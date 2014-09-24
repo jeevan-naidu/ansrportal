@@ -12,8 +12,13 @@ class projectAdmin(admin.ModelAdmin):
 
 
 class timeSheetEntryAdmin(admin.ModelAdmin):
-    list_display = ('project')
-    search_fields = ('project')
+    list_display = ['project']
+    # search_fields = ('project')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ['managerFeedback']
+        return self.readonly_fields
 
 
 class projectChangeInfoAdmin(admin.ModelAdmin):
@@ -32,8 +37,8 @@ class projectTeamMemberAdmin(admin.ModelAdmin):
                     'ResidentialAddress', 'mobileNumber')
     search_fields = ('firstName', 'mobileNumber')
 
-admin.site.register(project)
-admin.site.register(timeSheetEntry)
+admin.site.register(project, projectAdmin)
+admin.site.register(timeSheetEntry, timeSheetEntryAdmin)
 admin.site.register(ProjectChangeInfo)
 admin.site.register(ProjectMilestone)
 admin.site.register(ProjectTeamMember)

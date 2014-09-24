@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 
 # ansr models
 
-# Follow pep8 standards for python class and field names
-
 
 class project(models.Model):
     name = models.CharField(max_length=50, verbose_name="Project Name",
@@ -18,7 +16,7 @@ class project(models.Model):
     contigencyEffort = models.IntegerField(default=0,
                                            verbose_name="Contigency")
     projectManager = models.ForeignKey(User, verbose_name="Project Manager",
-                                       default=None)
+                                       default=None, editable=False)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True, default=None)
@@ -51,18 +49,23 @@ class timeSheetEntry(models.Model):
                                    verbose_name="Saturday")
     sunday = models.IntegerField(default=0,
                                  verbose_name="Sunday")
+    questionsCreated = models.IntegerField(default=0,
+                                           verbose_name="Question Created"
+                                           )
     approved = models.BooleanField(default=False,
                                    verbose_name="Approved")
+
     # Approval related details
     approvedon = models.DateTimeField(default=None, blank=True,
-                                      verbose_name="Approved On")
+                                      verbose_name="Approved On",
+                                      editable=False)
     managerFeedback = models.CharField(default=None, blank=True,
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
     teamMember = models.ForeignKey(User,
-                                   verbose_name="Team Members")
-    questionsCreated = models.IntegerField(default=0,
-                                           verbose_name="Question Created")
+                                   verbose_name="Team Members",
+                                   editable=False
+                                   )
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True, default=None)
