@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Project Login</title>
+	</head>
+	<body>
+	<form id="loginForm" action="{% url 'checkUser' %}" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+                	Enter User Name: <input type="text" name="userName" size="25" value="">
+                	Enter Password : <input type="password" name="passKey" size="25" value="">
+                	<input type="submit" name="button" value="Submit">
+                	<input type="button" name="button" value="Clear">
+            	</form>
+	</body>
+</html>
