@@ -19,9 +19,9 @@ class project(models.Model):
                                        default=None, editable=False)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now=True)
 
     def __unicode__(self):
         return self.name
@@ -68,9 +68,9 @@ class timeSheetEntry(models.Model):
                                    )
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now=True)
 
     class Meta:
         verbose_name = 'Timesheet Entry'
@@ -89,17 +89,17 @@ class ProjectChangeInfo(models.Model):
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                auto_now_add=True, default=None)
     revisedEffort = models.IntegerField(default=0,
-                                        verbose_name="Revised Effor")
+                                        verbose_name="Revised Effort")
     closed = models.BooleanField(default=False,
-                                 verbose_name="Close Project")
+                                 verbose_name="Close the Project")
     # Check lateset change or not
     status = models.BooleanField(default=False,
                                  verbose_name="Status")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now=True)
 
 
 class ProjectMilestone(models.Model):
@@ -112,18 +112,19 @@ class ProjectMilestone(models.Model):
                                    verbose_name="Description")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now=True)
 
 
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(project, verbose_name="Project Name")
     member = models.ForeignKey(User, verbose_name="Team Member")
+    startDate = models.DateField(verbose_name='Start date on project', default=None)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now_add=True, default=None)
+                                     auto_now=True)
