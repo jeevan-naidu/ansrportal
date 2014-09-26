@@ -15,3 +15,10 @@ class CreateProjectForm(forms.ModelForm):
             'plannedEffort',
             'contingencyEffort',
             'projectManager', )
+
+# This form is used in the initial login screen
+
+
+class LoginForm(forms.Form):
+    userid = forms.CharField(max_length=30)
+    password = forms.CharField(max_length=50, widget=forms.PasswordInput)

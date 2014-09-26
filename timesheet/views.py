@@ -1,13 +1,18 @@
 from django.contrib.auth import authenticate
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
-from timesheet.forms import createProjectForm
+from timesheet.forms import CreateProjectForm, LoginForm
 
 # views for ansr
 
 
 def index(request):
-    return render(request, 'timesheet/index.html')
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+    else:
+        form = LoginForm()
+    data = {'form': form}
+    return render(request, 'timesheet/index.html', data)
 
 
 def checkUser(request):
@@ -32,9 +37,10 @@ def checkUser(request):
 
 def addProject(request):
     if request.method == 'POST':
-        form = createProjectForm(request.POST)
+        form = CreateProjectForm(request.POST)
     else:
-        form = createProjectForm()
+        form = CreateProjectForm()
     data = {'form': form}
-    return render_to_response('timesheet/manager.html', data, \
+    return render_to_response('timesheet/manager.html', data,
                               context_instance=RequestContext(request))
+

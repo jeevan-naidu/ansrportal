@@ -86,7 +86,7 @@ class ProjectChangeInfo(models.Model):
     reason = models.CharField(max_length=100, default=None, blank=True,
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
-                               auto_now_add=True, default=None)
+                               default=None, blank=True)
     revisedEffort = models.IntegerField(default=0,
                                         verbose_name="Revised Effort")
     closed = models.BooleanField(default=False,
@@ -104,7 +104,7 @@ class ProjectChangeInfo(models.Model):
 class ProjectMilestone(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     milestoneDate = models.DateField(verbose_name="Milestone Date",
-                                     default=None, auto_now_add=True)
+                                     default=timezone.now, )
     deliverables = models.CharField(default=None, blank=True, max_length=100,
                                     verbose_name="Deliverables")
     description = models.CharField(default=None, blank=True, max_length=1000,
