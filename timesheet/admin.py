@@ -7,8 +7,9 @@ from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'startDate', 'endDate',
-                    'plannedEffort', 'projectManager')
-    search_fields = ('name', 'projectManager')
+                    'plannedEffort', 'contingencyEffort', 'projectManager')
+    search_fields = ('name', 'projectManager', 'startDate', 'endDate')
+    filter_fields = ('startDate', 'endDate')
 
 
 class TimeSheetEntryAdmin(admin.ModelAdmin):

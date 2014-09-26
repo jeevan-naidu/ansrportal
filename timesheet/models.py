@@ -1,22 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 # Database Models
 
 
 class Project(models.Model):
-    name = models.CharField(max_length=50, verbose_name="Project Name",
-                            default=None, blank=True)
+    name = models.CharField(max_length=50, verbose_name="Project Name")
     startDate = models.DateTimeField(verbose_name="Project Start Date",
-                                     auto_now_add=True, default=None)
+                                     default=timezone.now)
     endDate = models.DateTimeField(verbose_name="Project End Date",
-                                   auto_now_add=True, default=None)
+                                   default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
-    contigencyEffort = models.IntegerField(default=0,
-                                           verbose_name="Contigency")
+    contingencyEffort = models.IntegerField(default=0,
+                                            verbose_name="Contigency Effort")
     projectManager = models.ForeignKey(User, verbose_name="Project Manager",
-                                       default=None, editable=False)
+                                       default=None, blank=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
