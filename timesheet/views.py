@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import HttpResponse
+from timesheet.forms import createProjectForm
 
 # views for ansr
 
@@ -27,3 +28,13 @@ def checkUser(request):
             return HttpResponse("Logged in! Not Activated")
     else:
         return HttpResponse("Sorry no user is associated with this id")
+
+
+def addProject(request):
+    if request.method == 'POST':
+        form = createProjectForm(request.POST)
+    else:
+        form = createProjectForm()
+    data = {'form': form}
+    return render_to_response('timesheet/manager.html', data, \
+                              context_instance=RequestContext(request))

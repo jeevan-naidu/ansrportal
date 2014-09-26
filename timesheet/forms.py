@@ -1,6 +1,9 @@
 from django import forms
+from timesheet.models import project
 
 
-class loginForm(forms.Form):
-    userName = forms.CharField(max_length=256)
-    passKey = forms.CharField(widget=forms.PasswordInput())
+class createProjectForm(forms.ModelForm):
+    name = forms.CharField(max_length=256)
+
+    class Meta:
+        model = project
