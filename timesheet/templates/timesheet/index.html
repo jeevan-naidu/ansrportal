@@ -1,16 +1,29 @@
 <!DOCTYPE html>
-
 <html>
 	<head>
 		<title>Project Login</title>
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
 	</head>
 	<body>
-	<form id="loginForm" action="{% url 'checkUser' %}" method="post" enctype="multipart/form-data">
-			{% csrf_token %}
+	<form id="loginForm" action="{% url 'checkUser' %}" method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% bootstrap_form form layout='vertical' %} 
                 	Enter User Name: <input type="text" name="userName" size="25" value="">
                 	Enter Password : <input type="password" name="passKey" size="25" value="">
+             {% buttons %}
                 	<input type="submit" name="button" value="Submit">
                 	<input type="button" name="button" value="Clear">
+             {% endbuttons %}
             	</form>
 	</body>
 </html>
