@@ -15,8 +15,15 @@ def checkUser(request):
     user = authenticate(username=userName, password=passKey)
     if user is not None:
         if user.is_active:
-            return HttpResponse("Logged in! Activated")
+            try:
+                if user.groups.all()[0].name == "project manager":
+                    return render(request, 'timesheet/manager.html')
+                else:
+                    return render(request, 'timesheet/timesheet.html')
+            except IndexError:
+                return HttpResponse("Sorry you dont have the permission \
+                                    to get into projects")
         else:
             return HttpResponse("Logged in! Not Activated")
     else:
-        return HttpResponse("No account matched")
+        return HttpResponse("Sorry no user is associated with this id")

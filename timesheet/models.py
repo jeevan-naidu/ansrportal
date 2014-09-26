@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# ansr models
+# Database Models
 
 
 class project(models.Model):
@@ -120,7 +120,8 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(project, verbose_name="Project Name")
     member = models.ForeignKey(User, verbose_name="Team Member")
-    startDate = models.DateField(verbose_name='Start date on project', default=None)
+    startDate = models.DateField(verbose_name='Start date on project',
+                                 default=None)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     # Record Entered / Updated Date
