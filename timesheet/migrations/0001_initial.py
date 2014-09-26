@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='project',
+            name='Project',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(default=None, max_length=50, verbose_name=b'Project Name', blank=True)),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('status', models.BooleanField(default=False, verbose_name=b'Status')),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
-                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.project')),
+                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.Project')),
             ],
             options={
             },
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(default=None, max_length=1000, verbose_name=b'Description', blank=True)),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
-                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.project')),
+                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.Project')),
             ],
             options={
             },
@@ -72,14 +72,14 @@ class Migration(migrations.Migration):
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
                 ('member', models.ForeignKey(verbose_name=b'Team Member', to=settings.AUTH_USER_MODEL)),
-                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.project')),
+                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.Project')),
             ],
             options={
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='timeSheetEntry',
+            name='TimeSheetEntry',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('wkstart', models.DateField(default=None, verbose_name=b'Week Start', blank=True)),
@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
                 ('managerFeedback', models.CharField(default=None, max_length=1000, verbose_name=b'Manager Feedback', blank=True)),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
-                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.project')),
+                ('project', models.ForeignKey(verbose_name=b'Project Name', to='timesheet.Project')),
                 ('teamMember', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, verbose_name=b'Team Members')),
             ],
             options={

@@ -1,9 +1,17 @@
 from django import forms
-from timesheet.models import project
+from timesheet.models import Project
+
+# Read http://pydanny.com/core-concepts-django-modelforms.html for better
+# understanding of Django Forms
 
 
-class createProjectForm(forms.ModelForm):
-    name = forms.CharField(max_length=256)
+class CreateProjectForm(forms.ModelForm):
 
     class Meta:
-        model = project
+        model = Project
+        fields = (
+            'startDate',
+            'endDate',
+            'plannedEffort',
+            'contingencyEffort',
+            'projectManager', )

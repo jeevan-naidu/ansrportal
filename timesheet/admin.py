@@ -1,17 +1,17 @@
 from django.contrib import admin
-from timesheet.models import project, timeSheetEntry, ProjectChangeInfo, \
+from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
 
 # Admin Models for ansr
 
 
-class projectAdmin(admin.ModelAdmin):
+class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'startDate', 'endDate',
                     'plannedEffort', 'projectManager')
     search_fields = ('name', 'projectManager')
 
 
-class timeSheetEntryAdmin(admin.ModelAdmin):
+class TimeSheetEntryAdmin(admin.ModelAdmin):
     list_display = ['project']
     # search_fields = ('project')
 
@@ -21,24 +21,24 @@ class timeSheetEntryAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
-class projectChangeInfoAdmin(admin.ModelAdmin):
+class ProjectChangeInfoAdmin(admin.ModelAdmin):
     list_display = ('firstName', 'emailAddress',
                     'ResidentialAddress', 'mobileNumber')
     search_fields = ('firstName', 'mobileNumber')
 
 
-class projectMileStoneAdmin(admin.ModelAdmin):
+class ProjectMileStoneAdmin(admin.ModelAdmin):
     list_display = ('docName', 'specialization', 'experience')
     search_fields = ('specialization', 'docName')
 
 
-class projectTeamMemberAdmin(admin.ModelAdmin):
+class ProjectTeamMemberAdmin(admin.ModelAdmin):
     list_display = ('firstName', 'emailAddress',
                     'ResidentialAddress', 'mobileNumber')
     search_fields = ('firstName', 'mobileNumber')
 
-admin.site.register(project, projectAdmin)
-admin.site.register(timeSheetEntry, timeSheetEntryAdmin)
-admin.site.register(ProjectChangeInfo)
-admin.site.register(ProjectMilestone)
-admin.site.register(ProjectTeamMember)
+admin.site.register(Project, ProjectAdmin)
+admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
+#admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
+#admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
+#admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)

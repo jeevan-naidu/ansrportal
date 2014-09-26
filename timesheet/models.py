@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 # Database Models
 
 
-class project(models.Model):
+class Project(models.Model):
     name = models.CharField(max_length=50, verbose_name="Project Name",
                             default=None, blank=True)
     startDate = models.DateTimeField(verbose_name="Project Start Date",
@@ -27,8 +27,8 @@ class project(models.Model):
         return self.name
 
 
-class timeSheetEntry(models.Model):
-    project = models.ForeignKey(project, verbose_name="Project Name")
+class TimeSheetEntry(models.Model):
+    project = models.ForeignKey(Project, verbose_name="Project Name")
     # Week details
     wkstart = models.DateField(default=None, blank=True,
                                verbose_name="Week Start")
@@ -79,7 +79,7 @@ class timeSheetEntry(models.Model):
 
 class ProjectChangeInfo(models.Model):
     # project change Request Fields
-    project = models.ForeignKey(project, verbose_name="Project Name")
+    project = models.ForeignKey(Project, verbose_name="Project Name")
     changedOn = models.DateField(auto_now_add=True,
                                  verbose_name="Changed On", default=None)
     crId = models.CharField(default=None, blank=True,
@@ -103,7 +103,7 @@ class ProjectChangeInfo(models.Model):
 
 
 class ProjectMilestone(models.Model):
-    project = models.ForeignKey(project, verbose_name="Project Name")
+    project = models.ForeignKey(Project, verbose_name="Project Name")
     milestoneDate = models.DateField(verbose_name="Milestone Date",
                                      default=None, auto_now_add=True)
     deliverables = models.CharField(default=None, blank=True, max_length=100,
@@ -118,7 +118,7 @@ class ProjectMilestone(models.Model):
 
 
 class ProjectTeamMember(models.Model):
-    project = models.ForeignKey(project, verbose_name="Project Name")
+    project = models.ForeignKey(Project, verbose_name="Project Name")
     member = models.ForeignKey(User, verbose_name="Team Member")
     startDate = models.DateField(verbose_name='Start date on project',
                                  default=None)
