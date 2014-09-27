@@ -119,8 +119,10 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     member = models.ForeignKey(User, verbose_name="Team Member")
+    role = models.CharField(default=None, blank=True, max_length=100,
+                            verbose_name="Role")
     startDate = models.DateField(verbose_name='Start date on project',
-                                 default=None)
+                                 default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     # Record Entered / Updated Date
