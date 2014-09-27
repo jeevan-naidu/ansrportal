@@ -2,23 +2,25 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from timesheet.forms import CreateProjectForm, LoginForm
-
 # views for ansr
 
 
 def index(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
+        if form.is_valid():
+            return checkUser(
+                form.cleaned_data['userid'],
+                form.cleaned_data['password'],
+                request)
     else:
         form = LoginForm()
     data = {'form': form}
     return render(request, 'timesheet/index.html', data)
 
 
-def checkUser(request):
-    userName = request.POST.get('userName')
-    passKey = request.POST.get('passKey')
-    user = authenticate(username=userName, password=passKey)
+def checkUser(userName, password, request):
+    user = authenticate(username=userName, password=password)
     if user is not None:
         if user.is_active:
             try:
@@ -43,4 +45,3 @@ def addProject(request):
     data = {'form': form}
     return render_to_response('timesheet/manager.html', data,
                               context_instance=RequestContext(request))
-

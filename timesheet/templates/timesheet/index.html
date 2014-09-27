@@ -14,7 +14,7 @@
 
 	</head>
 	<body>
-	<form id="loginForm" action="{% url 'checkUser' %}" method="post" enctype="multipart/form-data" class="form">
+	<form id="loginForm" action="{% url 'index' %}" method="post" enctype="multipart/form-data" class="form">
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' %} 
         {% buttons %}
