@@ -15,27 +15,26 @@
 	</head>
 	<body>
 	<ul class="nav nav-tabs nav-justified" role="tablist">
-		<li><a href="#create">CREATE</a></li>
-		<li><a href="#manage">MANAGE</a></li>
-		<li><a href="#progress">PROGRESS</a></li>
-		<li><a href="#perfomance">TEAM MEMBERS PERFOMANCE</a></li>
-		<li><a href="#status">STATUS</a></li>
+		<li class="active"><a href="#create">Create&nbsp;New&nbsp;Project</a></li>
+		<li><a href="#manage">Manage&nbsp;Projects</a></li>
+		<li><a href="#progress">Project's&nbsp;Progress</a></li>
+		<li><a href="#perfomance">Team&nbsp;Member's&nbsp;Perfomance</a></li>
+		<li><a href="#status">Project's&nbsp;Status</a></li>
 	</ul>
+	<div class="col-xs-10 col-md-10 col-lg-6 
+		col-lg-offset-3 col-xs-offset-1 col-md-offset-1">
         <div id="create">
 		<form id="createProject" method="post" action="/timesheet/addProject">
 			{% csrf_token %}
-			{% bootstrap_form basicInfo layout="horizontal" %}
+			{% bootstrap_form basicInfo layout="linear" %}
+			{% bootstrap_form team layout="linear" %}
+			{% bootstrap_form milestone layout="linear" %}
 			{% buttons %}
-			        <button type="submit" class="btn btn-primary">
-				{% bootstrap_icon "arrow-right" %} Next
+				<button type="submit" class="btn btn-primary">
+				Create New Project
 				</button>
 			{% endbuttons %}
-			{% bootstrap_form team layout="horizontal" %}
-			{% bootstrap_form milestone layout="horizontal" %}
 		</form>
         </div>
-	<div id="#manage">
-		Module Under Contruction
-	</div>
     </body>
 </html>
