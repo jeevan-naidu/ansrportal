@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
-	<head>
+    <head>
+        {% load static from staticfiles %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Project Login</title>
 			{# Load the tag library #}
 			{% load bootstrap3 %}
@@ -12,13 +16,34 @@
 			{# Display django.contrib.messages as Bootstrap alerts #}
 			{% bootstrap_messages %}
 	</head>
-	<body>
-	<form id="loginForm" action="{% url 'index' %}" method="post" enctype="multipart/form-data" class="form">
-        	{% csrf_token %}
-       	 	{% bootstrap_form form layout='horizontal' %} 
-        	{% buttons %}
-            		<button type="submit" class="btn btn-primary">Login</button>
-        	{% endbuttons %}
-    	</form>
-	</body>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class ="col-md-offset-2" />
+
+                    <div class="col-xs-12 col-md-8">
+                        <img src="{% static 'ansrlogo.png' %}" class="img-responsive"/>
+                </div>
+                <div class ="col-md-offset-2" />
+
+            </div>
+            <div class="row">
+                <div class="col-md-3 hidden-xs">
+                    <p>left side</p>
+                </div>
+                <div class="col-sm-12 col-md-6">
+                        <form id="loginForm" action="{% url 'index' %}" method="post" enctype="multipart/form-data" class="form">
+                            {% csrf_token %}
+                            {% bootstrap_form form layout='vertical' %} 
+                            {% buttons %}
+                                <input type="submit" name="button" value="Submit">
+                            {% endbuttons %}
+                        </form>
+                    </div>
+                <div class="col-md-3 hidden-xs">
+                    <p>right side</p>
+                </div>
+                </div>
+    </div>
+    </body>
 </html>
