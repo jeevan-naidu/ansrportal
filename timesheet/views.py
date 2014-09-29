@@ -41,14 +41,27 @@ def checkUser(userName, password, request):
 
 def CreateProject(request):
     if request.method == 'POST':
-        form = ProjectBasicInfoForm(request.POST)
-        if form.is_valid():
-            form.cleaned_data['name']
-            form.cleaned_data['startDate']
-            form.cleaned_data['endDate']
-            form.cleaned_data['plannedEffort']
-            form.cleaned_data['contingencyEffort']
+        basicInfo = ProjectBasicInfoForm(request.POST)
+        team = ProjectTeamForm(request.POST)
+        milestone = ProjectMilestoneForm(request.POST)
+        if basicInfo.is_valid() and team.is_valid() and milestone.is_valid():
+            # Project Basic Information
+            basicInfo.cleaned_data['name']
+            basicInfo.cleaned_data['startDate']
+            basicInfo.cleaned_data['endDate']
+            basicInfo.cleaned_data['plannedEffort']
+            basicInfo.cleaned_data['contingencyEffort']
+            # Team Member and thier roles
+            team.cleaned_data['role']
+            team.cleaned_data['startDate']
+            team.cleaned_data['plannedEffort']
+            # Project Milestones
+            milestone.cleaned_data['milestoneDate']
+            milestone.cleaned_data['deliverables']
+            milestone.cleaned_data['description']
     else:
-        form = ProjectBasicInfoForm()
-    data = {'form': form}
+        basicInfo = ProjectBasicInfoForm()
+        team = ProjectTeamForm()
+        milestone = ProjectMilestoneForm()
+    data = {'basicInfo': basicInfo, 'team': team, 'milestone': milestone}
     return render(request, 'timesheet/manager.html', data)

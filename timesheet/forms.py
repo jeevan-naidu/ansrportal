@@ -31,6 +31,7 @@ class ProjectTeamForm(forms.ModelForm):
             'plannedEffort',
             'startDate', )
         widgets = {
+            'startDate': SelectDateWidget(),
             'project': forms.HiddenInput(), }
 
 
@@ -41,8 +42,10 @@ class ProjectMilestoneForm(forms.ModelForm):
         model = ProjectMilestone
         fields = (
             'milestoneDate',
+            'description',
             'deliverables', )
         widgets = {
+            'milestoneDate': SelectDateWidget(),
             'project': forms.HiddenInput(), }
 
 

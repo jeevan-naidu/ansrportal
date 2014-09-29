@@ -24,12 +24,14 @@
         <div id="create">
 		<form id="createProject" method="post" action="/timesheet/addProject">
 			{% csrf_token %}
-			{% bootstrap_form form layout="horizontal" %}
+			{% bootstrap_form basicInfo layout="horizontal" %}
 			{% buttons %}
 			        <button type="submit" class="btn btn-primary">
 				{% bootstrap_icon "arrow-right" %} Next
 				</button>
 			{% endbuttons %}
+			{% bootstrap_form team layout="horizontal" %}
+			{% bootstrap_form milestone layout="horizontal" %}
 		</form>
         </div>
 	<div id="#manage">
