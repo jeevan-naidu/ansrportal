@@ -18,19 +18,21 @@
     </head>
     <body>
 	<div class="col-lg-10 col-md-10 col-xs-12
-		col-lg-offset-1 col-md-offset-1 jumbotron"> 
+		col-lg-offset-1 col-md-offset-1 jumbotron"\
+		style="position: absolute; top: 20%"> 
 
 		<div class="col-lg-5 col-md-5 col-xs-12">
 			<img src="{% static 'ansrlogo.png' %}"
 		       	   class="img-responsive" />	
 		</div>	
 		<div class="col-lg-5 col-md-5 col-xs-12">
-			<legend>Login to your Project</legend>
+			<legend>Logon&nbsp;to&nbsp;your&nbsp;dashboard</legend>
 			<form id="loginForm"  action="{% url 'index' %}" method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{% bootstrap_form form layout='vertical' %}
 			{% buttons %}
-				<button type="submit" class="btn btn-primary">
+				<button type="submit" class="btn btn-primary
+					col-lg-12 col-xs-12 col-md-12">
 				Login
 				</button>
 			{% endbuttons %}	
