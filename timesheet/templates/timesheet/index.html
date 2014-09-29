@@ -17,11 +17,15 @@
 			{% bootstrap_messages %}
     </head>
     <body>
+    	<div class="col-xs-12 hidden-lg hidden-md">
+		<img src="{% static 'ansrlogo.png' %}" class="img-responsive" />
+
+	</div>
 	<div class="col-lg-10 col-md-10 col-xs-12
 		col-lg-offset-1 col-md-offset-1 jumbotron"\
 		style="position: absolute; top: 20%"> 
 
-		<div class="col-lg-5 col-md-5 col-xs-12">
+		<div class="hidden-xs col-lg-5 col-md-5 ">
 			<img src="{% static 'ansrlogo.png' %}"
 		       	   class="img-responsive" />	
 		</div>	
@@ -38,6 +42,9 @@
 			{% endbuttons %}	
 			</form>
 		</div>
+	</div>
+	<div style="position: fixed; bottom: 0px;">
+		<small>&copy 2014. Fantain Sports Pvt. Ltd.,</small>
 	</div>
     </body>
 </html>
