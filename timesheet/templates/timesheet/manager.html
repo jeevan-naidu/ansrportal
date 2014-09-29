@@ -3,18 +3,37 @@
 <html>
 	<head>
 		<title>Manager Login</title>
+		{# Load the tag library #}
+		{% load bootstrap3 %}
+
+		{# Load CSS and JavaScript #}
+		{% bootstrap_css %}
+		{% bootstrap_javascript %}
+
+		{# Display django.contrib.messages as Bootstrap alerts #}
+		{% bootstrap_messages %}
 	</head>
 	<body>
-	    <a href="#create">CREATE PROJECT</a> 
-        <a href="#manage">MANAGE PROJECT</a>
-        <a href="#progress">PROJECT PROGRESS</a>
-        <a href="#perfomance">TEAM MEMBERS PERFOMANCE</a> 
-        <a href="#status">PROJECT STATUS</a>
-        
+	<ul class="nav nav-tabs nav-justified" role="tablist">
+		<li><a href="#create">CREATE</a></li>
+		<li><a href="#manage">MANAGE</a></li>
+		<li><a href="#progress">PROGRESS</a></li>
+		<li><a href="#perfomance">TEAM MEMBERS PERFOMANCE</a></li>
+		<li><a href="#status">STATUS</a></li>
+	</ul>
         <div id="create">
 		<form id="createProject" method="post" action="/timesheet/addProject">
-			{{ form.name }}
+			{% csrf_token %}
+			{% bootstrap_form form layout="horizontal" %}
+			{% buttons %}
+			        <button type="submit" class="btn btn-primary">
+				{% bootstrap_icon "arrow-right" %} Next
+				</button>
+			{% endbuttons %}
 		</form>
         </div>
+	<div id="#manage">
+		Module Under Contruction
+	</div>
     </body>
 </html>

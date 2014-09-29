@@ -2,25 +2,23 @@
 <html>
 	<head>
 		<title>Project Login</title>
-{# Load the tag library #}
-{% load bootstrap3 %}
+			{# Load the tag library #}
+			{% load bootstrap3 %}
 
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
+			{# Load CSS and JavaScript #}
+			{% bootstrap_css %}
+			{% bootstrap_javascript %}
 
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
+			{# Display django.contrib.messages as Bootstrap alerts #}
+			{% bootstrap_messages %}
 	</head>
 	<body>
 	<form id="loginForm" action="{% url 'index' %}" method="post" enctype="multipart/form-data" class="form">
-        {% csrf_token %}
-        {% bootstrap_form form layout='horizontal' %} 
-        {% buttons %}
-            <input type="submit" name="button" value="Submit">
-            <input type="button" name="button" value="Clear">
-        {% endbuttons %}
-    </form>
+        	{% csrf_token %}
+       	 	{% bootstrap_form form layout='horizontal' %} 
+        	{% buttons %}
+            		<button type="submit" class="btn btn-primary">Login</button>
+        	{% endbuttons %}
+    	</form>
 	</body>
 </html>

@@ -1,7 +1,9 @@
 from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import HttpResponse
-from timesheet.forms import LoginForm
+from timesheet.forms import LoginForm, ProjectMilestoneForm, \
+    ProjectTeamForm, ProjectBasicInfoForm
+
 # views for ansr
 
 
@@ -25,7 +27,7 @@ def checkUser(userName, password, request):
         if user.is_active:
             try:
                 if user.groups.all()[0].name == "project manager":
-                    return render(request, 'timesheet/manager.html')
+                    return CreateProject(request)
                 else:
                     return render(request, 'timesheet/timesheet.html')
             except IndexError:
@@ -35,3 +37,18 @@ def checkUser(userName, password, request):
             return HttpResponse("Logged in! Not Activated")
     else:
         return HttpResponse("Sorry no user is associated with this id")
+
+
+def CreateProject(request):
+    if request.method == 'POST':
+        form = ProjectBasicInfoForm(request.POST)
+        if form.is_valid():
+            form.cleaned_data['name']
+            form.cleaned_data['startDate']
+            form.cleaned_data['endDate']
+            form.cleaned_data['plannedEffort']
+            form.cleaned_data['contingencyEffort']
+    else:
+        form = ProjectBasicInfoForm()
+    data = {'form': form}
+    return render(request, 'timesheet/manager.html', data)
