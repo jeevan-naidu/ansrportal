@@ -1,6 +1,8 @@
 from django import forms
 from timesheet.models import Project, ProjectTeamMember, ProjectMilestone
 from django.forms.extras.widgets import SelectDateWidget
+#from widgets import DateWidget
+from datetimewidget.widgets import DateWidget
 
 
 # Form Class to create project
@@ -15,7 +17,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'plannedEffort',
             'contingencyEffort', )
         widgets = {
-            'startDate': SelectDateWidget(),
+            'startDate': DateWidget(bootstrap_version=3),
             'endDate': SelectDateWidget(),
             'projectManager': forms.HiddenInput(), }
 
@@ -31,7 +33,7 @@ class ProjectTeamForm(forms.ModelForm):
             'plannedEffort',
             'startDate', )
         widgets = {
-            'startDate': SelectDateWidget(),
+            'startDate': DateWidget(),
             'project': forms.HiddenInput(), }
 
 

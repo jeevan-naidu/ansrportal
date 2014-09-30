@@ -2,6 +2,9 @@
 
 <html>
 	<head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Manager Login</title>
 		{# Load the tag library #}
 		{% load bootstrap3 %}
@@ -11,7 +14,11 @@
 		{% bootstrap_javascript %}
 
 		{# Display django.contrib.messages as Bootstrap alerts #}
-		{% bootstrap_messages %}
+        {% bootstrap_messages %}
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        {{ basicInfo.media }}
+        {{ team.media }}
+        {{ milestone.media }}
 	</head>
 	<body>
 	<ul class="nav nav-tabs nav-justified" role="tablist">
@@ -45,7 +52,7 @@
         <div id="create">
 		<form id="createProject" method="post" action="/timesheet/addProject">
 			{% csrf_token %}
-			{% bootstrap_form basicInfo layout="linear" %}
+			{% bootstrap_form basicInfo layout="vertical" %}
 			{% bootstrap_form team layout="linear" %}
 			{% bootstrap_form milestone layout="linear" %}
 			{% buttons %}
