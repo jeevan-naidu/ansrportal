@@ -1,0 +1,52 @@
+<!DOCTYPE html>   
+<html>                                                                                                                                                          
+    <head>                                                                                                                                                      
+       {% load static from staticfiles %}                                                                                                                     
+       <meta charset="utf-8">                                                                                                                                  
+       <meta http-equiv="X-UA-Compatible" content="IE=edge">                                                                                                   
+       <meta name="viewport" content="width=device-width, initial-scale=1">                                                                                   
+       <title>Project Login</title>                                                                                                                  
+       {# Load the tag library #}                                                                                                              
+       {% load bootstrap3 %}                                                                                                                   
+       {# Load Bootstrap CSS and JS #}                                                                                                           
+       {% bootstrap_css %}
+       {# Load Ansr CSS and JS #}     
+       {% static 'css/site.css' %}
+       {# Display django.contrib.messages as Bootstrap alerts #}
+       {% bootstrap_messages %}                      
+    </head>
+    <body>
+	<!-- Ansr -->
+	<div class="container">
+		<!-- Ansr Logo and role based menuset -->
+		<div clas="row">
+			<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+				<!-- Ansr brand logo -->
+				<div class="navbar-header">
+					<a class="navbar-brand">
+						<img src="{% static 'images/ansrlogo.png' %}" 
+						     class="img-responsive ansrLogo" />
+					</a>
+				</div> <!-- End of the Ansr Brand Logo -->
+				<!-- Ansr role based menuset -->
+				{% include menu.html %}
+			</nav>
+		</div><!-- End of Ansr Logo and role based menuset-->
+		<!-- Ansr body -->
+
+
+        
+	
+		<!-- Ansr footer -->
+		<div class="row">
+			<nav class="navbar navbar-default navbar-fixed-bottom col-lg-12 col-xs-12 col-md-12" role="navigation">
+				<div class="navbar-inner navbar-content-center">
+					<span class="col-lg-6 col-xs-12 col-md-12 col-lg-offset-3 ansrFooterText">
+						<small>&copy; 2014. Fantain Sports Pvt. Ltd.,</small>
+					</span>
+				</div>
+			</nav>
+		</div><!-- End of Ansr Footer -->
+      	</div>
+    </body>
+</html>
