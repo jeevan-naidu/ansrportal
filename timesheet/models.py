@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.contrib.auth.views import logout
 # Database Models
 
 
@@ -130,3 +131,6 @@ class ProjectTeamMember(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+
+    def __unicode__(self):
+        return self.member

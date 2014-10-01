@@ -16,6 +16,8 @@
 
        {# Load Ansr CSS and JS #}
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
+       <link rel="stylesheet" type="text/css" href="{% static 'css/tabs.css' %}">
+       <script src="{% static 'js/modernizr.js' %}"></script> 
 
        {# Display django.contrib.messages as Bootstrap alerts #}
        {% bootstrap_messages %}
@@ -44,8 +46,15 @@
 					 <ul class="nav navbar-nav" style="padding-left: 4px">
 						{% block ansrMenu %}{% endblock %}
 					 </ul>
+					 <ul class="nav navbar-nav navbar-right">
+						{% block loggedStatus %} {% endblock %}
+					</ul>
 				</div>
-				{% block loggedStatus %} {% endblock %}
+				<!-- <div>
+					<span class="nav navbar-nav navbar-right">
+					
+					</span>
+				</div> -->
 			</nav>
 		</div><!-- End of Ansr Logo and role based menuset-->
 		<!-- Ansr body -->
@@ -57,11 +66,13 @@
 			<nav class="navbar navbar-default navbar-fixed-bottom col-lg-12 col-xs-12 col-md-12" role="navigation">
 				<div class="navbar-inner navbar-content-center">
 					<span class="col-lg-6 col-xs-12 col-md-12 col-lg-offset-3 ansrFooterText">
-						<small>&copy;2014.Fantain Sports Pvt. Ltd.,</small>
+						<small>&copy; 2014.Fantain Sports Pvt. Ltd.,</small>
 					</span>
 				</div>
 			</nav>
 		</div><!-- End of Ansr Footer -->
       	</div>
+	<!-- Inclusion of Javascripts -->
+	<script src="{% static 'js/main.js' %}"></script>
     </body>
 </html>

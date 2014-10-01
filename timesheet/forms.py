@@ -18,8 +18,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'contingencyEffort', )
         widgets = {
             'startDate': DateWidget(bootstrap_version=3),
-            'startDate': SelectDateWidget(),
-            'endDate': SelectDateWidget(),
+            'endDate': DateWidget(bootstrap_version=3),
             'projectManager': forms.HiddenInput(), }
 
 
@@ -34,7 +33,7 @@ class ProjectTeamForm(forms.ModelForm):
             'plannedEffort',
             'startDate', )
         widgets = {
-            'startDate': SelectDateWidget(),
+            'startDate': DateWidget(bootstrap_version=3),
             'project': forms.HiddenInput(), }
 
 
@@ -48,7 +47,7 @@ class ProjectMilestoneForm(forms.ModelForm):
             'description',
             'deliverables', )
         widgets = {
-            'milestoneDate': SelectDateWidget(),
+            'milestoneDate': DateWidget(bootstrap_version=3),
             'project': forms.HiddenInput(), }
 
 

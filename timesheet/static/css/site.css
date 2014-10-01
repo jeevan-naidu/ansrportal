@@ -1,15 +1,44 @@
 /* Ansr Stylesheet */
 
-/* Ansr Menu */
+/* Common */
+.shadow {
+	background-color: white; 
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 5px 5px 5px #333;
+	-webkit-box-shadow:5px 5px 5px #333;
+	-o-box-shadow:5px 5px 5px #333
+}
+body {
+	padding-top: 70px;
+}
+
+/* Menu */
 .ansrLogo { 
 	max-width: 225px;
 	margin-top: -7px;
+	margin-right: 3px;
 }
 .ansrMenuShadow {
 	border-bottom: 1px solid #aaa;	
 }
+.ansrLogout {
+	font-weight: bold;
+	color: red;
+	padding-right: 5px;
+}
+.ansrLogoutIcon {
+	font-weight: bold;
+	color: red;
+}
 
-/* Ansr Footer */
+/* Body */
+/* Login Page */
+.ansrLoginForm { 
+	position: absolute; 
+	top: 20%;
+}
+
+/* Footer */
 .ansrFooterText {
 	text-align:center; 
 	position: absolute; 

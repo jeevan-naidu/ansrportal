@@ -1,10 +1,15 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
+from django.contrib import auth
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from timesheet.forms import LoginForm, ProjectMilestoneForm, \
     ProjectTeamForm, ProjectBasicInfoForm
 
 # views for ansr
+
+import logging
+
+
 
 
 def index(request):
@@ -25,6 +30,7 @@ def checkUser(userName, password, request):
     user = authenticate(username=userName, password=password)
     if user is not None:
         if user.is_active:
+            auth.login(request, user)
             try:
                 if user.groups.all()[0].name == "project manager":
                     return CreateProject(request)
@@ -51,10 +57,14 @@ def CreateProject(request):
             basicInfo.cleaned_data['endDate']
             basicInfo.cleaned_data['plannedEffort']
             basicInfo.cleaned_data['contingencyEffort']
+	    logging.error('username='+request.user.username)
+	    basicInfo.projectManager = request.user
+            basicInfo.save()
             # Team Member and thier roles
             team.cleaned_data['role']
             team.cleaned_data['startDate']
             team.cleaned_data['plannedEffort']
+            team.save()
             # Project Milestones
             milestone.cleaned_data['milestoneDate']
             milestone.cleaned_data['deliverables']
@@ -65,3 +75,12 @@ def CreateProject(request):
         milestone = ProjectMilestoneForm()
     data = {'basicInfo': basicInfo, 'team': team, 'milestone': milestone}
     return render(request, 'timesheet/manager.html', data)
+
+
+def Logout(request):
+    logout(request)
+    request.session.flush()
+    if hasattr(request, 'user'):
+        from django.contrib.auth.models import AnonymousUser
+        request.user = AnonymousUser()
+    return HttpResponseRedirect('/login')
