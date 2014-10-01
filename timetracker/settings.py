@@ -26,6 +26,11 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Ansr template definition
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'timesheet/templates/timesheet/'),
+)
 
 # Application definition
 
