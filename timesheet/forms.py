@@ -5,6 +5,7 @@ from django.forms.extras.widgets import SelectDateWidget
 from datetimewidget.widgets import DateWidget
 
 
+
 # Form Class to create project
 class ProjectBasicInfoForm(forms.ModelForm):
 

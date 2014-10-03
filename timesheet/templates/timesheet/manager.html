@@ -47,31 +47,58 @@
 
 {% block content %}
 <div class="col-xs-12 col-md-12 col-lg-8
-	col-lg-offset-2 shadow">
+	col-lg-offset-2 jumbotron shadow">
  <div id="create">
-	<ul class="nav nav-tabs">
-		<li class="active"><a data-toggle="tab" href="#basic">Basic Information</a></li>
-		<li><a data-toggle="tab" href="#team">Create Team</a></li>
-		<li><a data-toggle="tab" href="#milestones">Milestones</a></li>
-	</ul> <!-- cd-tabs-navigation -->
+	<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
 	<form id="createProject" method="post" action="{% url 'createproject' %}" enctype="multipart/form-data">
 		{% csrf_token %}
-		<div class="tab-content">
-			<div id="basic" class="tab-pane fade in active">
-				{% bootstrap_form basicInfo layout="vertical" %}
-			</div>	
-			<div id="team">
-				{% bootstrap_form team layout="linear" %}
+		{{ wizard.management_form }}
+		{% if wizard.form.forms %}
+		    {{ wizard.form.management_form }}
+		    {% for form in wizard.form.forms %}
+			{% bootstrap_form form layout="linear" %}
+		    {% endfor %}
+		{% else %}
+		   {% bootstrap_form wizard.form layout="linear" %}
+		{% endif %}
+		{% if wizard.steps.next and wizard.steps.prev %}
+			<div class="col-md-6 col-xs-6">
+			{% buttons %}
+				<button name="wizard_goto_step" value="{{ wizard.steps.prev }}" class="btn btn-primary">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				</button>
+			{% endbuttons %}
 			</div>
-			<div id="milestones">
-				{% bootstrap_form milestone layout="linear" %}
+			<div class="col-md-6 col-xs-6 text-right">
+			{% buttons %}
+				<button name="wizard_goto_step" value="{{ wizard.steps.next }}" type="submit" class="btn btn-primary">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+				</button>
+			{% endbuttons %}
+		{% elif wizard.steps.next %}
+			<div class="col-md-12 col-xs-12 text-right">
 				{% buttons %}
-					<button type="submit" class="btn btn-primary col-lg-12 col-xs-12 col-md-12">
-					Create New Project
+					<button name="wizard_goto_step" value="{{ wizard.steps.next }}" type="submit" class="btn btn-primary">
+						<span class="glyphicon glyphicon-chevron-right"></span>
 					</button>
 				{% endbuttons %}
-			</div>
-		</div>
+		        </div>
+		{% elif wizard.steps.last %}
+		     <div class="col-md-4 col-xs-4">
+			{% buttons %}
+				<button name="wizard_goto_step" value="{{ wizard.steps.prev }}" type="submit" class="btn btn-primary btn-sm">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				</button>
+			{% endbuttons %}
+		     </div>
+                     <div class="col-md-8 col-xs-8 text-right">
+			{% buttons %}
+				<button type="submit" class="btn btn-primary">
+					Create
+				</button>
+			{% endbuttons %}
+		      </div>
+		{% endif %}
 	</form>
  </div>
 </div>

@@ -1,14 +1,13 @@
 from django.contrib.auth import authenticate, logout
 from django.contrib import auth
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, ProjectMilestone, ProjectTeamMember
+from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
+    ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectMilestoneForm, \
     ProjectTeamForm, ProjectBasicInfoForm
-
+from django.contrib.formtools.wizard.views import SessionWizardView
 # views for ansr
-
-import logging
 
 
 def index(request):
@@ -32,7 +31,7 @@ def checkUser(userName, password, request):
             auth.login(request, user)
             try:
                 if user.groups.all()[0].name == "project manager":
-                    return CreateProject(request)
+                    return HttpResponseRedirect('login/createproject')
                 else:
                     return render(request, 'timesheet/timesheet.html')
             except IndexError:
@@ -44,7 +43,17 @@ def checkUser(userName, password, request):
         return HttpResponse("Sorry no user is associated with this id")
 
 
-def CreateProject(request):
+class CreateProject(SessionWizardView):
+    template_name = "manager.html"
+
+    def done(self, form_list, **kwargs):
+        for form in form_list:
+            form.save()
+        return HttpResponse("Nice!! Done")
+
+
+def process_form_data(request):
+
     if request.method == 'POST':
         basicInfo = ProjectBasicInfoForm(request.POST)
         team = ProjectTeamForm(request.POST)
@@ -57,7 +66,9 @@ def CreateProject(request):
             pr.startDate = basicInfo.cleaned_data['startDate']
             pr.endDate = basicInfo.cleaned_data['endDate']
             pr.plannedEffort = basicInfo.cleaned_data['plannedEffort']
-            pr.contingencyEffort = basicInfo.cleaned_data['contingencyEffort']
+            pr.contingencyEffort = basicInfo.cleaned_data[
+                'contingencyEffort'
+            ]
             pr.projectManager = request.user
             pr.save()
             # Team Member and thier roles
@@ -73,11 +84,13 @@ def CreateProject(request):
         basicInfo = ProjectBasicInfoForm()
         team = ProjectTeamForm()
         milestone = ProjectMilestoneForm()
+
     data = {'basicInfo': basicInfo, 'team': team, 'milestone': milestone}
     return render(request, 'timesheet/manager.html', data)
 
 
 def Logout(request):
+
     logout(request)
     request.session.flush()
     if hasattr(request, 'user'):
