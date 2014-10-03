@@ -2,14 +2,13 @@ from django.contrib.auth import authenticate, logout
 from django.contrib import auth
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectMilestoneForm, \
     ProjectTeamForm, ProjectBasicInfoForm
 
 # views for ansr
 
 import logging
-
-
 
 
 def index(request):
@@ -50,25 +49,26 @@ def CreateProject(request):
         basicInfo = ProjectBasicInfoForm(request.POST)
         team = ProjectTeamForm(request.POST)
         milestone = ProjectMilestoneForm(request.POST)
-        if basicInfo.is_valid() and team.is_valid() and milestone.is_valid():
+        # and team.is_valid() and milestone.is_valid():
+        if basicInfo.is_valid():
             # Project Basic Information
-            basicInfo.cleaned_data['name']
-            basicInfo.cleaned_data['startDate']
-            basicInfo.cleaned_data['endDate']
-            basicInfo.cleaned_data['plannedEffort']
-            basicInfo.cleaned_data['contingencyEffort']
-	    logging.error('username='+request.user.username)
-	    basicInfo.projectManager = request.user
-            basicInfo.save()
+            pr = Project()
+            pr.name = basicInfo.cleaned_data['name']
+            pr.startDate = basicInfo.cleaned_data['startDate']
+            pr.endDate = basicInfo.cleaned_data['endDate']
+            pr.plannedEffort = basicInfo.cleaned_data['plannedEffort']
+            pr.contingencyEffort = basicInfo.cleaned_data['contingencyEffort']
+            pr.projectManager = request.user
+            pr.save()
             # Team Member and thier roles
-            team.cleaned_data['role']
-            team.cleaned_data['startDate']
-            team.cleaned_data['plannedEffort']
-            team.save()
+            # team.cleaned_data['role']
+            # team.cleaned_data['startDate']
+            # team.cleaned_data['plannedEffort']
+            # team.save()
             # Project Milestones
-            milestone.cleaned_data['milestoneDate']
-            milestone.cleaned_data['deliverables']
-            milestone.cleaned_data['description']
+            # milestone.cleaned_data['milestoneDate']
+            # milestone.cleaned_data['deliverables']
+            # milestone.cleaned_data['description']
     else:
         basicInfo = ProjectBasicInfoForm()
         team = ProjectTeamForm()
