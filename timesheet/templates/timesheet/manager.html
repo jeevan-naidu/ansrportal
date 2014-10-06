@@ -64,45 +64,12 @@
 		    {% endfor %}
 		{% else %}
 		   {% bootstrap_form wizard.form layout="linear" %}
-		{% endif %}
-		{% if wizard.steps.next and wizard.steps.prev %}
-			<div class="col-md-6 col-xs-6">
-			{% buttons %}
-				<button name="wizard_goto_step" value="{{ wizard.steps.prev }}" class="btn btn-primary">
-					<span class="glyphicon glyphicon-chevron-left"></span>
-				</button>
-			{% endbuttons %}
-			</div>
-			<div class="col-md-6 col-xs-6 text-right">
-			{% buttons %}
-				<button name="wizard_goto_step" value="{{ wizard.steps.next }}" type="submit" class="btn btn-primary">
-					<span class="glyphicon glyphicon-chevron-right"></span>
-				</button>
-			{% endbuttons %}
-		{% elif wizard.steps.next %}
-			<div class="col-md-12 col-xs-12 text-right">
-				{% buttons %}
-					<button name="wizard_goto_step" value="{{ wizard.steps.next }}" type="submit" class="btn btn-primary">
-						<span class="glyphicon glyphicon-chevron-right"></span>
-					</button>
-				{% endbuttons %}
-		        </div>
-		{% elif wizard.steps.last %}
-		     <div class="col-md-4 col-xs-4">
-			{% buttons %}
-				<button name="wizard_goto_step" value="{{ wizard.steps.prev }}" type="submit" class="btn btn-primary btn-sm">
-					<span class="glyphicon glyphicon-chevron-left"></span>
-				</button>
-			{% endbuttons %}
-		     </div>
-                     <div class="col-md-8 col-xs-8 text-right">
-			{% buttons %}
-				<button type="submit" value="submit" class="btn btn-primary">
-					Create
-				</button>
-			{% endbuttons %}
-		      </div>
-		{% endif %}
+        {% endif %}
+        {% if wizard.steps.prev %}
+        <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
+        {% endif %}
+        <input type="submit" value="{% trans "submit" %}" />
+
 	</form>
  </div>
 </div>

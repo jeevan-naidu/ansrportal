@@ -47,8 +47,8 @@ def checkUser(userName, password, request):
 class CreateProjectWizard(SessionWizardView):
     template_name = "manager.html"
 
-    def process_step(self, request, formdata, ):
-        print 'Step executed : {0}'.format(formdata)
+    def process_step(self, formdata):
+        logging.error('Step executed')
 
     def done(self, form_list, **kwargs):
         logging.error('Done method called with {0}'.format(form_list))
