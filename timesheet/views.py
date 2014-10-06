@@ -49,6 +49,7 @@ class CreateProjectWizard(SessionWizardView):
 
     def process_step(self, formdata):
         logging.error('Step executed')
+        return super(CreateProjectWizard, self).process_step(formdata)
 
     def done(self, form_list, **kwargs):
         logging.error('Done method called with {0}'.format(form_list))
