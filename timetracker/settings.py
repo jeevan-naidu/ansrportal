@@ -41,7 +41,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.formtools', # Django Form wizard
+    'bootstrap3_datetime',
+    'django.contrib.formtools',  # Django Form wizard
     'bootstrap3',  # Django Bootstrap3
     'datetimewidget',  # https://github.com/asaglimbeni/django-datetime-widget
     'timesheet',

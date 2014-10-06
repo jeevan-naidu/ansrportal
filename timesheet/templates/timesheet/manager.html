@@ -1,5 +1,9 @@
 {% extends 'master.html' %}
 
+{% load i18n %}
+
+{{ wizard.form.media }}
+
 {% load bootstrap3 %}
 
 {% block siteTitle %}ANSR-Manager{% endblock %}
@@ -50,7 +54,7 @@
 	col-lg-offset-2 jumbotron shadow">
  <div id="create">
 	<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
-	<form id="createProject" method="post" action="{% url 'createproject' %}" enctype="multipart/form-data">
+	<form id="createProject" method="post" action="" enctype="multipart/form-data">
 		{% csrf_token %}
 		{{ wizard.management_form }}
 		{% if wizard.form.forms %}
@@ -93,7 +97,7 @@
 		     </div>
                      <div class="col-md-8 col-xs-8 text-right">
 			{% buttons %}
-				<button type="submit" class="btn btn-primary">
+				<button type="submit" value="submit" class="btn btn-primary">
 					Create
 				</button>
 			{% endbuttons %}

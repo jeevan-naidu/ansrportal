@@ -7,6 +7,7 @@ from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
 from timesheet.forms import LoginForm, ProjectMilestoneForm, \
     ProjectTeamForm, ProjectBasicInfoForm
 from django.contrib.formtools.wizard.views import SessionWizardView
+import logging
 # views for ansr
 
 
@@ -43,13 +44,15 @@ def checkUser(userName, password, request):
         return HttpResponse("Sorry no user is associated with this id")
 
 
-class CreateProject(SessionWizardView):
+class CreateProjectWizard(SessionWizardView):
     template_name = "manager.html"
 
+    def process_step(self, request, formdata, ):
+        print 'Step executed : {0}'.format(formdata)
+
     def done(self, form_list, **kwargs):
-        for form in form_list:
-            form.save()
-        return HttpResponse("Nice!! Done")
+        logging.error('Done method called with {0}'.format(form_list))
+        return HttpResponseRedirect("/login")
 
 
 def process_form_data(request):
@@ -60,6 +63,7 @@ def process_form_data(request):
         milestone = ProjectMilestoneForm(request.POST)
         # and team.is_valid() and milestone.is_valid():
         if basicInfo.is_valid():
+            logging.error(basicInfo.cleaned_data['name'])
             # Project Basic Information
             pr = Project()
             pr.name = basicInfo.cleaned_data['name']
@@ -86,7 +90,7 @@ def process_form_data(request):
         milestone = ProjectMilestoneForm()
 
     data = {'basicInfo': basicInfo, 'team': team, 'milestone': milestone}
-    return render(request, 'timesheet/manager.html', data)
+    return render(request, 'timesheet/sucess.html', data)
 
 
 def Logout(request):
