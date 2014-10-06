@@ -48,50 +48,26 @@ class CreateProjectWizard(SessionWizardView):
     template_name = "manager.html"
 
     def process_step(self, formdata):
-        logging.error('Step executed')
         return super(CreateProjectWizard, self).process_step(formdata)
 
     def done(self, form_list, **kwargs):
-        logging.error('Done method called with {0}'.format(form_list))
-        return HttpResponseRedirect("/login")
-
-
-def process_form_data(request):
-
-    if request.method == 'POST':
-        basicInfo = ProjectBasicInfoForm(request.POST)
-        team = ProjectTeamForm(request.POST)
-        milestone = ProjectMilestoneForm(request.POST)
-        # and team.is_valid() and milestone.is_valid():
-        if basicInfo.is_valid():
-            logging.error(basicInfo.cleaned_data['name'])
-            # Project Basic Information
-            pr = Project()
-            pr.name = basicInfo.cleaned_data['name']
-            pr.startDate = basicInfo.cleaned_data['startDate']
-            pr.endDate = basicInfo.cleaned_data['endDate']
-            pr.plannedEffort = basicInfo.cleaned_data['plannedEffort']
-            pr.contingencyEffort = basicInfo.cleaned_data[
-                'contingencyEffort'
-            ]
-            pr.projectManager = request.user
-            pr.save()
-            # Team Member and thier roles
-            # team.cleaned_data['role']
-            # team.cleaned_data['startDate']
-            # team.cleaned_data['plannedEffort']
-            # team.save()
-            # Project Milestones
-            # milestone.cleaned_data['milestoneDate']
-            # milestone.cleaned_data['deliverables']
-            # milestone.cleaned_data['description']
-    else:
-        basicInfo = ProjectBasicInfoForm()
-        team = ProjectTeamForm()
-        milestone = ProjectMilestoneForm()
-
-    data = {'basicInfo': basicInfo, 'team': team, 'milestone': milestone}
-    return render(request, 'timesheet/sucess.html', data)
+        pr = Project()
+        pr.name =  [form.cleaned_data.get('name') for form in form_list][0]
+        pr.startDate = [form.cleaned_data.get(
+            'startDate'
+        ) for form in form_list][0]
+        pr.endDate = [form.cleaned_data.get(
+            'endDate'
+        ) for form in form_list][0]
+        pr.plannedEffort = [form.cleaned_data.get(
+            'plannedEffort'
+        ) for form in form_list][0]
+        pr.contingencyEffort = [form.cleaned_data.get(
+            'contingencyEffort'
+        ) for form in form_list][0]
+        pr.projectManager = self.request.user
+        pr.save()
+        return HttpResponse("Saved!!!")
 
 
 def Logout(request):
