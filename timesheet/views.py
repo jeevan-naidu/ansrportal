@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, logout
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
@@ -18,30 +18,35 @@ def index(request):
             return checkUser(
                 form.cleaned_data['userid'],
                 form.cleaned_data['password'],
-                request)
+                request, form)
     else:
         form = LoginForm()
-    data = {'form': form}
-    return render(request, 'timesheet/index.html', data)
+    return loginResponse(request, form, 'timesheet/index.html')
 
 
-def checkUser(userName, password, request):
+def loginResponse(request, form, template):
+    data = {'form' : form if form else LoginForm(request.POST), }
+    return render(request, template, data)
+
+def Timesheet(request):
+    return render(request, 'timesheet/timesheet.html')
+
+def checkUser(userName, password, request, form):
     user = authenticate(username=userName, password=password)
     if user is not None:
         if user.is_active:
             auth.login(request, user)
             try:
                 if user.groups.all()[0].name == "project manager":
-                    return HttpResponseRedirect('login/createproject')
-                else:
-                    return render(request, 'timesheet/timesheet.html')
+                    return HttpResponseRedirect('project/add')
             except IndexError:
-                return HttpResponse("Sorry you dont have the permission \
-                                    to get into projects")
+                return HttpResponseRedirect('add')
         else:
-            return HttpResponse("Logged in! Not Activated")
+            messages.error(request, 'Sorry this user is not active')
+            return loginResponse(request, form, 'timesheet/index.html')
     else:
-        return HttpResponse("Sorry no user is associated with this id")
+        messages.error(request, 'Sorry login failed')
+        return loginResponse(request, form, 'timesheet/index.html')
 
 
 class CreateProjectWizard(SessionWizardView):
@@ -70,7 +75,8 @@ class CreateProjectWizard(SessionWizardView):
 
         ptm = ProjectTeamMember()
         ptm.project = Project.objects.get(
-            name__exact=[form.cleaned_data.get('name') for form in form_list][0]
+            name__exact=[form.cleaned_data.get('name')
+                         for form in form_list][0]
         )
         ptm.member = User.objects.get(
             username__exact=[form.cleaned_data.get(

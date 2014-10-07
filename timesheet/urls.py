@@ -4,8 +4,8 @@ from timesheet.forms import ProjectBasicInfoForm, ProjectTeamForm, \
     ProjectMilestoneForm
 
 urlpatterns = patterns(u'',
-                       url(r'^$', views.index, name=u'index'),
-                       url(r'^createproject$',
+                       url(r'^add$', views.Timesheet, name=u'timesheet'),
+                       url(r'^project/add$',
                            views.CreateProjectWizard.as_view([
                                ProjectBasicInfoForm,
                                ProjectTeamForm,
@@ -15,4 +15,5 @@ urlpatterns = patterns(u'',
                        # url(r'^savenewproject$', views.process_form_data,
                         #    name=u'savenewproject'),
                        url(r'^logout/$', views.Logout, name=u'logout'),
+                       url(r'^$', views.index, name=u'index'),
                        )
