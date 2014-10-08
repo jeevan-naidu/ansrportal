@@ -72,6 +72,10 @@ DATABASES = {
     }
 }
 
+# Bootstrap3 related settings
+BOOTSTRAP3 = {
+    'include_jquery': True,
+}
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
