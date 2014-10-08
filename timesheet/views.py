@@ -5,8 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
-from timesheet.forms import LoginForm, ProjectMilestoneForm, \
-    ProjectTeamForm, ProjectBasicInfoForm
+from timesheet.forms import LoginForm
 from django.contrib.formtools.wizard.views import SessionWizardView
 # views for ansr
 
@@ -25,11 +24,13 @@ def index(request):
 
 
 def loginResponse(request, form, template):
-    data = {'form' : form if form else LoginForm(request.POST), }
+    data = {'form': form if form else LoginForm(request.POST), }
     return render(request, template, data)
+
 
 def Timesheet(request):
     return render(request, 'timesheet/timesheet.html')
+
 
 def checkUser(userName, password, request, form):
     user = authenticate(username=userName, password=password)
@@ -52,8 +53,20 @@ def checkUser(userName, password, request, form):
 class CreateProjectWizard(SessionWizardView):
     template_name = "manager.html"
 
-    def process_step(self, formdata):
-        return super(CreateProjectWizard, self).process_step(formdata)
+    def get_form(self, step=None, data=None, files=None):
+        form = super(CreateProjectWizard, self).get_form(step, data, files)
+
+        if step is None:
+            step = self.steps.current
+
+        """if step == '0':
+            for k, v in form.data.items():
+                print "test"""
+        return form
+
+    """def get_form_step_data(self, form):
+        for k, v in form.data.items():
+            print k, v"""
 
     def done(self, form_list, **kwargs):
         pr = Project()
@@ -73,24 +86,21 @@ class CreateProjectWizard(SessionWizardView):
         pr.projectManager = self.request.user
         pr.save()
 
-        ptm = ProjectTeamMember()
-        ptm.project = Project.objects.get(
-            name__exact=[form.cleaned_data.get('name')
-                         for form in form_list][0]
-        )
-        ptm.member = User.objects.get(
-            username__exact=[form.cleaned_data.get(
-                'member'
-            ) for form in form_list][1]
-        )
-        ptm.role = [form.cleaned_data.get('role') for form in form_list][1]
-        ptm.startDate = [form.cleaned_data.get(
-            'startDate'
-        ) for form in form_list][1]
-        ptm.plannedEffort = [form.cleaned_data.get(
-            'plannedEffort'
-        ) for form in form_list][1]
-        ptm.save()
+        for memberData in [form.cleaned_data for form in form_list][1]:
+            ptm = ProjectTeamMember()
+            ptm.project = Project.objects.get(
+                name__exact=[form.cleaned_data.get('name')
+                             for form in form_list][0]
+            )
+            ptm.member = User.objects.get(
+                username__exact=[form.cleaned_data.get(
+                    formData['member']
+                ) for form in form_list][1]
+            )
+            ptm.role = formData['role']
+            ptm.startDate = formData['startDate']
+            ptm.plannedEffort = formData['plannedEffort']
+            ptm.save()
 
         pms = ProjectMilestone()
         pms.project = Project.objects.get(
@@ -116,4 +126,4 @@ def Logout(request):
     if hasattr(request, 'user'):
         from django.contrib.auth.models import AnonymousUser
         request.user = AnonymousUser()
-    return HttpResponseRedirect('/login')
+    return HttpResponseRedirect('/timesheet')
