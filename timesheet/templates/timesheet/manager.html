@@ -2,8 +2,6 @@
 
 {% load i18n %}
 
-{{ wizard.form.media }}
-
 {% load bootstrap3 %}
 
 {% block siteTitle %}ANSR-Manager{% endblock %}
@@ -50,43 +48,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-xs-12 col-md-12 col-lg-8
-    col-lg-offset-2 jumbotron shadow">
+<div class="col-xs-12 col-md-12 jumbotron shadow">
  <div id="create">
-    <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
-    <form id="createProject" method="post" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ wizard.management_form }}
-        {% if wizard.form.forms %}
-            {{ wizard.form.management_form }}
-            {% for form in wizard.form.forms %}
-            {% bootstrap_form form layout="linear" %}
-            {% endfor %}
-        {% else %}
-           {% bootstrap_form wizard.form layout="linear" %}
-        {% endif %}
-        
-        {% if wizard.steps.prev %}
-            <div class="col-md-12 col-xs-12 text-right">
-                {% buttons %}
-                <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
-                    type="submit" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                {% endbuttons %}
-            </div>
-        {% endif %}
-    
-        {% buttons %}
-            <button type="submit" value="submit" class="btn btn-primary">
-                {% if wizard.steps.current == wizard.steps.last %}
-                    Create
-                {% else %}
-                    <span class="glyphicon glyphicon-chevron-right"></span>
-                {% endif %}
-            </button>
-        {% endbuttons %}
-    </form>
+   <form action="" method="post">
+	{% csrf_token %}
+	{{ basicInfoForm }}
+	{{ teamForm }}
+	{{ milestoneForm }}
+	<button type="submit" value="submit">submit</button>
+   </form>
  </div>
 </div>
 {% endblock %}

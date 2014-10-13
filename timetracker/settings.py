@@ -32,6 +32,10 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'timesheet/templates/timesheet/'),
 )
 
+# Crispy Forms Layout
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -41,7 +45,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.formtools',  # Django Form wizard
     'bootstrap3',  # Django Bootstrap3
     'datetimewidget',  # https://github.com/asaglimbeni/django-datetime-widget
     'timesheet',

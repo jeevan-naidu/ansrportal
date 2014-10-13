@@ -14,8 +14,7 @@ class Project(models.Model):
                                         verbose_name="Planned Effort")
     contingencyEffort = models.IntegerField(default=0,
                                             verbose_name="Contigency Effort")
-    projectManager = models.ForeignKey(User, verbose_name="Project Manager",
-                                       default=None, blank=True)
+    projectManager = models.ForeignKey(User)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -23,7 +22,7 @@ class Project(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 class TimeSheetEntry(models.Model):
@@ -102,9 +101,9 @@ class ProjectChangeInfo(models.Model):
 
 
 class ProjectMilestone(models.Model):
-    project = models.ForeignKey(Project, verbose_name="Project Name")
+    project = models.ForeignKey(Project)
     milestoneDate = models.DateField(verbose_name="Milestone Date",
-                                     default=timezone.now, )
+                                     default=timezone.now)
     deliverables = models.CharField(default=None, blank=True, max_length=100,
                                     verbose_name="Deliverables")
     description = models.CharField(default=None, blank=True, max_length=1000,
@@ -117,8 +116,8 @@ class ProjectMilestone(models.Model):
 
 
 class ProjectTeamMember(models.Model):
-    project = models.ForeignKey(Project, verbose_name="Project Name")
-    member = models.ForeignKey(User, verbose_name="Team Member")
+    project = models.ForeignKey(Project)
+    member = models.ForeignKey(User)
     role = models.CharField(default=None, blank=True, max_length=100,
                             verbose_name="Role")
     startDate = models.DateField(verbose_name='Start date on project',
