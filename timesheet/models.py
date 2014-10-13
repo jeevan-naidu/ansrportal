@@ -25,6 +25,18 @@ class Project(models.Model):
         return unicode(self.name)
 
 
+class Activity(models.Model):
+    project = models.ForeignKey(Project, verbose_name="Project Name")
+    name = models.CharField(max_length=50, verbose_name="Project Name")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class TimeSheetEntry(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     # Week details
