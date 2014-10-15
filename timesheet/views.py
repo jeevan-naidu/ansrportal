@@ -5,9 +5,24 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
-from timesheet.forms import LoginForm
+from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
+    ProjectTeamForm, ProjectMilestoneForm
 from django.contrib.formtools.wizard.views import SessionWizardView
+from django.forms.formsets import formset_factory
 # views for ansr
+
+FORMS = [
+    ("Define Project", ProjectBasicInfoForm),
+    ("teamForm", formset_factory(ProjectTeamForm, extra=2)),
+    ("milestoneForm", formset_factory(ProjectMilestoneForm, extra=2))
+]
+
+
+TEMPLATES = {
+    "Define Project": "timesheet/manager.html",
+    "teamForm": "timesheet/teamMember.html",
+    "milestoneForm": "timesheet/milestone.html",
+}
 
 
 def index(request):
@@ -51,70 +66,32 @@ def checkUser(userName, password, request, form):
 
 
 class CreateProjectWizard(SessionWizardView):
-    template_name = "manager.html"
-
-    def get_form(self, step=None, data=None, files=None):
-        form = super(CreateProjectWizard, self).get_form(step, data, files)
-
-        if step is None:
-            step = self.steps.current
-
-        """if step == '0':
-            for k, v in form.data.items():
-                print "test"""
-        return form
-
-    """def get_form_step_data(self, form):
-        for k, v in form.data.items():
-            print k, v"""
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
         pr = Project()
-        pr.name = [form.cleaned_data.get('name') for form in form_list][0]
-        pr.startDate = [form.cleaned_data.get(
-            'startDate'
-        ) for form in form_list][0]
-        pr.endDate = [form.cleaned_data.get(
-            'endDate'
-        ) for form in form_list][0]
-        pr.plannedEffort = [form.cleaned_data.get(
-            'plannedEffort'
-        ) for form in form_list][0]
-        pr.contingencyEffort = [form.cleaned_data.get(
-            'contingencyEffort'
-        ) for form in form_list][0]
+        for form in form_list:
+            for k, v in [
+                form.cleaned_data for form in form_list
+            ][0].iteritems():
+                setattr(pr, k, v)
         pr.projectManager = self.request.user
         pr.save()
 
+        ptm = ProjectTeamMember()
+        ptm.project = pr
         for memberData in [form.cleaned_data for form in form_list][1]:
-            ptm = ProjectTeamMember()
-            ptm.project = Project.objects.get(
-                name__exact=[form.cleaned_data.get('name')
-                             for form in form_list][0]
-            )
-            ptm.member = User.objects.get(
-                username__exact=[form.cleaned_data.get(
-                    formData['member']
-                ) for form in form_list][1]
-            )
-            ptm.role = formData['role']
-            ptm.startDate = formData['startDate']
-            ptm.plannedEffort = formData['plannedEffort']
-            ptm.save()
+            ptm.member = User.objects.get(id=memberData.get('member').id)
+            for k, v in memberData.iteritems():
+                setattr(ptm, k, v)
+        ptm.save()
 
         pms = ProjectMilestone()
-        pms.project = Project.objects.get(
-            name__exact=[form.cleaned_data.get('name') for form in form_list][0]
-        )
-        pms.milestoneDate = [form.cleaned_data.get(
-            'milestoneDate'
-        ) for form in form_list][2]
-        pms.deliverables = [form.cleaned_data.get(
-            'deliverables'
-        ) for form in form_list][2]
-        pms.description = [form.cleaned_data.get(
-            'description'
-        ) for form in form_list][2]
+        pms.project = pr
+        for milestoneData in [form.cleaned_data for form in form_list][2]:
+            for k, v in milestoneData.iteritems():
+                setattr(pms, k, v)
         pms.save()
         return HttpResponse("Saved!!!")
 

@@ -53,39 +53,50 @@
 <div class="col-xs-12 col-md-12 col-lg-8
     col-lg-offset-2 jumbotron shadow">
  <div id="create">
-    <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
     <form id="createProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
         {{ wizard.management_form }}
-        {% if wizard.form.forms %}
-            {{ wizard.form.management_form }}
-            {% for form in wizard.form.forms %}
-            {% bootstrap_form form layout="linear" %}
-            {% endfor %}
-        {% else %}
-           {% bootstrap_form wizard.form layout="linear" %}
-        {% endif %}
-        
+	<h3><b>{{ wizard.steps.current }}</b></h3>
+	<div class="table-responsive">
+	<table class="table">
+		{% for field in form %}
+			<tr>
+				<td>
+					<b>
+						{{ field.label }}
+						{% if field.field.required %}
+							<span class="required">*</span>
+						{% endif %}
+					</b>
+				</td>
+				<td>{{ field }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	</div>
         {% if wizard.steps.prev %}
-            <div class="col-md-12 col-xs-12 text-right">
+            <span class="col-md-6 col-xs-6">
                 {% buttons %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
-                    type="submit" class="btn btn-primary">
+                    type="submit" class="btn btn-default">
                         <span class="glyphicon glyphicon-chevron-left"></span>
+		        <b>Previous</b>
                     </button>
                 {% endbuttons %}
-            </div>
+            </span>
         {% endif %}
-    
+    	<span class="col-md-6 col-xs-6 text-right">
         {% buttons %}
-            <button type="submit" value="submit" class="btn btn-primary">
+            <button type="submit" value="submit" class="btn btn-success">
                 {% if wizard.steps.current == wizard.steps.last %}
-                    Create
+		    <b>Create</b>
                 {% else %}
+		    <b>Next</b>
                     <span class="glyphicon glyphicon-chevron-right"></span>
                 {% endif %}
             </button>
         {% endbuttons %}
+	</span>
     </form>
  </div>
 </div>

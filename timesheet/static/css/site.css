@@ -11,6 +11,9 @@
 body {
 	padding-top: 70px;
 }
+.required { 
+	color: #FF0000; 
+}
 
 /* Menu */
 .ansrLogo { 
