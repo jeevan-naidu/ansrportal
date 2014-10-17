@@ -142,6 +142,13 @@ def saveProject(request):
         return render(request, 'timesheet/success.html', data)
 
 
+def deleteProject(request):
+    ProjectBasicInfoForm()
+    ProjectTeamForm()
+    ProjectMilestoneForm()
+    return HttpResponseRedirect('add')
+
+
 def Logout(request):
     logout(request)
     request.session.flush()
