@@ -50,16 +50,86 @@
 {% block content %}
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
 <legend><b>Summary</b></legend>
-{% for rec in form %}
-	
-
+<form id="snapshot" name="snapshot" method="POST" action="save">
+{% csrf_token %}
 <div class="panel panel-default">
-	<div class="panel-heading">Project Basic Information</div>
+<div class="panel-heading"><b>Project Basic Information</b></div>
 	<div class="panel-body">
-		{{ rec.startDate }}
+	<table class="table table-condensed">
+		<thead>
+			{% for rec, value in basicInfo.iteritems %}
+		<th>
+			{{ rec }}
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+		</th>
+			{% endfor %}
+		</thead>
+		<tbody>
+		<tr>
+			{% for rec, value in basicInfo.iteritems %}
+			<td>{{ value }}</td>
+			{% endfor %}
+		</tr>
+		</tbody>
+	</table>
 	</div>
 </div>
-
+<div class="panel panel-default">
+<div class="panel-heading"><b>Team Member(s)</b></div>
+{% for teamData in teamMember %}
+	<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+{% if forloop.first %}
+			{% for rec, value in teamData.iteritems %}
+		<th>
+			{{ rec }}
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+		</th>
+			{% endfor %}
+{% endif %}
+		</thead>
+		<tr>
+			{% for rec, value in teamData.iteritems %}
+			<td>{{ value }}</td>
+			{% endfor %}
+		</tr>
+	</table>
+	</div>
 {% endfor %}
+</div>
+<div class="panel panel-default">
+<div class="panel-heading"><b>Milestone(s)</b></div>
+{% for milestoneData in milestone %}
+	<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+{% if forloop.first %}
+			{% for rec, value in milestoneData.iteritems %}
+		<th>
+			{{ rec }}
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+		</th>
+			{% endfor %}
+{% endif %}
+		</thead>
+		<tr>
+			{% for rec, value in milestoneData.iteritems %}
+			<td>{{ value }}</td>
+			{% endfor %}
+		</tr>
+	</table>
+	</div>
+{% endfor %}
+</div>
+<button type="submit" value="submit" class="btn btn-danger">
+        <span class="glyphicon glyphicon-remove"></span>
+	<b>Delete Project</b>
+</button>
+<button type="submit" value="submit" class="btn btn-success pull-right">
+        <span class="glyphicon glyphicon-ok"></span>
+	<b>Create Project</b>
+</button>
+</form>
 </div>
 {% endblock %}

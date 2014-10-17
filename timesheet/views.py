@@ -1,13 +1,14 @@
 from django.contrib.auth import authenticate, logout
 from django.contrib import auth, messages
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
+from django.contrib.auth.models import User
 # views for ansr
 
 FORMS = [
@@ -78,37 +79,67 @@ class CreateProjectWizard(SessionWizardView):
         return [TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
+        cleanedTeamData = []
+        cleanedMilestoneData = []
+
+        basicInfo = [form.cleaned_data for form in form_list][0]
+        basicInfo['startDate'] = basicInfo.get(
+            'startDate'
+        ).strftime('%Y-%m-%d %H:%M%z')
+        basicInfo['endDate'] = basicInfo.get(
+            'endDate'
+        ).strftime('%Y-%m-%d %H:%M%z')
+
+        for teamData in [form.cleaned_data for form in form_list][1]:
+            teamData['startDate'] = teamData.get(
+                'startDate'
+            ).strftime('%Y-%m-%d')
+            teamData['teamMemberId'] = teamData.get('member').id
+            del teamData['DELETE']
+        cleanedTeamData.append(teamData)
+
+        for milestoneData in [form.cleaned_data for form in form_list][2]:
+            milestoneData['milestoneDate'] = milestoneData.get(
+                'milestoneDate'
+            ).strftime('%Y-%m-%d')
+            del milestoneData['DELETE']
+        cleanedMilestoneData.append(milestoneData)
         data = {
-            'basicInfoForm': [form.cleaned_data for form in form_list][0]
+            'basicInfo': basicInfo,
+            'teamMember': cleanedTeamData,
+            'milestone': cleanedMilestoneData
         }
         return render(self.request, 'timesheet/snapshot.html', data)
 
 
-"""def saveProject(request):
-    pr = Project()
-    for form in form_list:
-        for k, v in [
-            form.cleaned_data for form in form_list
-        ][0].iteritems():
-            setattr(pr, k, v)
-    pr.projectManager = self.request.user
-    pr.save()
+def saveProject(request):
+    if request.method == 'POST':
+        pr = Project()
+        pr.name = request.POST.get('name')
+        pr.startDate = request.POST.get('startDate')
+        pr.endDate = request.POST.get('endDate')
+        pr.plannedEffort = request.POST.get('plannedEffort')
+        pr.contingencyEffort = request.POST.get('contingencyEffort')
+        pr.projectManager = request.user
+        pr.save()
 
-    ptm = ProjectTeamMember()
-    ptm.project = pr
-    for memberData in [form.cleaned_data for form in form_list][1]:
-        ptm.member = User.objects.get(id=memberData.get('member').id)
-        for k, v in memberData.iteritems():
-            setattr(ptm, k, v)
-    ptm.save()
+        ptm = ProjectTeamMember()
+        ptm.project = pr
+        ptm.member = User.objects.get(id=request.POST.get('teamMemberId'))
+        ptm.role = request.POST.get('role')
+        ptm.plannedEffort = request.POST.get('plannedEffort')
+        ptm.startDate = request.POST.get('startDate')
+        ptm.save()
 
-    pms = ProjectMilestone()
-    pms.project = pr
-    for milestoneData in [form.cleaned_data for form in form_list][2]:
-        for k, v in milestoneData.iteritems():
-            setattr(pms, k, v)
-    pms.save()
-    return HttpResponse("Saved!!!")"""
+        pms = ProjectMilestone()
+        pms.project = pr
+        pms.milestoneDate = request.POST.get('milestoneDate')
+        pms.description = request.POST.get('description')
+        pms.deliverables = request.POST.get('deliverables')
+        pms.save()
+
+        data = {'projectId': pr.id, 'projectName': pr.name}
+        return render(request, 'timesheet/success.html', data)
 
 
 def Logout(request):

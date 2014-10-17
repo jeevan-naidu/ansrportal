@@ -3,6 +3,7 @@ from timesheet import views
 
 urlpatterns = patterns(u'',
                        url(r'^add$', views.Timesheet, name=u'timesheet'),
+		       url(r'^project/save$', views.saveProject, name=u'saveproject'),
                        url(r'^project/add$',
                            views.CreateProjectWizard.as_view(views.FORMS),
                            name=u'createproject'),
