@@ -1,8 +1,7 @@
 from django.contrib.auth import authenticate, logout
 from django.contrib import auth, messages
-from django.contrib.auth.models import User
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
@@ -13,15 +12,24 @@ from django.forms.formsets import formset_factory
 
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
-    ("teamForm", formset_factory(ProjectTeamForm, extra=2)),
-    ("milestoneForm", formset_factory(ProjectMilestoneForm, extra=2))
+    ("Add team members", formset_factory(
+        ProjectTeamForm,
+        extra=2,
+        can_delete=True
+    )),
+    ("Define Milestones", formset_factory(
+        ProjectMilestoneForm,
+        extra=2,
+        can_delete=True
+    )),
 ]
 
 
 TEMPLATES = {
-    "Define Project": "timesheet/manager.html",
-    "teamForm": "timesheet/teamMember.html",
-    "milestoneForm": "timesheet/milestone.html",
+    "Define Project": "timesheet/basicInfo.html",
+    "Add team members": "timesheet/teamMember.html",
+    "Define Milestones": "timesheet/milestone.html",
+    "Validate": "timesheet/snapshot.html",
 }
 
 
@@ -70,34 +78,40 @@ class CreateProjectWizard(SessionWizardView):
         return [TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
-        pr = Project()
-        for form in form_list:
-            for k, v in [
-                form.cleaned_data for form in form_list
-            ][0].iteritems():
-                setattr(pr, k, v)
-        pr.projectManager = self.request.user
-        pr.save()
+        data = {
+            'basicInfoForm': [form.cleaned_data for form in form_list][0]
+        }
+        return render(self.request, 'timesheet/snapshot.html', data)
 
-        ptm = ProjectTeamMember()
-        ptm.project = pr
-        for memberData in [form.cleaned_data for form in form_list][1]:
-            ptm.member = User.objects.get(id=memberData.get('member').id)
-            for k, v in memberData.iteritems():
-                setattr(ptm, k, v)
-        ptm.save()
 
-        pms = ProjectMilestone()
-        pms.project = pr
-        for milestoneData in [form.cleaned_data for form in form_list][2]:
-            for k, v in milestoneData.iteritems():
-                setattr(pms, k, v)
-        pms.save()
-        return HttpResponse("Saved!!!")
+"""def saveProject(request):
+    pr = Project()
+    for form in form_list:
+        for k, v in [
+            form.cleaned_data for form in form_list
+        ][0].iteritems():
+            setattr(pr, k, v)
+    pr.projectManager = self.request.user
+    pr.save()
+
+    ptm = ProjectTeamMember()
+    ptm.project = pr
+    for memberData in [form.cleaned_data for form in form_list][1]:
+        ptm.member = User.objects.get(id=memberData.get('member').id)
+        for k, v in memberData.iteritems():
+            setattr(ptm, k, v)
+    ptm.save()
+
+    pms = ProjectMilestone()
+    pms.project = pr
+    for milestoneData in [form.cleaned_data for form in form_list][2]:
+        for k, v in milestoneData.iteritems():
+            setattr(pms, k, v)
+    pms.save()
+    return HttpResponse("Saved!!!")"""
 
 
 def Logout(request):
-
     logout(request)
     request.session.flush()
     if hasattr(request, 'user'):
