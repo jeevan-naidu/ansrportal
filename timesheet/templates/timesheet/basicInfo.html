@@ -2,12 +2,19 @@
 
 
 {% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+		{% for field in form %} 
+		{% if field.errors %}
+			{{ field.label }}: {{ field.errors|striptags }}
+		{% endif %}
+		{% endfor %}								</div>
+{% endif %}
 	<div class="table-responsive">
 	<table class="table">
 		{% for field in form %}
 			<tr>
 				<td>
-						{{ field.errors }}
 						{{ field.label }}
 						{% if field.field.required %}
 							<span class="required">*</span>
