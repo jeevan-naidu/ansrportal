@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, logout
 from django.contrib import auth, messages
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
@@ -79,6 +79,10 @@ class CreateProjectWizard(SessionWizardView):
         return [TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
+        teamDataCounter = 0
+        milestoneDataCounter = 0
+        changedTeamData = {}
+        changedMilestoneData = {}
         cleanedTeamData = []
         cleanedMilestoneData = []
 
@@ -91,19 +95,37 @@ class CreateProjectWizard(SessionWizardView):
         ).strftime('%Y-%m-%d %H:%M%z')
 
         for teamData in [form.cleaned_data for form in form_list][1]:
-            teamData['startDate'] = teamData.get(
-                'startDate'
+            teamDataCounter += 1
+            for k, v in teamData.iteritems():
+                k = "{0}-{1}".format(k, teamDataCounter)
+                changedTeamData[k] = v
+            startDate = 'startDate-{0}'.format(teamDataCounter)
+            changedTeamData[startDate] = changedTeamData.get(
+                startDate
             ).strftime('%Y-%m-%d')
-            teamData['teamMemberId'] = teamData.get('member').id
-            del teamData['DELETE']
-        cleanedTeamData.append(teamData)
+            teamMemberId = 'teamMemberId-{0}'.format(teamDataCounter)
+            member = 'member-{0}'.format(teamDataCounter)
+            changedTeamData[teamMemberId] = changedTeamData.get(member).id
+            DELETE = 'DELETE-{0}'.format(teamDataCounter)
+            del changedTeamData[DELETE]
+            self.request.session['totalMemberCount'] = teamDataCounter + 1
+            cleanedTeamData.append(changedTeamData)
 
         for milestoneData in [form.cleaned_data for form in form_list][2]:
-            milestoneData['milestoneDate'] = milestoneData.get(
-                'milestoneDate'
+            milestoneDataCounter += 1
+            for k, v in milestoneData.iteritems():
+                k = "{0}-{1}".format(k, milestoneDataCounter)
+                changedMilestoneData[k] = v
+            milestoneDate = 'milestoneDate-{0}'.format(milestoneDataCounter)
+            changedMilestoneData[milestoneDate] = changedMilestoneData.get(
+                milestoneDate
             ).strftime('%Y-%m-%d')
-            del milestoneData['DELETE']
-        cleanedMilestoneData.append(milestoneData)
+            DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
+            del changedMilestoneData[DELETE]
+            self.request.session[
+                'totalMilestoneCount'
+            ] = milestoneDataCounter + 1
+            cleanedMilestoneData.append(changedMilestoneData)
         data = {
             'basicInfo': basicInfo,
             'teamMember': cleanedTeamData,
@@ -123,20 +145,32 @@ def saveProject(request):
         pr.projectManager = request.user
         pr.save()
 
-        ptm = ProjectTeamMember()
-        ptm.project = pr
-        ptm.member = User.objects.get(id=request.POST.get('teamMemberId'))
-        ptm.role = request.POST.get('role')
-        ptm.plannedEffort = request.POST.get('plannedEffort')
-        ptm.startDate = request.POST.get('startDate')
-        ptm.save()
+        for memberCount in range(1, request.session['totalMemberCount']):
+            ptm = ProjectTeamMember()
+            ptm.project = pr
+            teamMemberId = "teamMemberId-{0}".format(memberCount)
+            role = "role-{0}".format(memberCount)
+            plannedEffort = "plannedEffort-{0}".format(memberCount)
+            startDate = "startDate-{0}".format(memberCount)
 
-        pms = ProjectMilestone()
-        pms.project = pr
-        pms.milestoneDate = request.POST.get('milestoneDate')
-        pms.description = request.POST.get('description')
-        pms.deliverables = request.POST.get('deliverables')
-        pms.save()
+            ptm.member = User.objects.get(
+                id=request.POST.get(teamMemberId)
+            )
+            ptm.role = request.POST.get(role)
+            ptm.plannedEffort = request.POST.get(plannedEffort)
+            ptm.startDate = request.POST.get(startDate)
+            ptm.save()
+
+        for milestoneCount in range(1, request.session['totalMilestoneCount']):
+            pms = ProjectMilestone()
+            pms.project = pr
+            milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
+            description = 'description-{0}'.format(milestoneCount)
+            deliverables = 'deliverables-{0}'.format(milestoneCount)
+            pms.milestoneDate = request.POST.get(milestoneDate)
+            pms.description = request.POST.get(description)
+            pms.deliverables = request.POST.get(deliverables)
+            pms.save()
 
         data = {'projectId': pr.id, 'projectName': pr.name}
         return render(request, 'timesheet/success.html', data)

@@ -82,16 +82,20 @@
 		<thead>
 {% if forloop.first %}
 			{% for rec, value in teamData.iteritems %}
+			{% if rec != 'teamMemberId' %}
 		<th>
 			{{ rec }}
-			<input type="hidden" name="{{ rec }}" value="{{ value }}">
 		</th>
+			{% endif %}
 			{% endfor %}
 {% endif %}
 		</thead>
 		<tr>
 			{% for rec, value in teamData.iteritems %}
+			{% if rec != 'teamMemberId' %}
 			<td>{{ value }}</td>
+			{% endif %}
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
 		</tr>
 	</table>
@@ -101,29 +105,32 @@
 <div class="panel panel-default">
 <div class="panel-heading"><b>Milestone(s)</b></div>
 {% for milestoneData in milestone %}
+<input type="hidden" name="totalMilestones" value="{{ forloop.counter0 }}">
 	<div class="panel-body">
 	<table class="table table-condensed">
-		<thead>
 {% if forloop.first %}
+		<thead>
 			{% for rec, value in milestoneData.iteritems %}
 		<th>
 			{{ rec }}
-			<input type="hidden" name="{{ rec }}" value="{{ value }}">
 		</th>
 			{% endfor %}
-{% endif %}
 		</thead>
+{% endif %}
+		<tbody>
 		<tr>
 			{% for rec, value in milestoneData.iteritems %}
 			<td>{{ value }}</td>
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
 		</tr>
+		</tbody>
 	</table>
 	</div>
 {% endfor %}
 </div>
 <a href="delete" class="btn btn-danger">
-        <span class="glyphicon glyphicon-remove"></span>
+        <span class="glyphicon glyphicon-trash"></span>
 	<b>Delete Project</b>
 </a>
 <button type="submit" value="submit" class="btn btn-success pull-right">
