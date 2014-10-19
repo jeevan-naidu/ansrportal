@@ -36,6 +36,7 @@
 		<tbody>
 		<tr>
 			{% for field in form %}
+				{{ field.errors }}
 				<td>{{ field }}</td>
 			{% endfor %}
 			{% if form.can_delete %}

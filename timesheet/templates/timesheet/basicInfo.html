@@ -7,6 +7,7 @@
 		{% for field in form %}
 			<tr>
 				<td>
+						{{ field.errors }}
 						{{ field.label }}
 						{% if field.field.required %}
 							<span class="required">*</span>
