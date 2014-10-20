@@ -16,10 +16,8 @@
 
        {# Load Ansr CSS and JS #}
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
- 
-       {{ basicInfo.media }}
-       {{ team.media }}
-       {{ milestone.media }}
+       
+       {% block addFormMedia %}{% endblock %}
     </head>
     <body>
 	<!-- Ansr -->

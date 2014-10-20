@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'bootstrap3',  # Django Bootstrap3
     'datetimewidget',  # https://github.com/asaglimbeni/django-datetime-widget
     'timesheet',
+    'bootstrap3_datetime',
 )
 
 MIDDLEWARE_CLASSES = (
