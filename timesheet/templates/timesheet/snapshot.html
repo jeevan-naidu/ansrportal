@@ -2,8 +2,6 @@
 
 {% load i18n %}
 
-{{ wizard.form.media }}
-
 {% load bootstrap3 %}
 
 {% block siteTitle %}ANSR-Manager{% endblock %}
@@ -40,5 +38,28 @@
     <span class="glyphicon glyphicon-dashboard"></span>
     Project's&nbsp;Status
  </a></li>
-=======
-{{ data }}
+{% endblock %}
+
+{% block loggedStatus %}
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+      <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+{% block content %}
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+<legend><b>Summary</b></legend>
+{% for rec in form %}
+	
+
+<div class="panel panel-default">
+	<div class="panel-heading">Project Basic Information</div>
+	<div class="panel-body">
+		{{ rec.startDate }}
+	</div>
+</div>
+
+{% endfor %}
+</div>
+{% endblock %}

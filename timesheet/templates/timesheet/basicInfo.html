@@ -1,0 +1,20 @@
+{% extends 'manager.html' %}
+
+
+{% block childform %}{% block masterform %}
+	<div class="table-responsive">
+	<table class="table">
+		{% for field in form %}
+			<tr>
+				<td>
+						{{ field.label }}
+						{% if field.field.required %}
+							<span class="required">*</span>
+						{% endif %}
+				</td>
+				<td>{{ field }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	</div>
+{% endblock %}{% endblock %}

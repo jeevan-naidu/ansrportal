@@ -48,15 +48,50 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-xs-12 col-md-12 jumbotron shadow">
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
  <div id="create">
-   <form action="" method="post">
-	{% csrf_token %}
-	{{ basicInfoForm }}
-	{{ teamForm }}
-	{{ milestoneForm }}
-	<button type="submit" value="submit">submit</button>
-   </form>
+    <form id="createProject" method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+	<legend>
+		<b>{{ wizard.steps.current }}</b>
+		{% block addForm %}{% endblock %}
+	</legend>
+        {{ wizard.management_form }}
+	{% if wizard.form.forms %}
+		{{ wizard.form.management_form }}
+		{% for form in wizard.form.forms %}
+		{% block childform %}{% endblock %}
+		{% endfor %}
+	{% else %}
+		{{ wizard.form.management_form }}
+		{% with form=wizard.form %}
+		{% block masterform %}{% endblock %}
+		{% endwith %}
+	{% endif %}
+        {% if wizard.steps.prev %}
+            <span class="col-md-6 col-xs-6">
+                {% buttons %}
+                <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
+                    type="submit" class="btn btn-info">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+		        <b>Previous</b>
+                    </button>
+                {% endbuttons %}
+            </span>
+        {% endif %}
+    	<span class="col-md-6 col-xs-6 text-right">
+        {% buttons %}
+            <button type="submit" value="submit" class="btn btn-info">
+                {% if wizard.steps.current == wizard.steps.last %}
+		    <b>Create</b>
+                {% else %}
+		    <b>Next</b>
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                {% endif %}
+            </button>
+        {% endbuttons %}
+	</span>
+    </form>
  </div>
 </div>
 {% endblock %}
