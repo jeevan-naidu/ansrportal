@@ -3,7 +3,9 @@ from timesheet.models import Project, ProjectTeamMember, ProjectMilestone
 # from widgets import DateWidget
 from bootstrap3_datetime.widgets import DateTimePicker
 
-dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
+dateTimeOption = {"format": "YYYY-MM-DD",
+                  "pickTime": False,
+                  }
 
 
 # Form Class to create project
@@ -18,8 +20,8 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'plannedEffort',
             'contingencyEffort', )
         widgets = {
-            'startDate': DateTimePicker(dateTimeOption),
-            'endDate': DateTimePicker(dateTimeOption),
+            'startDate': DateTimePicker(options=dateTimeOption),
+            'endDate': DateTimePicker(options=dateTimeOption),
             'projectManager': forms.HiddenInput(), }
 
 
@@ -34,7 +36,7 @@ class ProjectTeamForm(forms.ModelForm):
             'plannedEffort',
             'startDate', )
         widgets = {
-            'startDate': DateTimePicker(dateTimeOption),
+            'startDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
 
 
@@ -48,7 +50,7 @@ class ProjectMilestoneForm(forms.ModelForm):
             'description',
             'deliverables', )
         widgets = {
-            'milestoneDate': DateTimePicker(dateTimeOption),
+            'milestoneDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
 
 

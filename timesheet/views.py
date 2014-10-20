@@ -89,10 +89,10 @@ class CreateProjectWizard(SessionWizardView):
         basicInfo = [form.cleaned_data for form in form_list][0]
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
-        ).strftime('%Y-%m-%d %H:%M%z')
+        ).strftime('%Y-%m-%d')
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
-        ).strftime('%Y-%m-%d %H:%M%z')
+        ).strftime('%Y-%m-%d')
 
         for teamData in [form.cleaned_data for form in form_list][1]:
             teamDataCounter += 1
@@ -109,7 +109,8 @@ class CreateProjectWizard(SessionWizardView):
             DELETE = 'DELETE-{0}'.format(teamDataCounter)
             del changedTeamData[DELETE]
             self.request.session['totalMemberCount'] = teamDataCounter + 1
-            cleanedTeamData.append(changedTeamData)
+            cleanedTeamData.append(changedTeamData.copy())
+            changedTeamData.clear()
 
         for milestoneData in [form.cleaned_data for form in form_list][2]:
             milestoneDataCounter += 1
@@ -125,7 +126,9 @@ class CreateProjectWizard(SessionWizardView):
             self.request.session[
                 'totalMilestoneCount'
             ] = milestoneDataCounter + 1
-            cleanedMilestoneData.append(changedMilestoneData)
+            cleanedMilestoneData.append(changedMilestoneData.copy())
+            changedMilestoneData.clear()
+
         data = {
             'basicInfo': basicInfo,
             'teamMember': cleanedTeamData,

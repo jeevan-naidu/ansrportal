@@ -59,7 +59,7 @@
 		<thead>
 			{% for rec, value in basicInfo.iteritems %}
 		<th>
-			{{ rec }}
+			{% cycle 'Start Date' 'End Date' 'Name' 'Contigency Effort' 'Planned Effort' %}
 			<input type="hidden" name="{{ rec }}" value="{{ value }}">
 		</th>
 			{% endfor %}
@@ -82,7 +82,7 @@
 		<thead>
 {% if forloop.first %}
 			{% for rec, value in teamData.iteritems %}
-			{% if rec != 'teamMemberId' %}
+			{% if 'teamMemberId' not in rec %}
 		<th>
 			{{ rec }}
 		</th>
@@ -92,7 +92,7 @@
 		</thead>
 		<tr>
 			{% for rec, value in teamData.iteritems %}
-			{% if rec != 'teamMemberId' %}
+			{% if 'teamMemberId' not in rec %}
 			<td>{{ value }}</td>
 			{% endif %}
 			<input type="hidden" name="{{ rec }}" value="{{ value }}">
