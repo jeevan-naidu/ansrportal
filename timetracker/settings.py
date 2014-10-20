@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'bootstrap3',  # Django Bootstrap3
     'datetimewidget',  # https://github.com/asaglimbeni/django-datetime-widget
     'timesheet',
+    'bootstrap3_datetime',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -59,6 +60,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+BOOSTSTRAP3 = {
+    'include_jquery': True,
+}
 
 ROOT_URLCONF = 'timetracker.urls'
 

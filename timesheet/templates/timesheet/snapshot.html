@@ -50,16 +50,93 @@
 {% block content %}
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
 <legend><b>Summary</b></legend>
-{% for rec in form %}
-	
-
+<form id="snapshot" name="snapshot" method="POST" action="save">
+{% csrf_token %}
 <div class="panel panel-default">
-	<div class="panel-heading">Project Basic Information</div>
+<div class="panel-heading"><b>Project Basic Information</b></div>
 	<div class="panel-body">
-		{{ rec.startDate }}
+	<table class="table table-condensed">
+		<thead>
+			{% for rec, value in basicInfo.iteritems %}
+		<th>
+			{% cycle 'Start Date' 'End Date' 'Name' 'Contigency Effort' 'Planned Effort' %}
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+		</th>
+			{% endfor %}
+		</thead>
+		<tbody>
+		<tr>
+			{% for rec, value in basicInfo.iteritems %}
+			<td>{{ value }}</td>
+			{% endfor %}
+		</tr>
+		</tbody>
+	</table>
 	</div>
 </div>
-
+<div class="panel panel-default">
+<div class="panel-heading"><b>Team Member(s)</b></div>
+{% for teamData in teamMember %}
+	<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+{% if forloop.first %}
+			{% for rec, value in teamData.iteritems %}
+			{% if 'teamMemberId' not in rec %}
+		<th>
+			{{ rec }}
+		</th>
+			{% endif %}
+			{% endfor %}
+{% endif %}
+		</thead>
+		<tr>
+			{% for rec, value in teamData.iteritems %}
+			{% if 'teamMemberId' not in rec %}
+			<td>{{ value }}</td>
+			{% endif %}
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+			{% endfor %}
+		</tr>
+	</table>
+	</div>
 {% endfor %}
+</div>
+<div class="panel panel-default">
+<div class="panel-heading"><b>Milestone(s)</b></div>
+{% for milestoneData in milestone %}
+<input type="hidden" name="totalMilestones" value="{{ forloop.counter0 }}">
+	<div class="panel-body">
+	<table class="table table-condensed">
+{% if forloop.first %}
+		<thead>
+			{% for rec, value in milestoneData.iteritems %}
+		<th>
+			{{ rec }}
+		</th>
+			{% endfor %}
+		</thead>
+{% endif %}
+		<tbody>
+		<tr>
+			{% for rec, value in milestoneData.iteritems %}
+			<td>{{ value }}</td>
+			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+			{% endfor %}
+		</tr>
+		</tbody>
+	</table>
+	</div>
+{% endfor %}
+</div>
+<a href="delete" class="btn btn-danger">
+        <span class="glyphicon glyphicon-trash"></span>
+	<b>Delete Project</b>
+</a>
+<button type="submit" value="submit" class="btn btn-success pull-right">
+        <span class="glyphicon glyphicon-ok"></span>
+	<b>Create Project</b>
+</button>
+</form>
 </div>
 {% endblock %}
