@@ -44,7 +44,6 @@ class ProjectTeamForm(forms.ModelForm):
         self.fields['member'].queryset = User.objects.exclude(
             Q(groups__name='project manager') |
             Q(is_superuser=True)
-
         )
 
 
