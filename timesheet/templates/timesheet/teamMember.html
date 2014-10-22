@@ -1,9 +1,19 @@
 {% extends 'manager.html' %}
 
+{% block ansrJScalls %}
+<script type="text/javascript">
+$(document).ready(function(){
+		$("#addForm").click(function(){
+			console.log('Nice Trigger');
+			});
+		});
+</script>
+{% endblock %}
+
 
 {% block addForm %}
 <span class="pull-right">
-	<button type="submit" value="submit" class="btn btn-success btn-xs">
+	<button type="submit" value="submit" id="addForm" class="btn btn-success btn-xs">
 		<span class="glyphicon glyphicon-plus"></span>
 			Add Member
 	</button>
@@ -16,6 +26,14 @@
 
 
 {% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+		{% for field in form %} 
+		{% if field.errors %}
+			{{ field.label }}: {{ field.errors|striptags }}
+		{% endif %}
+		{% endfor %}								</div>
+{% endif %}
 	<table class="table table-condensed">
 		{% for t in form %}
 			{% if forloop.first %}

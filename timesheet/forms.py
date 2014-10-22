@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.db.models import Q
 from timesheet.models import Project, ProjectTeamMember, ProjectMilestone
 from widgets import BootstrapUneditableInput
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -36,6 +38,14 @@ class ProjectTeamForm(forms.ModelForm):
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectTeamForm, self).__init__(*args, **kwargs)
+        self.fields['member'].queryset = User.objects.exclude(
+            Q(groups__name='project manager') |
+            Q(is_superuser=True)
+
+        )
 
 
 # Form Class to create milestones for project

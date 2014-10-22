@@ -1,0 +1,68 @@
+{% extends 'master.html' %}
+
+{% load i18n %}
+
+{% load bootstrap3 %}
+
+{% block siteTitle %}ANSR-Manager{% endblock %}
+
+{% block responsiveMenu %}
+<button type="button" class="navbar-toggle" data-toggle="collapse" 
+    data-target="#example-navbar-collapse">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>                                  
+</button>
+{% endblock %}
+
+{% block ansrMenu %}
+ <li class="active"><a href="#create">
+    <span class="glyphicon glyphicon glyphicon-pencil">
+    </span>
+     Create&nbsp;new&nbsp;project
+ </a></li>
+ <li><a href="#manage">
+     <span class="glyphicon glyphicon-cog"></span>
+     Manage&nbsp;projects
+ </a></li>
+ <li><a href="#progress">
+     <span class="glyphicon glyphicon-tasks"></span>
+     Project's&nbsp;progress
+ </a></li>
+ <li><a href="#perfomance">
+    <span class="glyphicon glyphicon-user"></span>
+    Team&nbsp;Member's&nbsp;Perfomance
+ </a></li>
+ <li><a href="#status">
+    <span class="glyphicon glyphicon-dashboard"></span>
+    Project's&nbsp;Status
+ </a></li>
+{% endblock %}
+
+{% block loggedStatus %}
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+      <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+{% block content %}
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+	<div class="alert alert-success" role="alert">
+		<h3>Congratulations!!!</h3><br /> <h5>Your project " <b>{{ projectName }}</b> " has been created.</h5>
+	</div>
+	<div class="alert alert-info" role="alert">
+		<h5>Assigned Project ID : {{ projectId }}</h5>
+		<button type="submit" value="submit" class="btn btn-sm btn-info">
+			<span class="glyphicon glyphicon-globe"></span>
+			<b>Notify Team</b>
+		</button>
+	</div>
+<a href="add" class="btn btn-success pull-right">
+        <span class="glyphicon glyphicon-saved"></span>
+	<b>Complete</b>
+</a>
+</div>
+
+{% endblock %}
