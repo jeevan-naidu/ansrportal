@@ -5,7 +5,8 @@ var app = {};
 // Form control module
 app.form_ctrl = (function() {
     var module = {},
-        addRow = $('#addForm');
+        addRow = $('#addForm'),
+        delRow = $('#delete-member');
 
     // Add
     module.add = function() {
@@ -14,7 +15,6 @@ app.form_ctrl = (function() {
             lastRowId = lastRow.find('td').first().find('select').attr('id'),
             newRow,
             newRowId,
-            newRowIds = [],
             $tds,
             $curId;
 
@@ -38,11 +38,39 @@ app.form_ctrl = (function() {
 
     };
 
-    // Events
+    module.del = function() {
+        var form = $('#createProject'),
+            rows = form.find('tr'),
+            curRowCheckbox,
+            isDelete,
+            curr;
+
+        rows.each(function() {
+            curr = $(this);
+            curRowCheckbox = curr.find('td:last-child > :first-child');
+
+            isDelete = curRowCheckbox.is(':checked');
+
+            if(isDelete) {
+                curRowCheckbox.closest('tr').remove();
+            }
+        });
+
+    };
+
+
+
+
+    // DOM Events
     addRow.on('click', function() {
         module.add();
     });
 
+    delRow.on('click', function() {
+        module.del();
+    });
+
+    // Export module
     return module;
 })();
 
