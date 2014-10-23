@@ -13,10 +13,10 @@ $(document).ready(function(){
 
 {% block addForm %}
 <span class="pull-right">
-	<button type="submit" value="submit" id="addForm" class="btn btn-success btn-xs">
+	<a id="addForm" href="javascript:;" class="btn btn-success btn-xs addForm">
 		<span class="glyphicon glyphicon-plus"></span>
 			Add Member
-	</button>
+	</a>
 	<button type="submit" value="submit" class="btn btn-danger btn-xs">
 		<span class="glyphicon glyphicon-minus"></span>
 			Delete Member
@@ -52,14 +52,21 @@ $(document).ready(function(){
 			{% endif %}
 		{% endfor %}
 		<tbody>
+
+
 		<tr>
 			{% for field in form %}
-				<td>{{ field }}</td>
+				<td>
+                    {{ field }}
+                    <input type="hidden">
+                </td>
 			{% endfor %}
 			{% if form.can_delete %}
 				<td>{{ form.DELETE }}</td>
 			{% endif %}
 		</tr>
+
+
 		</tbody>
 	</table>
 {% endblock %}{% endblock %}

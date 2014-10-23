@@ -61,10 +61,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-BOOSTSTRAP3 = {
-    'include_jquery': True,
-}
-
 ROOT_URLCONF = 'timetracker.urls'
 
 WSGI_APPLICATION = 'timetracker.wsgi.application'
