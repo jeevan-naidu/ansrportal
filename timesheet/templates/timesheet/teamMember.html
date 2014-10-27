@@ -34,11 +34,12 @@ $(document).ready(function(){
 		{% endif %}
 		{% endfor %}								</div>
 {% endif %}
-	<table class="table table-condensed">
+	<table class="table table-condensed table-responsive">
 		{% for t in form %}
 			{% if forloop.first %}
 				{% if '-0' in t.id_for_label %}
 					<thead>
+                    <tr>
 						{% for field in form %}
 							<th>
 								<small>{{ field.label }}</small>
@@ -47,6 +48,7 @@ $(document).ready(function(){
 								{% endif %}
 							</th>
 						{% endfor %}
+                    </tr>
 					</thead>
 				{% endif %}
 			{% endif %}

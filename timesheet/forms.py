@@ -52,7 +52,17 @@ class TimeSheetEntryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
-        self.fields['monday'].widget.attrs['size'] = 3
+        self.fields['project'].widget.attrs['class'] = "form-control"
+        self.fields['chapter'].widget.attrs['class'] = "form-control"
+        self.fields['task'].widget.attrs['class'] = "form-control"
+        self.fields['monday'].widget.attrs['class'] = "form-control"
+        self.fields['tuesday'].widget.attrs['class'] = "form-control"
+        self.fields['wednesday'].widget.attrs['class'] = "form-control"
+        self.fields['thursday'].widget.attrs['class'] = "form-control"
+        self.fields['friday'].widget.attrs['class'] = "form-control"
+        self.fields['saturday'].widget.attrs['class'] = "form-control"
+        self.fields['total'].widget.attrs['class'] = "form-control"
+        self.fields['managerFeedback'].widget.attrs['class'] = "form-control"
         self.fields['managerFeedback'].widget.attrs['readonly'] = True
         self.fields['total'].widget.attrs['readonly'] = True
 
