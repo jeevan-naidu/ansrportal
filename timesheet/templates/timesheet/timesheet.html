@@ -80,11 +80,11 @@
 		</button>
 	</span>
 	</legend>
-	<table class="table table-condensed">
+	<table class="table table-condensed table-responsive">
 		<thead>
             <tr>
 			{% for data in form %}
-				<th class="res-9-per">{{ data.label }}
+				<th>{{ data.label }}
 				{% if data.field.required %}
 					<span class="required">*</span>
 				{% endif %}

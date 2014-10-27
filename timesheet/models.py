@@ -111,17 +111,17 @@ class TimeSheetEntry(models.Model):
                             verbose_name='Task', max_length=2)
     # Effort capture
     monday = models.IntegerField(default=0,
-                                 verbose_name="Monday")
+                                 verbose_name="Mon")
     tuesday = models.IntegerField(default=0,
-                                  verbose_name="Tuesday")
+                                  verbose_name="Tue")
     wednesday = models.IntegerField(default=0,
-                                    verbose_name="Wednesday")
+                                    verbose_name="Wed")
     thursday = models.IntegerField(default=0,
-                                   verbose_name="Thursday")
+                                   verbose_name="Thu")
     friday = models.IntegerField(default=0,
-                                 verbose_name="Friday")
+                                 verbose_name="Fri")
     saturday = models.IntegerField(default=0,
-                                   verbose_name="Saturday")
+                                   verbose_name="Sat")
     questionsCreated = models.IntegerField(default=0,
                                            verbose_name="Question Created"
                                            )
