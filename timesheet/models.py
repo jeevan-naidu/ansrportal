@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from smart_selects.db_fields import ChainedForeignKey
 # Database Models
 
 TASK = (
@@ -11,6 +12,7 @@ TASK = (
     ('I', 'Idle'),
 )
 
+
 class Book(models.Model):
     name = models.CharField(max_length=100, verbose_name="Book Name")
     createdOn = models.DateTimeField(verbose_name="created Date",
@@ -20,6 +22,7 @@ class Book(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Chapter(models.Model):
     book = models.ForeignKey(Book)
@@ -44,7 +47,7 @@ class Project(models.Model):
     contingencyEffort = models.IntegerField(default=0,
                                             verbose_name="Contigency Effort")
     projectManager = models.ForeignKey(User)
-    #Chapters to be worked on in the project
+    # Chapters to be worked on in the project
     chapters = models.ManyToManyField(Chapter)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
@@ -96,8 +99,14 @@ class TimeSheetEntry(models.Model):
     wkend = models.DateField(default=None, blank=True,
                              verbose_name="Week End")
 
-    chapter = models.ForeignKey(Chapter, verbose_name="Chapter")
-
+    chapter = ChainedForeignKey(
+        Chapter,
+        chained_field="project",
+        chained_model_field="project",
+        show_all=False,
+        auto_choose=True,
+        verbose_name="Chapter"
+    )
     task = models.CharField(choices=TASK, default='D',
                             verbose_name='Task', max_length=2)
     # Effort capture
@@ -122,10 +131,10 @@ class TimeSheetEntry(models.Model):
                                    verbose_name="Approved")
 
     # Approval related details
-    approvedon = models.DateTimeField(default=None, blank=True,
+    approvedon = models.DateTimeField(default=None, null=True, blank=True,
                                       verbose_name="Approved On",
                                       editable=False)
-    managerFeedback = models.CharField(default=None, blank=True,
+    managerFeedback = models.CharField(default=None, null=True, blank=True,
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
     teamMember = models.ForeignKey(User,

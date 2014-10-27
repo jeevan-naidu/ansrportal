@@ -1,5 +1,41 @@
 {% extends 'master.html' %}
 
+{% block pageJS %}
+<script type="text/javascript">
+	$( "#id_monday").change(function() {
+		document.getElementById('id_total').value =
+		parseInt(document.getElementById('id_total').value) +
+		parseInt(document.getElementById('id_monday').value);
+	});
+	$( "#id_tuesday").change(function() {
+		document.getElementById('id_total').value =
+		parseInt(document.getElementById('id_total').value) +
+		parseInt(document.getElementById('id_tuesday').value);
+	});
+	$( "#id_wednesday").change(function() {
+		document.getElementById('id_total').value =
+		parseInt(document.getElementById('id_total').value) +
+		parseInt(document.getElementById('id_wednesday').value);
+	});
+	$( "#id_thursday").change(function() {
+		document.getElementById('id_total').value =
+		parseInt(document.getElementById('id_total').value) +
+		parseInt(document.getElementById('id_thursday').value);
+	});
+	$( "#id_friday").change(function() {
+		document.getElementById('id_total').value =
+		parseInt(document.getElementById('id_total').value) +
+		parseInt(document.getElementById('id_friday').value);
+	});
+	$( "#id_saturday").change(function() {
+		document.getElementById('id_total').value =
+		parseInt(document.getElementById('id_total').value) +
+		parseInt(document.getElementById('id_saturday').value);
+	});
+</script>
+{% endblock %}
+
+
 {% block siteTitle %}ANSR-Timesheet Entry{% endblock %}
 
 
@@ -22,7 +58,17 @@
  </button>
  </span>
 </legend>
+</div>
+<div class="row">
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 text-center">
+	<h4><small style="color: green">This Timesheet is approved </small> </h4>
+	<h4><small style="color: red">This Timesheet is not approved </small> </h4>
+</div>
+</div>
+<div class="row">
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
+	{% csrf_token %}
 	<legend>
 	Billable 
 	<span class="pull-right">
@@ -54,6 +100,10 @@
 		</tr>
 		</tbody>
 	</table>
+	 <button type="submit" value="submit" class="btn btn-info pull-right">
+		Submit Timesheet
+	</button>
+</form>
 	<legend>
 	Non - Billable 
 	</legend>

@@ -12,5 +12,6 @@ admin.site.site_header = apps.TimesheetConfig.verbose_name + ' - Management UI'
 urlpatterns = patterns('',
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^timesheet/', include('timesheet.urls')),
+                       url(r'^chaining/', include('smart_selects.urls')),
                        url(r'^$', RedirectView.as_view(url='/timesheet/')),
                        )

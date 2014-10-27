@@ -55,7 +55,27 @@ def loginResponse(request, form, template):
 
 
 def Timesheet(request):
+    today = datetime.now().date()
+    minAutoApprove = 36
+    maxAutoApprove = 44
+    weekstartDate = today - timedelta(days=datetime.now().date().weekday())
+    ansrEndDate = weekstartDate + timedelta(days=5)
     if request.method == 'POST':
+        form = TimeSheetEntryForm(request.POST)
+        timesheetObj = TimeSheetEntry()
+        timesheetObj.wkstart = weekstartDate
+        timesheetObj.wkend = ansrEndDate
+        timesheetObj.teamMember = request.user
+        if form.is_valid():
+            for k, v in form.cleaned_data.iteritems():
+                if k == 'total':
+                    if v < minAutoApprove | v > maxAutoApprove:
+                        timesheetObj.approved = False
+                    else:
+                        timesheetObj.approved = True
+                        timesheetObj.approvedon = datetime.now()
+                setattr(timesheetObj, k, v)
+        timesheetObj.save()
         return HttpResponseRedirect('/timesheet')
     else:
         currentUser = request.user
@@ -65,9 +85,6 @@ def Timesheet(request):
         form = TimeSheetEntryForm()
         form.fields['project'].queryset = project
         activityForm = ActivityForm(initial={'name': 'test'})
-        today = datetime.now().date()
-        weekstartDate = today - timedelta(days=datetime.now().date().weekday())
-        ansrEndDate = weekstartDate + timedelta(days=5)
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
                 'form': form,
