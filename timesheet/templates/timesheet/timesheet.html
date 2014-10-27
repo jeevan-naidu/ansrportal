@@ -1,44 +1,87 @@
 {% extends 'master.html' %}
 
-{% load i18n %}
+{% block siteTitle %}ANSR-Timesheet Entry{% endblock %}
 
-{{ wizard.form.media }}
 
-{% load bootstrap3 %}
+{% block content  %}
+<legend class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1">
+ <span class="col-md-2">
+ <button type="submit" value="submit" class="btn btn-default">
+	<span class="glyphicon glyphicon-arrow-left"></span>
+ </button>
+ </span>
+ <span class="col-md-4">
+ Start : {{ weekstartDate }}
+ </span>
+ <span class="col-md-4">
+ End : {{ weekendDate }}
+ </span>
+ <span class="col-md-2">
+ <button type="submit" value="submit" class="btn btn-default pull-right"> 
+	<span class="glyphicon glyphicon-arrow-right"></span>
+ </button>
+ </span>
+</legend>
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+	<legend>
+	Billable 
+	<span class="pull-right">
+		<button type="submit" value="submit" id="addForm" class="btn btn-success btn-xs">
+			<span class="glyphicon glyphicon-plus"></span>
+			Add Billable Item
+		</button>
+		<button type="submit" value="submit" class="btn btn-danger btn-xs">
+			<span class="glyphicon glyphicon-minus"></span>
+			Delete Billable Item
+		</button>
+	</span>
+	</legend>
+	<table class="table table-condensed">
+		<thead>
+			{% for data in form %}
+				<th>{{ data.label }}
+				{% if data.field.required %}
+					<span class="required">*</span>
+				{% endif %}
+				</th>
+			{% endfor %}
+		</thead>
+		<tbody>
+		<tr>
+			{% for data in form %}
+				<td>{{ data }}</td>
+			{% endfor %}
+		</tr>
+		</tbody>
+	</table>
+	<legend>
+	Non - Billable 
+	</legend>
+	<table class="table table-condensed">
+		<thead>
+			{% for data in activityForm %}
+				<th>{{ data.label }}
+				{% if data.field.required %}
+					<span class="required">*</span>
+				{% endif %}
+				</th>
+			{% endfor %}
+		</thead>
+		<tbody>
+		<tr>
+			{% for data in activityForm %}
+				<td>{{ data }}</td>
+			{% endfor %}
+		</tr>
+		</tbody>
+	</table>
+</div>
+{% endblock  %}
 
-{% block siteTitle %}ANSR-Manager{% endblock %}
-
-{% block responsiveMenu %}
-<button type="button" class="navbar-toggle" data-toggle="collapse" 
-    data-target="#example-navbar-collapse">
-    <span class="sr-only">Toggle navigation</span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>                                  
-</button>
+{% block loggedStatus %}
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+      <span class="ansrLogout">Logout</span>
+  </a></li>
 {% endblock %}
 
-{% block ansrMenu %}
- <li class="active"><a href="#create">
-    <span class="glyphicon glyphicon glyphicon-pencil">
-    </span>
-     Create&nbsp;new&nbsp;project
- </a></li>
- <li><a href="#manage">
-     <span class="glyphicon glyphicon-cog"></span>
-     Manage&nbsp;projects
- </a></li>
- <li><a href="#progress">
-     <span class="glyphicon glyphicon-tasks"></span>
-     Project's&nbsp;progress
- </a></li>
- <li><a href="#perfomance">
-    <span class="glyphicon glyphicon-user"></span>
-    Team&nbsp;Member's&nbsp;Perfomance
- </a></li>
- <li><a href="#status">
-    <span class="glyphicon glyphicon-dashboard"></span>
-    Project's&nbsp;Status
- </a></li>
-=======
-{{ data }}

@@ -3,12 +3,14 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember
+    ProjectMilestone, ProjectTeamMember, Chapter, Activity
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
-    ProjectTeamForm, ProjectMilestoneForm
+    ProjectTeamForm, ProjectMilestoneForm, ChapterForm, \
+    ActivityForm, TimeSheetEntryForm
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 # views for ansr
 
 FORMS = [
@@ -53,7 +55,24 @@ def loginResponse(request, form, template):
 
 
 def Timesheet(request):
-    return render(request, 'timesheet/timesheet.html')
+    if request.method == 'POST':
+        return HttpResponseRedirect('/timesheet')
+    else:
+        currentUser = request.user
+        project = Project.objects.filter(
+            id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
+        )
+        form = TimeSheetEntryForm()
+        form.fields['project'].queryset = project
+        activityForm = ActivityForm(initial={'name': 'test'})
+        today = datetime.now().date()
+        weekstartDate = today - timedelta(days=datetime.now().date().weekday())
+        ansrEndDate = weekstartDate + timedelta(days=5)
+        data = {'weekstartDate': weekstartDate,
+                'weekendDate': ansrEndDate,
+                'form': form,
+                'activityForm': activityForm}
+        return render(request, 'timesheet/timesheet.html', data)
 
 
 def checkUser(userName, password, request, form):
@@ -64,8 +83,11 @@ def checkUser(userName, password, request, form):
             try:
                 if user.groups.all()[0].name == "project manager":
                     return HttpResponseRedirect('project/add')
+                elif user.groups.all()[0].name == "project team":
+                    return HttpResponseRedirect('entry')
             except IndexError:
-                return HttpResponseRedirect('add')
+                messages.error(request, 'Sorry there is no such user')
+                return loginResponse(request, form, 'timesheet/index.html')
         else:
             messages.error(request, 'Sorry this user is not active')
             return loginResponse(request, form, 'timesheet/index.html')
@@ -157,7 +179,7 @@ def saveProject(request):
             startDate = "startDate-{0}".format(memberCount)
 
             ptm.member = User.objects.get(
-                id=request.POST.get(teamMemberId)
+                pk=request.POST.get(teamMemberId)
             )
             ptm.role = request.POST.get(role)
             ptm.plannedEffort = request.POST.get(plannedEffort)

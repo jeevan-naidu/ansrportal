@@ -1,11 +1,59 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
-from timesheet.models import Project, ProjectTeamMember, ProjectMilestone
-from widgets import BootstrapUneditableInput
+from timesheet.models import Project, ProjectTeamMember, \
+    ProjectMilestone, TimeSheetEntry, Activity, Chapter
 from bootstrap3_datetime.widgets import DateTimePicker
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
+
+
+class ActivityForm(forms.ModelForm):
+
+    class Meta:
+        model = Activity
+        fields = (
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'total',
+            'managerFeedback'
+        )
+
+
+class ChapterForm(forms.ModelForm):
+
+    class Meta:
+        model = Chapter
+        fields = ('name',)
+
+
+# Form class to maintain timesheet records
+class TimeSheetEntryForm(forms.ModelForm):
+
+    class Meta:
+        model = TimeSheetEntry
+        fields = (
+            'project',
+            'chapter',
+            'task',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'total',
+            'managerFeedback'
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
+        self.fields['managerFeedback'].widget.attrs['readonly'] = True
+        self.fields['total'].widget.attrs['readonly'] = True
 
 
 # Form Class to create project

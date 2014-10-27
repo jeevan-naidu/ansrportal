@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from timesheet import views
 
 urlpatterns = patterns(u'',
-                       url(r'^add$', views.Timesheet, name=u'timesheet'),
+                       url(r'^entry$', views.Timesheet, name=u'timesheet'),
                        url(r'^project/delete$',
                            views.deleteProject,
                            name=u'deleteproject'),
