@@ -11,6 +11,7 @@ from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+from django.db.models import Q
 # views for ansr
 
 FORMS = [
@@ -79,10 +80,17 @@ def Timesheet(request):
         return HttpResponseRedirect('/timesheet')
     else:
         currentUser = request.user
+        timesheetCount = len(list(TimeSheetEntry.objects.filter(
+            Q(teamMember=User.objects.filter(id=currentUser.id)) |
+            Q(wkstart=weekstartDate)
+        )))
+        if timesheetCount > 0:
+            form = TimeSheetEntryForm(readonly_form=True)
+        else:
+            form = TimeSheetEntryForm()
         project = Project.objects.filter(
             id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
         )
-        form = TimeSheetEntryForm()
         form.fields['project'].queryset = project
         activityForm = ActivityForm(initial={'name': 'test'})
         data = {'weekstartDate': weekstartDate,
