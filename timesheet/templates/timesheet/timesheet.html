@@ -71,7 +71,7 @@
 
 
 {% block content  %}
-<legend class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1">
+<legend class="clearfix pad-bot-10">
  <span class="col-md-2">
  <button type="submit" value="submit" class="btn btn-default">
 	<span class="glyphicon glyphicon-arrow-left"></span>
@@ -89,12 +89,10 @@
  </button>
  </span>
 </legend>
-</div>
-<div class="row">
-<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 text-center">
+
+<div class="text-center">
 	<h4><small style="color: green">This Timesheet is approved </small> </h4>
 	<h4><small style="color: red">This Timesheet is not approved </small> </h4>
-</div>
 </div>
 <div class="row">
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
@@ -113,8 +111,9 @@
 		</button>
 	</span>
 	</legend>
-	<table class="table table-condensed">
+	<table class="table table-condensed table-responsive">
 		<thead>
+            <tr>
 			{% for data in form %}
 				<th>{{ data.label }}
 				{% if data.field.required %}
@@ -122,6 +121,7 @@
 				{% endif %}
 				</th>
 			{% endfor %}
+            </tr>
 		</thead>
 		<tbody>
 		<tr>
@@ -142,15 +142,17 @@
 	<legend>
 	Non - Billable 
 	</legend>
-	<table class="table table-condensed">
+	<table class="table table-condensed table-responsive">
 		<thead>
-			{% for data in activityForm %}
-				<th>{{ data.label }}
-				{% if data.field.required %}
-					<span class="required">*</span>
-				{% endif %}
-				</th>
-			{% endfor %}
+            <tr>
+                {% for data in activityForm %}
+                    <th>{{ data.label }}
+                    {% if data.field.required %}
+                        <span class="required">*</span>
+                    {% endif %}
+                    </th>
+                {% endfor %}
+            </tr>
 		</thead>
 		<tbody>
 		<tr>
@@ -173,4 +175,5 @@
       <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
+
 
