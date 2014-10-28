@@ -86,7 +86,7 @@ def checkUser(userName, password, request, form):
                 elif user.groups.all()[0].name == "project team":
                     return HttpResponseRedirect('entry')
             except IndexError:
-                messages.error(request, 'Sorry there is no such user')
+                messages.error(request, 'This user does not have access.')
                 return loginResponse(request, form, 'timesheet/index.html')
         else:
             messages.error(request, 'Sorry this user is not active')
@@ -97,6 +97,7 @@ def checkUser(userName, password, request, form):
 
 
 class CreateProjectWizard(SessionWizardView):
+
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
