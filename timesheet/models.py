@@ -4,21 +4,6 @@ from django.utils import timezone
 from smart_selects.db_fields import ChainedForeignKey
 # Database Models
 
-TASK = (
-    ('D', 'Develop'),
-    ('R', 'Review'),
-    ('C', 'Copy Edit'),
-    ('Q', 'QA'),
-    ('I', 'Idle'),
-)
-
-NONBILLABLE = (
-    ('S', 'Self Development'),
-    ('R', 'Leave'),
-    ('C', 'Training'),
-    ('Q', 'Others'),
-)
-
 
 class Book(models.Model):
     name = models.CharField(max_length=100, verbose_name="Book Name")
@@ -66,7 +51,6 @@ class Project(models.Model):
         return unicode(self.name)
 
 
-
 class TimeSheetEntry(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name", null=True)
     # Week details
@@ -84,11 +68,8 @@ class TimeSheetEntry(models.Model):
         auto_choose=True,
         verbose_name="Chapter"
     )
-    activity = models.CharField(choices=NONBILLABLE, default='S',
-                                verbose_name='Activity', max_length=2,
-                                null=True)
-    task = models.CharField(choices=TASK, default='D', null=True,
-                            verbose_name='Task', max_length=2)
+    activity = models.CharField(max_length=2, null=True)
+    task = models.CharField(null=True, max_length=2)
     # Effort capture
     monday = models.IntegerField(default=0,
                                  verbose_name="Mon")

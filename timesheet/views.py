@@ -68,11 +68,7 @@ def Timesheet(request):
         timesheetObj.wkstart = weekstartDate
         timesheetObj.wkend = ansrEndDate
         timesheetObj.teamMember = request.user
-        if form.is_valid():
-            print form.cleaned_data
         if form.is_valid() and activityForm.is_valid():
-            print form.cleaned_data
-            print activityForm.cleaned_data
             for k, v in form.cleaned_data.iteritems():
                 if k == 'total':
                     if v < minAutoApprove | v > maxAutoApprove:
@@ -85,16 +81,12 @@ def Timesheet(request):
         return HttpResponseRedirect('/timesheet')
     else:
         currentUser = request.user
-        timesheetCount = len(list(TimeSheetEntry.objects.filter(
-            Q(teamMember=User.objects.filter(id=currentUser.id)) |
-            Q(wkstart=weekstartDate)
-        )))
-        form = TimeSheetEntryForm(prefix='ts')
+        form = TimeSheetEntryForm()
         project = Project.objects.filter(
             id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
         )
         form.fields['project'].queryset = project
-        activityForm = ActivityForm(prefix='at')
+        activityForm = ActivityForm()
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
                 'form': form,

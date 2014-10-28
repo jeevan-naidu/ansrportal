@@ -33,35 +33,35 @@
 		parseInt(document.getElementById('id_saturday').value);
 	});
 	
-	$( "#id_activityMonday").change(function() {
-		document.getElementById('id_activityTotal').value =
-		parseInt(document.getElementById('id_activityTotal').value) +
-		parseInt(document.getElementById('id_activityMonday').value);
+	$( "#id_activity_monday").change(function() {
+		document.getElementById('id_activity_total').value =
+		parseInt(document.getElementById('id_activity_total').value) +
+		parseInt(document.getElementById('id_activity_monday').value);
 	});
-	$( "#id_activityTuesday").change(function() {
-		document.getElementById('id_activityTotal').value =
-		parseInt(document.getElementById('id_activityTotal').value) +
-		parseInt(document.getElementById('id_activityTuesday').value);
+	$( "#id_activity_tuesday").change(function() {
+		document.getElementById('id_activity_total').value =
+		parseInt(document.getElementById('id_activity_total').value) +
+		parseInt(document.getElementById('id_activity_tuesday').value);
 	});
-	$( "#id_activityWednesday").change(function() {
-		document.getElementById('id_activityTotal').value =
-		parseInt(document.getElementById('id_activityTotal').value) +
-		parseInt(document.getElementById('id_activityWednesday').value);
+	$( "#id_activity_wednesday").change(function() {
+		document.getElementById('id_activity_total').value =
+		parseInt(document.getElementById('id_activity_total').value) +
+		parseInt(document.getElementById('id_activity_wednesday').value);
 	});
-	$( "#id_activityThursday").change(function() {
-		document.getElementById('id_activityTotal').value =
-		parseInt(document.getElementById('id_activityTotal').value) +
-		parseInt(document.getElementById('id_activityThursday').value);
+	$( "#id_activity_thursday").change(function() {
+		document.getElementById('id_activity_total').value =
+		parseInt(document.getElementById('id_activity_total').value) +
+		parseInt(document.getElementById('id_activity_thursday').value);
 	});
-	$( "#id_activityFriday").change(function() {
-		document.getElementById('id_activityTotal').value =
-		parseInt(document.getElementById('id_activityTotal').value) +
-		parseInt(document.getElementById('id_activityFriday').value);
+	$( "#id_activity_friday").change(function() {
+		document.getElementById('id_activity_total').value =
+		parseInt(document.getElementById('id_activity_total').value) +
+		parseInt(document.getElementById('id_activity_friday').value);
 	});
-	$( "#id_activitySaturday").change(function() {
-		document.getElementById('id_activityTotal').value =
-		parseInt(document.getElementById('id_activityTotal').value) +
-		parseInt(document.getElementById('id_activitySaturday').value);
+	$( "#id_activity_saturday").change(function() {
+		document.getElementById('id_activity_total').value =
+		parseInt(document.getElementById('id_activity_total').value) +
+		parseInt(document.getElementById('id_activity_saturday').value);
 	});
 </script>
 {% endblock %}
@@ -94,9 +94,8 @@
 	<h4><small style="color: green">This Timesheet is approved </small> </h4>
 	<h4><small style="color: red">This Timesheet is not approved </small> </h4>
 </div>
-<div class="row">
-<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
-  <form id="billabletimesheet" method="post" action="" enctype="multipart/form-data">
+  
+  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
 	{% csrf_token %}
 	<legend>
 	Billable 
@@ -113,15 +112,20 @@
 	</legend>
 	<table class="table table-condensed table-responsive">
 		<thead>
-            <tr>
+            	<tr>
 			{% for data in form %}
-				<th>{{ data.label }}
+				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.last %}
+					<th class="res-14-per">
+				{% else %}
+					<th>
+				{% endif %}
+				{{ data.label }}
 				{% if data.field.required %}
 					<span class="required">*</span>
 				{% endif %}
 				</th>
 			{% endfor %}
-            </tr>
+            	</tr>
 		</thead>
 		<tbody>
 		<tr>
@@ -131,28 +135,35 @@
 		</tr>
 		</tbody>
 	</table>
- <button type="submit" value="submit" class="btn btn-info pull-right">
-	 Save Billable
- </button>
- </form>
- <br />
- <br />
- <form id="nonbillabletimesheet" method="post" action="" enctype="multipart/form-data">
-	{% csrf_token %}
 	<legend>
 	Non - Billable 
+	<span class="pull-right">
+		<button type="submit" value="submit" id="addForm" class="btn btn-success btn-xs">
+			<span class="glyphicon glyphicon-plus"></span>
+			Add Non-Billable Item
+		</button>
+		<button type="submit" value="submit" class="btn btn-danger btn-xs">
+			<span class="glyphicon glyphicon-minus"></span>
+			Delete Non-Billable Item
+		</button>
+	</span>
 	</legend>
 	<table class="table table-condensed table-responsive">
 		<thead>
-            <tr>
+            	<tr>
                 {% for data in activityForm %}
-                    <th>{{ data.label }}
+		    {% if forloop.counter == 1 or forloop.last %}
+		    	<th class="res-14-per">
+		    {% else %}
+			<th>
+		    {% endif %}
+                    {{ data.label }}
                     {% if data.field.required %}
                         <span class="required">*</span>
                     {% endif %}
                     </th>
                 {% endfor %}
-            </tr>
+            	</tr>
 		</thead>
 		<tbody>
 		<tr>
@@ -163,10 +174,9 @@
 		</tbody>
 	</table>
  <button type="submit" value="submit" class="btn btn-info pull-right">
-	 Save Non-Billable
+	 Save
  </button>
  </form>
-</div>
 {% endblock  %}
 
 {% block loggedStatus %}
@@ -175,5 +185,3 @@
       <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
-
-
