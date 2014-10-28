@@ -12,6 +12,13 @@ TASK = (
     ('I', 'Idle'),
 )
 
+NONBILLABLE = (
+    ('S', 'Self Development'),
+    ('R', 'Leave'),
+    ('C', 'Training'),
+    ('Q', 'Others'),
+)
+
 
 class Book(models.Model):
     name = models.CharField(max_length=100, verbose_name="Book Name")
@@ -59,40 +66,9 @@ class Project(models.Model):
         return unicode(self.name)
 
 
-class Activity(models.Model):
-    name = models.CharField(max_length=50, verbose_name="Activity Name")
-    wkstart = models.DateField(default=None, blank=True,
-                               verbose_name="Week Start")
-    wkend = models.DateField(default=None, blank=True,
-                             verbose_name="Week End")
-    monday = models.IntegerField(default=0,
-                                 verbose_name="Monday")
-    tuesday = models.IntegerField(default=0,
-                                  verbose_name="Tuesday")
-    wednesday = models.IntegerField(default=0,
-                                    verbose_name="Wednesday")
-    thursday = models.IntegerField(default=0,
-                                   verbose_name="Thursday")
-    friday = models.IntegerField(default=0,
-                                 verbose_name="Friday")
-    saturday = models.IntegerField(default=0,
-                                   verbose_name="Saturday")
-    total = models.IntegerField(default=0,
-                                verbose_name="Total", )
-    managerFeedback = models.CharField(default=None, blank=True,
-                                       max_length=1000,
-                                       verbose_name="Manager Feedback")
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.name
-
 
 class TimeSheetEntry(models.Model):
-    project = models.ForeignKey(Project, verbose_name="Project Name")
+    project = models.ForeignKey(Project, verbose_name="Project Name", null=True)
     # Week details
     wkstart = models.DateField(default=None, blank=True,
                                verbose_name="Week Start")
@@ -101,13 +77,17 @@ class TimeSheetEntry(models.Model):
 
     chapter = ChainedForeignKey(
         Chapter,
+        null=True,
         chained_field="project",
         chained_model_field="project",
         show_all=False,
         auto_choose=True,
         verbose_name="Chapter"
     )
-    task = models.CharField(choices=TASK, default='D',
+    activity = models.CharField(choices=NONBILLABLE, default='S',
+                                verbose_name='Activity', max_length=2,
+                                null=True)
+    task = models.CharField(choices=TASK, default='D', null=True,
                             verbose_name='Task', max_length=2)
     # Effort capture
     monday = models.IntegerField(default=0,
@@ -122,9 +102,6 @@ class TimeSheetEntry(models.Model):
                                  verbose_name="Fri")
     saturday = models.IntegerField(default=0,
                                    verbose_name="Sat")
-    questionsCreated = models.IntegerField(default=0,
-                                           verbose_name="Question Created"
-                                           )
     total = models.IntegerField(default=0,
                                 verbose_name="Total")
     approved = models.BooleanField(default=False,
@@ -137,10 +114,7 @@ class TimeSheetEntry(models.Model):
     managerFeedback = models.CharField(default=None, null=True, blank=True,
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
-    teamMember = models.ForeignKey(User,
-                                   verbose_name="Team Members",
-                                   editable=False
-                                   )
+    teamMember = models.ForeignKey(User,editable=False)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

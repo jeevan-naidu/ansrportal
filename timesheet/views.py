@@ -3,7 +3,7 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember, Chapter, Activity
+    ProjectMilestone, ProjectTeamMember, Chapter
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, ChapterForm, \
     ActivityForm, TimeSheetEntryForm
@@ -63,11 +63,16 @@ def Timesheet(request):
     ansrEndDate = weekstartDate + timedelta(days=5)
     if request.method == 'POST':
         form = TimeSheetEntryForm(request.POST)
+        activityForm = ActivityForm(request.POST)
         timesheetObj = TimeSheetEntry()
         timesheetObj.wkstart = weekstartDate
         timesheetObj.wkend = ansrEndDate
         timesheetObj.teamMember = request.user
         if form.is_valid():
+            print form.cleaned_data
+        if form.is_valid() and activityForm.is_valid():
+            print form.cleaned_data
+            print activityForm.cleaned_data
             for k, v in form.cleaned_data.iteritems():
                 if k == 'total':
                     if v < minAutoApprove | v > maxAutoApprove:
@@ -84,15 +89,12 @@ def Timesheet(request):
             Q(teamMember=User.objects.filter(id=currentUser.id)) |
             Q(wkstart=weekstartDate)
         )))
-        if timesheetCount > 0:
-            form = TimeSheetEntryForm(readonly_form=True)
-        else:
-            form = TimeSheetEntryForm()
+        form = TimeSheetEntryForm(prefix='ts')
         project = Project.objects.filter(
             id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
         )
         form.fields['project'].queryset = project
-        activityForm = ActivityForm(initial={'name': 'test'})
+        activityForm = ActivityForm(prefix='at')
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
                 'form': form,

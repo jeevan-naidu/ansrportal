@@ -32,6 +32,37 @@
 		parseInt(document.getElementById('id_total').value) +
 		parseInt(document.getElementById('id_saturday').value);
 	});
+	
+	$( "#id_activityMonday").change(function() {
+		document.getElementById('id_activityTotal').value =
+		parseInt(document.getElementById('id_activityTotal').value) +
+		parseInt(document.getElementById('id_activityMonday').value);
+	});
+	$( "#id_activityTuesday").change(function() {
+		document.getElementById('id_activityTotal').value =
+		parseInt(document.getElementById('id_activityTotal').value) +
+		parseInt(document.getElementById('id_activityTuesday').value);
+	});
+	$( "#id_activityWednesday").change(function() {
+		document.getElementById('id_activityTotal').value =
+		parseInt(document.getElementById('id_activityTotal').value) +
+		parseInt(document.getElementById('id_activityWednesday').value);
+	});
+	$( "#id_activityThursday").change(function() {
+		document.getElementById('id_activityTotal').value =
+		parseInt(document.getElementById('id_activityTotal').value) +
+		parseInt(document.getElementById('id_activityThursday').value);
+	});
+	$( "#id_activityFriday").change(function() {
+		document.getElementById('id_activityTotal').value =
+		parseInt(document.getElementById('id_activityTotal').value) +
+		parseInt(document.getElementById('id_activityFriday').value);
+	});
+	$( "#id_activitySaturday").change(function() {
+		document.getElementById('id_activityTotal').value =
+		parseInt(document.getElementById('id_activityTotal').value) +
+		parseInt(document.getElementById('id_activitySaturday').value);
+	});
 </script>
 {% endblock %}
 
@@ -67,7 +98,7 @@
 </div>
 <div class="row">
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
-  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
+  <form id="billabletimesheet" method="post" action="" enctype="multipart/form-data">
 	{% csrf_token %}
 	<legend>
 	Billable 
@@ -100,10 +131,14 @@
 		</tr>
 		</tbody>
 	</table>
-	 <button type="submit" value="submit" class="btn btn-info pull-right">
-		Submit Timesheet
-	</button>
-</form>
+ <button type="submit" value="submit" class="btn btn-info pull-right">
+	 Save Billable
+ </button>
+ </form>
+ <br />
+ <br />
+ <form id="nonbillabletimesheet" method="post" action="" enctype="multipart/form-data">
+	{% csrf_token %}
 	<legend>
 	Non - Billable 
 	</legend>
@@ -125,6 +160,10 @@
 		</tr>
 		</tbody>
 	</table>
+ <button type="submit" value="submit" class="btn btn-info pull-right">
+	 Save Non-Billable
+ </button>
+ </form>
 </div>
 {% endblock  %}
 

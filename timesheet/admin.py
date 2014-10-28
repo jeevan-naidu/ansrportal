@@ -1,20 +1,16 @@
 from django.contrib import admin
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter, Activity
+    ProjectMilestone, ProjectTeamMember, Book, Chapter
+
 
 # Admin Models for ansr
-
 class BookAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
 
 class ChapterAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
-class ActivityAdmin(admin.ModelAdmin):
-    list_display = ('name', 'startDate', 'endDate',
-                    'plannedEffort', 'contingencyEffort', 'projectManager')
-    search_fields = ('name', 'projectManager', 'startDate', 'endDate')
-    filter_fields = ('startDate', 'endDate')
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'startDate', 'endDate',

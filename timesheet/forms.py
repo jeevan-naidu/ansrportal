@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from timesheet.models import Project, ProjectTeamMember, \
-    ProjectMilestone, TimeSheetEntry, Activity, Chapter
+    ProjectMilestone, TimeSheetEntry, Chapter
 from bootstrap3_datetime.widgets import DateTimePicker
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -11,8 +11,9 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 class ActivityForm(forms.ModelForm):
 
     class Meta:
-        model = Activity
+        model = TimeSheetEntry
         fields = (
+            'activity',
             'monday',
             'tuesday',
             'wednesday',
@@ -22,6 +23,18 @@ class ActivityForm(forms.ModelForm):
             'total',
             'managerFeedback'
         )
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+        self.fields['monday'].widget.attrs['id'] = 'id_activityMonday'
+        self.fields['tuesday'].widget.attrs['id'] = 'id_activityTuesday'
+        self.fields['wednesday'].widget.attrs['id'] = 'id_activityWednesday'
+        self.fields['thursday'].widget.attrs['id'] = 'id_activityThursday'
+        self.fields['friday'].widget.attrs['id'] = 'id_activityFriday'
+        self.fields['saturday'].widget.attrs['id'] = 'id_activitySaturday'
+        self.fields['total'].widget.attrs['id'] = 'id_activityTotal'
+        self.fields['managerFeedback'].widget.attrs['readonly'] = True
+        self.fields['total'].widget.attrs['readonly'] = True
 
 
 class ChapterForm(forms.ModelForm):
