@@ -6,7 +6,11 @@ var app = {};
 app.form_ctrl = (function() {
     var module = {},
         addRow = $('#addForm'),
-        delRow = $('#delete-member');
+        delRow = $('#delete-member'),
+        rowCountElement = $('#createProject').find('input[type="hidden"]:nth-of-type(3)'),
+        rowCount = Number(rowCountElement.val());
+
+        console.log(rowCount);
 
     // Add
     module.add = function() {
@@ -16,8 +20,10 @@ app.form_ctrl = (function() {
             newRow,
             newRowId,
             $tds,
-            $curId;
-
+            $element,
+            $curId,
+            $curChildEle,
+            curChildId;
         // Slice the id number from last row id
         lastRowId = app.getIdNo(lastRowId);
         lastRowId = Number(lastRowId);
@@ -28,14 +34,31 @@ app.form_ctrl = (function() {
 
         $tds = newRow.find('td > :first-child');
 
-        $tds.each(function() {
-            $curId = $(this).attr('id');
+        $tds.each(function(index) {
+            $element = $(this);
+            $curId = $element.attr('id');
             $curId = $curId.replace(app.getIdNo($curId), newRowId);
 
-            $(this).attr('id', $curId);
-            $(this).attr('name', $curId);
+            $element.attr('id', $curId);
+            $element.attr('name', $curId);
+
+            if(index === 1 || index === 2) {
+                $element.val('');
+            }
+
+            if(index === 3) {
+                $curChildEle = $element.find('div:nth-child(1n)');
+                $curChildEle.attr('id', $curId);
+                $curChildEle.attr('name', $curId);
+
+                $('#' + $curId).datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
+            }
+
         });
 
+        rowCount += 1;
+
+        $(rowCountElement).attr('value', rowCount);
     };
 
     module.del = function() {
@@ -53,9 +76,12 @@ app.form_ctrl = (function() {
 
             if(isDelete) {
                 curRowCheckbox.closest('tr').remove();
+
+                rowCount -= 1;
             }
         });
 
+        $(rowCountElement).attr('value', rowCount);
     };
 
 
