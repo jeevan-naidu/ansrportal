@@ -2,6 +2,7 @@
 
 {% block pageJS %}
 <script type="text/javascript">
+	alert("{{ TOTAL_FORMS }}")
 	$( "#id_monday").change(function() {
 		document.getElementById('id_total').value =
 		parseInt(document.getElementById('id_total').value) +
@@ -111,10 +112,13 @@
 	</span>
 	</legend>
 	<table class="table table-condensed table-responsive">
+	{{ tsFormset.management_form }}
+	{% for form in tsFormset %}
+		{% if forloop.first %}
 		<thead>
             	<tr>
 			{% for data in form %}
-				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.last %}
+				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 11 %}
 					<th class="res-14-per">
 				{% else %}
 					<th>
@@ -128,12 +132,16 @@
             	</tr>
 		</thead>
 		<tbody>
+		{% endif %}
 		<tr>
 			{% for data in form %}
 				<td>{{ data }}</td>
 			{% endfor %}
 		</tr>
+		{% if forloop.last %}
 		</tbody>
+		{% endif %}
+	{% endfor %}
 	</table>
 	<legend>
 	Non - Billable 
@@ -149,10 +157,13 @@
 	</span>
 	</legend>
 	<table class="table table-condensed table-responsive">
+	{{ atFormset.management_form }}
+	{% for form in atFormset %}
+		{% if forloop.first %}
 		<thead>
             	<tr>
-                {% for data in activityForm %}
-		    {% if forloop.counter == 1 or forloop.last %}
+                {% for data in form %}
+		    {% if forloop.counter == 1 or forloop.counter == 9 %}
 		    	<th class="res-14-per">
 		    {% else %}
 			<th>
@@ -166,12 +177,16 @@
             	</tr>
 		</thead>
 		<tbody>
+		{% endif %}
 		<tr>
-			{% for data in activityForm %}
+			{% for data in form %}
 				<td>{{ data }}</td>
 			{% endfor %}
 		</tr>
+		{% if forloop.last %}
 		</tbody>
+		{% endif %}
+	{% endfor %}
 	</table>
  <button type="submit" value="submit" class="btn btn-info pull-right">
 	 Save

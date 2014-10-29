@@ -2,16 +2,15 @@ from django.contrib.auth import authenticate, logout
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember, Chapter
+from timesheet.models import Project, TimeSheetEntry, \
+    ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
-    ProjectTeamForm, ProjectMilestoneForm, ChapterForm, \
+    ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimeSheetEntryForm
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
-from django.db.models import Q
 # views for ansr
 
 FORMS = [
@@ -81,16 +80,22 @@ def Timesheet(request):
         return HttpResponseRedirect('/timesheet')
     else:
         currentUser = request.user
-        form = TimeSheetEntryForm()
         project = Project.objects.filter(
             id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
         )
-        form.fields['project'].queryset = project
-        activityForm = ActivityForm()
+        tsFormset = formset_factory(
+            TimeSheetEntryForm, extra=2, can_delete=True
+        )
+        for form in tsFormset:
+            print form.as_table()
+        atFormset = formset_factory(
+            ActivityForm, extra=2, can_delete=True
+        )
+        form = tsFormset(initial=[{'project': project, }])
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
-                'form': form,
-                'activityForm': activityForm}
+                'tsFormset': tsFormset,
+                'atFormset': atFormset}
         return render(request, 'timesheet/timesheet.html', data)
 
 
