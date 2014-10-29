@@ -55,43 +55,51 @@ def loginResponse(request, form, template):
 
 
 def Timesheet(request):
+    # Creating Formset
+    tsFormset = formset_factory(
+        TimeSheetEntryForm, extra=2, can_delete=True
+    )
+    atFormset = formset_factory(
+        ActivityForm, extra=2, can_delete=True
+    )
+    # Week Calculation.
     today = datetime.now().date()
     minAutoApprove = 36
     maxAutoApprove = 44
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=5)
+    # Getting the form values and storing it to DB.
     if request.method == 'POST':
-        form = TimeSheetEntryForm(request.POST)
-        activityForm = ActivityForm(request.POST)
-        timesheetObj = TimeSheetEntry()
-        timesheetObj.wkstart = weekstartDate
-        timesheetObj.wkend = ansrEndDate
-        timesheetObj.teamMember = request.user
-        if form.is_valid() and activityForm.is_valid():
-            for k, v in form.cleaned_data.iteritems():
-                if k == 'total':
-                    if v < minAutoApprove | v > maxAutoApprove:
-                        timesheetObj.approved = False
-                    else:
-                        timesheetObj.approved = True
-                        timesheetObj.approvedon = datetime.now()
-                setattr(timesheetObj, k, v)
-        timesheetObj.save()
+        # Getting the forms with submitted values
+        timesheets = tsFormset(request.POST)
+        activities = atFormset(request.POST)
+        # Getting objects for models
+        billableTS = TimeSheetEntry()
+        nonbillableTS = TimeSheetEntry()
+        # Common values for Billable and Non-Billable
+        nonbillableTS.wkstart = weekstartDate
+        nonbillableTS.wkend = ansrEndDate
+        nonbillableTS.teamMember = request.user
+        billableTS.wkstart = weekstartDate
+        billableTS.wkend = ansrEndDate
+        billableTS.teamMember = request.user
+        # User values for timsheet
+        if timesheets.is_valid() and activities.is_valid():
+            for timesheet in timesheets:
+                for k, v in timesheet.cleaned_data.iteritems():
+                    print k, v
+        # billableTS.save()
+            for activity in activities:
+                for k, v in activity.cleaned_data.iteritems():
+                    print k, v
+        # nonbillableTS.save()
         return HttpResponseRedirect('/timesheet')
     else:
+        # Assining initial values for the formsets.
         currentUser = request.user
         project = Project.objects.filter(
             id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
         )
-        tsFormset = formset_factory(
-            TimeSheetEntryForm, extra=2, can_delete=True
-        )
-        for form in tsFormset:
-            print form.as_table()
-        atFormset = formset_factory(
-            ActivityForm, extra=2, can_delete=True
-        )
-        form = tsFormset(initial=[{'project': project, }])
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
                 'tsFormset': tsFormset,
@@ -140,7 +148,7 @@ class CreateProjectWizard(SessionWizardView):
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
         ).strftime('%Y-%m-%d %H:%M%z')
-
+        print [form.cleaned_data for form in form_list][1]
         for teamData in [form.cleaned_data for form in form_list][1]:
             teamDataCounter += 1
             for k, v in teamData.iteritems():
