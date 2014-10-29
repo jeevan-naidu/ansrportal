@@ -1,7 +1,13 @@
 Django==1.7
 argparse==1.2.1
+django-auth-ldap==1.2.2
 django-bootstrap3==4.11.0
+django-bootstrap3-datetimepicker==2.3
 django-datetime-widget==0.9
-django-bootstrap3-datetimepicker==2.2.3
+django-formset-js==0.4.0
+django-jquery-js==2.0.3
+django-smart-selects==1.0.9.3
+python-dateutil==2.2
 pytz==2014.7
+six==1.8.0
 wsgiref==0.1.2

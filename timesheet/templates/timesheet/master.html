@@ -17,19 +17,17 @@
 
        {# Load Ansr CSS and JS #}
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
-
-       {{ form.media }}
-       {{ basicInfo.media }}
-       {{ team.media }}
-       {{ milestone.media }}
-
+       
+       {% block addFormMedia %}{% endblock %}
+ 
        {% block ansrJScalls %}{% endblock %}
+
     </head>
     <body>
 	<!-- Ansr -->
 	<div class="container">
 		<!-- Ansr Logo and role based menuset -->
-		<div clas="row">
+		<div class="row">
 			<nav class="navbar navbar-default navbar-fixed-top ansrMenuShadow" role="navigation">
 				<!-- Ansr brand logo -->
 				<div class="navbar-header">
@@ -56,7 +54,7 @@
 			</nav>
 		</div><!-- End of Ansr Logo and role based menuset-->
 		<!-- Ansr body -->
-		<div clas="row">
+		<div class="row">
 		{% block content  %}{% endblock  %}
 		</div><!-- End of Ansr body -->
 		<!-- Ansr footer -->
@@ -70,7 +68,6 @@
 			</nav>
 		</div><!-- End of Ansr Footer -->
       	</div>
-
-        <script src="{% static 'js/main.js' %}"></script>
+       {% block pageJS %}{% endblock %}
     </body>
 </html>

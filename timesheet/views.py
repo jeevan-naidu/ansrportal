@@ -2,13 +2,15 @@ from django.contrib.auth import authenticate, logout
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
+from timesheet.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
-    ProjectTeamForm, ProjectMilestoneForm
+    ProjectTeamForm, ProjectMilestoneForm, \
+    ActivityForm, TimeSheetEntryForm
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 # views for ansr
 
 FORMS = [
@@ -53,7 +55,48 @@ def loginResponse(request, form, template):
 
 
 def Timesheet(request):
-    return render(request, 'timesheet/timesheet.html')
+    today = datetime.now().date()
+    minAutoApprove = 36
+    maxAutoApprove = 44
+    weekstartDate = today - timedelta(days=datetime.now().date().weekday())
+    ansrEndDate = weekstartDate + timedelta(days=5)
+    if request.method == 'POST':
+        form = TimeSheetEntryForm(request.POST)
+        activityForm = ActivityForm(request.POST)
+        timesheetObj = TimeSheetEntry()
+        timesheetObj.wkstart = weekstartDate
+        timesheetObj.wkend = ansrEndDate
+        timesheetObj.teamMember = request.user
+        if form.is_valid() and activityForm.is_valid():
+            for k, v in form.cleaned_data.iteritems():
+                if k == 'total':
+                    if v < minAutoApprove | v > maxAutoApprove:
+                        timesheetObj.approved = False
+                    else:
+                        timesheetObj.approved = True
+                        timesheetObj.approvedon = datetime.now()
+                setattr(timesheetObj, k, v)
+        timesheetObj.save()
+        return HttpResponseRedirect('/timesheet')
+    else:
+        currentUser = request.user
+        project = Project.objects.filter(
+            id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
+        )
+        tsFormset = formset_factory(
+            TimeSheetEntryForm, extra=2, can_delete=True
+        )
+        for form in tsFormset:
+            print form.as_table()
+        atFormset = formset_factory(
+            ActivityForm, extra=2, can_delete=True
+        )
+        form = tsFormset(initial=[{'project': project, }])
+        data = {'weekstartDate': weekstartDate,
+                'weekendDate': ansrEndDate,
+                'tsFormset': tsFormset,
+                'atFormset': atFormset}
+        return render(request, 'timesheet/timesheet.html', data)
 
 
 def checkUser(userName, password, request, form):
@@ -64,8 +107,11 @@ def checkUser(userName, password, request, form):
             try:
                 if user.groups.all()[0].name == "project manager":
                     return HttpResponseRedirect('project/add')
+                elif user.groups.all()[0].name == "project team":
+                    return HttpResponseRedirect('entry')
             except IndexError:
-                return HttpResponseRedirect('add')
+                messages.error(request, 'This user does not have access.')
+                return loginResponse(request, form, 'timesheet/index.html')
         else:
             messages.error(request, 'Sorry this user is not active')
             return loginResponse(request, form, 'timesheet/index.html')
@@ -73,13 +119,9 @@ def checkUser(userName, password, request, form):
         messages.error(request, 'Sorry login failed')
         return loginResponse(request, form, 'timesheet/index.html')
 
-def CreateProject(request):
-    if request.method == 'POST':
-        basicInfoForm = ProjectBasicInfoForm(request.POST)
-        teamForm = ProjectTeamForm(request.POST)
-        milestoneForm = ProjectMilestoneForm(request.POST)
 
 class CreateProjectWizard(SessionWizardView):
+
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
@@ -94,10 +136,10 @@ class CreateProjectWizard(SessionWizardView):
         basicInfo = [form.cleaned_data for form in form_list][0]
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
-        ).strftime('%Y-%m-%d')
+        ).strftime('%Y-%m-%d %H:%M%z')
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
-        ).strftime('%Y-%m-%d')
+        ).strftime('%Y-%m-%d %H:%M%z')
 
         for teamData in [form.cleaned_data for form in form_list][1]:
             teamDataCounter += 1
@@ -162,7 +204,7 @@ def saveProject(request):
             startDate = "startDate-{0}".format(memberCount)
 
             ptm.member = User.objects.get(
-                id=request.POST.get(teamMemberId)
+                pk=request.POST.get(teamMemberId)
             )
             ptm.role = request.POST.get(role)
             ptm.plannedEffort = request.POST.get(plannedEffort)

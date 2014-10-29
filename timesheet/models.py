@@ -1,7 +1,31 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from smart_selects.db_fields import ChainedForeignKey
 # Database Models
+
+
+class Book(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Book Name")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Chapter(models.Model):
+    book = models.ForeignKey(Book)
+    name = models.CharField(max_length=100, verbose_name="Chapter Name")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Project(models.Model):
@@ -15,6 +39,8 @@ class Project(models.Model):
     contingencyEffort = models.IntegerField(default=0,
                                             verbose_name="Contigency Effort")
     projectManager = models.ForeignKey(User)
+    # Chapters to be worked on in the project
+    chapters = models.ManyToManyField(Chapter)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -25,57 +51,51 @@ class Project(models.Model):
         return unicode(self.name)
 
 
-class Activity(models.Model):
-    project = models.ForeignKey(Project, verbose_name="Project Name")
-    name = models.CharField(max_length=50, verbose_name="Project Name")
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.name
-
-
 class TimeSheetEntry(models.Model):
-    project = models.ForeignKey(Project, verbose_name="Project Name")
+    project = models.ForeignKey(Project, verbose_name="Project Name", null=True)
     # Week details
     wkstart = models.DateField(default=None, blank=True,
                                verbose_name="Week Start")
     wkend = models.DateField(default=None, blank=True,
                              verbose_name="Week End")
+
+    chapter = ChainedForeignKey(
+        Chapter,
+        null=True,
+        chained_field="project",
+        chained_model_field="project",
+        show_all=False,
+        auto_choose=True,
+        verbose_name="Chapter"
+    )
+    activity = models.CharField(max_length=2, null=True)
+    task = models.CharField(null=True, max_length=2)
     # Effort capture
     monday = models.IntegerField(default=0,
-                                 verbose_name="Monday")
+                                 verbose_name="Mon")
     tuesday = models.IntegerField(default=0,
-                                  verbose_name="Tuesday")
+                                  verbose_name="Tue")
     wednesday = models.IntegerField(default=0,
-                                    verbose_name="Wednesday")
+                                    verbose_name="Wed")
     thursday = models.IntegerField(default=0,
-                                   verbose_name="Thursday")
+                                   verbose_name="Thu")
     friday = models.IntegerField(default=0,
-                                 verbose_name="Friday")
+                                 verbose_name="Fri")
     saturday = models.IntegerField(default=0,
-                                   verbose_name="Saturday")
-    sunday = models.IntegerField(default=0,
-                                 verbose_name="Sunday")
-    questionsCreated = models.IntegerField(default=0,
-                                           verbose_name="Question Created"
-                                           )
+                                   verbose_name="Sat")
+    total = models.IntegerField(default=0,
+                                verbose_name="Total")
     approved = models.BooleanField(default=False,
                                    verbose_name="Approved")
 
     # Approval related details
-    approvedon = models.DateTimeField(default=None, blank=True,
+    approvedon = models.DateTimeField(default=None, null=True, blank=True,
                                       verbose_name="Approved On",
                                       editable=False)
-    managerFeedback = models.CharField(default=None, blank=True,
+    managerFeedback = models.CharField(default=None, null=True, blank=True,
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
-    teamMember = models.ForeignKey(User,
-                                   verbose_name="Team Members",
-                                   editable=False
-                                   )
+    teamMember = models.ForeignKey(User,editable=False)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -143,4 +163,4 @@ class ProjectTeamMember(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.member
+        return unicode(self.member)

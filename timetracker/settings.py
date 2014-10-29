@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'smart_selects',
     'bootstrap3',  # Django Bootstrap3
     'datetimewidget',  # https://github.com/asaglimbeni/django-datetime-widget
     'timesheet',

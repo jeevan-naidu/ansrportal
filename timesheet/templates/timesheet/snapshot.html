@@ -59,7 +59,7 @@
 		<thead>
 			{% for rec, value in basicInfo.iteritems %}
 		<th>
-			{% cycle 'Start Date' 'End Date' 'Name' 'Contigency Effort' 'Planned Effort' %}
+			{{ rec }}
 			<input type="hidden" name="{{ rec }}" value="{{ value }}">
 		</th>
 			{% endfor %}
