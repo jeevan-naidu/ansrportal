@@ -1,104 +1,15 @@
 /* Global namespace for entire application */
-
 var app = {};
 
-// Form control module
-app.form_ctrl = (function() {
-    var module = {},
-        addRow = $('#addForm'),
-        delRow = $('#delete-member'),
-        rowCountElement = $('#createProject').find('input[type="hidden"]:nth-of-type(3)'),
-        rowCount = Number(rowCountElement.val());
+// Main
+(function() {
+    $(document).ready(function() {
+        $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
 
-        console.log(rowCount);
-
-    // Add
-    module.add = function() {
-        var table = $('.table-condensed')[1],
-            lastRow = $(table).find('tr').last(),
-            lastRowId = lastRow.find('td').first().find('select').attr('id'),
-            newRow,
-            newRowId,
-            $tds,
-            $element,
-            $curId,
-            $curChildEle,
-            curChildId;
-        // Slice the id number from last row id
-        lastRowId = app.getIdNo(lastRowId);
-        lastRowId = Number(lastRowId);
-
-        newRow = lastRow.clone();
-        newRowId = lastRowId + 1;
-        lastRow.after(newRow);
-
-        $tds = newRow.find('td > :first-child');
-
-        $tds.each(function(index) {
-            $element = $(this);
-            $curId = $element.attr('id');
-            $curId = $curId.replace(app.getIdNo($curId), newRowId);
-
-            $element.attr('id', $curId);
-            $element.attr('name', $curId);
-
-            if(index === 1 || index === 2) {
-                $element.val('');
-            }
-
-            if(index === 3) {
-                $curChildEle = $element.find('div:nth-child(1n)');
-                $curChildEle.attr('id', $curId);
-                $curChildEle.attr('name', $curId);
-
-                $('#' + $curId).datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
-            }
-
-        });
-
-        rowCount += 1;
-
-        $(rowCountElement).attr('value', rowCount);
-    };
-
-    module.del = function() {
-        var form = $('#createProject'),
-            rows = form.find('tr'),
-            curRowCheckbox,
-            isDelete,
-            curr;
-
-        rows.each(function() {
-            curr = $(this);
-            curRowCheckbox = curr.find('td:last-child > :first-child');
-
-            isDelete = curRowCheckbox.is(':checked');
-
-            if(isDelete) {
-                curRowCheckbox.closest('tr').remove();
-
-                rowCount -= 1;
-            }
-        });
-
-        $(rowCountElement).attr('value', rowCount);
-    };
-
-
-
-
-    // DOM Events
-    addRow.on('click', function() {
-        module.add();
+        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', daysTotal: true});
+        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
     });
-
-    delRow.on('click', function() {
-        module.del();
-    });
-
-    // Export module
-    return module;
-})//();
+}());
 
 app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
@@ -107,17 +18,15 @@ app.getIdNo = function(str) {
 // Form control plugin
 (function() {
     $.fn.dynamicForm = function(options) {
-        var $form = $(this),
+        var $table = $(this),
             $addBtn = $(options.add),
             $delBtn = $(options.del),
 
-            rowCountElement = $form.find('input[type="hidden"]:nth-of-type(3)'),
+            rowCountElement = $table.find('input[type="hidden"]:nth-of-type(3)'),
             rowCount = Number(rowCountElement.val());
 
-
-
         var add = function() {
-            var lastRow = $($form).find('tr').last(),
+            var lastRow = $($table).find('tr').last(),
                 lastRowId = lastRow.find('td').first().find('select').attr('id'),
                 newRow,
                 newRowId,
@@ -151,6 +60,10 @@ app.getIdNo = function(str) {
                     $element.val('');
                 }
 
+                if($($element).hasClass('input-field')) {
+                    $element.val(0);
+                }
+
                 if(options.calendar) {
                     if(index === 3) {
                         $curIdSel = $('#' + $curId);
@@ -171,10 +84,12 @@ app.getIdNo = function(str) {
             rowCount += 1;
 
             $(rowCountElement).attr('value', rowCount);
+
+            daysTotalFun();
         };
 
         var del = function() {
-            var rows = $form.find('tr'),
+            var rows = $table.find('tr'),
                 curRowCheckbox,
                 isDelete,
                 curr;
@@ -195,6 +110,40 @@ app.getIdNo = function(str) {
             $(rowCountElement).attr('value', rowCount);
 
         };
+        var daysTotalFun = function() {
+            if(options.daysTotal) {
+                var $days = $table.find('.days');
+
+                var totalDays = function () {
+                    var $curEle = $(this),
+                        $curRow = $curEle.closest('tr'),
+                        $curDays = $curRow.find('.days'),
+                        $curDaysLen = $curDays.length,
+                        $curTotal = $curRow.find('.total'),
+                        $curEleVal = $curEle.val(),
+                        $curEleVal = Number($curEleVal),
+                        i,
+                        $curDay,
+                        temp = 0;
+
+                    for (i = 0; i < $curDaysLen; i += 1) {
+                        $curDay = Number($($curDays[i]).val());
+                        temp += $curDay;
+                    }
+
+                    $curTotal.val(temp);
+                };
+
+                $days.on({
+                    keyup: totalDays,
+                    click: totalDays
+                });
+            }
+        };
+
+        daysTotalFun();
+
+
 
         var getIdNo = function(str) {
             return str.match(/\d+/)[0];
@@ -207,5 +156,6 @@ app.getIdNo = function(str) {
     };
 }(jQuery));
 
-$('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
+
+
 

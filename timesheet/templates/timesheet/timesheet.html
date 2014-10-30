@@ -100,17 +100,17 @@
 	<legend>
 	Billable 
 	<span class="pull-right">
-		<button type="submit" value="submit" id="addForm" class="btn btn-success btn-xs">
+		<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
 			<span class="glyphicon glyphicon-plus"></span>
 			Add Billable Item
-		</button>
-		<button type="submit" value="submit" class="btn btn-danger btn-xs">
+		</a>
+		<a type="submit" value="submit" class="btn btn-danger btn-xs" id="timesheet-billable-del-btn">
 			<span class="glyphicon glyphicon-minus"></span>
 			Delete Billable Item
-		</button>
+		</a>
 	</span>
 	</legend>
-	<table class="table table-condensed table-responsive">
+	<table class="table table-condensed table-responsive" id="timesheet-billable">
 	{{ tsFormset.management_form }}
 	{% for form in tsFormset %}
 		{% if forloop.first %}
@@ -145,17 +145,17 @@
 	<legend>
 	Non - Billable 
 	<span class="pull-right">
-		<button type="submit" value="submit" id="addForm" class="btn btn-success btn-xs">
+		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn-success btn-xs">
 			<span class="glyphicon glyphicon-plus"></span>
 			Add Non-Billable Item
-		</button>
-		<button type="submit" value="submit" class="btn btn-danger btn-xs">
+		</a>
+		<a type="submit" value="submit" class="btn btn-danger btn-xs" id="timesheet-non-billable-del-btn">
 			<span class="glyphicon glyphicon-minus"></span>
 			Delete Non-Billable Item
-		</button>
+		</a>
 	</span>
 	</legend>
-	<table class="table table-condensed table-responsive">
+	<table class="table table-condensed table-responsive" id="timesheet-non-billable">
 	{{ atFormset.management_form }}
 	{% for form in atFormset %}
 		{% if forloop.first %}
