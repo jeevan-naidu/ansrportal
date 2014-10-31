@@ -71,13 +71,20 @@ class ActivityForm(forms.Form):
         self.fields['activity_feedback'].widget.attrs['readonly'] = True
         self.fields['activity_total'].widget.attrs['readonly'] = True
         self.fields['activity'].widget.attrs['class'] = "form-control"
-        self.fields['activity_monday'].widget.attrs['class'] = "form-control"
-        self.fields['activity_tuesday'].widget.attrs['class'] = "form-control"
-        self.fields['activity_wednesday'].widget.attrs['class'] = "form-control"
-        self.fields['activity_thursday'].widget.attrs['class'] = "form-control"
-        self.fields['activity_friday'].widget.attrs['class'] = "form-control"
-        self.fields['activity_saturday'].widget.attrs['class'] = "form-control"
-        self.fields['activity_total'].widget.attrs['class'] = "form-control"
+        self.fields['activity_monday'].widget.attrs['class'] = "form-control \
+        days input-field"
+        self.fields['activity_tuesday'].widget.attrs['class'] = "form-control \
+        days input-field"
+        self.fields['activity_wednesday'].widget.attrs['class'] = "form-control \
+        days input-field"
+        self.fields['activity_thursday'].widget.attrs['class'] = "form-control \
+        days input-field"
+        self.fields['activity_friday'].widget.attrs['class'] = "form-control \
+        days input-field"
+        self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
+        days input-field"
+        self.fields['activity_total'].widget.attrs['class'] = "form-control \
+        total input-field"
         self.fields['activity_feedback'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['value'] = 0
         self.fields['activity_tuesday'].widget.attrs['value'] = 0
@@ -148,7 +155,7 @@ def TimesheetFormset(currentUser):
             required=False
         )
         feedback = forms.CharField(
-        max_length="50", label="Feedback", required=False
+            max_length="50", label="Feedback", required=False
         )
 
         def __init__(self, *args, **kwargs):
@@ -167,18 +174,26 @@ def TimesheetFormset(currentUser):
             self.fields['thursday'].widget.attrs['value'] = 0
             self.fields['friday'].widget.attrs['value'] = 0
             self.fields['saturday'].widget.attrs['value'] = 0
-            self.fields['monday'].widget.attrs['class'] = "form-control"
-            self.fields['tuesday'].widget.attrs['class'] = "form-control"
-            self.fields['wednesday'].widget.attrs['class'] = "form-control"
-            self.fields['thursday'].widget.attrs['class'] = "form-control"
-            self.fields['friday'].widget.attrs['class'] = "form-control"
-            self.fields['saturday'].widget.attrs['class'] = "form-control"
-            self.fields['total'].widget.attrs['class'] = "form-control"
+            self.fields['monday'].widget.attrs['class'] = "form-control \
+            days input-field"
+            self.fields['tuesday'].widget.attrs['class'] = "form-control \
+            days input-field"
+            self.fields['wednesday'].widget.attrs['class'] = "form-control \
+            days input-field"
+            self.fields['thursday'].widget.attrs['class'] = "form-control \
+            days input-field"
+            self.fields['friday'].widget.attrs['class'] = "form-control \
+            days input-field"
+            self.fields['saturday'].widget.attrs['class'] = "form-control \
+            days input-field"
+            self.fields['total'].widget.attrs['class'] = "form-control \
+            days input-field"
             self.fields['total'].widget.attrs['value'] = "0"
             self.fields['feedback'].widget.attrs['class'] = "form-control"
             self.fields['feedback'].widget.attrs['readonly'] = True
             self.fields['total'].widget.attrs['readonly'] = True
     return TimeSheetEntryForm
+
 
 # Form Class to create project
 class ProjectBasicInfoForm(forms.ModelForm):
