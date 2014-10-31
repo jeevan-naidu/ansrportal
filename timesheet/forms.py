@@ -187,7 +187,7 @@ def TimesheetFormset(currentUser):
             self.fields['saturday'].widget.attrs['class'] = "form-control \
             days input-field"
             self.fields['total'].widget.attrs['class'] = "form-control \
-            days input-field"
+            total input-field"
             self.fields['total'].widget.attrs['value'] = "0"
             self.fields['feedback'].widget.attrs['class'] = "form-control"
             self.fields['feedback'].widget.attrs['readonly'] = True
