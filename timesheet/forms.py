@@ -107,13 +107,14 @@ def TimesheetFormset(currentUser):
     class TimeSheetEntryForm(forms.Form):
         project = forms.ModelChoiceField(
             queryset=None,
-            label="Project Name"
+            label="Project Name",
+            required=True
         )
         chapter = ChainedModelChoiceField(
             'timesheet',
             'Chapter',
             chain_field='project',
-            model_field='chapters',
+            model_field='project',
             show_all=False,
             auto_choose=True
         )

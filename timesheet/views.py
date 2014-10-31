@@ -11,7 +11,6 @@ from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
-from django.utils.functional import curry
 # views for ansr
 
 FORMS = [
@@ -56,10 +55,10 @@ def loginResponse(request, form, template):
 
 
 def Timesheet(request):
-    #Creating Formset
-    tt = TimesheetFormset(request.user)
-    timesheetFormset = formset_factory(
-        tt, extra=2, can_delete=True
+    # Creating Formset
+    tsform = TimesheetFormset(request.user)
+    tsFormset = formset_factory(
+        tsform, extra=2, can_delete=True
     )
     atFormset = formset_factory(
         ActivityForm, extra=2, can_delete=True
@@ -90,17 +89,17 @@ def Timesheet(request):
             for timesheet in timesheets:
                 for k, v in timesheet.cleaned_data.iteritems():
                     print k, v
-        # billableTS.save()
             for activity in activities:
                 for k, v in activity.cleaned_data.iteritems():
                     print k, v
+        # billableTS.save()
         # nonbillableTS.save()
         return HttpResponseRedirect('/timesheet')
     else:
         # Assigning initial values for the formsets.
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
-                'tsFormset': timesheetFormset,
+                'tsFormset': tsFormset,
                 'atFormset': atFormset}
         return render(request, 'timesheet/timesheet.html', data)
 

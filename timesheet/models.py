@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from smart_selects.db_fields import ChainedForeignKey
 # Database Models
 
 
@@ -59,7 +58,7 @@ class TimeSheetEntry(models.Model):
     wkend = models.DateField(default=None, blank=True,
                              verbose_name="Week End")
 
-    chapter = models.ForeignKey(Chapter, verbose_name="Chapter")
+    chapter = models.ForeignKey(Chapter, verbose_name="Chapter", null=True)
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
     # Effort capture
@@ -87,7 +86,7 @@ class TimeSheetEntry(models.Model):
     managerFeedback = models.CharField(default=None, null=True, blank=True,
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
-    teamMember = models.ForeignKey(User,editable=False)
+    teamMember = models.ForeignKey(User, editable=False)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
