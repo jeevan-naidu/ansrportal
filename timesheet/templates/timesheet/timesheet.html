@@ -1,5 +1,7 @@
 {% extends 'master.html' %}
 
+{% load bootstrap3 %}
+
 {% block siteTitle %}ANSR-Timesheet Entry{% endblock %}
 
 {% block content  %}
@@ -23,8 +25,7 @@
 </legend>
 
 <div class="text-center">
-	<h4><small style="color: green">This Timesheet is approved </small> </h4>
-	<h4><small style="color: red">This Timesheet is not approved </small> </h4>
+	<b>{% bootstrap_messages %}</b>
 </div>
   
   <form id="timesheet" method="post" action="" enctype="multipart/form-data">
@@ -124,7 +125,7 @@
 	</table>
     </div>
  <button type="submit" value="submit" class="btn btn-info pull-right">
-	 Save
+	 Save Timesheet
  </button>
  </form>
 {% endblock  %}

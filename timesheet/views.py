@@ -86,17 +86,75 @@ def Timesheet(request):
         billableTS.teamMember = request.user
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
+            mondayTotal = 0
+            tuesdayTotal = 0
+            wednesdayTotal = 0
+            thursdayTotal = 0
+            fridayTotal = 0
+            saturdayTotal = 0
+            weekTotal = 0
             for timesheet in timesheets:
+                del(timesheet.cleaned_data['DELETE'])
                 for k, v in timesheet.cleaned_data.iteritems():
-                    print k, v
+                    if k == 'monday':
+                        mondayTotal += v
+                    elif k == 'tuesday':
+                        tuesdayTotal += v
+                    elif k == 'wednesday':
+                        wednesdayTotal += v
+                    elif k == 'thursday':
+                        thursdayTotal += v
+                    elif k == 'friday':
+                        fridayTotal += v
+                    elif k == 'saturday':
+                        saturdayTotal += v
+                    elif k == 'total':
+                        weekTotal += v
+                    setattr(billableTS, k, v)
             for activity in activities:
+                del(activity.cleaned_data['DELETE'])
                 for k, v in activity.cleaned_data.iteritems():
-                    print k, v
-        # billableTS.save()
-        # nonbillableTS.save()
-        return HttpResponseRedirect('/timesheet')
+                    if k == 'activity_monday':
+                        mondayTotal += v
+                    elif k == 'activity_tuesday':
+                        tuesdayTotal += v
+                    elif k == 'activity_wednesday':
+                        wednesdayTotal += v
+                    elif k == 'activity_thursday':
+                        thursdayTotal += v
+                    elif k == 'activity_friday':
+                        fridayTotal += v
+                    elif k == 'activity_saturday':
+                        saturdayTotal += v
+                    elif k == 'total':
+                        weekTotal += v
+                    setattr(nonbillableTS, k, v)
+            if (mondayTotal > 24) | (tuesdayTotal > 24) | \
+                    (wednesdayTotal > 24) | (thursdayTotal > 24) | \
+                    (fridayTotal > 24) | (saturdayTotal > 24):
+                messages.error(request, 'You can only work for 24 hours a day')
+            elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove):
+                billableTS.save()
+                nonbillableTS.save()
+                messages.info(
+                    request,
+                    'Timesheet is pending for this week'
+                )
+            else:
+                # Save Timesheet
+                billableTS.approved = True
+                billableTS.approvedon = datetime.now()
+                nonbillableTS.approved = True
+                nonbillableTS.approvedon = datetime.now()
+                billableTS.save()
+                nonbillableTS.save()
+                messages.success(
+                    request,
+                    'Timesheet is approved for this week'
+                )
+        return HttpResponseRedirect('/timesheet/entry')
     else:
-        # Assigning initial values for the formsets.
+        # Creating data for templates
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
                 'tsFormset': tsFormset,
