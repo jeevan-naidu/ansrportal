@@ -96,88 +96,89 @@ class ChapterForm(forms.ModelForm):
 
 
 # Form class to maintain timesheet records
-class TimeSheetEntryForm(forms.Form):
-    project = forms.ModelChoiceField(
-        queryset=None,
-        label="Project Name"
-    )
-    chapter = ChainedModelChoiceField(
-        'timesheet',
-        'Chapter',
-        chain_field='project',
-        model_field='chapters',
-        show_all=False,
-        auto_choose=True
-    )
-    task = forms.ChoiceField(choices=TASK, label='Task')
-    monday = forms.IntegerField(
-        label="Mon",
-        min_value=0,
-        max_value=24
-    )
-    tuesday = forms.IntegerField(
-        label="Tue",
-        min_value=0,
-        max_value=24
-    )
-    wednesday = forms.IntegerField(
-        label="Wed",
-        min_value=0,
-        max_value=24
-    )
-    thursday = forms.IntegerField(
-        label="Thu",
-        min_value=0,
-        max_value=24
-    )
-    friday = forms.IntegerField(
-        label="Fri",
-        min_value=0,
-        max_value=24
-    )
-    saturday = forms.IntegerField(
-        label="Sat",
-        min_value=0,
-        max_value=24
-    )
-    total = forms.IntegerField(
-        label="Total",
-        min_value=0,
-        max_value=144,
-        required=False
-    )
-    feedback = forms.CharField(
-        max_length="50", label="Feedback", required=False
-    )
-
-    def __init__(self, currentUser, *args, **kwargs):
-        super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
-        self.fields['project'].queryset = Project.objects.filter(
-            id__in=ProjectTeamMember.objects.filter(
-                member=currentUser.id
-            ).values('project_id')
+def TimesheetFormset(currentUser):
+    class TimeSheetEntryForm(forms.Form):
+        project = forms.ModelChoiceField(
+            queryset=None,
+            label="Project Name"
         )
-        self.fields['project'].widget.attrs['class'] = "form-control"
-        self.fields['chapter'].widget.attrs['class'] = "form-control"
-        self.fields['task'].widget.attrs['class'] = "form-control"
-        self.fields['monday'].widget.attrs['value'] = 0
-        self.fields['tuesday'].widget.attrs['value'] = 0
-        self.fields['wednesday'].widget.attrs['value'] = 0
-        self.fields['thursday'].widget.attrs['value'] = 0
-        self.fields['friday'].widget.attrs['value'] = 0
-        self.fields['saturday'].widget.attrs['value'] = 0
-        self.fields['monday'].widget.attrs['class'] = "form-control"
-        self.fields['tuesday'].widget.attrs['class'] = "form-control"
-        self.fields['wednesday'].widget.attrs['class'] = "form-control"
-        self.fields['thursday'].widget.attrs['class'] = "form-control"
-        self.fields['friday'].widget.attrs['class'] = "form-control"
-        self.fields['saturday'].widget.attrs['class'] = "form-control"
-        self.fields['total'].widget.attrs['class'] = "form-control"
-        self.fields['total'].widget.attrs['value'] = "0"
-        self.fields['feedback'].widget.attrs['class'] = "form-control"
-        self.fields['feedback'].widget.attrs['readonly'] = True
-        self.fields['total'].widget.attrs['readonly'] = True
+        chapter = ChainedModelChoiceField(
+            'timesheet',
+            'Chapter',
+            chain_field='project',
+            model_field='chapters',
+            show_all=False,
+            auto_choose=True
+        )
+        task = forms.ChoiceField(choices=TASK, label='Task')
+        monday = forms.IntegerField(
+            label="Mon",
+            min_value=0,
+            max_value=24
+        )
+        tuesday = forms.IntegerField(
+            label="Tue",
+            min_value=0,
+            max_value=24
+        )
+        wednesday = forms.IntegerField(
+            label="Wed",
+            min_value=0,
+            max_value=24
+        )
+        thursday = forms.IntegerField(
+            label="Thu",
+            min_value=0,
+            max_value=24
+        )
+        friday = forms.IntegerField(
+            label="Fri",
+            min_value=0,
+            max_value=24
+        )
+        saturday = forms.IntegerField(
+            label="Sat",
+            min_value=0,
+            max_value=24
+        )
+        total = forms.IntegerField(
+            label="Total",
+            min_value=0,
+            max_value=144,
+            required=False
+        )
+        feedback = forms.CharField(
+        max_length="50", label="Feedback", required=False
+        )
 
+        def __init__(self, *args, **kwargs):
+            super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
+            self.fields['project'].queryset = Project.objects.filter(
+                id__in=ProjectTeamMember.objects.filter(
+                    member=currentUser.id
+                ).values('project_id')
+            )
+            self.fields['project'].widget.attrs['class'] = "form-control"
+            self.fields['chapter'].widget.attrs['class'] = "form-control"
+            self.fields['task'].widget.attrs['class'] = "form-control"
+            self.fields['monday'].widget.attrs['value'] = 0
+            self.fields['tuesday'].widget.attrs['value'] = 0
+            self.fields['wednesday'].widget.attrs['value'] = 0
+            self.fields['thursday'].widget.attrs['value'] = 0
+            self.fields['friday'].widget.attrs['value'] = 0
+            self.fields['saturday'].widget.attrs['value'] = 0
+            self.fields['monday'].widget.attrs['class'] = "form-control"
+            self.fields['tuesday'].widget.attrs['class'] = "form-control"
+            self.fields['wednesday'].widget.attrs['class'] = "form-control"
+            self.fields['thursday'].widget.attrs['class'] = "form-control"
+            self.fields['friday'].widget.attrs['class'] = "form-control"
+            self.fields['saturday'].widget.attrs['class'] = "form-control"
+            self.fields['total'].widget.attrs['class'] = "form-control"
+            self.fields['total'].widget.attrs['value'] = "0"
+            self.fields['feedback'].widget.attrs['class'] = "form-control"
+            self.fields['feedback'].widget.attrs['readonly'] = True
+            self.fields['total'].widget.attrs['readonly'] = True
+    return TimeSheetEntryForm
 
 # Form Class to create project
 class ProjectBasicInfoForm(forms.ModelForm):

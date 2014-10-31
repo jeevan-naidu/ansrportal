@@ -6,11 +6,12 @@ from timesheet.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
-    ActivityForm, TimeSheetEntryForm
+    ActivityForm, TimesheetFormset
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+from django.utils.functional import curry
 # views for ansr
 
 FORMS = [
@@ -55,11 +56,11 @@ def loginResponse(request, form, template):
 
 
 def Timesheet(request):
-    # Creating Formset
-    tt = TimeSheetEntryForm(request.user)
-    """timesheetFormset = formset_factory(
+    #Creating Formset
+    tt = TimesheetFormset(request.user)
+    timesheetFormset = formset_factory(
         tt, extra=2, can_delete=True
-    )"""
+    )
     atFormset = formset_factory(
         ActivityForm, extra=2, can_delete=True
     )
@@ -99,7 +100,7 @@ def Timesheet(request):
         # Assigning initial values for the formsets.
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
-                'tsFormset': tt,
+                'tsFormset': timesheetFormset,
                 'atFormset': atFormset}
         return render(request, 'timesheet/timesheet.html', data)
 
