@@ -56,9 +56,10 @@ def loginResponse(request, form, template):
 
 def Timesheet(request):
     # Creating Formset
-    tsFormset = formset_factory(
-        TimeSheetEntryForm, extra=2, can_delete=True
-    )
+    tt = TimeSheetEntryForm(request.user)
+    """timesheetFormset = formset_factory(
+        tt, extra=2, can_delete=True
+    )"""
     atFormset = formset_factory(
         ActivityForm, extra=2, can_delete=True
     )
@@ -95,14 +96,10 @@ def Timesheet(request):
         # nonbillableTS.save()
         return HttpResponseRedirect('/timesheet')
     else:
-        # Assining initial values for the formsets.
-        currentUser = request.user
-        project = Project.objects.filter(
-            id__in=ProjectTeamMember.objects.filter(member=currentUser.id)
-        )
+        # Assigning initial values for the formsets.
         data = {'weekstartDate': weekstartDate,
                 'weekendDate': ansrEndDate,
-                'tsFormset': tsFormset,
+                'tsFormset': tt,
                 'atFormset': atFormset}
         return render(request, 'timesheet/timesheet.html', data)
 

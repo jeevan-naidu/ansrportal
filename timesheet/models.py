@@ -59,15 +59,7 @@ class TimeSheetEntry(models.Model):
     wkend = models.DateField(default=None, blank=True,
                              verbose_name="Week End")
 
-    chapter = ChainedForeignKey(
-        Chapter,
-        null=True,
-        chained_field="project",
-        chained_model_field="project",
-        show_all=False,
-        auto_choose=True,
-        verbose_name="Chapter"
-    )
+    chapter = models.ForeignKey(Chapter, verbose_name="Chapter")
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
     # Effort capture

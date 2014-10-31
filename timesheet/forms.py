@@ -4,7 +4,7 @@ from django.db.models import Q
 from timesheet.models import Project, ProjectTeamMember, \
     ProjectMilestone, TimeSheetEntry, Chapter
 from bootstrap3_datetime.widgets import DateTimePicker
-from smart_selects.db_fields import ChainedForeignKey
+from smart_selects.form_fields import ChainedModelChoiceField
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
@@ -22,6 +22,7 @@ NONBILLABLE = (
     ('C', 'Training'),
     ('Q', 'Others'),
 )
+
 
 class ActivityForm(forms.Form):
     activity = forms.ChoiceField(choices=NONBILLABLE, label="Activity")
@@ -96,17 +97,19 @@ class ChapterForm(forms.ModelForm):
 
 # Form class to maintain timesheet records
 class TimeSheetEntryForm(forms.Form):
-    myProjects = Project.objects.all()
-    myChapters = Chapter.objects.all()
     project = forms.ModelChoiceField(
-        queryset=myProjects,
+        queryset=None,
         label="Project Name"
     )
-    chapter = forms.ModelChoiceField(
-        queryset=myChapters,
-        label="Chapter"
+    chapter = ChainedModelChoiceField(
+        'timesheet',
+        'Chapter',
+        chain_field='project',
+        model_field='chapters',
+        show_all=False,
+        auto_choose=True
     )
-    task = forms.ChoiceField(choices=TASK, label='Task' )
+    task = forms.ChoiceField(choices=TASK, label='Task')
     monday = forms.IntegerField(
         label="Mon",
         min_value=0,
@@ -147,8 +150,13 @@ class TimeSheetEntryForm(forms.Form):
         max_length="50", label="Feedback", required=False
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, currentUser, *args, **kwargs):
         super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
+        self.fields['project'].queryset = Project.objects.filter(
+            id__in=ProjectTeamMember.objects.filter(
+                member=currentUser.id
+            ).values('project_id')
+        )
         self.fields['project'].widget.attrs['class'] = "form-control"
         self.fields['chapter'].widget.attrs['class'] = "form-control"
         self.fields['task'].widget.attrs['class'] = "form-control"
@@ -169,6 +177,7 @@ class TimeSheetEntryForm(forms.Form):
         self.fields['feedback'].widget.attrs['class'] = "form-control"
         self.fields['feedback'].widget.attrs['readonly'] = True
         self.fields['total'].widget.attrs['readonly'] = True
+
 
 # Form Class to create project
 class ProjectBasicInfoForm(forms.ModelForm):
