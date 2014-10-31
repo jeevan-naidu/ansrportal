@@ -22,7 +22,7 @@ app.getIdNo = function(str) {
             $addBtn = $(options.add),
             $delBtn = $(options.del),
 
-            rowCountElement = $table.find('input[type="hidden"]:nth-of-type(3)'),
+            rowCountElement = $table.find('input[type="hidden"]:nth-of-type(1)'),
             rowCount = Number(rowCountElement.val());
 
         var add = function() {

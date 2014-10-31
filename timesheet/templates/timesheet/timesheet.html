@@ -29,6 +29,7 @@
   
   <form id="timesheet" method="post" action="" enctype="multipart/form-data">
 	{% csrf_token %}
+    <div id="timesheet-billable">
 	<legend>
 	Billable 
 	<span class="pull-right">
@@ -43,7 +44,7 @@
 	</span>
 	</legend>
 	{{ tsFormset.management_form }}
-	<table class="table table-condensed table-responsive" id="timesheet-billable">
+	<table class="table table-condensed table-responsive">
 	{% for form in tsFormset %}
 		{% if forloop.first %}
 		<thead>
@@ -74,6 +75,8 @@
 		{% endif %}
 	{% endfor %}
 	</table>
+    </div>
+    <div id="timesheet-non-billable">
 	<legend>
 	Non - Billable 
 	<span class="pull-right">
@@ -88,7 +91,7 @@
 	</span>
 	</legend>
 	{{ atFormset.management_form }}
-	<table class="table table-condensed table-responsive" id="timesheet-non-billable">
+	<table class="table table-condensed table-responsive">
 	{% for form in atFormset %}
 		{% if forloop.first %}
 		<thead>
@@ -119,6 +122,7 @@
 		{% endif %}
 	{% endfor %}
 	</table>
+    </div>
  <button type="submit" value="submit" class="btn btn-info pull-right">
 	 Save
  </button>
