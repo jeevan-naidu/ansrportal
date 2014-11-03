@@ -1,0 +1,77 @@
+{% extends 'master.html' %}
+
+{% load bootstrap3 %}
+
+{% load verbose_name %}
+
+{% block siteTitle %}ANSR-Timesheet Entry{% endblock %}
+
+{% block content  %}
+<legend class="clearfix pad-bot-10">
+ <span class="col-md-2">
+ <button type="submit" value="submit" class="btn btn-default">
+	<span class="glyphicon glyphicon-arrow-left"></span>
+ </button>
+ </span>
+ <span class="col-md-4">
+ Start : {{ weekstartDate }}
+ </span>
+ <span class="col-md-4">
+ End : {{ weekendDate }}
+ </span>
+ <span class="col-md-2">
+ <button type="submit" value="submit" class="btn btn-default pull-right"> 
+	<span class="glyphicon glyphicon-arrow-right"></span>
+ </button>
+ </span>
+</legend>
+
+<div class="text-center">
+	<b>{% bootstrap_messages %}</b>
+</div>
+<table class="table table-condensed">
+{% for timesheets in currentTimesheet %}
+	{% if forloop.first %}
+	<thead>
+		<legend>Billable</legend>
+		{% for k, v in timesheets.items %}
+			<th>{{ k }}</th>
+		{% endfor %}
+	</thead>
+	{% endif %}
+	<tbody>
+		<tr>
+			{% for k, v in timesheets.items %}
+				<td>{{ v }}</td>
+			{% endfor %}
+		</tr>
+	</tbody>
+{% endfor %}
+</table>
+<table class="table table-condensed">
+{% for timesheets in currentActivity %}
+	{% if forloop.first %}
+	<thead>
+		<legend>Non-Billable</legend>
+		{% for k, v in timesheets.items %}
+			<th>{{ k }}</th>
+		{% endfor %}
+	</thead>
+	{% endif %}
+	<tbody>
+		<tr>
+			{% for k, v in timesheets.items %}
+				<td>{{ v }}</td>
+			{% endfor %}
+		</tr>
+	</tbody>
+{% endfor %}
+</table>
+{% endblock  %}
+
+{% block loggedStatus %}
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+      <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
