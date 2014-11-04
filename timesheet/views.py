@@ -206,7 +206,7 @@ def Timesheet(request):
                     request,
                     'Timesheet is approved for this week'
                 )
-        return HttpResponseRedirect('/timesheet/entry')
+        return HttpResponseRedirect(request.get_full_path())
     else:
         if request.GET.get('week') == 'prev':
             weekstartDate = datetime.strptime(
