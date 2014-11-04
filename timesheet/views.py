@@ -224,6 +224,69 @@ def Timesheet(request):
             teamMember=request.user,
             approved=False
         ).count()
+        cwActivityData = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=request.user,
+                approved=False,
+                project__isnull=True
+            )
+        ).values('activity', 'monday', 'tuesday', 'wednesday', 'thursday',
+                 'friday', 'saturday', 'total', 'managerFeedback'
+                 )
+        cwTimesheetData = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=request.user,
+                approved=False,
+                activity__isnull=True
+            )
+        ).values('project', 'chapter', 'task', 'monday',
+                 'tuesday', 'wednesday', 'thursday',
+                 'friday', 'saturday', 'total', 'managerFeedback'
+                 )
+        tsData = {}
+        tsDataList = []
+        for eachData in cwTimesheetData:
+            for k, v in eachData.iteritems():
+                tsData[k] = v
+                if k == 'managerFeedback':
+                    tsData['feedback'] = v
+            tsDataList.append(tsData.copy())
+            tsData.clear()
+        atData = {}
+        atDataList = []
+        for eachData in cwActivityData:
+            for k, v in eachData.iteritems():
+                if 'monday' in k:
+                    atData['activity_monday'] = v
+                if 'tuesday' in k:
+                    atData['activity_tuesday'] = v
+                if 'wednesday' in k:
+                    atData['activity_wednesday'] = v
+                if 'thursday' in k:
+                    atData['activity_thursday'] = v
+                if 'friday' in k:
+                    atData['activity_friday'] = v
+                if 'saturday' in k:
+                    atData['activity_saturday'] = v
+                if 'total' in k:
+                    atData['activity_total'] = v
+                if k == 'managerFeedback':
+                    atData['feedback'] = v
+            atDataList.append(atData.copy())
+            atData.clear()
+        if cwTimesheet > 0:
+            tsFormset = formset_factory(tsform,
+                                        extra=0,
+                                        can_delete=True)
+            tsFormset = tsFormset(initial=tsDataList)
+            atFormset = formset_factory(ActivityForm,
+                                        extra=0,
+                                        can_delete=True)
+            atFormset = atFormset(initial=atDataList)
         cwApprovedTimesheet = TimeSheetEntry.objects.filter(
             wkstart=weekstartDate, wkend=ansrEndDate,
             teamMember=request.user,
