@@ -1,0 +1,115 @@
+{% extends 'timesheetMaster.html'  %}
+
+{% load bootstrap3 %}
+{% block startDate %}
+{{ weekstartDate }}
+{% endblock %}
+
+{% block endDate %}
+{{ weekendDate }}
+{% endblock %}
+
+{% block timesheetContent %}
+  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
+	{% csrf_token %}
+    <div id="timesheet-billable">
+	<legend>
+	Billable 
+	<span class="pull-right">
+		<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
+			<span class="glyphicon glyphicon-plus"></span>
+			Add Billable Item
+		</a>
+		<a type="submit" value="submit" class="btn btn-danger btn-xs" id="timesheet-billable-del-btn">
+			<span class="glyphicon glyphicon-minus"></span>
+			Delete Billable Item
+		</a>
+	</span>
+	</legend>
+	{{ tsFormset.management_form }}
+	<table class="table table-condensed table-responsive">
+	{% for form in tsFormset %}
+		{% if forloop.first %}
+		<thead>
+            	<tr>
+			{% for data in form %}
+				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 11 %}
+					<th class="res-14-per">
+				{% else %}
+					<th>
+				{% endif %}
+				{{ data.label }}
+				{% if data.field.required %}
+					<span class="required">*</span>
+				{% endif %}
+				</th>
+			{% endfor %}
+            	</tr>
+		</thead>
+		<tbody>
+		{% endif %}
+		<tr>
+			{% for data in form %}
+				<td>{{ data }}</td>
+			{% endfor %}
+		</tr>
+		{% if forloop.last %}
+		</tbody>
+		{% endif %}
+	{% endfor %}
+	</table>
+    </div>
+    <div id="timesheet-non-billable">
+	<legend>
+	Non - Billable 
+	<span class="pull-right">
+		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn-success btn-xs">
+			<span class="glyphicon glyphicon-plus"></span>
+			Add Non-Billable Item
+		</a>
+		<a type="submit" value="submit" class="btn btn-danger btn-xs" id="timesheet-non-billable-del-btn">
+			<span class="glyphicon glyphicon-minus"></span>
+			Delete Non-Billable Item
+		</a>
+	</span>
+	</legend>
+	{{ atFormset.management_form }}
+	<table class="table table-condensed table-responsive">
+	{% for form in atFormset %}
+		{% if forloop.first %}
+		<thead>
+            	<tr>
+                {% for data in form %}
+		    {% if forloop.counter == 1 or forloop.counter == 9 %}
+		    	<th class="res-14-per">
+		    {% else %}
+			<th>
+		    {% endif %}
+                    {{ data.label }}
+                    {% if data.field.required %}
+                        <span class="required">*</span>
+                    {% endif %}
+                    </th>
+                {% endfor %}
+            	</tr>
+		</thead>
+		<tbody>
+		{% endif %}
+		<tr>
+			{% for data in form %}
+				<td>{{ data }}</td>
+			{% endfor %}
+		</tr>
+		{% if forloop.last %}
+		</tbody>
+		{% endif %}
+	{% endfor %}
+	</table>
+    </div>
+    <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
+    <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
+ <button type="submit" value="submit" class="btn btn-info pull-right">
+	 Save Timesheet
+ </button>
+ </form>
+{% endblock %}
