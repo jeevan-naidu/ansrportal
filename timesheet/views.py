@@ -70,6 +70,7 @@ def Timesheet(request):
     maxAutoApprove = 44
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=5)
+    disabled = 'next'
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
         # Getting the forms with submitted values
@@ -77,6 +78,12 @@ def Timesheet(request):
         activities = atFormset(request.POST)
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
+            changedStartDate = datetime.strptime(
+                request.POST.get('startdate'), '%d%m%Y'
+            ).date()
+            changedEndDate = datetime.strptime(
+                request.POST.get('enddate'), '%d%m%Y'
+            ).date()
             mondayTotal = 0
             tuesdayTotal = 0
             wednesdayTotal = 0
@@ -135,8 +142,8 @@ def Timesheet(request):
                     # Getting objects for models
                     nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
-                    nonbillableTS.wkstart = weekstartDate
-                    nonbillableTS.wkend = ansrEndDate
+                    nonbillableTS.wkstart = changedStartDate
+                    nonbillableTS.wkend = changedEndDate
                     nonbillableTS.teamMember = request.user
                     for k, v in eachActivity.iteritems():
                         if k == 'activity_monday':
@@ -160,8 +167,8 @@ def Timesheet(request):
                     nonbillableTS.save()
                 for eachTimesheet in timesheetList:
                     billableTS = TimeSheetEntry()
-                    billableTS.wkstart = weekstartDate
-                    billableTS.wkend = ansrEndDate
+                    billableTS.wkstart = changedStartDate
+                    billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
@@ -176,8 +183,8 @@ def Timesheet(request):
                     # Getting objects for models
                     nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
-                    nonbillableTS.wkstart = weekstartDate
-                    nonbillableTS.wkend = ansrEndDate
+                    nonbillableTS.wkstart = changedStartDate
+                    nonbillableTS.wkend = changedEndDate
                     nonbillableTS.activity = activity
                     nonbillableTS.teamMember = request.user
                     nonbillableTS.approved = True
@@ -187,8 +194,8 @@ def Timesheet(request):
                     nonbillableTS.save()
                 for eachTimesheet in timesheetList:
                     billableTS = TimeSheetEntry()
-                    billableTS.wkstart = weekstartDate
-                    billableTS.wkend = ansrEndDate
+                    billableTS.wkstart = changedStartDate
+                    billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.approved = True
                     billableTS.approvedon = datetime.now()
@@ -201,44 +208,65 @@ def Timesheet(request):
                 )
         return HttpResponseRedirect('/timesheet/entry')
     else:
+        if request.GET.get('week') == 'prev':
+            weekstartDate = datetime.strptime(
+                request.GET.get('startdate'), '%d%m%Y'
+            ).date() - timedelta(days=7)
+            ansrEndDate = datetime.strptime(
+                request.GET.get('enddate'), '%d%m%Y'
+            ).date() - timedelta(days=7)
+            disabled = 'prev'
+        elif request.GET.get('week') == 'next':
+            disabled = 'next'
         # Creating data for templates
         cwTimesheet = TimeSheetEntry.objects.filter(
-            wkstart=weekstartDate, wkend=ansrEndDate
+            wkstart=weekstartDate, wkend=ansrEndDate,
+            teamMember=request.user,
+            approved=False
         ).count()
-        cwActivityData = TimeSheetEntry.objects.filter(
+        cwApprovedTimesheet = TimeSheetEntry.objects.filter(
+            wkstart=weekstartDate, wkend=ansrEndDate,
+            teamMember=request.user,
+            approved=True
+        ).count()
+        cwApprovedActivityData = TimeSheetEntry.objects.filter(
             Q(
                 wkstart=weekstartDate,
                 wkend=ansrEndDate,
                 teamMember=request.user,
+                approved=True,
                 project__isnull=True
             )
         ).values('activity', 'monday', 'tuesday', 'wednesday', 'thursday',
                  'friday', 'saturday', 'total', 'managerFeedback'
                  )
-        cwTimesheetData = TimeSheetEntry.objects.filter(
+        cwApprovedTimesheetData = TimeSheetEntry.objects.filter(
             Q(
                 wkstart=weekstartDate,
                 wkend=ansrEndDate,
                 teamMember=request.user,
+                approved=True,
                 activity__isnull=True
             )
         ).values('project__name', 'chapter__name', 'monday',
                  'tuesday', 'wednesday', 'thursday', 'task',
                  'friday', 'saturday', 'total', 'managerFeedback'
                  )
-        if cwTimesheet > 0:
+        if cwApprovedTimesheet > 0:
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
-                    'currentTimesheet': cwTimesheetData,
-                    'currentActivity': cwActivityData
+                    'disabled': disabled,
+                    'currentTimesheet': cwApprovedTimesheetData,
+                    'currentActivity': cwApprovedActivityData
                     }
-            return render(request, 'timesheet/readOnlyTimesheet.html', data)
+            return render(request, 'timesheet/timesheetApproved.html', data)
         else:
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
+                    'disabled': disabled,
                     'tsFormset': tsFormset,
                     'atFormset': atFormset}
-            return render(request, 'timesheet/timesheet.html', data)
+            return render(request, 'timesheet/timesheetEntry.html', data)
 
 
 def checkUser(userName, password, request, form):
