@@ -1,35 +1,33 @@
-{% extends 'manager.inc' %}
+{% extends 'projectMaster.inc' %}
 
 
 {% block addForm %}
 <span class="pull-right">
-	<a id="addForm" href="javascript:;" class="btn btn-success btn-xs addForm">
+	<button type="submit" value="submit" class="btn btn-success btn-xs">
 		<span class="glyphicon glyphicon-plus"></span>
-			Add Member
-	</a>
-	<a id="delete-member" class="btn btn-danger btn-xs">
+			Add Milestone
+	</button>
+	<button type="submit" value="submit" class="btn btn-danger btn-xs">
 		<span class="glyphicon glyphicon-minus"></span>
-			Delete Member
-	</a>
+			Delete Milestone
+	</button>
 </span>
 {% endblock %}
 
 
 {% block childform %}{% block masterform %}
 {% if form.errors %}
-	<div class="alert alert-danger" role="alert">
+	<div class="alert alert-danger">
+		<button type="button" class="close" data-dismiss="alert">×</button>
 		{% for field in form %} 
-		{% if field.errors %}
-			{{ field.label }}: {{ field.errors|striptags }}
-		{% endif %}
+		{% if field.errors %}									<li>{{ field.label }}: {{ field.errors|striptags }}</li>		  {% endif %}
 		{% endfor %}								</div>
 {% endif %}
-	<table class="table table-condensed table-responsive">
+	<table class="table table-condensed">
 		{% for t in form %}
 			{% if forloop.first %}
 				{% if '-0' in t.id_for_label %}
 					<thead>
-                    <tr>
 						{% for field in form %}
 							<th>
 								<small>{{ field.label }}</small>
@@ -38,27 +36,19 @@
 								{% endif %}
 							</th>
 						{% endfor %}
-                    </tr>
 					</thead>
 				{% endif %}
 			{% endif %}
 		{% endfor %}
 		<tbody>
-
-
 		<tr>
 			{% for field in form %}
-				<td>
-                    {{ field }}
-                    <input type="hidden">
-                </td>
+				<td>{{ field }}</td>
 			{% endfor %}
 			{% if form.can_delete %}
 				<td>{{ form.DELETE }}</td>
 			{% endif %}
 		</tr>
-
-
 		</tbody>
 	</table>
 {% endblock %}{% endblock %}

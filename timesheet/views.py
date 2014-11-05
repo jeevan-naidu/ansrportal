@@ -30,10 +30,10 @@ FORMS = [
 
 
 TEMPLATES = {
-    "Define Project": "timesheet/basicInfo.html",
-    "Add team members": "timesheet/teamMember.html",
-    "Define Milestones": "timesheet/milestone.html",
-    "Validate": "timesheet/snapshot.html",
+    "Define Project": "timesheet/projectBasicInfo.html",
+    "Add team members": "timesheet/projectTeamMember.html",
+    "Define Milestones": "timesheet/projectMilestone.html",
+    "Validate": "timesheet/projectSnapshot.html",
 }
 
 
@@ -413,7 +413,7 @@ class CreateProjectWizard(SessionWizardView):
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
         }
-        return render(self.request, 'timesheet/snapshot.html', data)
+        return render(self.request, 'timesheet/projectSnapshot.html', data)
 
 
 def saveProject(request):
@@ -455,7 +455,7 @@ def saveProject(request):
             pms.save()
 
         data = {'projectId': pr.id, 'projectName': pr.name}
-        return render(request, 'timesheet/success.html', data)
+        return render(request, 'timesheet/projectSuccess.html', data)
 
 
 def deleteProject(request):
