@@ -28,7 +28,8 @@ body {
 .ansrLogout {
 	font-weight: bold;
 	color: red;
-	padding-right: 5px;
+	padding-right: 15px;
+	font-size: 17px;
 }
 .ansrLogoutIcon {
 	font-weight: bold;
