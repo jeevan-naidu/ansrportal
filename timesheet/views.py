@@ -373,7 +373,6 @@ class CreateProjectWizard(SessionWizardView):
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
         ).strftime('%Y-%m-%d %H:%M%z')
-        print [form.cleaned_data for form in form_list][1]
         for teamData in [form.cleaned_data for form in form_list][1]:
             teamDataCounter += 1
             for k, v in teamData.iteritems():
