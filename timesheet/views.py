@@ -332,6 +332,10 @@ def Timesheet(request):
             return render(request, 'timesheet/timesheetEntry.html', data)
 
 
+def ApproveTimesheet(request):
+    return render(request, 'timesheet/timesheetApprove.html', {})
+
+
 def checkUser(userName, password, request, form):
     user = authenticate(username=userName, password=password)
     if user is not None:

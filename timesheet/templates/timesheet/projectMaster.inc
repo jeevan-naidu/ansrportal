@@ -23,28 +23,28 @@
 {% endblock %}
 
 {% block ansrMenu %}
- <li class="active"><a href="#create">
+ <li {% block createProjectActive %}{% endblock %}><a href="/timesheet/project/add">
     <span class="glyphicon glyphicon glyphicon-pencil">
     </span>
      Create&nbsp;new&nbsp;project
  </a></li>
- <li><a href="#manage">
+ <li {% block manageProjectActive %}{% endblock %}><a href="#manage">
      <span class="glyphicon glyphicon-cog"></span>
      Manage&nbsp;projects
  </a></li>
- <li><a href="#progress">
+ <li {% block projectProgressActive %}{% endblock %}><a href="#progress">
      <span class="glyphicon glyphicon-tasks"></span>
      Project's&nbsp;progress
  </a></li>
- <li><a href="#perfomance">
+ <li {% block teamMemberPerfomanceActive %}{% endblock %}><a href="#perfomance">
     <span class="glyphicon glyphicon-user"></span>
     Team&nbsp;Member's&nbsp;Perfomance
  </a></li>
- <li><a href="#status">
+ <li {% block projectStatusActive %}{% endblock %}><a href="#status">
     <span class="glyphicon glyphicon-dashboard"></span>
     Project's&nbsp;Status
  </a></li>
- <li><a href="#timesheet">
+ <li {% block timesheetActive %}{% endblock %}><a href="/timesheet/approve">
     <span class="glyphicon glyphicon-list-alt"></span>
     Timesheet
  </a></li>

@@ -3,6 +3,9 @@ from timesheet import views
 
 urlpatterns = patterns(u'',
                        url(r'^entry$', views.Timesheet, name=u'timesheet'),
+                       url(r'^approve$',
+                           views.ApproveTimesheet,
+                           name=u'timesheet'),
                        url(r'^project/delete$',
                            views.deleteProject,
                            name=u'deleteproject'),
