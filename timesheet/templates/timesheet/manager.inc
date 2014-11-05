@@ -44,12 +44,15 @@
     <span class="glyphicon glyphicon-dashboard"></span>
     Project's&nbsp;Status
  </a></li>
+ <li><a href="#timesheet">
+    <span class="glyphicon glyphicon-list-alt"></span>
+    Timesheet
+ </a></li>
 {% endblock %}
 
 {% block loggedStatus %}
 <li class="ansrLogout"><a href="{% url 'logout' %}">
     <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
-      <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
 
