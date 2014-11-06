@@ -52,7 +52,11 @@
 {% block timesheetContent %}{% endblock %}
 {% endblock %}
 
-{% block loggedStatus %}
+{% block ansrMenu %}
+ <li><a href="/timesheet/dashboard">
+    <span class="glyphicon glyphicon-home"></span>
+    Dashboard
+ </a></li>
 <li class="ansrLogout"><a href="{% url 'logout' %}">
     <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
       <span class="ansrLogout">Logout</span>

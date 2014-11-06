@@ -39,18 +39,10 @@
 				</div> <!-- End of the Ansr Brand Logo -->
 				<!-- Ansr role based menuset -->
 				 <div class="collapse navbar-collapse" id="example-navbar-collapse">
-					 <ul class="nav navbar-nav" style="padding-left: 4px">
+					 <ul class="nav navbar-nav navbar-right" style="padding-right: 15px;">
 						{% block ansrMenu %}{% endblock %}
 					 </ul>
-					 <ul class="nav navbar-nav navbar-right">
-						{% block loggedStatus %} {% endblock %}
-					</ul>
 				</div>
-				<!-- <div>
-					<span class="nav navbar-nav navbar-right">
-					
-					</span>
-				</div> -->
 			</nav>
 		</div><!-- End of Ansr Logo and role based menuset-->
 		<!-- Ansr body -->

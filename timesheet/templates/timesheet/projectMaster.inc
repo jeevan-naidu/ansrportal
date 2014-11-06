@@ -23,37 +23,65 @@
 {% endblock %}
 
 {% block ansrMenu %}
- <li {% block createProjectActive %}{% endblock %}><a href="/timesheet/project/add">
-    <span class="glyphicon glyphicon glyphicon-pencil">
-    </span>
-     Create&nbsp;new&nbsp;project
+ <li><a href="/timesheet/dashboard">
+    <span class="glyphicon glyphicon-home"></span>
+    Dashboard
  </a></li>
- <li {% block manageProjectActive %}{% endblock %}><a href="#manage">
-     <span class="glyphicon glyphicon-cog"></span>
-     Manage&nbsp;projects
+ <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	    <span class="glyphicon glyphicon-book"></span>
+	    Project
+    <span class="caret"></span></a>
+    <ul class="dropdown-menu" role="menu">
+	<li {% block createProjectActive %}{% endblock %}><a href="/timesheet/project/add">
+		<span class="glyphicon glyphicon glyphicon-pencil"></span>
+		Create New
+	</a></li>
+	<li class="divider"></li>
+	<li {% block manageProjectActive %}{% endblock %}><a href="#">
+		<span class="glyphicon glyphicon-cog"></span>
+		Manage
+	</a></li>
+	<li class="divider"></li>
+	<li {% block projectProgressActive %}{% endblock %}><a href="#">
+		<span class="glyphicon glyphicon-tasks"></span>
+		Progress
+	</a></li>
+	<li class="divider"></li>
+	<li {% block projectStatusActive %}{% endblock %}><a href="#">
+    		<span class="glyphicon glyphicon-dashboard"></span>
+		Status
+	</a></li>
+    </ul>
  </a></li>
- <li {% block projectProgressActive %}{% endblock %}><a href="#progress">
-     <span class="glyphicon glyphicon-tasks"></span>
-     Project's&nbsp;progress
+ <li {% block timesheetActive %}{% endblock %} class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	    <span class="glyphicon glyphicon-list-alt"></span>
+	    Timesheet
+    <span class="caret"></span></a>
+    <ul class="dropdown-menu" role="menu">
+	<li><a href="#">
+    		<span class="glyphicon glyphicon-plus"></span>
+		Entry
+	</a></li>
+	<li class="divider"></li>
+	<li><a href="#">
+    		<span class="glyphicon glyphicon-cog"></span>
+		Manage
+	</a></li>
+    </ul>
  </a></li>
  <li {% block teamMemberPerfomanceActive %}{% endblock %}><a href="#perfomance">
     <span class="glyphicon glyphicon-user"></span>
     Team&nbsp;Member's&nbsp;Perfomance
  </a></li>
- <li {% block projectStatusActive %}{% endblock %}><a href="#status">
-    <span class="glyphicon glyphicon-dashboard"></span>
-    Project's&nbsp;Status
- </a></li>
- <li {% block timesheetActive %}{% endblock %}><a href="/timesheet/approve">
-    <span class="glyphicon glyphicon-list-alt"></span>
-    Timesheet
- </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+    <span class="ansrLogout">Logout</span>
+  </a></li>
 {% endblock %}
 
 {% block loggedStatus %}
-<li class="ansrLogout"><a href="{% url 'logout' %}">
-    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
-  </a></li>
 {% endblock %}
 
 {% block content %}

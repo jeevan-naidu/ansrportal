@@ -336,6 +336,30 @@ def ApproveTimesheet(request):
     return render(request, 'timesheet/timesheetApprove.html', {})
 
 
+def Dashboard(request):
+    if request.session['usertype'] == 'pm':
+        totalActiveProjects = Project.objects.filter(
+            projectManager=request.user
+        ).count()
+        unApprovedTimeSheet = TimeSheetEntry.objects.filter(
+            project__projectManager=request.user,
+            approved=False
+        ).count()
+        totalEmployees = User.objects.all().count()
+    else:
+        totalActiveProjects = 0
+        unApprovedTimeSheet = 0
+        totalEmployees = 0
+    data = {
+        'username': request.session['username'],
+        'usertype': request.session['usertype'],
+        'activeProjects': totalActiveProjects,
+        'unapprovedts': unApprovedTimeSheet,
+        'totalemp': totalEmployees
+    }
+    return render(request, 'timesheet/landingPage.html', data)
+
+
 def checkUser(userName, password, request, form):
     user = authenticate(username=userName, password=password)
     if user is not None:
@@ -343,9 +367,13 @@ def checkUser(userName, password, request, form):
             auth.login(request, user)
             try:
                 if user.groups.all()[0].name == "project manager":
-                    return HttpResponseRedirect('project/add')
+                    request.session['username'] = userName
+                    request.session['usertype'] = 'pm'
+                    return HttpResponseRedirect('dashboard')
                 elif user.groups.all()[0].name == "project team":
-                    return HttpResponseRedirect('entry')
+                    request.session['username'] = userName
+                    request.session['usertype'] = 'tm'
+                    return HttpResponseRedirect('dashboard')
             except IndexError:
                 messages.error(request, 'This user does not have access.')
                 return loginResponse(request, form, 'timesheet/index.html')

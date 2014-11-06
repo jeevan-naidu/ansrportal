@@ -1,0 +1,76 @@
+{% extends 'master.inc' %}
+
+{% block siteTitle %}ANSR-Dashboard{% endblock %}
+
+{% block ansrMenu %}
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+	<span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+	<span class="ansrLogout">Logout</span>
+</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12 text-center">
+	<h1><small>Welcome <b>{{ username }}</b>, Quo Vadis?</small></h1>
+</div>
+{% if usertype == 'pm' %}
+<div class="col-md-6">
+<div class="jumbotron shadow">
+	<legend><h2><small><b>Timesheet</b></small></h2></legend>
+	<ul class="list-group">
+		<a href="entry" class="list-group-item">Enter Your Timesheet</a>
+		<a href="#" class="list-group-item">
+			<span class="badge">{{ unapprovedts }}</span>
+			Approve Timesheet
+		</a>
+	</ul>
+</div>
+</div>
+<div class="col-md-6">
+<div class="jumbotron shadow">
+	<legend><h2><small><b>Projects</b></small></h2></legend>
+	<ul class="list-group">
+		<a href="project/add" class="list-group-item">Create Project</a>
+		<a href="#" class="list-group-item">
+			<span class="badge">{{ activeProjects }}</span>
+			Manage Projects
+		</a>
+	</ul>
+</div>
+</div>
+<div class="col-md-6">
+<div class="jumbotron shadow">
+	<legend><h2><small><b>Employees</b></small></h2></legend>
+	<ul class="list-group">
+		<a href="#" class="list-group-item">
+			<span class="badge">{{ totalemp }}</span>
+			Manage Employees
+		</a>
+	</ul>
+</div>
+</div>
+<div class="col-md-6">
+<div class="jumbotron shadow">
+	<legend><h2><small><b>Reports</b></small></h2></legend>
+	<ul class="list-group">
+		<a href="#" class="list-group-item">
+			Team Progress
+		</a>
+		<a href="#" class="list-group-item">
+			Team Member Perfomance
+		</a>
+		<a href="#" class="list-group-item">
+			Project Status
+		</a>
+	</ul>
+</div>
+</div>
+{% else %}
+<div class="col-md-6 col-md-offset-3">
+<div class="jumbotron shadow">
+	<legend><h2><small><b>Timesheet</b></small></h2></legend>
+	<a href="entry">Enter Your Timesheet</a>
+</div>
+</div>
+{% endif %}
+{% endblock %}
