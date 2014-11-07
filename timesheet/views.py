@@ -400,6 +400,7 @@ class CreateProjectWizard(SessionWizardView):
 
         basicInfo = [form.cleaned_data for form in form_list][0]
         chapterList = []
+        chapterDict = {}
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList
@@ -462,6 +463,9 @@ def saveProject(request):
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
         pr.save()
+
+        for eachId in request.session['chapters']:
+            pr.chapters.add(eachId)
 
         for memberCount in range(1, request.session['totalMemberCount']):
             ptm = ProjectTeamMember()
