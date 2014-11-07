@@ -3,7 +3,7 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember
+    ProjectMilestone, ProjectTeamMember, Chapter
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
@@ -21,7 +21,7 @@ FORMS = [
         extra=2,
         can_delete=True
     )),
-    ("Define Milestones", formset_factory(
+    ("Financial Milestones", formset_factory(
         ProjectMilestoneForm,
         extra=2,
         can_delete=True
@@ -32,7 +32,7 @@ FORMS = [
 TEMPLATES = {
     "Define Project": "timesheet/projectBasicInfo.html",
     "Add team members": "timesheet/projectTeamMember.html",
-    "Define Milestones": "timesheet/projectMilestone.html",
+    "Financial Milestones": "timesheet/projectMilestone.html",
     "Validate": "timesheet/projectSnapshot.html",
 }
 
@@ -399,6 +399,10 @@ class CreateProjectWizard(SessionWizardView):
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
+        chapterList = []
+        for eachChapter in basicInfo['chapters']:
+            chapterList.append(eachChapter.id)
+        self.request.session['chapters'] = chapterList
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
         ).strftime('%Y-%m-%d %H:%M%z')

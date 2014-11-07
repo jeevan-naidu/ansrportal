@@ -3,6 +3,11 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 # Database Models
 
+BU = (
+    ('E', 'Editorial'),
+    ('M', 'Media'),
+)
+
 
 class Book(models.Model):
     name = models.CharField(max_length=100, verbose_name="Book Name")
@@ -28,6 +33,12 @@ class Chapter(models.Model):
 
 
 class Project(models.Model):
+    bu = models.CharField(
+        default='E',
+        choices=BU,
+        max_length=2,
+        verbose_name="Business Unit"
+    )
     name = models.CharField(max_length=50, verbose_name="Project Name")
     startDate = models.DateTimeField(verbose_name="Project Start Date",
                                      default=timezone.now)
@@ -40,6 +51,7 @@ class Project(models.Model):
     projectManager = models.ForeignKey(User)
     # Chapters to be worked on in the project
     chapters = models.ManyToManyField(Chapter)
+    totalValue = models.IntegerField(default=0, verbose_name="Total Value")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -55,29 +67,27 @@ class TimeSheetEntry(models.Model):
     # Week details
     wkstart = models.DateField(default=None, blank=True,
                                verbose_name="Week Start")
-    wkend = models.DateField(default=None, blank=True,
-                             verbose_name="Week End")
+    wkend = models.DateField(default=None, blank=True, verbose_name="Week End")
 
     chapter = models.ForeignKey(Chapter, verbose_name="Chapter", null=True)
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
     # Effort capture
-    monday = models.IntegerField(default=0,
-                                 verbose_name="Mon")
-    tuesday = models.IntegerField(default=0,
-                                  verbose_name="Tue")
-    wednesday = models.IntegerField(default=0,
-                                    verbose_name="Wed")
-    thursday = models.IntegerField(default=0,
-                                   verbose_name="Thu")
-    friday = models.IntegerField(default=0,
-                                 verbose_name="Fri")
-    saturday = models.IntegerField(default=0,
-                                   verbose_name="Sat")
-    total = models.IntegerField(default=0,
-                                verbose_name="Total")
-    approved = models.BooleanField(default=False,
-                                   verbose_name="Approved")
+    mondayQ = models.IntegerField(default=0, verbose_name="Mon")
+    mondayH = models.IntegerField(default=0, verbose_name="Mon")
+    tuesdayQ = models.IntegerField(default=0, verbose_name="Tue")
+    tuesdayH = models.IntegerField(default=0, verbose_name="Tue")
+    wednesdayQ = models.IntegerField(default=0, verbose_name="Wed")
+    wednesdayH = models.IntegerField(default=0, verbose_name="Wed")
+    thursdayQ = models.IntegerField(default=0, verbose_name="Thu")
+    thursdayH = models.IntegerField(default=0, verbose_name="Thu")
+    fridayQ = models.IntegerField(default=0, verbose_name="Fri")
+    fridayH = models.IntegerField(default=0, verbose_name="Fri")
+    saturdayQ = models.IntegerField(default=0, verbose_name="Sat")
+    saturdayH = models.IntegerField(default=0, verbose_name="Sat")
+    totalQ = models.IntegerField(default=0, verbose_name="Total")
+    totalH = models.IntegerField(default=0, verbose_name="Total")
+    approved = models.BooleanField(default=False, verbose_name="Approved")
 
     # Approval related details
     approvedon = models.DateTimeField(default=None, null=True, blank=True,
@@ -87,6 +97,8 @@ class TimeSheetEntry(models.Model):
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
     teamMember = models.ForeignKey(User, editable=False)
+    exception = models.CharField(default="No Exception", max_length=75)
+    billable = models.BooleanField(default=False, verbose_name="Billable")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -131,6 +143,7 @@ class ProjectMilestone(models.Model):
                                     verbose_name="Deliverables")
     description = models.CharField(default=None, blank=True, max_length=1000,
                                    verbose_name="Description")
+    amount = models.IntegerField(default=0, verbose_name="Amount")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

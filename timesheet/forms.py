@@ -119,42 +119,27 @@ def TimesheetFormset(currentUser):
             auto_choose=True
         )
         task = forms.ChoiceField(choices=TASK, label='Task')
-        monday = forms.IntegerField(
-            label="Mon",
-            min_value=0,
-            max_value=24
-        )
-        tuesday = forms.IntegerField(
-            label="Tue",
-            min_value=0,
-            max_value=24
-        )
-        wednesday = forms.IntegerField(
-            label="Wed",
-            min_value=0,
-            max_value=24
-        )
-        thursday = forms.IntegerField(
-            label="Thu",
-            min_value=0,
-            max_value=24
-        )
-        friday = forms.IntegerField(
-            label="Fri",
-            min_value=0,
-            max_value=24
-        )
-        saturday = forms.IntegerField(
-            label="Sat",
-            min_value=0,
-            max_value=24
-        )
-        total = forms.IntegerField(
-            label="Total",
-            min_value=0,
-            max_value=144,
-            required=False
-        )
+        monday = forms.CharField(label="Mon")
+        mondayQ = forms.IntegerField(label="Hours")
+        mondayH = forms.IntegerField(label="Questions")
+        tuesday = forms.CharField(label="Tue",)
+        tuesdayQ = forms.IntegerField(label="Hours")
+        tuesdayH = forms.IntegerField(label="Questions")
+        wednesday = forms.CharField(label="Wed")
+        wednesdayQ = forms.IntegerField(label="Hours")
+        wedbesdayH = forms.IntegerField(label="Questions")
+        thursday = forms.CharField(label="Thu")
+        thursdayQ = forms.IntegerField(label="Hours")
+        thursdayH = forms.IntegerField(label="Questions")
+        friday = forms.CharField(label="Fri")
+        fridayQ = forms.IntegerField(label="Hours")
+        fridayH = forms.IntegerField(label="Questions")
+        saturday = forms.CharField(label="Sat")
+        saturdayQ = forms.IntegerField(label="Hours")
+        saturdayH = forms.IntegerField(label="Questions")
+        total = forms.CharField(label="Total", required=False)
+        totalQ = forms.IntegerField(label="Hours")
+        totalH = forms.IntegerField(label="Questions")
         feedback = forms.CharField(
             max_length="50", label="Feedback", required=False
         )
@@ -202,11 +187,15 @@ class ProjectBasicInfoForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
+            'bu',
             'name',
             'startDate',
             'endDate',
+            'chapters',
             'plannedEffort',
-            'contingencyEffort', )
+            'contingencyEffort',
+            'totalValue'
+        )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
             'endDate': DateTimePicker(options=dateTimeOption),
@@ -243,7 +232,9 @@ class ProjectMilestoneForm(forms.ModelForm):
         fields = (
             'milestoneDate',
             'description',
-            'deliverables', )
+            'deliverables',
+            'amount'
+        )
         widgets = {
             'milestoneDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
