@@ -3,7 +3,7 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Chapter
+    ProjectMilestone, ProjectTeamMember
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
@@ -316,6 +316,7 @@ def Timesheet(request):
                  'friday', 'saturday', 'total', 'managerFeedback'
                  )
         if cwApprovedTimesheet > 0:
+            messages.success(request, 'Timesheet is approved for this week')
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
@@ -324,6 +325,12 @@ def Timesheet(request):
                     }
             return render(request, 'timesheet/timesheetApproved.html', data)
         else:
+            if cwTimesheet > 0:
+                messages.warning(request,
+                                 'Timesheet is Pending for approval this week')
+            else:
+                messages.info(request,
+                              'Please fill timesheet for this week')
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
@@ -400,7 +407,6 @@ class CreateProjectWizard(SessionWizardView):
 
         basicInfo = [form.cleaned_data for form in form_list][0]
         chapterList = []
-        chapterDict = {}
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList
