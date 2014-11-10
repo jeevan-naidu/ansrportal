@@ -15,15 +15,16 @@ import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType
 
 AUTHENTICATION_BACKENDS = (
-    'django_ldapbackend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
 AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
-AUTH_LDAP_BASE_DN = "dc=fantain,dc=com"
-AUTH_LDAP_BIND_DN = ""
-AUTH_LDAP_BIND_PASSWORD = ""
-AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=fantainusers,dc=fantain,dc=com"
+#AUTH_LDAP_BASE_DN = "dc=fantain,dc=com"
+AUTH_LDAP_BIND_DN = "cn=admin,dc=fantain,dc=com"
+AUTH_LDAP_BIND_PASSWORD = "fant@in"
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=fantain,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+#AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=fantainusers,dc=fantain,dc=com"
 AUTH_LDAP_REQUIRE_GROUP = "cn=users,ou=fantaingroups,dc=fantain,dc=com"
 AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")
 AUTH_LDAP_VERSION = 3
@@ -35,14 +36,43 @@ AUTH_LDAP_FIELD_USERNAME = "uid"
 
 
 AUTH_LDAP_USER_ATTR_MAP = {
-    "username": "uid",
-    "firstname": "givenName",
-    "lastname": "sn",
-    "email": "mail",
+    "first_name": "sn",
+    "last_name":"givenName",
+    'email' : 'mail',
     }
-AUTH_PROFILE_MODULE = "employee.EmpBasic"
+
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': True,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
+#AUTH_PROFILE_MODULE = "employee.UserProfile"
+
+AUTH_LDAP_PROFILE_ATTR_MAP = {
+    "employee_number": "employeeNumber"
+}
+
+AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+    "is_active": "cn=active,ou=django,ou=groups,dc=example,dc=com",
+    "is_staff": "cn=staff,ou=django,ou=groups,dc=example,dc=com",
+    "is_superuser": "cn=superuser,ou=django,ou=groups,dc=example,dc=com"
+}
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 

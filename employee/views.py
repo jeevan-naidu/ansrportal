@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from employee.forms import LoginForm 
-from employee.models import EmpBasic, EmpAddress
+from employee.models import UserProfile
 # Create your views here.
+
 def logincred(request):
     if request.method =='GET':
         form = LoginForm()
@@ -17,7 +18,6 @@ def logincred(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    ldapuserprofile = EmpBasic.objects.get(uid=request.user.username)
                     return HttpResponse("sucessfully login")
                 else:
                     return HttpResponse("Your account is disabled")

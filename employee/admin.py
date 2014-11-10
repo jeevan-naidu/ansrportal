@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from employee.models import *
 # Register your models here.
+'''
 class EmpBasicAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Employee Details',{
@@ -31,7 +32,9 @@ class EmpBasicAdmin(admin.ModelAdmin):
             'fields': ('bank_name', 'bank_branch', 'bank_ac', 'ifsc_code')
                         }),
                  )
+'''
 
 
-admin.site.register(EmpBasic, EmpBasicAdmin)
-admin.site.register(EmpAddress)
+#admin.site.register(EmpBasic, EmpBasicAdmin)
+#admin.site.register(EmpAddress)
+admin.site.register(UserProfile)
