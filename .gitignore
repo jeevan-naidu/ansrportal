@@ -2,6 +2,7 @@
 *.pyc
 *.sqlite3
 *.swp
+*.??~
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
