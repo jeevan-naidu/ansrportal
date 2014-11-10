@@ -469,6 +469,7 @@ def saveProject(request):
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
         pr.save()
+        request.session['currentProject'] = pr.id
 
         for eachId in request.session['chapters']:
             pr.chapters.add(eachId)
@@ -502,6 +503,14 @@ def saveProject(request):
 
         data = {'projectId': pr.id, 'projectName': pr.name}
         return render(request, 'timesheet/projectSuccess.html', data)
+
+
+def notify(request):
+    projectId = request.session['currentProject']
+    teamMembers = User.objects.filter(
+        username=ProjectTeamMember.objects.filter(project=projectId)
+    )
+    print teamMembers
 
 
 def deleteProject(request):
