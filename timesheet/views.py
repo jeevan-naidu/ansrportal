@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, logout
+from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -9,8 +10,11 @@ from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
+from django.template.loader import render_to_string
+from email.mime.text import MIMEText
 from django.db.models import Q
 # views for ansr
 
@@ -507,10 +511,16 @@ def saveProject(request):
 
 def notify(request):
     projectId = request.session['currentProject']
-    teamMembers = User.objects.filter(
-        username=ProjectTeamMember.objects.filter(project=projectId)
-    )
-    print teamMembers
+    teamMembers = ProjectTeamMember.objects.filter(
+        project=projectId
+    ).values('member__email', 'member__first_name', 'member__last_name')
+    emailTemp = get_template('projectCreatedEmail.html')
+    m = MIMEText(emailTemp.encode('utf-8'), 'text/html', 'utf-8')
+    notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                        m,
+                                        'niranj@fantain.com',
+                                        ['niranjmsc@gmail.com'],)
+    notifyTeam.send()
 
 
 def deleteProject(request):
