@@ -4,15 +4,15 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
 SEX_CHOICES = (
-	('00', 'MALE'), 
+	('00', 'MALE'),
 	('01', 'FEMALE'),
 	      )
 
 MARITAL_CHOICES = (
-	('00', 'Married'), 
-	('01', 'Windowed'), 
-	('02', 'Seperated'), 
-	('03', 'Divorced'), 
+	('00', 'Married'),
+	('01', 'Windowed'),
+	('02', 'Seperated'),
+	('03', 'Divorced'),
 	('04', 'Single'),
 		  )
 
@@ -38,7 +38,7 @@ DEPART_CHOICES = (
 	('03', 'Human resource'),
 	('04', 'IT Department'),
 			     )
-    )	 
+    )
 		)
 
 CATEG_CHOICES = (

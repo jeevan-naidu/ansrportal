@@ -11,8 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 # For LDAP
-import ldap
-from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType
+from django_auth_ldap.config import PosixGroupType
 
 AUTHENTICATION_BACKENDS = (
     'django_ldapbackend.LDAPBackend',
@@ -29,7 +28,7 @@ AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")
 AUTH_LDAP_VERSION = 3
 # Optional
 AUTH_LDAP_FIELD_USERAUTH = "uid"
-#user authentication shall be done.
+# user authentication shall be done.
 AUTH_LDAP_FIELD_AUTHUNIT = "fantainusers"
 AUTH_LDAP_FIELD_USERNAME = "uid"
 
@@ -83,7 +82,6 @@ INSTALLED_APPS = (
     'smart_selects',
     'bootstrap3',  # Django Bootstrap3
     'timesheet',
-    'employee',
     'bootstrap3_datetime',
 )
 
