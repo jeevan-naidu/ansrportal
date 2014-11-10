@@ -232,8 +232,8 @@ def Timesheet(request):
                 approved=False,
                 project__isnull=True
             )
-        ).values('activity', 'monday', 'tuesday', 'wednesday', 'thursday',
-                 'friday', 'saturday', 'total', 'managerFeedback'
+        ).values('activity', 'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
+                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
         cwTimesheetData = TimeSheetEntry.objects.filter(
             Q(
@@ -243,9 +243,9 @@ def Timesheet(request):
                 approved=False,
                 activity__isnull=True
             )
-        ).values('project', 'chapter', 'task', 'monday',
-                 'tuesday', 'wednesday', 'thursday',
-                 'friday', 'saturday', 'total', 'managerFeedback'
+        ).values('project', 'chapter', 'task', 'mondayH',
+                 'tuesdayH', 'wednesdayH', 'thursdayH',
+                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
         tsData = {}
         tsDataList = []
@@ -300,8 +300,8 @@ def Timesheet(request):
                 approved=True,
                 project__isnull=True
             )
-        ).values('activity', 'monday', 'tuesday', 'wednesday', 'thursday',
-                 'friday', 'saturday', 'total', 'managerFeedback'
+        ).values('activity', 'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
+                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
         cwApprovedTimesheetData = TimeSheetEntry.objects.filter(
             Q(
@@ -311,9 +311,9 @@ def Timesheet(request):
                 approved=True,
                 activity__isnull=True
             )
-        ).values('project__name', 'chapter__name', 'monday',
-                 'tuesday', 'wednesday', 'thursday', 'task',
-                 'friday', 'saturday', 'total', 'managerFeedback'
+        ).values('project__name', 'chapter__name', 'mondayH',
+                 'tuesdayH', 'wednesdayH', 'thursdayH', 'task',
+                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
         if cwApprovedTimesheet > 0:
             messages.success(request, 'Timesheet is approved for this week')

@@ -107,7 +107,7 @@ def TimesheetFormset(currentUser):
     class TimeSheetEntryForm(forms.Form):
         project = forms.ModelChoiceField(
             queryset=None,
-            label="Project Name",
+            label="Project",
             required=True
         )
         chapter = ChainedModelChoiceField(
@@ -154,12 +154,12 @@ def TimesheetFormset(currentUser):
             self.fields['project'].widget.attrs['class'] = "form-control"
             self.fields['chapter'].widget.attrs['class'] = "form-control"
             self.fields['task'].widget.attrs['class'] = "form-control"
-            self.fields['monday'].widget.attrs['value'] = 0
-            self.fields['tuesday'].widget.attrs['value'] = 0
-            self.fields['wednesday'].widget.attrs['value'] = 0
-            self.fields['thursday'].widget.attrs['value'] = 0
-            self.fields['friday'].widget.attrs['value'] = 0
-            self.fields['saturday'].widget.attrs['value'] = 0
+            self.fields['monday'].widget.attrs['value'] = '0 Q in 0 H'
+            self.fields['tuesday'].widget.attrs['value'] = '0 Q in 0 H'
+            self.fields['wednesday'].widget.attrs['value'] = '0 Q in 0 H'
+            self.fields['thursday'].widget.attrs['value'] = '0 Q in 0 H'
+            self.fields['friday'].widget.attrs['value'] = '0 Q in 0 H'
+            self.fields['saturday'].widget.attrs['value'] = '0 Q in 0 H'
             self.fields['monday'].widget.attrs['class'] = "form-control \
             days input-field"
             self.fields['tuesday'].widget.attrs['class'] = "form-control \
@@ -174,10 +174,16 @@ def TimesheetFormset(currentUser):
             days input-field"
             self.fields['total'].widget.attrs['class'] = "form-control \
             total input-field"
-            self.fields['total'].widget.attrs['value'] = "0"
+            self.fields['total'].widget.attrs['value'] = "0 Q in 0 H"
             self.fields['feedback'].widget.attrs['class'] = "form-control"
             self.fields['feedback'].widget.attrs['readonly'] = True
             self.fields['total'].widget.attrs['readonly'] = True
+            self.fields['monday'].widget.attrs['readonly'] = True
+            self.fields['tuesday'].widget.attrs['readonly'] = True
+            self.fields['wednesday'].widget.attrs['readonly'] = True
+            self.fields['thursday'].widget.attrs['readonly'] = True
+            self.fields['friday'].widget.attrs['readonly'] = True
+            self.fields['saturday'].widget.attrs['readonly'] = True
     return TimeSheetEntryForm
 
 

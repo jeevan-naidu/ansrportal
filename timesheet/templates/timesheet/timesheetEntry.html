@@ -33,6 +33,7 @@
 		<thead>
             	<tr>
 			{% for data in form %}
+				{% if 'Questions' not in data.label and 'Hours' not in data.label %}
 				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 11 %}
 					<th class="res-14-per">
 				{% else %}
@@ -43,6 +44,7 @@
 					<span class="required">*</span>
 				{% endif %}
 				</th>
+				{% endif %}
 			{% endfor %}
             	</tr>
 		</thead>
@@ -50,7 +52,9 @@
 		{% endif %}
 		<tr>
 			{% for data in form %}
-				<td>{{ data }}</td>
+				{% if 'Questions' not in data.label and 'Hours' not in data.label %}
+					<td>{{ data }}</td>
+				{% endif %}
 			{% endfor %}
 		</tr>
 		{% if forloop.last %}

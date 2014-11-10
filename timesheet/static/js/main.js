@@ -5,7 +5,6 @@ var app = {};
 (function() {
     $(document).ready(function() {
         $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
-
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', daysTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
     });
