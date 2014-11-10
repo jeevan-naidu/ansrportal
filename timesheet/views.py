@@ -514,12 +514,15 @@ def notify(request):
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
     ).values('member__email', 'member__first_name', 'member__last_name')
-    emailTemp = get_template('projectCreatedEmail.html')
-    m = MIMEText(emailTemp.encode('utf-8'), 'text/html', 'utf-8')
+
     notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                        m,
+                                        '',  # Pass plain text rendered template
                                         'niranj@fantain.com',
                                         ['niranjmsc@gmail.com'],)
+
+    emailTemp = render_to_string('projectCreatedEmail.html', {})
+    notifyTeam.attach_alternative(emailTemp,'text/html')
+
     notifyTeam.send()
 
 

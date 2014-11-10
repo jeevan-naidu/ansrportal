@@ -14,7 +14,7 @@ import os
 from django_auth_ldap.config import PosixGroupType
 
 AUTHENTICATION_BACKENDS = (
-    'django_ldapbackend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
