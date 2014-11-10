@@ -10,6 +10,40 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+# For LDAP
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType
+
+AUTHENTICATION_BACKENDS = (
+    'django_ldapbackend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    )
+
+AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
+AUTH_LDAP_BASE_DN = "dc=fantain,dc=com"
+AUTH_LDAP_BIND_DN = ""
+AUTH_LDAP_BIND_PASSWORD = ""
+AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=fantainusers,dc=fantain,dc=com"
+AUTH_LDAP_REQUIRE_GROUP = "cn=users,ou=fantaingroups,dc=fantain,dc=com"
+AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")
+AUTH_LDAP_VERSION = 3
+# Optional
+AUTH_LDAP_FIELD_USERAUTH = "uid"
+#user authentication shall be done.
+AUTH_LDAP_FIELD_AUTHUNIT = "fantainusers"
+AUTH_LDAP_FIELD_USERNAME = "uid"
+
+
+AUTH_LDAP_USER_ATTR_MAP = {
+    "username": "uid",
+    "firstname": "givenName",
+    "lastname": "sn",
+    "email": "mail",
+    }
+AUTH_PROFILE_MODULE = "employee.EmpBasic"
+
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -30,6 +64,7 @@ ALLOWED_HOSTS = []
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'timesheet/templates/timesheet/'),
+    os.path.join(BASE_DIR, 'employee/template/'),
 )
 
 # Crispy Forms Layout
@@ -48,6 +83,7 @@ INSTALLED_APPS = (
     'smart_selects',
     'bootstrap3',  # Django Bootstrap3
     'timesheet',
+    'employee',
     'bootstrap3_datetime',
 )
 
@@ -59,6 +95,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 )
 
 ROOT_URLCONF = 'timetracker.urls'
