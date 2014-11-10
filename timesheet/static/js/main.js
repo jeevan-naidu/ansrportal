@@ -7,6 +7,15 @@ var app = {};
         $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', daysTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
+
+        var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="text" value="3"></div>';
+            popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="text" value="7"></div>';
+
+        $('.days').popover({
+                html: true,
+                placement: 'bottom',
+                content: popoverCon
+            });
     });
 }());
 

@@ -79,3 +79,18 @@ body {
     padding-bottom: 10px;
 }
 
+.sm-fw-label {
+    width: 80px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.small-input {
+    display: inline-block;
+    width: 50px
+}
+
+.mar-bot-5 {
+    margin-bottom: 5px;
+}
+
