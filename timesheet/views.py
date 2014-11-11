@@ -12,10 +12,9 @@ from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.core.mail import EmailMultiAlternatives
-from django.template.loader import get_template
 from django.template.loader import render_to_string
-from email.mime.text import MIMEText
 from django.db.models import Q
+from django.conf import settings
 # views for ansr
 
 FORMS = [
@@ -474,6 +473,7 @@ def saveProject(request):
         pr.projectManager = request.user
         pr.save()
         request.session['currentProject'] = pr.id
+        request.session['currentProjectName'] = pr.name
 
         for eachId in request.session['chapters']:
             pr.chapters.add(eachId)
@@ -514,16 +514,27 @@ def notify(request):
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
     ).values('member__email', 'member__first_name', 'member__last_name')
+    for eachMember in teamMembers:
+        notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                            'hai',
+                                            settings.EMAIL_HOST_USER,
+                                            ['{0}'.format(
+                                                eachMember['member__email']
+                                            )],)
 
-    notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                        '',  # Pass plain text rendered template
-                                        'niranj@fantain.com',
-                                        ['niranjmsc@gmail.com'],)
-
-    emailTemp = render_to_string('projectCreatedEmail.html', {})
-    notifyTeam.attach_alternative(emailTemp,'text/html')
-
-    notifyTeam.send()
+        emailTemp = render_to_string(
+            'projectCreatedEmail.html',
+            {
+                'firstName': eachMember['member__first_name'],
+                'lastName': eachMember['member__last_name'],
+                'projectId': projectId
+            }
+        )
+        notifyTeam.attach_alternative(emailTemp, 'text/html')
+        notifyTeam.send()
+    projectName = request.session['currentProjectName']
+    data = {'projectId': projectId, 'projectName': projectName, 'notify': 'F'}
+    return render(request, 'timesheet/projectSuccess.html', data)
 
 
 def deleteProject(request):
