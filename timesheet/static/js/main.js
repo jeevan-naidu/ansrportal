@@ -5,17 +5,19 @@ var app = {};
 (function() {
     $(document).ready(function() {
         $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
-        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', daysTotal: true});
+        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
 
         var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="text" value="3"></div>';
             popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="text" value="7"></div>';
 
-        $('.days').popover({
+        $('.day-popover-button').popover({
                 html: true,
                 placement: 'bottom',
                 content: popoverCon
             });
+
+
     });
 }());
 
@@ -118,6 +120,7 @@ app.getIdNo = function(str) {
             $(rowCountElement).attr('value', rowCount);
 
         };
+
         var daysTotalFun = function() {
             if(options.daysTotal) {
                 var $days = $table.find('.days');
@@ -149,8 +152,74 @@ app.getIdNo = function(str) {
             }
         };
 
-        daysTotalFun();
+        var billableTotalFun = function() {
+            if(options.billableTotal) {
 
+                var primaryCb = function() {
+                    var $curDayBtn              = $(this),
+                        $curRow                 = $curDayBtn.closest('tr'),
+                        $curRowQuestions        = $curRow.find('.b-questions'),
+                        $curRowHours            = $curRow.find('.b-hours'),
+                        $totalQuestions         = $curRow.find('.t-questions'),
+                        $totalHours             = $curRow.find('.t-hours'),
+                        curRowQuestionsLen      = $curRowQuestions.length,
+                        $curQuestionsView       = $(this).find('.b-questions'),
+                        $curHoursView           = $curDayBtn.find('.b-hours'),
+                        $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
+                        $curHoursInput          = $curDayBtn.next().find('.hours-input'),
+                        curQuestionsViewText    = $curQuestionsView.text(),
+                        curHoursViewText        = $curHoursView.text();
+
+                    console.log(curRowQuestionsLen);
+
+                    var viewToInput = function() {
+                        $($curQuestionsInput).val(curQuestionsViewText);
+                        $($curHoursInput).val(curHoursViewText);
+                    };
+
+                    viewToInput();
+
+                    var calculateTotal = function() {
+                        var questionsTemp,
+                            hoursTemp,
+                            curQuestions,
+                            curHours,
+                            i;
+
+                        for(i = 0; i < curRowQuestionsLen; i += 1) {
+                            curQuestions = Number($($curRowQuestions[i]).val());
+                            curHours     = Number($($curRowHours[i]).val());
+
+                            console.log(i);
+                        }
+
+                    };
+
+                    var inputToView = function() {
+                        $curQuestionsView.text($curQuestionsInput.val());
+                        $curHoursView.text($curHoursInput.val());
+                    };
+
+                    $curQuestionsInput.on({
+                        keyup: inputToView,
+                        click: inputToView
+                    }, calculateTotal);
+
+                    $curHoursInput.on({
+                        keyup: inputToView,
+                        click: inputToView
+                    }, calculateTotal);
+                };
+
+
+
+                $('.day-popover-button').on('shown.bs.popover', primaryCb);
+
+            }
+        };
+
+        daysTotalFun();
+        billableTotalFun();
 
 
         var getIdNo = function(str) {

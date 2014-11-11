@@ -94,3 +94,9 @@ body {
     margin-bottom: 5px;
 }
 
+.b-questions,
+.b-hours {
+    display: inline-block;
+    min-width: 12px;
+}
+
