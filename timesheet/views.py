@@ -343,6 +343,11 @@ def Timesheet(request):
 
 
 def ApproveTimesheet(request):
+    unApprovedTimeSheet = TimeSheetEntry.objects.filter(
+        project__projectManager=request.user,
+        approved=False
+    ).values('project__name', 'wkstart', 'wkend', 'teamMember__name',
+             'totalH', 'exception', 'approved', 'managerFeedback')
     return render(request, 'timesheet/timesheetApprove.html', {})
 
 
@@ -453,9 +458,18 @@ class CreateProjectWizard(SessionWizardView):
             ] = milestoneDataCounter + 1
             cleanedMilestoneData.append(changedMilestoneData.copy())
             changedMilestoneData.clear()
+        basicInfoDict = {}
+        for k, v in basicInfo.iteritems():
+            key = Project._meta.get_field_by_name(k)[0].verbose_name
+            if k == 'chapters':
+                basicInfoDict[key] = basicInfo[k].values('name')
+            elif k == 'bu':
+                print type(basicInfo[k])
+            else:
+                basicInfoDict[key] = basicInfo[k]
 
         data = {
-            'basicInfo': basicInfo,
+            'basicInfo': basicInfoDict,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
         }
