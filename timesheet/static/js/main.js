@@ -8,18 +8,13 @@ var app = {};
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
 
-        var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="text" value="3"></div>';
-            popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="text" value="7"></div>';
 
-        $('.day-popover-button').popover({
-                html: true,
-                placement: 'bottom',
-                content: popoverCon
-            });
 
 
     });
 }());
+
+
 
 app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
@@ -61,10 +56,10 @@ app.getIdNo = function(str) {
             $tds.each(function(index) {
                 $element = $(this);
                 $curId = $element.attr('id');
-                $curId = $curId.replace(app.getIdNo($curId), newRowId);
+                //$curId = $curId.replace(app.getIdNo($curId), newRowId);
 
-                $element.attr('id', $curId);
-                $element.attr('name', $curId);
+                //$element.attr('id', $curId);
+                //$element.attr('name', $curId);
 
                 if(index === 1 || index === 2) {
                     $element.val('');
@@ -96,6 +91,7 @@ app.getIdNo = function(str) {
             $(rowCountElement).attr('value', rowCount);
 
             daysTotalFun();
+            billableTotalFun();
         };
 
         var del = function() {
@@ -154,6 +150,18 @@ app.getIdNo = function(str) {
 
         var billableTotalFun = function() {
             if(options.billableTotal) {
+                var $dayPopoverBtn = $table.find('.day-popover-button');
+
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0"></div>';
+
+                $dayPopoverBtn.popover({
+                    html: true,
+                    placement: 'bottom',
+                    content: popoverCon
+                });
+
+                $dayPopoverBtn.popover('hide');
 
                 var primaryCb = function() {
                     var $curDayBtn              = $(this),
@@ -170,8 +178,6 @@ app.getIdNo = function(str) {
                         curQuestionsViewText    = $curQuestionsView.text(),
                         curHoursViewText        = $curHoursView.text();
 
-                    console.log(curRowQuestionsLen);
-
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
@@ -180,24 +186,29 @@ app.getIdNo = function(str) {
                     viewToInput();
 
                     var calculateTotal = function() {
-                        var questionsTemp,
-                            hoursTemp,
+                        var questionsTemp = 0,
+                            hoursTemp = 0,
                             curQuestions,
                             curHours,
                             i;
 
                         for(i = 0; i < curRowQuestionsLen; i += 1) {
-                            curQuestions = Number($($curRowQuestions[i]).val());
-                            curHours     = Number($($curRowHours[i]).val());
+                            curQuestions = Number($($curRowQuestions[i]).text());
+                            curHours     = Number($($curRowHours[i]).text());
 
-                            console.log(i);
+                            questionsTemp += curQuestions;
+                            hoursTemp += curHours;
                         }
 
+                        $totalQuestions.text(questionsTemp);
+                        $totalHours.text(hoursTemp);
                     };
 
                     var inputToView = function() {
                         $curQuestionsView.text($curQuestionsInput.val());
                         $curHoursView.text($curHoursInput.val());
+
+                        calculateTotal();
                     };
 
                     $curQuestionsInput.on({
@@ -211,10 +222,7 @@ app.getIdNo = function(str) {
                     }, calculateTotal);
                 };
 
-
-
-                $('.day-popover-button').on('shown.bs.popover', primaryCb);
-
+                $dayPopoverBtn.on('shown.bs.popover', primaryCb);
             }
         };
 

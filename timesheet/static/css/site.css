@@ -87,7 +87,7 @@ body {
 
 .small-input {
     display: inline-block;
-    width: 50px
+    width: 70px
 }
 
 .mar-bot-5 {
@@ -98,5 +98,22 @@ body {
 .b-hours {
     display: inline-block;
     min-width: 12px;
+}
+
+.t-questions,
+.t-hours {
+    display: inline-block;
+    min-width: 16px;
+    font-weight: bold;
+}
+
+.b-questions,
+.t-questions{
+    color: #C30;
+}
+
+.t-hours,
+.b-hours {
+    color: #428bca;
 }
 
