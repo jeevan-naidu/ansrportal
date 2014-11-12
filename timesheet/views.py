@@ -76,6 +76,7 @@ def Timesheet(request):
         # Getting the forms with submitted values
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST)
+        print timesheets
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
             changedStartDate = datetime.strptime(
