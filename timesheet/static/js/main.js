@@ -86,7 +86,30 @@ app.getIdNo = function(str) {
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
                     }
                 }
+
+
             });
+
+            if(options.billableTotal) {
+                var newRowBQuestions            = newRow.find('.b-questions'),
+                    newRowBHours                = newRow.find('.b-hours'),
+                    newRowBQuestionsHidden      = newRow.find('.b-questions-hidden'),
+                    newRowBHoursHidden          = newRow.find('.b-hours-hidden'),
+                    newRowTotalQuestions        = newRow.find('.t-questions'),
+                    newRowTotalHours            = newRow.find('.t-hours'),
+                    newRowTotalQuestionsHidden  = newRow.find('.t-questions-hidden'),
+                    newRowTotalHoursHidden      = newRow.find('.t-hours-hidden');
+
+
+                newRowBQuestions.text('0');
+                newRowBHours.text('0');
+                newRowBQuestionsHidden.val('0');
+                newRowBHoursHidden.val('0');
+                newRowTotalQuestions.text('0');
+                newRowTotalHours.text('0');
+                newRowTotalQuestionsHidden.val('0');
+                newRowTotalHoursHidden.val('0');
+             }
 
             rowCount += 1;
 
@@ -208,9 +231,6 @@ app.getIdNo = function(str) {
 
                         $totalQuestions.text(questionsTemp);
                         $totalHours.text(hoursTemp);
-
-
-                        console.log($totalQuestionsHidden);
 
                         $totalQuestionsHidden.val(questionsTemp);
                         $totalHoursHidden.val(hoursTemp);
