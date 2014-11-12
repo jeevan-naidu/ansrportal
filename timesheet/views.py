@@ -94,6 +94,8 @@ def Timesheet(request):
             fridayTotal = 0
             saturdayTotal = 0
             weekTotal = 0
+            billableTotal = 0
+            nonbillableTotal = 0
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
             for timesheet in timesheets:
@@ -120,8 +122,10 @@ def Timesheet(request):
                     elif k == 'saturdayH':
                         saturdayTotal += v
                     elif k == 'totalH':
+                        billableTotal += v
                         weekTotal += v
                     timesheetDict[k] = v
+                print billableTotal
                 timesheetList.append(timesheetDict.copy())
                 timesheetDict.clear()
             for activity in activities:
@@ -140,6 +144,7 @@ def Timesheet(request):
                     elif k == 'activity_saturday':
                         saturdayTotal += v
                     elif k == 'total':
+                        nonbillableTotal += v
                         weekTotal += v
                     activityDict[k] = v
                 activitiesList.append(activityDict.copy())
@@ -148,7 +153,8 @@ def Timesheet(request):
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
                     (fridayTotal > 24) | (saturdayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
-            elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove):
+            elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove) | \
+                 (billableTotal > 44) | (nonbillableTotal > 40):
                 for eachActivity in activitiesList:
                     # Getting objects for models
                     nonbillableTS = TimeSheetEntry()
@@ -156,6 +162,13 @@ def Timesheet(request):
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
                     nonbillableTS.teamMember = request.user
+                    if (weekTotal < minAutoApprove) | \
+                            (weekTotal > maxAutoApprove):
+                        nonbillableTS.exception = '10% deviation in totalhours \
+                            for this week'
+                    elif nonbillableTotal > 40:
+                        nonbillableTS.exception = 'NonBillable activity more \
+                            than 40 Hours'
                     for k, v in eachActivity.iteritems():
                         if k == 'activity_monday':
                             nonbillableTS.monday = v
@@ -182,6 +195,13 @@ def Timesheet(request):
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.billable = True
+                    if (weekTotal < minAutoApprove) | \
+                            (weekTotal > maxAutoApprove):
+                        billableTS.exception = '10% deviation in totalhours \
+                            for this week'
+                    elif billableTotal > 40:
+                        billableTS.exception = 'NonBillable activity more \
+                            than 40 Hours'
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
