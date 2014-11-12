@@ -1,11 +1,15 @@
 from django.contrib import admin
 from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter
+    ProjectMilestone, ProjectTeamMember, Book, Chapter, Holiday
 
 
 # Admin Models for ansr
 class BookAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
+
+class HolidayAdmin(admin.ModelAdmin):
+    list_display = ('name', 'date', )
 
 
 class ChapterAdmin(admin.ModelAdmin):
@@ -45,6 +49,7 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
+admin.site.register(Holiday, HolidayAdmin)
 admin.site.register(Chapter, ChapterAdmin)
 # admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
 admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)

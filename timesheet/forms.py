@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from timesheet.models import Project, ProjectTeamMember, \
-    ProjectMilestone, TimeSheetEntry, Chapter
+    ProjectMilestone, Chapter
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 
@@ -119,41 +119,41 @@ def TimesheetFormset(currentUser):
             auto_choose=True
         )
         task = forms.ChoiceField(choices=TASK, label='Task')
-        monday = forms.CharField(label="Mon")
+        monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.IntegerField(label="Hours",
                                      widget=forms.HiddenInput())
         mondayQ = forms.IntegerField(label="Questions",
                                      widget=forms.HiddenInput())
-        tuesday = forms.CharField(label="Tue")
+        tuesday = forms.CharField(label="Tue", required=False)
         tuesdayH = forms.IntegerField(label="Hours",
-                                     widget=forms.HiddenInput())
+                                      widget=forms.HiddenInput())
         tuesdayQ = forms.IntegerField(label="Questions",
-                                     widget=forms.HiddenInput())
-        wednesday = forms.CharField(label="Wed")
+                                      widget=forms.HiddenInput())
+        wednesday = forms.CharField(label="Wed", required=False)
         wednesdayH = forms.IntegerField(label="Hours",
-                                     widget=forms.HiddenInput())
+                                        widget=forms.HiddenInput())
         wednesdayQ = forms.IntegerField(label="Questions",
-                                     widget=forms.HiddenInput())
-        thursday = forms.CharField(label="Thu")
+                                        widget=forms.HiddenInput())
+        thursday = forms.CharField(label="Thu", required=False)
         thursdayH = forms.IntegerField(label="Hours",
-                                     widget=forms.HiddenInput())
+                                       widget=forms.HiddenInput())
         thursdayQ = forms.IntegerField(label="Questions",
-                                     widget=forms.HiddenInput())
-        friday = forms.CharField(label="Fri")
+                                       widget=forms.HiddenInput())
+        friday = forms.CharField(label="Fri", required=False)
         fridayH = forms.IntegerField(label="Hours",
                                      widget=forms.HiddenInput())
         fridayQ = forms.IntegerField(label="Questions",
                                      widget=forms.HiddenInput())
-        saturday = forms.CharField(label="Sat")
+        saturday = forms.CharField(label="Sat", required=False)
         saturdayH = forms.IntegerField(label="Hours",
-                                     widget=forms.HiddenInput())
+                                       widget=forms.HiddenInput())
         saturdayQ = forms.IntegerField(label="Questions",
-                                     widget=forms.HiddenInput())
+                                       widget=forms.HiddenInput())
         total = forms.CharField(label="Total", required=False)
         totalH = forms.IntegerField(label="Hours",
-                                     widget=forms.HiddenInput())
+                                    widget=forms.HiddenInput())
         totalQ = forms.IntegerField(label="Questions",
-                                     widget=forms.HiddenInput())
+                                    widget=forms.HiddenInput())
         feedback = forms.CharField(
             max_length="50", label="Feedback", required=False
         )
@@ -196,7 +196,7 @@ def TimesheetFormset(currentUser):
             ] = "t-hours-hidden"
             self.fields['feedback'].widget.attrs['class'] = "form-control"
             self.fields['feedback'].widget.attrs['readonly'] = True
-            self.fields['mondayH'].widget.attrs['class'] = "form-control"
+            self.fields['mondayH'].widget.attrs['value'] = 0
             self.fields['mondayQ'].widget.attrs['value'] = 0
             self.fields['tuesdayH'].widget.attrs['value'] = 0
             self.fields['tuesdayQ'].widget.attrs['value'] = 0

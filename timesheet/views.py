@@ -79,7 +79,6 @@ def Timesheet(request):
         # Getting the forms with submitted values
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST)
-        print timesheets
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
             changedStartDate = datetime.strptime(
@@ -99,20 +98,28 @@ def Timesheet(request):
              timesheetDict, activityDict) = ([], [], {}, {})
             for timesheet in timesheets:
                 del(timesheet.cleaned_data['DELETE'])
+                del(timesheet.cleaned_data['monday'])
+                del(timesheet.cleaned_data['tuesday'])
+                del(timesheet.cleaned_data['wednesday'])
+                del(timesheet.cleaned_data['thursday'])
+                del(timesheet.cleaned_data['friday'])
+                del(timesheet.cleaned_data['saturday'])
+                del(timesheet.cleaned_data['total'])
+                print timesheet.cleaned_data
                 for k, v in timesheet.cleaned_data.iteritems():
-                    if k == 'monday':
+                    if k == 'mondayH':
                         mondayTotal += v
-                    elif k == 'tuesday':
+                    elif k == 'tuesdayH':
                         tuesdayTotal += v
-                    elif k == 'wednesday':
+                    elif k == 'wednesdayH':
                         wednesdayTotal += v
-                    elif k == 'thursday':
+                    elif k == 'thursdayH':
                         thursdayTotal += v
-                    elif k == 'friday':
+                    elif k == 'fridayH':
                         fridayTotal += v
-                    elif k == 'saturday':
+                    elif k == 'saturdayH':
                         saturdayTotal += v
-                    elif k == 'total':
+                    elif k == 'totalH':
                         weekTotal += v
                     timesheetDict[k] = v
                 timesheetList.append(timesheetDict.copy())
@@ -174,6 +181,7 @@ def Timesheet(request):
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
+                    billableTS.billable = True
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
@@ -201,6 +209,7 @@ def Timesheet(request):
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
+                    billableTS.billable = True
                     billableTS.approved = True
                     billableTS.approvedon = datetime.now()
                     for k, v in eachTimesheet.iteritems():
@@ -470,7 +479,7 @@ class CreateProjectWizard(SessionWizardView):
                 basicInfoDict[key] = basicInfo[k]
 
         data = {
-            'basicInfo': basicInfoDict,
+            'basicInfo': basicInfo,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
         }

@@ -110,6 +110,22 @@ class TimeSheetEntry(models.Model):
         verbose_name_plural = 'Timesheet Entries'
 
 
+class Holiday(models.Model):
+    # project change Request Fields
+    name = models.CharField(verbose_name="Holiday Name",
+                            max_length="100",
+                            null=True,
+                            blank=True)
+    date = models.DateField(verbose_name="Holiday Date")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class ProjectChangeInfo(models.Model):
     # project change Request Fields
     project = models.ForeignKey(Project, verbose_name="Project Name")
