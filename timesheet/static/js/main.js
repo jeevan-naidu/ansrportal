@@ -153,7 +153,7 @@ app.getIdNo = function(str) {
                 var $dayPopoverBtn = $table.find('.day-popover-button');
 
                 var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
 
                 $dayPopoverBtn.popover({
                     html: true,
