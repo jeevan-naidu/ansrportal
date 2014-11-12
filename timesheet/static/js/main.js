@@ -5,10 +5,16 @@ var app = {};
 (function() {
     $(document).ready(function() {
         $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
-        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', daysTotal: true});
+        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
+
+
+
+
     });
 }());
+
+
 
 app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
@@ -50,10 +56,12 @@ app.getIdNo = function(str) {
             $tds.each(function(index) {
                 $element = $(this);
                 $curId = $element.attr('id');
-                $curId = $curId.replace(app.getIdNo($curId), newRowId);
 
-                $element.attr('id', $curId);
-                $element.attr('name', $curId);
+                if($curId) {
+                    $curId = $curId.replace(app.getIdNo($curId), newRowId);
+                    $element.attr('id', $curId);
+                    $element.attr('name', $curId);
+                }
 
                 if(index === 1 || index === 2) {
                     $element.val('');
@@ -78,13 +86,37 @@ app.getIdNo = function(str) {
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
                     }
                 }
+
+
             });
+
+            if(options.billableTotal) {
+                var newRowBQuestions            = newRow.find('.b-questions'),
+                    newRowBHours                = newRow.find('.b-hours'),
+                    newRowBQuestionsHidden      = newRow.find('.b-questions-hidden'),
+                    newRowBHoursHidden          = newRow.find('.b-hours-hidden'),
+                    newRowTotalQuestions        = newRow.find('.t-questions'),
+                    newRowTotalHours            = newRow.find('.t-hours'),
+                    newRowTotalQuestionsHidden  = newRow.find('.t-questions-hidden'),
+                    newRowTotalHoursHidden      = newRow.find('.t-hours-hidden');
+
+
+                newRowBQuestions.text('0');
+                newRowBHours.text('0');
+                newRowBQuestionsHidden.val('0');
+                newRowBHoursHidden.val('0');
+                newRowTotalQuestions.text('0');
+                newRowTotalHours.text('0');
+                newRowTotalQuestionsHidden.val('0');
+                newRowTotalHoursHidden.val('0');
+             }
 
             rowCount += 1;
 
             $(rowCountElement).attr('value', rowCount);
 
             daysTotalFun();
+            billableTotalFun();
         };
 
         var del = function() {
@@ -109,6 +141,7 @@ app.getIdNo = function(str) {
             $(rowCountElement).attr('value', rowCount);
 
         };
+
         var daysTotalFun = function() {
             if(options.daysTotal) {
                 var $days = $table.find('.days');
@@ -140,8 +173,96 @@ app.getIdNo = function(str) {
             }
         };
 
-        daysTotalFun();
+        var billableTotalFun = function() {
+            if(options.billableTotal) {
+                var $dayPopoverBtn = $table.find('.day-popover-button');
 
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
+
+                $dayPopoverBtn.popover({
+                    html: true,
+                    placement: 'bottom',
+                    content: popoverCon
+                });
+
+                $dayPopoverBtn.popover('hide');
+
+                var primaryCb = function() {
+                    var $curDayBtn              = $(this),
+                        $curRow                 = $curDayBtn.closest('tr'),
+                        $curRowQuestions        = $curRow.find('.b-questions'),
+                        $curRowHours            = $curRow.find('.b-hours'),
+                        $totalQuestions         = $curRow.find('.t-questions'),
+                        $totalHours             = $curRow.find('.t-hours'),
+                        $totalQuestionsHidden   = $curRow.find('.t-questions-hidden'),
+                        $totalHoursHidden       = $curRow.find('.t-hours-hidden'),
+                        curRowQuestionsLen      = $curRowQuestions.length,
+                        $curQuestionsView       = $curDayBtn.find('.b-questions'),
+                        $curHoursView           = $curDayBtn.find('.b-hours'),
+                        $curQuestionsHidden     = $curDayBtn.find('.b-questions-hidden'),
+                        $curHoursHidden         = $curDayBtn.find('.b-hours-hidden'),
+                        $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
+                        $curHoursInput          = $curDayBtn.next().find('.hours-input'),
+                        curQuestionsViewText    = $curQuestionsView.text(),
+                        curHoursViewText        = $curHoursView.text();
+
+                    var viewToInput = function() {
+                        $($curQuestionsInput).val(curQuestionsViewText);
+                        $($curHoursInput).val(curHoursViewText);
+                    };
+
+                    viewToInput();
+
+                    var calculateTotal = function() {
+                        var questionsTemp = 0,
+                            hoursTemp = 0,
+                            curQuestions,
+                            curHours,
+                            i;
+
+                        for(i = 0; i < curRowQuestionsLen; i += 1) {
+                            curQuestions = Number($($curRowQuestions[i]).text());
+                            curHours     = Number($($curRowHours[i]).text());
+
+                            questionsTemp += curQuestions;
+                            hoursTemp += curHours;
+                        }
+
+                        $totalQuestions.text(questionsTemp);
+                        $totalHours.text(hoursTemp);
+
+                        $totalQuestionsHidden.val(questionsTemp);
+                        $totalHoursHidden.val(hoursTemp);
+                    };
+
+                    var inputToView = function() {
+                        $curQuestionsView.text($curQuestionsInput.val());
+                        $curHoursView.text($curHoursInput.val());
+
+                        $curQuestionsHidden.val($curQuestionsInput.val());
+                        $curHoursHidden.val($curHoursInput.val());
+
+                        calculateTotal();
+                    };
+
+                    $curQuestionsInput.on({
+                        keyup: inputToView,
+                        click: inputToView
+                    }, calculateTotal);
+
+                    $curHoursInput.on({
+                        keyup: inputToView,
+                        click: inputToView
+                    }, calculateTotal);
+                };
+
+                $dayPopoverBtn.on('shown.bs.popover', primaryCb);
+            }
+        };
+
+        daysTotalFun();
+        billableTotalFun();
 
 
         var getIdNo = function(str) {

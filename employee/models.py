@@ -7,15 +7,15 @@ from django.core.files.storage import FileSystemStorage
 fs = FileSystemStorage(location='employee/emp_photo')
 
 SEX_CHOICES = (
-	('00', 'MALE'), 
+	('00', 'MALE'),
 	('01', 'FEMALE'),
 	      )
 
 MARITAL_CHOICES = (
-	('00', 'Married'), 
-	('01', 'Windowed'), 
-	('02', 'Seperated'), 
-	('03', 'Divorced'), 
+	('00', 'Married'),
+	('01', 'Windowed'),
+	('02', 'Seperated'),
+	('03', 'Divorced'),
 	('04', 'Single'),
 		  )
 
@@ -41,7 +41,7 @@ DEPART_CHOICES = (
 	('03', 'Human resource'),
 	('04', 'IT Department'),
 			     )
-    )	 
+    )
 		)
 
 CATEG_CHOICES = (

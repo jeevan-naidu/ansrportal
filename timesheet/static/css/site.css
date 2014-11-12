@@ -79,3 +79,41 @@ body {
     padding-bottom: 10px;
 }
 
+.sm-fw-label {
+    width: 80px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.small-input {
+    display: inline-block;
+    width: 70px
+}
+
+.mar-bot-5 {
+    margin-bottom: 5px;
+}
+
+.b-questions,
+.b-hours {
+    display: inline-block;
+    min-width: 12px;
+}
+
+.t-questions,
+.t-hours {
+    display: inline-block;
+    min-width: 16px;
+    font-weight: bold;
+}
+
+.b-questions,
+.t-questions{
+    color: #C30;
+}
+
+.t-hours,
+.b-hours {
+    color: #428bca;
+}
+
