@@ -107,7 +107,6 @@ def Timesheet(request):
                 del(timesheet.cleaned_data['friday'])
                 del(timesheet.cleaned_data['saturday'])
                 del(timesheet.cleaned_data['total'])
-                print timesheet.cleaned_data
                 for k, v in timesheet.cleaned_data.iteritems():
                     if k == 'mondayH':
                         mondayTotal += v
@@ -125,7 +124,6 @@ def Timesheet(request):
                         billableTotal += v
                         weekTotal += v
                     timesheetDict[k] = v
-                print billableTotal
                 timesheetList.append(timesheetDict.copy())
                 timesheetDict.clear()
             for activity in activities:
