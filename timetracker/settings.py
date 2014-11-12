@@ -23,8 +23,10 @@ AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
 #AUTH_LDAP_BASE_DN = "dc=fantain,dc=com"
 AUTH_LDAP_BIND_DN = "cn=admin,dc=fantain,dc=com"
 AUTH_LDAP_BIND_PASSWORD = "fant@in"
-AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=fantain,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=fantainusers,dc=fantain,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
 #AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=fantainusers,dc=fantain,dc=com"
+#AUTH_LDAP_GROUP_SEARCH = LDAPSearch("cn=users,ou=fantaingroups,dc=fantain,dc=com",
+#    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)")
 AUTH_LDAP_REQUIRE_GROUP = "cn=users,ou=fantaingroups,dc=fantain,dc=com"
 AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")
 AUTH_LDAP_VERSION = 3
@@ -66,12 +68,14 @@ AUTH_LDAP_PROFILE_ATTR_MAP = {
 }
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_active": "cn=active,ou=django,ou=groups,dc=example,dc=com",
+    "is_active": "cn=active,cn=users,ou=fantaingroups,dc=fantain,dc=com",
     "is_staff": "cn=staff,ou=django,ou=groups,dc=example,dc=com",
     "is_superuser": "cn=superuser,ou=django,ou=groups,dc=example,dc=com"
 }
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
+#AUTH_LDAP_FIND_GROUP_PERMS = True
+#AUTH_LDAP_CACHE_TIMEOUT = 3600
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -95,6 +99,7 @@ ALLOWED_HOSTS = []
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'timesheet/templates/timesheet/'),
     os.path.join(BASE_DIR, 'employee/template/'),
+    os.path.join(BASE_DIR, 'employee/emp_photo/'),
 )
 
 # Crispy Forms Layout
