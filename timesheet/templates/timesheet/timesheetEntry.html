@@ -34,7 +34,7 @@
 		<thead>
             	<tr>
 			{% for data in form %}
-				{% if 'Questions' not in data.label and 'Hours' not in data.label %}
+				{% if 'Questions' not in data.label and 'Hours' not in data.label %}	
 				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 11 %}
 					<th class="res-14-per">
 				{% else %}
@@ -44,7 +44,7 @@
 				{% if data.field.required %}
 					<span class="required">*</span>
 				{% endif %}
-				</th>
+					</th>
 				{% endif %}
 			{% endfor %}
             	</tr>
@@ -58,8 +58,11 @@
 						<a class="btn btn-default day-popover-button" href="javascript:;">
 							<span class="b-questions">0</span> Q 
 							<span class="b-hours">0</span> H
-                            <input type="hidden" class="b-questions-hidden" value="0">
-                            <input type="hidden" class="b-hours-hidden" value="0">
+							{% for data in form.hidden_fields %}
+								{% if 'monday' in data.id_for_label %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
 						</a>
 					</td>
 				{% elif data.label == 'Tue' %}
@@ -67,8 +70,11 @@
 						<a class="btn btn-default day-popover-button" href="javascript:;">
 							<span class="b-questions">0</span> Q 
 							<span class="b-hours">0</span> H
-                            <input type="hidden" class="b-questions-hidden" value="0">
-                            <input type="hidden" class="b-hours-hidden" value="0">
+							{% for data in form.hidden_fields %}
+								{% if 'tuesday' in data.id_for_label %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
 						</a>
 					</td>
 				{% elif data.label == 'Wed' %}
@@ -76,8 +82,11 @@
 						<a class="btn btn-default day-popover-button" href="javascript:;">
 							<span class="b-questions">0</span> Q 
 							<span class="b-hours">0</span> H
-                            <input type="hidden" class="b-questions-hidden" value="0">
-                            <input type="hidden" class="b-hours-hidden" value="0">
+							{% for data in form.hidden_fields %}
+								{% if 'wednesday' in data.id_for_label %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
 						</a>
 					</td>
 				{% elif data.label == 'Thu' %}
@@ -85,8 +94,11 @@
 						<a class="btn btn-default day-popover-button" href="javascript:;">
 							<span class="b-questions">0</span> Q 
 							<span class="b-hours">0</span> H
-                            <input type="hidden" class="b-questions-hidden" value="0">
-                            <input type="hidden" class="b-hours-hidden" value="0">
+							{% for data in form.hidden_fields %}
+								{% if 'thursday' in data.id_for_label %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
 						</a>
 					</td>
 				{% elif data.label == 'Fri' %}
@@ -94,8 +106,11 @@
 						<a class="btn btn-default day-popover-button" href="javascript:;">
 							<span class="b-questions">0</span> Q 
 							<span class="b-hours">0</span> H
-                            <input type="hidden" class="b-questions-hidden" value="0">
-                            <input type="hidden" class="b-hours-hidden" value="0">
+							{% for data in form.hidden_fields %}
+								{% if 'friday' in data.id_for_label %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
 						</a>
 					</td>
 				{% elif data.label == 'Sat' %}
@@ -103,8 +118,11 @@
 						<a class="btn btn-default day-popover-button" href="javascript:;">
 							<span class="b-questions">0</span> Q 
 							<span class="b-hours">0</span> H
-                            <input type="hidden" class="b-questions-hidden" value="0">
-                            <input type="hidden" class="b-hours-hidden" value="0">
+							{% for data in form.hidden_fields %}
+								{% if 'saturday' in data.id_for_label %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
 						</a>
 					</td>
 				{% elif data.label == 'Total' %}
@@ -112,8 +130,11 @@
 						<a class="btn btn-default" href="javascript:;">
 							<span class="t-questions">0</span> Q 
 							<span class="t-hours">0</span> H
-                            <input type="hidden" class="t-questions-hidden" value="0">
-                            <input type="hidden" class="t-hours-hidden" value="0">
+							{% for data in form.hidden_fields %}
+								{% if 'total' in data.id_for_label %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
 						</a>
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label %}

@@ -120,26 +120,40 @@ def TimesheetFormset(currentUser):
         )
         task = forms.ChoiceField(choices=TASK, label='Task')
         monday = forms.CharField(label="Mon")
-        mondayQ = forms.IntegerField(label="Hours")
-        mondayH = forms.IntegerField(label="Questions")
-        tuesday = forms.CharField(label="Tue",)
-        tuesdayQ = forms.IntegerField(label="Hours")
-        tuesdayH = forms.IntegerField(label="Questions")
+        mondayH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        mondayQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
+        tuesday = forms.CharField(label="Tue")
+        tuesdayH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        tuesdayQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
         wednesday = forms.CharField(label="Wed")
-        wednesdayQ = forms.IntegerField(label="Hours")
-        wedbesdayH = forms.IntegerField(label="Questions")
+        wednesdayH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        wednesdayQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
         thursday = forms.CharField(label="Thu")
-        thursdayQ = forms.IntegerField(label="Hours")
-        thursdayH = forms.IntegerField(label="Questions")
+        thursdayH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        thursdayQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
         friday = forms.CharField(label="Fri")
-        fridayQ = forms.IntegerField(label="Hours")
-        fridayH = forms.IntegerField(label="Questions")
+        fridayH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        fridayQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
         saturday = forms.CharField(label="Sat")
-        saturdayQ = forms.IntegerField(label="Hours")
-        saturdayH = forms.IntegerField(label="Questions")
+        saturdayH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        saturdayQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
         total = forms.CharField(label="Total", required=False)
-        totalQ = forms.IntegerField(label="Hours")
-        totalH = forms.IntegerField(label="Questions")
+        totalH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        totalQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
         feedback = forms.CharField(
             max_length="50", label="Feedback", required=False
         )
@@ -154,36 +168,48 @@ def TimesheetFormset(currentUser):
             self.fields['project'].widget.attrs['class'] = "form-control"
             self.fields['chapter'].widget.attrs['class'] = "form-control"
             self.fields['task'].widget.attrs['class'] = "form-control"
-            self.fields['monday'].widget.attrs['value'] = '0 Q in 0 H'
-            self.fields['tuesday'].widget.attrs['value'] = '0 Q in 0 H'
-            self.fields['wednesday'].widget.attrs['value'] = '0 Q in 0 H'
-            self.fields['thursday'].widget.attrs['value'] = '0 Q in 0 H'
-            self.fields['friday'].widget.attrs['value'] = '0 Q in 0 H'
-            self.fields['saturday'].widget.attrs['value'] = '0 Q in 0 H'
-            self.fields['monday'].widget.attrs['class'] = "form-control \
-            days input-field"
-            self.fields['tuesday'].widget.attrs['class'] = "form-control \
-            days input-field"
-            self.fields['wednesday'].widget.attrs['class'] = "form-control \
-            days input-field"
-            self.fields['thursday'].widget.attrs['class'] = "form-control \
-            days input-field"
-            self.fields['friday'].widget.attrs['class'] = "form-control \
-            days input-field"
-            self.fields['saturday'].widget.attrs['class'] = "form-control \
-            days input-field"
-            self.fields['total'].widget.attrs['class'] = "form-control \
-            total input-field"
-            self.fields['total'].widget.attrs['value'] = "0 Q in 0 H"
+            self.fields['mondayQ'].widget.attrs['class'] = "b-questions-hidden"
+            self.fields['mondayH'].widget.attrs[
+                'class'
+            ] = "b-hours-hidden"
+            self.fields['tuesdayQ'].widget.attrs['class'] = "b-questions-hidden"
+            self.fields['tuesdayH'].widget.attrs['class'] = "b-hours-hidden"
+            self.fields['wednesdayQ'].widget.attrs[
+                'class'
+            ] = "b-questions-hidden"
+            self.fields['wednesdayH'].widget.attrs[
+                'class'
+            ] = "b-hours-hidden"
+            self.fields['thursdayQ'].widget.attrs[
+                'class'
+            ] = "b-questions-hidden"
+            self.fields['thursdayH'].widget.attrs['class'] = "b-hours-hidden"
+            self.fields['fridayQ'].widget.attrs['class'] = "b-questions-hidden"
+            self.fields['fridayH'].widget.attrs['class'] = "b-hours-hidden"
+            self.fields['saturdayQ'].widget.attrs[
+                'class'
+            ] = "b-questions-hidden"
+            self.fields['saturdayH'].widget.attrs['class'] = "b-hours-hidden"
+            self.fields['totalQ'].widget.attrs['class'] = "t-questions-hidden"
+            self.fields['totalH'].widget.attrs[
+                'class'
+            ] = "t-hours-hidden"
             self.fields['feedback'].widget.attrs['class'] = "form-control"
             self.fields['feedback'].widget.attrs['readonly'] = True
-            self.fields['total'].widget.attrs['readonly'] = True
-            self.fields['monday'].widget.attrs['readonly'] = True
-            self.fields['tuesday'].widget.attrs['readonly'] = True
-            self.fields['wednesday'].widget.attrs['readonly'] = True
-            self.fields['thursday'].widget.attrs['readonly'] = True
-            self.fields['friday'].widget.attrs['readonly'] = True
-            self.fields['saturday'].widget.attrs['readonly'] = True
+            self.fields['mondayH'].widget.attrs['class'] = "form-control"
+            self.fields['mondayQ'].widget.attrs['value'] = 0
+            self.fields['tuesdayH'].widget.attrs['value'] = 0
+            self.fields['tuesdayQ'].widget.attrs['value'] = 0
+            self.fields['wednesdayH'].widget.attrs['value'] = 0
+            self.fields['wednesdayQ'].widget.attrs['value'] = 0
+            self.fields['thursdayH'].widget.attrs['value'] = 0
+            self.fields['thursdayQ'].widget.attrs['value'] = 0
+            self.fields['fridayH'].widget.attrs['value'] = 0
+            self.fields['fridayQ'].widget.attrs['value'] = 0
+            self.fields['saturdayH'].widget.attrs['value'] = 0
+            self.fields['saturdayQ'].widget.attrs['value'] = 0
+            self.fields['totalH'].widget.attrs['value'] = 0
+            self.fields['totalQ'].widget.attrs['value'] = 0
     return TimeSheetEntryForm
 
 
