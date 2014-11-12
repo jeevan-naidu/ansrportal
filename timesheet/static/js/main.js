@@ -56,10 +56,12 @@ app.getIdNo = function(str) {
             $tds.each(function(index) {
                 $element = $(this);
                 $curId = $element.attr('id');
-                //$curId = $curId.replace(app.getIdNo($curId), newRowId);
 
-                //$element.attr('id', $curId);
-                //$element.attr('name', $curId);
+                if($curId) {
+                    $curId = $curId.replace(app.getIdNo($curId), newRowId);
+                    $element.attr('id', $curId);
+                    $element.attr('name', $curId);
+                }
 
                 if(index === 1 || index === 2) {
                     $element.val('');
@@ -170,9 +172,13 @@ app.getIdNo = function(str) {
                         $curRowHours            = $curRow.find('.b-hours'),
                         $totalQuestions         = $curRow.find('.t-questions'),
                         $totalHours             = $curRow.find('.t-hours'),
+                        $totalQuestionsHidden   = $curRow.find('.t-questions-hidden'),
+                        $totalHoursHidden       = $curRow.find('.t-hours-hidden'),
                         curRowQuestionsLen      = $curRowQuestions.length,
-                        $curQuestionsView       = $(this).find('.b-questions'),
+                        $curQuestionsView       = $curDayBtn.find('.b-questions'),
                         $curHoursView           = $curDayBtn.find('.b-hours'),
+                        $curQuestionsHidden     = $curDayBtn.find('.b-questions-hidden'),
+                        $curHoursHidden         = $curDayBtn.find('.b-hours-hidden'),
                         $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
                         curQuestionsViewText    = $curQuestionsView.text(),
@@ -202,11 +208,20 @@ app.getIdNo = function(str) {
 
                         $totalQuestions.text(questionsTemp);
                         $totalHours.text(hoursTemp);
+
+
+                        console.log($totalQuestionsHidden);
+
+                        $totalQuestionsHidden.val(questionsTemp);
+                        $totalHoursHidden.val(hoursTemp);
                     };
 
                     var inputToView = function() {
                         $curQuestionsView.text($curQuestionsInput.val());
                         $curHoursView.text($curHoursInput.val());
+
+                        $curQuestionsHidden.val($curQuestionsInput.val());
+                        $curHoursHidden.val($curHoursInput.val());
 
                         calculateTotal();
                     };
