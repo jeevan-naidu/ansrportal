@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, logout
+from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -9,9 +10,11 @@ from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.db.models import Q
+from django.conf import settings
 # views for ansr
 
 FORMS = [
@@ -341,6 +344,11 @@ def Timesheet(request):
 
 
 def ApproveTimesheet(request):
+    unApprovedTimeSheet = TimeSheetEntry.objects.filter(
+        project__projectManager=request.user,
+        approved=False
+    ).values('project__name', 'wkstart', 'wkend', 'teamMember__name',
+             'totalH', 'exception', 'approved', 'managerFeedback')
     return render(request, 'timesheet/timesheetApprove.html', {})
 
 
@@ -451,9 +459,18 @@ class CreateProjectWizard(SessionWizardView):
             ] = milestoneDataCounter + 1
             cleanedMilestoneData.append(changedMilestoneData.copy())
             changedMilestoneData.clear()
+        basicInfoDict = {}
+        for k, v in basicInfo.iteritems():
+            key = Project._meta.get_field_by_name(k)[0].verbose_name
+            if k == 'chapters':
+                basicInfoDict[key] = basicInfo[k].values('name')
+            elif k == 'bu':
+                print type(basicInfo[k])
+            else:
+                basicInfoDict[key] = basicInfo[k]
 
         data = {
-            'basicInfo': basicInfo,
+            'basicInfo': basicInfoDict,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
         }
@@ -470,6 +487,8 @@ def saveProject(request):
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
         pr.save()
+        request.session['currentProject'] = pr.id
+        request.session['currentProjectName'] = pr.name
 
         for eachId in request.session['chapters']:
             pr.chapters.add(eachId)
@@ -503,6 +522,34 @@ def saveProject(request):
 
         data = {'projectId': pr.id, 'projectName': pr.name}
         return render(request, 'timesheet/projectSuccess.html', data)
+
+
+def notify(request):
+    projectId = request.session['currentProject']
+    teamMembers = ProjectTeamMember.objects.filter(
+        project=projectId
+    ).values('member__email', 'member__first_name', 'member__last_name')
+    for eachMember in teamMembers:
+        notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                            'hai',
+                                            settings.EMAIL_HOST_USER,
+                                            ['{0}'.format(
+                                                eachMember['member__email']
+                                            )],)
+
+        emailTemp = render_to_string(
+            'projectCreatedEmail.html',
+            {
+                'firstName': eachMember['member__first_name'],
+                'lastName': eachMember['member__last_name'],
+                'projectId': projectId
+            }
+        )
+        notifyTeam.attach_alternative(emailTemp, 'text/html')
+        notifyTeam.send()
+    projectName = request.session['currentProjectName']
+    data = {'projectId': projectId, 'projectName': projectName, 'notify': 'F'}
+    return render(request, 'timesheet/projectSuccess.html', data)
 
 
 def deleteProject(request):
