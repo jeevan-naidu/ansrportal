@@ -101,12 +101,13 @@ def Timesheet(request):
             weekHolidays = Holiday.objects.filter(
                 date__range=[changedStartDate, changedEndDate]
             ).values('date')
-            holidayDay = []
-            for holiday in weekHolidays:
-                for k, v in holiday.iteritems():
-                    day = v.strftime('%A')
-            print holidayDay
             for timesheet in timesheets:
+                for holiday in weekHolidays:
+                    holidayDay = '{0}H'.format(
+                        holiday['date'].strftime('%A').lower()
+                    )
+                    if timesheet.cleaned_data[holidayDay] > 0:
+                        leaveDayWork = True
                 del(timesheet.cleaned_data['DELETE'])
                 del(timesheet.cleaned_data['monday'])
                 del(timesheet.cleaned_data['tuesday'])
@@ -160,7 +161,8 @@ def Timesheet(request):
                     (fridayTotal > 24) | (saturdayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
             elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove) | \
-                 (billableTotal > 44) | (nonbillableTotal > 40):
+                 (billableTotal > 44) | (nonbillableTotal > 40) | \
+                 (leaveDayWork is True):
                 for eachActivity in activitiesList:
                     # Getting objects for models
                     nonbillableTS = TimeSheetEntry()
@@ -206,8 +208,10 @@ def Timesheet(request):
                         billableTS.exception = '10% deviation in totalhours \
                             for this week'
                     elif billableTotal > 40:
-                        billableTS.exception = 'NonBillable activity more \
+                        billableTS.exception = 'Billable activity more \
                             than 40 Hours'
+                    elif leaveDayWork is True:
+                        billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
