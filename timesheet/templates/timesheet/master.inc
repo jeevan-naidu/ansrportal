@@ -10,9 +10,6 @@
        {# Load the tag library #}
        {% load bootstrap3 %}
 
-       {# To get verbose names our templates #}
-       {% load verbose_name %}
-
        {# Load Bootstrap CSS and JS #}
        {% bootstrap_css %}
        {% bootstrap_javascript %}
