@@ -135,6 +135,8 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
+							<input type="hidden" id="r-total-idle-hours" value="0" />
+							<input type="hidden" id="r-total-billable-hours" value="0" />
 						</a>
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label %}
