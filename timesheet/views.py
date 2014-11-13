@@ -4,7 +4,7 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember
+    ProjectMilestone, ProjectTeamMember, Holiday
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
@@ -98,6 +98,9 @@ def Timesheet(request):
             nonbillableTotal = 0
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
+            print Holida
+            for week in range(6):
+                print changedStartDate + timedelta(week)
             for timesheet in timesheets:
                 del(timesheet.cleaned_data['DELETE'])
                 del(timesheet.cleaned_data['monday'])
