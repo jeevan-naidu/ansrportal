@@ -26,6 +26,7 @@ app.getIdNo = function(str) {
         var $table = $(this),
             $addBtn = $(options.add),
             $delBtn = $(options.del),
+            $rows   = $table.find('tr'),
 
             rowCountElement = $table.find('input[type="hidden"]:nth-of-type(1)'),
             rowCount = Number(rowCountElement.val());
@@ -186,8 +187,10 @@ app.getIdNo = function(str) {
         };
 
         var billableTotalFun = function() {
+            var bModule = {};
             if(options.billableTotal) {
                 var $dayPopoverBtn = $table.find('.day-popover-button');
+                var $bTask = $table.find('.b-task');
 
                 var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
@@ -235,18 +238,20 @@ app.getIdNo = function(str) {
                             i,
                             curTaskVal = $curRow.find('.b-task option:selected').val(),
                             curTotalIdleHours          = 0,
-                            curTotalBillableHours      = 0;
+                            curTotalBillableHours      = 0,
+                            $curTotalIdleHoursHidden    = $curRow.find('.r-total-idle-hours'),
+                            $curTotalBillableHoursHidden    = $curRow.find('.r-total-billable-hours');
+
 
                         if(curTaskVal === 'I') {
-                            $curRow.addClass('idle-row');
+                            $curRow.removeClass('billable-row').addClass('idle-row');
                         } else {
-                            $curRow.addClass('billable-row');
+                            $curRow.removeClass('idle-row').addClass('billable-row');
                         }
 
                         for(i = 0; i < curRowQuestionsLen; i += 1) {
                             curQuestions = Number($($curRowQuestions[i]).text());
                             curHours     = Number($($curRowHours[i]).text());
-
 
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
@@ -264,20 +269,39 @@ app.getIdNo = function(str) {
                         $totalQuestionsHidden.val(questionsTemp);
                         $totalHoursHidden.val(hoursTemp);
 
+                        // Idle and billable hours
+                        $curTotalIdleHoursHidden.val(curTotalIdleHours);
+                        $curTotalBillableHoursHidden.val(curTotalBillableHours);
+
+                        var totalIdleAndBillableHours = function() {
+                            var $rTotalIdleHoursList = $table.find('.r-total-idle-hours'),
+                                $rTotalBillableHoursList = $table.find('.r-total-billable-hours'),
+                                rTotalIdleHoursListLen = $rTotalIdleHoursList.length,
+                                tempIdleTotal = 0,
+                                tempBillableTotal = 0,
+                                curIdleTotal,
+                                curBillableTotal,
+                                idleTotalHours,
+                                billableTotalHours;
+
+                            for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
+                                curIdleTotal = Number($($rTotalIdleHoursList[i]).val());
+                                curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
+
+                                tempIdleTotal += curIdleTotal;
+                                tempBillableTotal += curBillableTotal;
+                            }
+
+                            idleTotalHours = tempIdleTotal;
+                            billableTotalHours = tempBillableTotal;
+                        };
 
                         totalIdleAndBillableHours();
+
+
                     };
 
-                    var totalIdleAndBillableHours = function() {
-                        var $idleRows = $('.idle-row'),
-                            $billableRows = $('.billable'),
-                            idleRowsLen = $idleRows.length,
-                            i;
-
-                        for(i = 0; i < idleRowsLen; i += 1) {
-                            console.log(i);
-                        }
-                    };
+                    calculateTotal();
 
                     var inputToView = function() {
                         $curQuestionsView.text($curQuestionsInput.val());
@@ -301,6 +325,9 @@ app.getIdNo = function(str) {
                 };
 
                 $dayPopoverBtn.on('shown.bs.popover', primaryCb);
+                $bTask.on({
+                    change: primaryCb
+                });
             }
         };
 
