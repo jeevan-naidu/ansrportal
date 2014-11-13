@@ -104,6 +104,7 @@ app.getIdNo = function(str) {
                     curDItemId,
                     i;
 
+
                 for(i = 0; i < dItemsLen; i += 1) {
                     curDItem = dItems[i];
                     curDItemId = $(curDItem).attr('id');
@@ -218,6 +219,7 @@ app.getIdNo = function(str) {
                         curQuestionsViewText    = $curQuestionsView.text(),
                         curHoursViewText        = $curHoursView.text();
 
+
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
@@ -230,14 +232,30 @@ app.getIdNo = function(str) {
                             hoursTemp = 0,
                             curQuestions,
                             curHours,
-                            i;
+                            i,
+                            curTaskVal = $curRow.find('.b-task option:selected').val(),
+                            curTotalIdleHours          = 0,
+                            curTotalBillableHours      = 0;
+
+                        if(curTaskVal === 'I') {
+                            $curRow.addClass('idle-row');
+                        } else {
+                            $curRow.addClass('billable-row');
+                        }
 
                         for(i = 0; i < curRowQuestionsLen; i += 1) {
                             curQuestions = Number($($curRowQuestions[i]).text());
                             curHours     = Number($($curRowHours[i]).text());
 
+
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
+
+                            if(curTaskVal === 'I') {
+                                curTotalIdleHours += curHours;
+                            } else {
+                                curTotalBillableHours += curHours;
+                            }
                         }
 
                         $totalQuestions.text(questionsTemp);
@@ -245,6 +263,20 @@ app.getIdNo = function(str) {
 
                         $totalQuestionsHidden.val(questionsTemp);
                         $totalHoursHidden.val(hoursTemp);
+
+
+                        totalIdleAndBillableHours();
+                    };
+
+                    var totalIdleAndBillableHours = function() {
+                        var $idleRows = $('.idle-row'),
+                            $billableRows = $('.billable'),
+                            idleRowsLen = $idleRows.length,
+                            i;
+
+                        for(i = 0; i < idleRowsLen; i += 1) {
+                            console.log(i);
+                        }
                     };
 
                     var inputToView = function() {
