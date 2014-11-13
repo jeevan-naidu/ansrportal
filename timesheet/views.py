@@ -71,6 +71,7 @@ def Timesheet(request):
     today = datetime.now().date()
     minAutoApprove = 36
     maxAutoApprove = 44
+    leaveDayWork = False
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=5)
     disabled = 'next'
@@ -108,6 +109,15 @@ def Timesheet(request):
                     )
                     if timesheet.cleaned_data[holidayDay] > 0:
                         leaveDayWork = True
+                plannedEffort = ProjectTeamMember.objects.filter(
+                    member=request.user,
+                    project=timesheet.cleaned_data['project']
+                ).values('plannedEffort')
+                myTotalEfforts = TimeSheetEntry.objects.filter(
+                    teamMember=request.user,
+                    project=timesheet.cleaned_data['project']
+                )
+                print myTotalEfforts
                 del(timesheet.cleaned_data['DELETE'])
                 del(timesheet.cleaned_data['monday'])
                 del(timesheet.cleaned_data['tuesday'])
@@ -135,6 +145,8 @@ def Timesheet(request):
                     timesheetDict[k] = v
                 timesheetList.append(timesheetDict.copy())
                 timesheetDict.clear()
+                for myEffort in plannedEffort:
+                    print myEffort['plannedEffort']
             for activity in activities:
                 del(activity.cleaned_data['DELETE'])
                 for k, v in activity.cleaned_data.iteritems():
@@ -286,9 +298,10 @@ def Timesheet(request):
                 approved=False,
                 activity__isnull=True
             )
-        ).values('project', 'chapter', 'task', 'mondayH',
-                 'tuesdayH', 'wednesdayH', 'thursdayH',
-                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
+        ).values('project', 'chapter', 'task', 'mondayH', 'mondayQ',
+                 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
+                 'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
                  )
         tsData = {}
         tsDataList = []
