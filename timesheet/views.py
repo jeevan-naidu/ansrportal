@@ -98,9 +98,14 @@ def Timesheet(request):
             nonbillableTotal = 0
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
-            print Holida
-            for week in range(6):
-                print changedStartDate + timedelta(week)
+            weekHolidays = Holiday.objects.filter(
+                date__range=[changedStartDate, changedEndDate]
+            ).values('date')
+            holidayDay = []
+            for holiday in weekHolidays:
+                for k, v in holiday.iteritems():
+                    day = v.strftime('%A')
+            print holidayDay
             for timesheet in timesheets:
                 del(timesheet.cleaned_data['DELETE'])
                 del(timesheet.cleaned_data['monday'])
