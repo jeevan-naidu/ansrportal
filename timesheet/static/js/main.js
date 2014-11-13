@@ -42,7 +42,7 @@ app.getIdNo = function(str) {
                 $curIdSel,
                 $curChildEle,
                 curChildId,
-                $curChildEleInput;
+                $curChildEleInput,
 
             // Slice the id number from last row id
             lastRowId = getIdNo(lastRowId);
@@ -79,7 +79,6 @@ app.getIdNo = function(str) {
                         $curChildEle = $element.find('div:nth-child(1n)');
                         $curChildEleInput = $curIdSel.find('input');
 
-                        console.log($curChildEleInput);
                         $curChildEle.attr('id', $curId);
                         $curChildEle.attr('name', $curId);
                         $curChildEleInput.attr('id', $curId);
@@ -169,14 +168,34 @@ app.getIdNo = function(str) {
                         $curEleVal = Number($curEleVal),
                         i,
                         $curDay,
-                        temp = 0;
+                        temp = 0,
+                        $rows = $table.find('tr'),
+                        $totalList = $rows.find('.r-total'),
+                        totalListLen = $totalList.length,
+                        curTotalNonBillable,
+                        tempTotalNonBillable = 0,
+                        totalNonBillable;
 
                     for (i = 0; i < $curDaysLen; i += 1) {
                         $curDay = Number($($curDays[i]).val());
                         temp += $curDay;
                     }
 
+                    var nonBillableTotalFun = function() {
+                        for(i = 0; i < totalListLen; i += 1) {
+                            curTotalNonBillable = Number($($totalList[i]).val());
+
+                            tempTotalNonBillable +=  curTotalNonBillable;
+                        }
+
+                        totalNonBillable = tempTotalNonBillable;
+                    };
+
+
+
                     $curTotal.val(temp);
+
+                    nonBillableTotalFun();
                 };
 
                 $days.on({
@@ -187,7 +206,6 @@ app.getIdNo = function(str) {
         };
 
         var billableTotalFun = function() {
-            var bModule = {};
             if(options.billableTotal) {
                 var $dayPopoverBtn = $table.find('.day-popover-button');
                 var $bTask = $table.find('.b-task');
@@ -297,8 +315,6 @@ app.getIdNo = function(str) {
                         };
 
                         totalIdleAndBillableHours();
-
-
                     };
 
                     calculateTotal();
@@ -334,11 +350,9 @@ app.getIdNo = function(str) {
         daysTotalFun();
         billableTotalFun();
 
-
         var getIdNo = function(str) {
             return str.match(/\d+/)[0];
         };
-
 
         // Dom events
         $addBtn.on('click', add);
