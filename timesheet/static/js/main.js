@@ -49,6 +49,7 @@ app.getIdNo = function(str) {
 
             newRow = lastRow.clone();
             newRowId = lastRowId + 1;
+
             lastRow.after(newRow);
 
             $tds = newRow.find('td > :first-child');
@@ -86,8 +87,6 @@ app.getIdNo = function(str) {
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
                     }
                 }
-
-
             });
 
             if(options.billableTotal) {
@@ -98,8 +97,20 @@ app.getIdNo = function(str) {
                     newRowTotalQuestions        = newRow.find('.t-questions'),
                     newRowTotalHours            = newRow.find('.t-hours'),
                     newRowTotalQuestionsHidden  = newRow.find('.t-questions-hidden'),
-                    newRowTotalHoursHidden      = newRow.find('.t-hours-hidden');
+                    newRowTotalHoursHidden      = newRow.find('.t-hours-hidden'),
+                    dItems                      = newRow.find('.d-item'),
+                    dItemsLen                   = dItems.length,
+                    curDItem,
+                    curDItemId,
+                    i;
 
+                for(i = 0; i < dItemsLen; i += 1) {
+                    curDItem = dItems[i];
+                    curDItemId = $(curDItem).attr('id');
+                    curDItemId = curDItemId.replace(app.getIdNo(curDItemId), newRowId);
+
+                    $(curDItem).attr('id', curDItemId);
+                }
 
                 newRowBQuestions.text('0');
                 newRowBHours.text('0');
