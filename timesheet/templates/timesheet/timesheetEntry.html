@@ -191,16 +191,16 @@
 							{% for data in form.hidden_fields %}
 								{% if 'totalQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-questions">{{ data.value }}</span> Q 
+										<span class="t-questions">{{ data.value }}</span> Q 
 									{% else %}
-										<span class="b-questions">0</span> Q 
+										<span class="t-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
 								{% elif 'totalH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="t-hours">{{ data.value }}</span> H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="t-hours">0</span> H
 									{% endif %}
 									{{ data }}
 								{% endif %}

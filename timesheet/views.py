@@ -117,7 +117,6 @@ def Timesheet(request):
                     teamMember=request.user,
                     project=timesheet.cleaned_data['project']
                 )
-                print myTotalEfforts
                 del(timesheet.cleaned_data['DELETE'])
                 del(timesheet.cleaned_data['monday'])
                 del(timesheet.cleaned_data['tuesday'])
@@ -146,7 +145,7 @@ def Timesheet(request):
                 timesheetList.append(timesheetDict.copy())
                 timesheetDict.clear()
                 for myEffort in plannedEffort:
-                    print myEffort['plannedEffort']
+                    tt = myEffort['plannedEffort']
             for activity in activities:
                 del(activity.cleaned_data['DELETE'])
                 for k, v in activity.cleaned_data.iteritems():
@@ -184,26 +183,26 @@ def Timesheet(request):
                     nonbillableTS.teamMember = request.user
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
-                        nonbillableTS.exception = '10% deviation in totalhours \
-                            for this week'
+                        nonbillableTS.exception = \
+                            '10% deviation in totalhours for this week'
                     elif nonbillableTotal > 40:
-                        nonbillableTS.exception = 'NonBillable activity more \
-                            than 40 Hours'
+                        nonbillableTS.exception = \
+                            'NonBillable activity more than 40 Hours'
                     for k, v in eachActivity.iteritems():
                         if k == 'activity_monday':
-                            nonbillableTS.monday = v
+                            nonbillableTS.mondayH = v
                         elif k == 'activity_tuesday':
-                            nonbillableTS.tuesday = v
+                            nonbillableTS.tuesdayH = v
                         elif k == 'activity_wednesday':
-                            nonbillableTS.wednesday = v
+                            nonbillableTS.wednesdayH = v
                         elif k == 'activity_thursday':
-                            nonbillableTS.thursday = v
+                            nonbillableTS.thursdayH = v
                         elif k == 'activity_friday':
-                            nonbillableTS.friday = v
+                            nonbillableTS.fridayH = v
                         elif k == 'activity_saturday':
-                            nonbillableTS.saturday = v
+                            nonbillableTS.saturdayH = v
                         elif k == 'activity_total':
-                            nonbillableTS.total = v
+                            nonbillableTS.totalH = v
                         elif k == 'activity_feedback':
                             nonbillableTS.feedback = v
                         elif k == 'activity':
@@ -217,11 +216,11 @@ def Timesheet(request):
                     billableTS.billable = True
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
-                        billableTS.exception = '10% deviation in totalhours \
-                            for this week'
+                        billableTS.exception = \
+                            '10% deviation in totalhours for this week'
                     elif billableTotal > 40:
-                        billableTS.exception = 'Billable activity more \
-                            than 40 Hours'
+                        billableTS.exception = \
+                            'Billable activity more than 40 Hours'
                     elif leaveDayWork is True:
                         billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
