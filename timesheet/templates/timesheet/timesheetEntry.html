@@ -197,6 +197,33 @@
 	{% endfor %}
 	</table>
     </div>
+    <div class="row">
+        <div class="col-md-4 pull-right">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Hours</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Project Billable</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td>Project Idle</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>Others</td>
+                    <td>5</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
  <button type="submit" value="submit" class="btn btn-info pull-right">
