@@ -166,6 +166,7 @@ app.getIdNo = function(str) {
                         $curTotal = $curRow.find('.total'),
                         $curEleVal = $curEle.val(),
                         $curEleVal = Number($curEleVal),
+                        $totalNonBillableHours = $('.total-non-billable-hours'),
                         i,
                         $curDay,
                         temp = 0,
@@ -189,6 +190,8 @@ app.getIdNo = function(str) {
                         }
 
                         totalNonBillable = tempTotalNonBillable;
+
+                        $totalNonBillableHours.text(totalNonBillable);
                     };
 
 
@@ -238,7 +241,9 @@ app.getIdNo = function(str) {
                         $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
                         curQuestionsViewText    = $curQuestionsView.text(),
-                        curHoursViewText        = $curHoursView.text();
+                        curHoursViewText        = $curHoursView.text(),
+                        $totalBillableHours     = $('.total-billable-hours'),
+                        $totalIdleHours         = $('.total-idle-hours');
 
 
                     var viewToInput = function() {
@@ -302,6 +307,7 @@ app.getIdNo = function(str) {
                                 idleTotalHours,
                                 billableTotalHours;
 
+
                             for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
                                 curIdleTotal = Number($($rTotalIdleHoursList[i]).val());
                                 curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
@@ -312,6 +318,10 @@ app.getIdNo = function(str) {
 
                             idleTotalHours = tempIdleTotal;
                             billableTotalHours = tempBillableTotal;
+
+                            // To Dom
+                            $totalBillableHours.text(billableTotalHours);
+                            $totalIdleHours.text(idleTotalHours);
                         };
 
                         totalIdleAndBillableHours();
