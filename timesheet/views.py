@@ -78,6 +78,7 @@ def Timesheet(request):
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
         # Getting the forms with submitted values
+        tsInstance = TimeSheetEntry.objects.all()
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST)
         # User values for timsheet
@@ -395,12 +396,32 @@ def Timesheet(request):
 
 
 def ApproveTimesheet(request):
-    unApprovedTimeSheet = TimeSheetEntry.objects.filter(
-        project__projectManager=request.user,
-        approved=False
-    ).values('project__name', 'wkstart', 'wkend', 'teamMember__name',
-             'totalH', 'exception', 'approved', 'managerFeedback')
-    return render(request, 'timesheet/timesheetApprove.html', {})
+    if request.method == 'POST':
+        for k, v in request.POST.iteritems():
+            if 'feedback' in k:
+                updateRec = k.split('-', 1)[1]
+                TimeSheetEntry.objects.filter(
+                    id=updateRec
+                ).update(managerFeedback=v)
+            elif 'status' in k:
+                updateRec = k.split('-', 1)[1]
+                if v == 'approve':
+                    TimeSheetEntry.objects.filter(
+                        id=updateRec
+                    ).update(approved=True, approvedon=datetime.now())
+        return HttpResponseRedirect('/timesheet/dashboard')
+    else:
+        unApprovedTimeSheet = TimeSheetEntry.objects.filter(
+            project__projectManager=request.user,
+            approved=False
+        ).values('id', 'project__id', 'project__name', 'wkstart', 'wkend',
+                 'teamMember__first_name', 'totalH', 'exception', 'approved',
+                 'managerFeedback').order_by('project__id')
+
+        data = {
+            'timesheetInfo': unApprovedTimeSheet
+        }
+        return render(request, 'timesheet/timesheetApprove.html', data)
 
 
 def Dashboard(request):
