@@ -293,10 +293,14 @@ class ProjectMilestoneForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectMilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['milestoneDate'].widget.attrs['class'] = \
+            "date-picker d-item"
         self.fields['deliverables'].widget.attrs['class'] = \
-            "milestone-item-deliverable"
+            "milestone-item-deliverable d-item input-item"
         self.fields['amount'].widget.attrs['class'] = \
-            "milestone-item-amount"
+            "milestone-item-amount d-item input-item"
+        self.fields['description'].widget.attrs['class'] = \
+            "milestone-item-amount d-item input-item"
 
 
 # Form Class to create front-End Login
