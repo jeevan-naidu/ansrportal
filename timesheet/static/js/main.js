@@ -4,15 +4,13 @@ var app = {};
 // Main
 (function() {
     $(document).ready(function() {
-        $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
+        $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3});
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
         $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0});
 
     });
 }());
-
-
 
 app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
