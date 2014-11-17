@@ -261,6 +261,19 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'endDate': DateTimePicker(options=dateTimeOption),
             'projectManager': forms.HiddenInput(), }
 
+    def __init__(self, *args, **kwargs):
+        super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
+        self.fields['startDate'].widget.attrs['class'] = \
+            "start-date-input"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "end-date-input"
+        self.fields['plannedEffort'].widget.attrs['class'] = \
+            "planned-effort-input"
+        self.fields['contingencyEffort'].widget.attrs['class'] = \
+            "contigency-effort-input"
+        self.fields['totalValue'].widget.attrs['class'] = \
+            "total-value-input"
+
 
 # Form Class to create team for project
 class ProjectTeamForm(forms.ModelForm):
