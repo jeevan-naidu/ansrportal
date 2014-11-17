@@ -4,10 +4,10 @@ var app = {};
 // Main
 (function() {
     $(document).ready(function() {
-        $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3});
+        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3});
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
-        $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0});
+        $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0, financialTotal: true});
 
     });
 }());
@@ -28,7 +28,6 @@ app.getIdNo = function(str) {
 
         var add = function() {
             var lastRow = $($table).find('tr').last(),
-                //lastRowId = lastRow.find('td').first().find('*:first').attr('id'),
                 lastRowId = lastRow.find('td:first').children(':first').attr('id'),
                 newRow,
                 newRowId,
@@ -124,6 +123,7 @@ app.getIdNo = function(str) {
 
             daysTotalFun();
             billableTotalFun();
+            financialTotalFun();
         };
 
         var del = function() {
@@ -268,9 +268,56 @@ app.getIdNo = function(str) {
             }
         };
 
+        var financialTotalFun = function() {
+            if(options.financialTotal) {
+                $deliverables = $table.find('.milestone-item-deliverable');
+                $amounts = $table.find('.milestone-item-amount');
+
+                var deliverableTotal = function () {
+                    var $deliverablesLen = $deliverables.length,
+                        $deliverableTotal = $table.parent().find('.milestone-total-deliverable'),
+                        i,
+                        $curItem,
+                        temp = 0;
+
+                    for (i = 0; i < $deliverablesLen; i += 1) {
+                        $curItem = Number($($deliverables[i]).val());
+                        temp += $curItem;
+                    }
+
+                    $deliverableTotal.text(temp);
+                };
+
+                var amountTotal = function () {
+                    var $amountsLen = $amounts.length,
+                        $amountTotal = $table.parent().find('.milestone-total-amount'),
+                        i,
+                        $curItem,
+                        temp = 0;
+
+                    for (i = 0; i < $amountsLen; i += 1) {
+                        $curItem = Number($($amounts[i]).val());
+                        temp += $curItem;
+                    }
+
+                    $amountTotal.text(temp);
+                };
+
+                $deliverables.on({
+                    keyup: deliverableTotal,
+                    click: deliverableTotal
+                });
+
+                $amounts.on({
+                    keyup: amountTotal,
+                    click: amountTotal
+                });
+            }
+        };
+
         daysTotalFun();
         billableTotalFun();
-
+        financialTotalFun();
 
         var getIdNo = function(str) {
             return str.match(/\d+/)[0];
