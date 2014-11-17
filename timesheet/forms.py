@@ -291,6 +291,13 @@ class ProjectMilestoneForm(forms.ModelForm):
             'milestoneDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
 
+        def __init__(self, *args, **kwargs):
+            super(ProjectMilestoneForm, self).__init__(*args, **kwargs)
+            self.fields['deliverables'].widget.attrs['class'] = \
+                "milestone-item-deliverable"
+            self.fields['amount'].widget.attrs['class'] = \
+                "milestone-item-amount"
+
 
 # Form Class to create front-End Login
 class LoginForm(forms.Form):

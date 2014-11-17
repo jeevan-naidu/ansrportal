@@ -105,19 +105,14 @@
 		{% block masterform %}{% endblock %}
 		{% endwith %}
 	{% endif %}
+	{% buttons %}
         {% if wizard.steps.prev %}
-            <span class="col-md-6 col-xs-6">
-                {% buttons %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
                         <span class="glyphicon glyphicon-chevron-left"></span>
 		        <b>Previous</b>
                     </button>
-                {% endbuttons %}
-            </span>
         {% endif %}
-    	<span class="col-md-6 col-xs-6">
-        {% buttons %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
 		    <b>Create</b>
@@ -127,7 +122,6 @@
                 {% endif %}
             </button>
         {% endbuttons %}
-	</span>
     </form>
  </div>
 </div>
