@@ -30,11 +30,16 @@
     {{ tsFormset.management_form }}
 	<table class="table table-condensed table-responsive">
 	{% for form in tsFormset %}
+		{% for field in form.hidden_fields %}
+			{% if 'id' in field.label %}
+				{{ field }}
+			{% endif %}
+		{% endfor %}
 		{% if forloop.first %}
 		<thead>
             	<tr>
 			{% for data in form %}
-				{% if 'Questions' not in data.label and 'Hours' not in data.label %}	
+				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}	
 				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 11 %}
 					<th class="res-14-per">
 				{% else %}
@@ -207,7 +212,7 @@
 							{% endfor %}
 						</a>
 					</td>
-				{% elif 'Questions' not in data.label and 'Hours' not in data.label %}
+				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}
 					<td>{{ data }}</td>
 				{% endif %}
 			{% endfor %}
@@ -235,20 +240,27 @@
 	{{ atFormset.management_form }}
 	<table class="table table-condensed table-responsive">
 	{% for form in atFormset %}
+		{% for field in form.hidden_fields %}
+			{% if 'id' in field.label %}
+				{{ field }}
+			{% endif %}
+		{% endfor %}
 		{% if forloop.first %}
 		<thead>
             	<tr>
                 {% for data in form %}
+		    {% if 'id' not in data.label %}
 		    {% if forloop.counter == 1 or forloop.counter == 9 %}
 		    	<th class="res-14-per">
 		    {% else %}
 			<th>
 		    {% endif %}
-                    {{ data.label }}
+                    	{{ data.label }}
                     {% if data.field.required %}
                         <span class="required">*</span>
-                    {% endif %}
+		    {% endif %}
                     </th>
+                    {% endif %}
                 {% endfor %}
             	</tr>
 		</thead>
@@ -256,7 +268,9 @@
 		{% endif %}
 		<tr>
 			{% for data in form %}
-				<td>{{ data }}</td>
+		    		{% if 'id' not in data.label %}
+					<td>{{ data }}</td>
+				{% endif %}
 			{% endfor %}
 		</tr>
 		{% if forloop.last %}

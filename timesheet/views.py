@@ -78,6 +78,9 @@ def Timesheet(request):
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
         # Getting the forms with submitted values
+        for k, v in request.POST.iteritems():
+            if 'tsId' in k:
+                print v
         tsInstance = TimeSheetEntry.objects.all()
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST)
@@ -287,8 +290,9 @@ def Timesheet(request):
                 approved=False,
                 project__isnull=True
             )
-        ).values('activity', 'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
-                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
+        ).values('id', 'activity', 'mondayH', 'tuesdayH', 'wednesdayH',
+                 'thursdayH', 'fridayH', 'saturdayH', 'totalH',
+                 'managerFeedback'
                  )
         cwTimesheetData = TimeSheetEntry.objects.filter(
             Q(
@@ -298,7 +302,7 @@ def Timesheet(request):
                 approved=False,
                 activity__isnull=True
             )
-        ).values('project', 'chapter', 'task', 'mondayH', 'mondayQ',
+        ).values('id', 'project', 'chapter', 'task', 'mondayH', 'mondayQ',
                  'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
                  'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
@@ -310,6 +314,8 @@ def Timesheet(request):
                 tsData[k] = v
                 if k == 'managerFeedback':
                     tsData['feedback'] = v
+                if k == 'id':
+                    tsData['tsId'] = v
             tsDataList.append(tsData.copy())
             tsData.clear()
         atData = {}
@@ -332,6 +338,8 @@ def Timesheet(request):
                     atData['activity_total'] = v
                 if k == 'managerFeedback':
                     atData['feedback'] = v
+                if k == 'id':
+                    tsData['atId'] = v
             atDataList.append(atData.copy())
             atData.clear()
         if cwTimesheet > 0:
