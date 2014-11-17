@@ -7,9 +7,7 @@ var app = {};
         $('#createProject').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true});
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
-
-
-
+        $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0});
 
     });
 }());
@@ -32,7 +30,8 @@ app.getIdNo = function(str) {
 
         var add = function() {
             var lastRow = $($table).find('tr').last(),
-                lastRowId = lastRow.find('td').first().find('select').attr('id'),
+                //lastRowId = lastRow.find('td').first().find('*:first').attr('id'),
+                lastRowId = lastRow.find('td:first').children(':first').attr('id'),
                 newRow,
                 newRowId,
                 $tds,
@@ -73,12 +72,11 @@ app.getIdNo = function(str) {
                 }
 
                 if(options.calendar) {
-                    if(index === 3) {
+                    if(index === options.calendarPos) {
                         $curIdSel = $('#' + $curId);
                         $curChildEle = $element.find('div:nth-child(1n)');
                         $curChildEleInput = $curIdSel.find('input');
 
-                        console.log($curChildEleInput);
                         $curChildEle.attr('id', $curId);
                         $curChildEle.attr('name', $curId);
                         $curChildEleInput.attr('id', $curId);
@@ -120,7 +118,7 @@ app.getIdNo = function(str) {
                 newRowTotalHours.text('0');
                 newRowTotalQuestionsHidden.val('0');
                 newRowTotalHoursHidden.val('0');
-             }
+            }
 
             rowCount += 1;
 

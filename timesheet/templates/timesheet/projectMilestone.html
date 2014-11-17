@@ -3,14 +3,14 @@
 
 {% block addForm %}
 <span class="pull-right">
-	<button type="submit" value="submit" class="btn btn-success btn-xs">
+	<a class="btn btn-success btn-xs" id="add-milestone-btn">
 		<span class="glyphicon glyphicon-plus"></span>
 			Add Milestone
-	</button>
-	<button type="submit" value="submit" class="btn btn-danger btn-xs">
+	</a>
+	<a class="btn btn-danger btn-xs" id="del-milestone-btn">
 		<span class="glyphicon glyphicon-minus"></span>
 			Delete Milestone
-	</button>
+	</a>
 </span>
 {% endblock %}
 
@@ -27,7 +27,7 @@
 	</div>
 {% endif %}
 	{% if forloop.first %}
-		<table class="table table-condensed table-responsive">
+		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
 	{% endif %}
 		{% for t in form %}
 			{% if forloop.first %}
@@ -55,13 +55,17 @@
 			{% endif %}
 	      {% endfor %}
 	{% if forloop.last %}
-		<tr>
-			<td>Total</td>
-			<td><span class="milestone-total-deliverable"></span></td>
-			<td>&nbsp;</td>
-			<td><span class="milestone-total-amount"></span></td>
-			<td>&nbsp;</td>
-		</tr>
+
 		</table>
+
+        <table class="table table-condensed table-responsive bor-top-n">
+            <tr>
+                <td>Total</td>
+                <td><span class="milestone-total-deliverable"></span></td>
+                <td>&nbsp;</td>
+                <td><span class="milestone-total-amount"></span></td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
 	{% endif %}
 {% endblock %}{% endblock %}

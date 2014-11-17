@@ -4,14 +4,16 @@
 .shadow {
 	background-color: white; 
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-	-moz-box-shadow: 5px 5px 5px #333;
-	-webkit-box-shadow:5px 5px 5px #333;
-	-o-box-shadow:5px 5px 5px #333
+	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
 body {
 	padding-top: 70px;
 	padding-bottom: 70px;
 }
+
 .required { 
 	color: #FF0000; 
 }
@@ -115,5 +117,14 @@ body {
 .t-hours,
 .b-hours {
     color: #428bca;
+}
+
+.bottom {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.bor-top-n {
+    border-top: 0;
 }
 
