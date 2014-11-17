@@ -110,12 +110,14 @@ body {
 }
 
 .b-questions,
-.t-questions{
+.t-questions,
+.t-danger {
     color: #C30;
 }
 
 .t-hours,
-.b-hours {
+.b-hours,
+.t-info {
     color: #428bca;
 }
 
