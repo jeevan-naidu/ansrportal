@@ -9,7 +9,7 @@ from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
 from django.contrib.formtools.wizard.views import SessionWizardView
-from django.forms.formsets import formset_factory
+from django.forms.formsets import formset_factory, modelformset_factory
 from datetime import datetime, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -78,8 +78,12 @@ def Timesheet(request):
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
         # Getting the forms with submitted values
+        tsFormset.instance = TimeSheetEntry.objects.all()
+        print tsFormset
         for k, v in request.POST.iteritems():
             if 'tsId' in k:
+                print v
+            if 'atId' in k:
                 print v
         tsInstance = TimeSheetEntry.objects.all()
         timesheets = tsFormset(request.POST)
