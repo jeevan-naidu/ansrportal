@@ -9,7 +9,7 @@ from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
 from django.contrib.formtools.wizard.views import SessionWizardView
-from django.forms.formsets import formset_factory, modelformset_factory
+from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -78,14 +78,6 @@ def Timesheet(request):
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
         # Getting the forms with submitted values
-        tsFormset.instance = TimeSheetEntry.objects.all()
-        print tsFormset
-        for k, v in request.POST.iteritems():
-            if 'tsId' in k:
-                print v
-            if 'atId' in k:
-                print v
-        tsInstance = TimeSheetEntry.objects.all()
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST)
         # User values for timsheet
@@ -184,7 +176,12 @@ def Timesheet(request):
                  (leaveDayWork is True):
                 for eachActivity in activitiesList:
                     # Getting objects for models
-                    nonbillableTS = TimeSheetEntry()
+                    if eachActivity['atId'] > 0:
+                        nonbillableTS = TimeSheetEntry.objects.filter(
+                            id=eachActivity['atId']
+                        )[0]
+                    else:
+                        nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
@@ -217,7 +214,12 @@ def Timesheet(request):
                             nonbillableTS.activity = v
                     nonbillableTS.save()
                 for eachTimesheet in timesheetList:
-                    billableTS = TimeSheetEntry()
+                    if eachTimesheet['tsId'] > 0:
+                        billableTS = TimeSheetEntry.objects.filter(
+                            id=eachTimesheet['tsId']
+                        )[0]
+                    else:
+                        billableTS = TimeSheetEntry()
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
@@ -242,7 +244,12 @@ def Timesheet(request):
                 # Save Timesheet
                 for eachActivity in activitiesList:
                     # Getting objects for models
-                    nonbillableTS = TimeSheetEntry()
+                    if eachActivity['atId'] > 0:
+                        nonbillableTS = TimeSheetEntry.objects.filter(
+                            id=eachActivity['atId']
+                        )[0]
+                    else:
+                        nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
@@ -254,7 +261,12 @@ def Timesheet(request):
                         setattr(nonbillableTS, k, v)
                     nonbillableTS.save()
                 for eachTimesheet in timesheetList:
-                    billableTS = TimeSheetEntry()
+                    if eachTimesheet['tsId'] > 0:
+                        billableTS = TimeSheetEntry.objects.filter(
+                            id=eachTimesheet['tsId']
+                        )[0]
+                    else:
+                        billableTS = TimeSheetEntry()
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
@@ -343,7 +355,7 @@ def Timesheet(request):
                 if k == 'managerFeedback':
                     atData['feedback'] = v
                 if k == 'id':
-                    tsData['atId'] = v
+                    atData['atId'] = v
             atDataList.append(atData.copy())
             atData.clear()
         if cwTimesheet > 0:
