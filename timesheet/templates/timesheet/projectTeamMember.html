@@ -22,14 +22,17 @@
 		{% if field.errors %}
 			{{ field.label }}: {{ field.errors|striptags }}
 		{% endif %}
-		{% endfor %}								</div>
+		{% endfor %}								
+	</div>
 {% endif %}
-	<table class="table table-condensed table-responsive">
+	{% if forloop.first %}
+		<table class="table table-condensed table-responsive" id="add-team-members">
+	{% endif %}
 		{% for t in form %}
 			{% if forloop.first %}
 				{% if '-0' in t.id_for_label %}
 					<thead>
-                    <tr>
+                    				<tr>
 						{% for field in form %}
 							<th>
 								<small>{{ field.label }}</small>
@@ -38,27 +41,21 @@
 								{% endif %}
 							</th>
 						{% endfor %}
-                    </tr>
+                    				</tr>
 					</thead>
 				{% endif %}
 			{% endif %}
-		{% endfor %}
-		<tbody>
-
-
-		<tr>
-			{% for field in form %}
-				<td>
-                    {{ field }}
-                    <input type="hidden">
-                </td>
-			{% endfor %}
-			{% if form.can_delete %}
-				<td>{{ form.DELETE }}</td>
+	      {% endfor %}
+	      {% for t in form %}
+			{% if forloop.first %}
+			   	<tr>
 			{% endif %}
-		</tr>
-
-
-		</tbody>
-	</table>
+					<td>{{ t }}</td>
+			{% if forloop.last %}
+				</tr>
+			{% endif %}
+	      {% endfor %}
+	{% if forloop.last %}
+		</table>
+	{% endif %}
 {% endblock %}{% endblock %}

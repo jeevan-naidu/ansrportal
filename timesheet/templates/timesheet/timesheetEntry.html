@@ -30,11 +30,16 @@
     {{ tsFormset.management_form }}
 	<table class="table table-condensed table-responsive">
 	{% for form in tsFormset %}
+		{% for field in form.hidden_fields %}
+			{% if 'id' in field.label %}
+				{{ field }}
+			{% endif %}
+		{% endfor %}
 		{% if forloop.first %}
 		<thead>
             	<tr>
 			{% for data in form %}
-				{% if 'Questions' not in data.label and 'Hours' not in data.label %}	
+				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}	
 				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 11 %}
 					<th class="res-14-per">
 				{% else %}
@@ -56,10 +61,20 @@
 				{% if data.label == 'Mon' %}
 					<td>
 						<a class="btn btn-default day-popover-button" href="javascript:;">
-							<span class="b-questions">0</span> Q 
-							<span class="b-hours">0</span> H
 							{% for data in form.hidden_fields %}
-								{% if 'monday' in data.id_for_label %}
+								{% if 'mondayQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-questions">{{ data.value }}</span> Q 
+									{% else %}
+										<span class="b-questions">0</span> Q 
+									{% endif %}
+									{{ data }}
+								{% elif 'mondayH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="b-hours">0</span> H
+									{% endif %}
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -68,10 +83,20 @@
 				{% elif data.label == 'Tue' %}
 					<td>
 						<a class="btn btn-default day-popover-button" href="javascript:;">
-							<span class="b-questions">0</span> Q 
-							<span class="b-hours">0</span> H
 							{% for data in form.hidden_fields %}
-								{% if 'tuesday' in data.id_for_label %}
+								{% if 'tuesdayQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-questions">{{ data.value }}</span> Q 
+									{% else %}
+										<span class="b-questions">0</span> Q 
+									{% endif %}
+									{{ data }}
+								{% elif 'tuesdayH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="b-hours">0</span> H
+									{% endif %}
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -80,10 +105,20 @@
 				{% elif data.label == 'Wed' %}
 					<td>
 						<a class="btn btn-default day-popover-button" href="javascript:;">
-							<span class="b-questions">0</span> Q 
-							<span class="b-hours">0</span> H
 							{% for data in form.hidden_fields %}
-								{% if 'wednesday' in data.id_for_label %}
+								{% if 'wednesdayQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-questions">{{ data.value }}</span> Q 
+									{% else %}
+										<span class="b-questions">0</span> Q 
+									{% endif %}
+									{{ data }}
+								{% elif 'wednesdayH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="b-hours">0</span> H
+									{% endif %}
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -92,10 +127,20 @@
 				{% elif data.label == 'Thu' %}
 					<td>
 						<a class="btn btn-default day-popover-button" href="javascript:;">
-							<span class="b-questions">0</span> Q 
-							<span class="b-hours">0</span> H
 							{% for data in form.hidden_fields %}
-								{% if 'thursday' in data.id_for_label %}
+								{% if 'thursdayQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-questions">{{ data.value }}</span> Q 
+									{% else %}
+										<span class="b-questions">0</span> Q 
+									{% endif %}
+									{{ data }}
+								{% elif 'thursdayH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="b-hours">0</span> H
+									{% endif %}
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -104,10 +149,20 @@
 				{% elif data.label == 'Fri' %}
 					<td>
 						<a class="btn btn-default day-popover-button" href="javascript:;">
-							<span class="b-questions">0</span> Q 
-							<span class="b-hours">0</span> H
 							{% for data in form.hidden_fields %}
-								{% if 'friday' in data.id_for_label %}
+								{% if 'fridayQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-questions">{{ data.value }}</span> Q 
+									{% else %}
+										<span class="b-questions">0</span> Q 
+									{% endif %}
+									{{ data }}
+								{% elif 'fridayH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="b-hours">0</span> H
+									{% endif %}
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -116,10 +171,20 @@
 				{% elif data.label == 'Sat' %}
 					<td>
 						<a class="btn btn-default day-popover-button" href="javascript:;">
-							<span class="b-questions">0</span> Q 
-							<span class="b-hours">0</span> H
 							{% for data in form.hidden_fields %}
-								{% if 'saturday' in data.id_for_label %}
+								{% if 'saturdayQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-questions">{{ data.value }}</span> Q 
+									{% else %}
+										<span class="b-questions">0</span> Q 
+									{% endif %}
+									{{ data }}
+								{% elif 'saturdayH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="b-hours">0</span> H
+									{% endif %}
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -128,10 +193,20 @@
 				{% elif data.label == 'Total' %}
 					<td>
 						<a class="btn btn-default" href="javascript:;">
-							<span class="t-questions">0</span> Q 
-							<span class="t-hours">0</span> H
 							{% for data in form.hidden_fields %}
-								{% if 'total' in data.id_for_label %}
+								{% if 'totalQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="t-questions">{{ data.value }}</span> Q 
+									{% else %}
+										<span class="t-questions">0</span> Q 
+									{% endif %}
+									{{ data }}
+								{% elif 'totalH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="t-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="t-hours">0</span> H
+									{% endif %}
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -139,7 +214,7 @@
 							<input type="hidden" class="r-total-billable-hours" value="0" />
 						</a>
 					</td>
-				{% elif 'Questions' not in data.label and 'Hours' not in data.label %}
+				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}
 					<td>{{ data }}</td>
 				{% endif %}
 			{% endfor %}
@@ -167,20 +242,27 @@
 	{{ atFormset.management_form }}
 	<table class="table table-condensed table-responsive">
 	{% for form in atFormset %}
+		{% for field in form.hidden_fields %}
+			{% if 'id' in field.label %}
+				{{ field }}
+			{% endif %}
+		{% endfor %}
 		{% if forloop.first %}
 		<thead>
             	<tr>
                 {% for data in form %}
+		    {% if 'id' not in data.label %}
 		    {% if forloop.counter == 1 or forloop.counter == 9 %}
 		    	<th class="res-14-per">
 		    {% else %}
 			<th>
 		    {% endif %}
-                    {{ data.label }}
+                    	{{ data.label }}
                     {% if data.field.required %}
                         <span class="required">*</span>
-                    {% endif %}
+		    {% endif %}
                     </th>
+                    {% endif %}
                 {% endfor %}
             	</tr>
 		</thead>
@@ -188,7 +270,9 @@
 		{% endif %}
 		<tr>
 			{% for data in form %}
-				<td>{{ data }}</td>
+		    		{% if 'id' not in data.label %}
+					<td>{{ data }}</td>
+				{% endif %}
 			{% endfor %}
 		</tr>
 		{% if forloop.last %}

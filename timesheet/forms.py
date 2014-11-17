@@ -65,6 +65,9 @@ class ActivityForm(forms.Form):
     activity_feedback = forms.CharField(
         max_length="50", label="Feedback", required=False
     )
+    atId = forms.IntegerField(label="id",
+                              required=False,
+                              widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
@@ -93,6 +96,7 @@ class ActivityForm(forms.Form):
         self.fields['activity_friday'].widget.attrs['value'] = 0
         self.fields['activity_saturday'].widget.attrs['value'] = 0
         self.fields['activity_total'].widget.attrs['value'] = 0
+        self.fields['atId'].widget.attrs['value'] = 0
 
 
 class ChapterForm(forms.ModelForm):
@@ -157,6 +161,9 @@ def TimesheetFormset(currentUser):
         feedback = forms.CharField(
             max_length="50", label="Feedback", required=False
         )
+        tsId = forms.IntegerField(label="id",
+                                  required=False,
+                                  widget=forms.HiddenInput())
 
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
@@ -230,6 +237,7 @@ def TimesheetFormset(currentUser):
             self.fields['saturdayQ'].widget.attrs['value'] = 0
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['totalQ'].widget.attrs['value'] = 0
+            self.fields['tsId'].widget.attrs['value'] = 0
     return TimeSheetEntryForm
 
 
@@ -290,6 +298,17 @@ class ProjectMilestoneForm(forms.ModelForm):
         widgets = {
             'milestoneDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectMilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['milestoneDate'].widget.attrs['class'] = \
+            "date-picker d-item"
+        self.fields['deliverables'].widget.attrs['class'] = \
+            "milestone-item-deliverable d-item input-item"
+        self.fields['amount'].widget.attrs['class'] = \
+            "milestone-item-amount d-item input-item"
+        self.fields['description'].widget.attrs['class'] = \
+            "milestone-item-amount d-item input-item"
 
 
 # Form Class to create front-End Login

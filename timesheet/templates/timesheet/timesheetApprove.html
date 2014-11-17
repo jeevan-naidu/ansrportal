@@ -3,8 +3,66 @@
 {% block timesheetActive %}class="active"{% endblock %}
 
 {% block content %}
-<ul class="nav nav-tabs nav-justified" role="tablist">
-	<li>Approve Timesheet</li>
-	<li>Enter Timesheet</li>
-</ul>
+<div class="jumbotron shadow">
+	<legend><h2><small>Approve / Hold Exceptions</small></h2></legend>
+<form id="approveTS" method="post" action="" >
+	{% csrf_token %}
+	<table class="table table-condensed">
+		<thead>
+			<th>Person</th>
+			<th>WeekStart</th>
+			<th>WeekEnd</th>
+			<th>Hours</th>
+			<th>Exception Details</th>
+			<th>Approve / Hold</th>
+			<th>Feedback</th>
+		</thead>
+		{% regroup timesheetInfo by project__name as projectTSInfo %}
+		{% for eachTS in projectTSInfo %}
+			<tbody>
+				<tr>
+					<td><b><small>Project : {{ eachTS.grouper }}</small></b></td>
+				</tr>
+				{% for rec in eachTS.list %}
+				<tr>
+					<td>{{ rec.teamMember__first_name }}</td>
+					<td>{{ rec.wkstart }}</td>
+					<td>{{ rec.wkend }}</td>
+					<td>{{ rec.totalH }}</td>
+					<td>{{ rec.exception }}</td>
+					<td>
+						{% if 'approved' in rec %}
+							<label class="radio-inline">
+							{% with recIdString=rec.id|stringformat:"s" %}
+								{% with apId="status-"|add:recIdString %}
+									<input type="radio" value="approve" name='{{ apId }}'>Approve
+								{% endwith %}
+							{% endwith %}
+							</label>
+							<label class="radio-inline">
+							{% with recIdString=rec.id|stringformat:"s" %}
+								{% with hoId="status-"|add:recIdString %}
+									<input type="radio" value="hold" name='{{ hoId }}' checked>Hold
+								{% endwith %}
+							{% endwith %}
+							</label>
+						{% endif %}
+					</td>
+					<td>
+						{% if 'managerFeedback' in rec %}
+							{% with recIdString=rec.id|stringformat:"s" %}
+								{% with fbId="feedback-"|add:recIdString %}
+								<textarea class="form-control" rows="1" cols="10" name='{{ fbId }}' id='{{ fbId }}'></textarea>
+								{% endwith %}
+							{% endwith %}
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+	{% endfor %}
+	</table>
+	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
+</form>
+</div>
 {% endblock %}
