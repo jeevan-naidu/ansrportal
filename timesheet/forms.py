@@ -87,7 +87,7 @@ class ActivityForm(forms.Form):
         self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
         days input-field"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
-        total input-field"
+        total input-field r-total"
         self.fields['activity_feedback'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['value'] = 0
         self.fields['activity_tuesday'].widget.attrs['value'] = 0
