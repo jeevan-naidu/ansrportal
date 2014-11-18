@@ -251,6 +251,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'name',
             'startDate',
             'endDate',
+            'book',
             'chapters',
             'plannedEffort',
             'contingencyEffort',

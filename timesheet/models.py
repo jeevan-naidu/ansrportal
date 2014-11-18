@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+
 # Database Models
 
 BU = (
@@ -10,7 +11,8 @@ BU = (
 
 
 class Book(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Book Name")
+    name = models.CharField(max_length=100, null=False,
+                            verbose_name="Book Name")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -50,6 +52,11 @@ class Project(models.Model):
                                             verbose_name="Contigency Effort")
     projectManager = models.ForeignKey(User)
     # Chapters to be worked on in the project
+    book = models.ForeignKey(Book,
+                             verbose_name="Book",
+                             default=None,
+                             null=False
+                             )
     chapters = models.ManyToManyField(Chapter)
     totalValue = models.IntegerField(default=0, verbose_name="Total Value")
     # Record Entered / Updated Date
