@@ -18,7 +18,8 @@
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
        
        {% block addFormMedia %}{% endblock %}
-
+    
+       {% include 'session_security/all.html' %}
     </head>
     <body>
 	<!-- Ansr -->
