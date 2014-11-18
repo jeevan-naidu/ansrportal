@@ -102,6 +102,7 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 
 # Session Expire Configuration
 SESSION_SECURITY_WARN_AFTER = 300  # Time Given in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 ROOT_URLCONF = 'timetracker.urls'
 
