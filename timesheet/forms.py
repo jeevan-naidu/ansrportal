@@ -258,6 +258,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
+            'projectType',
             'bu',
             'name',
             'startDate',

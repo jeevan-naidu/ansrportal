@@ -8,6 +8,11 @@ BU = (
     ('E', 'Editorial'),
     ('M', 'Media'),
 )
+PROJECT_TYPE = (
+    ('Q', 'Questions'),
+    ('P', 'Powerpoint'),
+    ('I', 'Instructional')
+)
 
 
 class Book(models.Model):
@@ -35,6 +40,12 @@ class Chapter(models.Model):
 
 
 class Project(models.Model):
+    projectType = models.CharField(
+        default='Q',
+        choices=PROJECT_TYPE,
+        max_length=2,
+        verbose_name="Project Type"
+    )
     bu = models.CharField(
         default='E',
         choices=BU,
