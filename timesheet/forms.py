@@ -169,9 +169,20 @@ def TimesheetFormset(currentUser):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
                 id__in=ProjectTeamMember.objects.filter(
-                    member=currentUser.id
+                    Q(member=currentUser.id) |
+                    Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             )
+            if currentUser.groups.all()[0].name == "project manager":
+                self.fields['chapter'] = ChainedModelChoiceField(
+                    'timesheet',
+                    'Chapter',
+                    chain_field='project',
+                    model_field='project',
+                    show_all=False,
+                    auto_choose=False,
+                    required=False
+                )
             self.fields['project'].widget.attrs['class'] = "form-control d-item"
             self.fields['chapter'].widget.attrs['class'] = "form-control d-item"
             self.fields['task'].widget.attrs[
