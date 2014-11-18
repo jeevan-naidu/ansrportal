@@ -4,7 +4,7 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from timesheet.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Holiday
+    ProjectMilestone, ProjectTeamMember, Holiday, Book
 from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
@@ -515,6 +515,7 @@ class CreateProjectWizard(SessionWizardView):
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList
+        self.request.session['book'] = basicInfo['book'].id
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
         ).strftime('%Y-%m-%d %H:%M%z')
@@ -582,6 +583,7 @@ def saveProject(request):
         pr.plannedEffort = request.POST.get('plannedEffort')
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
+        pr.book = Book.objects.filter(id=request.session['book'])[0]
         pr.save()
         request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
