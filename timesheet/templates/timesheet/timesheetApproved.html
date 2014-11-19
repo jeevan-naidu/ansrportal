@@ -18,16 +18,36 @@
 	{% if forloop.first %}
 	<thead>
 		<legend>Billable</legend>
-		{% for k, v in timesheets.items %}
-			<th>{{ k }}</th>
-		{% endfor %}
+		<th>Project</th>
+		<th>Chapter</th>
+		<th>Task</th>
+		<th>Monday</th>
+		<th>Tuesday</th>
+		<th>Wednesday</th>
+		<th>Thursday</th>
+		<th>Friday</th>
+		<th>Saturday</th>
+		<th>Total</th>
+		<th>Manager Feedback</th>
 	</thead>
 	{% endif %}
 	<tbody>
 		<tr>
-			{% for k, v in timesheets.items %}
-				<td>{{ v }}</td>
-			{% endfor %}
+			<td>{{ timesheets.project__name }}</td>
+			<td>
+				{% if timesheets.chapter__name == None %}
+					Overall
+				{% endif %}
+			</td>
+			<td>{{ timesheets.task }}</td>
+			<td>{{ timesheets.mondayH }}</td>
+			<td>{{ timesheets.tuesdayH }}</td>
+			<td>{{ timesheets.wednesdayH }}</td>
+			<td>{{ timesheets.thursdayH }}</td>
+			<td>{{ timesheets.fridayH }}</td>
+			<td>{{ timesheets.saturdayH }}</td>
+			<td>{{ timesheets.totalH }}</td>
+			<td>{{ timesheets.managerFeedback }}</td>
 		</tr>
 	</tbody>
 {% endfor %}
@@ -37,16 +57,28 @@
 	{% if forloop.first %}
 	<thead>
 		<legend>Non-Billable</legend>
-		{% for k, v in timesheets.items %}
-			<th>{{ k }}</th>
-		{% endfor %}
+		<th>Activity</th>
+		<th>Monday</th>
+		<th>Tuesday</th>
+		<th>Wednesday</th>
+		<th>Thursday</th>
+		<th>Friday</th>
+		<th>Saturday</th>
+		<th>Total</th>
+		<th>Manager Feedback</th>
 	</thead>
 	{% endif %}
 	<tbody>
 		<tr>
-			{% for k, v in timesheets.items %}
-				<td>{{ v }}</td>
-			{% endfor %}
+			<td>{{ timesheets.activity }}</td>
+			<td>{{ timesheets.mondayH }}</td>
+			<td>{{ timesheets.tuesdayH }}</td>
+			<td>{{ timesheets.wednesdayH }}</td>
+			<td>{{ timesheets.thursdayH }}</td>
+			<td>{{ timesheets.fridayH }}</td>
+			<td>{{ timesheets.saturdayH }}</td>
+			<td>{{ timesheets.totalH }}</td>
+			<td>{{ timesheets.managerFeedback }}</td>
 		</tr>
 	</tbody>
 {% endfor %}
