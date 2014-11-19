@@ -1,5 +1,7 @@
 /* Global namespace for entire application */
-var app = {};
+var app = app || {};
+
+
 
 // Main
 (function() {
@@ -9,8 +11,21 @@ var app = {};
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
         $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0, financialTotal: true});
 
+
+        var contigencyEffortEle = $('.contigency-effort-input');
+
+        if(contigencyEffortEle.length > 0) {
+            localStorage.contigencyEffort = contigencyEffortEle.val();
+        }
+
+        contigencyEffortEle.on('keyup', function() {
+            localStorage.contigencyEffort = $(this).val();
+        });
+
     });
 }());
+
+
 
 app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
@@ -193,7 +208,9 @@ app.getIdNo = function(str) {
                     content: popoverCon
                 });
 
-                $dayPopoverBtn.popover('hide');
+               $dayPopoverBtn.popover('hide');
+
+
 
                 var primaryCb = function() {
                     var $curDayBtn              = $(this),
@@ -265,13 +282,15 @@ app.getIdNo = function(str) {
                 };
 
                 $dayPopoverBtn.on('shown.bs.popover', primaryCb);
+
             }
         };
 
         var financialTotalFun = function() {
             if(options.financialTotal) {
-                $deliverables = $table.find('.milestone-item-deliverable');
-                $amounts = $table.find('.milestone-item-amount');
+                var $deliverables = $table.find('.milestone-item-deliverable'),
+                    $amounts = $table.find('.milestone-item-amount'),
+                    $amountTotal = $table.parent().find('.milestone-total-amount');
 
                 var deliverableTotal = function () {
                     var $deliverablesLen = $deliverables.length,
@@ -288,9 +307,23 @@ app.getIdNo = function(str) {
                     $deliverableTotal.text(temp);
                 };
 
+                // amount validation
+                var amountValidatoinFun = function() {
+                    if(Number(localStorage.contigencyEffort) > Number($amountTotal.text()) || Number(localStorage.contigencyEffort) < Number($amountTotal.text())) {
+                        if(!($amountTotal.hasClass('t-danger'))) {
+                            $amountTotal.addClass('t-danger');
+                        }
+                    } else {
+                        if($amountTotal.hasClass('t-danger')) {
+                            $amountTotal.removeClass('t-danger');
+                        }
+                    }
+                };
+
+                amountValidatoinFun();
+
                 var amountTotal = function () {
                     var $amountsLen = $amounts.length,
-                        $amountTotal = $table.parent().find('.milestone-total-amount'),
                         i,
                         $curItem,
                         temp = 0;
@@ -301,6 +334,8 @@ app.getIdNo = function(str) {
                     }
 
                     $amountTotal.text(temp);
+
+                    amountValidatoinFun();
                 };
 
                 $deliverables.on({
