@@ -518,10 +518,10 @@ class CreateProjectWizard(SessionWizardView):
         self.request.session['book'] = basicInfo['book'].id
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
-        ).strftime('%Y-%m-%d %H:%M%z')
+        ).strftime('%Y-%m-%d')
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
-        ).strftime('%Y-%m-%d %H:%M%z')
+        ).strftime('%Y-%m-%d')
         for teamData in [form.cleaned_data for form in form_list][1]:
             teamDataCounter += 1
             for k, v in teamData.iteritems():

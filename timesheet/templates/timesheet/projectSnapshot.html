@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+<div class="col-xs-12 col-md-12 col-lg-12  jumbotron shadow">
 <legend><b>Summary</b></legend>
 <form id="snapshot" name="snapshot" method="POST" action="save">
 {% csrf_token %}
@@ -11,17 +11,39 @@
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-			{% for rec, value in basicInfo.iteritems %}
-		<th>
-			{{ rec }}
-			<input type="hidden" name="{{ rec }}" value="{{ value }}">
-		</th>
-			{% endfor %}
+				<th>Type</th>
+				<th>Business Unit</th>
+				<th>Name</th>
+				<th>Planned Effort</th>
+				<th>Contigency Effort</th>
+				<th>Book</th>
+				<th>Chapters</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Total Value</th>
 		</thead>
 		<tbody>
 		<tr>
+			<td>{{ basicInfo.projectType }}</td>
+			<td>{{ basicInfo.bu }}</td>
+			<td>{{ basicInfo.name }}</td>
+			<td>{{ basicInfo.plannedEffort }}</td>
+			<td>{{ basicInfo.contingencyEffort }}</td>
+			<td>{{ basicInfo.book }}</td>
+			<td>
+				{% for eachChapter in basicInfo.chapters %}
+					{% if forloop.last %}
+						{{ eachChapter }}
+					{% else %}
+						{{ eachChapter }},
+					{% endif %}
+				{% endfor %}
+			</td>
+			<td>{{ basicInfo.startDate }}</td>
+			<td>{{ basicInfo.endDate }}</td>
+			<td>{{ basicInfo.totalValue }}</td>
 			{% for rec, value in basicInfo.iteritems %}
-			<td>{{ value }}</td>
+				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
 		</tr>
 		</tbody>
@@ -30,61 +52,122 @@
 </div>
 <div class="panel panel-default">
 <div class="panel-heading"><b>Team Member(s)</b></div>
-{% for teamData in teamMember %}
-	<div class="panel-body">
+<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-{% if forloop.first %}
-			{% for rec, value in teamData.iteritems %}
-			{% if 'teamMemberId' not in rec %}
-		<th>
-			{{ rec }}
-		</th>
-			{% endif %}
-			{% endfor %}
-{% endif %}
+			<th>Member</th>
+			<th>Role</th>
+			<th>Start Date</th>
+			<th>Planned Effort</th>
 		</thead>
+		{% for teamData in teamMember %}
 		<tr>
+			{% with counter=forloop.counter|stringformat:"s" %}
+				<td>
+					{% with memberId="member-"|add:counter %}
+						{% for rec, value in teamData.iteritems %}
+							{% if memberId == rec %}
+								{{ value }}
+							{% endif %}
+						{% endfor %}
+					{% endwith %}
+				</td>
+				<td>
+					{% with roleId="role-"|add:counter %}
+						{% for rec, value in teamData.iteritems %}
+							{% if roleId == rec %}
+								{{ value }}
+							{% endif %}
+						{% endfor %}
+					{% endwith %}
+				</td>
+				<td>
+					{% with startDateId="startDate-"|add:counter %}
+						{% for rec, value in teamData.iteritems %}
+							{% if startDateId == rec %}
+								{{ value }}
+							{% endif %}
+						{% endfor %}
+					{% endwith %}
+				</td>
+				<td>
+					{% with effortId="plannedEffort-"|add:counter %}
+						{% for rec, value in teamData.iteritems %}
+							{% if effortId == rec %}
+								{{ value }}
+							{% endif %}
+						{% endfor %}
+					{% endwith %}
+				</td>
+			{% endwith %}
 			{% for rec, value in teamData.iteritems %}
-			{% if 'teamMemberId' not in rec %}
-			<td>{{ value }}</td>
-			{% endif %}
-			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
 		</tr>
+		{% endfor %}
 	</table>
-	</div>
-{% endfor %}
+</div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading"><b>Milestone(s)</b></div>
-{% for milestoneData in milestone %}
-<input type="hidden" name="totalMilestones" value="{{ forloop.counter0 }}">
-	<div class="panel-body">
+<div class="panel-body">
 	<table class="table table-condensed">
-{% if forloop.first %}
 		<thead>
-			{% for rec, value in milestoneData.iteritems %}
-		<th>
-			{{ rec }}
-		</th>
-			{% endfor %}
+			<th>Description</th>
+			<th>Deliverables</th>
+			<th>Deadline</th>
+			<th>Amount</th>
 		</thead>
-{% endif %}
-		<tbody>
+		{% for milestoneData in milestone %}
 		<tr>
+			{% with counter=forloop.counter|stringformat:"s" %}
+			<td>
+				{% with descriptionId="description-"|add:counter %}
+					{% for rec, value in milestoneData.iteritems %}
+						{% if descriptionId == rec %}
+							{{ value }}
+						{% endif %}
+					{% endfor %}
+				{% endwith %}
+			</td>
+			<td>
+				{% with deliverableId="deliverables-"|add:counter %}
+					{% for rec, value in milestoneData.iteritems %}
+						{% if deliverableId == rec %}
+							{{ value }}
+						{% endif %}
+					{% endfor %}
+				{% endwith %}
+			</td>
+			<td>
+				{% with deadlineId="milestoneDate-"|add:counter %}
+					{% for rec, value in milestoneData.iteritems %}
+						{% if deadlineId == rec %}
+							{{ value }}
+						{% endif %}
+					{% endfor %}
+				{% endwith %}
+			</td>
+			<td>
+				{% with amountId="amount-"|add:counter %}
+					{% for rec, value in milestoneData.iteritems %}
+						{% if amountId == rec %}
+							{{ value }}
+						{% endif %}
+					{% endfor %}
+				{% endwith %}
+			</td>
+			{% endwith %}
 			{% for rec, value in milestoneData.iteritems %}
-			<td>{{ value }}</td>
-			<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
 		</tr>
-		</tbody>
+		{% endfor %}
 	</table>
-	</div>
-{% endfor %}
+</div>
 </div>
 <a href="delete" class="btn btn-danger">
-        <span class="glyphicon glyphicon-trash"></span>
+        <span class="glyphicon glyphicon-remove"></span>
 	<b>Cancel Project</b>
 </a>
 <button type="submit" value="submit" class="btn btn-success pull-right">

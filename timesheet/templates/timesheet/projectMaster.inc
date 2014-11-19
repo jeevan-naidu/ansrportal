@@ -67,7 +67,7 @@
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
-		    <b>Create</b>
+		    <b>Confirm & Create Project</b>
                 {% else %}
 		    <b>Next</b>
                     <span class="glyphicon glyphicon-chevron-right"></span>
