@@ -351,6 +351,11 @@ app.getIdNo = function(str) {
                 $bTask.on({
                     change: primaryCb
                 });
+
+                $dayPopoverBtn.on('show.bs.popover', function() {
+                    var $popover = $('.popover');
+                    $popover.popover('hide');
+                });
             }
         };
 
