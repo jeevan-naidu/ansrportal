@@ -87,7 +87,7 @@ class ActivityForm(forms.Form):
         self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
         days input-field"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
-        total input-field"
+        total input-field r-total"
         self.fields['activity_feedback'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['value'] = 0
         self.fields['activity_tuesday'].widget.attrs['value'] = 0
@@ -169,9 +169,20 @@ def TimesheetFormset(currentUser):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
                 id__in=ProjectTeamMember.objects.filter(
-                    member=currentUser.id
+                    Q(member=currentUser.id) |
+                    Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             )
+            if currentUser.groups.all()[0].name == "project manager":
+                self.fields['chapter'] = ChainedModelChoiceField(
+                    'timesheet',
+                    'Chapter',
+                    chain_field='project',
+                    model_field='project',
+                    show_all=False,
+                    auto_choose=False,
+                    required=False
+                )
             self.fields['project'].widget.attrs['class'] = "form-control d-item"
             self.fields['chapter'].widget.attrs['class'] = "form-control d-item"
             self.fields['task'].widget.attrs[
@@ -247,10 +258,12 @@ class ProjectBasicInfoForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
+            'projectType',
             'bu',
             'name',
             'startDate',
             'endDate',
+            'book',
             'chapters',
             'plannedEffort',
             'contingencyEffort',

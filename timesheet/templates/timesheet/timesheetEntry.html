@@ -210,6 +210,8 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
+							<input type="hidden" class="r-total-idle-hours" value="0" />
+							<input type="hidden" class="r-total-billable-hours" value="0" />
 						</a>
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}
@@ -279,6 +281,33 @@
 	{% endfor %}
 	</table>
     </div>
+    <div class="row">
+        <div class="col-md-4 pull-right">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Hours</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Project Billable</td>
+                    <td class="total-billable-hours">0</td>
+                </tr>
+                <tr>
+                    <td>Project Idle</td>
+                    <td class="total-idle-hours">0</td>
+                </tr>
+                <tr>
+                    <td>Others</td>
+                    <td class="total-non-billable-hours">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
  <button type="submit" value="submit" class="btn btn-info pull-right">
