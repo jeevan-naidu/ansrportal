@@ -370,6 +370,10 @@ app.getIdNo = function(str) {
                     change: primaryCb
                 });
 
+                $dayPopoverBtn.on('show.bs.popover', function() {
+                    var $popover = $('.popover');
+                    $popover.popover('hide');
+                });
             }
         };
 
