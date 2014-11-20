@@ -223,12 +223,14 @@ app.getIdNo = function(str) {
         var billableTotalFun = function() {
             if(options.billableTotal) {
                 var $dayPopoverBtn = $table.find('.day-popover-button');
-                var $bTask = $table.find('.b-task');
+                var $bTask = $table.find('.b-task'),
+                    $rowTotalView = $('.row-total-view');
 
                 var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
 
                 $dayPopoverBtn.popover({
+                    trigger: 'click',
                     html: true,
                     placement: 'bottom',
                     content: popoverCon
@@ -374,6 +376,20 @@ app.getIdNo = function(str) {
                     var $popover = $('.popover');
                     $popover.popover('hide');
                 });
+
+                $dayPopoverBtn.on('focus', function() {
+                    var $popover = $('.popover');
+                    $popover.popover('hide');
+
+                    $(this).trigger('click');
+                });
+
+                $rowTotalView.on('focus', function() {
+                    console.log('rTotalView trigged');
+                    var $popover = $('.popover');
+                    $popover.popover('hide');
+                });
+
             }
         };
 
