@@ -166,8 +166,8 @@ body {
 }
 
 .form-step.active .form-step-no{
-    background-color: #337ab7;
-    color: #fff;
+    background-color: #E6E6E6;
+    color: #000;
 }
 
 .form-step.active .form-step-label {
