@@ -35,8 +35,34 @@
 
 {% block loggedStatus %}
 {% endblock %}
-
 {% block content %}
+<ul class="form-steps clearfix">
+    <li class="form-step {% block BIactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">1</span>
+        <label class="form-step-label">Basic Information</label>
+    </li>
+    <li class="form-step {% block DTactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">2</span>
+        <label class="form-step-label">Define Team</label>
+    </li>
+    <li class="form-step {% block FMactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">3</span>
+        <label class="form-step-label">Financial Milestones</label>
+    </li>
+    <li class="form-step {% block VactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">4</span>
+        <label class="form-step-label">Validate</label>
+    </li>
+    <li class="form-step {% block CactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">5</span>
+        <label class="form-step-label">Complete!</label>
+    </li>
+</ul>
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
  <div id="create">
     <form id="createProject" method="post" action="" enctype="multipart/form-data">

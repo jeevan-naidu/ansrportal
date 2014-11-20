@@ -130,3 +130,50 @@ body {
     border-top: 0;
 }
 
+/* Form-steps */
+.form-steps {
+    list-style: none;
+    margin: 20px 0;
+}
+
+.form-step {
+    float: left;
+    width: 20%;
+    text-align: center;
+}
+
+.form-step-bor {
+    display: block;
+    height: 2px;
+    background-color: #333;
+}
+
+.form-step-no {
+    border-radius: 15px;
+    border: 1px solid #333;
+    display: block;
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    color: #333;
+    text-align: center;
+    line-height: 30px;
+    margin: -15px auto 5px auto;
+}
+
+.form-step-label {
+    font-weight: normal;
+}
+
+.form-step.active .form-step-no{
+    background-color: #E6E6E6;
+    color: #000;
+}
+
+.form-step.active .form-step-label {
+    font-weight: bold;
+}
+
+
+
+
