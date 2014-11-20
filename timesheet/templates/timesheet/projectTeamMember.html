@@ -57,8 +57,38 @@
 	      {% endfor %}
 	{% if forloop.last %}
 		</table>
+<div class="row">
+    <div class="col-md-6 pull-right">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Calendar Effort (Team # * Calendar Duration)</td>
+                <td class="total-billable-hours">1080</td>
+            </tr>
+            <tr>
+                <td>Planned Effort Total</td>
+                <td class="total-idle-hours">1040</td>
+            </tr>
+            <tr>
+                <td>Planned hours / day</td>
+                <td class="total-non-billable-hours">9</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 	{% endif %}
 
+
+
 {% endblock %}{% endblock %}
+
+
 
 
