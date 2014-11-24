@@ -276,16 +276,26 @@ class ProjectBasicInfoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
+        self.fields['projectType'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['bu'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['name'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['book'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['chapters'].widget.attrs['class'] = \
+            "form-control"
         self.fields['startDate'].widget.attrs['class'] = \
-            "start-date-input"
+            "start-date-input form-control"
         self.fields['endDate'].widget.attrs['class'] = \
-            "end-date-input"
+            "end-date-input form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
-            "planned-effort-input"
+            "planned-effort-input form-control"
         self.fields['contingencyEffort'].widget.attrs['class'] = \
-            "contigency-effort-input"
+            "contigency-effort-input form-control"
         self.fields['totalValue'].widget.attrs['class'] = \
-            "total-value-input"
+            "total-value-input form-control"
 
 
 # Form Class to create team for project

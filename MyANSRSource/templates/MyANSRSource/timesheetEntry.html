@@ -192,7 +192,7 @@
 					</td>
 				{% elif data.label == 'Total' %}
 					<td>
-						<a class="btn btn-default" href="javascript:;">
+						<a class="btn btn-default row-total-view" href="javascript:;">
 							{% for data in form.hidden_fields %}
 								{% if 'totalQ' in data.id_for_label %}
 									{% if data.value > 0 %}
