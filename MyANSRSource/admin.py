@@ -1,5 +1,5 @@
 from django.contrib import admin
-from timesheet.models import Project, TimeSheetEntry, ProjectChangeInfo, \
+from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, Chapter, Holiday
 
 

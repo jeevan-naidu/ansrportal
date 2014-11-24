@@ -37,6 +37,8 @@
 			<td>
 				{% if timesheets.chapter__name == None %}
 					Overall
+				{% else %}
+					{{ timesheets.chapter__name }}
 				{% endif %}
 			</td>
 			<td>{{ timesheets.task }}</td>

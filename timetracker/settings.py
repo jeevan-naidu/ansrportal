@@ -63,7 +63,7 @@ ALLOWED_HOSTS = []
 # Ansr template definition
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'timesheet/templates/timesheet/'),
+    os.path.join(BASE_DIR, 'MyANSRSource/templates/MyANSRSource/'),
     os.path.join(BASE_DIR, 'employee/template/'),
 )
 
@@ -78,7 +78,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'smart_selects',
     'bootstrap3',  # Django Bootstrap3
-    'timesheet',
+    'MyANSRSource',
     'bootstrap3_datetime',
     'session_security',  # Django session TimeOut / Security
 )
@@ -145,6 +145,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_HOST_USER = 'niranj@fantain.com'
-EMAIL_HOST_PASSWORD = 'Sep@123!'
+EMAIL_HOST_PASSWORD = 'Nov@123!'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

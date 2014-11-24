@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from timesheet.models import Project, TimeSheetEntry, \
+from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Holiday, Book
-from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
+from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
 from django.contrib.formtools.wizard.views import SessionWizardView
@@ -33,10 +33,10 @@ FORMS = [
 
 
 TEMPLATES = {
-    "Define Project": "timesheet/projectBasicInfo.html",
-    "Add team members": "timesheet/projectTeamMember.html",
-    "Financial Milestones": "timesheet/projectMilestone.html",
-    "Validate": "timesheet/projectSnapshot.html",
+    "Define Project": "MyANSRSource/projectBasicInfo.html",
+    "Add team members": "MyANSRSource/projectTeamMember.html",
+    "Financial Milestones": "MyANSRSource/projectMilestone.html",
+    "Validate": "MyANSRSource/projectSnapshot.html",
 }
 
 
@@ -50,7 +50,7 @@ def index(request):
                 request, form)
     else:
         form = LoginForm()
-    return loginResponse(request, form, 'timesheet/index.html')
+    return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
 def loginResponse(request, form, template):
@@ -403,7 +403,7 @@ def Timesheet(request):
                     'currentTimesheet': cwApprovedTimesheetData,
                     'currentActivity': cwApprovedActivityData
                     }
-            return render(request, 'timesheet/timesheetApproved.html', data)
+            return render(request, 'MyANSRSource/timesheetApproved.html', data)
         else:
             if cwTimesheet > 0:
                 messages.warning(request,
@@ -416,7 +416,7 @@ def Timesheet(request):
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'atFormset': atFormset}
-            return render(request, 'timesheet/timesheetEntry.html', data)
+            return render(request, 'MyANSRSource/timesheetEntry.html', data)
 
 
 def ApproveTimesheet(request):
@@ -433,7 +433,7 @@ def ApproveTimesheet(request):
                     TimeSheetEntry.objects.filter(
                         id=updateRec
                     ).update(approved=True, approvedon=datetime.now())
-        return HttpResponseRedirect('/timesheet/dashboard')
+        return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(
             project__projectManager=request.user,
@@ -445,7 +445,7 @@ def ApproveTimesheet(request):
         data = {
             'timesheetInfo': unApprovedTimeSheet
         }
-        return render(request, 'timesheet/timesheetApprove.html', data)
+        return render(request, 'MyANSRSource/timesheetApprove.html', data)
 
 
 def Dashboard(request):
@@ -469,7 +469,7 @@ def Dashboard(request):
         'unapprovedts': unApprovedTimeSheet,
         'totalemp': totalEmployees
     }
-    return render(request, 'timesheet/landingPage.html', data)
+    return render(request, 'MyANSRSource/landingPage.html', data)
 
 
 def checkUser(userName, password, request, form):
@@ -488,13 +488,13 @@ def checkUser(userName, password, request, form):
                     return HttpResponseRedirect('dashboard')
             except IndexError:
                 messages.error(request, 'This user does not have access.')
-                return loginResponse(request, form, 'timesheet/index.html')
+                return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
             messages.error(request, 'Sorry this user is not active')
-            return loginResponse(request, form, 'timesheet/index.html')
+            return loginResponse(request, form, 'MyANSRSource/index.html')
     else:
         messages.error(request, 'Sorry login failed')
-        return loginResponse(request, form, 'timesheet/index.html')
+        return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
 class CreateProjectWizard(SessionWizardView):
@@ -571,7 +571,7 @@ class CreateProjectWizard(SessionWizardView):
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
         }
-        return render(self.request, 'timesheet/projectSnapshot.html', data)
+        return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
 def saveProject(request):
@@ -619,7 +619,7 @@ def saveProject(request):
             pms.save()
 
         data = {'projectId': pr.id, 'projectName': pr.name}
-        return render(request, 'timesheet/projectSuccess.html', data)
+        return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
 def notify(request):
@@ -647,7 +647,7 @@ def notify(request):
         notifyTeam.send()
     projectName = request.session['currentProjectName']
     data = {'projectId': projectId, 'projectName': projectName, 'notify': 'F'}
-    return render(request, 'timesheet/projectSuccess.html', data)
+    return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
 def deleteProject(request):
@@ -663,4 +663,4 @@ def Logout(request):
     if hasattr(request, 'user'):
         from django.contrib.auth.models import AnonymousUser
         request.user = AnonymousUser()
-    return HttpResponseRedirect('/timesheet')
+    return HttpResponseRedirect('/myansrsource')

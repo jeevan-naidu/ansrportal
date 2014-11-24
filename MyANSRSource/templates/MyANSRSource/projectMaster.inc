@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block ansrMenu %}
- <li><a href="/timesheet/dashboard">
+ <li><a href="/myansrsource/dashboard">
     <span class="glyphicon glyphicon-home"></span>
     Dashboard
  </a></li>
