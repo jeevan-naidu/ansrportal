@@ -5,7 +5,7 @@
        <meta charset="utf-8">                                                                                                                                  
        <meta http-equiv="X-UA-Compatible" content="IE=edge">                                                                                                   
        <meta name="viewport" content="width=device-width, initial-scale=1">                                                                                   
-       <title>{% block siteTitle %}ANSR{% endblock %}</title>
+       <title>{% block siteTitle %}MyANSRSource{% endblock %}</title>
 
        {# Load the tag library #}
        {% load bootstrap3 %}
