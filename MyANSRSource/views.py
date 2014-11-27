@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from timesheet.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember
-from timesheet.forms import LoginForm, ProjectBasicInfoForm, \
+from MyANSRSource.models import Project, TimeSheetEntry, \
+    ProjectMilestone, ProjectTeamMember, Holiday, Book
+from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset
 from django.contrib.formtools.wizard.views import SessionWizardView
@@ -33,10 +33,10 @@ FORMS = [
 
 
 TEMPLATES = {
-    "Define Project": "timesheet/projectBasicInfo.html",
-    "Add team members": "timesheet/projectTeamMember.html",
-    "Financial Milestones": "timesheet/projectMilestone.html",
-    "Validate": "timesheet/projectSnapshot.html",
+    "Define Project": "MyANSRSource/projectBasicInfo.html",
+    "Add team members": "MyANSRSource/projectTeamMember.html",
+    "Financial Milestones": "MyANSRSource/projectMilestone.html",
+    "Validate": "MyANSRSource/projectSnapshot.html",
 }
 
 
@@ -50,7 +50,7 @@ def index(request):
                 request, form)
     else:
         form = LoginForm()
-    return loginResponse(request, form, 'timesheet/index.html')
+    return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
 def loginResponse(request, form, template):
@@ -71,6 +71,7 @@ def Timesheet(request):
     today = datetime.now().date()
     minAutoApprove = 36
     maxAutoApprove = 44
+    leaveDayWork = False
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=5)
     disabled = 'next'
@@ -79,7 +80,6 @@ def Timesheet(request):
         # Getting the forms with submitted values
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST)
-        print timesheets
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
             changedStartDate = datetime.strptime(
@@ -95,28 +95,57 @@ def Timesheet(request):
             fridayTotal = 0
             saturdayTotal = 0
             weekTotal = 0
+            billableTotal = 0
+            nonbillableTotal = 0
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
+            weekHolidays = Holiday.objects.filter(
+                date__range=[changedStartDate, changedEndDate]
+            ).values('date')
             for timesheet in timesheets:
+                for holiday in weekHolidays:
+                    holidayDay = '{0}H'.format(
+                        holiday['date'].strftime('%A').lower()
+                    )
+                    if timesheet.cleaned_data[holidayDay] > 0:
+                        leaveDayWork = True
+                plannedEffort = ProjectTeamMember.objects.filter(
+                    member=request.user,
+                    project=timesheet.cleaned_data['project']
+                ).values('plannedEffort')
+                myTotalEfforts = TimeSheetEntry.objects.filter(
+                    teamMember=request.user,
+                    project=timesheet.cleaned_data['project']
+                )
                 del(timesheet.cleaned_data['DELETE'])
+                del(timesheet.cleaned_data['monday'])
+                del(timesheet.cleaned_data['tuesday'])
+                del(timesheet.cleaned_data['wednesday'])
+                del(timesheet.cleaned_data['thursday'])
+                del(timesheet.cleaned_data['friday'])
+                del(timesheet.cleaned_data['saturday'])
+                del(timesheet.cleaned_data['total'])
                 for k, v in timesheet.cleaned_data.iteritems():
-                    if k == 'monday':
+                    if k == 'mondayH':
                         mondayTotal += v
-                    elif k == 'tuesday':
+                    elif k == 'tuesdayH':
                         tuesdayTotal += v
-                    elif k == 'wednesday':
+                    elif k == 'wednesdayH':
                         wednesdayTotal += v
-                    elif k == 'thursday':
+                    elif k == 'thursdayH':
                         thursdayTotal += v
-                    elif k == 'friday':
+                    elif k == 'fridayH':
                         fridayTotal += v
-                    elif k == 'saturday':
+                    elif k == 'saturdayH':
                         saturdayTotal += v
-                    elif k == 'total':
+                    elif k == 'totalH':
+                        billableTotal += v
                         weekTotal += v
                     timesheetDict[k] = v
                 timesheetList.append(timesheetDict.copy())
                 timesheetDict.clear()
+                for myEffort in plannedEffort:
+                    tt = myEffort['plannedEffort']
             for activity in activities:
                 del(activity.cleaned_data['DELETE'])
                 for k, v in activity.cleaned_data.iteritems():
@@ -133,6 +162,7 @@ def Timesheet(request):
                     elif k == 'activity_saturday':
                         saturdayTotal += v
                     elif k == 'total':
+                        nonbillableTotal += v
                         weekTotal += v
                     activityDict[k] = v
                 activitiesList.append(activityDict.copy())
@@ -141,39 +171,68 @@ def Timesheet(request):
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
                     (fridayTotal > 24) | (saturdayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
-            elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove):
+            elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove) | \
+                 (billableTotal > 44) | (nonbillableTotal > 40) | \
+                 (leaveDayWork is True):
                 for eachActivity in activitiesList:
                     # Getting objects for models
-                    nonbillableTS = TimeSheetEntry()
+                    if eachActivity['atId'] > 0:
+                        nonbillableTS = TimeSheetEntry.objects.filter(
+                            id=eachActivity['atId']
+                        )[0]
+                    else:
+                        nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
                     nonbillableTS.teamMember = request.user
+                    if (weekTotal < minAutoApprove) | \
+                            (weekTotal > maxAutoApprove):
+                        nonbillableTS.exception = \
+                            '10% deviation in totalhours for this week'
+                    elif nonbillableTotal > 40:
+                        nonbillableTS.exception = \
+                            'NonBillable activity more than 40 Hours'
                     for k, v in eachActivity.iteritems():
                         if k == 'activity_monday':
-                            nonbillableTS.monday = v
+                            nonbillableTS.mondayH = v
                         elif k == 'activity_tuesday':
-                            nonbillableTS.tuesday = v
+                            nonbillableTS.tuesdayH = v
                         elif k == 'activity_wednesday':
-                            nonbillableTS.wednesday = v
+                            nonbillableTS.wednesdayH = v
                         elif k == 'activity_thursday':
-                            nonbillableTS.thursday = v
+                            nonbillableTS.thursdayH = v
                         elif k == 'activity_friday':
-                            nonbillableTS.friday = v
+                            nonbillableTS.fridayH = v
                         elif k == 'activity_saturday':
-                            nonbillableTS.saturday = v
+                            nonbillableTS.saturdayH = v
                         elif k == 'activity_total':
-                            nonbillableTS.total = v
+                            nonbillableTS.totalH = v
                         elif k == 'activity_feedback':
                             nonbillableTS.feedback = v
                         elif k == 'activity':
                             nonbillableTS.activity = v
                     nonbillableTS.save()
                 for eachTimesheet in timesheetList:
-                    billableTS = TimeSheetEntry()
+                    if eachTimesheet['tsId'] > 0:
+                        billableTS = TimeSheetEntry.objects.filter(
+                            id=eachTimesheet['tsId']
+                        )[0]
+                    else:
+                        billableTS = TimeSheetEntry()
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
+                    billableTS.billable = True
+                    if (weekTotal < minAutoApprove) | \
+                            (weekTotal > maxAutoApprove):
+                        billableTS.exception = \
+                            '10% deviation in totalhours for this week'
+                    elif billableTotal > 40:
+                        billableTS.exception = \
+                            'Billable activity more than 40 Hours'
+                    elif leaveDayWork is True:
+                        billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
@@ -185,7 +244,12 @@ def Timesheet(request):
                 # Save Timesheet
                 for eachActivity in activitiesList:
                     # Getting objects for models
-                    nonbillableTS = TimeSheetEntry()
+                    if eachActivity['atId'] > 0:
+                        nonbillableTS = TimeSheetEntry.objects.filter(
+                            id=eachActivity['atId']
+                        )[0]
+                    else:
+                        nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
@@ -197,10 +261,16 @@ def Timesheet(request):
                         setattr(nonbillableTS, k, v)
                     nonbillableTS.save()
                 for eachTimesheet in timesheetList:
-                    billableTS = TimeSheetEntry()
+                    if eachTimesheet['tsId'] > 0:
+                        billableTS = TimeSheetEntry.objects.filter(
+                            id=eachTimesheet['tsId']
+                        )[0]
+                    else:
+                        billableTS = TimeSheetEntry()
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
+                    billableTS.billable = True
                     billableTS.approved = True
                     billableTS.approvedon = datetime.now()
                     for k, v in eachTimesheet.iteritems():
@@ -236,8 +306,9 @@ def Timesheet(request):
                 approved=False,
                 project__isnull=True
             )
-        ).values('activity', 'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
-                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
+        ).values('id', 'activity', 'mondayH', 'tuesdayH', 'wednesdayH',
+                 'thursdayH', 'fridayH', 'saturdayH', 'totalH',
+                 'managerFeedback'
                  )
         cwTimesheetData = TimeSheetEntry.objects.filter(
             Q(
@@ -247,9 +318,10 @@ def Timesheet(request):
                 approved=False,
                 activity__isnull=True
             )
-        ).values('project', 'chapter', 'task', 'mondayH',
-                 'tuesdayH', 'wednesdayH', 'thursdayH',
-                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
+        ).values('id', 'project', 'chapter', 'task', 'mondayH', 'mondayQ',
+                 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
+                 'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
                  )
         tsData = {}
         tsDataList = []
@@ -258,6 +330,8 @@ def Timesheet(request):
                 tsData[k] = v
                 if k == 'managerFeedback':
                     tsData['feedback'] = v
+                if k == 'id':
+                    tsData['tsId'] = v
             tsDataList.append(tsData.copy())
             tsData.clear()
         atData = {}
@@ -280,6 +354,8 @@ def Timesheet(request):
                     atData['activity_total'] = v
                 if k == 'managerFeedback':
                     atData['feedback'] = v
+                if k == 'id':
+                    atData['atId'] = v
             atDataList.append(atData.copy())
             atData.clear()
         if cwTimesheet > 0:
@@ -327,7 +403,7 @@ def Timesheet(request):
                     'currentTimesheet': cwApprovedTimesheetData,
                     'currentActivity': cwApprovedActivityData
                     }
-            return render(request, 'timesheet/timesheetApproved.html', data)
+            return render(request, 'MyANSRSource/timesheetApproved.html', data)
         else:
             if cwTimesheet > 0:
                 messages.warning(request,
@@ -340,16 +416,36 @@ def Timesheet(request):
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'atFormset': atFormset}
-            return render(request, 'timesheet/timesheetEntry.html', data)
+            return render(request, 'MyANSRSource/timesheetEntry.html', data)
 
 
 def ApproveTimesheet(request):
-    unApprovedTimeSheet = TimeSheetEntry.objects.filter(
-        project__projectManager=request.user,
-        approved=False
-    ).values('project__name', 'wkstart', 'wkend', 'teamMember__name',
-             'totalH', 'exception', 'approved', 'managerFeedback')
-    return render(request, 'timesheet/timesheetApprove.html', {})
+    if request.method == 'POST':
+        for k, v in request.POST.iteritems():
+            if 'feedback' in k:
+                updateRec = k.split('-', 1)[1]
+                TimeSheetEntry.objects.filter(
+                    id=updateRec
+                ).update(managerFeedback=v)
+            elif 'status' in k:
+                updateRec = k.split('-', 1)[1]
+                if v == 'approve':
+                    TimeSheetEntry.objects.filter(
+                        id=updateRec
+                    ).update(approved=True, approvedon=datetime.now())
+        return HttpResponseRedirect('/myansrsource/dashboard')
+    else:
+        unApprovedTimeSheet = TimeSheetEntry.objects.filter(
+            project__projectManager=request.user,
+            approved=False
+        ).values('id', 'project__id', 'project__name', 'wkstart', 'wkend',
+                 'teamMember__first_name', 'totalH', 'exception', 'approved',
+                 'managerFeedback').order_by('project__id')
+
+        data = {
+            'timesheetInfo': unApprovedTimeSheet
+        }
+        return render(request, 'MyANSRSource/timesheetApprove.html', data)
 
 
 def Dashboard(request):
@@ -373,7 +469,7 @@ def Dashboard(request):
         'unapprovedts': unApprovedTimeSheet,
         'totalemp': totalEmployees
     }
-    return render(request, 'timesheet/landingPage.html', data)
+    return render(request, 'MyANSRSource/landingPage.html', data)
 
 
 def checkUser(userName, password, request, form):
@@ -392,13 +488,13 @@ def checkUser(userName, password, request, form):
                     return HttpResponseRedirect('dashboard')
             except IndexError:
                 messages.error(request, 'This user does not have access.')
-                return loginResponse(request, form, 'timesheet/index.html')
+                return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
             messages.error(request, 'Sorry this user is not active')
-            return loginResponse(request, form, 'timesheet/index.html')
+            return loginResponse(request, form, 'MyANSRSource/index.html')
     else:
         messages.error(request, 'Sorry login failed')
-        return loginResponse(request, form, 'timesheet/index.html')
+        return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
 class CreateProjectWizard(SessionWizardView):
@@ -419,12 +515,13 @@ class CreateProjectWizard(SessionWizardView):
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList
+        self.request.session['book'] = basicInfo['book'].id
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
-        ).strftime('%Y-%m-%d %H:%M%z')
+        ).strftime('%Y-%m-%d')
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
-        ).strftime('%Y-%m-%d %H:%M%z')
+        ).strftime('%Y-%m-%d')
         for teamData in [form.cleaned_data for form in form_list][1]:
             teamDataCounter += 1
             for k, v in teamData.iteritems():
@@ -470,11 +567,11 @@ class CreateProjectWizard(SessionWizardView):
                 basicInfoDict[key] = basicInfo[k]
 
         data = {
-            'basicInfo': basicInfoDict,
+            'basicInfo': basicInfo,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
         }
-        return render(self.request, 'timesheet/projectSnapshot.html', data)
+        return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
 def saveProject(request):
@@ -486,6 +583,7 @@ def saveProject(request):
         pr.plannedEffort = request.POST.get('plannedEffort')
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
+        pr.book = Book.objects.filter(id=request.session['book'])[0]
         pr.save()
         request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
@@ -521,7 +619,7 @@ def saveProject(request):
             pms.save()
 
         data = {'projectId': pr.id, 'projectName': pr.name}
-        return render(request, 'timesheet/projectSuccess.html', data)
+        return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
 def notify(request):
@@ -549,7 +647,7 @@ def notify(request):
         notifyTeam.send()
     projectName = request.session['currentProjectName']
     data = {'projectId': projectId, 'projectName': projectName, 'notify': 'F'}
-    return render(request, 'timesheet/projectSuccess.html', data)
+    return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
 def deleteProject(request):
@@ -565,4 +663,4 @@ def Logout(request):
     if hasattr(request, 'user'):
         from django.contrib.auth.models import AnonymousUser
         request.user = AnonymousUser()
-    return HttpResponseRedirect('/timesheet')
+    return HttpResponseRedirect('/myansrsource')

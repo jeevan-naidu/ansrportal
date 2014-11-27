@@ -1,6 +1,7 @@
 {% extends 'projectMaster.inc' %}
 
 {% block createProjectActive %}class="active"{% endblock %}
+{% block BIactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
@@ -21,9 +22,19 @@
 							<span class="required">*</span>
 						{% endif %}
 				</td>
-				<td>{{ field }}</td>
+				<td class="col-xs-12 col-md-12 col-lg-6">{{ field }}</td>
 			</tr>
 		{% endfor %}
 	</table>
 	</div>
+<script>
+    var app = app || {};
+
+    (function() {
+
+    }());
+</script>
+
 {% endblock %}{% endblock %}
+
+

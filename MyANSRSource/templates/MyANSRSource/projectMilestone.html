@@ -1,0 +1,81 @@
+{% extends 'projectMaster.inc' %}
+
+
+{% block addForm %}
+<span class="pull-right">
+	<a class="btn btn-success btn-xs" id="add-milestone-btn">
+		<span class="glyphicon glyphicon-plus"></span>
+			Add Milestone
+	</a>
+	<a class="btn btn-danger btn-xs" id="del-milestone-btn">
+		<span class="glyphicon glyphicon-minus"></span>
+			Delete Milestone
+	</a>
+</span>
+{% endblock %}
+
+{% block FMactiveClass %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		{% for field in form %} 
+		{% if field.errors %}									
+			<li>{{ field.label }}: {{ field.errors|striptags }}</li>		  
+		{% endif %}
+		{% endfor %}								
+	</div>
+{% endif %}
+	{% if forloop.first %}
+		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
+	{% endif %}
+		{% for t in form %}
+			{% if forloop.first %}
+				{% if '-0' in t.id_for_label %}
+					<thead>
+						{% for field in form %}
+							<th>
+								<small>{{ field.label }}</small>
+								{% if field.field.required %}
+									<span class="required">*</span>
+								{% endif %}
+							</th>
+						{% endfor %}
+					</thead>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	      {% for t in form %}
+			{% if forloop.first %}
+			   	<tr>
+			{% endif %}
+					<td>{{ t }}</td>
+			{% if forloop.last %}
+				</tr>
+			{% endif %}
+	      {% endfor %}
+	{% if forloop.last %}
+
+		</table>
+
+
+
+    <div class="row">
+        <div class="col-md-4 pull-right">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td><strong>Deliverables</strong></td>
+                    <td><span class="milestone-total-deliverable">0</span> Questions</td>
+                </tr>
+                <tr>
+                    <td><strong>Amount</strong></td>
+                    <td><span class="milestone-total-amount">0</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+	{% endif %}
+{% endblock %}{% endblock %}

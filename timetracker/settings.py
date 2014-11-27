@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from django.conf import global_settings
 # For LDAP
 from django_auth_ldap.config import PosixGroupType
 
@@ -96,14 +97,10 @@ ALLOWED_HOSTS = []
 # Ansr template definition
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'timesheet/templates/timesheet/'),
+    os.path.join(BASE_DIR, 'MyANSRSource/templates/MyANSRSource/'),
     os.path.join(BASE_DIR, 'employee/template/'),
     os.path.join(BASE_DIR, 'employee/emp_photo/'),
 )
-
-# Crispy Forms Layout
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # Application definition
 
@@ -116,8 +113,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'smart_selects',
     'bootstrap3',  # Django Bootstrap3
-    'timesheet',
+    'MyANSRSource',
     'bootstrap3_datetime',
+    'session_security',  # Django session TimeOut / Security
 )
 
 MIDDLEWARE_CLASSES = (
@@ -126,10 +124,20 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'session_security.middleware.SessionSecurityMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 )
+
+# Overriding Default T_C_P with new T_C_p
+TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    'django.core.context_processors.request',
+)
+
+# Session Expire Configuration
+SESSION_SECURITY_WARN_AFTER = 300  # Time Given in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 ROOT_URLCONF = 'timetracker.urls'
 
@@ -172,6 +180,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_HOST_USER = 'niranj@fantain.com'
-EMAIL_HOST_PASSWORD = 'Sep@123!'
+EMAIL_HOST_PASSWORD = 'Nov@123!'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

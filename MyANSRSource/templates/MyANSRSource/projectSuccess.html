@@ -1,0 +1,56 @@
+{% extends 'projectMaster.inc' %}
+
+{% block CactiveClass %}active{% endblock %}
+{% block content %}
+<ul class="form-steps clearfix">
+    <li class="form-step">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">1</span>
+        <label class="form-step-label">Basic Information</label>
+    </li>
+    <li class="form-step">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">2</span>
+        <label class="form-step-label">Define Team</label>
+    </li>
+    <li class="form-step">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">3</span>
+        <label class="form-step-label">Financial Milestones</label>
+    </li>
+    <li class="form-step">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">4</span>
+        <label class="form-step-label">Validate</label>
+    </li>
+    <li class="form-step active">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">5</span>
+        <label class="form-step-label">Complete!</label>
+    </li>
+</ul>
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+	<div class="alert alert-success" role="alert">
+		<h3>Congratulations!!!</h3><br /> <h5>Your project " <b>{{ projectName }}</b> " has been created.</h5>
+	</div>
+	<div class="alert alert-info" role="alert">
+		<h5>Assigned Project ID : {{ projectId }}</h5>
+		{% if notify == 'F' %}
+			<a type="submit" value="submit" href="notify-team" class="btn btn-sm disabled btn-info">
+				<span class="glyphicon glyphicon-ok"></span>
+				<b>Notified</b>
+			</a>
+		{% else %}
+			<a type="submit" value="submit" href="notify-team" class="btn btn-sm btn-info">
+				<span class="glyphicon glyphicon-globe"></span>
+				<b>Notify Team</b>
+			</a>
+		{% endif %}
+	</div>
+<a href="add" class="btn btn-success pull-right">
+        <span class="glyphicon glyphicon-saved"></span>
+	<b>Complete</b>
+</a>
+</div>
+
+{% endblock %}

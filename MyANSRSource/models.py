@@ -1,16 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+
 # Database Models
 
 BU = (
     ('E', 'Editorial'),
     ('M', 'Media'),
 )
+PROJECT_TYPE = (
+    ('Q', 'Questions'),
+    ('P', 'Powerpoint'),
+    ('I', 'Instructional')
+)
 
 
 class Book(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Book Name")
+    name = models.CharField(max_length=100, null=False,
+                            verbose_name="Book Name")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -33,6 +40,12 @@ class Chapter(models.Model):
 
 
 class Project(models.Model):
+    projectType = models.CharField(
+        default='Q',
+        choices=PROJECT_TYPE,
+        max_length=2,
+        verbose_name="Project Type"
+    )
     bu = models.CharField(
         default='E',
         choices=BU,
@@ -50,6 +63,11 @@ class Project(models.Model):
                                             verbose_name="Contigency Effort")
     projectManager = models.ForeignKey(User)
     # Chapters to be worked on in the project
+    book = models.ForeignKey(Book,
+                             verbose_name="Book",
+                             default=None,
+                             null=False
+                             )
     chapters = models.ManyToManyField(Chapter)
     totalValue = models.IntegerField(default=0, verbose_name="Total Value")
     # Record Entered / Updated Date
@@ -108,6 +126,22 @@ class TimeSheetEntry(models.Model):
     class Meta:
         verbose_name = 'Timesheet Entry'
         verbose_name_plural = 'Timesheet Entries'
+
+
+class Holiday(models.Model):
+    # project change Request Fields
+    name = models.CharField(verbose_name="Holiday Name",
+                            max_length="100",
+                            null=True,
+                            blank=True)
+    date = models.DateField(verbose_name="Holiday Date")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 class ProjectChangeInfo(models.Model):
