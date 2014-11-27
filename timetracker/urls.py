@@ -1,3 +1,6 @@
+import autocomplete_light
+autocomplete_light.autodiscover()
+
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
@@ -13,6 +16,9 @@ admin.site.site_header = apps.MyANSRSourceConfig.verbose_name +  \
 urlpatterns = patterns('',
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^myansrsource/', include('MyANSRSource.urls')),
+                       url(r'^autocomplete/',
+                           include('autocomplete_light.urls')
+                           ),
                        url(r'^chaining/', include('smart_selects.urls')),
                        url(r'session_security/',
                            include('session_security.urls')

@@ -20,6 +20,8 @@
        {% block addFormMedia %}{% endblock %}
     
        {% include 'session_security/all.html' %}
+
+       {% include 'autocomplete_light/static.html' %}
     </head>
     <body>
 	<!-- Ansr -->

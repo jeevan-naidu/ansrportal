@@ -1,3 +1,4 @@
+import autocomplete_light
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -299,7 +300,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
 
 
 # Form Class to create team for project
-class ProjectTeamForm(forms.ModelForm):
+"""class ProjectTeamForm(forms.ModelForm):
 
     class Meta:
         model = ProjectTeamMember
@@ -312,6 +313,23 @@ class ProjectTeamForm(forms.ModelForm):
             'startDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
 
+    def __init__(self, *args, **kwargs):
+        super(ProjectTeamForm, self).__init__(*args, **kwargs)
+        self.fields['member'].queryset = User.objects.exclude(
+            Q(groups__name='project manager') |
+            Q(is_superuser=True)
+        )"""
+
+
+class ProjectTeamForm(autocomplete_light.ModelForm):
+
+    class Meta:
+        model = ProjectTeamMember
+        fields = (
+            'member',
+            'role',
+            'plannedEffort',
+            'startDate', )
     def __init__(self, *args, **kwargs):
         super(ProjectTeamForm, self).__init__(*args, **kwargs)
         self.fields['member'].queryset = User.objects.exclude(
