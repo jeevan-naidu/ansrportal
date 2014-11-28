@@ -1,6 +1,3 @@
-import autocomplete_light
-autocomplete_light.autodiscover()
-
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import auth, messages

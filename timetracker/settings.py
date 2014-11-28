@@ -76,9 +76,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'autocomplete_light',
     'smart_selects',
     'bootstrap3',  # Django Bootstrap3
+    'selectable',
     'MyANSRSource',
     'bootstrap3_datetime',
     'session_security',  # Django session TimeOut / Security

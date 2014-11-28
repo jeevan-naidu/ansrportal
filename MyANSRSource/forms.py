@@ -1,9 +1,10 @@
-import autocomplete_light
 from django import forms
+import selectable.forms as selectable
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter
+from lookups import MemberLookup
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 
@@ -300,9 +301,14 @@ class ProjectBasicInfoForm(forms.ModelForm):
 
 
 # Form Class to create team for project
-"""class ProjectTeamForm(forms.ModelForm):
+class ProjectTeamForm(forms.ModelForm):
 
     class Meta:
+        attrs = {'data-selectable-options':
+                 {'highlightMatch': True,
+                  'minLength': 5,
+                 }
+                }
         model = ProjectTeamMember
         fields = (
             'member',
@@ -311,25 +317,12 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'startDate', )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
-            'project': forms.HiddenInput(), }
+            'project': forms.HiddenInput(),
+            'member': selectable.AutoCompleteSelectWidget(
+                lookup_class=MemberLookup, attrs=attrs
+            )
+        }
 
-    def __init__(self, *args, **kwargs):
-        super(ProjectTeamForm, self).__init__(*args, **kwargs)
-        self.fields['member'].queryset = User.objects.exclude(
-            Q(groups__name='project manager') |
-            Q(is_superuser=True)
-        )"""
-
-
-class ProjectTeamForm(autocomplete_light.ModelForm):
-
-    class Meta:
-        model = ProjectTeamMember
-        fields = (
-            'member',
-            'role',
-            'plannedEffort',
-            'startDate', )
     def __init__(self, *args, **kwargs):
         super(ProjectTeamForm, self).__init__(*args, **kwargs)
         self.fields['member'].queryset = User.objects.exclude(

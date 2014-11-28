@@ -18,10 +18,13 @@
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
        
        {% block addFormMedia %}{% endblock %}
-    
-       {% include 'session_security/all.html' %}
 
-       {% include 'autocomplete_light/static.html' %}
+       {# Load Dependecies for Django selectable #}
+       {% load selectable_tags %}
+       {% include_ui_theme %}
+       <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
+
+       {% include 'session_security/all.html' %}
     </head>
     <body>
 	<!-- Ansr -->
