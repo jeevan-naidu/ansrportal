@@ -54,10 +54,8 @@ class Project(models.Model):
     )
     name = models.CharField(max_length=50, verbose_name="Project Name")
     projectId = models.CharField(max_length=15, null=False)
-    startDate = models.DateTimeField(verbose_name="Project Start Date",
-                                     default=timezone.now)
-    endDate = models.DateTimeField(verbose_name="Project End Date",
-                                   default=timezone.now)
+    startDate = models.DateTimeField(verbose_name="Project Start Date")
+    endDate = models.DateTimeField(verbose_name="Project End Date")
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     contingencyEffort = models.IntegerField(default=0,

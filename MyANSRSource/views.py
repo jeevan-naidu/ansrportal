@@ -563,7 +563,7 @@ class CreateProjectWizard(SessionWizardView):
             if k == 'chapters':
                 basicInfoDict[key] = basicInfo[k].values('name')
             elif k == 'bu':
-                print type(basicInfo[k])
+                basicInfo[k]
             else:
                 basicInfoDict[key] = basicInfo[k]
 
