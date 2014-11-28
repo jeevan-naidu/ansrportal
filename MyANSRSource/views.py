@@ -509,6 +509,7 @@ class CreateProjectWizard(SessionWizardView):
         changedMilestoneData = {}
         cleanedTeamData = []
         cleanedMilestoneData = []
+        print [form.cleaned_data for form in form_list][1]
 
         basicInfo = [form.cleaned_data for form in form_list][0]
         chapterList = []
