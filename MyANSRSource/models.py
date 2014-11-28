@@ -53,6 +53,7 @@ class Project(models.Model):
         verbose_name="Business Unit"
     )
     name = models.CharField(max_length=50, verbose_name="Project Name")
+    projectId = models.CharField(max_length=15, null=False)
     startDate = models.DateTimeField(verbose_name="Project Start Date",
                                      default=timezone.now)
     endDate = models.DateTimeField(verbose_name="Project End Date",
