@@ -604,7 +604,7 @@ def saveProject(request):
         pr.projectManager = request.user
         pr.book = Book.objects.filter(id=request.session['book'])[0]
         pr.save()
-        request.session['currentProject'] = pr.projectId
+        request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
 
         for eachId in request.session['chapters']:
