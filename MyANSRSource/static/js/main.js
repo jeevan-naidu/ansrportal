@@ -6,7 +6,7 @@ var app = app || {};
 // Main
 (function() {
     $(document).ready(function() {
-        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3});
+        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3, addTeamMember: true});
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
         $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0, financialTotal: true});
@@ -41,6 +41,11 @@ app.getIdNo = function(str) {
 
             rowCountElement = $table.find('input[type="hidden"]:nth-of-type(1)'),
             rowCount = Number(rowCountElement.val());
+
+            if(options.addTeamMember || options.financialTotal) {
+                rowCountElement = $table.parent().find('input[type="hidden"]:nth-of-type(3)');
+                rowCount = Number(rowCountElement.val());
+            }
 
         var add = function() {
             var lastRow = $($table).find('tr').last(),
@@ -137,6 +142,8 @@ app.getIdNo = function(str) {
             rowCount += 1;
 
             $(rowCountElement).attr('value', rowCount);
+
+            console.log(rowCount);
 
             daysTotalFun();
             billableTotalFun();

@@ -21,6 +21,12 @@
 						{% if field.field.required %}
 							<span class="required">*</span>
 						{% endif %}
+						{% if field.label == 'Chapters' %}
+							<br />
+							<span>
+								<h5><small>Use <b><kbd>ctrl + click<kbd></b> to select multiple chapters</small></h5>
+							</span>
+						{% endif %}
 				</td>
 				<td class="col-xs-12 col-md-12 col-lg-6">{{ field }}</td>
 			</tr>

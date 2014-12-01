@@ -15,6 +15,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.conf import settings
+import re
 # views for ansr
 
 FORMS = [
@@ -562,7 +563,7 @@ class CreateProjectWizard(SessionWizardView):
             if k == 'chapters':
                 basicInfoDict[key] = basicInfo[k].values('name')
             elif k == 'bu':
-                print type(basicInfo[k])
+                basicInfo[k]
             else:
                 basicInfoDict[key] = basicInfo[k]
 
@@ -578,6 +579,24 @@ def saveProject(request):
     if request.method == 'POST':
         pr = Project()
         pr.name = request.POST.get('name')
+        projectname = request.POST.get('name')
+        projectname = projectname.replace(' ', '_').lower()
+        projectname = re.sub('[^a-z_]+', '', projectname)
+        if projectname.endswith('_'):
+            projectname = projectname[:-1]
+        minWordCount = len(min(projectname.split('_'), key=len))
+        strippedWord = [e[:minWordCount] for e in projectname.split('_')]
+        projectname = '_'.join(strippedWord)
+        pnLength = len(projectname)
+        while (pnLength > 15):
+            strippedWord = [
+                e[:-1]
+                for e in projectname.split('_')
+            ]
+            pnLength = len('_'.join(strippedWord))
+            projectname = '_'.join(strippedWord)
+        projectId = projectname
+        pr.projectId = projectId
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
@@ -618,7 +637,7 @@ def saveProject(request):
             pms.deliverables = request.POST.get(deliverables)
             pms.save()
 
-        data = {'projectId': pr.id, 'projectName': pr.name}
+        data = {'projectId': pr.projectId, 'projectName': pr.name}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
