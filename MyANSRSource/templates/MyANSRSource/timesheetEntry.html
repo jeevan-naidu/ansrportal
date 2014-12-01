@@ -30,14 +30,14 @@
     {{ tsFormset.management_form }}
 	<table class="table table-condensed table-responsive">
 	{% for form in tsFormset %}
-		{% for field in form.hidden_fields %}
-			{% if 'id' in field.label %}
-				{{ field }}
-			{% endif %}
-		{% endfor %}
 		{% if forloop.first %}
 		<thead>
             	<tr>
+			{% for field in form.hidden_fields %}
+				{% if 'id' in field.label %}
+					<td style="display: none">{{ field.label }}</td>
+				{% endif %}
+			{% endfor %}
 			{% for data in form %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}	
 				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 11 %}
@@ -57,6 +57,11 @@
 		<tbody>
 		{% endif %}
 		<tr>
+			{% for field in form.hidden_fields %}
+				{% if 'id' in field.label %}
+					<td style="display: none">{{ field }}</td>
+				{% endif %}
+			{% endfor %}
 			{% for data in form %}
 				{% if data.label == 'Mon' %}
 					<td>
@@ -242,14 +247,14 @@
 	{{ atFormset.management_form }}
 	<table class="table table-condensed table-responsive">
 	{% for form in atFormset %}
-		{% for field in form.hidden_fields %}
-			{% if 'id' in field.label %}
-				{{ field }}
-			{% endif %}
-		{% endfor %}
 		{% if forloop.first %}
 		<thead>
             	<tr>
+		{% for field in form.hidden_fields %}
+			{% if 'id' in field.label %}
+				<td style="display: none">{{ field.label }}</td>
+			{% endif %}
+		{% endfor %}
                 {% for data in form %}
 		    {% if 'id' not in data.label %}
 		    {% if forloop.counter == 1 or forloop.counter == 9 %}
@@ -269,6 +274,11 @@
 		<tbody>
 		{% endif %}
 		<tr>
+			{% for field in form.hidden_fields %}
+				{% if 'id' in field.label %}
+					<td style="display: none">{{ field }}</td>
+				{% endif %}
+			{% endfor %}
 			{% for data in form %}
 		    		{% if 'id' not in data.label %}
 					<td>{{ data }}</td>
