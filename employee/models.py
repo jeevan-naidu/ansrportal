@@ -198,37 +198,37 @@ class Employee(models.Model):
         max_length=10,
         choices=MARITAL_CHOICES,
         blank=False)
-    blood_grop = models.CharField(
+    blood_group = models.CharField(
         "Blood Group",
-        max_length=50,
+        max_length=3,
         choices=B_GROUP_CHOICES,
-        blank=False)
-    depar_code = models.CharField(
-        "Department Code",
-        max_length=50,
+        blank=True)
+    department = models.CharField(
+        "Department",
+        max_length=3,
         choices=DEPARTMENT_CHOICES,
         blank=False)
-    cate_code = models.CharField(
-        "Category Code",
-        max_length=50,
+    category = models.CharField(
+        "Employment Category",
+        max_length=3,
         choices=CATEGORY_CHOICES,
         blank=False)
-    desig_code = models.CharField(
-        "Designation Code",
-        max_length=50,
+    designation_code = models.CharField(
+        "Designation",
+        max_length=3,
         choices=DESIGNATION_CHOICES,
         blank=False)
     year_exp = models.IntegerField(
         "Years of Experience",
         max_length=2,
         blank=False)
-    mob_num = models.CharField(
+    mobile_phone = models.CharField(
         "Mobile Number",
         max_length=15,
         unique=True,
-        blank=False)
-    land_num = models.CharField("Landline Number", max_length=15)
-    emer_num = models.CharField(
+        blank=True)
+    land_phone = models.CharField("Landline Number", max_length=15, blank=True)
+    emergency_phone = models.CharField(
         "Emergency Contact Number",
         max_length=15,
         unique=True,
@@ -238,18 +238,13 @@ class Employee(models.Model):
         max_length=250,
         blank=False,
         unique=True)
-    official_email = models.EmailField(
-        "Official E-mail",
-        max_length=250,
-        blank=False,
-        unique=True)
-    pan_no = models.CharField(
-        "PAN No",
+    PAN = models.CharField(
+        "PAN Number",
         max_length=10,
         blank=False,
         unique=True)
-    passport_no = models.CharField("Passport No", max_length=10, unique=True)
-    pf_no = models.CharField("PF No", max_length=14,  blank=False)
+    passport_number = models.CharField("Passport Number", max_length=10, unique=True)
+    pf_number = models.CharField("Provide Fund Number", max_length=14,  blank=True)
     prev_comp_name = models.CharField("Previous Company Name", max_length=150)
     prev_comp_addr = models.CharField(
         "Previous Company Address",
@@ -269,31 +264,31 @@ class Employee(models.Model):
         max_length=250)
     shift_plan = models.CharField(
         "Shift Plan",
-        max_length=15,
+        max_length=5,
         choices=SHIFT_CHOICES,
         blank=False)
     leave_plan = models.CharField(
         "Leave Plan",
-        max_length=50,
+        max_length=5,
         choices=LEAVE_CHOICES,
         blank=False)
-    att_plan = models.CharField(
+    attendance_plan = models.CharField(
         "Attendance Plan",
-        max_length=50,
+        max_length=5,
         choices=ATTEN_CHOICES,
         blank=False)
-    over_tplan = models.CharField(
+    overtime_plan = models.CharField(
         "OverTime Plan",
-        max_length=50,
+        max_length=5,
         choices=OVER_TPLAN_CHOICES,
         blank=False)
     lat_early_plan = models.CharField(
         "Late/Early Plan",
-        max_length=15,
+        max_length=5,
         choices=LATE_EARLY_CHOICES,
         blank=False)
-    prob_date = models.DateField("Probation Date", blank=False)
-    confirm_date = models.DateField("Confirm Date", blank=False)
+    probation_end_date = models.DateField("Probation End Date", blank=False)
+    confirmation_date = models.DateField("Confirmation Date", blank=False)
     join_date = models.DateField("Joining Date", blank=False)
     res_date = models.DateField("Designation Date")
     exit_date = models.DateField("Exit Date")
