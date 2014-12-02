@@ -23,7 +23,7 @@ AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
 #AUTH_LDAP_BASE_DN = "dc=fantain,dc=com"
 AUTH_LDAP_BIND_DN = "cn=admin,dc=fantain,dc=com"
 AUTH_LDAP_BIND_PASSWORD = "fant@in"
-AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=fantainusers,dc=fantain,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+#AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=fantainusers,dc=fantain,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
 #AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=fantainusers,dc=fantain,dc=com"
 #AUTH_LDAP_GROUP_SEARCH = LDAPSearch("cn=users,ou=fantaingroups,dc=fantain,dc=com",
 #    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)")
