@@ -104,6 +104,7 @@ def Timesheet(request):
                 date__range=[changedStartDate, changedEndDate]
             ).values('date')
             for timesheet in timesheets:
+                print timesheet
                 for holiday in weekHolidays:
                     holidayDay = '{0}H'.format(
                         holiday['date'].strftime('%A').lower()
@@ -297,7 +298,12 @@ def Timesheet(request):
         cwTimesheet = TimeSheetEntry.objects.filter(
             wkstart=weekstartDate, wkend=ansrEndDate,
             teamMember=request.user,
-            approved=False
+            approved=False, activity__isnull=True
+        ).count()
+        cwActivity = TimeSheetEntry.objects.filter(
+            wkstart=weekstartDate, wkend=ansrEndDate,
+            teamMember=request.user,
+            approved=False, project__isnull=True
         ).count()
         cwActivityData = TimeSheetEntry.objects.filter(
             Q(
