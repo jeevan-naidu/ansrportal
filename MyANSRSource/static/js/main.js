@@ -39,7 +39,7 @@ app.getIdNo = function(str) {
             $delBtn = $(options.del),
             $rows   = $table.find('tr'),
 
-            rowCountElement = $table.find('input[type="hidden"]:nth-of-type(1)'),
+            rowCountElement = $table.find('input[type="hidden"]:first'),
             rowCount = Number(rowCountElement.val());
 
             if(options.addTeamMember || options.financialTotal) {
