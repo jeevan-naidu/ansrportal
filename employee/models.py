@@ -17,7 +17,7 @@ MARITAL_CHOICES = (
     ('04', 'Single'),
     )
 
-B_GROUP_CHOICES = (
+BLOOD_GROUP_CHOICES = (
     ('00', 'A+'),
     ('01', 'A-'),
     ('02', 'B+'),
@@ -28,19 +28,6 @@ B_GROUP_CHOICES = (
     ('07', 'AB-'),
     )
 
-DEPARTMENT_CHOICES = (
-    ('Authoring', (
-        ('00', 'Production'),
-        ('01', 'Marketing & Sales'),
-        ('02', 'Finance'),
-        )
-     ),
-    ('Multimedia', (
-        ('03', 'Human resource'),
-        ('04', 'IT Department'),
-        )
-     )
-    )
 
 CATEGORY_CHOICES = (
     ('00', 'Fulltime Employee'),
@@ -49,32 +36,9 @@ CATEGORY_CHOICES = (
     ('03', 'Contractor'),
     )
 
-DESIGNATION_CHOICES = (
-    ('00', 'Developer D1'),
-    ('01', 'Developer D2'),
-    ('02', 'Quality Analyst'),
-    ('03', 'Copy Editor'),
-    ('04', 'EA'),
-    )
 
-SHIFT_CHOICES = (
-    ('00', 'General Shift'),
-    ('01', 'A Shift'),
-    ('02', 'B Shift'),
-    )
-
-LEAVE_CHOICES = (
-    ('00', 'Permission'),
-    ('01', 'Without Persmission'),
-    )
-
-ATTEN_CHOICES = (
-    ('00', 'First Off'),
-    ('01', 'Last Off'),
-    ('02', 'Entire Off'),
-    )
-
-OVER_TPLAN_CHOICES = ()
+OVERTIMEPLAN_CHOICES = (('CB', 'Compensatory Leave'),
+                        ('LP', 'Leave Pay'))
 
 LATE_EARLY_CHOICES = ()
 
@@ -123,7 +87,7 @@ EMP_STATUS_CHOICES = (
     )
 
 
-class Locations(models.Model):
+class OfficeLocation(models.Model):
     name = models.CharField(
         verbose_name="Location Name",
         max_length=30,
@@ -131,9 +95,97 @@ class Locations(models.Model):
     city = models.CharField("City", max_length=15, blank=False)
     state = models.CharField("State", max_length=20, blank=False)
     zipcode = models.CharField("ZIP Code", max_length=6, blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name + '::' + self.city
 
 
-# Create your models here.
+class Department(models.Model):
+    name = models.CharField(
+        verbose_name="Department Name",
+        max_length=40,
+        blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Division(models.Model):
+    department = models.ForeignKey(Department)
+    name = models.CharField(
+        verbose_name="Sub Department Name",
+        max_length=40,
+        blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.department.name + '::' + self.name
+
+
+class BusinessUnit(models.Model):
+    name = models.CharField(
+        verbose_name="Business Unit Name",
+        max_length=40,
+        blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+class Designation(models.Model):
+    name = models.CharField(
+        verbose_name="Designation Title",
+        max_length=40,
+        blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class PreviousEmployment(models.Model):
+    company_name = models.CharField("Company Name", max_length=150)
+    company_address = models.CharField(
+        "Company Address",
+        max_length=500)
+    employed_from = models.DateField(verbose_name="Start Date", null=False)
+    employed_upto = models.DateField(verbose_name="End Date", null=False)
+    pf_number = models.CharField(
+        "PF Number",
+        max_length=15,
+        null=True,
+        blank=True)
+    last_ctc = models.DecimalField(
+        "Last CTC",
+        max_digits=15,
+        decimal_places=2)
+    reason_for_exit = models.CharField(
+        verbose_name="Reason for Exit",
+        max_length=50)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.company_name
 
 
 class EmpAddress(models.Model):
@@ -157,10 +209,9 @@ class EmpAddress(models.Model):
             self.state,
             self.pincode)
 
-""" This class is an extension of the Django user class.  The fields in the User
- model can be found here.
- https://docs.djangoproject.com/en/dev/ref/contrib/auth/
- """
+""" This class is an extension of the Django user class.  The fields in the
+User model can be found here.
+https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 
 
 class Employee(models.Model):
@@ -172,11 +223,11 @@ class Employee(models.Model):
         primary_key=True,
         blank=False)
     idcard = models.CharField(
-        "Card ID",
-        max_length=8,
+        "ID Card Identifier",
+        max_length=15,
         unique=True,
         blank=False)
-    location = models.ForeignKey(Locations)
+    location = models.ForeignKey(OfficeLocation)
     permanent_address = models.ForeignKey(
         EmpAddress,
         verbose_name="Permanent Address",
@@ -190,7 +241,7 @@ class Employee(models.Model):
         max_length=15,
         choices=GENDER_CHOICES,
         blank=False)
-    d_o_b = models.DateField("Date of Birth", blank=False)
+    date_of_birth = models.DateField("Date of Birth", blank=False)
     # Can we make this a choice field?
     nationality = models.CharField("Nationality", max_length=30, blank=False)
     marital_status = models.CharField(
@@ -201,29 +252,21 @@ class Employee(models.Model):
     blood_group = models.CharField(
         "Blood Group",
         max_length=3,
-        choices=B_GROUP_CHOICES,
+        choices=BLOOD_GROUP_CHOICES,
         blank=True)
-    department = models.CharField(
-        "Department",
-        max_length=3,
-        choices=DEPARTMENT_CHOICES,
-        blank=False)
+    division = models.ForeignKey(Division)
     category = models.CharField(
         "Employment Category",
         max_length=3,
         choices=CATEGORY_CHOICES,
         blank=False)
-    designation_code = models.CharField(
-        "Designation",
+    designation = models.ForeignKey(Designation)
+    exprience = models.IntegerField(
+        "Experience in Months",
         max_length=3,
-        choices=DESIGNATION_CHOICES,
-        blank=False)
-    year_exp = models.IntegerField(
-        "Years of Experience",
-        max_length=2,
         blank=False)
     mobile_phone = models.CharField(
-        "Mobile Number",
+        "Mobile Phone",
         max_length=15,
         unique=True,
         blank=True)
@@ -243,95 +286,46 @@ class Employee(models.Model):
         max_length=10,
         blank=False,
         unique=True)
-    passport_number = models.CharField("Passport Number", max_length=10, unique=True)
-    pf_number = models.CharField("Provide Fund Number", max_length=14,  blank=True)
-    prev_comp_name = models.CharField("Previous Company Name", max_length=150)
-    prev_comp_addr = models.CharField(
-        "Previous Company Address",
-        max_length=500)
-    prev_comp_duration = models.IntegerField(
-        "Previous Company Duration",
-        max_length=3,
-        help_text="Duration should be a month")
-    prev_comp_pf = models.CharField("Previous Company PF No", max_length=15)
-    prev_comp_ctc = models.DecimalField(
-        "Previous Company CTC",
-        max_digits=15,
-        decimal_places=2)
-    prev_leav_date = models.DateField("Previous Leaving Date")
-    prev_reas_leav = models.CharField(
-        "Reason for Leaving in previous company",
-        max_length=250)
-    shift_plan = models.CharField(
-        "Shift Plan",
-        max_length=5,
-        choices=SHIFT_CHOICES,
-        blank=False)
-    leave_plan = models.CharField(
-        "Leave Plan",
-        max_length=5,
-        choices=LEAVE_CHOICES,
-        blank=False)
-    attendance_plan = models.CharField(
-        "Attendance Plan",
-        max_length=5,
-        choices=ATTEN_CHOICES,
-        blank=False)
-    overtime_plan = models.CharField(
-        "OverTime Plan",
-        max_length=5,
-        choices=OVER_TPLAN_CHOICES,
-        blank=False)
-    lat_early_plan = models.CharField(
-        "Late/Early Plan",
-        max_length=5,
-        choices=LATE_EARLY_CHOICES,
-        blank=False)
+    passport_number = models.CharField(
+        "Passport Number",
+        max_length=10,
+        unique=True)
+    pf_number = models.CharField(
+        "Provide Fund Number",
+        max_length=14,
+        blank=True)
+
+    previous_employment = models.ManyToManyField(PreviousEmployment)
+
     probation_end_date = models.DateField("Probation End Date", blank=False)
     confirmation_date = models.DateField("Confirmation Date", blank=False)
     join_date = models.DateField("Joining Date", blank=False)
-    res_date = models.DateField("Designation Date")
+    resignation_date = models.DateField("Resignation Date")
     exit_date = models.DateField("Exit Date")
-    bus_route = models.CharField("Bus Route", max_length=15)
-    off_day1 = models.CharField(
-        "Off Day1",
-        max_length=20,
-        choices=OFFDAY1_CHOICES,
-        blank=False)
-    off_day2 = models.CharField(
-        "Off Day2",
-        max_length=20,
-        choices=OFFDAY2_CHOICES,
-        blank=False)
     apply_to = models.CharField(
         "Apply To",
         max_length=50,
         choices=APPLY_CHOICES,
         blank=False)
-    busin_unit_code = models.CharField(
-        "Business Unit Code",
-        max_length=50,
-        choices=BUSI_UNIT_CODE_CHOICES,
-        blank=False)
-    cost_centre = models.CharField("Cost Centre", max_length=10, blank=False)
+    business_unit = models.ForeignKey(BusinessUnit)
     bank_name = models.CharField("Bank Name", max_length=70, blank=False)
     bank_branch = models.CharField("Bank Branch", max_length=70, blank=False)
-    bank_ac = models.IntegerField(
+    bank_acccount = models.IntegerField(
         "Bank Ac/No",
         max_length=30,
         blank=False,
         unique=True)
-    ifsc_code = models.CharField("IFSC Code", max_length=30, blank=False)
-    group_insu_no = models.CharField(
+    bank_ifsc_code = models.CharField("IFSC Code", max_length=30, blank=False)
+    group_insurance_no = models.CharField(
         "Group Insurance Number",
         max_length=30,
         blank=False)
-    emp_status = models.CharField(
+    status = models.CharField(
         "Employee Status",
         max_length=30,
         choices=EMP_STATUS_CHOICES,
         blank=False)
-    esi_num = models.CharField("ESI Number", max_length=30)
+    esi_number = models.CharField("ESI Number", max_length=30)
     photo = models.ImageField(storage=fs, verbose_name="Employee Photo")
 
     def __unicode__(self):
@@ -341,7 +335,7 @@ class Employee(models.Model):
             self.last_name)
 
 
-class Relative(models.Model):
+class FamilyMember(models.Model):
     employee = models.ForeignKey(Employee)
     name = models.CharField("Name", max_length=50, blank=False)
     dob = models.DateField("DOB", blank=False)
@@ -362,7 +356,7 @@ class Education(models.Model):
     to_date = models.DateField("To Date", blank=False)
     institute = models.CharField("Institute Name", max_length=50, blank=False)
     overall_marks = models.IntegerField(
-        "Percentage",
+        "Total Score/GPA",
         max_length=50,
         blank=False)
 
