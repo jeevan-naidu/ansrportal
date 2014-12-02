@@ -21,9 +21,9 @@ import re
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
-    ("Add team members", formset_factory(
+    ("Define Team", formset_factory(
         ProjectTeamForm,
-        extra=2,
+        extra=0,
         can_delete=True
     )),
     ("Financial Milestones", formset_factory(
@@ -37,7 +37,7 @@ FORMS = [
 TEMPLATES = {
     "Define Project": "MyANSRSource/projectDefinition.html",
     "Basic Information": "MyANSRSource/projectBasicInfo.html",
-    "Add team members": "MyANSRSource/projectTeamMember.html",
+    "Define Team": "MyANSRSource/projectTeamMember.html",
     "Financial Milestones": "MyANSRSource/projectMilestone.html",
     "Validate": "MyANSRSource/projectSnapshot.html",
 }
@@ -504,6 +504,30 @@ class CreateProjectWizard(SessionWizardView):
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super(CreateProjectWizard, self).get_form(step, data, files)
+        if step is None:
+            step = self.steps.current
+        if step == 'Define Project':
+            if form.is_valid():
+                self.request.session['PStartDate'] = form.cleaned_data[
+                    'startDate'
+                ].strftime('%Y-%m-%d')
+                self.request.session['PEndDate'] = form.cleaned_data[
+                    'endDate'
+                ].strftime('%Y-%m-%d')
+        return form
+
+    def get_form_initial(self, step):
+        if step == 'Define Team':
+            initValue = [{'startDate': self.request.session['PStartDate'],
+                          'endDate': self.request.session['PEndDate']},
+                         {'startDate': self.request.session['PStartDate'],
+                          'endDate': self.request.session['PEndDate']}]
+        else:
+            initValue = {}
+        return self.initial_dict.get(step, initValue)
 
     def done(self, form_list, **kwargs):
         teamDataCounter = 0
