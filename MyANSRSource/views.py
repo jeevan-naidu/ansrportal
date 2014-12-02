@@ -321,8 +321,8 @@ def Timesheet(request):
                 approved=False,
                 activity__isnull=True
             )
-        ).values('id', 'project', 'chapter', 'task', 'mondayH', 'mondayQ',
-                 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+        ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
+                 'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
                  'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
                  )
@@ -394,7 +394,7 @@ def Timesheet(request):
                 approved=True,
                 activity__isnull=True
             )
-        ).values('project__name', 'chapter__name', 'mondayH',
+        ).values('project__name', 'location__name', 'chapter__name', 'mondayH',
                  'tuesdayH', 'wednesdayH', 'thursdayH', 'task',
                  'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
