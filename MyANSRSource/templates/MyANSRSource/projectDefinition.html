@@ -1,7 +1,7 @@
 {% extends 'projectMaster.inc' %}
 
 {% block createProjectActive %}class="active"{% endblock %}
-{% block BIactiveClass %}active{% endblock %}
+{% block DPactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
@@ -16,17 +16,19 @@
 	<table class="table">
 		{% for field in form %}
 			<tr>
-				<td class="col-lg-6">
+				<td>
 						{{ field.label }}
 						{% if field.field.required %}
 							<span class="required">*</span>
 						{% endif %}
+						{% if field.label == 'Chapters' %}
+							<br />
+							<span>
+								<h5><small>Use <b><kbd>ctrl + click<kbd></b> to select multiple chapters</small></h5>
+							</span>
+						{% endif %}
 				</td>
-				<td class="col-lg-6">
-					{% for choice in field %}
-						<span class="col-lg-3">{{ choice }}</span>
-					{% endfor %}
-				</td>
+				<td class="col-xs-12 col-md-12 col-lg-6">{{ field }}</td>
 			</tr>
 		{% endfor %}
 	</table>

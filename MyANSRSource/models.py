@@ -53,6 +53,24 @@ class Project(models.Model):
         verbose_name="Business Unit"
     )
     name = models.CharField(max_length=50, verbose_name="Project Name")
+    currentProject = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Is this a new project?"
+    )
+    signed = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Is this project signed?"
+    )
+    internal = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Is this an internal project?"
+    )
     projectId = models.CharField(max_length=15, null=False)
     startDate = models.DateTimeField(verbose_name="Project Start Date")
     endDate = models.DateTimeField(verbose_name="Project End Date")
@@ -191,6 +209,8 @@ class ProjectTeamMember(models.Model):
                             verbose_name="Role")
     startDate = models.DateField(verbose_name='Start date on project',
                                  default=timezone.now)
+    endDate = models.DateField(verbose_name='End date on project',
+                               default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     # Record Entered / Updated Date

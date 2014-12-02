@@ -307,9 +307,11 @@ class ProjectTeamForm(forms.ModelForm):
             'member',
             'role',
             'plannedEffort',
-            'startDate', )
+            'startDate',
+            'endDate', )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
+            'endDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(), }
 
     def __init__(self, *args, **kwargs):
@@ -318,6 +320,34 @@ class ProjectTeamForm(forms.ModelForm):
             Q(groups__name='project manager') |
             Q(is_superuser=True)
         )
+        self.fields['member'].widget.attrs['class'] = "form-control"
+        self.fields['startDate'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
+        self.fields['role'].widget.attrs['class'] = "w-100 form-control"
+        self.fields['plannedEffort'].widget.attrs['class'] = \
+            "w-100 form-control"
+
+
+# Project Flag Form
+class ProjectFlagForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = (
+            'currentProject',
+            'signed',
+            'internal', )
+        widgets = {
+            'currentProject': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            ),
+            'signed': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            ),
+            'internal': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            )
+        }
 
 
 # Form Class to create milestones for project
