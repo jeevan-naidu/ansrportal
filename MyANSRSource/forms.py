@@ -339,7 +339,7 @@ class ProjectFlagForm(forms.ModelForm):
             'internal', )
         widgets = {
             'currentProject': forms.RadioSelect(
-                choices=[(True, 'Yes'), (False, 'No')]
+                choices=[(True, 'New Development'), (False, 'Enhancement')]
             ),
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]

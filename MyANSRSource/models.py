@@ -55,21 +55,21 @@ class Project(models.Model):
     name = models.CharField(max_length=50, verbose_name="Project Name")
     currentProject = models.BooleanField(
         blank=False,
-        default=False,
+        default=True,
         null=False,
-        verbose_name="Is this a new project?"
+        verbose_name="Project Stage"
     )
     signed = models.BooleanField(
         blank=False,
-        default=False,
+        default=True,
         null=False,
-        verbose_name="Is this project signed?"
+        verbose_name="project Signed"
     )
     internal = models.BooleanField(
         blank=False,
-        default=False,
+        default=True,
         null=False,
-        verbose_name="Is this an internal project?"
+        verbose_name="Internal Project"
     )
     projectId = models.CharField(max_length=15, null=False)
     startDate = models.DateTimeField(verbose_name="Project Start Date")

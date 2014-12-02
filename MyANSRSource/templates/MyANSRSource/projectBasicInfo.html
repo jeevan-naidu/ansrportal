@@ -24,7 +24,11 @@
 				</td>
 				<td class="col-lg-6">
 					{% for choice in field %}
-						<span class="col-lg-3">{{ choice }}</span>
+						{% if field.label == "Project Stage" %}
+							<span class="col-lg-6">{{ choice }}</span>
+						{% else %}
+							<span class="col-lg-3">{{ choice }}</span>
+						{% endif %}
 					{% endfor %}
 				</td>
 			</tr>
