@@ -171,6 +171,7 @@
 	</table>
 </div>
 </div>
+{% if flagData.internal == False %} 
 <div class="panel panel-default">
 <div class="panel-heading"><b>Milestone(s)</b></div>
 <div class="panel-body">
@@ -229,7 +230,8 @@
 	</table>
 </div>
 </div>
-<a href="delete" class="btn btn-danger">
+{% endif %}
+<a href="cancel" class="btn btn-danger">
         <span class="glyphicon glyphicon-remove"></span>
 	<b>Cancel Project</b>
 </a>
