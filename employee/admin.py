@@ -3,10 +3,20 @@ from employee.models import Employee, PreviousEmployment, EmpAddress, FamilyMemb
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
-# Register your models here.
+
+class EducationInline(admin.TabularInline):
+    model = Education
+    extra = 2
+
+class FamilyMemberInline(admin.TabularInline):
+    model = FamilyMember
+    extra = 2
+
 
 class PreviousEmploymentInline(admin.TabularInline):
     model = PreviousEmployment
+    extra = 1
+
 
 class UserInline(admin.StackedInline):
     model = Employee
@@ -39,7 +49,8 @@ class UserInline(admin.StackedInline):
 
 
 class EmployeeAdmin(OriginalUserAdmin):
-    inlines = [UserInline,PreviousEmploymentInline,  ]
+    readonly_fields = ('email', )
+    inlines = [UserInline, EducationInline, FamilyMemberInline, PreviousEmploymentInline, ]
 
 
 try:

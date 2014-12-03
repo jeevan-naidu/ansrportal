@@ -69,8 +69,10 @@ class Designation(models.Model):
         return self.name
 
 
-
 class EmpAddress(models.Model):
+    class Meta:
+        verbose_name_plural = 'Addresses'
+
     address1 = models.CharField(
         verbose_name="Address 1",
         max_length=30,
@@ -267,6 +269,11 @@ class FamilyMember(models.Model):
 
 
 class Education(models.Model):
+
+    class Meta:
+        verbose_name = "Education"
+        verbose_name_plural = "Education"
+
     employee = models.ForeignKey(User)
     name = models.CharField("Degree", max_length=50, blank=False)
     from_date = models.DateField("From Date", blank=False)
@@ -287,6 +294,12 @@ class Education(models.Model):
 
 
 class PreviousEmployment(models.Model):
+
+    class Meta:
+        verbose_name = "Previous Employment"
+        verbose_name_plural = "Previous Employment"
+
+
     employee = models.ForeignKey(User)
     company_name = models.CharField("Company Name", max_length=150)
     company_address = models.CharField(
