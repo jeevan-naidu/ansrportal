@@ -5,16 +5,16 @@ from django.core.files.storage import FileSystemStorage
 fs = FileSystemStorage(location='employee/emp_photo')
 
 GENDER_CHOICES = (
-    ('00', 'Male'),
-    ('01', 'Female'),
+    ('M', 'Male'),
+    ('F', 'Female'),
     )
 
 MARITAL_CHOICES = (
-    ('00', 'Married'),
-    ('01', 'Windowed'),
-    ('02', 'Seperated'),
-    ('03', 'Divorced'),
-    ('04', 'Single'),
+    ('MA', 'Married'),
+    ('WD', 'Windowed'),
+    ('SE', 'Seperated'),
+    ('DV', 'Divorced'),
+    ('SG', 'Single'),
     )
 
 BLOOD_GROUP_CHOICES = (
@@ -30,121 +30,30 @@ BLOOD_GROUP_CHOICES = (
 
 
 CATEGORY_CHOICES = (
-    ('00', 'Fulltime Employee'),
-    ('01', 'Parttime Employee'),
-    ('02', 'Intern'),
-    ('03', 'Contractor'),
+    ('FT', 'Fulltime Employee'),
+    ('PT', 'Parttime Employee'),
+    ('IN', 'Intern'),
+    ('CT', 'Contractor'),
     )
 
 
 OVERTIMEPLAN_CHOICES = (('CB', 'Compensatory Leave'),
                         ('LP', 'Leave Pay'))
 
-LATE_EARLY_CHOICES = ()
-
-OFFDAY1_CHOICES = (
-    ('00', 'Sunday'),
-    ('01', 'Monday'),
-    ('02', 'Tuesday'),
-    ('03', 'Wednesday'),
-    ('04', 'Thursday'),
-    ('05', 'Friday'),
-    ('06', 'Saturday'),
-    ('07', 'Nothing'),
-    )
-
-OFFDAY2_CHOICES = (
-    ('00', 'Sunday'),
-    ('01', 'Monday'),
-    ('02', 'Tuesday'),
-    ('03', 'Wednesday'),
-    ('04', 'Thursday'),
-    ('05', 'Friday'),
-    ('06', 'Saturday'),
-    ('07', 'Nothing'),
-    )
-
-APPLY_CHOICES = (
-    ('00', 'All WeekOffs'),
-    ('01', 'Odd WeekOffs'),
-    ('02', 'Even WeekOffs'),
-    ('03', 'Not Applicable'),
-    )
 
 RELATION_CHOICES = (
-    ('00', 'Father'),
-    ('01', 'Mother'),
-    ('02', 'Spouse'),
-    ('03', 'Child1'),
-    ('04', 'Child2'),
+    ('FA', 'Father'),
+    ('MO', 'Mother'),
+    ('SP', 'Spouse'),
+    ('C1', 'Child1'),
+    ('C2', 'Child2'),
     )
-
-BUSI_UNIT_CODE_CHOICES = ()
 
 EMP_STATUS_CHOICES = (
     ('00', 'InActive'),
     ('01', 'Active'),
     )
 
-
-class OfficeLocation(models.Model):
-    name = models.CharField(
-        verbose_name="Location Name",
-        max_length=30,
-        blank=False)
-    city = models.CharField("City", max_length=15, blank=False)
-    state = models.CharField("State", max_length=20, blank=False)
-    zipcode = models.CharField("ZIP Code", max_length=6, blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.name + '::' + self.city
-
-
-class Department(models.Model):
-    name = models.CharField(
-        verbose_name="Department Name",
-        max_length=40,
-        blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.name
-
-
-class Division(models.Model):
-    department = models.ForeignKey(Department)
-    name = models.CharField(
-        verbose_name="Sub Department Name",
-        max_length=40,
-        blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.department.name + '::' + self.name
-
-
-class BusinessUnit(models.Model):
-    name = models.CharField(
-        verbose_name="Business Unit Name",
-        max_length=40,
-        blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.name
 
 class Designation(models.Model):
     name = models.CharField(
@@ -202,12 +111,12 @@ class EmpAddress(models.Model):
     zipcode = models.CharField("Zip Code", max_length=6, blank=False)
 
     def __unicode__(self):
-        return '{0},{1},{2},{3},{4}'.format(
+        return '{0}, {1}, {2}, {3}, {4}'.format(
             self.address1,
             self.address2,
             self.city,
             self.state,
-            self.pincode)
+            self.zipcode)
 
 """ This class is an extension of the Django user class.  The fields in the
 User model can be found here.
@@ -215,30 +124,21 @@ https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 
 
 class Employee(models.Model):
+    # User model will have the usual fields.  We will have the remaining ones
+    # here
+    status = models.BooleanField(default=True)
     user = models.OneToOneField(User, verbose_name="User")
+    '''
+    ================================================
+    Basic Employee Attributes
+    ================================================
+    '''
+    # No middlename in user model !
     middle_name = models.CharField("Middle Name", max_length=15, blank=True)
-    employee_assigned_id = models.CharField(
-        "Employee ID Assigned",
-        max_length=8,
-        primary_key=True,
-        blank=False)
-    idcard = models.CharField(
-        "ID Card Identifier",
-        max_length=15,
-        unique=True,
-        blank=False)
-    location = models.ForeignKey(OfficeLocation)
-    permanent_address = models.ForeignKey(
-        EmpAddress,
-        verbose_name="Permanent Address",
-        related_name="permanent_addr")
-    temporary_address = models.ForeignKey(
-        EmpAddress,
-        verbose_name="Temporary Address",
-        related_name="temporary_addr")
+    # Gender
     gender = models.CharField(
         "Gender",
-        max_length=15,
+        max_length=2,
         choices=GENDER_CHOICES,
         blank=False)
     date_of_birth = models.DateField("Date of Birth", blank=False)
@@ -254,23 +154,14 @@ class Employee(models.Model):
         max_length=3,
         choices=BLOOD_GROUP_CHOICES,
         blank=True)
-    division = models.ForeignKey(Division)
-    category = models.CharField(
-        "Employment Category",
-        max_length=3,
-        choices=CATEGORY_CHOICES,
-        blank=False)
-    designation = models.ForeignKey(Designation)
-    exprience = models.IntegerField(
-        "Experience in Months",
-        max_length=3,
-        blank=False)
     mobile_phone = models.CharField(
         "Mobile Phone",
         max_length=15,
         unique=True,
         blank=True)
-    land_phone = models.CharField("Landline Number", max_length=15, blank=True)
+    land_phone = models.CharField(
+        "Landline Number",
+        max_length=15, blank=True)
     emergency_phone = models.CharField(
         "Emergency Contact Number",
         max_length=15,
@@ -281,52 +172,108 @@ class Employee(models.Model):
         max_length=250,
         blank=False,
         unique=True)
+    # Employee address details
+    permanent_address = models.ForeignKey(
+        EmpAddress,
+        verbose_name="Permanent Address",
+        related_name="permanent_addr")
+    temporary_address = models.ForeignKey(
+        EmpAddress,
+        verbose_name="Temporary Address",
+        related_name="temporary_addr")
+    passport_number = models.CharField(
+        "Passport Number",
+        max_length=10,
+        unique=True,
+        null=True, blank=True)
+
+    photo = models.ImageField(storage=fs,
+                              verbose_name="Employee Photo")
+
+    '''
+    =========================================================
+    Company assigned attributes for the employee on joining
+    =========================================================
+    '''
+    # Business unit to which this employee belongs
+    business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
+    # user's default office location
+    location = models.ForeignKey('CompanyMaster.OfficeLocation')
+    # Corporates have already assigned employee Ids.
+    employee_assigned_id = models.CharField(
+        "Employee ID",
+        max_length=15,
+        primary_key=True,
+        blank=False)
+    idcard = models.CharField(
+        "Access Card Number",
+        max_length=15,
+        unique=True,
+        blank=False)
+    division = models.ForeignKey('CompanyMaster.Division')
+    category = models.CharField(
+        "Employment Category",
+        max_length=3,
+        choices=CATEGORY_CHOICES,
+        blank=False)
+    designation = models.ForeignKey(Designation)
+    exprience = models.IntegerField(
+        "Experience in Months",
+        max_length=3,
+        blank=False)
+
+    '''
+    ============================
+    Key dates for the employee
+    ============================
+    '''
+    joined = models.DateField("Joining Date", blank=False)
+    confirmation = models.DateField("Confirmation Date", blank=False)
+    last_promotion = models.DateField("Probation End Date", blank=False)
+    resignation = models.DateField("Resignation Date", null=True, blank=True)
+    exit = models.DateField("Exit Date", null=True, blank=True)
+
+    '''
+    =================================================
+    Financial details for Salary, Insurance etc.,
+    =================================================
+    '''
     PAN = models.CharField(
         "PAN Number",
         max_length=10,
         blank=False,
         unique=True)
-    passport_number = models.CharField(
-        "Passport Number",
-        max_length=10,
-        unique=True)
-    pf_number = models.CharField(
+    PF_number = models.CharField(
         "Provide Fund Number",
         max_length=14,
         blank=True)
-
-    previous_employment = models.ManyToManyField(PreviousEmployment)
-
-    probation_end_date = models.DateField("Probation End Date", blank=False)
-    confirmation_date = models.DateField("Confirmation Date", blank=False)
-    join_date = models.DateField("Joining Date", blank=False)
-    resignation_date = models.DateField("Resignation Date")
-    exit_date = models.DateField("Exit Date")
-    apply_to = models.CharField(
-        "Apply To",
-        max_length=50,
-        choices=APPLY_CHOICES,
-        blank=False)
-    business_unit = models.ForeignKey(BusinessUnit)
-    bank_name = models.CharField("Bank Name", max_length=70, blank=False)
-    bank_branch = models.CharField("Bank Branch", max_length=70, blank=False)
+    bank_name = models.CharField(verbose_name="Bank Name",
+                                 max_length=70, blank=False)
+    bank_branch = models.CharField(verbose_name="Branch Name",
+                                   max_length=70, blank=False)
     bank_acccount = models.IntegerField(
-        "Bank Ac/No",
+        "Account Number",
         max_length=30,
         blank=False,
         unique=True)
-    bank_ifsc_code = models.CharField("IFSC Code", max_length=30, blank=False)
-    group_insurance_no = models.CharField(
+    bank_ifsc_code = models.CharField(
+        "IFSC Code",
+        max_length=20, blank=False)
+    group_insurance_number = models.CharField(
         "Group Insurance Number",
         max_length=30,
-        blank=False)
-    status = models.CharField(
-        "Employee Status",
+        blank=True)
+    esi_number = models.CharField(
+        "ESI Number",
         max_length=30,
-        choices=EMP_STATUS_CHOICES,
-        blank=False)
-    esi_number = models.CharField("ESI Number", max_length=30)
-    photo = models.ImageField(storage=fs, verbose_name="Employee Photo")
+        null=True,
+        blank=True)
+
+    '''
+    Previous employment details
+    '''
+    previous_employment = models.ManyToManyField(
+        PreviousEmployment)
 
     def __unicode__(self):
         return '{0},{1},{2}'.format(
