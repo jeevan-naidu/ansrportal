@@ -1,13 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+import CompanyMaster
 
 # Database Models
-
-BU = (
-    ('E', 'Editorial'),
-    ('M', 'Media'),
-)
 PROJECT_TYPE = (
     ('Q', 'Questions'),
     ('P', 'Powerpoint'),
@@ -18,6 +14,18 @@ PROJECT_TYPE = (
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
                             verbose_name="Book Name")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Location(models.Model):
+    name = models.CharField(max_length=100, null=False,
+                            verbose_name="Location Name")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -46,13 +54,35 @@ class Project(models.Model):
         max_length=2,
         verbose_name="Project Type"
     )
-    bu = models.CharField(
-        default='E',
-        choices=BU,
-        max_length=2,
+    bu = models.ForeignKey(
+        CompanyMaster.models.BusinessUnit,
         verbose_name="Business Unit"
     )
+    customer = models.ForeignKey(
+        CompanyMaster.models.Customer,
+        verbose_name="Customer",
+        default=None,
+        null=False,
+    )
     name = models.CharField(max_length=50, verbose_name="Project Name")
+    currentProject = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Project Stage"
+    )
+    signed = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="project Signed"
+    )
+    internal = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Internal Project"
+    )
     projectId = models.CharField(max_length=15, null=False)
     startDate = models.DateTimeField(verbose_name="Project Start Date")
     endDate = models.DateTimeField(verbose_name="Project End Date")
@@ -86,6 +116,7 @@ class TimeSheetEntry(models.Model):
                                verbose_name="Week Start")
     wkend = models.DateField(default=None, blank=True, verbose_name="Week End")
 
+    location = models.ForeignKey(Location, verbose_name="Location", null=True)
     chapter = models.ForeignKey(Chapter, verbose_name="Chapter", null=True)
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
@@ -125,22 +156,6 @@ class TimeSheetEntry(models.Model):
     class Meta:
         verbose_name = 'Timesheet Entry'
         verbose_name_plural = 'Timesheet Entries'
-
-
-class Holiday(models.Model):
-    # project change Request Fields
-    name = models.CharField(verbose_name="Holiday Name",
-                            max_length="100",
-                            null=True,
-                            blank=True)
-    date = models.DateField(verbose_name="Holiday Date")
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return unicode(self.name)
 
 
 class ProjectChangeInfo(models.Model):
@@ -191,6 +206,8 @@ class ProjectTeamMember(models.Model):
                             verbose_name="Role")
     startDate = models.DateField(verbose_name='Start date on project',
                                  default=timezone.now)
+    endDate = models.DateField(verbose_name='End date on project',
+                               default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     # Record Entered / Updated Date

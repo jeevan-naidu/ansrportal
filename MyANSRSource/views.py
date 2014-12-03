@@ -4,10 +4,12 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Holiday, Book
+    ProjectMilestone, ProjectTeamMember, Book
+from CompanyMaster.models import Holiday
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
-    ActivityForm, TimesheetFormset
+    ActivityForm, TimesheetFormset, ProjectFlagForm
+import CompanyMaster
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
@@ -20,9 +22,10 @@ import re
 
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
-    ("Add team members", formset_factory(
+    ("Basic Information", ProjectFlagForm),
+    ("Define Team", formset_factory(
         ProjectTeamForm,
-        extra=2,
+        extra=0,
         can_delete=True
     )),
     ("Financial Milestones", formset_factory(
@@ -34,10 +37,10 @@ FORMS = [
 
 
 TEMPLATES = {
-    "Define Project": "MyANSRSource/projectBasicInfo.html",
-    "Add team members": "MyANSRSource/projectTeamMember.html",
+    "Define Project": "MyANSRSource/projectDefinition.html",
+    "Basic Information": "MyANSRSource/projectBasicInfo.html",
+    "Define Team": "MyANSRSource/projectTeamMember.html",
     "Financial Milestones": "MyANSRSource/projectMilestone.html",
-    "Validate": "MyANSRSource/projectSnapshot.html",
 }
 
 
@@ -325,8 +328,8 @@ def Timesheet(request):
                 approved=False,
                 activity__isnull=True
             )
-        ).values('id', 'project', 'chapter', 'task', 'mondayH', 'mondayQ',
-                 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+        ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
+                 'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
                  'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
                  )
@@ -398,7 +401,7 @@ def Timesheet(request):
                 approved=True,
                 activity__isnull=True
             )
-        ).values('project__name', 'chapter__name', 'mondayH',
+        ).values('project__name', 'location__name', 'chapter__name', 'mondayH',
                  'tuesdayH', 'wednesdayH', 'thursdayH', 'task',
                  'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
@@ -509,6 +512,51 @@ class CreateProjectWizard(SessionWizardView):
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
+    def get_form(self, step=None, data=None, files=None):
+        form = super(CreateProjectWizard, self).get_form(step, data, files)
+        step = step or self.steps.current
+        if step == 'Define Project':
+            if form.is_valid():
+                self.request.session['PStartDate'] = form.cleaned_data[
+                    'startDate'
+                ].strftime('%Y-%m-%d')
+                self.request.session['PEndDate'] = form.cleaned_data[
+                    'endDate'
+                ].strftime('%Y-%m-%d')
+
+        if step == 'Financial Milestones':
+            internalStatus = self.storage.get_step_data('Basic Information')[
+                'Basic Information-internal'
+            ]
+            if internalStatus == 'True':
+                for eachForm in form:
+                    eachForm.fields['milestoneDate'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['description'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['deliverables'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['amount'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['DELETE'].widget.attrs[
+                        'readonly'
+                    ] = True
+        return form
+
+    def get_form_initial(self, step):
+        if step == 'Define Team':
+            initValue = [{'startDate': self.request.session['PStartDate'],
+                          'endDate': self.request.session['PEndDate']},
+                         {'startDate': self.request.session['PStartDate'],
+                          'endDate': self.request.session['PEndDate']}]
+        else:
+            initValue = {}
+        return self.initial_dict.get(step, initValue)
+
     def done(self, form_list, **kwargs):
         teamDataCounter = 0
         milestoneDataCounter = 0
@@ -522,14 +570,19 @@ class CreateProjectWizard(SessionWizardView):
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList
+        self.request.session['bu'] = basicInfo['bu'].id
         self.request.session['book'] = basicInfo['book'].id
+        self.request.session['customer'] = basicInfo['customer'].id
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
         ).strftime('%Y-%m-%d')
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
         ).strftime('%Y-%m-%d')
-        for teamData in [form.cleaned_data for form in form_list][1]:
+        flagData = {}
+        for k, v in [form.cleaned_data for form in form_list][1].iteritems():
+            flagData[k] = v
+        for teamData in [form.cleaned_data for form in form_list][2]:
             teamDataCounter += 1
             for k, v in teamData.iteritems():
                 k = "{0}-{1}".format(k, teamDataCounter)
@@ -537,6 +590,10 @@ class CreateProjectWizard(SessionWizardView):
             startDate = 'startDate-{0}'.format(teamDataCounter)
             changedTeamData[startDate] = changedTeamData.get(
                 startDate
+            ).strftime('%Y-%m-%d')
+            endDate = 'endDate-{0}'.format(teamDataCounter)
+            changedTeamData[endDate] = changedTeamData.get(
+                endDate
             ).strftime('%Y-%m-%d')
             teamMemberId = 'teamMemberId-{0}'.format(teamDataCounter)
             member = 'member-{0}'.format(teamDataCounter)
@@ -547,7 +604,7 @@ class CreateProjectWizard(SessionWizardView):
             cleanedTeamData.append(changedTeamData.copy())
             changedTeamData.clear()
 
-        for milestoneData in [form.cleaned_data for form in form_list][2]:
+        for milestoneData in [form.cleaned_data for form in form_list][3]:
             milestoneDataCounter += 1
             for k, v in milestoneData.iteritems():
                 k = "{0}-{1}".format(k, milestoneDataCounter)
@@ -573,11 +630,19 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 basicInfoDict[key] = basicInfo[k]
 
-        data = {
-            'basicInfo': basicInfo,
-            'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData
-        }
+        if [form.cleaned_data for form in form_list][1]['internal'] is True:
+            data = {
+                'basicInfo': basicInfo,
+                'flagData': flagData,
+                'teamMember': cleanedTeamData,
+            }
+        else:
+            data = {
+                'basicInfo': basicInfo,
+                'flagData': flagData,
+                'teamMember': cleanedTeamData,
+                'milestone': cleanedMilestoneData
+            }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
@@ -606,12 +671,22 @@ def saveProject(request):
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
+        pr.currentProject = request.POST.get('currentProject')
+        pr.signed = request.POST.get('signed')
+        pr.internal = request.POST.get('internal')
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
+        pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
+            id=request.session['bu']
+        )[0]
+        pr.customer = CompanyMaster.models.Customer.objects.filter(
+            id=request.session['customer']
+        )[0]
         pr.book = Book.objects.filter(id=request.session['book'])[0]
         pr.save()
         request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
+        request.session['currentProjectId'] = pr.projectId
 
         for eachId in request.session['chapters']:
             pr.chapters.add(eachId)
@@ -623,6 +698,7 @@ def saveProject(request):
             role = "role-{0}".format(memberCount)
             plannedEffort = "plannedEffort-{0}".format(memberCount)
             startDate = "startDate-{0}".format(memberCount)
+            endDate = "endDate-{0}".format(memberCount)
 
             ptm.member = User.objects.get(
                 pk=request.POST.get(teamMemberId)
@@ -630,24 +706,53 @@ def saveProject(request):
             ptm.role = request.POST.get(role)
             ptm.plannedEffort = request.POST.get(plannedEffort)
             ptm.startDate = request.POST.get(startDate)
+            ptm.endDate = request.POST.get(endDate)
             ptm.save()
 
-        for milestoneCount in range(1, request.session['totalMilestoneCount']):
-            pms = ProjectMilestone()
-            pms.project = pr
-            milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
-            description = 'description-{0}'.format(milestoneCount)
-            deliverables = 'deliverables-{0}'.format(milestoneCount)
-            pms.milestoneDate = request.POST.get(milestoneDate)
-            pms.description = request.POST.get(description)
-            pms.deliverables = request.POST.get(deliverables)
-            pms.save()
+        if pr.internal is False:
+            for milestoneCount in range(1, request.session[
+                'totalMilestoneCount'
+            ]):
+                pms = ProjectMilestone()
+                pms.project = pr
+                milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
+                description = 'description-{0}'.format(milestoneCount)
+                deliverables = 'deliverables-{0}'.format(milestoneCount)
+                pms.milestoneDate = request.POST.get(milestoneDate)
+                pms.description = request.POST.get(description)
+                pms.deliverables = request.POST.get(deliverables)
+                pms.save()
 
         data = {'projectId': pr.projectId, 'projectName': pr.name}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
 def notify(request):
+    projectId = request.session['currentProject']
+    projectHead = CompanyMaster.models.Customer.objects.filter(
+        id=request.session['customer'],
+        name__groups__name__in=['BU Head',
+                                'ANSR client partner',
+                                'ANSR account manager ']
+    ).values('name__email', 'name__first_name', 'name__last_name')
+    for eachHead in projectHead:
+        notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                            'hai',
+                                            settings.EMAIL_HOST_USER,
+                                            ['{0}'.format(
+                                                eachHead['name__email']
+                                            )],)
+
+        emailTemp = render_to_string(
+            'projectCreatedHeadEmail.html',
+            {
+                'firstName': eachHead['name__first_name'],
+                'lastName': eachHead['name__last_name'],
+                'projectId': projectId
+            }
+        )
+        notifyTeam.attach_alternative(emailTemp, 'text/html')
+        notifyTeam.send()
     projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
@@ -671,7 +776,9 @@ def notify(request):
         notifyTeam.attach_alternative(emailTemp, 'text/html')
         notifyTeam.send()
     projectName = request.session['currentProjectName']
-    data = {'projectId': projectId, 'projectName': projectName, 'notify': 'F'}
+    data = {'projectId': request.session['currentProjectId'],
+            'projectName': projectName,
+            'notify': 'F'}
     return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 

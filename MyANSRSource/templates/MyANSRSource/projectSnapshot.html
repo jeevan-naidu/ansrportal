@@ -5,26 +5,31 @@
     <li class="form-step">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
-        <label class="form-step-label">Basic Information</label>
+        <label class="form-step-label">Define Project</label>
     </li>
     <li class="form-step">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
-        <label class="form-step-label">Define Team</label>
+        <label class="form-step-label">Basic Information</label>
     </li>
     <li class="form-step">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
+        <label class="form-step-label">Define Team</label>
+    </li>
+    <li class="form-step">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">4</span>
         <label class="form-step-label">Financial Milestones</label>
     </li>
     <li class="form-step active">
         <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
+        <span class="form-step-no">5</span>
         <label class="form-step-label">Validate</label>
     </li>
     <li class="form-step">
         <span class="form-step-bor"></span>
-        <span class="form-step-no">5</span>
+        <span class="form-step-no">6</span>
         <label class="form-step-label">Complete!</label>
     </li>
 </ul>
@@ -33,13 +38,14 @@
 <form id="snapshot" name="snapshot" method="POST" action="save">
 {% csrf_token %}
 <div class="panel panel-default">
-<div class="panel-heading"><b>Project Basic Information</b></div>
+<div class="panel-heading"><b>Define Project</b></div>
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
 				<th>Type</th>
 				<th>Business Unit</th>
 				<th>Name</th>
+				<th>Customer</th>
 				<th>Planned Effort</th>
 				<th>Contigency Effort</th>
 				<th>Book</th>
@@ -53,6 +59,7 @@
 			<td>{{ basicInfo.projectType }}</td>
 			<td>{{ basicInfo.bu }}</td>
 			<td>{{ basicInfo.name }}</td>
+			<td>{{ basicInfo.customer }}</td>
 			<td>{{ basicInfo.plannedEffort }}</td>
 			<td>{{ basicInfo.contingencyEffort }}</td>
 			<td>{{ basicInfo.book }}</td>
@@ -77,6 +84,28 @@
 	</div>
 </div>
 <div class="panel panel-default">
+<div class="panel-heading"><b>Project Basic Information</b></div>
+	<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+				<th>Is it an internal Project?</th>
+				<th>Is this a new project?</th>
+				<th>Is this project signed?</th>
+		</thead>
+		<tbody>
+		<tr>
+			<td>{{ flagData.internal }}</td>
+			<td>{{ flagData.currentProject }}</td>
+			<td>{{ flagData.signed }}</td>
+			{% for rec, value in flagData.iteritems %}
+				<input type="hidden" name="{{ rec }}" value="{{ value }}">
+			{% endfor %}
+		</tr>
+		</tbody>
+	</table>
+	</div>
+</div>
+<div class="panel panel-default">
 <div class="panel-heading"><b>Team Member(s)</b></div>
 <div class="panel-body">
 	<table class="table table-condensed">
@@ -84,6 +113,7 @@
 			<th>Member</th>
 			<th>Role</th>
 			<th>Start Date</th>
+			<th>End Date</th>
 			<th>Planned Effort</th>
 		</thead>
 		{% for teamData in teamMember %}
@@ -117,6 +147,15 @@
 					{% endwith %}
 				</td>
 				<td>
+					{% with endDateId="endDate-"|add:counter %}
+						{% for rec, value in teamData.iteritems %}
+							{% if endDateId == rec %}
+								{{ value }}
+							{% endif %}
+						{% endfor %}
+					{% endwith %}
+				</td>
+				<td>
 					{% with effortId="plannedEffort-"|add:counter %}
 						{% for rec, value in teamData.iteritems %}
 							{% if effortId == rec %}
@@ -134,6 +173,7 @@
 	</table>
 </div>
 </div>
+{% if flagData.internal == False %} 
 <div class="panel panel-default">
 <div class="panel-heading"><b>Milestone(s)</b></div>
 <div class="panel-body">
@@ -192,7 +232,8 @@
 	</table>
 </div>
 </div>
-<a href="delete" class="btn btn-danger">
+{% endif %}
+<a href="cancel" class="btn btn-danger">
         <span class="glyphicon glyphicon-remove"></span>
 	<b>Cancel Project</b>
 </a>

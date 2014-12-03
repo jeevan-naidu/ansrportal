@@ -78,9 +78,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'smart_selects',
     'bootstrap3',  # Django Bootstrap3
-    'MyANSRSource',
     'bootstrap3_datetime',
     'session_security',  # Django session TimeOut / Security
+    'CompanyMaster',
+    'MyANSRSource',
 )
 
 MIDDLEWARE_CLASSES = (
