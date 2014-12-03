@@ -402,9 +402,21 @@ app.getIdNo = function(str) {
             if(options.financialTotal) {
                 var $deliverables = $table.find('.milestone-item-deliverable'),
                     $amounts = $table.find('.milestone-item-amount'),
-                    $amountTotal = $table.parent().find('.milestone-total-amount');
+                    $amountTotal = $table.parent().find('.milestone-total-amount'),
+                    $datePickers = $('.date-picker'),
+                    $links = $('#add-milestone-btn, #del-milestone-btn');
 
-                var deliverableTotal = function () {
+                    if($($datePickers[0]).prop('readonly') == true) {
+                        $table.hide();
+
+                        $links.each(function() {
+                            $(this).attr('role', 'button');
+                            $(this).attr('disabled', true);
+                        });
+                    }
+
+
+                    var deliverableTotal = function () {
                     var $deliverablesLen = $deliverables.length,
                         $deliverableTotal = $table.parent().find('.milestone-total-deliverable'),
                         i,
