@@ -719,6 +719,9 @@ def saveProject(request):
 
 def notify(request):
     projectId = request.session['currentProject']
+    print Project.objects.filter(id=projectId).values(
+        'customer__name__username'
+    )
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
     ).values('member__email', 'member__first_name', 'member__last_name')

@@ -189,7 +189,8 @@ def TimesheetFormset(currentUser):
                     required=False
                 )
             self.fields['project'].widget.attrs['class'] = "form-control d-item"
-            self.fields['location'].widget.attrs['class'] = "form-control d-item"
+            self.fields['location'].widget.attrs['class'] = \
+                "form-control d-item"
             self.fields['chapter'].widget.attrs['class'] = "form-control d-item"
             self.fields['task'].widget.attrs[
                 'class'
@@ -266,6 +267,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
         fields = (
             'projectType',
             'bu',
+            'customer',
             'name',
             'startDate',
             'endDate',
@@ -285,6 +287,8 @@ class ProjectBasicInfoForm(forms.ModelForm):
         self.fields['projectType'].widget.attrs['class'] = \
             "form-control"
         self.fields['bu'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['customer'].widget.attrs['class'] = \
             "form-control"
         self.fields['name'].widget.attrs['class'] = \
             "form-control"

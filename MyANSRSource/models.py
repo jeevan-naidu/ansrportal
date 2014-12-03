@@ -58,6 +58,12 @@ class Project(models.Model):
         CompanyMaster.models.BusinessUnit,
         verbose_name="Business Unit"
     )
+    customer = models.ForeignKey(
+        CompanyMaster.models.Customer,
+        verbose_name="Customer",
+        default=None,
+        null=False,
+    )
     name = models.CharField(max_length=50, verbose_name="Project Name")
     currentProject = models.BooleanField(
         blank=False,

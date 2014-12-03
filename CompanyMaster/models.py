@@ -1,7 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # Create your models here.
+class Customer(models.Model):
+    name = models.ManyToManyField(
+        User,
+        verbose_name="Customer Name",
+        blank=False,
+        null=False
+    )
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return ",".join([rec.username for rec in self.name.all()])
+
+
 class OfficeLocation(models.Model):
     name = models.CharField(
         verbose_name="Location Name",
