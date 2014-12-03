@@ -243,11 +243,9 @@ app.getIdNo = function(str) {
                     content: popoverCon
                 });
 
-               $dayPopoverBtn.popover('hide');
-
-
-
-                var primaryCb = function() {
+               var primaryCb = function(e) {
+                   e.preventDefault();
+                   e.stopPropagation();
                     var $curDayBtn              = $(this),
                         $curRow                 = $curDayBtn.closest('tr'),
                         $curRowQuestions        = $curRow.find('.b-questions'),
@@ -384,11 +382,11 @@ app.getIdNo = function(str) {
                     $popover.popover('hide');
                 });
 
-                $dayPopoverBtn.on('focus', function() {
-                    var $popover = $('.popover');
-                    $popover.popover('hide');
 
-                    $(this).trigger('click');
+                $dayPopoverBtn.on('keyup', function(e) {
+                    if(e.keyCode === 9) {
+                        $(this).trigger('click');
+                    }
                 });
 
                 $rowTotalView.on('focus', function() {
