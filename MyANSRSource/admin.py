@@ -1,6 +1,6 @@
 from django.contrib import admin
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter, Holiday, Location
+    ProjectMilestone, ProjectTeamMember, Book, Chapter, Location
 
 
 # Admin Models for ansr
@@ -10,10 +10,6 @@ class BookAdmin(admin.ModelAdmin):
 
 class LocationAdmin(admin.ModelAdmin):
     list_display = ('name',)
-
-
-class HolidayAdmin(admin.ModelAdmin):
-    list_display = ('name', 'date', )
 
 
 class ChapterAdmin(admin.ModelAdmin):
@@ -53,7 +49,6 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
-admin.site.register(Holiday, HolidayAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Chapter, ChapterAdmin)
 # admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)

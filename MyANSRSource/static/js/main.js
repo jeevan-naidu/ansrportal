@@ -243,11 +243,9 @@ app.getIdNo = function(str) {
                     content: popoverCon
                 });
 
-               $dayPopoverBtn.popover('hide');
-
-
-
-                var primaryCb = function() {
+               var primaryCb = function(e) {
+                   e.preventDefault();
+                   e.stopPropagation();
                     var $curDayBtn              = $(this),
                         $curRow                 = $curDayBtn.closest('tr'),
                         $curRowQuestions        = $curRow.find('.b-questions'),
@@ -384,11 +382,11 @@ app.getIdNo = function(str) {
                     $popover.popover('hide');
                 });
 
-                $dayPopoverBtn.on('focus', function() {
-                    var $popover = $('.popover');
-                    $popover.popover('hide');
 
-                    $(this).trigger('click');
+                $dayPopoverBtn.on('keyup', function(e) {
+                    if(e.keyCode === 9) {
+                        $(this).trigger('click');
+                    }
                 });
 
                 $rowTotalView.on('focus', function() {
@@ -404,9 +402,21 @@ app.getIdNo = function(str) {
             if(options.financialTotal) {
                 var $deliverables = $table.find('.milestone-item-deliverable'),
                     $amounts = $table.find('.milestone-item-amount'),
-                    $amountTotal = $table.parent().find('.milestone-total-amount');
+                    $amountTotal = $table.parent().find('.milestone-total-amount'),
+                    $datePickers = $('.date-picker'),
+                    $links = $('#add-milestone-btn, #del-milestone-btn');
 
-                var deliverableTotal = function () {
+                    if($($datePickers[0]).prop('readonly') == true) {
+                        $table.hide();
+
+                        $links.each(function() {
+                            $(this).attr('role', 'button');
+                            $(this).attr('disabled', true);
+                        });
+                    }
+
+
+                    var deliverableTotal = function () {
                     var $deliverablesLen = $deliverables.length,
                         $deliverableTotal = $table.parent().find('.milestone-total-deliverable'),
                         i,

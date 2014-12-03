@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class OfficeLocation(models.Model):
     name = models.CharField(
@@ -45,6 +46,21 @@ class Division(models.Model):
 
     def __unicode__(self):
         return self.department.name + '::' + self.name
+
+
+class Holiday(models.Model):
+    name = models.CharField(verbose_name="Holiday Name",
+                            max_length="100",
+                            null=True,
+                            blank=True)
+    date = models.DateField(verbose_name="Holiday Date")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 class BusinessUnit(models.Model):
