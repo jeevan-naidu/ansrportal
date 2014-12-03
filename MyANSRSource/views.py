@@ -41,7 +41,6 @@ TEMPLATES = {
     "Basic Information": "MyANSRSource/projectBasicInfo.html",
     "Define Team": "MyANSRSource/projectTeamMember.html",
     "Financial Milestones": "MyANSRSource/projectMilestone.html",
-    "Validate": "MyANSRSource/projectSnapshot.html",
 }
 
 
@@ -509,8 +508,7 @@ class CreateProjectWizard(SessionWizardView):
 
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
-        if step is None:
-            step = self.steps.current
+        step = step or self.steps.current
         if step == 'Define Project':
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
@@ -519,6 +517,28 @@ class CreateProjectWizard(SessionWizardView):
                 self.request.session['PEndDate'] = form.cleaned_data[
                     'endDate'
                 ].strftime('%Y-%m-%d')
+
+        if step == 'Financial Milestones':
+            internalStatus = self.storage.get_step_data('Basic Information')[
+                'Basic Information-internal'
+            ]
+            if internalStatus == 'True':
+                for eachForm in form:
+                    eachForm.fields['milestoneDate'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['description'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['deliverables'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['amount'].widget.attrs[
+                        'readonly'
+                    ] = True
+                    eachForm.fields['DELETE'].widget.attrs[
+                        'readonly'
+                    ] = True
         return form
 
     def get_form_initial(self, step):
@@ -603,12 +623,19 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 basicInfoDict[key] = basicInfo[k]
 
-        data = {
-            'basicInfo': basicInfo,
-            'flagData': flagData,
-            'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData
-        }
+        if [form.cleaned_data for form in form_list][1]['internal'] is True:
+            data = {
+                'basicInfo': basicInfo,
+                'flagData': flagData,
+                'teamMember': cleanedTeamData,
+            }
+        else:
+            data = {
+                'basicInfo': basicInfo,
+                'flagData': flagData,
+                'teamMember': cleanedTeamData,
+                'milestone': cleanedMilestoneData
+            }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
@@ -649,6 +676,7 @@ def saveProject(request):
         pr.save()
         request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
+        request.session['currentProjectId'] = pr.projectId
 
         for eachId in request.session['chapters']:
             pr.chapters.add(eachId)
@@ -671,16 +699,19 @@ def saveProject(request):
             ptm.endDate = request.POST.get(endDate)
             ptm.save()
 
-        for milestoneCount in range(1, request.session['totalMilestoneCount']):
-            pms = ProjectMilestone()
-            pms.project = pr
-            milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
-            description = 'description-{0}'.format(milestoneCount)
-            deliverables = 'deliverables-{0}'.format(milestoneCount)
-            pms.milestoneDate = request.POST.get(milestoneDate)
-            pms.description = request.POST.get(description)
-            pms.deliverables = request.POST.get(deliverables)
-            pms.save()
+        if pr.internal is False:
+            for milestoneCount in range(1, request.session[
+                'totalMilestoneCount'
+            ]):
+                pms = ProjectMilestone()
+                pms.project = pr
+                milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
+                description = 'description-{0}'.format(milestoneCount)
+                deliverables = 'deliverables-{0}'.format(milestoneCount)
+                pms.milestoneDate = request.POST.get(milestoneDate)
+                pms.description = request.POST.get(description)
+                pms.deliverables = request.POST.get(deliverables)
+                pms.save()
 
         data = {'projectId': pr.projectId, 'projectName': pr.name}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
@@ -710,7 +741,9 @@ def notify(request):
         notifyTeam.attach_alternative(emailTemp, 'text/html')
         notifyTeam.send()
     projectName = request.session['currentProjectName']
-    data = {'projectId': projectId, 'projectName': projectName, 'notify': 'F'}
+    data = {'projectId': request.session['currentProjectId'],
+            'projectName': projectName,
+            'notify': 'F'}
     return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
