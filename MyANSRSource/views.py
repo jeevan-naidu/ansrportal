@@ -566,6 +566,7 @@ class CreateProjectWizard(SessionWizardView):
         self.request.session['chapters'] = chapterList
         self.request.session['bu'] = basicInfo['bu'].id
         self.request.session['book'] = basicInfo['book'].id
+        self.request.session['customer'] = basicInfo['customer'].id
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
         ).strftime('%Y-%m-%d')
@@ -672,6 +673,9 @@ def saveProject(request):
         pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
             id=request.session['bu']
         )[0]
+        pr.customer = CompanyMaster.models.Customer.objects.filter(
+            id=request.session['customer']
+        )[0]
         pr.book = Book.objects.filter(id=request.session['book'])[0]
         pr.save()
         request.session['currentProject'] = pr.id
@@ -718,6 +722,31 @@ def saveProject(request):
 
 
 def notify(request):
+    projectId = request.session['currentProject']
+    projectHead = CompanyMaster.models.Customer.objects.filter(
+        id=request.session['customer'],
+        name__groups__name__in=['BU Head',
+                                'ANSR client partner',
+                                'ANSR account manager ']
+    ).values('name__email', 'name__first_name', 'name__last_name')
+    for eachHead in projectHead:
+        notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                            'hai',
+                                            settings.EMAIL_HOST_USER,
+                                            ['{0}'.format(
+                                                eachHead['name__email']
+                                            )],)
+
+        emailTemp = render_to_string(
+            'projectCreatedHeadEmail.html',
+            {
+                'firstName': eachHead['name__first_name'],
+                'lastName': eachHead['name__last_name'],
+                'projectId': projectId
+            }
+        )
+        notifyTeam.attach_alternative(emailTemp, 'text/html')
+        notifyTeam.send()
     projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
