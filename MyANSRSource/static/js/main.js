@@ -1,12 +1,10 @@
 /* Global namespace for entire application */
 var app = app || {};
 
-
-
 // Main
 (function() {
     $(document).ready(function() {
-        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3, addTeamMember: true});
+        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3, addTeamMember: true, plannedEffortCalc: true});
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
         $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
         $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0, financialTotal: true});
@@ -227,6 +225,75 @@ app.getIdNo = function(str) {
             }
         };
 
+        var plannedEffortFun = function() {
+            if(options.plannedEffortCalc) {
+                // variables
+                var rowsLen = $rows.length,
+                    item,
+                    starDateItem,
+                    endDateItem,
+                    plannedEffortItem,
+                    $plannedEffortItems = $('.pro-planned-effort'),
+                    $plannedEffortItemsLen = $plannedEffortItems.length;
+
+
+                var calcEffort = function($startDate, $endDate, $plannedEffort) {
+                    // get value and formatting
+                    var startDateVal = $startDate.val();
+                    var startDate = startDateVal.split('-');
+                    var startDateLen = startDate.length;
+
+                    var endDateVal = $endDate.val();
+                    var endDate = endDateVal.split('-');
+                    var endDateLen = endDate.length;
+
+                    // Type cast
+                    for(i = 0; i < startDateLen; i += 1) {
+                        startDate[i] = Number(startDate[i]);
+                    }
+
+                    for(i = 0; i < endDateLen; i += 1) {
+                        endDate[i] = Number(endDate[i]);
+                    }
+
+                    startDate = startDate.join();
+                    endDate = endDate.join();
+
+                    // Create Date Object
+                    startDate = new Date(startDate);
+                    endDate = new Date(endDate);
+
+                    // Calculate planned effort
+                    var plannedEffort = app.workingDaysBetweenDates(startDate, endDate);
+
+                    var totalEffort = plannedEffort * 8 * (plannedEffort / 100);
+
+                    $plannedEffort.val(plannedEffort);
+
+                    return true;
+                };
+
+
+
+                // Calculation for each row
+                $rows.each(function(index) {
+
+                    if(index > 0) {
+                        item = $(this);
+                        starDateItem = item.find('.pro-start-date');
+                        endDateItem = item.find('.pro-end-date');
+                        plannedEffortItem = item.find('.pro-planned-effort');
+
+                        calcEffort(starDateItem, endDateItem, plannedEffortItem);
+                    }
+                });
+
+                $plannedEffortItemsLen.each(function() {
+                    
+                });
+            }
+        };
+
         var billableTotalFun = function() {
             if(options.billableTotal) {
                 var $dayPopoverBtn = $table.find('.day-popover-button');
@@ -243,9 +310,7 @@ app.getIdNo = function(str) {
                     content: popoverCon
                 });
 
-               $dayPopoverBtn.popover('hide');
-
-
+                $dayPopoverBtn.popover('hide');
 
                 var primaryCb = function() {
                     var $curDayBtn              = $(this),
@@ -467,6 +532,7 @@ app.getIdNo = function(str) {
         daysTotalFun();
         billableTotalFun();
         financialTotalFun();
+        plannedEffortFun();
 
         var getIdNo = function(str) {
             return str.match(/\d+/)[0];
@@ -477,6 +543,54 @@ app.getIdNo = function(str) {
         $delBtn.on('click', del);
     };
 }(jQuery));
+
+
+app.workingDaysBetweenDates = function (startDate, endDate) {
+
+    // Validate input
+    if (endDate < startDate)
+        return 0;
+
+    // Calculate days between dates
+    var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
+    startDate.setHours(0,0,0,1);  // Start just after midnight
+    endDate.setHours(23,59,59,999);  // End just before midnight
+    var diff = endDate - startDate;  // Milliseconds between datetime objects
+    var days = Math.ceil(diff / millisecondsPerDay);
+
+    // Subtract two weekend days for every week in between
+    var weeks = Math.floor(days / 7);
+    var days = days - (weeks * 2);
+
+    // Handle special cases
+    var startDay = startDate.getDay();
+    var endDay = endDate.getDay();
+
+    // Remove weekend not previously removed.
+    if (startDay - endDay > 1)
+        days = days - 2;
+
+    // Remove start day if span starts on Sunday but ends before Saturday
+    if (startDay == 0 && endDay != 6)
+        days = days - 1
+
+    // Remove end day if span ends on Saturday but starts after Sunday
+    if (endDay == 6 && startDay != 0)
+        days = days - 1
+
+    return days;
+};
+
+
+
+
+
+
+
+
+
+
+
 
 
 

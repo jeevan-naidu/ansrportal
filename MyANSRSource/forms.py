@@ -321,11 +321,11 @@ class ProjectTeamForm(forms.ModelForm):
             Q(is_superuser=True)
         )
         self.fields['member'].widget.attrs['class'] = "form-control"
-        self.fields['startDate'].widget.attrs['class'] = "form-control"
-        self.fields['endDate'].widget.attrs['class'] = "form-control"
+        self.fields['startDate'].widget.attrs['class'] = "form-control pro-start-date"
+        self.fields['endDate'].widget.attrs['class'] = "form-control pro-end-date"
         self.fields['role'].widget.attrs['class'] = "w-100 form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
-            "w-100 form-control"
+            "w-100 form-control pro-planned-effort"
 
 
 # Project Flag Form
