@@ -7,7 +7,7 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Holiday, Book
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
-    ActivityForm, TimesheetFormset
+    ActivityForm, TimesheetFormset, ProjectFlagForm
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
@@ -20,6 +20,7 @@ import re
 
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
+    ("Basic Information", ProjectFlagForm),
     ("Add team members", formset_factory(
         ProjectTeamForm,
         extra=2,
@@ -34,7 +35,8 @@ FORMS = [
 
 
 TEMPLATES = {
-    "Define Project": "MyANSRSource/projectBasicInfo.html",
+    "Define Project": "MyANSRSource/projectDefinition.html",
+    "Basic Information": "MyANSRSource/projectBasicInfo.html",
     "Add team members": "MyANSRSource/projectTeamMember.html",
     "Financial Milestones": "MyANSRSource/projectMilestone.html",
     "Validate": "MyANSRSource/projectSnapshot.html",
@@ -319,8 +321,8 @@ def Timesheet(request):
                 approved=False,
                 activity__isnull=True
             )
-        ).values('id', 'project', 'chapter', 'task', 'mondayH', 'mondayQ',
-                 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+        ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
+                 'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
                  'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
                  )
@@ -392,7 +394,7 @@ def Timesheet(request):
                 approved=True,
                 activity__isnull=True
             )
-        ).values('project__name', 'chapter__name', 'mondayH',
+        ).values('project__name', 'location__name', 'chapter__name', 'mondayH',
                  'tuesdayH', 'wednesdayH', 'thursdayH', 'task',
                  'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
@@ -523,7 +525,10 @@ class CreateProjectWizard(SessionWizardView):
         basicInfo['endDate'] = basicInfo.get(
             'endDate'
         ).strftime('%Y-%m-%d')
-        for teamData in [form.cleaned_data for form in form_list][1]:
+        flagData = {}
+        for k, v in [form.cleaned_data for form in form_list][1].iteritems():
+            flagData[k] = v
+        for teamData in [form.cleaned_data for form in form_list][2]:
             teamDataCounter += 1
             for k, v in teamData.iteritems():
                 k = "{0}-{1}".format(k, teamDataCounter)
@@ -531,6 +536,10 @@ class CreateProjectWizard(SessionWizardView):
             startDate = 'startDate-{0}'.format(teamDataCounter)
             changedTeamData[startDate] = changedTeamData.get(
                 startDate
+            ).strftime('%Y-%m-%d')
+            endDate = 'endDate-{0}'.format(teamDataCounter)
+            changedTeamData[endDate] = changedTeamData.get(
+                endDate
             ).strftime('%Y-%m-%d')
             teamMemberId = 'teamMemberId-{0}'.format(teamDataCounter)
             member = 'member-{0}'.format(teamDataCounter)
@@ -541,7 +550,7 @@ class CreateProjectWizard(SessionWizardView):
             cleanedTeamData.append(changedTeamData.copy())
             changedTeamData.clear()
 
-        for milestoneData in [form.cleaned_data for form in form_list][2]:
+        for milestoneData in [form.cleaned_data for form in form_list][3]:
             milestoneDataCounter += 1
             for k, v in milestoneData.iteritems():
                 k = "{0}-{1}".format(k, milestoneDataCounter)
@@ -569,6 +578,7 @@ class CreateProjectWizard(SessionWizardView):
 
         data = {
             'basicInfo': basicInfo,
+            'flagData': flagData,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
         }
@@ -600,6 +610,9 @@ def saveProject(request):
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
+        pr.currentProject = request.POST.get('currentProject')
+        pr.signed = request.POST.get('signed')
+        pr.internal = request.POST.get('internal')
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
         pr.book = Book.objects.filter(id=request.session['book'])[0]
@@ -617,6 +630,7 @@ def saveProject(request):
             role = "role-{0}".format(memberCount)
             plannedEffort = "plannedEffort-{0}".format(memberCount)
             startDate = "startDate-{0}".format(memberCount)
+            endDate = "endDate-{0}".format(memberCount)
 
             ptm.member = User.objects.get(
                 pk=request.POST.get(teamMemberId)
@@ -624,6 +638,7 @@ def saveProject(request):
             ptm.role = request.POST.get(role)
             ptm.plannedEffort = request.POST.get(plannedEffort)
             ptm.startDate = request.POST.get(startDate)
+            ptm.endDate = request.POST.get(endDate)
             ptm.save()
 
         for milestoneCount in range(1, request.session['totalMilestoneCount']):

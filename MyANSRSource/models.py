@@ -27,6 +27,18 @@ class Book(models.Model):
         return self.name
 
 
+class Location(models.Model):
+    name = models.CharField(max_length=100, null=False,
+                            verbose_name="Location Name")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Chapter(models.Model):
     book = models.ForeignKey(Book)
     name = models.CharField(max_length=100, verbose_name="Chapter Name")
@@ -53,6 +65,24 @@ class Project(models.Model):
         verbose_name="Business Unit"
     )
     name = models.CharField(max_length=50, verbose_name="Project Name")
+    currentProject = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Is this a new project?"
+    )
+    signed = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Is this project signed?"
+    )
+    internal = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Is this an internal project?"
+    )
     projectId = models.CharField(max_length=15, null=False)
     startDate = models.DateTimeField(verbose_name="Project Start Date")
     endDate = models.DateTimeField(verbose_name="Project End Date")
@@ -86,6 +116,7 @@ class TimeSheetEntry(models.Model):
                                verbose_name="Week Start")
     wkend = models.DateField(default=None, blank=True, verbose_name="Week End")
 
+    location = models.ForeignKey(Location, verbose_name="Location", null=True)
     chapter = models.ForeignKey(Chapter, verbose_name="Chapter", null=True)
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
@@ -191,6 +222,8 @@ class ProjectTeamMember(models.Model):
                             verbose_name="Role")
     startDate = models.DateField(verbose_name='Start date on project',
                                  default=timezone.now)
+    endDate = models.DateField(verbose_name='End date on project',
+                               default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     # Record Entered / Updated Date
