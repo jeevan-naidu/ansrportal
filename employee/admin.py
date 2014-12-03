@@ -1,15 +1,19 @@
 from django.contrib import admin
 from employee.models import Employee
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
+
 # Register your models here.
 
 
-class EmployeeAdmin(admin.ModelAdmin):
+class UserInline(admin.StackedInline):
+    model = Employee
+    can_delete = False
+
     fieldsets = (
         ('Employee Identification', {
             'fields': (
-                'user.first_name', 'middle_name', 'user.last_name',
-                'user.email',
-                'employee_assigned_id')}),
+                'middle_name', 'employee_assigned_id')}),
         ('Contact Details', {
             'fields': (
                 'permanent_address', 'temporary_address', 'mobile_phone',
@@ -26,7 +30,7 @@ class EmployeeAdmin(admin.ModelAdmin):
                 'division', 'location', 'category', 'idcard',)}),
         ('Financial Information', {
             'fields': ('PAN', 'PF_number',
-                'bank_name', 'bank_branch', 'bank_account', 'ifsc_code',
+                'bank_name', 'bank_branch', 'bank_account', 'bank_ifsc_code',
                        'group_insurance_number', 'esi_number',
                        )}),
         ('Key Dates', {
@@ -35,4 +39,13 @@ class EmployeeAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(Employee, EmployeeAdmin)
+class EmployeeAdmin(OriginalUserAdmin):
+    inlines = [UserInline, ]
+
+
+try:
+    admin.site.unregister(User)
+finally:
+    admin.site.register(User, EmployeeAdmin)
+
+#admin.site.register(Employee, EmployeeAdmin)

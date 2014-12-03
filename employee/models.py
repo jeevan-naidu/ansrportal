@@ -251,7 +251,7 @@ class Employee(models.Model):
                                  max_length=70, blank=False)
     bank_branch = models.CharField(verbose_name="Branch Name",
                                    max_length=70, blank=False)
-    bank_acccount = models.IntegerField(
+    bank_account = models.IntegerField(
         "Account Number",
         max_length=30,
         blank=False,
