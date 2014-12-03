@@ -9,6 +9,7 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('CompanyMaster', '0002_holiday'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -39,11 +40,10 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Holiday',
+            name='Location',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=b'100', null=True, verbose_name=b'Holiday Name', blank=True)),
-                ('date', models.DateField(verbose_name=b'Holiday Date')),
+                ('name', models.CharField(max_length=100, verbose_name=b'Location Name')),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
             ],
@@ -56,8 +56,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('projectType', models.CharField(default=b'Q', max_length=2, verbose_name=b'Project Type', choices=[(b'Q', b'Questions'), (b'P', b'Powerpoint'), (b'I', b'Instructional')])),
-                ('bu', models.CharField(default=b'E', max_length=2, verbose_name=b'Business Unit', choices=[(b'E', b'Editorial'), (b'M', b'Media')])),
                 ('name', models.CharField(max_length=50, verbose_name=b'Project Name')),
+                ('currentProject', models.BooleanField(default=True, verbose_name=b'Project Stage')),
+                ('signed', models.BooleanField(default=True, verbose_name=b'project Signed')),
+                ('internal', models.BooleanField(default=True, verbose_name=b'Internal Project')),
                 ('projectId', models.CharField(max_length=15)),
                 ('startDate', models.DateTimeField(verbose_name=b'Project Start Date')),
                 ('endDate', models.DateTimeField(verbose_name=b'Project End Date')),
@@ -67,6 +69,7 @@ class Migration(migrations.Migration):
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
                 ('book', models.ForeignKey(default=None, verbose_name=b'Book', to='MyANSRSource.Book')),
+                ('bu', models.ForeignKey(verbose_name=b'Business Unit', to='CompanyMaster.BusinessUnit')),
                 ('chapters', models.ManyToManyField(to='MyANSRSource.Chapter')),
                 ('projectManager', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -115,6 +118,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('role', models.CharField(default=None, max_length=100, verbose_name=b'Role', blank=True)),
                 ('startDate', models.DateField(default=django.utils.timezone.now, verbose_name=b'Start date on project')),
+                ('endDate', models.DateField(default=django.utils.timezone.now, verbose_name=b'End date on project')),
                 ('plannedEffort', models.IntegerField(default=0, verbose_name=b'Planned Effort')),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
@@ -155,6 +159,7 @@ class Migration(migrations.Migration):
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
                 ('chapter', models.ForeignKey(verbose_name=b'Chapter', to='MyANSRSource.Chapter', null=True)),
+                ('location', models.ForeignKey(verbose_name=b'Location', to='MyANSRSource.Location', null=True)),
                 ('project', models.ForeignKey(verbose_name=b'Project Name', to='MyANSRSource.Project', null=True)),
                 ('teamMember', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL)),
             ],

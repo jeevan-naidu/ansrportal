@@ -1,13 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+import CompanyMaster
 
 # Database Models
-
-BU = (
-    ('E', 'Editorial'),
-    ('M', 'Media'),
-)
 PROJECT_TYPE = (
     ('Q', 'Questions'),
     ('P', 'Powerpoint'),
@@ -58,10 +54,8 @@ class Project(models.Model):
         max_length=2,
         verbose_name="Project Type"
     )
-    bu = models.CharField(
-        default='E',
-        choices=BU,
-        max_length=2,
+    bu = models.ForeignKey(
+        CompanyMaster.models.BusinessUnit,
         verbose_name="Business Unit"
     )
     name = models.CharField(max_length=50, verbose_name="Project Name")
@@ -156,22 +150,6 @@ class TimeSheetEntry(models.Model):
     class Meta:
         verbose_name = 'Timesheet Entry'
         verbose_name_plural = 'Timesheet Entries'
-
-
-class Holiday(models.Model):
-    # project change Request Fields
-    name = models.CharField(verbose_name="Holiday Name",
-                            max_length="100",
-                            null=True,
-                            blank=True)
-    date = models.DateField(verbose_name="Holiday Date")
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return unicode(self.name)
 
 
 class ProjectChangeInfo(models.Model):

@@ -4,10 +4,12 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Holiday, Book
+    ProjectMilestone, ProjectTeamMember, Book
+from CompanyMaster.models import Holiday
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm
+import CompanyMaster
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
@@ -542,6 +544,7 @@ class CreateProjectWizard(SessionWizardView):
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList
+        self.request.session['bu'] = basicInfo['bu'].id
         self.request.session['book'] = basicInfo['book'].id
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
@@ -639,6 +642,9 @@ def saveProject(request):
         pr.internal = request.POST.get('internal')
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
+        pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
+            id=request.session['bu']
+        )[0]
         pr.book = Book.objects.filter(id=request.session['book'])[0]
         pr.save()
         request.session['currentProject'] = pr.id
