@@ -1,10 +1,12 @@
 from django.contrib import admin
-from employee.models import Employee
+from employee.models import Employee, PreviousEmployment, EmpAddress, FamilyMember, Education
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
 # Register your models here.
 
+class PreviousEmploymentInline(admin.TabularInline):
+    model = PreviousEmployment
 
 class UserInline(admin.StackedInline):
     model = Employee
@@ -22,9 +24,6 @@ class UserInline(admin.StackedInline):
             'fields': (
                 'date_of_birth', 'gender', 'nationality',
                 'marital_status', 'blood_group',)}),
-        ('Previous Employement', {
-            'fields': (
-                'previous_employment', ), }, ),
         ('Role and Job', {
             'fields': ('employee_assigned_id', 'designation',
                 'division', 'location', 'category', 'idcard',)}),
@@ -40,7 +39,7 @@ class UserInline(admin.StackedInline):
 
 
 class EmployeeAdmin(OriginalUserAdmin):
-    inlines = [UserInline, ]
+    inlines = [UserInline,PreviousEmploymentInline,  ]
 
 
 try:

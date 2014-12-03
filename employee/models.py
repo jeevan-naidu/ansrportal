@@ -69,33 +69,6 @@ class Designation(models.Model):
         return self.name
 
 
-class PreviousEmployment(models.Model):
-    company_name = models.CharField("Company Name", max_length=150)
-    company_address = models.CharField(
-        "Company Address",
-        max_length=500)
-    employed_from = models.DateField(verbose_name="Start Date", null=False)
-    employed_upto = models.DateField(verbose_name="End Date", null=False)
-    pf_number = models.CharField(
-        "PF Number",
-        max_length=15,
-        null=True,
-        blank=True)
-    last_ctc = models.DecimalField(
-        "Last CTC",
-        max_digits=15,
-        decimal_places=2)
-    reason_for_exit = models.CharField(
-        verbose_name="Reason for Exit",
-        max_length=50)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.company_name
-
 
 class EmpAddress(models.Model):
     address1 = models.CharField(
@@ -272,9 +245,6 @@ class Employee(models.Model):
     '''
     Previous employment details
     '''
-    previous_employment = models.ManyToManyField(
-        PreviousEmployment)
-
     def __unicode__(self):
         return '{0},{1},{2}'.format(
             self.emp_id,
@@ -283,7 +253,7 @@ class Employee(models.Model):
 
 
 class FamilyMember(models.Model):
-    employee = models.ForeignKey(Employee)
+    employee = models.ForeignKey(User)
     name = models.CharField("Name", max_length=50, blank=False)
     dob = models.DateField("DOB", blank=False)
     rela_type = models.CharField(
@@ -297,7 +267,7 @@ class FamilyMember(models.Model):
 
 
 class Education(models.Model):
-    employee = models.ForeignKey(Employee)
+    employee = models.ForeignKey(User)
     name = models.CharField("Degree", max_length=50, blank=False)
     from_date = models.DateField("From Date", blank=False)
     to_date = models.DateField("To Date", blank=False)
@@ -314,3 +284,33 @@ class Education(models.Model):
             self.to_date,
             self.institute,
             self.overall_marks)
+
+
+class PreviousEmployment(models.Model):
+    employee = models.ForeignKey(User)
+    company_name = models.CharField("Company Name", max_length=150)
+    company_address = models.CharField(
+        "Company Address",
+        max_length=500)
+    employed_from = models.DateField(verbose_name="Start Date", null=False)
+    employed_upto = models.DateField(verbose_name="End Date", null=False)
+    pf_number = models.CharField(
+        "PF Number",
+        max_length=15,
+        null=True,
+        blank=True)
+    last_ctc = models.DecimalField(
+        "Last CTC",
+        max_digits=15,
+        decimal_places=2)
+    reason_for_exit = models.CharField(
+        verbose_name="Reason for Exit",
+        max_length=50)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.company_name + ':' + \
+            str(self.employed_from) + ' ~ ' + str(self.employed_upto)
