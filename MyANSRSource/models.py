@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
+import employee
 
 # Database Models
 PROJECT_TYPE = (
@@ -202,8 +203,12 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
     member = models.ForeignKey(User)
-    role = models.CharField(default=None, blank=True, max_length=100,
-                            verbose_name="Role")
+    role = models.ForeignKey(
+        employee.models.Designation,
+        verbose_name="Role",
+        default=None,
+        null=False,
+    )
     startDate = models.DateField(verbose_name='Start date on project',
                                  default=timezone.now)
     endDate = models.DateField(verbose_name='End date on project',

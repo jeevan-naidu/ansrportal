@@ -10,6 +10,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm
 import CompanyMaster
+import employee
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
