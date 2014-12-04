@@ -12,11 +12,11 @@
 		{% endfor %}								
 	</div>
 {% endif %}
-	<div class="table-responsive">
+	<div class="table-responsive col-lg-12">
 	<table class="table">
 		{% for field in form %}
 			<tr>
-				<td class="col-lg-6">
+				<td class="col-lg-1">
 						{{ field.label }}
 						{% if field.field.required %}
 							<span class="required">*</span>
@@ -28,7 +28,7 @@
 							</span>
 						{% endif %}
 				</td>
-				<td class="col-xs-12 col-md-12 col-lg-6">{{ field }}</td>
+				<td class="col-xs-12 col-md-12 col-lg-2">{{ field }}</td>
 			</tr>
 		{% endfor %}
 	</table>

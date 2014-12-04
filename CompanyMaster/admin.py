@@ -14,10 +14,7 @@ class OfficeLocatonAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('customerList',)
-
-    def customerList(self, obj):
-        return ",".join([rec.username for rec in obj.name.all()])
+    list_display = ('name',)
 
 
 class DepartmentAdmin(admin.ModelAdmin):
