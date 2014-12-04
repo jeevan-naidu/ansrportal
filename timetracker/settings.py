@@ -15,7 +15,7 @@ from django.conf import global_settings
 from django_auth_ldap.config import PosixGroupType
 
 AUTHENTICATION_BACKENDS = (
-#    'django_auth_ldap.backend.LDAPBackend',
+    #    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
@@ -25,7 +25,7 @@ AUTH_LDAP_BIND_DN = "cn=admin,dc=fantain,dc=com"
 AUTH_LDAP_BIND_PASSWORD = "fant@in"
 #AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=fantainusers,dc=fantain,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
 #AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=fantainusers,dc=fantain,dc=com"
-#AUTH_LDAP_GROUP_SEARCH = LDAPSearch("cn=users,ou=fantaingroups,dc=fantain,dc=com",
+# AUTH_LDAP_GROUP_SEARCH = LDAPSearch("cn=users,ou=fantaingroups,dc=fantain,dc=com",
 #    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)")
 AUTH_LDAP_REQUIRE_GROUP = "cn=users,ou=fantaingroups,dc=fantain,dc=com"
 AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")
@@ -39,8 +39,8 @@ AUTH_LDAP_FIELD_USERNAME = "uid"
 
 AUTH_LDAP_USER_ATTR_MAP = {
     "first_name": "sn",
-    "last_name":"givenName",
-    'email' : 'mail',
+    "last_name": "givenName",
+    'email': 'mail',
     }
 
 
@@ -105,6 +105,7 @@ TEMPLATE_DIRS = (
 # Application definition
 
 INSTALLED_APPS = (
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,6 +136,7 @@ MIDDLEWARE_CLASSES = (
 # Overriding Default T_C_P with new T_C_p
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+
 )
 
 # Session Expire Configuration

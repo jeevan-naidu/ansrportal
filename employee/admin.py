@@ -1,8 +1,12 @@
 from django.contrib import admin
-from employee.models import Employee, PreviousEmployment, EmpAddress, FamilyMember, Education
+from employee.models import Employee, PreviousEmployment, EmpAddress,\
+    FamilyMember, Education, Designation, EmpAddress
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
+
+class EmpAddressInline(admin.TabularInline):
+    model = EmpAddress
 
 class EducationInline(admin.TabularInline):
     model = Education
@@ -13,7 +17,7 @@ class FamilyMemberInline(admin.TabularInline):
     extra = 2
 
 
-class PreviousEmploymentInline(admin.TabularInline):
+class PreviousEmploymentInline(admin.StackedInline):
     model = PreviousEmployment
     extra = 1
 
@@ -28,8 +32,8 @@ class UserInline(admin.StackedInline):
                 'middle_name', 'employee_assigned_id')}),
         ('Contact Details', {
             'fields': (
-                'permanent_address', 'temporary_address', 'mobile_phone',
-                'land_phone', 'emergency_phone', 'personal_email',)}),
+                'mobile_phone', 'land_phone',
+                'emergency_phone', 'personal_email',)}),
         ('Other Details', {
             'fields': (
                 'date_of_birth', 'gender', 'nationality',
@@ -47,15 +51,21 @@ class UserInline(admin.StackedInline):
                        'resignation', 'exit',), }, ),
     )
 
+    inlines = [EmpAddressInline, ]
 
 class EmployeeAdmin(OriginalUserAdmin):
     readonly_fields = ('email', )
-    inlines = [UserInline, EducationInline, FamilyMemberInline, PreviousEmploymentInline, ]
+    inlines = [UserInline, EducationInline, FamilyMemberInline, PreviousEmploymentInline, EmpAddressInline ]
 
+class DesignationAdmin(admin.ModelAdmin):
+    pass
 
 try:
     admin.site.unregister(User)
 finally:
     admin.site.register(User, EmployeeAdmin)
+
+admin.site.register(Designation, DesignationAdmin)
+
 
 #admin.site.register(Employee, EmployeeAdmin)
