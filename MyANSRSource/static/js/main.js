@@ -6,11 +6,13 @@ var app = app || {};
 // Main
 (function() {
     $(document).ready(function() {
+        // Project
         $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3, calendarPos2: 8, addTeamMember: true});
-        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
-        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
         $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0, financialTotal: true});
 
+        // TimeSheet
+        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
+        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
@@ -54,8 +56,8 @@ app.getIdNo = function(str) {
                 newRowId,
                 $formFields,
                 $element,
-                $curId,
-                $curName,
+                curId,
+                curName,
                 $curIdSel,
 
             // Slice the id number from last row id
@@ -72,15 +74,19 @@ app.getIdNo = function(str) {
             // Increment the id and name value
             $formFields.each(function(index) {
                 $element = $(this);
-                $curId = $element.attr('id');
-                $curName = $element.attr('name');
+                curId = $element.attr('id');
+                curName = $element.attr('name');
 
-                console.log('index: ' + index + ' - ' + $curId);
+                console.log('index: ' + index + ' - ' + curId);
 
-                if($curId) {
-                    $curId = $curId.replace(app.getIdNo($curId), newRowId);
-                    $element.attr('id', $curId);
-                    $element.attr('name', $curName);
+                if(curId) {
+                    curId = curId.replace(app.getIdNo(curId), newRowId);
+                    $element.attr('id', curId);
+                }
+
+                if(curName) {
+                    curName = curName.replace(app.getIdNo(curName), newRowId);
+                    $element.attr('name', curName);
                 }
 
                 if(index === 1 || index === 2) {
@@ -93,41 +99,7 @@ app.getIdNo = function(str) {
 
                 if(options.calendar) {
                     if(index === options.calendarPos || index === options.calendarPos2) {
-                        $curIdSel = $('#' + $curId);
-
-
-                        /*$curChildEle = $element.find('div:nth-child(1n)');
-                        $curChildEleInput = $curIdSel.find('input');
-
-                        curChildEleId = $curChildEle.attr('id');
-                        curChildEleName = $curChildEle.attr('name');
-                        curChildEleInputId = $curChildEle.attr('id');
-                        curChildEleInputName = $curChildEle.attr('name');
-
-                        if(curChildEleId) {
-                            curChildEleId = curChildEleId.replace(app.getIdNo(curChildEleId), newRowId);
-
-                            $curChildEle.attr('id', curChildEleId);
-                        }
-
-                        if(curChildEleName) {
-                            curChildEleName = curChildEleName.replace(app.getIdNo(curChildEleName), newRowId);
-
-                            $curChildEle.attr('name', curChildEleName);
-                        }
-
-                        if(curChildEleInputId) {
-                            curChildEleInputId = curChildEleInputId.replace(app.getIdNo(curChildEleInputId), newRowId);
-
-                            $curChildEleInput.attr('id', curChildEleInputId);
-                        }
-
-                        if(curChildEleInputName) {
-                            curChildEleInputName = curChildEleInputName.replace(app.getIdNo(curChildEleInputName), newRowId);
-
-                            $curChildEleInput.attr('id', curChildEleInputId);
-                        }*/
-
+                        $curIdSel = $('#' + curId);
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
                     }
                 }
@@ -149,13 +121,13 @@ app.getIdNo = function(str) {
                     i;
 
 
-                for(i = 0; i < dItemsLen; i += 1) {
+                /*for(i = 0; i < dItemsLen; i += 1) {
                     curDItem = dItems[i];
                     curDItemId = $(curDItem).attr('id');
                     curDItemId = curDItemId.replace(app.getIdNo(curDItemId), newRowId);
 
                     $(curDItem).attr('id', curDItemId);
-                }
+                }*/
 
                 newRowBQuestions.text('0');
                 newRowBHours.text('0');
