@@ -578,6 +578,7 @@ class CreateProjectWizard(SessionWizardView):
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
             flagData[k] = v
         for teamData in [form.cleaned_data for form in form_list][2]:
+            print teamData
             teamDataCounter += 1
             for k, v in teamData.iteritems():
                 k = "{0}-{1}".format(k, teamDataCounter)
