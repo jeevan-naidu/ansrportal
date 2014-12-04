@@ -1,5 +1,6 @@
 from django.contrib import admin
-from employee.models import Employee, PreviousEmployment, EmpAddress, FamilyMember, Education
+from employee.models import Employee, PreviousEmployment, EmpAddress,\
+    FamilyMember, Education, Designation
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
@@ -13,7 +14,7 @@ class FamilyMemberInline(admin.TabularInline):
     extra = 2
 
 
-class PreviousEmploymentInline(admin.TabularInline):
+class PreviousEmploymentInline(admin.StackedInline):
     model = PreviousEmployment
     extra = 1
 
@@ -52,10 +53,15 @@ class EmployeeAdmin(OriginalUserAdmin):
     readonly_fields = ('email', )
     inlines = [UserInline, EducationInline, FamilyMemberInline, PreviousEmploymentInline, ]
 
+class DesignationAdmin(admin.ModelAdmin):
+    pass
 
 try:
     admin.site.unregister(User)
 finally:
     admin.site.register(User, EmployeeAdmin)
+
+admin.site.register(Designation, DesignationAdmin)
+
 
 #admin.site.register(Employee, EmployeeAdmin)
