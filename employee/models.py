@@ -1,192 +1,329 @@
 from django.db import models
-from django.contrib import admin
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.core.files.storage import FileSystemStorage
 
-SEX_CHOICES = (
-	('00', 'MALE'),
-	('01', 'FEMALE'),
-	      )
+fs = FileSystemStorage(location='employee/emp_photo')
+
+GENDER_CHOICES = (
+    ('M', 'Male'),
+    ('F', 'Female'),
+    )
 
 MARITAL_CHOICES = (
-	('00', 'Married'),
-	('01', 'Windowed'),
-	('02', 'Seperated'),
-	('03', 'Divorced'),
-	('04', 'Single'),
-		  )
-
-B_GROUP_CHOICES = (
-	('00', 'A+'),
-	('01', 'A-'),
-	('02', 'B+'),
-	('03', 'B-'),
-	('04', 'O+'),
-	('05', 'O-'),
-	('06', 'AB+'),
-	('07', 'AB-'),
-		  )
-
-DEPART_CHOICES = (
-    ('Manufacturing',(
-	('00', 'Production'),
-	('01', 'Marketing & Sales'),
-	('02', 'Finance'),
-		     )
-    ),
-    ('Information Technology',(
-	('03', 'Human resource'),
-	('04', 'IT Department'),
-			     )
+    ('MA', 'Married'),
+    ('WD', 'Windowed'),
+    ('SE', 'Seperated'),
+    ('DV', 'Divorced'),
+    ('SG', 'Single'),
     )
-		)
 
-CATEG_CHOICES = (
-	('00', 'Agriculture'),
-	('01', 'Arts'),
-	('02', 'Finance'),
-	('03', 'Educational'),
-	('04', 'High Tech'),
-	('05', 'Media'),
-	('06', 'Service'),
-	('07', 'Transportation'),
-		)
+BLOOD_GROUP_CHOICES = (
+    ('00', 'A+'),
+    ('01', 'A-'),
+    ('02', 'B+'),
+    ('03', 'B-'),
+    ('04', 'O+'),
+    ('05', 'O-'),
+    ('06', 'AB+'),
+    ('07', 'AB-'),
+    )
 
-DESIG_CHOICES = (
-	('00', 'Application Developer'),
-	('01', 'Application Support Analyst'),
-	('02', 'Applications Engineer'),
-	('03', 'Associate Developer'),
-	('04', 'Cheif Technology Officer'),
-	('05', 'Cheif Information Officer'),
-	('06', 'Computer Systems Manager'),
-	('07', 'Data Center Support Specialist'),
-		 )
 
-SHIFT_CHOICES = (
-	('00', 'General Shift'),
-	('01', 'A Shift'),
-	('02', 'B Shift'),
-		 )
+CATEGORY_CHOICES = (
+    ('FT', 'Fulltime Employee'),
+    ('PT', 'Parttime Employee'),
+    ('IN', 'Intern'),
+    ('CT', 'Contractor'),
+    )
 
-LEAVE_CHOICES = (
-	('00', 'Permission'),
-	('01', 'Without Persmission'),
-		)
 
-ATTEN_CHOICES = (
-	('00', 'First Off'),
-	('01', 'Last Off'),
-	('02', 'Entire Off'),
-	        )
+OVERTIMEPLAN_CHOICES = (('CB', 'Compensatory Leave'),
+                        ('LP', 'Leave Pay'))
 
-OVER_TPLAN_CHOICES = ( )
 
-LATE_EARLY_CHOICES = ( )
-
-OFFDAY1_CHOICES = (
-	('00', 'Sunday'),
-	('01', 'Monday'),
-	('02', 'Tuesday'),
-	('03', 'Wednesday'),
-	('04', 'Thursday'),
-	('05', 'Friday'),
-	('06', 'Saturday'),
-	('07', 'Nothing'),
-		  )
-
-OFFDAY2_CHOICES = (
-	('00', 'Sunday'),
-	('01', 'Monday'),
-	('02', 'Tuesday'),
-	('03', 'Wednesday'),
-	('04', 'Thursday'),
-	('05', 'Friday'),
-	('06', 'Saturday'),
-	('07', 'Nothing'),
-		  )
-
-APPLY_CHOICES = (
-	('00', 'All WeekOffs'),
-	('01', 'Odd WeekOffs'),
-	('02', 'Even WeekOffs'),
-	('03', 'Not Applicable'),
-		)
-
-BUSI_UNIT_CODE_CHOICES = ( )
+RELATION_CHOICES = (
+    ('FA', 'Father'),
+    ('MO', 'Mother'),
+    ('SP', 'Spouse'),
+    ('C1', 'Child1'),
+    ('C2', 'Child2'),
+    )
 
 EMP_STATUS_CHOICES = (
-	('00', 'InActive'),
-	('01', 'Active'),
-		     )
+    ('00', 'InActive'),
+    ('01', 'Active'),
+    )
 
 
-# Create your models here.
-class EmpAddress(models.Model):
-    address1 = models.CharField("Address 1", max_length=30, blank=False)
-    address2 = models.CharField("Address 2", max_length=30, blank=False)
-    city = models.CharField("City", max_length=15, blank=False)
-    state = models.CharField("State", max_length=20, blank=False)
-    pincode = models.CharField("PinCode", max_length=6, blank = False)
+class Designation(models.Model):
+    name = models.CharField(
+        verbose_name="Designation Title",
+        max_length=40,
+        blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
 
     def __unicode__(self):
-        return '{0},{1},{2},{3},{4}'.format(self.address1, self.address2, self.city, self.state, self.pincode)
+        return self.name
 
-class EmpBasic(models.Model):
-    first_name = models.CharField("First Name", max_length=15, blank=False)
-    last_name = models.CharField("Last Name", max_length=15, blank=False)
-    emp_id = models.CharField("Employee ID", max_length=8, blank=False)
-    card_id = models.CharField("Card ID", max_length=8,blank=False)
-    user_name = models.OneToOneField(User, verbose_name="User Name")
-    location_id = models.CharField("Location ID", max_length=5, blank=False)
-    permanent_address = models.ForeignKey(EmpAddress, verbose_name="Permanent Address1", related_name="per_addr")
-    temporary_address = models.ForeignKey(EmpAddress, verbose_name="Temporary Address2", related_name="tem_addr")
-    gender = models.CharField("Gender", max_length=15, choices=SEX_CHOICES,blank=False)
-    d_o_b = models.DateField("Date of Birth", blank=False)
+
+class EmpAddress(models.Model):
+    class Meta:
+        verbose_name_plural = 'Addresses'
+
+    address1 = models.CharField(
+        verbose_name="Address 1",
+        max_length=30,
+        blank=False)
+    address2 = models.CharField(
+        verbose_name="Address 2",
+        max_length=30,
+        blank=False)
+    city = models.CharField("City", max_length=15, blank=False)
+    state = models.CharField("State", max_length=20, blank=False)
+    zipcode = models.CharField("Zip Code", max_length=6, blank=False)
+
+    def __unicode__(self):
+        return '{0}, {1}, {2}, {3}, {4}'.format(
+            self.address1,
+            self.address2,
+            self.city,
+            self.state,
+            self.zipcode)
+
+""" This class is an extension of the Django user class.  The fields in the
+User model can be found here.
+https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
+
+
+class Employee(models.Model):
+    # User model will have the usual fields.  We will have the remaining ones
+    # here
+    status = models.BooleanField(default=True)
+    user = models.OneToOneField(User, verbose_name="User")
+    '''
+    ================================================
+    Basic Employee Attributes
+    ================================================
+    '''
+    # No middlename in user model !
+    middle_name = models.CharField("Middle Name", max_length=15, blank=True)
+    # Gender
+    gender = models.CharField(
+        "Gender",
+        max_length=2,
+        choices=GENDER_CHOICES,
+        blank=False)
+    date_of_birth = models.DateField("Date of Birth", blank=False)
+    # Can we make this a choice field?
     nationality = models.CharField("Nationality", max_length=30, blank=False)
-    mar_sta = models.CharField("Marital Status", max_length= 10, choices = MARITAL_CHOICES, blank=False)
-    blood_grop = models.CharField("Blood Group", max_length=50, choices=B_GROUP_CHOICES, blank=False)
-    depar_code = models.CharField("Department Code", max_length=50, choices=DEPART_CHOICES, blank=False)
-    cate_code = models.CharField("Category Code", max_length=50, choices=CATEG_CHOICES, blank=False)
-    desig_code = models.CharField("Designation Code", max_length=50, choices=DESIG_CHOICES, blank=False)
-    year_exp = models.IntegerField("Years of Experience", max_length=2, blank=False)
-    mob_num = models.CharField("Mobile Number", max_length=15, blank=False)
-    land_num = models.CharField("Landline Number", max_length=15)
-    emer_num = models.CharField("Emergency Contact Number", max_length=15, blank=False)
-    personal_email = models.EmailField("Personal E-mail", max_length=250, blank=False)
-    official_email = models.EmailField("Official E-mail", max_length=250, blank=False)
-    pan_no = models.CharField("PAN No", max_length=10, blank=False)
-    passport_no = models.CharField("Passport No", max_length=10)
-    pf_no = models.CharField("PF No", max_length=14,  blank=False)
-    prev_comp_name = models.CharField("Previous Company Name", max_length=150)
-    prev_comp_addr = models.CharField("Previous Company Address", max_length = 500)
-    prev_comp_duration = models.IntegerField("Previous Company Duration", max_length=3, help_text="Duration should be a month")
-    prev_leav_date = models.DateField("Previous Leaving Date")
-    prev_reas_leav = models.CharField("Reason for Leaving in previous company", max_length=250)
-    shift_plan = models.CharField("Shift Plan", max_length=15, choices=SHIFT_CHOICES, blank=False)
-    leave_plan = models.CharField("Leave Plan", max_length=50, choices=LEAVE_CHOICES, blank=False)
-    att_plan = models.CharField("Attendance Plan", max_length=50, choices=ATTEN_CHOICES, blank=False)
-    over_tplan = models.CharField("OverTime Plan", max_length=50, choices=OVER_TPLAN_CHOICES, blank=False)
-    lat_early_plan = models.CharField("Late/Early Plan", max_length=15, choices=LATE_EARLY_CHOICES, blank=False)
-    prob_date = models.DateField("Probation Date", blank=False)
-    confirm_date = models.DateField("Confirm Date", blank=False)
-    join_date = models.DateField("Joining Date", blank=False)
-    bus_route = models.CharField("Bus Route", max_length=15)
-    off_day1 = models.CharField("Off Day1", max_length=20,  choices=OFFDAY1_CHOICES, blank=False)
-    off_day2 = models.CharField("Off Day2", max_length=20, choices=OFFDAY2_CHOICES, blank=False)
-    apply_to = models.CharField("Apply To", max_length=50, choices=APPLY_CHOICES, blank=False)
-    busin_unit_code = models.CharField("Business Unit Code", max_length=50, choices=BUSI_UNIT_CODE_CHOICES, blank=False)
-    cost_centre = models.CharField("Cost Centre", max_length=10, blank=False)
-    bank_name = models.CharField("Bank Name", max_length=70, blank=False)
-    bank_branch = models.CharField("Bank Branch", max_length=70, blank=False)
-    bank_ac = models.IntegerField("Bank Ac/No", max_length=30, blank=False)
-    ifsc_code = models.CharField("IFSC Code", max_length=30, blank=False)
-    group_insu_no = models.CharField("Group Insurance Number", max_length=30, blank=False)
-    emp_status = models.CharField("Employee Status", max_length=30, choices=EMP_STATUS_CHOICES,blank=False)
-    esi_num = models.CharField("ESI Number", max_length=30)
+    marital_status = models.CharField(
+        "Marital Status",
+        max_length=10,
+        choices=MARITAL_CHOICES,
+        blank=False)
+    blood_group = models.CharField(
+        "Blood Group",
+        max_length=3,
+        choices=BLOOD_GROUP_CHOICES,
+        blank=True)
+    mobile_phone = models.CharField(
+        "Mobile Phone",
+        max_length=15,
+        unique=True,
+        blank=True)
+    land_phone = models.CharField(
+        "Landline Number",
+        max_length=15, blank=True)
+    emergency_phone = models.CharField(
+        "Emergency Contact Number",
+        max_length=15,
+        unique=True,
+        blank=False)
+    personal_email = models.EmailField(
+        "Personal E-mail",
+        max_length=250,
+        blank=False,
+        unique=True)
+    # Employee address details
+    permanent_address = models.ForeignKey(
+        EmpAddress,
+        verbose_name="Permanent Address",
+        related_name="permanent_addr")
+    temporary_address = models.ForeignKey(
+        EmpAddress,
+        verbose_name="Temporary Address",
+        related_name="temporary_addr")
+    passport_number = models.CharField(
+        "Passport Number",
+        max_length=10,
+        unique=True,
+        null=True, blank=True)
 
-def create_user_profile(sender, instance, created, **kwargs):
+    photo = models.ImageField(storage=fs,
+                              verbose_name="Employee Photo")
 
-    EmpBasic.objects.get_or_create(user=instance)
+    '''
+    =========================================================
+    Company assigned attributes for the employee on joining
+    =========================================================
+    '''
+    # Business unit to which this employee belongs
+    business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
+    # user's default office location
+    location = models.ForeignKey('CompanyMaster.OfficeLocation')
+    # Corporates have already assigned employee Ids.
+    employee_assigned_id = models.CharField(
+        "Employee ID",
+        max_length=15,
+        primary_key=True,
+        blank=False)
+    idcard = models.CharField(
+        "Access Card Number",
+        max_length=15,
+        unique=True,
+        blank=False)
+    division = models.ForeignKey('CompanyMaster.Division')
+    category = models.CharField(
+        "Employment Category",
+        max_length=3,
+        choices=CATEGORY_CHOICES,
+        blank=False)
+    designation = models.ForeignKey(Designation)
+    exprience = models.IntegerField(
+        "Experience in Months",
+        max_length=3,
+        blank=False)
 
-post_save.connect(create_user_profile, sender=User)
+    '''
+    ============================
+    Key dates for the employee
+    ============================
+    '''
+    joined = models.DateField("Joining Date", blank=False)
+    confirmation = models.DateField("Confirmation Date", blank=False)
+    last_promotion = models.DateField("Probation End Date", blank=False)
+    resignation = models.DateField("Resignation Date", null=True, blank=True)
+    exit = models.DateField("Exit Date", null=True, blank=True)
+
+    '''
+    =================================================
+    Financial details for Salary, Insurance etc.,
+    =================================================
+    '''
+    PAN = models.CharField(
+        "PAN Number",
+        max_length=10,
+        blank=False,
+        unique=True)
+    PF_number = models.CharField(
+        "Provide Fund Number",
+        max_length=14,
+        blank=True)
+    bank_name = models.CharField(verbose_name="Bank Name",
+                                 max_length=70, blank=False)
+    bank_branch = models.CharField(verbose_name="Branch Name",
+                                   max_length=70, blank=False)
+    bank_account = models.IntegerField(
+        "Account Number",
+        max_length=30,
+        blank=False,
+        unique=True)
+    bank_ifsc_code = models.CharField(
+        "IFSC Code",
+        max_length=20, blank=False)
+    group_insurance_number = models.CharField(
+        "Group Insurance Number",
+        max_length=30,
+        blank=True)
+    esi_number = models.CharField(
+        "ESI Number",
+        max_length=30,
+        null=True,
+        blank=True)
+
+    '''
+    Previous employment details
+    '''
+    def __unicode__(self):
+        return '{0},{1},{2}'.format(
+            self.emp_id,
+            self.first_name,
+            self.last_name)
+
+
+class FamilyMember(models.Model):
+    employee = models.ForeignKey(User)
+    name = models.CharField("Name", max_length=50, blank=False)
+    dob = models.DateField("DOB", blank=False)
+    rela_type = models.CharField(
+        "Relation Type",
+        max_length=50,
+        choices=RELATION_CHOICES,
+        blank=False)
+
+    def __unicode__(self):
+        return (self.name, self.dob)
+
+
+class Education(models.Model):
+
+    class Meta:
+        verbose_name = "Education"
+        verbose_name_plural = "Education"
+
+    employee = models.ForeignKey(User)
+    name = models.CharField("Degree", max_length=50, blank=False)
+    from_date = models.DateField("From Date", blank=False)
+    to_date = models.DateField("To Date", blank=False)
+    institute = models.CharField("Institute Name", max_length=50, blank=False)
+    overall_marks = models.IntegerField(
+        "Total Score/GPA",
+        max_length=50,
+        blank=False)
+
+    def __unicode__(self):
+        return '{0},{1},{2},{3},{4}'.format(
+            self.degree,
+            self.from_date,
+            self.to_date,
+            self.institute,
+            self.overall_marks)
+
+
+class PreviousEmployment(models.Model):
+
+    class Meta:
+        verbose_name = "Previous Employment"
+        verbose_name_plural = "Previous Employment"
+
+
+    employee = models.ForeignKey(User)
+    company_name = models.CharField("Company Name", max_length=150)
+    company_address = models.CharField(
+        "Company Address",
+        max_length=500)
+    employed_from = models.DateField(verbose_name="Start Date", null=False)
+    employed_upto = models.DateField(verbose_name="End Date", null=False)
+    pf_number = models.CharField(
+        "PF Number",
+        max_length=15,
+        null=True,
+        blank=True)
+    last_ctc = models.DecimalField(
+        "Last CTC",
+        max_digits=15,
+        decimal_places=2)
+    reason_for_exit = models.CharField(
+        verbose_name="Reason for Exit",
+        max_length=50)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.company_name + ':' + \
+            str(self.employed_from) + ' ~ ' + str(self.employed_upto)
