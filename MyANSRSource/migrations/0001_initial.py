@@ -9,8 +9,8 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('CompanyMaster', '0002_holiday'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('CompanyMaster', '0001_initial'),
     ]
 
     operations = [
@@ -71,6 +71,7 @@ class Migration(migrations.Migration):
                 ('book', models.ForeignKey(default=None, verbose_name=b'Book', to='MyANSRSource.Book')),
                 ('bu', models.ForeignKey(verbose_name=b'Business Unit', to='CompanyMaster.BusinessUnit')),
                 ('chapters', models.ManyToManyField(to='MyANSRSource.Chapter')),
+                ('customer', models.ForeignKey(default=None, verbose_name=b'Customer', to='CompanyMaster.Customer')),
                 ('projectManager', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={

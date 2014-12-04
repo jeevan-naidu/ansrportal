@@ -4,9 +4,13 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Customer(models.Model):
-    name = models.ManyToManyField(
+    name = models.CharField(verbose_name='Customer Name',
+                            max_length=100,
+                            null=False,
+                            blank=False)
+    relatedMember = models.ManyToManyField(
         User,
-        verbose_name="Customer Name",
+        verbose_name="Related Members",
         blank=False,
         null=False
     )
@@ -16,7 +20,7 @@ class Customer(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return ",".join([rec.username for rec in self.name.all()])
+        return unicode(self.name)
 
 
 class OfficeLocation(models.Model):
