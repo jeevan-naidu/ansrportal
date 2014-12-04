@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter
+    ProjectMilestone, Chapter, Location
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 
@@ -114,6 +114,11 @@ def TimesheetFormset(currentUser):
             label="Project",
             required=True
         )
+        location = forms.ModelChoiceField(
+            queryset=Location.objects.all(),
+            label="Location",
+            required=True
+        )
         chapter = ChainedModelChoiceField(
             'MyANSRSource',
             'Chapter',
@@ -184,6 +189,7 @@ def TimesheetFormset(currentUser):
                     required=False
                 )
             self.fields['project'].widget.attrs['class'] = "form-control d-item"
+            self.fields['location'].widget.attrs['class'] = "form-control d-item"
             self.fields['chapter'].widget.attrs['class'] = "form-control d-item"
             self.fields['task'].widget.attrs[
                 'class'

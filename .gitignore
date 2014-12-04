@@ -11,6 +11,8 @@ __pycache__/
 # C extensions
 *.so
 
+# Remove pyc file in this folder
+migrations/*pyc
 
 # Distribution / packaging
 .Python
