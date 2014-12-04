@@ -644,6 +644,7 @@ def saveProject(request):
     if request.method == 'POST':
         pr = Project()
         pr.name = request.POST.get('name')
+        pr.projectType = request.POST.get('projectType')
         projectname = request.POST.get('name')
         projectname = projectname.replace(' ', '_').lower()
         projectname = re.sub('[^a-z_]+', '', projectname)
@@ -660,8 +661,17 @@ def saveProject(request):
             ]
             pnLength = len('_'.join(strippedWord))
             projectname = '_'.join(strippedWord)
-        projectId = projectname
-        pr.projectId = projectId
+        projectName = projectname
+        if Project.objects.all().count() > 0:
+            lastPId = Project.objects.all().values('id').order_by('-id')[0]['id']
+        else:
+            lastPId = 0000
+        projectIdPrefix = "{0}_{1}_{2}_".format(
+            request.POST.get('projectType'),
+            datetime.now().year,
+            str(lastPId).zfill(4)
+        )
+        pr.projectId = "{0}{1}".format(projectIdPrefix, projectName)
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
