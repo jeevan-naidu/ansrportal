@@ -107,7 +107,6 @@ def Timesheet(request):
                 date__range=[changedStartDate, changedEndDate]
             ).values('date')
             for timesheet in timesheets:
-                print timesheet
                 for holiday in weekHolidays:
                     holidayDay = '{0}H'.format(
                         holiday['date'].strftime('%A').lower()
@@ -130,7 +129,9 @@ def Timesheet(request):
                 del(timesheet.cleaned_data['friday'])
                 del(timesheet.cleaned_data['saturday'])
                 del(timesheet.cleaned_data['total'])
+                print '\n'
                 for k, v in timesheet.cleaned_data.iteritems():
+                    print k, v
                     if k == 'mondayH':
                         mondayTotal += v
                     elif k == 'tuesdayH':

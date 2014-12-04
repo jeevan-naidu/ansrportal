@@ -118,15 +118,18 @@ app.getIdNo = function(str) {
                     dItemsLen                   = dItems.length,
                     curDItem,
                     curDItemId,
+		    curDItemName,
                     i;
 
 
                 for(i = 0; i < dItemsLen; i += 1) {
                     curDItem = dItems[i];
+		    curDItemName = $(curDItem).attr('name');
                     curDItemId = $(curDItem).attr('id');
                     curDItemId = curDItemId.replace(app.getIdNo(curDItemId), newRowId);
-
+		    curDItemName = curDItemName.replace(app.getIdNo(curDItemName), newRowId);
                     $(curDItem).attr('id', curDItemId);
+		    $(curDItem).attr('name', curDItemId);
                 }
 
                 newRowBQuestions.text('0');
