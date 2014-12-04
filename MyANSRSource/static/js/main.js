@@ -115,21 +115,22 @@ app.getIdNo = function(str) {
                     newRowTotalQuestionsHidden  = newRow.find('.t-questions-hidden'),
                     newRowTotalHoursHidden      = newRow.find('.t-hours-hidden'),
                     dItems                      = newRow.find('.d-item'),
+                    rowCountInitialElement      = $table.find('input[type="hidden"]:nth-of-type(2)'),
                     dItemsLen                   = dItems.length,
                     curDItem,
                     curDItemId,
-		    curDItemName,
+		            curDItemName,
                     i;
 
 
                 for(i = 0; i < dItemsLen; i += 1) {
                     curDItem = dItems[i];
-		    curDItemName = $(curDItem).attr('name');
+		            curDItemName = $(curDItem).attr('name');
                     curDItemId = $(curDItem).attr('id');
                     curDItemId = curDItemId.replace(app.getIdNo(curDItemId), newRowId);
-		    curDItemName = curDItemName.replace(app.getIdNo(curDItemName), newRowId);
+		            curDItemName = curDItemName.replace(app.getIdNo(curDItemName), newRowId);
                     $(curDItem).attr('id', curDItemId);
-		    $(curDItem).attr('name', curDItemId);
+		             $(curDItem).attr('name', curDItemName);
                 }
 
                 newRowBQuestions.text('0');
@@ -146,7 +147,9 @@ app.getIdNo = function(str) {
 
             $(rowCountElement).attr('value', rowCount);
 
-            console.log(rowCount);
+            if(options.billableTotal) {
+                $(rowCountInitialElement).attr('value', rowCount);
+            }
 
             daysTotalFun();
             billableTotalFun();
