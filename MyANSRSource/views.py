@@ -578,11 +578,12 @@ class CreateProjectWizard(SessionWizardView):
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
             flagData[k] = v
         for teamData in [form.cleaned_data for form in form_list][2]:
-            print teamData
             teamDataCounter += 1
             for k, v in teamData.iteritems():
                 k = "{0}-{1}".format(k, teamDataCounter)
                 changedTeamData[k] = v
+                if 'role' in k:
+                    self.request.session[k] = v.id
             startDate = 'startDate-{0}'.format(teamDataCounter)
             changedTeamData[startDate] = changedTeamData.get(
                 startDate
@@ -708,7 +709,9 @@ def saveProject(request):
             ptm.member = User.objects.get(
                 pk=request.POST.get(teamMemberId)
             )
-            ptm.role = request.POST.get(role)
+            ptm.role = employee.models.Designation.objects.filter(
+                pk=request.session[role]
+            )[0]
             ptm.plannedEffort = request.POST.get(plannedEffort)
             ptm.startDate = request.POST.get(startDate)
             ptm.endDate = request.POST.get(endDate)
