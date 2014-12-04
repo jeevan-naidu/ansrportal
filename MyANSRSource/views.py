@@ -84,7 +84,7 @@ def Timesheet(request):
     if request.method == 'POST':
         # Getting the forms with submitted values
         timesheets = tsFormset(request.POST)
-        activities = atFormset(request.POST)
+        activities = atFormset(request.POST, prefix='at')
         print [form.cleaned_data for form in timesheets.deleted_forms]
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
@@ -109,6 +109,8 @@ def Timesheet(request):
                 date__range=[changedStartDate, changedEndDate]
             ).values('date')
             for timesheet in timesheets:
+                print '\n'
+                print timesheet.cleaned_data
                 for holiday in weekHolidays:
                     holidayDay = '{0}H'.format(
                         holiday['date'].strftime('%A').lower()
@@ -302,7 +304,12 @@ def Timesheet(request):
         cwTimesheet = TimeSheetEntry.objects.filter(
             wkstart=weekstartDate, wkend=ansrEndDate,
             teamMember=request.user,
-            approved=False
+            approved=False, activity__isnull=True
+        ).count()
+        cwActivity = TimeSheetEntry.objects.filter(
+            wkstart=weekstartDate, wkend=ansrEndDate,
+            teamMember=request.user,
+            approved=False, project__isnull=True
         ).count()
         cwActivityData = TimeSheetEntry.objects.filter(
             Q(
@@ -372,7 +379,15 @@ def Timesheet(request):
             atFormset = formset_factory(ActivityForm,
                                         extra=0,
                                         can_delete=True)
-            atFormset = atFormset(initial=atDataList)
+            atFormset = atFormset(initial=atDataList, prefix='at')
+        else:
+            tsFormset = formset_factory(tsform,
+                                        extra=2,
+                                        can_delete=True)
+            atFormset = formset_factory(ActivityForm,
+                                        extra=2,
+                                        can_delete=True)
+            atFormset = atFormset(prefix='at')
         cwApprovedTimesheet = TimeSheetEntry.objects.filter(
             wkstart=weekstartDate, wkend=ansrEndDate,
             teamMember=request.user,
