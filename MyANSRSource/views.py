@@ -662,16 +662,6 @@ def saveProject(request):
             pnLength = len('_'.join(strippedWord))
             projectname = '_'.join(strippedWord)
         projectName = projectname
-        if Project.objects.all().count() > 0:
-            lastPId = Project.objects.all().values('id').order_by('-id')[0]['id']
-        else:
-            lastPId = 0000
-        projectIdPrefix = "{0}_{1}_{2}_".format(
-            request.POST.get('projectType'),
-            datetime.now().year,
-            str(lastPId).zfill(4)
-        )
-        pr.projectId = "{0}{1}".format(projectIdPrefix, projectName)
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
@@ -690,7 +680,16 @@ def saveProject(request):
         pr.save()
         request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
-        request.session['currentProjectId'] = pr.projectId
+
+        projectIdPrefix = "{0}_{1}_{2}_".format(
+            request.POST.get('projectType'),
+            datetime.now().year,
+            str(pr.id).zfill(4)
+        )
+        pru = Project.objects.get(id=pr.id)
+        pru.projectId = "{0}{1}".format(projectIdPrefix, projectName)
+        pru.save()
+        request.session['currentProjectId'] = pru.projectId
 
         for eachId in request.session['chapters']:
             pr.chapters.add(eachId)
@@ -727,7 +726,7 @@ def saveProject(request):
                 pms.deliverables = request.POST.get(deliverables)
                 pms.save()
 
-        data = {'projectId': pr.projectId, 'projectName': pr.name}
+        data = {'projectId': pru.projectId, 'projectName': pr.name}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
