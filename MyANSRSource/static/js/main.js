@@ -6,11 +6,13 @@ var app = app || {};
 // Main
 (function() {
     $(document).ready(function() {
-        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3, addTeamMember: true});
-        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
-        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
+        // Project
+        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3, calendarPos2: 8, addTeamMember: true});
         $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0, financialTotal: true});
 
+        // TimeSheet
+        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
+        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
@@ -52,13 +54,11 @@ app.getIdNo = function(str) {
                 lastRowId = lastRow.find('td:first').children(':first').attr('id'),
                 newRow,
                 newRowId,
-                $tds,
+                $formFields,
                 $element,
-                $curId,
+                curId,
+                curName,
                 $curIdSel,
-                $curChildEle,
-                curChildId,
-                $curChildEleInput,
 
             // Slice the id number from last row id
             lastRowId = getIdNo(lastRowId);
@@ -69,16 +69,24 @@ app.getIdNo = function(str) {
 
             lastRow.after(newRow);
 
-            $tds = newRow.find('td > :first-child');
+            $formFields = newRow.find('select, input, div, span');
 
-            $tds.each(function(index) {
+            // Increment the id and name value
+            $formFields.each(function(index) {
                 $element = $(this);
-                $curId = $element.attr('id');
+                curId = $element.attr('id');
+                curName = $element.attr('name');
 
-                if($curId) {
-                    $curId = $curId.replace(app.getIdNo($curId), newRowId);
-                    $element.attr('id', $curId);
-                    $element.attr('name', $curId);
+                console.log('index: ' + index + ' - ' + curId);
+
+                if(curId) {
+                    curId = curId.replace(app.getIdNo(curId), newRowId);
+                    $element.attr('id', curId);
+                }
+
+                if(curName) {
+                    curName = curName.replace(app.getIdNo(curName), newRowId);
+                    $element.attr('name', curName);
                 }
 
                 if(index === 1 || index === 2) {
@@ -90,16 +98,8 @@ app.getIdNo = function(str) {
                 }
 
                 if(options.calendar) {
-                    if(index === options.calendarPos) {
-                        $curIdSel = $('#' + $curId);
-                        $curChildEle = $element.find('div:nth-child(1n)');
-                        $curChildEleInput = $curIdSel.find('input');
-
-                        $curChildEle.attr('id', $curId);
-                        $curChildEle.attr('name', $curId);
-                        $curChildEleInput.attr('id', $curId);
-                        $curChildEleInput.attr('name', $curId);
-
+                    if(index === options.calendarPos || index === options.calendarPos2) {
+                        $curIdSel = $('#' + curId);
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
                     }
                 }
@@ -123,15 +123,19 @@ app.getIdNo = function(str) {
                     i;
 
 
-                for(i = 0; i < dItemsLen; i += 1) {
+                /*for(i = 0; i < dItemsLen; i += 1) {
                     curDItem = dItems[i];
 		            curDItemName = $(curDItem).attr('name');
                     curDItemId = $(curDItem).attr('id');
                     curDItemId = curDItemId.replace(app.getIdNo(curDItemId), newRowId);
 		            curDItemName = curDItemName.replace(app.getIdNo(curDItemName), newRowId);
                     $(curDItem).attr('id', curDItemId);
+
 		             $(curDItem).attr('name', curDItemName);
                 }
+
+                }*/
+
 
                 newRowBQuestions.text('0');
                 newRowBHours.text('0');
@@ -147,9 +151,11 @@ app.getIdNo = function(str) {
 
             $(rowCountElement).attr('value', rowCount);
 
+
             if(options.billableTotal) {
                 $(rowCountInitialElement).attr('value', rowCount);
             }
+
 
             daysTotalFun();
             billableTotalFun();
