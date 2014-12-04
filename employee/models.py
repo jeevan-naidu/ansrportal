@@ -54,13 +54,17 @@ EMP_STATUS_CHOICES = (
     ('01', 'Active'),
     )
 
+ADDRESSTYPE_CHOICES = (
+    ('PR', 'Permanent'),
+    ('TM', 'Temporary'),
+    )
 
 class Designation(models.Model):
     name = models.CharField(
         verbose_name="Title",
         max_length=40,
         blank=False)
-    billable = models.BooleanField(default=True, verbose_name='Billable ?')
+    billable = models.BooleanField(default=True, verbose_name='Billable')
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -75,6 +79,11 @@ class EmpAddress(models.Model):
     class Meta:
         verbose_name_plural = 'Addresses'
 
+    employee = models.ForeignKey(User)
+    address_type = models.CharField('Address Type',
+                                    max_length=2,
+                                    choices=ADDRESSTYPE_CHOICES,
+                                    default='TM')
     address1 = models.CharField(
         verbose_name="Address 1",
         max_length=30,
@@ -149,15 +158,6 @@ class Employee(models.Model):
         max_length=250,
         blank=False,
         unique=True)
-    # Employee address details
-    permanent_address = models.ForeignKey(
-        EmpAddress,
-        verbose_name="Permanent Address",
-        related_name="permanent_addr")
-    temporary_address = models.ForeignKey(
-        EmpAddress,
-        verbose_name="Temporary Address",
-        related_name="temporary_addr")
     passport_number = models.CharField(
         "Passport Number",
         max_length=10,
