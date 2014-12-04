@@ -82,8 +82,8 @@ def Timesheet(request):
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
         # Getting the forms with submitted values
-        timesheets = tsFormset(request.POST, prefix="ts")
-        activities = atFormset(request.POST, prefix="at")
+        timesheets = tsFormset(request.POST)
+        activities = atFormset(request.POST, prefix='at')
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
             changedStartDate = datetime.strptime(
@@ -373,11 +373,19 @@ def Timesheet(request):
             tsFormset = formset_factory(tsform,
                                         extra=0,
                                         can_delete=True)
-            tsFormset = tsFormset(initial=tsDataList, prefix="ts")
+            tsFormset = tsFormset(initial=tsDataList, prefix='ts')
             atFormset = formset_factory(ActivityForm,
                                         extra=0,
                                         can_delete=True)
-            atFormset = atFormset(initial=atDataList, prefix="at")
+            atFormset = atFormset(initial=atDataList, prefix='at')
+        else:
+            tsFormset = formset_factory(tsform,
+                                        extra=2,
+                                        can_delete=True)
+            atFormset = formset_factory(ActivityForm,
+                                        extra=2,
+                                        can_delete=True)
+            atFormset = atFormset(prefix='at')
         cwApprovedTimesheet = TimeSheetEntry.objects.filter(
             wkstart=weekstartDate, wkend=ansrEndDate,
             teamMember=request.user,
