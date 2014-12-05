@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, logout
+from django.db.models import Count
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
@@ -423,6 +424,44 @@ def Timesheet(request):
                  'tuesdayH', 'wednesdayH', 'thursdayH', 'task',
                  'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
+        billableHours = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=request.user,
+                approved=False,
+                activity__isnull=True
+            ),
+            ~Q(task='I')
+        ).values('totalH')
+        idleHours = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                task='I',
+                teamMember=request.user,
+                approved=False,
+                activity__isnull=True
+            ),
+        ).values('totalH')
+        othersHours = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=request.user,
+                approved=False,
+                project__isnull=True
+            ),
+        ).values('totalH')
+        bTotal = 0
+        for billable in billableHours:
+            bTotal += billable['totalH']
+        idleTotal = 0
+        for idle in idleHours:
+            idleTotal += idle['totalH']
+        othersTotal = 0
+        for others in othersHours:
+            othersTotal += others['totalH']
         if cwApprovedTimesheet > 0:
             messages.success(request, 'Timesheet is approved for this week')
             data = {'weekstartDate': weekstartDate,
@@ -443,6 +482,9 @@ def Timesheet(request):
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'tsFormset': tsFormset,
+                    'bTotal': bTotal,
+                    'idleTotal': idleTotal,
+                    'othersTotal': othersTotal,
                     'atFormset': atFormset}
             return render(request, 'MyANSRSource/timesheetEntry.html', data)
 
