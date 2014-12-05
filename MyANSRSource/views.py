@@ -50,11 +50,11 @@ CFORMS = [
     ("Change Basic Information", ChangeProjectBasicInfoForm),
     ("Change Team Members", formset_factory(
         ChangeProjectTeamMemberForm,
-        extra=2,
+        extra=0,
     )),
     ("Change Milestones", formset_factory(
         ChangeProjectMilestoneForm,
-        extra=2,
+        extra=0,
     )),
 ]
 CTEMPLATES = {
@@ -559,6 +559,10 @@ class ChangeProjectWizard(SessionWizardView):
             form.fields['project'].queryset = Project.objects.filter(
                 projectManager=self.request.user,
             )
+        return form
+
+    def get_form_initial(self, step):
+        currentProject = []
         if step == 'Change Basic Information':
             currentProject = Project.objects.filter(
                 id=self.storage.get_step_data(
@@ -570,10 +574,30 @@ class ChangeProjectWizard(SessionWizardView):
                     'closed',
                     'signed'
                 )[0]
-            form.fields['endDate'].value = currentProject['endDate']
-            form.fields['closed'].value = currentProject['closed']
-            form.fields['signed'].value = currentProject['signed']
-        return form
+            basicDict = currentProject.copy()
+        if step == 'Change Team Members':
+            currentProject = ProjectTeamMember.objects.filter(
+                project__id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values(
+                    'member',
+                    'role',
+                    'startDate',
+                    'endDate',
+                    'plannedEffort'
+                )
+        if step == 'Change Milestones':
+            currentProject = ProjectMilestone.objects.filter(
+                project__id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values(
+                    'milestoneDate',
+                    'deliverables',
+                    'description',
+                    'amount',
+                )
+            print currentProject
+        return self.initial_dict.get(step, currentProject)
 
 
 class CreateProjectWizard(SessionWizardView):
@@ -675,32 +699,23 @@ class CreateProjectWizard(SessionWizardView):
             cleanedTeamData.append(changedTeamData.copy())
             changedTeamData.clear()
 
-        for milestoneData in [form.cleaned_data for form in form_list][3]:
-            milestoneDataCounter += 1
-            for k, v in milestoneData.iteritems():
-                k = "{0}-{1}".format(k, milestoneDataCounter)
-                changedMilestoneData[k] = v
-            milestoneDate = 'milestoneDate-{0}'.format(milestoneDataCounter)
-            changedMilestoneData[milestoneDate] = changedMilestoneData.get(
-                milestoneDate
-            ).strftime('%Y-%m-%d')
-            DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
-            del changedMilestoneData[DELETE]
-            self.request.session[
-                'totalMilestoneCount'
-            ] = milestoneDataCounter + 1
-            cleanedMilestoneData.append(changedMilestoneData.copy())
-            changedMilestoneData.clear()
-        basicInfoDict = {}
-        for k, v in basicInfo.iteritems():
-            key = Project._meta.get_field_by_name(k)[0].verbose_name
-            if k == 'chapters':
-                basicInfoDict[key] = basicInfo[k].values('name')
-            elif k == 'bu':
-                basicInfo[k]
-            else:
-                basicInfoDict[key] = basicInfo[k]
-
+        if [form.cleaned_data for form in form_list][1]['internal'] is False:
+            for milestoneData in [form.cleaned_data for form in form_list][3]:
+                milestoneDataCounter += 1
+                for k, v in milestoneData.iteritems():
+                    k = "{0}-{1}".format(k, milestoneDataCounter)
+                    changedMilestoneData[k] = v
+                milestoneDate = 'milestoneDate-{0}'.format(milestoneDataCounter)
+                changedMilestoneData[milestoneDate] = changedMilestoneData.get(
+                    milestoneDate
+                ).strftime('%Y-%m-%d')
+                DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
+                del changedMilestoneData[DELETE]
+                self.request.session[
+                    'totalMilestoneCount'
+                ] = milestoneDataCounter + 1
+                cleanedMilestoneData.append(changedMilestoneData.copy())
+                changedMilestoneData.clear()
         if [form.cleaned_data for form in form_list][1]['internal'] is True:
             data = {
                 'basicInfo': basicInfo,
@@ -792,7 +807,8 @@ def saveProject(request):
             ptm.endDate = request.POST.get(endDate)
             ptm.save()
 
-        if pr.internal is False:
+        if pr.internal == 'False':
+            print request.session['totalMilestoneCount']
             for milestoneCount in range(1, request.session[
                 'totalMilestoneCount'
             ]):
@@ -801,9 +817,11 @@ def saveProject(request):
                 milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
                 description = 'description-{0}'.format(milestoneCount)
                 deliverables = 'deliverables-{0}'.format(milestoneCount)
+                amount = 'amount-{0}'.format(milestoneCount)
                 pms.milestoneDate = request.POST.get(milestoneDate)
                 pms.description = request.POST.get(description)
                 pms.deliverables = request.POST.get(deliverables)
+                pms.amount = request.POST.get(amount)
                 pms.save()
 
         data = {'projectId': pru.projectId, 'projectName': pr.name}
