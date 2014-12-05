@@ -560,12 +560,32 @@ class ChangeProjectWizard(SessionWizardView):
                 projectManager=self.request.user,
             )
         if step == 'Change Team Members':
+            currentProject = ProjectTeamMember.objects.filter(
+                project__id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values(
+                    'startDate',
+                    'endDate',
+                )
             for eachData in currentProject:
                 delta = eachData['startDate'] - datetime.now().date()
                 if delta.days <= 0:
-                    eachData.fields['startDate'].widget.attrs[
-                        'readonly'
-                    ] = True
+                    for eachForm in form:
+                        eachForm.fields['member'].widget.attrs[
+                            'disabled'
+                        ] = True
+                        eachForm.fields['role'].widget.attrs[
+                            'disabled'
+                        ] = True
+                        eachForm.fields['startDate'].widget.attrs[
+                            'disabled'
+                        ] = True
+                        eachForm.fields['endDate'].widget.attrs[
+                            'disabled'
+                        ] = True
+                        eachForm.fields['plannedEffort'].widget.attrs[
+                            'disabled'
+                        ] = True
         return form
 
     def get_form_initial(self, step):
