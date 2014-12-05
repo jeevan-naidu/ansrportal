@@ -12,7 +12,7 @@ var app = app || {};
 
         // TimeSheet
         $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
-        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true});
+        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true, nonBillable: true});
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
@@ -71,13 +71,15 @@ app.getIdNo = function(str) {
 
             $formFields = newRow.find('select, input, div, span');
 
+            rowCount += 1;
+
+            $(rowCountElement).attr('value', rowCount);
+
             // Increment the id and name value
             $formFields.each(function(index) {
                 $element = $(this);
                 curId = $element.attr('id');
                 curName = $element.attr('name');
-
-                console.log('index: ' + index + ' - ' + curId);
 
                 if(curId) {
                     curId = curId.replace(app.getIdNo(curId), newRowId);
@@ -89,12 +91,23 @@ app.getIdNo = function(str) {
                     $element.attr('name', curName);
                 }
 
-                if(index === 1 || index === 2) {
-                    $element.val('');
+                if(!options.billableTotal || !options.nonBillable) {
+                    if(index === 1 || index === 2) {
+                        $element.val('');
+                    }
+
+
                 }
 
-                if($($element).hasClass('input-field')) {
-                    $element.val(0);
+                if(options.billableTotal || options.nonBillable) {
+                    if(index === 0) {
+                        $element.val('0');
+                    }
+
+
+                    var rowCountInitialElement      = $table.find('input[type="hidden"]:eq(1)');
+                    $(rowCountInitialElement).attr('value', rowCount);
+
                 }
 
                 if(options.calendar) {
@@ -103,6 +116,10 @@ app.getIdNo = function(str) {
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
                     }
                 }
+
+
+
+                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
             });
 
             if(options.billableTotal) {
@@ -115,27 +132,7 @@ app.getIdNo = function(str) {
                     newRowTotalQuestionsHidden  = newRow.find('.t-questions-hidden'),
                     newRowTotalHoursHidden      = newRow.find('.t-hours-hidden'),
                     dItems                      = newRow.find('.d-item'),
-                    rowCountInitialElement      = $table.find('input[type="hidden"]:nth-of-type(2)'),
-                    dItemsLen                   = dItems.length,
-                    curDItem,
-                    curDItemId,
-		            curDItemName,
-                    i;
-
-
-                /*for(i = 0; i < dItemsLen; i += 1) {
-                    curDItem = dItems[i];
-		            curDItemName = $(curDItem).attr('name');
-                    curDItemId = $(curDItem).attr('id');
-                    curDItemId = curDItemId.replace(app.getIdNo(curDItemId), newRowId);
-		            curDItemName = curDItemName.replace(app.getIdNo(curDItemName), newRowId);
-                    $(curDItem).attr('id', curDItemId);
-
-		             $(curDItem).attr('name', curDItemName);
-                }
-
-                }*/
-
+                    dItemsLen                   = dItems.length;
 
                 newRowBQuestions.text('0');
                 newRowBHours.text('0');
@@ -146,16 +143,6 @@ app.getIdNo = function(str) {
                 newRowTotalQuestionsHidden.val('0');
                 newRowTotalHoursHidden.val('0');
             }
-
-            rowCount += 1;
-
-            $(rowCountElement).attr('value', rowCount);
-
-
-            if(options.billableTotal) {
-                $(rowCountInitialElement).attr('value', rowCount);
-            }
-
 
             daysTotalFun();
             billableTotalFun();
