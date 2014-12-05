@@ -10,6 +10,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm
 import CompanyMaster
+import employee
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
@@ -107,72 +108,80 @@ def Timesheet(request):
                 date__range=[changedStartDate, changedEndDate]
             ).values('date')
             for timesheet in timesheets:
-                print '\n'
-                print timesheet.cleaned_data
-                for holiday in weekHolidays:
-                    holidayDay = '{0}H'.format(
-                        holiday['date'].strftime('%A').lower()
+                if timesheet.cleaned_data['DELETE'] is True:
+                    TimeSheetEntry.objects.filter(
+                        id=timesheet.cleaned_data['tsId']
+                    ).delete()
+                else:
+                    for holiday in weekHolidays:
+                        holidayDay = '{0}H'.format(
+                            holiday['date'].strftime('%A').lower()
+                        )
+                        if timesheet.cleaned_data[holidayDay] > 0:
+                            leaveDayWork = True
+                    plannedEffort = ProjectTeamMember.objects.filter(
+                        member=request.user,
+                        project=timesheet.cleaned_data['project']
+                    ).values('plannedEffort')
+                    myTotalEfforts = TimeSheetEntry.objects.filter(
+                        teamMember=request.user,
+                        project=timesheet.cleaned_data['project']
                     )
-                    if timesheet.cleaned_data[holidayDay] > 0:
-                        leaveDayWork = True
-                plannedEffort = ProjectTeamMember.objects.filter(
-                    member=request.user,
-                    project=timesheet.cleaned_data['project']
-                ).values('plannedEffort')
-                myTotalEfforts = TimeSheetEntry.objects.filter(
-                    teamMember=request.user,
-                    project=timesheet.cleaned_data['project']
-                )
-                del(timesheet.cleaned_data['DELETE'])
-                del(timesheet.cleaned_data['monday'])
-                del(timesheet.cleaned_data['tuesday'])
-                del(timesheet.cleaned_data['wednesday'])
-                del(timesheet.cleaned_data['thursday'])
-                del(timesheet.cleaned_data['friday'])
-                del(timesheet.cleaned_data['saturday'])
-                del(timesheet.cleaned_data['total'])
-                for k, v in timesheet.cleaned_data.iteritems():
-                    if k == 'mondayH':
-                        mondayTotal += v
-                    elif k == 'tuesdayH':
-                        tuesdayTotal += v
-                    elif k == 'wednesdayH':
-                        wednesdayTotal += v
-                    elif k == 'thursdayH':
-                        thursdayTotal += v
-                    elif k == 'fridayH':
-                        fridayTotal += v
-                    elif k == 'saturdayH':
-                        saturdayTotal += v
-                    elif k == 'totalH':
-                        billableTotal += v
-                        weekTotal += v
-                    timesheetDict[k] = v
-                timesheetList.append(timesheetDict.copy())
-                timesheetDict.clear()
-                for myEffort in plannedEffort:
-                    tt = myEffort['plannedEffort']
+                    del(timesheet.cleaned_data['DELETE'])
+                    del(timesheet.cleaned_data['monday'])
+                    del(timesheet.cleaned_data['tuesday'])
+                    del(timesheet.cleaned_data['wednesday'])
+                    del(timesheet.cleaned_data['thursday'])
+                    del(timesheet.cleaned_data['friday'])
+                    del(timesheet.cleaned_data['saturday'])
+                    del(timesheet.cleaned_data['total'])
+                    for k, v in timesheet.cleaned_data.iteritems():
+                        if k == 'mondayH':
+                            mondayTotal += v
+                        elif k == 'tuesdayH':
+                            tuesdayTotal += v
+                        elif k == 'wednesdayH':
+                            wednesdayTotal += v
+                        elif k == 'thursdayH':
+                            thursdayTotal += v
+                        elif k == 'fridayH':
+                            fridayTotal += v
+                        elif k == 'saturdayH':
+                            saturdayTotal += v
+                        elif k == 'totalH':
+                            billableTotal += v
+                            weekTotal += v
+                        timesheetDict[k] = v
+                    timesheetList.append(timesheetDict.copy())
+                    timesheetDict.clear()
+                    for myEffort in plannedEffort:
+                        tt = myEffort['plannedEffort']
             for activity in activities:
-                del(activity.cleaned_data['DELETE'])
-                for k, v in activity.cleaned_data.iteritems():
-                    if k == 'activity_monday':
-                        mondayTotal += v
-                    elif k == 'activity_tuesday':
-                        tuesdayTotal += v
-                    elif k == 'activity_wednesday':
-                        wednesdayTotal += v
-                    elif k == 'activity_thursday':
-                        thursdayTotal += v
-                    elif k == 'activity_friday':
-                        fridayTotal += v
-                    elif k == 'activity_saturday':
-                        saturdayTotal += v
-                    elif k == 'total':
-                        nonbillableTotal += v
-                        weekTotal += v
-                    activityDict[k] = v
-                activitiesList.append(activityDict.copy())
-                activityDict.clear()
+                if activity.cleaned_data['DELETE'] is True:
+                    TimeSheetEntry.objects.filter(
+                        id=activity.cleaned_data['atId']
+                    ).delete()
+                else:
+                    del(activity.cleaned_data['DELETE'])
+                    for k, v in activity.cleaned_data.iteritems():
+                        if k == 'activity_monday':
+                            mondayTotal += v
+                        elif k == 'activity_tuesday':
+                            tuesdayTotal += v
+                        elif k == 'activity_wednesday':
+                            wednesdayTotal += v
+                        elif k == 'activity_thursday':
+                            thursdayTotal += v
+                        elif k == 'activity_friday':
+                            fridayTotal += v
+                        elif k == 'activity_saturday':
+                            saturdayTotal += v
+                        elif k == 'total':
+                            nonbillableTotal += v
+                            weekTotal += v
+                        activityDict[k] = v
+                    activitiesList.append(activityDict.copy())
+                    activityDict.clear()
             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
                     (fridayTotal > 24) | (saturdayTotal > 24):
@@ -596,6 +605,8 @@ class CreateProjectWizard(SessionWizardView):
             for k, v in teamData.iteritems():
                 k = "{0}-{1}".format(k, teamDataCounter)
                 changedTeamData[k] = v
+                if 'role' in k:
+                    self.request.session[k] = v.id
             startDate = 'startDate-{0}'.format(teamDataCounter)
             changedTeamData[startDate] = changedTeamData.get(
                 startDate
@@ -721,7 +732,9 @@ def saveProject(request):
             ptm.member = User.objects.get(
                 pk=request.POST.get(teamMemberId)
             )
-            ptm.role = request.POST.get(role)
+            ptm.role = employee.models.Designation.objects.filter(
+                pk=request.session[role]
+            )[0]
             ptm.plannedEffort = request.POST.get(plannedEffort)
             ptm.startDate = request.POST.get(startDate)
             ptm.endDate = request.POST.get(endDate)
