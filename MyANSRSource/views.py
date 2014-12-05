@@ -559,6 +559,13 @@ class ChangeProjectWizard(SessionWizardView):
             form.fields['project'].queryset = Project.objects.filter(
                 projectManager=self.request.user,
             )
+        if step == 'Change Team Members':
+            for eachData in currentProject:
+                delta = eachData['startDate'] - datetime.now().date()
+                if delta.days <= 0:
+                    eachData.fields['startDate'].widget.attrs[
+                        'readonly'
+                    ] = True
         return form
 
     def get_form_initial(self, step):
@@ -574,7 +581,6 @@ class ChangeProjectWizard(SessionWizardView):
                     'closed',
                     'signed'
                 )[0]
-            basicDict = currentProject.copy()
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -586,6 +592,7 @@ class ChangeProjectWizard(SessionWizardView):
                     'endDate',
                     'plannedEffort'
                 )
+
         if step == 'Change Milestones':
             currentProject = ProjectMilestone.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -596,7 +603,6 @@ class ChangeProjectWizard(SessionWizardView):
                     'description',
                     'amount',
                 )
-            print currentProject
         return self.initial_dict.get(step, currentProject)
 
 
