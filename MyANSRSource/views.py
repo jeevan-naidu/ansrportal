@@ -1,14 +1,17 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book
+    ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo
 from CompanyMaster.models import Holiday
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
-    ActivityForm, TimesheetFormset, ProjectFlagForm
+    ActivityForm, TimesheetFormset, ProjectFlagForm, \
+    ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
+    ChangeProjectMilestoneForm, ChangeProjectForm
 import CompanyMaster
 import employee
 from django.contrib.formtools.wizard.views import SessionWizardView
@@ -35,13 +38,30 @@ FORMS = [
         can_delete=True
     )),
 ]
-
-
 TEMPLATES = {
     "Define Project": "MyANSRSource/projectDefinition.html",
     "Basic Information": "MyANSRSource/projectBasicInfo.html",
     "Define Team": "MyANSRSource/projectTeamMember.html",
     "Financial Milestones": "MyANSRSource/projectMilestone.html",
+}
+
+CFORMS = [
+    ("My Projects", ChangeProjectForm),
+    ("Change Basic Information", ChangeProjectBasicInfoForm),
+    ("Change Team Members", formset_factory(
+        ChangeProjectTeamMemberForm,
+        extra=2,
+    )),
+    ("Change Milestones", formset_factory(
+        ChangeProjectMilestoneForm,
+        extra=2,
+    )),
+]
+CTEMPLATES = {
+    "My Projects": "MyANSRSource/changeProject.html",
+    "Change Basic Information": "MyANSRSource/changeProjectBasicInfo.html",
+    "Change Team Members": "MyANSRSource/changeProjectTeamMember.html",
+    "Change Milestones": "MyANSRSource/changeProjectMilestone.html",
 }
 
 
@@ -63,6 +83,7 @@ def loginResponse(request, form, template):
     return render(request, template, data)
 
 
+@login_required
 def Timesheet(request):
     # Creating Formset
     tsform = TimesheetFormset(request.user)
@@ -447,6 +468,7 @@ def Timesheet(request):
             return render(request, 'MyANSRSource/timesheetEntry.html', data)
 
 
+@login_required
 def ApproveTimesheet(request):
     if request.method == 'POST':
         for k, v in request.POST.iteritems():
@@ -476,6 +498,7 @@ def ApproveTimesheet(request):
         return render(request, 'MyANSRSource/timesheetApprove.html', data)
 
 
+@login_required
 def Dashboard(request):
     if request.session['usertype'] == 'pm':
         totalActiveProjects = Project.objects.filter(
@@ -523,6 +546,34 @@ def checkUser(userName, password, request, form):
     else:
         messages.error(request, 'Sorry login failed')
         return loginResponse(request, form, 'MyANSRSource/index.html')
+
+
+class ChangeProjectWizard(SessionWizardView):
+    def get_template_names(self):
+        return [CTEMPLATES[self.steps.current]]
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super(ChangeProjectWizard, self).get_form(step, data, files)
+        step = step or self.steps.current
+        if step == 'My Projects':
+            form.fields['project'].queryset = Project.objects.filter(
+                projectManager=self.request.user,
+            )
+        if step == 'Change Basic Information':
+            currentProject = Project.objects.filter(
+                id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values(
+                    'endDate',
+                    'plannedEffort',
+                    'totalValue',
+                    'closed',
+                    'signed'
+                )[0]
+            form.fields['endDate'].value = currentProject['endDate']
+            form.fields['closed'].value = currentProject['closed']
+            form.fields['signed'].value = currentProject['signed']
+        return form
 
 
 class CreateProjectWizard(SessionWizardView):
@@ -666,6 +717,7 @@ class CreateProjectWizard(SessionWizardView):
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
+@login_required
 def saveProject(request):
     if request.method == 'POST':
         pr = Project()
@@ -758,6 +810,7 @@ def saveProject(request):
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
+@login_required
 def notify(request):
     projectId = request.session['currentProject']
     projectHead = CompanyMaster.models.Customer.objects.filter(
@@ -813,6 +866,7 @@ def notify(request):
     return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 
+@login_required
 def deleteProject(request):
     ProjectBasicInfoForm()
     ProjectTeamForm()
