@@ -294,7 +294,7 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Project Billable</td>
+		    <td>Project Billable</td>
 		    <td class="total-billable-hours">{{ bTotal }}</td>
                 </tr>
                 <tr>
@@ -312,9 +312,9 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    <input type="hidden" name="total-billable-hours-hidden" class="total-billable-hours-hidden" value="0" />
-    <input type="hidden" name="total-idle-hours-hidden" class="total-idle-hours-hidden" value="0" />
-    <input type="hidden" name="total-non-billable-hours-hidden" class="total-non-billable-hours-hidden" value="0" />
+    <input type="hidden" name="total-billable-hours-hidden" class="total-billable-hours-hidden" value="{{ bTotal }}" />
+    <input type="hidden" name="total-idle-hours-hidden" class="total-idle-hours-hidden" value="{{ idleTotal }}" />
+    <input type="hidden" name="total-non-billable-hours-hidden" class="total-non-billable-hours-hidden" value="{{ othersTotal }}" />
  <button type="submit" value="submit" class="btn btn-info pull-right">
 	 Save Timesheet
  </button>
