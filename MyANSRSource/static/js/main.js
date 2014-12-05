@@ -49,6 +49,26 @@ app.getIdNo = function(str) {
                 rowCount = Number(rowCountElement.val());
             }
 
+        if(options.billableTotal) {
+            var $totalBillableHours     = $('.total-billable-hours'),
+                $totalIdleHours         = $('.total-idle-hours'),
+                $totalBillableHoursHidden     = $('.total-billable-hours-hidden'),
+                $totalIdleHoursHidden         = $('.total-idle-hours-hidden'),
+
+                totalBillableHours     = $totalBillableHoursHidden.val(),
+                totalIdleHours         = $totalIdleHoursHidden.val();
+
+            // Type cast
+            totalBillableHours = Number(totalBillableHours);
+            totalIdleHours = Number(totalIdleHours);
+
+            // To Dom
+            $totalBillableHours.text(totalBillableHours);
+            $totalIdleHours.text(totalBillableHours);
+        }
+
+
+
         var add = function() {
             var lastRow = $($table).find('tr').last(),
                 lastRowId = lastRow.find('td:first').children(':first').attr('id'),
@@ -117,9 +137,7 @@ app.getIdNo = function(str) {
                     }
                 }
 
-
-
-                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
             });
 
             if(options.billableTotal) {
@@ -242,6 +260,8 @@ app.getIdNo = function(str) {
                     content: popoverCon
                 });
 
+
+
                var primaryCb = function(e) {
                    e.preventDefault();
                    e.stopPropagation();
@@ -261,9 +281,8 @@ app.getIdNo = function(str) {
                         $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
                         curQuestionsViewText    = $curQuestionsView.text(),
-                        curHoursViewText        = $curHoursView.text(),
-                        $totalBillableHours     = $('.total-billable-hours'),
-                        $totalIdleHours         = $('.total-idle-hours');
+                        curHoursViewText        = $curHoursView.text();
+
 
 
                     var viewToInput = function() {
@@ -320,12 +339,17 @@ app.getIdNo = function(str) {
                             var $rTotalIdleHoursList = $table.find('.r-total-idle-hours'),
                                 $rTotalBillableHoursList = $table.find('.r-total-billable-hours'),
                                 rTotalIdleHoursListLen = $rTotalIdleHoursList.length,
-                                tempIdleTotal = 0,
-                                tempBillableTotal = 0,
+                                tempIdleTotal = $rTotalIdleHoursList.text(),
+                                tempBillableTotal = $rTotalBillableHoursList.text(),
                                 curIdleTotal,
                                 curBillableTotal,
                                 idleTotalHours,
                                 billableTotalHours;
+
+                            // type cast
+                            tempIdleTotal = Number(tempIdleTotal);
+                            tempBillableTotal = Number(tempBillableTotal);
+
 
 
                             for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
@@ -342,6 +366,9 @@ app.getIdNo = function(str) {
                             // To Dom
                             $totalBillableHours.text(billableTotalHours);
                             $totalIdleHours.text(idleTotalHours);
+
+                            $totalBillableHoursHidden.val(billableTotalHours);
+                            $totalIdleHoursHidden.val(idleTotalHours);
                         };
 
                         totalIdleAndBillableHours();
