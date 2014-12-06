@@ -695,9 +695,9 @@ def UpdateProjectInfo(newInfo):
 
     for eachMilestone in newInfo[3]:
         if eachMilestone['id'] == 0:
-            ptmc = ProjectMilestone()
+            pmc = ProjectMilestone()
         else:
-            ptmc = ProjectMilestone.objects.get(id=eachmember['id'])
+            pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
         pmc.project = pci.project
         pmc.milestoneDate = eachMilestone['milestoneDate']
         pmc.deliverables = eachMilestone['deliverables']
