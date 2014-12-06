@@ -681,7 +681,10 @@ def UpdateProjectInfo(newInfo):
     prc.save()
 
     for eachmember in newInfo[2]:
-        ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
+        if eachmember['id'] == 0:
+            ptmc = ProjectTeamMember()
+        else:
+            ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
         ptmc.project = pci.project
         ptmc.member = eachmember['member']
         ptmc.role = eachmember['role']
@@ -691,7 +694,10 @@ def UpdateProjectInfo(newInfo):
         ptmc.save()
 
     for eachMilestone in newInfo[3]:
-        pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
+        if eachMilestone['id'] == 0:
+            ptmc = ProjectMilestone()
+        else:
+            ptmc = ProjectMilestone.objects.get(id=eachmember['id'])
         pmc.project = pci.project
         pmc.milestoneDate = eachMilestone['milestoneDate']
         pmc.deliverables = eachMilestone['deliverables']
