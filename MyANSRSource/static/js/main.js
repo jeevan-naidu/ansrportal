@@ -64,10 +64,31 @@ app.getIdNo = function(str) {
             lastRowId = getIdNo(lastRowId);
             lastRowId = Number(lastRowId);
 
-            newRow = lastRow.clone();
+	    newRow = lastRow.clone();
             newRowId = lastRowId + 1;
 
-            lastRow.after(newRow);
+	    screenName = newRow.find('td:first').children(':first').attr('id');
+	    if (screenName.search("Milestones") >= 0) {
+		    if (newRow.find('td:first').children(':first').children(':first').attr('readonly')) {
+			newRow.find('td:nth-child(1)').children(':first').children(':first').attr('readonly',false)
+			newRow.find('td:nth-child(2)').children(':first').attr('readonly',false)
+			newRow.find('td:nth-child(3)').children(':first').attr('readonly',false)
+			newRow.find('td:nth-child(4)').children(':first').attr('readonly',false)
+		    }
+	    }
+	    else {
+		    if (newRow.find('td:first').children(':first').attr('readonly')) {
+			newRow.find('td:nth-child(1)').children(':first').attr('readonly',false)
+			newRow.find('td:nth-child(2)').children(':first').attr('readonly',false)
+			newRow.find('td:nth-child(3)').children(':first').children(':first').attr('readonly', false)
+			newRow.find('td:nth-child(4)').children(':first').children(':first').attr('readonly', false)
+			newRow.find('td:nth-child(5)').children(':first').attr('readonly',false)
+		    }
+	    }
+
+	    newRow.find('input[type="hidden"]:last').val(0)
+            
+	    lastRow.after(newRow);
 
             $formFields = newRow.find('select, input, div, span');
 
@@ -112,7 +133,10 @@ app.getIdNo = function(str) {
 
                 if(options.calendar) {
                     if(index === options.calendarPos || index === options.calendarPos2) {
-                        $curIdSel = $('#' + curId);
+			if (curId.indexOf("id_Change Team Members-") >= 0) {
+				curId = curId.replace(/\s+/g, '_') + '_pickers';
+			}
+			$curIdSel = $('#' + curId);
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
                     }
                 }

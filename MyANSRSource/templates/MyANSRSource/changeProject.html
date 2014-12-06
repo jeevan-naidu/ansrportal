@@ -1,0 +1,41 @@
+{% extends 'changeProjectMaster.inc' %}
+
+{% block createProjectActive %}class="active"{% endblock %}
+{% block MPactiveClass %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+		{% for field in form %} 
+		{% if field.errors %}
+			{{ field.label }}: {{ field.errors|striptags }}
+		{% endif %}
+		{% endfor %}								
+	</div>
+{% endif %}
+	<div class="table-responsive col-lg-12">
+	<table class="table table-bordered">
+		<thead>
+			<th class="text-center">Choose</th>
+			<th>Project Name</th>
+		</thead>
+		{% for field in form.project %}
+			<tr>
+				<td class="col-lg-1 text-center">
+					{{ field.tag }}
+				</td>
+				<td class="col-lg-7">
+					{{ field.choice_label }}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+	</div>
+<script>
+    var app = app || {};
+
+    (function() {
+
+    }());
+</script>
+
+{% endblock %}{% endblock %}
