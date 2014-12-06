@@ -575,19 +575,19 @@ class ChangeProjectWizard(SessionWizardView):
                 if startDateDelta.days <= 0 or endDateDelta.days <= 0:
                     for eachForm in form:
                         eachForm.fields['member'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
                         eachForm.fields['role'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
                         eachForm.fields['startDate'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
                         eachForm.fields['endDate'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
                         eachForm.fields['plannedEffort'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
         if step == 'Change Milestones':
             currentProject = ProjectMilestone.objects.filter(
@@ -599,16 +599,16 @@ class ChangeProjectWizard(SessionWizardView):
                 if delta.days <= 0:
                     for eachForm in form:
                         eachForm.fields['milestoneDate'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
                         eachForm.fields['deliverables'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
                         eachForm.fields['description'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
                         eachForm.fields['amount'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = True
         return form
 
