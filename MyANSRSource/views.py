@@ -502,7 +502,8 @@ def ApproveTimesheet(request):
 def Dashboard(request):
     if request.session['usertype'] == 'pm':
         totalActiveProjects = Project.objects.filter(
-            projectManager=request.user
+            projectManager=request.user,
+            closed=False
         ).count()
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(
             project__projectManager=request.user,
@@ -558,6 +559,7 @@ class ChangeProjectWizard(SessionWizardView):
         if step == 'My Projects':
             form.fields['project'].queryset = Project.objects.filter(
                 projectManager=self.request.user,
+                closed=False
             )
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
@@ -568,8 +570,9 @@ class ChangeProjectWizard(SessionWizardView):
                     'endDate',
                 )
             for eachData in currentProject:
-                delta = eachData['startDate'] - datetime.now().date()
-                if delta.days <= 0:
+                startDateDelta = eachData['startDate'] - datetime.now().date()
+                endDateDelta = eachData['endDate'] - datetime.now().date()
+                if startDateDelta.days <= 0 or endDateDelta.days <= 0:
                     for eachForm in form:
                         eachForm.fields['member'].widget.attrs[
                             'disabled'
@@ -586,6 +589,27 @@ class ChangeProjectWizard(SessionWizardView):
                         eachForm.fields['plannedEffort'].widget.attrs[
                             'disabled'
                         ] = True
+        if step == 'Change Milestones':
+            currentProject = ProjectMilestone.objects.filter(
+                project__id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values('milestoneDate')
+            for eachData in currentProject:
+                delta = eachData['milestoneDate'] - datetime.now().date()
+                if delta.days <= 0:
+                    for eachForm in form:
+                        eachForm.fields['milestoneDate'].widget.attrs[
+                            'disabled'
+                        ] = True
+                        eachForm.fields['deliverables'].widget.attrs[
+                            'disabled'
+                        ] = True
+                        eachForm.fields['description'].widget.attrs[
+                            'disabled'
+                        ] = True
+                        eachForm.fields['amount'].widget.attrs[
+                            'disabled'
+                        ] = True
         return form
 
     def get_form_initial(self, step):
@@ -595,6 +619,7 @@ class ChangeProjectWizard(SessionWizardView):
                 id=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
+                    'id',
                     'endDate',
                     'plannedEffort',
                     'totalValue',
@@ -606,6 +631,7 @@ class ChangeProjectWizard(SessionWizardView):
                 project__id=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
+                    'id',
                     'member',
                     'role',
                     'startDate',
@@ -618,12 +644,61 @@ class ChangeProjectWizard(SessionWizardView):
                 project__id=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
+                    'id',
                     'milestoneDate',
                     'deliverables',
                     'description',
                     'amount',
                 )
         return self.initial_dict.get(step, currentProject)
+
+    def done(self, form_list, **kwargs):
+        data = UpdateProjectInfo([form.cleaned_data for form in form_list])
+        return render(self.request, 'MyANSRSource/changeProjectId.html', data)
+
+
+def UpdateProjectInfo(newInfo):
+    pci = ProjectChangeInfo()
+    pci.project = newInfo[0]['project']
+    pci.reason = newInfo[1]['reason']
+    pci.endDate = newInfo[1]['endDate']
+    pci.revisedEffort = newInfo[1]['revisedEffort']
+    pci.revisedTotal = newInfo[1]['revisedTotal']
+    pci.closed = newInfo[1]['closed']
+    pci.signed = newInfo[1]['signed']
+    pci.save()
+
+    pcicr = ProjectChangeInfo.objects.get(id=pci.id)
+    pcicr.crId = "CR-{0}".format(pci.id)
+    pcicr.save()
+
+    prc = Project.objects.get(id=newInfo[1]['id'])
+    prc.endDate = pci.endDate
+    prc.plannedEffort = pci.revisedEffort
+    prc.totalValue = pci.revisedTotal
+    prc.closed = pci.closed
+    prc.signed = pci.signed
+    prc.save()
+
+    for eachmember in newInfo[2]:
+        ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
+        ptmc.project = pci.project
+        ptmc.member = eachmember['member']
+        ptmc.role = eachmember['role']
+        ptmc.startDate = eachmember['startDate']
+        ptmc.endDate = eachmember['endDate']
+        ptmc.plannedEffort = eachmember['plannedEffort']
+        ptmc.save()
+
+    for eachMilestone in newInfo[3]:
+        pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
+        pmc.project = pci.project
+        pmc.milestoneDate = eachMilestone['milestoneDate']
+        pmc.deliverables = eachMilestone['deliverables']
+        pmc.description = eachMilestone['description']
+        pmc.save()
+
+    return {'crId': pcicr.crId}
 
 
 class CreateProjectWizard(SessionWizardView):

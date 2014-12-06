@@ -31,9 +31,11 @@
 					<thead>
 						{% for field in form %}
 							<th>
-								<small>{{ field.label }}</small>
-								{% if field.field.required %}
-									<span class="required">*</span>
+								{% if field.label != 'msRecId' %}
+									<small>{{ field.label }}</small>
+									{% if field.field.required %}
+										<span class="required">*</span>
+									{% endif %}
 								{% endif %}
 							</th>
 						{% endfor %}
@@ -45,6 +47,9 @@
 			{% if forloop.first %}
 			   	<tr>
 			{% endif %}
+					{% for hField in t.hidden_fields %}
+						<td>{{ hField }}</td>
+					{% endfor %}
 					<td>{{ t }}</td>
 			{% if forloop.last %}
 				</tr>

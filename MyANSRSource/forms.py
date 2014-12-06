@@ -326,6 +326,8 @@ class ChangeProjectForm(forms.ModelForm):
 
 class ChangeProjectBasicInfoForm(forms.ModelForm):
 
+    id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
+
     class Meta:
         model = ProjectChangeInfo
         fields = (
@@ -338,6 +340,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ChangeProjectBasicInfoForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
         self.fields['reason'].widget.attrs['class'] = "form-control"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
         self.fields['revisedEffort'].widget.attrs['class'] = "form-control"
@@ -347,6 +350,8 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 
 
 class ChangeProjectTeamMemberForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="teamRecId", widget=forms.HiddenInput())
 
     class Meta:
         model = ProjectTeamMember
@@ -362,6 +367,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ChangeProjectTeamMemberForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
         self.fields['member'].widget.attrs['class'] = "form-control"
         self.fields['role'].widget.attrs['class'] = "form-control"
         self.fields['startDate'].widget.attrs['class'] = "form-control"
@@ -370,6 +376,8 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 
 
 class ChangeProjectMilestoneForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
 
     class Meta:
         model = ProjectMilestone
@@ -384,6 +392,7 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ChangeProjectMilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
         self.fields['deliverables'].widget.attrs['class'] = "form-control"
         self.fields['description'].widget.attrs['class'] = "form-control"

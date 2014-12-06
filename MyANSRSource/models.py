@@ -208,7 +208,7 @@ class ProjectTeamMember(models.Model):
 class ProjectChangeInfo(models.Model):
     # project change Request Fields
     project = models.ForeignKey(Project, verbose_name="Project Name")
-    crId = models.CharField(default=None, blank=True,
+    crId = models.CharField(default=None, blank=True, null=True,
                             max_length=100, verbose_name="Change Request ID")
     reason = models.CharField(max_length=100, default=None, blank=True,
                               verbose_name="Reason for change")
@@ -225,8 +225,6 @@ class ProjectChangeInfo(models.Model):
     # Check lateset change or not
     status = models.BooleanField(default=False,
                                  verbose_name="Status")
-    teamMember = models.ForeignKey(ProjectTeamMember)
-    milestone = models.ForeignKey(ProjectMilestone)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
