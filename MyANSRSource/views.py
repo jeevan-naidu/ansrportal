@@ -940,50 +940,54 @@ def notify(request):
     projectId = request.session['currentProject']
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=request.session['customer'],
-        name__groups__name__in=['BU Head',
-                                'ANSR client partner',
-                                'ANSR account manager ']
-    ).values('name__email', 'name__first_name', 'name__last_name')
+        relatedMember__groups__name__in=['BU Head',
+                                         'ANSR client partner',
+                                         'ANSR account manager']
+    ).values('relatedMember__email',
+             'relatedMember__first_name',
+             'relatedMember__last_name')
     for eachHead in projectHead:
-        notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                            'hai',
-                                            settings.EMAIL_HOST_USER,
-                                            ['{0}'.format(
-                                                eachHead['name__email']
-                                            )],)
+        if eachHead['name__email'] != '':
+            notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                                'hai',
+                                                settings.EMAIL_HOST_USER,
+                                                ['{0}'.format(
+                                                    eachHead['name__email']
+                                                )],)
 
-        emailTemp = render_to_string(
-            'projectCreatedHeadEmail.html',
-            {
-                'firstName': eachHead['name__first_name'],
-                'lastName': eachHead['name__last_name'],
-                'projectId': projectId
-            }
-        )
-        notifyTeam.attach_alternative(emailTemp, 'text/html')
-        notifyTeam.send()
+            emailTemp = render_to_string(
+                'projectCreatedHeadEmail.html',
+                {
+                    'firstName': eachHead['name__first_name'],
+                    'lastName': eachHead['name__last_name'],
+                    'projectId': projectId
+                }
+            )
+            notifyTeam.attach_alternative(emailTemp, 'text/html')
+            notifyTeam.send()
     projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
     ).values('member__email', 'member__first_name', 'member__last_name')
     for eachMember in teamMembers:
-        notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                            'hai',
-                                            settings.EMAIL_HOST_USER,
-                                            ['{0}'.format(
-                                                eachMember['member__email']
-                                            )],)
+        if eachMember['member__email'] != '':
+            notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                                'hai',
+                                                settings.EMAIL_HOST_USER,
+                                                ['{0}'.format(
+                                                    eachMember['member__email']
+                                                )],)
 
-        emailTemp = render_to_string(
-            'projectCreatedEmail.html',
-            {
-                'firstName': eachMember['member__first_name'],
-                'lastName': eachMember['member__last_name'],
-                'projectId': projectId
-            }
-        )
-        notifyTeam.attach_alternative(emailTemp, 'text/html')
-        notifyTeam.send()
+            emailTemp = render_to_string(
+                'projectCreatedEmail.html',
+                {
+                    'firstName': eachMember['member__first_name'],
+                    'lastName': eachMember['member__last_name'],
+                    'projectId': projectId
+                }
+            )
+            notifyTeam.attach_alternative(emailTemp, 'text/html')
+            notifyTeam.send()
     projectName = request.session['currentProjectName']
     data = {'projectId': request.session['currentProjectId'],
             'projectName': projectName,
