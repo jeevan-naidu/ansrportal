@@ -791,14 +791,24 @@ class CreateProjectWizard(SessionWizardView):
                     ] = True
         return form
 
+    def get_context_data(self, form, **kwargs):
+        context = super(CreateProjectWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Financial Milestones':
+            selectedType = self.storage.get_step_data('Define Project')[
+                'Define Project-projectType'
+            ]
+            prType = Project(projectType=selectedType)
+            context.update({'pt': prType.get_projectType_display()})
+        return context
+
     def get_form_initial(self, step):
+        initValue = {}
         if step == 'Define Team':
             initValue = [{'startDate': self.request.session['PStartDate'],
                           'endDate': self.request.session['PEndDate']},
                          {'startDate': self.request.session['PStartDate'],
                           'endDate': self.request.session['PEndDate']}]
-        else:
-            initValue = {}
         return self.initial_dict.get(step, initValue)
 
     def done(self, form_list, **kwargs):
