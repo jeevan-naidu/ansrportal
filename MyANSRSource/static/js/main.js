@@ -13,54 +13,108 @@ helper.range = function(start, end) {
 };
 
 
-app.billableSetZeroList = helper.range(0, 37);
+app.billableSetZeroList = helper.range(0, 35);
 
 // Main
 (function() {
     $(document).ready(function() {
-        // Project
-        $('#add-team-members').dynamicForm({
-            add: '#addForm',
-            del: '#delete-member',
-            calendar: true,
-            calendarPosList: [3, 8],
-            addTeamMember: true,
-            plannedEffortCalc: true,
-            defaultValues: {  // When add row, set the elements default values
-                setZeroList: null,
-                setEmptyList: null
-            }
-        });
+        var $changeTeamMembers = $('#change-team-members');
+        if($changeTeamMembers.length > 0) {
+            var $changeTeamMemberFields = $changeTeamMembers.find('div, select, input, span'),
+                $changeTeamMemberCur,
+                changeTeamMemberCurId,
+                total = 0,
+                idFilter = 0;
 
-        $('#financial-milestones').dynamicForm({
-            add: '#add-milestone-btn',
-            del: '#del-milestone-btn',
-            calendar: true,
-            calendarPosList: 0,
-            financialTotal: true
-        });
+
+
+            $changeTeamMemberFields.each(function(index) {
+                total += 1;
+
+                $changeTeamMemberCur = $(this);
+                changeTeamMemberCurId = $changeTeamMemberCur.attr('id');
+
+
+
+                if(changeTeamMemberCurId) {
+                    if(changeTeamMemberCurId.match(' Team Members')) {
+                        idFilter += 1;
+                        changeTeamMemberCurId = changeTeamMemberCurId.replace(/\s+/g, '_');
+                        $changeTeamMemberCur.attr('id', changeTeamMemberCurId);
+                    }
+                }
+            });
+
+            $changeTeamMembers.dynamicForm({
+                add: '#addForm',
+                del: '#delete-member',
+                calendar: true,
+                calendarPosList: [3, 8],
+                addTeamMember: true,
+                defaultValues: {  // When add row, set the elements default values
+                    setZeroList: [13],
+                    setEmptyList: null
+                }
+            });
+        }
+
+        // Project
+        var addTeamMembers = $('#add-team-members');
+        if(addTeamMembers.length > 0) {
+            addTeamMembers.dynamicForm({
+                add: '#addForm',
+                del: '#delete-member',
+                calendar: true,
+                calendarPosList: [3, 8],
+                addTeamMember: true,
+                plannedEffortCalc: true,
+                defaultValues: {  // When add row, set the elements default values
+                    setZeroList: null,
+                    setEmptyList: null
+                }
+            });
+        }
+
+        var financialMilestones = $('#financial-milestones');
+        if(financialMilestones.length > 0) {
+            financialMilestones.dynamicForm({
+                add: '#add-milestone-btn',
+                del: '#del-milestone-btn',
+                calendar: true,
+                calendarPosList: 0,
+                financialTotal: true
+            });
+        }
 
         // TimeSheet
-        $('#timesheet-billable').dynamicForm({
-            add: '#timesheet-billable-add-btn',
-            del: '#timesheet-billable-del-btn',
-            billableTotal: true,
-            defaultValues: {  // When add row, set the elements default values
-                setZeroList: app.billableSetZeroList,
-                setEmptyList: null
-            }
-        });
+        var timesheetBillable = $('#timesheet-billable');
+        if(timesheetBillable.length > 0) {
+            timesheetBillable.dynamicForm({
+                add: '#timesheet-billable-add-btn',
+                del: '#timesheet-billable-del-btn',
+                billableTotal: true,
+                defaultValues: {  // When add row, set the elements default values
+                    setZeroList: app.billableSetZeroList,
+                    setEmptyList: null
+                }
+            });
+        }
 
-        $('#timesheet-non-billable').dynamicForm({
-            add: '#timesheet-non-billable-add-btn',
-            del: '#timesheet-non-billable-del-btn',
-            daysTotal: true,
-            nonBillable: true,
-            defaultValues: {  // When add row, set the elements default values
-                setZeroList: [2, 3, 4, 5, 6],
-                setEmptyList: null
-            }
-        });
+        var timesheetNonBillable = $('#timesheet-non-billable');
+        if(timesheetNonBillable.length > 0) {
+            timesheetNonBillable.dynamicForm({
+                add: '#timesheet-non-billable-add-btn',
+                del: '#timesheet-non-billable-del-btn',
+                daysTotal: true,
+                nonBillable: true,
+                defaultValues: {  // When add row, set the elements default values
+                    setZeroList: [2, 3, 4, 5, 6],
+                    setEmptyList: null
+                }
+            });
+        }
+
+
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
@@ -106,16 +160,20 @@ app.getIdNo = function(str) {
                 $element,
                 curId,
                 curName,
-                $curIdSel,
+                $curIdSel;
+
+            console.log(lastRowId);
 
             // Slice the id number from last row id
-            lastRowId = getIdNo(lastRowId);
+
+            lastRowId = app.getIdNo(lastRowId);
+
             lastRowId = Number(lastRowId);
 
 	    newRow = lastRow.clone();
             newRowId = lastRowId + 1;
 
-	    screenName = newRow.find('td:first').children(':first').attr('id');
+	    /*screenName = newRow.find('td:first').children(':first').attr('id');
 	    if (screenName.search("Milestones") >= 0) {
 		    if (newRow.find('td:first').children(':first').children(':first').attr('readonly')) {
 			newRow.find('td:nth-child(1)').children(':first').children(':first').attr('readonly',false)
@@ -132,9 +190,9 @@ app.getIdNo = function(str) {
 			newRow.find('td:nth-child(4)').children(':first').children(':first').attr('readonly', false)
 			newRow.find('td:nth-child(5)').children(':first').attr('readonly',false)
 		    }
-	    }
+	    }*/
 
-	    newRow.find('input[type="hidden"]:last').val(0)
+	    //newRow.find('input[type="hidden"]:last').val(0)
             
 	    lastRow.after(newRow);
 
@@ -160,22 +218,7 @@ app.getIdNo = function(str) {
                     $element.attr('name', curName);
                 }
 
-                /*if(!options.billableTotal || !options.nonBillable) {
-                    if(index === options.notResetItemIndex) {
-                        alert('ready');
-                    } else {
-                        $element.val('');
-                    }
-
-
-                }*/
-
                 if(options.billableTotal || options.nonBillable) {
-                    /*if(index === 0) {
-                        $element.val('0');
-                    }*/
-
-
                     var rowCountInitialElement      = $table.find('input[type="hidden"]:eq(1)');
                     $(rowCountInitialElement).attr('value', rowCount);
 
@@ -204,9 +247,6 @@ app.getIdNo = function(str) {
 
                 if(options.calendar) {
                     if(options.calendarPosList.indexOf(index) !== -1) {
-                        if (curId.indexOf("id_Change Team Members-") >= 0) {
-                            curId = curId.replace(/\s+/g, '_') + '_pickers';
-                        }
                         $curIdSel = $('#' + curId);
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
 
@@ -216,30 +256,8 @@ app.getIdNo = function(str) {
 
 
 
-                //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
             });
-
-            if(options.billableTotal) {
-                /*var newRowBQuestions            = newRow.find('.b-questions'),
-                    newRowBHours                = newRow.find('.b-hours'),
-                    newRowBQuestionsHidden      = newRow.find('.b-questions-hidden'),
-                    newRowBHoursHidden          = newRow.find('.b-hours-hidden'),
-                    newRowTotalQuestions        = newRow.find('.t-questions'),
-                    newRowTotalHours            = newRow.find('.t-hours'),
-                    newRowTotalQuestionsHidden  = newRow.find('.t-questions-hidden'),
-                    newRowTotalHoursHidden      = newRow.find('.t-hours-hidden'),
-                    dItems                      = newRow.find('.d-item'),
-                    dItemsLen                   = dItems.length;
-
-                newRowBQuestions.text('0');
-                newRowBHours.text('0');
-                newRowBQuestionsHidden.val('0');
-                newRowBHoursHidden.val('0');
-                newRowTotalQuestions.text('0');
-                newRowTotalHours.text('0');
-                newRowTotalQuestionsHidden.val('0');
-                newRowTotalHoursHidden.val('0');*/
-            }
 
             daysTotalFun();
             billableTotalFun();
@@ -311,8 +329,6 @@ app.getIdNo = function(str) {
                         $totalNonBillableHours.text(totalNonBillable);
                     };
 
-
-
                     $curTotal.val(temp);
 
                     nonBillableTotalFun();
@@ -360,7 +376,7 @@ app.getIdNo = function(str) {
                     endDate = new Date(endDate);
 
                     // Calculate planned effort
-                    var plannedEffort = app.workingDaysBetweenDates(startDate, endDate);
+                    var plannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
 
                     return plannedEffort;
                 };
@@ -637,10 +653,6 @@ app.getIdNo = function(str) {
         billableTotalFun();
         financialTotalFun();
         plannedEffortFun();
-
-        var getIdNo = function(str) {
-            return str.match(/\d+/)[0];
-        };
 
         // Dom events
         $addBtn.on('click', add);
