@@ -482,6 +482,8 @@ def Timesheet(request):
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'tsFormset': tsFormset,
+                    'billableHours': billableHours,
+                    'idleHours': idleHours,
                     'bTotal': bTotal,
                     'idleTotal': idleTotal,
                     'othersTotal': othersTotal,

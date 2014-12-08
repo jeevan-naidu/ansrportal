@@ -49,23 +49,7 @@ app.getIdNo = function(str) {
                 rowCount = Number(rowCountElement.val());
             }
 
-        if(options.billableTotal) {
-            var $totalBillableHours     = $('.total-billable-hours'),
-                $totalIdleHours         = $('.total-idle-hours'),
-                $totalBillableHoursHidden     = $('.total-billable-hours-hidden'),
-                $totalIdleHoursHidden         = $('.total-idle-hours-hidden'),
 
-                totalBillableHours     = $totalBillableHoursHidden.val(),
-                totalIdleHours         = $totalIdleHoursHidden.val();
-
-            // Type cast
-            totalBillableHours = Number(totalBillableHours);
-            totalIdleHours = Number(totalIdleHours);
-
-            // To Dom
-            $totalBillableHours.text(totalBillableHours);
-            $totalIdleHours.text(totalBillableHours);
-        }
 
 
 
@@ -246,6 +230,9 @@ app.getIdNo = function(str) {
 
         var billableTotalFun = function() {
             if(options.billableTotal) {
+                var $totalBillableHours     = $('.total-billable-hours'),
+                    $totalIdleHours         = $('.total-idle-hours');
+
                 var $dayPopoverBtn = $table.find('.day-popover-button');
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
@@ -353,6 +340,7 @@ app.getIdNo = function(str) {
 
 
                             for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
+                                console.log('total idle list item: ' + i);
                                 curIdleTotal = Number($($rTotalIdleHoursList[i]).val());
                                 curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
 
@@ -366,9 +354,6 @@ app.getIdNo = function(str) {
                             // To Dom
                             $totalBillableHours.text(billableTotalHours);
                             $totalIdleHours.text(idleTotalHours);
-
-                            $totalBillableHoursHidden.val(billableTotalHours);
-                            $totalIdleHoursHidden.val(idleTotalHours);
                         };
 
                         totalIdleAndBillableHours();

@@ -203,6 +203,25 @@
 									{% endif %}
 									{{ data }}
 								{% elif 'totalH' in data.id_for_label %}
+                                    {% for Ndata in form %}
+                                        {% if Ndata.label == 'Task' %}
+                                            {% if Ndata.value == 'I' %}
+                                                 {% if data.value > 0 %}
+                                                    <input type="hidden" class="r-total-idle-hours" value="{{ data.value }}" />
+                                                    <input type="hidden" class="r-total-billable-hours" value="0" />
+                                                 {% else %}
+                                                    <input type="hidden" class="r-total-idle-hours" value="0" />
+                                                 {% endif %}
+                                            {% else %}
+                                                 {% if data.value > 0 %}
+                                                    <input type="hidden" class="r-total-billable-hours" value="{{ data.value }}" />
+                                                    <input type="hidden" class="r-total-idle-hours" value="0" />
+                                                 {% else %}
+                                                    <input type="hidden" class="r-total-billable-hours" value="0" />
+                                                 {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
 									{% if data.value > 0 %}
 										<span class="t-hours">{{ data.value }}</span> H
 									{% else %}
@@ -211,8 +230,6 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							<input type="hidden" class="r-total-idle-hours" value="0" />
-							<input type="hidden" class="r-total-billable-hours" value="0" />
 						</a>
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}
@@ -312,9 +329,9 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    <input type="hidden" name="total-billable-hours-hidden" class="total-billable-hours-hidden" value="{{ bTotal }}" />
+    <!--<input type="hidden" name="total-billable-hours-hidden" class="total-billable-hours-hidden" value="{{ bTotal }}" />
     <input type="hidden" name="total-idle-hours-hidden" class="total-idle-hours-hidden" value="{{ idleTotal }}" />
-    <input type="hidden" name="total-non-billable-hours-hidden" class="total-non-billable-hours-hidden" value="{{ othersTotal }}" />
+    <input type="hidden" name="total-non-billable-hours-hidden" class="total-non-billable-hours-hidden" value="{{ othersTotal }}" />-->
  <button type="submit" value="submit" class="btn btn-info pull-right">
 	 Save Timesheet
  </button>
