@@ -1,7 +1,7 @@
-{% extends 'projectMaster.inc' %}
+{% extends 'changeProjectMaster.inc' %}
 
 {% block createProjectActive %}class="active"{% endblock %}
-{% block DPactiveClass %}active{% endblock %}
+{% block CBIactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
@@ -14,21 +14,24 @@
 {% endif %}
 	<div class="table-responsive col-lg-12">
 	<table class="table">
+		<tr>
+			{% for hField in form.hidden_fields %}
+				<td>{{ hField }}</td>
+			{% endfor %}
+		</tr>
 		{% for field in form %}
 			<tr>
-				<td class="col-lg-1">
-						{{ field.label }}
-						{% if field.field.required %}
-							<span class="required">*</span>
-						{% endif %}
-						{% if field.label == 'Chapters' %}
-							<br />
-							<span>
-								<h5><small>Use <b><kbd>ctrl + click<kbd></b> to select multiple chapters</small></h5>
-							</span>
+				<td class="col-lg-3">
+						{% if field.label != 'BasicInfoId' %}
+							{{ field.label }}
+							{% if field.field.required %}
+								<span class="required">*</span>
+							{% endif %}
 						{% endif %}
 				</td>
-				<td class="col-xs-12 col-md-12 col-lg-2">{{ field }}</td>
+				<td class="col-lg-5">
+					{{ field }}
+				</td>
 			</tr>
 		{% endfor %}
 	</table>
@@ -42,5 +45,3 @@
 </script>
 
 {% endblock %}{% endblock %}
-
-
