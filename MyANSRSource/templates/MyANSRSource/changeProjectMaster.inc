@@ -37,40 +37,35 @@
 {% endblock %}
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-sixth {% block DPactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block MPactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
-        <label class="form-step-label">Define Project</label>
+        <label class="form-step-label">My Projects</label>
     </li>
-    <li class="form-step one-sixth {% block BIactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block CBIactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
-        <label class="form-step-label">Basic Information</label>
+        <label class="form-step-label">Change Basic Information</label>
     </li>
-    <li class="form-step one-sixth {% block DTactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block CTMactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
-        <label class="form-step-label">Define Team</label>
+        <label class="form-step-label">Change Team Members</label>
     </li>
-    <li class="form-step one-sixth {% block FMactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block CFMactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">4</span>
-        <label class="form-step-label">Financial Milestones</label>
+        <label class="form-step-label">Change Milestones</label>
     </li>
-    <li class="form-step one-sixth {% block VactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block SactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">5</span>
-        <label class="form-step-label">Validate</label>
-    </li>
-    <li class="form-step one-sixth {% block CactiveClass %}{% endblock %}">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">6</span>
-        <label class="form-step-label">Complete!</label>
+        <label class="form-step-label">Summary</label>
     </li>
 </ul>
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
  <div id="create">
-    <form id="createProject" method="post" action="" enctype="multipart/form-data">
+    <form id="changeProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 	<legend>
 		<b>{{ wizard.steps.current }}</b>
@@ -98,7 +93,7 @@
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
-		    <b>Confirm & Create Project</b>
+		    <b>Update Project</b>
                 {% else %}
 		    <b>Next</b>
                     <span class="glyphicon glyphicon-chevron-right"></span>

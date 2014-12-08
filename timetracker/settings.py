@@ -140,9 +140,9 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 )
 
 # Session Expire Configuration
-SESSION_SECURITY_WARN_AFTER = 600  # Time Given in seconds
+SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_SECURITY_EXPIRE_AFTER = 600
+SESSION_SECURITY_EXPIRE_AFTER = 10*60
 
 
 ROOT_URLCONF = 'timetracker.urls'
@@ -176,6 +176,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+LOGIN_URL = '/'
 
 
 # Static files (CSS, JavaScript, Images)

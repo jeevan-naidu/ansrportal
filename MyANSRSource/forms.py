@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, Location
+    ProjectMilestone, Chapter, Location, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 
@@ -14,6 +14,7 @@ TASK = (
     ('C', 'Copy Edit'),
     ('Q', 'QA'),
     ('I', 'Idle'),
+    ('W', 'ReWork'),
 )
 
 NONBILLABLE = (
@@ -308,6 +309,97 @@ class ProjectBasicInfoForm(forms.ModelForm):
             "total-value-input form-control"
 
 
+# Change Project Basic Form
+class ChangeProjectForm(forms.ModelForm):
+
+    class Meta:
+        model = ProjectChangeInfo
+        fields = ('project',)
+
+        widgets = {
+            'project': forms.RadioSelect()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeProjectForm, self).__init__(*args, **kwargs)
+        self.fields['project'].empty_label = None
+
+
+class ChangeProjectBasicInfoForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
+
+    class Meta:
+        model = ProjectChangeInfo
+        fields = (
+            'reason', 'endDate', 'revisedEffort',
+            'revisedTotal', 'closed', 'signed'
+        )
+        widgets = {
+            'endDate': DateTimePicker(options=dateTimeOption),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeProjectBasicInfoForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['reason'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
+        self.fields['revisedEffort'].widget.attrs['class'] = "form-control"
+        self.fields['revisedTotal'].widget.attrs['class'] = "form-control"
+        self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['signed'].widget.attrs['class'] = "form-control"
+
+
+class ChangeProjectTeamMemberForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="teamRecId", widget=forms.HiddenInput())
+
+    class Meta:
+        model = ProjectTeamMember
+        fields = (
+            'member', 'role', 'startDate',
+            'endDate', 'plannedEffort'
+        )
+        widgets = {
+            'startDate': DateTimePicker(options=dateTimeOption),
+            'endDate': DateTimePicker(options=dateTimeOption),
+            'project': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeProjectTeamMemberForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['member'].widget.attrs['class'] = "form-control"
+        self.fields['role'].widget.attrs['class'] = "form-control"
+        self.fields['startDate'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
+        self.fields['plannedEffort'].widget.attrs['class'] = "form-control"
+
+
+class ChangeProjectMilestoneForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
+
+    class Meta:
+        model = ProjectMilestone
+        fields = (
+            'milestoneDate', 'deliverables', 'description',
+            'amount'
+        )
+        widgets = {
+            'milestoneDate': DateTimePicker(options=dateTimeOption),
+            'project': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeProjectMilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
+        self.fields['deliverables'].widget.attrs['class'] = "form-control"
+        self.fields['description'].widget.attrs['class'] = "form-control"
+        self.fields['amount'].widget.attrs['class'] = "form-control"
+
+
 # Form Class to create team for project
 class ProjectTeamForm(forms.ModelForm):
 
@@ -318,7 +410,8 @@ class ProjectTeamForm(forms.ModelForm):
             'role',
             'plannedEffort',
             'startDate',
-            'endDate', )
+            'endDate',
+        )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
             'endDate': DateTimePicker(options=dateTimeOption),
