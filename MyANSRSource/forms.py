@@ -14,6 +14,7 @@ TASK = (
     ('C', 'Copy Edit'),
     ('Q', 'QA'),
     ('I', 'Idle'),
+    ('W', 'ReWork'),
 )
 
 NONBILLABLE = (
