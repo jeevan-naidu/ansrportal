@@ -1,17 +1,66 @@
 /* Global namespace for entire application */
 var app = app || {};
+var helper = helper || {};
+
+// Helper
+helper.range = function(start, end) {
+    var result = [];
+    for(var i = start; i < end; i += 1) {
+        result.push(i);
+    }
+
+    return result;
+};
+
+
+app.billableSetZeroList = helper.range(0, 37);
 
 // Main
 (function() {
     $(document).ready(function() {
         // Project
-        $('#add-team-members').dynamicForm({add: '#addForm', del: '#delete-member', calendar: true, calendarPos: 3, calendarPos2: 8, addTeamMember: true});
+        $('#add-team-members').dynamicForm({
+            add: '#addForm',
+            del: '#delete-member',
+            calendar: true,
+            calendarPosList: [3, 8],
+            addTeamMember: true,
+            plannedEffortCalc: true,
+            defaultValues: {  // When add row, set the elements default values
+                setZeroList: null,
+                setEmptyList: null
+            }
+        });
 
-        $('#financial-milestones').dynamicForm({add: '#add-milestone-btn', del: '#del-milestone-btn', calendar: true, calendarPos: 0, financialTotal: true});
+        $('#financial-milestones').dynamicForm({
+            add: '#add-milestone-btn',
+            del: '#del-milestone-btn',
+            calendar: true,
+            calendarPosList: 0,
+            financialTotal: true
+        });
 
         // TimeSheet
-        $('#timesheet-billable').dynamicForm({add: '#timesheet-billable-add-btn', del: '#timesheet-billable-del-btn', billableTotal: true});
-        $('#timesheet-non-billable').dynamicForm({add: '#timesheet-non-billable-add-btn', del: '#timesheet-non-billable-del-btn', daysTotal: true, nonBillable: true});
+        $('#timesheet-billable').dynamicForm({
+            add: '#timesheet-billable-add-btn',
+            del: '#timesheet-billable-del-btn',
+            billableTotal: true,
+            defaultValues: {  // When add row, set the elements default values
+                setZeroList: app.billableSetZeroList,
+                setEmptyList: null
+            }
+        });
+
+        $('#timesheet-non-billable').dynamicForm({
+            add: '#timesheet-non-billable-add-btn',
+            del: '#timesheet-non-billable-del-btn',
+            daysTotal: true,
+            nonBillable: true,
+            defaultValues: {  // When add row, set the elements default values
+                setZeroList: [2, 3, 4, 5, 6],
+                setEmptyList: null
+            }
+        });
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
@@ -111,18 +160,20 @@ app.getIdNo = function(str) {
                     $element.attr('name', curName);
                 }
 
-                if(!options.billableTotal || !options.nonBillable) {
-                    if(index === 1 || index === 2) {
+                /*if(!options.billableTotal || !options.nonBillable) {
+                    if(index === options.notResetItemIndex) {
+                        alert('ready');
+                    } else {
                         $element.val('');
                     }
 
 
-                }
+                }*/
 
                 if(options.billableTotal || options.nonBillable) {
-                    if(index === 0) {
+                    /*if(index === 0) {
                         $element.val('0');
-                    }
+                    }*/
 
 
                     var rowCountInitialElement      = $table.find('input[type="hidden"]:eq(1)');
@@ -130,23 +181,46 @@ app.getIdNo = function(str) {
 
                 }
 
+                if(options.defaultValues.setZeroList) {
+                    if(options.defaultValues.setZeroList.indexOf(index) !== -1) {
+                        if($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
+                            $element.val('0');
+                            console.log('input');
+                        } else {
+                            $element.text('0');
+                            console.log('not input');
+                        }
+                    }
+
+                    //console.log(index + ': set zero');
+                }
+
+                if(options.defaultValues.setEmptyList) {
+                    if(options.defaultValues.setEmptyList.indexOf(index) !== -1) {
+                        $element.val('');
+                        console.log(index + ': set empty');
+                    }
+                }
+
                 if(options.calendar) {
-                    if(index === options.calendarPos || index === options.calendarPos2) {
-			if (curId.indexOf("id_Change Team Members-") >= 0) {
-				curId = curId.replace(/\s+/g, '_') + '_pickers';
-			}
-			$curIdSel = $('#' + curId);
+                    if(options.calendarPosList.indexOf(index) !== -1) {
+                        if (curId.indexOf("id_Change Team Members-") >= 0) {
+                            curId = curId.replace(/\s+/g, '_') + '_pickers';
+                        }
+                        $curIdSel = $('#' + curId);
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
+
+                        //console.log('index of calender: ' + index);
                     }
                 }
 
 
 
-                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
             });
 
             if(options.billableTotal) {
-                var newRowBQuestions            = newRow.find('.b-questions'),
+                /*var newRowBQuestions            = newRow.find('.b-questions'),
                     newRowBHours                = newRow.find('.b-hours'),
                     newRowBQuestionsHidden      = newRow.find('.b-questions-hidden'),
                     newRowBHoursHidden          = newRow.find('.b-hours-hidden'),
@@ -164,12 +238,14 @@ app.getIdNo = function(str) {
                 newRowTotalQuestions.text('0');
                 newRowTotalHours.text('0');
                 newRowTotalQuestionsHidden.val('0');
-                newRowTotalHoursHidden.val('0');
+                newRowTotalHoursHidden.val('0');*/
             }
 
             daysTotalFun();
             billableTotalFun();
             financialTotalFun();
+
+            plannedEffortFun();
         };
 
         var del = function() {
@@ -252,14 +328,10 @@ app.getIdNo = function(str) {
         var plannedEffortFun = function() {
             if(options.plannedEffortCalc) {
                 // variables
-                var rowsLen = $rows.length,
-                    item,
+                var item,
                     starDateItem,
                     endDateItem,
-                    plannedEffortItem,
-                    $plannedEffortItems = $('.pro-planned-effort'),
-                    $plannedEffortItemsLen = $plannedEffortItems.length;
-
+                    plannedEffortItem;
 
                 var calcEffort = function($startDate, $endDate, $plannedEffort) {
                     // get value and formatting
@@ -290,11 +362,7 @@ app.getIdNo = function(str) {
                     // Calculate planned effort
                     var plannedEffort = app.workingDaysBetweenDates(startDate, endDate);
 
-                    var totalEffort = plannedEffort * 8 * (plannedEffort / 100);
-
-                    $plannedEffort.val(plannedEffort);
-
-                    return true;
+                    return plannedEffort;
                 };
 
 
@@ -308,7 +376,7 @@ app.getIdNo = function(str) {
                         endDateItem = item.find('.pro-end-date');
                         plannedEffortItem = item.find('.pro-planned-effort');
 
-                        calcEffort(starDateItem, endDateItem, plannedEffortItem);
+                        plannedEffortItem.val(calcEffort(starDateItem, endDateItem, plannedEffortItem));
                     }
                 });
 
@@ -616,6 +684,15 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
 
     return days;
 };
+
+
+
+
+
+
+
+
+
 
 
 
