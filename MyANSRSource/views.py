@@ -984,26 +984,25 @@ def notify(request):
     projectId = request.session['currentProject']
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=request.session['customer'],
-        relatedMember__groups__name__in=['BU Head',
-                                         'ANSR client partner',
-                                         'ANSR account manager']
     ).values('relatedMember__email',
              'relatedMember__first_name',
              'relatedMember__last_name')
     for eachHead in projectHead:
-        if eachHead['name__email'] != '':
+        if eachHead['relatedMember__email'] != '':
             notifyTeam = EmailMultiAlternatives('Congrats!!!',
                                                 'hai',
                                                 settings.EMAIL_HOST_USER,
                                                 ['{0}'.format(
-                                                    eachHead['name__email']
+                                                    eachHead[
+                                                        'relatedMember__email'
+                                                    ]
                                                 )],)
 
             emailTemp = render_to_string(
                 'projectCreatedHeadEmail.html',
                 {
-                    'firstName': eachHead['name__first_name'],
-                    'lastName': eachHead['name__last_name'],
+                    'firstName': eachHead['relatedMember__first_name'],
+                    'lastName': eachHead['relatedMember__last_name'],
                     'projectId': projectId
                 }
             )
