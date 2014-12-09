@@ -15,36 +15,58 @@ helper.range = function(start, end) {
 
 app.billableSetZeroList = helper.range(0, 35);
 
+app.spaceToUnderscore = function($containerEle) {
+    var items = $containerEle.find('td *'),
+        item,
+        itemId;
+
+        items.each(function() {
+        item = $(this);
+        itemId = item.attr('id');
+
+        if(itemId) {
+            if(/\s/.test(itemId)) {
+                itemId = itemId.replace(/\s+/g, '_');
+                item.attr('id', itemId);
+            }
+        }
+    });
+};
+
+
+
+app.getEffortCurRowId = function() {
+    var calenderBtn = $('.date .input-group-addon');
+
+    calenderBtn.on('click', function() {
+        var item = $(this),
+            prevElem = item.prev(),
+            rowId = prevElem.attr('id');
+        app.effortRowIdNo = Number(app.getIdNo(rowId)) + 1;
+    });
+};
+
+app.calcCurRowChangeDate = function() {
+    var table = $('#add-team-members'),
+        row = table.find('tr:eq(' + app.effortRowIdNo + ')'),
+        starDateItem = row.find('.pro-start-date'),
+        endDateItem = row.find('.pro-end-date'),
+        plannedEffortItem = row.find('.pro-planned-effort'),
+        plannedEffortPercentItem = row.find('.pro-planned-effort-percent');
+
+    plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem));
+};
+
+
+
+
+
 // Main
 (function() {
     $(document).ready(function() {
         var $changeTeamMembers = $('#change-team-members');
         if($changeTeamMembers.length > 0) {
-            var $changeTeamMemberFields = $changeTeamMembers.find('div, select, input, span'),
-                $changeTeamMemberCur,
-                changeTeamMemberCurId,
-                total = 0,
-                idFilter = 0;
-
-
-
-
-            $changeTeamMemberFields.each(function(index) {
-                total += 1;
-
-                $changeTeamMemberCur = $(this);
-                changeTeamMemberCurId = $changeTeamMemberCur.attr('id');
-
-
-
-                if(changeTeamMemberCurId) {
-                    if(changeTeamMemberCurId.match(' Team Members')) {
-                        idFilter += 1;
-                        changeTeamMemberCurId = changeTeamMemberCurId.replace(/\s+/g, '_');
-                        $changeTeamMemberCur.attr('id', changeTeamMemberCurId);
-                    }
-                }
-            });
+            app.spaceToUnderscore($changeTeamMembers);
 
             $changeTeamMembers.dynamicForm({
                 add: '#addForm',
@@ -58,21 +80,17 @@ app.billableSetZeroList = helper.range(0, 35);
                 }
             });
 
-            $('#id_Define_Team-0-startDate_pickers').on('changeDate', function() {
-                alert('change date');
-            });
-
-
         }
 
         // Project
         var addTeamMembers = $('#add-team-members');
         if(addTeamMembers.length > 0) {
+            app.spaceToUnderscore(addTeamMembers);
             addTeamMembers.dynamicForm({
                 add: '#addForm',
                 del: '#delete-member',
                 calendar: true,
-                calendarPosList: [3, 8],
+                calendarPosList: [4, 9],
                 addTeamMember: true,
                 plannedEffortCalc: true,
                 defaultValues: {  // When add row, set the elements default values
@@ -86,9 +104,10 @@ app.billableSetZeroList = helper.range(0, 35);
                 starDateItem,
                 endDateItem,
                 plannedEffortItem,
-                addMemberDatePickerDay = $('.day'),
-                addMemberDatePicker  = $('.date'),
-                $datePickers = $('.date-picker');
+                plannedEffortPercentItem,
+                row;
+
+            app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent');
 
             // Calculate effort for each row
             $addTeamRows.each(function(index) {
@@ -96,15 +115,33 @@ app.billableSetZeroList = helper.range(0, 35);
                     item = $(this);
                     starDateItem = item.find('.pro-start-date');
                     endDateItem = item.find('.pro-end-date');
-                    plannedEffortItem = item.find('.pro-planned-effort');
+                    plannedEffortItem = item.find('.pro-planned-effort'),
+                    plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
 
-                    plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem));
+                    plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem));
                 }
             });
 
-            $datePickers.on('changeDate', function() {
-                alert('change date event triggered');
+            // Calculate PlannedEffort when change effort
+            app.calcPlannedEffortCurRow = function() {
+                item = $(this);
+                row = item.closest('tr');
+                starDateItem = row.find('.pro-start-date');
+                endDateItem = row.find('.pro-end-date');
+                plannedEffortItem = row.find('.pro-planned-effort');
+                plannedEffortPercentItem = row.find('.pro-planned-effort-percent');
+
+                plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem));
+            };
+
+
+
+            app.proPlannedEffortPercentItems.on({
+                'keyup': app.calcPlannedEffortCurRow,
+                'click': app.calcPlannedEffortCurRow
             });
+
+            app.getEffortCurRowId();
         }
 
         var financialMilestones = $('#financial-milestones');
@@ -178,14 +215,10 @@ app.getIdNo = function(str) {
             rowCountElement = $table.find('input[type="hidden"]:first'),
             rowCount = Number(rowCountElement.val());
 
-            if(options.addTeamMember || options.financialTotal) {
-                rowCountElement = $table.parent().find('input[type="hidden"]:nth-of-type(3)');
-                rowCount = Number(rowCountElement.val());
-            }
-
-
-
-
+        if(options.addTeamMember || options.financialTotal) {
+            rowCountElement = $table.parent().find('input[type="hidden"]:nth-of-type(3)');
+            rowCount = Number(rowCountElement.val());
+        }
 
         var add = function() {
             var lastRow = $($table).find('tr').last(),
@@ -198,18 +231,14 @@ app.getIdNo = function(str) {
                 curName,
                 $curIdSel;
 
-            console.log(lastRowId);
-
-            // Slice the id number from last row id
-
-            lastRowId = app.getIdNo(lastRowId);
-
-            lastRowId = Number(lastRowId);
+        // Slice the id number from last row id
+        lastRowId = app.getIdNo(lastRowId);
+        lastRowId = Number(lastRowId);
 
 	    newRow = lastRow.clone();
-            newRowId = lastRowId + 1;
+        newRowId = lastRowId + 1;
 
-	    /*screenName = newRow.find('td:first').children(':first').attr('id');
+        /*screenName = newRow.find('td:first').children(':first').attr('id');
 	    if (screenName.search("Milestones") >= 0) {
 		    if (newRow.find('td:first').children(':first').children(':first').attr('readonly')) {
 			newRow.find('td:nth-child(1)').children(':first').children(':first').attr('readonly',false)
@@ -231,6 +260,8 @@ app.getIdNo = function(str) {
 	    //newRow.find('input[type="hidden"]:last').val(0)
             
 	    lastRow.after(newRow);
+
+
 
             $formFields = newRow.find('select, input, div, span');
 
@@ -255,19 +286,18 @@ app.getIdNo = function(str) {
                 }
 
                 if(options.billableTotal || options.nonBillable) {
-                    var rowCountInitialElement      = $table.find('input[type="hidden"]:eq(1)');
+                    var rowCountInitialElement = $table.find('input[type="hidden"]:eq(1)');
                     $(rowCountInitialElement).attr('value', rowCount);
-
                 }
 
                 if(options.defaultValues.setZeroList) {
                     if(options.defaultValues.setZeroList.indexOf(index) !== -1) {
                         if($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
                             $element.val('0');
-                            console.log('input');
+                            //console.log('input');
                         } else {
                             $element.text('0');
-                            console.log('not input');
+                            //console.log('not input');
                         }
                     }
 
@@ -277,22 +307,16 @@ app.getIdNo = function(str) {
                 if(options.defaultValues.setEmptyList) {
                     if(options.defaultValues.setEmptyList.indexOf(index) !== -1) {
                         $element.val('');
-                        console.log(index + ': set empty');
+                        //console.log(index + ': set empty');
                     }
                 }
 
                 if(options.calendar) {
                     if(options.calendarPosList.indexOf(index) !== -1) {
                         $curIdSel = $('#' + curId);
-                        $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
-
-                        $curIdSel.on('')
-
-                        //console.log('index of calender: ' + index);
+                        $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"}).on('change', app.calcCurRowChangeDate);
                     }
                 }
-
-
 
                 //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
             });
@@ -301,10 +325,16 @@ app.getIdNo = function(str) {
             billableTotalFun();
             financialTotalFun();
 
-            if(options.plannedEffortCalc) {
-                //app.getPlannedEffort();
-            }
+            if(options.addTeamMember) {
+                app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent');
 
+                app.proPlannedEffortPercentItems.on({
+                    'keyup': app.calcPlannedEffortCurRow,
+                    'click': app.calcPlannedEffortCurRow
+                });
+
+                app.getEffortCurRowId();
+            }
         };
 
         var del = function() {
@@ -381,66 +411,6 @@ app.getIdNo = function(str) {
                 });
             }
         };
-
-        /*var plannedEffortFun = function() {
-            if(options.plannedEffortCalc) {
-                // variables
-                var item,
-                    starDateItem,
-                    endDateItem,
-                    plannedEffortItem;
-
-                var calcEffort = function($startDate, $endDate, $plannedEffort) {
-                    // get value and formatting
-                    var startDateVal = $startDate.val();
-                    var startDate = startDateVal.split('-');
-                    var startDateLen = startDate.length;
-
-                    var endDateVal = $endDate.val();
-                    var endDate = endDateVal.split('-');
-                    var endDateLen = endDate.length;
-
-                    // Type cast
-                    for(i = 0; i < startDateLen; i += 1) {
-                        startDate[i] = Number(startDate[i]);
-                    }
-
-                    for(i = 0; i < endDateLen; i += 1) {
-                        endDate[i] = Number(endDate[i]);
-                    }
-
-                    startDate = startDate.join();
-                    endDate = endDate.join();
-
-                    // Create Date Object
-                    startDate = new Date(startDate);
-                    endDate = new Date(endDate);
-
-                    // Calculate planned effort
-                    var plannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
-                    //var plannedEffortInPer = plannedEffort * (currPer/ 100);  // Calculate effort percentage
-
-                    return plannedEffort;
-                };
-
-
-
-                // Calculation for each row
-                $rows.each(function(index) {
-
-                    if(index > 0) {
-                        item = $(this);
-                        starDateItem = item.find('.pro-start-date');
-                        endDateItem = item.find('.pro-end-date');
-                        plannedEffortItem = item.find('.pro-planned-effort');
-
-                        plannedEffortItem.val(calcEffort(starDateItem, endDateItem, plannedEffortItem));
-                    }
-                });
-
-                
-            }
-        };*/
 
         var billableTotalFun = function() {
             if(options.billableTotal) {
@@ -746,7 +716,7 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
     return days;
 };
 
-app.getPlannedEffort = function($startDate, $endDate, $plannedEffort) {
+app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPercent) {
     // get value and formatting
     var startDateVal = $startDate.val();
     var startDate = startDateVal.split('-');
@@ -755,6 +725,10 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort) {
     var endDateVal = $endDate.val();
     var endDate = endDateVal.split('-');
     var endDateLen = endDate.length;
+
+    var plannedPercent = $plannedPercent.val();
+    plannedPercent = Number(plannedPercent);
+
 
     // Type cast
     for(var i = 0; i < startDateLen; i += 1) {
@@ -774,9 +748,11 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort) {
 
     // Calculate planned effort
     var plannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
-    //var plannedEffortInPer = plannedEffort * (currPer/ 100);  // Calculate effort percentage
+    var plannedEffortPercent = plannedEffort * (plannedPercent / 100);  // Calculate effort percentage
+    plannedEffortPercent = Math.round(plannedEffortPercent);
+    //plannedEffortPercent = Number(plannedEffortPercent);
 
-    return plannedEffort;
+    return plannedEffortPercent;
 };
 
 
