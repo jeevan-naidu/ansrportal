@@ -28,6 +28,7 @@ app.billableSetZeroList = helper.range(0, 35);
 
 
 
+
             $changeTeamMemberFields.each(function(index) {
                 total += 1;
 
@@ -56,6 +57,8 @@ app.billableSetZeroList = helper.range(0, 35);
                     setEmptyList: null
                 }
             });
+
+
         }
 
         // Project
@@ -72,6 +75,31 @@ app.billableSetZeroList = helper.range(0, 35);
                     setZeroList: null,
                     setEmptyList: null
                 }
+            });
+
+            var $addTeamRows = addTeamMembers.find('tr'),
+                item,
+                starDateItem,
+                endDateItem,
+                plannedEffortItem,
+                addMemberDatePickerDay = $('.day'),
+                addMemberDatePicker  = $('.date'),
+                $datePickers = $('.date-picker');
+
+            // Calculate effort for each row
+            $addTeamRows.each(function(index) {
+                if(index > 0) {
+                    item = $(this);
+                    starDateItem = item.find('.pro-start-date');
+                    endDateItem = item.find('.pro-end-date');
+                    plannedEffortItem = item.find('.pro-planned-effort');
+
+                    plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem));
+                }
+            });
+
+            $datePickers.on('changeDate', function() {
+                alert('change date event triggered');
             });
         }
 
@@ -250,20 +278,25 @@ app.getIdNo = function(str) {
                         $curIdSel = $('#' + curId);
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"});
 
+                        $curIdSel.on('')
+
                         //console.log('index of calender: ' + index);
                     }
                 }
 
 
 
-                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
             });
 
             daysTotalFun();
             billableTotalFun();
             financialTotalFun();
 
-            plannedEffortFun();
+            if(options.plannedEffortCalc) {
+                //app.getPlannedEffort();
+            }
+
         };
 
         var del = function() {
@@ -341,7 +374,7 @@ app.getIdNo = function(str) {
             }
         };
 
-        var plannedEffortFun = function() {
+        /*var plannedEffortFun = function() {
             if(options.plannedEffortCalc) {
                 // variables
                 var item,
@@ -377,6 +410,7 @@ app.getIdNo = function(str) {
 
                     // Calculate planned effort
                     var plannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
+                    //var plannedEffortInPer = plannedEffort * (currPer/ 100);  // Calculate effort percentage
 
                     return plannedEffort;
                 };
@@ -398,7 +432,7 @@ app.getIdNo = function(str) {
 
                 
             }
-        };
+        };*/
 
         var billableTotalFun = function() {
             if(options.billableTotal) {
@@ -652,7 +686,6 @@ app.getIdNo = function(str) {
         daysTotalFun();
         billableTotalFun();
         financialTotalFun();
-        plannedEffortFun();
 
         // Dom events
         $addBtn.on('click', add);
@@ -696,6 +729,41 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
 
     return days;
 };
+
+app.getPlannedEffort = function($startDate, $endDate, $plannedEffort) {
+    // get value and formatting
+    var startDateVal = $startDate.val();
+    var startDate = startDateVal.split('-');
+    var startDateLen = startDate.length;
+
+    var endDateVal = $endDate.val();
+    var endDate = endDateVal.split('-');
+    var endDateLen = endDate.length;
+
+    // Type cast
+    for(var i = 0; i < startDateLen; i += 1) {
+        startDate[i] = Number(startDate[i]);
+    }
+
+    for(i = 0; i < endDateLen; i += 1) {
+        endDate[i] = Number(endDate[i]);
+    }
+
+    startDate = startDate.join();
+    endDate = endDate.join();
+
+    // Create Date Object
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+
+    // Calculate planned effort
+    var plannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
+    //var plannedEffortInPer = plannedEffort * (currPer/ 100);  // Calculate effort percentage
+
+    return plannedEffort;
+};
+
+
 
 
 
