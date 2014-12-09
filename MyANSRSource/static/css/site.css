@@ -17,6 +17,9 @@ body {
 .required { 
 	color: #FF0000; 
 }
+.overflowHidden {
+	overflow: hidden;
+}
 
 /* Menu */
 .ansrLogo { 

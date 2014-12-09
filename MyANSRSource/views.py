@@ -822,6 +822,10 @@ class CreateProjectWizard(SessionWizardView):
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
+        if basicInfo['plannedEffort'] > 0:
+            revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
+        else:
+            revenueRec = 0
         chapterList = []
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
@@ -838,9 +842,12 @@ class CreateProjectWizard(SessionWizardView):
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
             flagData[k] = v
+        effortTotal = 0
         for teamData in [form.cleaned_data for form in form_list][2]:
             teamDataCounter += 1
             for k, v in teamData.iteritems():
+                if k == 'plannedEffort':
+                    effortTotal += v
                 k = "{0}-{1}".format(k, teamDataCounter)
                 changedTeamData[k] = v
                 if 'role' in k:
@@ -883,12 +890,16 @@ class CreateProjectWizard(SessionWizardView):
             data = {
                 'basicInfo': basicInfo,
                 'flagData': flagData,
+                'effortTotal': effortTotal,
+                'revenueRec': revenueRec,
                 'teamMember': cleanedTeamData,
             }
         else:
             data = {
                 'basicInfo': basicInfo,
                 'flagData': flagData,
+                'effortTotal': effortTotal,
+                'revenueRec': revenueRec,
                 'teamMember': cleanedTeamData,
                 'milestone': cleanedMilestoneData
             }
