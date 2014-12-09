@@ -4,7 +4,8 @@ from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, Location, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
-from smart_selects.form_fields import ChainedModelChoiceField
+from smart_selects.form_fields import ChainedModelChoiceField, \
+    GroupedModelSelect
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
@@ -263,6 +264,15 @@ def TimesheetFormset(currentUser):
 # Form Class to create project
 class ProjectBasicInfoForm(forms.ModelForm):
 
+    chapters = ChainedModelChoiceField(
+        'MyANSRSource',
+        'Chapter',
+        chain_field='book',
+        model_field='book',
+        show_all=False,
+        auto_choose=True
+    )
+
     class Meta:
         model = Project
         fields = (
@@ -273,7 +283,6 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'startDate',
             'endDate',
             'book',
-            'chapters',
             'plannedEffort',
             'contingencyEffort',
             'totalValue'
