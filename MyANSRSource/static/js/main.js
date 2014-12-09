@@ -179,6 +179,10 @@ app.getIdNo = function(str) {
                 rowCount = Number(rowCountElement.val());
             }
 
+
+
+
+
         var add = function() {
             var lastRow = $($table).find('tr').last(),
                 lastRowId = lastRow.find('td:first').children(':first').attr('id'),
@@ -436,6 +440,9 @@ app.getIdNo = function(str) {
 
         var billableTotalFun = function() {
             if(options.billableTotal) {
+                var $totalBillableHours     = $('.total-billable-hours'),
+                    $totalIdleHours         = $('.total-idle-hours');
+
                 var $dayPopoverBtn = $table.find('.day-popover-button');
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
@@ -471,9 +478,8 @@ app.getIdNo = function(str) {
                         $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
                         curQuestionsViewText    = $curQuestionsView.text(),
-                        curHoursViewText        = $curHoursView.text(),
-                        $totalBillableHours     = $('.total-billable-hours'),
-                        $totalIdleHours         = $('.total-idle-hours');
+                        curHoursViewText        = $curHoursView.text();
+
 
 
                     var viewToInput = function() {
@@ -530,15 +536,21 @@ app.getIdNo = function(str) {
                             var $rTotalIdleHoursList = $table.find('.r-total-idle-hours'),
                                 $rTotalBillableHoursList = $table.find('.r-total-billable-hours'),
                                 rTotalIdleHoursListLen = $rTotalIdleHoursList.length,
-                                tempIdleTotal = 0,
-                                tempBillableTotal = 0,
+                                tempIdleTotal = $rTotalIdleHoursList.text(),
+                                tempBillableTotal = $rTotalBillableHoursList.text(),
                                 curIdleTotal,
                                 curBillableTotal,
                                 idleTotalHours,
                                 billableTotalHours;
 
+                            // type cast
+                            tempIdleTotal = Number(tempIdleTotal);
+                            tempBillableTotal = Number(tempBillableTotal);
+
+
 
                             for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
+                                console.log('total idle list item: ' + i);
                                 curIdleTotal = Number($($rTotalIdleHoursList[i]).val());
                                 curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
 
