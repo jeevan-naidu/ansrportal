@@ -2,8 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, Location, ProjectChangeInfo
+    ProjectMilestone, Chapter, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
+import CompanyMaster
 from smart_selects.form_fields import ChainedModelChoiceField
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -116,7 +117,7 @@ def TimesheetFormset(currentUser):
             required=True
         )
         location = forms.ModelChoiceField(
-            queryset=Location.objects.all(),
+            queryset=CompanyMaster.models.OfficeLocation.objects.all(),
             label="Location",
             required=True
         )
