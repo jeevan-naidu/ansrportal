@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
+from django.db.models import Count
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
@@ -444,6 +445,44 @@ def Timesheet(request):
                  'tuesdayH', 'wednesdayH', 'thursdayH', 'task',
                  'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
                  )
+        billableHours = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=request.user,
+                approved=False,
+                activity__isnull=True
+            ),
+            ~Q(task='I')
+        ).values('totalH')
+        idleHours = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                task='I',
+                teamMember=request.user,
+                approved=False,
+                activity__isnull=True
+            ),
+        ).values('totalH')
+        othersHours = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=request.user,
+                approved=False,
+                project__isnull=True
+            ),
+        ).values('totalH')
+        bTotal = 0
+        for billable in billableHours:
+            bTotal += billable['totalH']
+        idleTotal = 0
+        for idle in idleHours:
+            idleTotal += idle['totalH']
+        othersTotal = 0
+        for others in othersHours:
+            othersTotal += others['totalH']
         if cwApprovedTimesheet > 0:
             messages.success(request, 'Timesheet is approved for this week')
             data = {'weekstartDate': weekstartDate,
@@ -464,6 +503,11 @@ def Timesheet(request):
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'tsFormset': tsFormset,
+                    'billableHours': billableHours,
+                    'idleHours': idleHours,
+                    'bTotal': bTotal,
+                    'idleTotal': idleTotal,
+                    'othersTotal': othersTotal,
                     'atFormset': atFormset}
             return render(request, 'MyANSRSource/timesheetEntry.html', data)
 
@@ -636,7 +680,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'role',
                     'startDate',
                     'endDate',
-                    'plannedEffort'
+                    'plannedEffort',
+                    'rate'
                 )
 
         if step == 'Change Milestones':
@@ -691,6 +736,7 @@ def UpdateProjectInfo(newInfo):
         ptmc.startDate = eachmember['startDate']
         ptmc.endDate = eachmember['endDate']
         ptmc.plannedEffort = eachmember['plannedEffort']
+        ptmc.rate = eachmember['rate']
         ptmc.save()
 
     for eachMilestone in newInfo[3]:
@@ -747,14 +793,24 @@ class CreateProjectWizard(SessionWizardView):
                     ] = True
         return form
 
+    def get_context_data(self, form, **kwargs):
+        context = super(CreateProjectWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Financial Milestones':
+            selectedType = self.storage.get_step_data('Define Project')[
+                'Define Project-projectType'
+            ]
+            prType = Project(projectType=selectedType)
+            context.update({'pt': prType.get_projectType_display()})
+        return context
+
     def get_form_initial(self, step):
+        initValue = {}
         if step == 'Define Team':
             initValue = [{'startDate': self.request.session['PStartDate'],
                           'endDate': self.request.session['PEndDate']},
                          {'startDate': self.request.session['PStartDate'],
                           'endDate': self.request.session['PEndDate']}]
-        else:
-            initValue = {}
         return self.initial_dict.get(step, initValue)
 
     def done(self, form_list, **kwargs):
@@ -900,6 +956,7 @@ def saveProject(request):
             teamMemberId = "teamMemberId-{0}".format(memberCount)
             role = "role-{0}".format(memberCount)
             plannedEffort = "plannedEffort-{0}".format(memberCount)
+            rate = "rate-{0}".format(memberCount)
             startDate = "startDate-{0}".format(memberCount)
             endDate = "endDate-{0}".format(memberCount)
 
@@ -910,6 +967,7 @@ def saveProject(request):
                 pk=request.session[role]
             )[0]
             ptm.plannedEffort = request.POST.get(plannedEffort)
+            ptm.rate = request.POST.get(rate)
             ptm.startDate = request.POST.get(startDate)
             ptm.endDate = request.POST.get(endDate)
             ptm.save()
@@ -940,50 +998,53 @@ def notify(request):
     projectId = request.session['currentProject']
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=request.session['customer'],
-        name__groups__name__in=['BU Head',
-                                'ANSR client partner',
-                                'ANSR account manager ']
-    ).values('name__email', 'name__first_name', 'name__last_name')
+    ).values('relatedMember__email',
+             'relatedMember__first_name',
+             'relatedMember__last_name')
     for eachHead in projectHead:
-        notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                            'hai',
-                                            settings.EMAIL_HOST_USER,
-                                            ['{0}'.format(
-                                                eachHead['name__email']
-                                            )],)
+        if eachHead['relatedMember__email'] != '':
+            notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                                'hai',
+                                                settings.EMAIL_HOST_USER,
+                                                ['{0}'.format(
+                                                    eachHead[
+                                                        'relatedMember__email'
+                                                    ]
+                                                )],)
 
-        emailTemp = render_to_string(
-            'projectCreatedHeadEmail.html',
-            {
-                'firstName': eachHead['name__first_name'],
-                'lastName': eachHead['name__last_name'],
-                'projectId': projectId
-            }
-        )
-        notifyTeam.attach_alternative(emailTemp, 'text/html')
-        notifyTeam.send()
+            emailTemp = render_to_string(
+                'projectCreatedHeadEmail.html',
+                {
+                    'firstName': eachHead['relatedMember__first_name'],
+                    'lastName': eachHead['relatedMember__last_name'],
+                    'projectId': projectId
+                }
+            )
+            notifyTeam.attach_alternative(emailTemp, 'text/html')
+            notifyTeam.send()
     projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
     ).values('member__email', 'member__first_name', 'member__last_name')
     for eachMember in teamMembers:
-        notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                            'hai',
-                                            settings.EMAIL_HOST_USER,
-                                            ['{0}'.format(
-                                                eachMember['member__email']
-                                            )],)
+        if eachMember['member__email'] != '':
+            notifyTeam = EmailMultiAlternatives('Congrats!!!',
+                                                'hai',
+                                                settings.EMAIL_HOST_USER,
+                                                ['{0}'.format(
+                                                    eachMember['member__email']
+                                                )],)
 
-        emailTemp = render_to_string(
-            'projectCreatedEmail.html',
-            {
-                'firstName': eachMember['member__first_name'],
-                'lastName': eachMember['member__last_name'],
-                'projectId': projectId
-            }
-        )
-        notifyTeam.attach_alternative(emailTemp, 'text/html')
-        notifyTeam.send()
+            emailTemp = render_to_string(
+                'projectCreatedEmail.html',
+                {
+                    'firstName': eachMember['member__first_name'],
+                    'lastName': eachMember['member__last_name'],
+                    'projectId': projectId
+                }
+            )
+            notifyTeam.attach_alternative(emailTemp, 'text/html')
+            notifyTeam.send()
     projectName = request.session['currentProjectName']
     data = {'projectId': request.session['currentProjectId'],
             'projectName': projectName,
