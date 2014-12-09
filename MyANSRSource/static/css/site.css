@@ -150,6 +150,9 @@ body {
 .one-sixth {
 	width: 16%;
 }
+.one-half {
+	width: 50%;
+}
 
 .form-step-bor {
     display: block;

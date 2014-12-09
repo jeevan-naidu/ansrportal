@@ -165,6 +165,14 @@ class ProjectMilestone(models.Model):
     description = models.CharField(default=None, blank=True, max_length=1000,
                                    verbose_name="Description")
     amount = models.IntegerField(default=0, verbose_name="Amount")
+    closed = models.BooleanField(
+        default=False,
+        null=False,
+        blank=False,
+        verbose_name="Completed"
+    )
+    reason = models.CharField(default=None, blank=True, max_length=100,
+                              verbose_name="Reason for change", null=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
