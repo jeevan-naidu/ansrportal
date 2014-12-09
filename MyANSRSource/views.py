@@ -680,7 +680,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'role',
                     'startDate',
                     'endDate',
-                    'plannedEffort'
+                    'plannedEffort',
+                    'rate'
                 )
 
         if step == 'Change Milestones':
@@ -735,6 +736,7 @@ def UpdateProjectInfo(newInfo):
         ptmc.startDate = eachmember['startDate']
         ptmc.endDate = eachmember['endDate']
         ptmc.plannedEffort = eachmember['plannedEffort']
+        ptmc.rate = eachmember['rate']
         ptmc.save()
 
     for eachMilestone in newInfo[3]:
@@ -954,6 +956,7 @@ def saveProject(request):
             teamMemberId = "teamMemberId-{0}".format(memberCount)
             role = "role-{0}".format(memberCount)
             plannedEffort = "plannedEffort-{0}".format(memberCount)
+            rate = "rate-{0}".format(memberCount)
             startDate = "startDate-{0}".format(memberCount)
             endDate = "endDate-{0}".format(memberCount)
 
@@ -964,6 +967,7 @@ def saveProject(request):
                 pk=request.session[role]
             )[0]
             ptm.plannedEffort = request.POST.get(plannedEffort)
+            ptm.rate = request.POST.get(rate)
             ptm.startDate = request.POST.get(startDate)
             ptm.endDate = request.POST.get(endDate)
             ptm.save()

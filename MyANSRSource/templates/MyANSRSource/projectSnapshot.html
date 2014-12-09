@@ -115,6 +115,7 @@
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Planned Effort</th>
+			<th>%</th>
 		</thead>
 		{% for teamData in teamMember %}
 		<tr>
@@ -157,6 +158,15 @@
 				</td>
 				<td>
 					{% with effortId="plannedEffort-"|add:counter %}
+						{% for rec, value in teamData.iteritems %}
+							{% if effortId == rec %}
+								{{ value }}
+							{% endif %}
+						{% endfor %}
+					{% endwith %}
+				</td>
+				<td>
+					{% with effortId="rate-"|add:counter %}
 						{% for rec, value in teamData.iteritems %}
 							{% if effortId == rec %}
 								{{ value }}

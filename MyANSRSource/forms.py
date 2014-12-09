@@ -359,7 +359,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         model = ProjectTeamMember
         fields = (
             'member', 'role', 'startDate',
-            'endDate', 'plannedEffort'
+            'rate', 'endDate', 'plannedEffort'
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -374,6 +374,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         self.fields['role'].widget.attrs['class'] = "form-control"
         self.fields['startDate'].widget.attrs['class'] = "form-control"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
+        self.fields['plannedEffort'].widget.attrs['class'] = "form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = "form-control"
 
 
@@ -410,6 +411,7 @@ class ProjectTeamForm(forms.ModelForm):
             'member',
             'role',
             'plannedEffort',
+            'rate',
             'startDate',
             'endDate',
         )
@@ -425,11 +427,15 @@ class ProjectTeamForm(forms.ModelForm):
             Q(is_superuser=True)
         )
         self.fields['member'].widget.attrs['class'] = "form-control"
-        self.fields['startDate'].widget.attrs['class'] = "form-control pro-start-date"
-        self.fields['endDate'].widget.attrs['class'] = "form-control pro-end-date"
+        self.fields['startDate'].widget.attrs['class'] = \
+            "form-control pro-start-date"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "form-control pro-end-date"
         self.fields['role'].widget.attrs['class'] = "w-100 form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "w-100 form-control pro-planned-effort"
+        self.fields['rate'].widget.attrs['class'] = \
+            "w-100 form-control pro-planned-effort-percent"
 
 
 # Project Flag Form
