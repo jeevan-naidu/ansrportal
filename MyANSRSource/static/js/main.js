@@ -58,6 +58,10 @@ app.billableSetZeroList = helper.range(0, 35);
                 }
             });
 
+            $('#id_Define_Team-0-startDate_pickers').on('changeDate', function() {
+                alert('change date');
+            });
+
 
         }
 
