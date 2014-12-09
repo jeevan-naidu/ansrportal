@@ -38,7 +38,12 @@
 <form id="snapshot" name="snapshot" method="POST" action="save">
 {% csrf_token %}
 <div class="panel panel-default">
-<div class="panel-heading"><b>Define Project</b></div>
+	<div class="panel-heading overflowHidden">
+		<b>
+			<span class="col-lg-6">Define Project</span>
+			<span class="col-lg-6 text-right">Planned Revenue Recognition : {{ revenueRec }}</span>
+		</b>
+	</div>
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
@@ -84,7 +89,7 @@
 	</div>
 </div>
 <div class="panel panel-default">
-<div class="panel-heading"><b>Project Basic Information</b></div>
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Project Basic Information</span></b></div>
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
@@ -106,7 +111,12 @@
 	</div>
 </div>
 <div class="panel panel-default">
-<div class="panel-heading"><b>Team Member(s)</b></div>
+	<div class="panel-heading overflowHidden">
+		<b>
+			<span class="col-lg-6">Team Member(s)</span>
+			<span class="col-lg-6 text-right">Total Effort : {{ effortTotal }}</span>
+		</b>
+	</div>
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
@@ -115,6 +125,7 @@
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Planned Effort</th>
+			<th>%</th>
 		</thead>
 		{% for teamData in teamMember %}
 		<tr>
@@ -164,6 +175,15 @@
 						{% endfor %}
 					{% endwith %}
 				</td>
+				<td>
+					{% with effortId="rate-"|add:counter %}
+						{% for rec, value in teamData.iteritems %}
+							{% if effortId == rec %}
+								{{ value }}
+							{% endif %}
+						{% endfor %}
+					{% endwith %}
+				</td>
 			{% endwith %}
 			{% for rec, value in teamData.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
@@ -175,7 +195,7 @@
 </div>
 {% if flagData.internal == False %} 
 <div class="panel panel-default">
-<div class="panel-heading"><b>Milestone(s)</b></div>
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>

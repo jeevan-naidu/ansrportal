@@ -2,10 +2,11 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, Location, ProjectChangeInfo
+    ProjectMilestone, Chapter, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField, \
     GroupedModelSelect
+import CompanyMaster
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
@@ -117,7 +118,7 @@ def TimesheetFormset(currentUser):
             required=True
         )
         location = forms.ModelChoiceField(
-            queryset=Location.objects.all(),
+            queryset=CompanyMaster.models.OfficeLocation.objects.all(),
             label="Location",
             required=True
         )
@@ -367,7 +368,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         model = ProjectTeamMember
         fields = (
             'member', 'role', 'startDate',
-            'endDate', 'plannedEffort'
+            'rate', 'endDate', 'plannedEffort'
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -382,6 +383,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         self.fields['role'].widget.attrs['class'] = "form-control"
         self.fields['startDate'].widget.attrs['class'] = "form-control"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
+        self.fields['plannedEffort'].widget.attrs['class'] = "form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = "form-control"
 
 
@@ -409,6 +411,34 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
         self.fields['amount'].widget.attrs['class'] = "form-control"
 
 
+class CloseProjectMilestoneForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
+
+    class Meta:
+        model = ProjectMilestone
+        fields = (
+            'milestoneDate', 'deliverables', 'description',
+            'amount', 'reason', 'closed'
+        )
+        widgets = {
+            'project': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CloseProjectMilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
+        self.fields['milestoneDate'].widget.attrs['readonly'] = True
+        self.fields['deliverables'].widget.attrs['class'] = "form-control"
+        self.fields['deliverables'].widget.attrs['readonly'] = True
+        self.fields['description'].widget.attrs['class'] = "form-control"
+        self.fields['description'].widget.attrs['readonly'] = True
+        self.fields['amount'].widget.attrs['class'] = "form-control"
+        self.fields['reason'].widget.attrs['class'] = "form-control"
+        self.fields['closed'].widget.attrs['class'] = "form-control"
+
+
 # Form Class to create team for project
 class ProjectTeamForm(forms.ModelForm):
 
@@ -418,6 +448,7 @@ class ProjectTeamForm(forms.ModelForm):
             'member',
             'role',
             'plannedEffort',
+            'rate',
             'startDate',
             'endDate',
         )
@@ -433,11 +464,15 @@ class ProjectTeamForm(forms.ModelForm):
             Q(is_superuser=True)
         )
         self.fields['member'].widget.attrs['class'] = "form-control"
-        self.fields['startDate'].widget.attrs['class'] = "form-control"
-        self.fields['endDate'].widget.attrs['class'] = "form-control"
+        self.fields['startDate'].widget.attrs['class'] = \
+            "form-control pro-start-date"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "form-control pro-end-date"
         self.fields['role'].widget.attrs['class'] = "w-100 form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
-            "w-100 form-control"
+            "w-100 form-control pro-planned-effort"
+        self.fields['rate'].widget.attrs['class'] = \
+            "w-100 form-control pro-planned-effort-percent"
 
 
 # Project Flag Form

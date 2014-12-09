@@ -59,6 +59,7 @@ ADDRESSTYPE_CHOICES = (
     ('TM', 'Temporary'),
     )
 
+
 class Designation(models.Model):
     name = models.CharField(
         verbose_name="Title",
@@ -112,8 +113,8 @@ https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 class Employee(models.Model):
     # User model will have the usual fields.  We will have the remaining ones
     # here
-    status = models.BooleanField(default=True)
     user = models.OneToOneField(User, verbose_name="User")
+    status = models.BooleanField(default=True)
     '''
     ================================================
     Basic Employee Attributes
@@ -221,7 +222,7 @@ class Employee(models.Model):
         blank=False,
         unique=True)
     PF_number = models.CharField(
-        "Provide Fund Number",
+        "Provident Fund Number",
         max_length=14,
         blank=True)
     bank_name = models.CharField(verbose_name="Bank Name",
@@ -248,9 +249,9 @@ class Employee(models.Model):
 
     def __unicode__(self):
         return '{0},{1},{2}'.format(
-            self.emp_id,
-            self.first_name,
-            self.last_name)
+            self.employee_assigned_id,
+            self.user.first_name,
+            self.user.last_name)
 
 
 class FamilyMember(models.Model):
@@ -274,10 +275,10 @@ class Education(models.Model):
         verbose_name_plural = "Education"
 
     employee = models.ForeignKey(User)
-    name = models.CharField("Degree", max_length=50, blank=False)
+    name = models.CharField("Qualification", max_length=50, blank=False)
     from_date = models.DateField("From Date", blank=False)
     to_date = models.DateField("To Date", blank=False)
-    institute = models.CharField("Institute Name", max_length=50, blank=False)
+    institute = models.CharField("Institution", max_length=50, blank=False)
     overall_marks = models.IntegerField(
         "Total Score/GPA",
         max_length=50,
