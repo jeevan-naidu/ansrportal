@@ -800,8 +800,12 @@ class CreateProjectWizard(SessionWizardView):
             selectedType = self.storage.get_step_data('Define Project')[
                 'Define Project-projectType'
             ]
+            projectTotal = self.storage.get_step_data('Define Project')[
+                'Define Project-totalValue'
+            ]
             prType = Project(projectType=selectedType)
             context.update({'pt': prType.get_projectType_display()})
+            context.update({'totalValue': projectTotal})
         return context
 
     def get_form_initial(self, step):
