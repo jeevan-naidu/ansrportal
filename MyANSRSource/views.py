@@ -1,12 +1,14 @@
+from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.db.models import Count
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo
+    ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
+    Chapter
 from CompanyMaster.models import Holiday
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
@@ -904,7 +906,6 @@ class CreateProjectWizard(SessionWizardView):
         else:
             revenueRec = 0
         chapterList = []
-        print basicInfo
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList
@@ -1150,6 +1151,12 @@ def deleteProject(request):
     ProjectTeamForm()
     ProjectMilestoneForm()
     return HttpResponseRedirect('add')
+
+
+def GetChapters(request, bookid):
+    chapters = Chapter.objects.filter(book__id=bookid)
+    json_chapters = serializers.serialize("json", chapters)
+    return HttpResponse(json_chapters, content_type="application/javascript")
 
 
 def Logout(request):

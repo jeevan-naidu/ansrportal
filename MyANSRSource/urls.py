@@ -2,6 +2,9 @@ from django.conf.urls import patterns, url
 from MyANSRSource import views
 
 urlpatterns = patterns(u'',
+                       url(r'^getchapters/(?P<bookid>[0-9])/$',
+                           views.GetChapters,
+                           name=u'getchapters'),
                        url(r'^timesheet/entry$',
                            views.Timesheet,
                            name=u'timesheet'),

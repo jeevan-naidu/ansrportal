@@ -264,15 +264,6 @@ def TimesheetFormset(currentUser):
 # Form Class to create project
 class ProjectBasicInfoForm(forms.ModelForm):
 
-    chapters = ChainedModelChoiceField(
-        'MyANSRSource',
-        'Chapter',
-        chain_field='book',
-        model_field='book',
-        show_all=False,
-        auto_choose=True
-    )
-
     class Meta:
         model = Project
         fields = (
@@ -283,6 +274,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'startDate',
             'endDate',
             'book',
+            'chapters',
             'plannedEffort',
             'contingencyEffort',
             'totalValue'
@@ -309,7 +301,8 @@ class ProjectBasicInfoForm(forms.ModelForm):
             "id_Define_Project-book"
         self.fields['chapters'].widget.attrs['class'] = \
             "form-control"
-        self.fields['chapters'].widget.attrs['multiple'] = 'multiple'
+        self.fields['chapters'].widget.attrs['id'] = \
+            "id_Define_Project-chapters"
         self.fields['startDate'].widget.attrs['class'] = \
             "start-date-input form-control"
         self.fields['endDate'].widget.attrs['class'] = \

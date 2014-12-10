@@ -34,13 +34,33 @@
 	</table>
 	</div>
 <script>
+	$(document).ready(
+		function() {
+			// Initializing the chapters value
+			noBook = $("#id_Define_Project-book :selected").text();
+			if(noBook == "---------") {
+				$("select#id_Define_Project-chapters").html('');
+			}
+			// To Filter the chapters based on the selected book
+			$("select#id_Define_Project-book").change(function() {
+			var url = "/myansrsource/getchapters/"+ $(this).val();
+			var options = '';
+			$.getJSON(url, function(json_chapters) {
+				var chapters = json_chapters;
+				for (var i = 0; i < chapters.length; i++) {
+					options += '<option value="' + chapters[i].pk + '">' + chapters[i].fields['name'] + '</option>';
+				}
+				$("select#id_Define_Project-chapters").html(options);
+				$("select#id_Define_Project-chapters option:first").attr('selected', 'selected');
+			});
+		});
+	});
     var app = app || {};
 
     (function() {
 
     }());
 </script>
-
 {% endblock %}{% endblock %}
 
 
