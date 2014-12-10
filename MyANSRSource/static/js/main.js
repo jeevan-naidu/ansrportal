@@ -52,10 +52,11 @@ app.calcCurRowChangeDate = function() {
         starDateItem = row.find('.pro-start-date'),
         endDateItem = row.find('.pro-end-date'),
         plannedEffortItem = row.find('.pro-planned-effort'),
-        plannedEffortPercentItem = row.find('.pro-planned-effort-percent');
+        plannedEffortPercentItem = row.find('.pro-planned-effort-percent'),
+        plannedResult = app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem);
 
-    plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffortPercent);
-    plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
+    plannedEffortItem.val(plannedResult.plannedEffortPercent);
+    plannedEffortPercentItem.val(plannedResult.plannedEffort);
 };
 
 
@@ -689,8 +690,11 @@ app.getIdNo = function(str) {
     };
 }(jQuery));
 
+app.holidaysList = ['2014,12,11', '2014,12,12', '2014,12,13', '2014,12,14', '2014,12,18'];
 
 app.workingDaysBetweenDates = function (startDate, endDate) {
+    var newDate,
+        holidayCount = 0;
 
     // Validate input
     if (endDate < startDate)
@@ -723,7 +727,32 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
     if (endDay == 6 && startDay != 0)
         days = days - 1
 
-    return days;
+    // Remove holidays
+    var startDateFormat,
+        startGetDay;
+
+    while(startDate < endDate) {
+        //console.log('startDate: ' + startDate);
+        startGetDay = startDate.getDay();
+        startDateFormat = startDate.getFullYear() + ',' + (startDate.getMonth() + 1) + ',' + startDate.getDate();
+
+
+
+        if(app.holidaysList.indexOf(startDateFormat) !== -1) {
+            if(startGetDay !== 0 && startGetDay !== 6) { // If holiday not equal to sunday,saturday
+                console.log('holiday: ' + startDate + 'day:' + startGetDay);
+                holidayCount += 1;
+            }
+        }
+
+        newDate = startDate.setDate(startDate.getDate() + 1);
+
+        startDate = new Date(newDate);
+    }
+
+    console.log('holidayCount:' + holidayCount);
+
+    return days - holidayCount;
 };
 
 app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPercent) {
