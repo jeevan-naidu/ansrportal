@@ -12,8 +12,9 @@ helper.range = function(start, end) {
     return result;
 };
 
-
 app.billableSetZeroList = helper.range(0, 35);
+
+
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -61,8 +62,6 @@ app.calcCurRowChangeDate = function() {
 
 
 
-
-
 // Main
 (function() {
     $(document).ready(function() {
@@ -81,7 +80,6 @@ app.calcCurRowChangeDate = function() {
                     setEmptyList: null
                 }
             });
-
         }
 
         // Project
@@ -107,9 +105,23 @@ app.calcCurRowChangeDate = function() {
                 endDateItem,
                 plannedEffortItem,
                 plannedEffortPercentItem,
-                row;
+                row,
+                holiday,
+                holidayDay,
+                totalHolidayLen = window.holidays.data.length;
+                app.holidaysList = [];
+
 
             app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
+
+            for(var i = 0; i < totalHolidayLen; i += 1) {
+                holiday = new Date(window.holidays.data[i].date);
+                holidayDay = holiday.getDay();
+
+                if(holidayDay !== 0 && holidayDay !== 6) {
+                    app.holidaysList.push(holiday);
+                }
+            }
 
             // Calculate effort for each row
             $addTeamRows.each(function(index) {
@@ -123,6 +135,8 @@ app.calcCurRowChangeDate = function() {
                     plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
                 }
             });
+
+
 
             // Calculate PlannedEffort when change effort
             app.calcPlannedEffortCurRow = function() {
@@ -144,7 +158,6 @@ app.calcCurRowChangeDate = function() {
             };
 
 
-
             app.proPlannedEffortPercentItems.on({
                 'keyup': app.calcPlannedEffortCurRow,
                 'click': app.calcPlannedEffortCurRow
@@ -153,6 +166,8 @@ app.calcCurRowChangeDate = function() {
             app.getEffortCurRowId();
 
             $('.date').on('change', app.calcCurRowChangeDate);
+
+
         }
 
         var financialMilestones = $('#financial-milestones');
@@ -690,11 +705,12 @@ app.getIdNo = function(str) {
     };
 }(jQuery));
 
-app.holidaysList = ['2014,12,11', '2014,12,12', '2014,12,13', '2014,12,14', '2014,12,18'];
+//app.holidaysList = ['2014-12-11', '2014-12-12', '2014-12-13', '2014-12-14', '2014-12-25'];
 
 app.workingDaysBetweenDates = function (startDate, endDate) {
     var newDate,
-        holidayCount = 0;
+        holidayCount = 0,
+        holidaysListLen = app.holidaysList.length;
 
     // Validate input
     if (endDate < startDate)
@@ -731,10 +747,10 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
     var startDateFormat,
         startGetDay;
 
-    while(startDate < endDate) {
+    /*while(startDate < endDate) {
         //console.log('startDate: ' + startDate);
         startGetDay = startDate.getDay();
-        startDateFormat = startDate.getFullYear() + ',' + (startDate.getMonth() + 1) + ',' + startDate.getDate();
+        startDateFormat = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate();
 
 
 
@@ -748,6 +764,12 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
         newDate = startDate.setDate(startDate.getDate() + 1);
 
         startDate = new Date(newDate);
+    }*/
+
+    for(var i = 0; i < holidaysListLen; i += 1) {
+        if(app.holidaysList[i] >= startDate & app.holidaysList[i] <= endDate) {
+            holidayCount += 1;
+        }
     }
 
     console.log('holidayCount:' + holidayCount);

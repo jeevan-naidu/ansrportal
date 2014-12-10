@@ -1,3 +1,4 @@
+import json
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
@@ -878,8 +879,11 @@ class CreateProjectWizard(SessionWizardView):
         if self.steps.current == 'Define Team':
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
-                holiday['date'] = holiday['date'].strftime("%d,%m,%Y")
-            context.update({'holidayList': holidays})
+                holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+            data = { 'data': list(holidays)}
+            print data
+            print json.dumps(data)
+            context.update({'holidayList': json.dumps(data)})
         return context
         if self.steps.current == 'Financial Milestones':
             selectedType = self.storage.get_step_data('Define Project')[

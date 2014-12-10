@@ -57,6 +57,12 @@
 	{% if forloop.last %}
 		</table>
 	{% endif %}
+{% autoescape off %}
+<script type="text/javascript">
+    window.holidays = {{ holidayList }};
+</script>
+{% endautoescape %}
+
 {% endblock %}{% endblock %}
 
 
