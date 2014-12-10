@@ -37,29 +37,34 @@
 {% endblock %}
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step {% block BIactiveClass %}{% endblock %}">
+    <li class="form-step one-sixth {% block DPactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
-        <label class="form-step-label">Basic Information</label>
+        <label class="form-step-label">Define Project</label>
     </li>
-    <li class="form-step {% block DTactiveClass %}{% endblock %}">
+    <li class="form-step one-sixth {% block BIactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
-        <label class="form-step-label">Define Team</label>
+        <label class="form-step-label">Basic Information</label>
     </li>
-    <li class="form-step {% block FMactiveClass %}{% endblock %}">
+    <li class="form-step one-sixth {% block DTactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
-        <label class="form-step-label">Financial Milestones</label>
+        <label class="form-step-label">Define Team</label>
     </li>
-    <li class="form-step {% block VactiveClass %}{% endblock %}">
+    <li class="form-step one-sixth {% block FMactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">4</span>
-        <label class="form-step-label">Validate</label>
+        <label class="form-step-label">Financial Milestones</label>
     </li>
-    <li class="form-step {% block CactiveClass %}{% endblock %}">
+    <li class="form-step one-sixth {% block VactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">5</span>
+        <label class="form-step-label">Validate</label>
+    </li>
+    <li class="form-step one-sixth {% block CactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">6</span>
         <label class="form-step-label">Complete!</label>
     </li>
 </ul>

@@ -2,6 +2,9 @@ from django.conf.urls import patterns, url
 from MyANSRSource import views
 
 urlpatterns = patterns(u'',
+                       url(r'^getchapters/(?P<bookid>[0-9])/$',
+                           views.GetChapters,
+                           name=u'getchapters'),
                        url(r'^timesheet/entry$',
                            views.Timesheet,
                            name=u'timesheet'),
@@ -23,6 +26,12 @@ urlpatterns = patterns(u'',
                        url(r'^project/add$',
                            views.CreateProjectWizard.as_view(views.FORMS),
                            name=u'createproject'),
+                       url(r'^project/modify$',
+                           views.ChangeProjectWizard.as_view(views.CFORMS),
+                           name=u'modifyproject'),
+                       url(r'^project/trackmilestone$',
+                           views.TrackMilestoneWizard.as_view(views.TMFORMS),
+                           name=u'trackmilestone'),
                        url(r'^logout/$', views.Logout, name=u'logout'),
                        url(r'^$', views.index, name=u'index'),
                        )

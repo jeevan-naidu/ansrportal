@@ -11,6 +11,7 @@ admin.site.site_header = apps.MyANSRSourceConfig.verbose_name +  \
     ' - Management UI'
 
 urlpatterns = patterns('',
+                       url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^myansrsource/', include('MyANSRSource.urls')),
                        url(r'^chaining/', include('smart_selects.urls')),

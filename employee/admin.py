@@ -1,37 +1,107 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from employee.models import Employee, PreviousEmployment, EmpAddress,\
+    FamilyMember, Education, Designation
 from django.contrib.auth.models import User
-from employee.models import *
-# Register your models here.
-class EmpBasicAdmin(admin.ModelAdmin):
+from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
+
+
+class EmpAddressInline(admin.StackedInline):
+    model = EmpAddress
+    extra = 1
+    fields = ('address_type', 'address1', 'address2',
+              ('city', 'state', 'zipcode'))
+
+
+class EducationInline(admin.TabularInline):
+    model = Education
+    extra = 1
+    classes = ('grp-collapse grp-closed',)
+
+
+class FamilyMemberInline(admin.TabularInline):
+    model = FamilyMember
+    extra = 1
+    classes = ('grp-collapse grp-closed',)
+
+
+class PreviousEmploymentInline(admin.StackedInline):
+    model = PreviousEmployment
+    extra = 1
+    classes = ('grp-collapse grp-closed',)
+
+
+class UserInline(admin.StackedInline):
+    model = Employee
+    can_delete = False
+    # Grappelli stylesheets
+    classes = ('grp-collapse grp-open',)
+    inline_classes = ('grp-collapse grp-open',)
+
     fieldsets = (
-        ('Employee Details',{
-            'fields': ('first_name', 'last_name', 'location_id', 
-                       'gender', 'd_o_b', 'nationality', 'mar_sta', 'blood_grop',
-                       'pan_no', 'passport_no')
-			    }),
-	('Contact Details',{
-            'fields': ('permanent_address', 'temporary_address', 'mob_num', 'land_num',
-                       'emer_num', 'personal_email', 'official_email')
-                           }),
-	('Previous Employement Details',{
-            'fields': ('prev_comp_name', 'prev_comp_addr', 'prev_comp_duration',
-                       'prev_leav_date')
-                                        }),
-        ('Employment Details',{
-            'fields': ('emp_id', 'card_id', 'user_name', 'depar_code',
-                       'cate_code', 'desig_code', 'year_exp', 'pf_no',
-                       'join_date', 'prob_date', 'confirm_date', 'bus_route',
-                       'busin_unit_code', 'cost_centre', 'group_insu_no', 'esi_num')
-                              }),
-	('Planning',{
-            'fields': ('shift_plan', 'leave_plan', 'att_plan', 'over_tplan', 'lat_early_plan', 'off_day1', 'off_day2', 'apply_to')
-                    }),
-        ('Bank Details',{
-            'fields': ('bank_name', 'bank_branch', 'bank_ac', 'ifsc_code')
-                        }),
-                 )
+        ('Employee Identification', {
+            'fields': (
+                'middle_name', )}),
+        ('Contact Details', {
+            'fields': (
+                ('mobile_phone', 'land_phone',
+                 'emergency_phone'), 'personal_email',)}),
+        ('Other Details', {
+            'fields': (
+                ('date_of_birth', 'gender', 'nationality'),
+                ('marital_status', 'blood_group'), 'exprience')}),
+        ('Role and Job', {
+            'fields': (('employee_assigned_id', 'designation'),
+                       ('business_unit', 'division', 'location'),
+                       ('category', 'idcard'),)}),
+        ('Financial Information', {
+            'fields': (('bank_name', 'bank_branch'),
+                       ('bank_account', 'bank_ifsc_code',),
+                       ('PAN', 'PF_number'),
+                       ('group_insurance_number', 'esi_number',),
+                       )}),
+        ('Key Dates', {
+            'fields': (('joined', 'confirmation', 'last_promotion'),
+                       ('resignation', 'exit',)), }, ),
+    )
 
 
-admin.site.register(EmpBasic, EmpBasicAdmin)
-admin.site.register(EmpAddress)
+class EmployeeAdmin(OriginalUserAdmin):
+    readonly_fields = ('email', )
+    inlines = [UserInline, EmpAddressInline, EducationInline,
+               FamilyMemberInline,
+               PreviousEmploymentInline, ]
+#    exclude = ['groups', 'user_permissions', ]
+
+    super_fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                    'groups', 'user_permissions')}),
+        # ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+
+    ord_fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
+        # ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+
+    def get_fieldsets(self, request, obj=None, **kwargs):
+        if request.user.is_superuser:
+            return self.super_fieldsets
+        else:
+            return self.ord_fieldsets
+
+
+class DesignationAdmin(admin.ModelAdmin):
+    pass
+
+try:
+    admin.site.unregister(User)
+finally:
+    admin.site.register(User, EmployeeAdmin)
+
+admin.site.register(Designation, DesignationAdmin)
+
+
+#admin.site.register(Employee, EmployeeAdmin)
