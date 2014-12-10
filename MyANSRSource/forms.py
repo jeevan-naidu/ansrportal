@@ -402,6 +402,34 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
         self.fields['amount'].widget.attrs['class'] = "form-control"
 
 
+class CloseProjectMilestoneForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
+
+    class Meta:
+        model = ProjectMilestone
+        fields = (
+            'milestoneDate', 'deliverables', 'description',
+            'amount', 'reason', 'closed'
+        )
+        widgets = {
+            'project': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CloseProjectMilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
+        self.fields['milestoneDate'].widget.attrs['readonly'] = True
+        self.fields['deliverables'].widget.attrs['class'] = "form-control"
+        self.fields['deliverables'].widget.attrs['readonly'] = True
+        self.fields['description'].widget.attrs['class'] = "form-control"
+        self.fields['description'].widget.attrs['readonly'] = True
+        self.fields['amount'].widget.attrs['class'] = "form-control"
+        self.fields['reason'].widget.attrs['class'] = "form-control"
+        self.fields['closed'].widget.attrs['class'] = "form-control"
+
+
 # Form Class to create team for project
 class ProjectTeamForm(forms.ModelForm):
 

@@ -1,0 +1,52 @@
+{% extends 'closeMilestoneMaster.inc' %}
+
+
+{% block CMSactiveClass %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		{% for field in form %} 
+		{% if field.errors %}									
+			<li>{{ field.label }}: {{ field.errors|striptags }}</li>		  
+		{% endif %}
+		{% endfor %}								
+	</div>
+{% endif %}
+	{% if forloop.first %}
+		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
+	{% endif %}
+		{% for t in form %}
+			{% if forloop.first %}
+				{% if '-0' in t.id_for_label %}
+					<thead>
+						{% for field in form %}
+							<th>
+								{% if field.label != 'msRecId' %}
+									<small>{{ field.label }}</small>
+									{% if field.field.required %}
+										<span class="required">*</span>
+									{% endif %}
+								{% endif %}
+							</th>
+						{% endfor %}
+					</thead>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	      {% for t in form %}
+			{% if forloop.first %}
+			   	<tr>
+			{% endif %}
+					{% for hField in t.hidden_fields %}
+						<td>{{ hField }}</td>
+					{% endfor %}
+					<td>{{ t }}</td>
+			{% if forloop.last %}
+				</tr>
+			{% endif %}
+	      {% endfor %}
+	{% if forloop.last %}
+		</table>
+	{% endif %}
+{% endblock %}{% endblock %}

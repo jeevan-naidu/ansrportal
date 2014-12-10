@@ -17,6 +17,9 @@ body {
 .required { 
 	color: #FF0000; 
 }
+.overflowHidden {
+	overflow: hidden;
+}
 
 /* Menu */
 .ansrLogo { 
@@ -146,6 +149,9 @@ body {
 }
 .one-sixth {
 	width: 16%;
+}
+.one-half {
+	width: 50%;
 }
 
 .form-step-bor {
