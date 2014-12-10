@@ -7,6 +7,15 @@ from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
 class EmpAddressInline(admin.TabularInline):
     model = EmpAddress
+    extra = 1
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj:
+            # Don't add any extra forms if
+            # the related object already
+            # exists.
+            return 0
+        return self.extra
 
 
 class EducationInline(admin.TabularInline):
@@ -14,11 +23,27 @@ class EducationInline(admin.TabularInline):
     extra = 1
     classes = ('grp-collapse grp-closed',)
 
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj:
+            # Don't add any extra forms if
+            # the related object already
+            # exists.
+            return 0
+        return self.extra
+
 
 class FamilyMemberInline(admin.TabularInline):
     model = FamilyMember
     extra = 1
     classes = ('grp-collapse grp-closed',)
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj:
+            # Don't add any extra forms if
+            # the related object already
+            # exists.
+            return 0
+        return self.extra
 
 
 class PreviousEmploymentInline(admin.StackedInline):
@@ -26,8 +51,18 @@ class PreviousEmploymentInline(admin.StackedInline):
     extra = 1
     classes = ('grp-collapse grp-closed',)
 
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj:
+            # Don't add any extra forms if
+            # the related object already
+            # exists.
+            return 0
+        return self.extra
+
 
 class UserInline(admin.StackedInline):
+    extra = 0
+    verbose_name_plural = 'Employee'
     model = Employee
     can_delete = False
     # Grappelli stylesheets
@@ -61,13 +96,20 @@ class UserInline(admin.StackedInline):
                        ('resignation', 'exit',)), }, ),
     )
 
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj:
+            # Don't add any extra forms if
+            # the related object already
+            # exists.
+            return 0
+        return self.extra
+
 
 class EmployeeAdmin(OriginalUserAdmin):
     readonly_fields = ('email', )
     inlines = [UserInline, EmpAddressInline, EducationInline,
                FamilyMemberInline,
                PreviousEmploymentInline, ]
-#    exclude = ['groups', 'user_permissions', ]
 
     super_fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -83,7 +125,14 @@ class EmployeeAdmin(OriginalUserAdmin):
         # ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
+    add_fieldsets = (
+        ('Add', {'fields': ('username', 'password1', 'password2'), }, ),
+    )
+
     def get_fieldsets(self, request, obj=None, **kwargs):
+        if obj is None:
+            return self.add_fieldsets
+
         if request.user.is_superuser:
             return self.super_fieldsets
         else:
@@ -99,6 +148,3 @@ finally:
     admin.site.register(User, EmployeeAdmin)
 
 admin.site.register(Designation, DesignationAdmin)
-
-
-#admin.site.register(Employee, EmployeeAdmin)
