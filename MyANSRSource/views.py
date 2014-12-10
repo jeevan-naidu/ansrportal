@@ -1165,6 +1165,12 @@ def GetChapters(request, bookid):
     return HttpResponse(json_chapters, content_type="application/javascript")
 
 
+def GetHolidays(request):
+    holidays = Holiday.objects.all()
+    json_holidays = serializers.serialize("json", holidays)
+    return HttpResponse(json_holidays, content_type="application/javascript")
+
+
 def Logout(request):
     logout(request)
     request.session.flush()
