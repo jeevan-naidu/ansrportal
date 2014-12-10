@@ -904,6 +904,7 @@ class CreateProjectWizard(SessionWizardView):
         else:
             revenueRec = 0
         chapterList = []
+        print basicInfo
         for eachChapter in basicInfo['chapters']:
             chapterList.append(eachChapter.id)
         self.request.session['chapters'] = chapterList

@@ -4,8 +4,7 @@ from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
-from smart_selects.form_fields import ChainedModelChoiceField, \
-    GroupedModelSelect
+from smart_selects.form_fields import ChainedModelChoiceField
 import CompanyMaster
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -291,7 +290,8 @@ class ProjectBasicInfoForm(forms.ModelForm):
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
             'endDate': DateTimePicker(options=dateTimeOption),
-            'projectManager': forms.HiddenInput(), }
+            'projectManager': forms.HiddenInput(),
+        }
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
@@ -305,8 +305,11 @@ class ProjectBasicInfoForm(forms.ModelForm):
             "form-control"
         self.fields['book'].widget.attrs['class'] = \
             "form-control"
+        self.fields['book'].widget.attrs['id'] = \
+            "id_Define_Project-book"
         self.fields['chapters'].widget.attrs['class'] = \
             "form-control"
+        self.fields['chapters'].widget.attrs['multiple'] = 'multiple'
         self.fields['startDate'].widget.attrs['class'] = \
             "start-date-input form-control"
         self.fields['endDate'].widget.attrs['class'] = \
