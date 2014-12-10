@@ -19,10 +19,7 @@
        
        {% block addFormMedia %}{% endblock %}
 
-       {# Load Dependecies for Django selectable #}
-       {% load selectable_tags %}
-       {% include_ui_theme %}
-       <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
+       {% include 'autocomplete_light/static.html' %}
 
        {% include 'session_security/all.html' %}
     </head>
