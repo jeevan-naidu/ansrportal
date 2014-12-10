@@ -873,6 +873,12 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Define Team':
+            holidays = Holiday.objects.all().values('name', 'date')
+            for holiday in holidays:
+                holiday['date'] = holiday['date'].strftime("%d,%m,%Y")
+            context.update({'holidayList': holidays})
+        return context
         if self.steps.current == 'Financial Milestones':
             selectedType = self.storage.get_step_data('Define Project')[
                 'Define Project-projectType'
