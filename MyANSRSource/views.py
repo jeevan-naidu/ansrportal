@@ -671,6 +671,16 @@ class ChangeProjectWizard(SessionWizardView):
                 projectManager=self.request.user,
                 closed=False
             )
+        if step == 'Change Basic Information':
+            signed = Project.objects.filter(
+                id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values('signed')[0]
+            if signed['signed'] is True:
+                form.fields['signed'].widget.attrs[
+                    'readonly'
+                ] = True
+
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -999,7 +1009,11 @@ def saveProject(request):
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
         pr.currentProject = request.POST.get('currentProject')
-        pr.signed = request.POST.get('signed')
+        if request.POST.get('signed') == 'False':
+            signed = False
+        else:
+            signed = True
+        pr.signed = signed
         if request.POST.get('internal') == 'False':
             internalValue = False
         else:
