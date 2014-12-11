@@ -880,11 +880,8 @@ class CreateProjectWizard(SessionWizardView):
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
                 holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
-            data = { 'data': list(holidays)}
-            print data
-            print json.dumps(data)
+            data = {'data': list(holidays)}
             context.update({'holidayList': json.dumps(data)})
-        return context
         if self.steps.current == 'Financial Milestones':
             selectedType = self.storage.get_step_data('Define Project')[
                 'Define Project-projectType'
