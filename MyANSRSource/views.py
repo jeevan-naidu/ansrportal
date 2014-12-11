@@ -628,7 +628,6 @@ class TrackMilestoneWizard(SessionWizardView):
                 'id',
                 'milestoneDate',
                 'description',
-                'deliverables',
                 'amount'
             )
         return self.initial_dict.get(step, projectMS)
