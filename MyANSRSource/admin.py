@@ -35,7 +35,7 @@ class ProjectChangeInfoAdmin(admin.ModelAdmin):
 
 
 class ProjectMileStoneAdmin(admin.ModelAdmin):
-    list_display = ('milestoneDate', 'deliverables', 'description')
+    list_display = ('milestoneDate', 'description')
 
 
 class ProjectTeamMemberAdmin(admin.ModelAdmin):

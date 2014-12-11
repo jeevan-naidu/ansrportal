@@ -231,6 +231,12 @@ body {
     width: 100px;
 }
 
+#add-team-members .autocomplete-light-widget,
+#add-team-members .autocomplete-light-widget input,
+#add-team-members .autocomplete-light-widget input:focus {
+    width: 100%;
+}
+
 
 
 

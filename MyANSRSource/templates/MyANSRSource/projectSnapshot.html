@@ -200,7 +200,6 @@
 	<table class="table table-condensed">
 		<thead>
 			<th>Description</th>
-			<th>Deliverables</th>
 			<th>Deadline</th>
 			<th>Amount</th>
 		</thead>
@@ -211,15 +210,6 @@
 				{% with descriptionId="description-"|add:counter %}
 					{% for rec, value in milestoneData.iteritems %}
 						{% if descriptionId == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			<td>
-				{% with deliverableId="deliverables-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if deliverableId == rec %}
 							{{ value }}
 						{% endif %}
 					{% endfor %}
