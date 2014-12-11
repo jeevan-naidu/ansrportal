@@ -280,10 +280,6 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
-                messages.info(
-                    request,
-                    'Timesheet is pending for approval this week'
-                )
             else:
                 # Save Timesheet
                 for eachActivity in activitiesList:
@@ -320,10 +316,6 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
-                messages.success(
-                    request,
-                    'Timesheet is approved for this week'
-                )
         return HttpResponseRedirect(request.get_full_path())
     else:
         if request.GET.get('week') == 'prev':
@@ -497,7 +489,8 @@ def Timesheet(request):
         else:
             if cwTimesheet > 0:
                 messages.warning(request,
-                                 'Timesheet is Pending for approval this week')
+                              'This timesheet is sent for approval \
+                              to your manager')
             else:
                 messages.info(request,
                               'Please fill timesheet for this week')
@@ -564,6 +557,7 @@ def Dashboard(request):
         totalActiveProjects = 0
         unApprovedTimeSheet = 0
         totalEmployees = 0
+        activeMilestones = 0
     data = {
         'username': request.session['username'],
         'usertype': request.session['usertype'],
