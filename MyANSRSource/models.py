@@ -160,8 +160,8 @@ class ProjectMilestone(models.Model):
     project = models.ForeignKey(Project)
     milestoneDate = models.DateField(verbose_name="Milestone Date",
                                      default=timezone.now)
-    description = models.CharField(default=None, blank=True, max_length=1000,
-                                   verbose_name="Description")
+    description = models.CharField(default=None, blank=False, max_length=1000,
+                                   null=True, verbose_name="Description")
     amount = models.IntegerField(default=0, verbose_name="Amount")
     closed = models.BooleanField(
         default=False,
