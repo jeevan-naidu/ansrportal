@@ -459,12 +459,12 @@ class ProjectTeamForm(forms.ModelForm):
             Q(groups__name='project manager') |
             Q(is_superuser=True)
         )
-        self.fields['member'].widget.attrs['class'] = "form-control"
+        self.fields['member'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs['class'] = \
             "form-control pro-start-date"
         self.fields['endDate'].widget.attrs['class'] = \
             "form-control pro-end-date"
-        self.fields['role'].widget.attrs['class'] = "w-100 form-control"
+        self.fields['role'].widget.attrs['class'] = "form-control min-180 max-200"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "w-100 form-control pro-planned-effort"
         self.fields['rate'].widget.attrs['class'] = \
@@ -511,13 +511,13 @@ class ProjectMilestoneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['milestoneDate'].widget.attrs['class'] = \
-            "date-picker d-item"
+            "date-picker d-item form-control"
         self.fields['deliverables'].widget.attrs['class'] = \
-            "milestone-item-deliverable d-item input-item"
+            "milestone-item-deliverable d-item input-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
-            "milestone-item-amount d-item input-item"
+            "milestone-item-amount d-item input-item form-control"
         self.fields['description'].widget.attrs['class'] = \
-            "milestone-item-amount d-item input-item"
+            "milestone-item-amount d-item input-item form-control"
         self.fields['deliverables'].widget.attrs['value'] = 0
 
 

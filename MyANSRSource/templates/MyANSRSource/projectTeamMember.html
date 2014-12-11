@@ -25,7 +25,8 @@
 	</div>
 {% endif %}
 	{% if forloop.first %}
-		<table class="table table-condensed table-responsive" id="add-team-members">
+        <div class="table-responsive">
+		<table class="table" id="add-team-members">
 	{% endif %}
 		{% for t in form %}
 			{% if forloop.first %}
@@ -33,7 +34,13 @@
 					<thead>
                     				<tr>
 						{% for field in form %}
-							<th>
+                            {% if field.label == 'Start date on project' or field.label == 'End date on project' %}
+                                <th class="w-170">
+                            {% elif field.label == 'Planned Effort' or field.label == '%' %}
+                                <th class="w-100">
+                            {% else %}
+							    <th>
+                            {% endif %}
 								<small>{{ field.label }}</small>
 								{% if field.field.required %}
 									<span class="required">*</span>
@@ -56,6 +63,7 @@
 	      {% endfor %}
 	{% if forloop.last %}
 		</table>
+        </div>
 	{% endif %}
 {% endblock %}{% endblock %}
 

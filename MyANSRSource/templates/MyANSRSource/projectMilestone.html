@@ -27,6 +27,7 @@
 	</div>
 {% endif %}
 	{% if forloop.first %}
+        <div class="col-sm-8 center-block">
 		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
 	{% endif %}
 		{% for t in form %}
@@ -34,7 +35,18 @@
 				{% if '-0' in t.id_for_label %}
 					<thead>
 						{% for field in form.visible_fields %}
-							<th>
+                            {% if field.label == 'Milestone Date' %}
+                                <th class="w-150">
+                            {% elif field.label == 'Description' %}
+                                <th class="min-200">
+                            {% elif field.label == 'Deliverables' or field.label == 'Amount' %}
+                                <th class="w-100">
+                            {% elif field.label == 'Delete' %}
+                                <th class="w-50">
+                            {% else %}
+                                <th>
+                            {% endif %}
+
 								<small>{{ field.label }}</small>
 								{% if field.field.required %}
 									<span class="required">*</span>
@@ -57,11 +69,11 @@
 	{% if forloop.last %}
 
 		</table>
-
+    </div>
 
 
     <div class="row">
-        <div class="col-md-4 pull-right">
+        <div class="col-sm-4 center-block">
             <table class="table table-bordered">
                 <tbody>
                 <tr>
