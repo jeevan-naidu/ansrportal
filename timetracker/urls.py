@@ -1,8 +1,10 @@
+import autocomplete_light
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from MyANSRSource import apps
 
+autocomplete_light.autodiscover()
 admin.autodiscover()
 
 # Modify this to change the title from "Django Administration"
