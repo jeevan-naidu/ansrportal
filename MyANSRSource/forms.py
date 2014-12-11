@@ -1,3 +1,5 @@
+import autocomplete_light
+autocomplete_light.autodiscover()
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -436,7 +438,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
 
 
 # Form Class to create team for project
-class ProjectTeamForm(forms.ModelForm):
+class ProjectTeamForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = ProjectTeamMember
