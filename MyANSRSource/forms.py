@@ -517,7 +517,7 @@ class ProjectMilestoneForm(forms.ModelForm):
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['description'].widget.attrs['class'] = \
-            "milestone-item-amount d-item input-item form-control"
+            "d-item input-item form-control"
 
 
 # Form Class to create front-End Login

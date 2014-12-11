@@ -90,7 +90,7 @@ app.calcCurRowChangeDate = function() {
                 add: '#addForm',
                 del: '#delete-member',
                 calendar: true,
-                calendarPosList: [4, 9],
+                calendarPosList: [11, 16],
                 addTeamMember: true,
                 plannedEffortCalc: true,
                 defaultValues: {  // When add row, set the elements default values
@@ -176,8 +176,12 @@ app.calcCurRowChangeDate = function() {
                 add: '#add-milestone-btn',
                 del: '#del-milestone-btn',
                 calendar: true,
-                calendarPosList: 0,
-                financialTotal: true
+                calendarPosList: [0],
+                financialTotal: true,
+                defaultValues: {  // When add row, set the elements default values
+                    setZeroList: null,
+                    setEmptyList: null
+                }
             });
         }
 
@@ -621,36 +625,21 @@ app.getIdNo = function(str) {
 
         var financialTotalFun = function() {
             if(options.financialTotal) {
+                var $datePickers = $('.date-picker');
+
+                if($($datePickers[0]).prop('readonly') == true) {
+                    $table.hide();
+
+                    $links.each(function() {
+                        $(this).attr('role', 'button');
+                        $(this).attr('disabled', true);
+                    });
+                }
+
                 var $deliverables = $table.find('.milestone-item-deliverable'),
                     $amounts = $table.find('.milestone-item-amount'),
-                    $amountTotal = $table.parent().find('.milestone-total-amount'),
-                    $datePickers = $('.date-picker'),
+                    $amountTotal = $table.parent().parent().find('.milestone-total-amount'),
                     $links = $('#add-milestone-btn, #del-milestone-btn');
-
-                    if($($datePickers[0]).prop('readonly') == true) {
-                        $table.hide();
-
-                        $links.each(function() {
-                            $(this).attr('role', 'button');
-                            $(this).attr('disabled', true);
-                        });
-                    }
-
-
-                    var deliverableTotal = function () {
-                    var $deliverablesLen = $deliverables.length,
-                        $deliverableTotal = $table.parent().find('.milestone-total-deliverable'),
-                        i,
-                        $curItem,
-                        temp = 0;
-
-                    for (i = 0; i < $deliverablesLen; i += 1) {
-                        $curItem = Number($($deliverables[i]).val());
-                        temp += $curItem;
-                    }
-
-                    $deliverableTotal.text(temp);
-                };
 
                 // amount validation
                 var amountValidatoinFun = function() {
@@ -683,10 +672,7 @@ app.getIdNo = function(str) {
                     amountValidatoinFun();
                 };
 
-                $deliverables.on({
-                    keyup: deliverableTotal,
-                    click: deliverableTotal
-                });
+                amountTotal();
 
                 $amounts.on({
                     keyup: amountTotal,
@@ -705,7 +691,6 @@ app.getIdNo = function(str) {
     };
 }(jQuery));
 
-//app.holidaysList = ['2014-12-11', '2014-12-12', '2014-12-13', '2014-12-14', '2014-12-25'];
 
 app.workingDaysBetweenDates = function (startDate, endDate) {
     var newDate,
@@ -747,27 +732,8 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
     var startDateFormat,
         startGetDay;
 
-    /*while(startDate < endDate) {
-        //console.log('startDate: ' + startDate);
-        startGetDay = startDate.getDay();
-        startDateFormat = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate();
-
-
-
-        if(app.holidaysList.indexOf(startDateFormat) !== -1) {
-            if(startGetDay !== 0 && startGetDay !== 6) { // If holiday not equal to sunday,saturday
-                console.log('holiday: ' + startDate + 'day:' + startGetDay);
-                holidayCount += 1;
-            }
-        }
-
-        newDate = startDate.setDate(startDate.getDate() + 1);
-
-        startDate = new Date(newDate);
-    }*/
-
     for(var i = 0; i < holidaysListLen; i += 1) {
-        if(app.holidaysList[i] >= startDate & app.holidaysList[i] <= endDate) {
+        if(app.holidaysList[i] >= startDate && app.holidaysList[i] <= endDate) {
             holidayCount += 1;
         }
     }
