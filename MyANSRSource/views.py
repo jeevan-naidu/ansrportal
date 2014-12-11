@@ -1,3 +1,4 @@
+import json
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
@@ -875,6 +876,12 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Define Team':
+            holidays = Holiday.objects.all().values('name', 'date')
+            for holiday in holidays:
+                holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+            data = {'data': list(holidays)}
+            context.update({'holidayList': json.dumps(data)})
         if self.steps.current == 'Financial Milestones':
             selectedType = self.storage.get_step_data('Define Project')[
                 'Define Project-projectType'
@@ -1157,6 +1164,12 @@ def GetChapters(request, bookid):
     chapters = Chapter.objects.filter(book__id=bookid)
     json_chapters = serializers.serialize("json", chapters)
     return HttpResponse(json_chapters, content_type="application/javascript")
+
+
+def GetHolidays(request):
+    holidays = Holiday.objects.all()
+    json_holidays = serializers.serialize("json", holidays)
+    return HttpResponse(json_holidays, content_type="application/javascript")
 
 
 def Logout(request):

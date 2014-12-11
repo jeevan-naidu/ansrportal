@@ -1,3 +1,5 @@
+import autocomplete_light
+autocomplete_light.autodiscover()
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -363,8 +365,12 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
     class Meta:
         model = ProjectTeamMember
         fields = (
-            'member', 'role', 'startDate',
-            'rate', 'endDate', 'plannedEffort'
+            'member',
+            'role',
+            'startDate',
+            'endDate',
+            'rate',
+            'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -436,17 +442,17 @@ class CloseProjectMilestoneForm(forms.ModelForm):
 
 
 # Form Class to create team for project
-class ProjectTeamForm(forms.ModelForm):
+class ProjectTeamForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = ProjectTeamMember
         fields = (
             'member',
             'role',
-            'plannedEffort',
-            'rate',
             'startDate',
             'endDate',
+            'rate',
+            'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
