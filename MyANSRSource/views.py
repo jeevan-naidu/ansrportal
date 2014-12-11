@@ -157,14 +157,6 @@ def Timesheet(request):
                         )
                         if timesheet.cleaned_data[holidayDay] > 0:
                             leaveDayWork = True
-                    plannedEffort = ProjectTeamMember.objects.filter(
-                        member=request.user,
-                        project=timesheet.cleaned_data['project']
-                    ).values('plannedEffort')
-                    myTotalEfforts = TimeSheetEntry.objects.filter(
-                        teamMember=request.user,
-                        project=timesheet.cleaned_data['project']
-                    )
                     del(timesheet.cleaned_data['DELETE'])
                     del(timesheet.cleaned_data['monday'])
                     del(timesheet.cleaned_data['tuesday'])
@@ -192,8 +184,6 @@ def Timesheet(request):
                         timesheetDict[k] = v
                     timesheetList.append(timesheetDict.copy())
                     timesheetDict.clear()
-                    for myEffort in plannedEffort:
-                        tt = myEffort['plannedEffort']
             for activity in activities:
                 if activity.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
@@ -350,11 +340,6 @@ def Timesheet(request):
             wkstart=weekstartDate, wkend=ansrEndDate,
             teamMember=request.user,
             approved=False, activity__isnull=True
-        ).count()
-        cwActivity = TimeSheetEntry.objects.filter(
-            wkstart=weekstartDate, wkend=ansrEndDate,
-            teamMember=request.user,
-            approved=False, project__isnull=True
         ).count()
         cwActivityData = TimeSheetEntry.objects.filter(
             Q(
@@ -725,9 +710,6 @@ class ChangeProjectWizard(SessionWizardView):
                         eachForm.fields['milestoneDate'].widget.attrs[
                             'readonly'
                         ] = True
-                        eachForm.fields['deliverables'].widget.attrs[
-                            'readonly'
-                        ] = True
                         eachForm.fields['description'].widget.attrs[
                             'readonly'
                         ] = True
@@ -771,7 +753,6 @@ class ChangeProjectWizard(SessionWizardView):
                 )['My Projects-project']).values(
                     'id',
                     'milestoneDate',
-                    'deliverables',
                     'description',
                     'amount',
                 )
@@ -826,7 +807,6 @@ def UpdateProjectInfo(newInfo):
             pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
         pmc.project = pci.project
         pmc.milestoneDate = eachMilestone['milestoneDate']
-        pmc.deliverables = eachMilestone['deliverables']
         pmc.description = eachMilestone['description']
         pmc.save()
 
@@ -860,9 +840,6 @@ class CreateProjectWizard(SessionWizardView):
                         'readonly'
                     ] = True
                     eachForm.fields['description'].widget.attrs[
-                        'readonly'
-                    ] = True
-                    eachForm.fields['deliverables'].widget.attrs[
                         'readonly'
                     ] = True
                     eachForm.fields['amount'].widget.attrs[
@@ -1081,11 +1058,9 @@ def saveProject(request):
                 pms.project = pr
                 milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
                 description = 'description-{0}'.format(milestoneCount)
-                deliverables = 'deliverables-{0}'.format(milestoneCount)
                 amount = 'amount-{0}'.format(milestoneCount)
                 pms.milestoneDate = request.POST.get(milestoneDate)
                 pms.description = request.POST.get(description)
-                pms.deliverables = request.POST.get(deliverables)
                 pms.amount = request.POST.get(amount)
                 pms.save()
 

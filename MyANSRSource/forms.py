@@ -396,7 +396,7 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'deliverables', 'description',
+            'milestoneDate', 'description',
             'amount'
         )
         widgets = {
@@ -408,7 +408,6 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
         super(ChangeProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
-        self.fields['deliverables'].widget.attrs['class'] = "form-control"
         self.fields['description'].widget.attrs['class'] = "form-control"
         self.fields['amount'].widget.attrs['class'] = "form-control"
 
@@ -420,7 +419,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'deliverables', 'description',
+            'milestoneDate', 'description',
             'amount', 'reason', 'closed'
         )
         widgets = {
@@ -432,8 +431,6 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
         self.fields['milestoneDate'].widget.attrs['readonly'] = True
-        self.fields['deliverables'].widget.attrs['class'] = "form-control"
-        self.fields['deliverables'].widget.attrs['readonly'] = True
         self.fields['description'].widget.attrs['class'] = "form-control"
         self.fields['description'].widget.attrs['readonly'] = True
         self.fields['amount'].widget.attrs['class'] = "form-control"
@@ -507,7 +504,6 @@ class ProjectMilestoneForm(forms.ModelForm):
         fields = (
             'milestoneDate',
             'description',
-            'deliverables',
             'amount'
         )
         widgets = {
@@ -518,13 +514,10 @@ class ProjectMilestoneForm(forms.ModelForm):
         super(ProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['milestoneDate'].widget.attrs['class'] = \
             "date-picker d-item"
-        self.fields['deliverables'].widget.attrs['class'] = \
-            "milestone-item-deliverable d-item input-item"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item"
         self.fields['description'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item"
-        self.fields['deliverables'].widget.attrs['value'] = 0
 
 
 # Form Class to create front-End Login
