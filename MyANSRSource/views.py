@@ -1,3 +1,4 @@
+from django.forms.util import ErrorList
 import json
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
@@ -829,6 +830,14 @@ class CreateProjectWizard(SessionWizardView):
                 self.request.session['PEndDate'] = form.cleaned_data[
                     'endDate'
                 ].strftime('%Y-%m-%d')
+
+        if step == 'Define Team':
+            if form.is_valid():
+                for eachForm in form:
+                    if eachForm.cleaned_data['rate'] > 100:
+                        rate = eachForm.cleaned_data['rate']
+                        errors = eachForm._errors.setdefault(rate, ErrorList())
+                        errors.append(u'% value cannot be greater than 100')
 
         if step == 'Financial Milestones':
             internalStatus = self.storage.get_step_data('Basic Information')[

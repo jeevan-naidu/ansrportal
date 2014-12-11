@@ -467,7 +467,8 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
             "form-control pro-start-date min-100"
         self.fields['endDate'].widget.attrs['class'] = \
             "form-control pro-end-date min-100"
-        self.fields['role'].widget.attrs['class'] = "form-control min-180 max-200"
+        self.fields['role'].widget.attrs['class'] = "form-control min-180 \
+            max-200"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "w-100 form-control pro-planned-effort"
         self.fields['rate'].widget.attrs['class'] = \

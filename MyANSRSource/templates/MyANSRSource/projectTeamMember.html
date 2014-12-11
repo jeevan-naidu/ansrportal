@@ -17,6 +17,9 @@
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
+		{% for k, v in form.errors.items %}
+			{{ v|striptags }}
+		{% endfor %}
 		{% for field in form %} 
 		{% if field.errors %}
 			{{ field.label }}: {{ field.errors|striptags }}
