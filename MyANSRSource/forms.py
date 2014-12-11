@@ -365,8 +365,12 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
     class Meta:
         model = ProjectTeamMember
         fields = (
-            'member', 'role', 'startDate',
-            'rate', 'endDate', 'plannedEffort'
+            'member',
+            'role',
+            'startDate',
+            'endDate',
+            'rate',
+            'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -445,10 +449,10 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
         fields = (
             'member',
             'role',
-            'plannedEffort',
-            'rate',
             'startDate',
             'endDate',
+            'rate',
+            'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
