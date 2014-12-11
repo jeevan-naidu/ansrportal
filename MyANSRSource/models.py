@@ -193,7 +193,7 @@ class ProjectTeamMember(models.Model):
                                default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
-    rate = models.IntegerField(default=0, verbose_name="%")
+    rate = models.IntegerField(default=100, verbose_name="%")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
