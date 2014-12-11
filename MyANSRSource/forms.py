@@ -1,4 +1,5 @@
 import autocomplete_light
+autocomplete_light.autodiscover()
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -437,41 +438,6 @@ class CloseProjectMilestoneForm(forms.ModelForm):
 
 
 # Form Class to create team for project
-"""class ProjectTeamForm(forms.ModelForm):
-
-    class Meta:
-        model = ProjectTeamMember
-        fields = (
-            'member',
-            'role',
-            'plannedEffort',
-            'rate',
-            'startDate',
-            'endDate',
-        )
-        widgets = {
-            'startDate': DateTimePicker(options=dateTimeOption),
-            'endDate': DateTimePicker(options=dateTimeOption),
-            'project': forms.HiddenInput(), }
-
-    def __init__(self, *args, **kwargs):
-        super(ProjectTeamForm, self).__init__(*args, **kwargs)
-        self.fields['member'].queryset = User.objects.exclude(
-            Q(groups__name='project manager') |
-            Q(is_superuser=True)
-        )
-        self.fields['member'].widget.attrs['class'] = "form-control"
-        self.fields['startDate'].widget.attrs['class'] = \
-            "form-control pro-start-date"
-        self.fields['endDate'].widget.attrs['class'] = \
-            "form-control pro-end-date"
-        self.fields['role'].widget.attrs['class'] = "w-100 form-control"
-        self.fields['plannedEffort'].widget.attrs['class'] = \
-            "w-100 form-control pro-planned-effort"
-        self.fields['rate'].widget.attrs['class'] = \
-            "w-100 form-control pro-planned-effort-percent" """
-
-
 class ProjectTeamForm(autocomplete_light.ModelForm):
 
     class Meta:
