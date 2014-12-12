@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block timesheetContent %}
-  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
+  <form name="timesheetForm" id="timesheet" method="post" action="" enctype="multipart/form-data">
 	{% csrf_token %}
     <div id="timesheet-billable">
 	<legend>
