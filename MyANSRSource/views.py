@@ -230,6 +230,7 @@ def Timesheet(request):
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
                     nonbillableTS.teamMember = request.user
+                    nonbillableTS.hold = True
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
                         nonbillableTS.exception = \
@@ -268,6 +269,7 @@ def Timesheet(request):
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.billable = True
+                    billableTS.hold = True
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
                         billableTS.exception = \
@@ -296,6 +298,7 @@ def Timesheet(request):
                     nonbillableTS.activity = activity
                     nonbillableTS.teamMember = request.user
                     nonbillableTS.approved = True
+                    nonbillableTS.hold = True
                     nonbillableTS.approvedon = datetime.now()
                     for k, v in eachActivity.iteritems():
                         setattr(nonbillableTS, k, v)
@@ -313,6 +316,7 @@ def Timesheet(request):
                     billableTS.billable = True
                     billableTS.approved = True
                     billableTS.approvedon = datetime.now()
+                    billableTS.hold = True
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
@@ -356,7 +360,7 @@ def Timesheet(request):
             )
         ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
-                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
+                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
                  'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
                  )
         tsData = {}
@@ -488,16 +492,24 @@ def Timesheet(request):
             return render(request, 'MyANSRSource/timesheetApproved.html', data)
         else:
             if cwTimesheet > 0:
-                messages.warning(request,
-                              'This timesheet is sent for approval \
-                              to your manager')
+                hold = cwTimesheetData[0]['hold']
+                if hold is True:
+                    messages.warning(request,
+                                'This timesheet is sent for approval \
+                                to your manager')
+                else:
+                    messages.warning(request,
+                                'Your manager kept this timesheet on hold, \
+                                     please resubmit')
             else:
                 messages.info(request,
                               'Please fill timesheet for this week')
+                hold = False
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'tsFormset': tsFormset,
+                    'hold': hold,
                     'billableHours': billableHours,
                     'idleHours': idleHours,
                     'bTotal': bTotal,
@@ -522,6 +534,10 @@ def ApproveTimesheet(request):
                     TimeSheetEntry.objects.filter(
                         id=updateRec
                     ).update(approved=True, approvedon=datetime.now())
+                else:
+                    TimeSheetEntry.objects.filter(
+                        id=updateRec
+                    ).update(hold=False)
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(

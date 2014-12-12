@@ -133,7 +133,8 @@ class TimeSheetEntry(models.Model):
     saturdayH = models.IntegerField(default=0, verbose_name="Sat")
     totalQ = models.IntegerField(default=0, verbose_name="Total")
     totalH = models.IntegerField(default=0, verbose_name="Total")
-    approved = models.BooleanField(default=False, verbose_name="Approved")
+    approved = models.BooleanField(default=False)
+    hold = models.BooleanField(default=False)
 
     # Approval related details
     approvedon = models.DateTimeField(default=None, null=True, blank=True,

@@ -332,7 +332,11 @@
     <!--<input type="hidden" name="total-billable-hours-hidden" class="total-billable-hours-hidden" value="{{ bTotal }}" />
     <input type="hidden" name="total-idle-hours-hidden" class="total-idle-hours-hidden" value="{{ idleTotal }}" />
     <input type="hidden" name="total-non-billable-hours-hidden" class="total-non-billable-hours-hidden" value="{{ othersTotal }}" />-->
- <button type="submit" value="submit" class="btn btn-info pull-right">
+    {% if hold == True  %}
+ 	<button type="submit" value="submit" class="btn btn-info pull-right" disabled="disabled">
+    {% else %}
+ 	<button type="submit" value="submit" class="btn btn-info pull-right">
+    {% endif %}
 	 Save Timesheet
  </button>
  </form>
