@@ -181,7 +181,8 @@ app.calcCurRowChangeDate = function() {
                 defaultValues: {  // When add row, set the elements default values
                     setZeroList: null,
                     setEmptyList: null
-                }
+                },
+                setEnableList: [7]
             });
         }
 
@@ -256,6 +257,7 @@ app.getIdNo = function(str) {
                 newRow,
                 newRowId,
                 $formFields,
+                formFieldsLen,
                 $element,
                 curId,
                 curName,
@@ -294,7 +296,7 @@ app.getIdNo = function(str) {
 
 
             $formFields = newRow.find('select, input, div, span');
-
+            formFieldsLen = $formFields.length;
             rowCount += 1;
 
             $(rowCountElement).attr('value', rowCount);
@@ -341,10 +343,23 @@ app.getIdNo = function(str) {
                     }
                 }
 
+                if(options.setEnableList) {
+                    if(options.setEnableList.indexOf(index) !== -1) {
+                        $element.prop('disabled', false);
+                        //console.log(index + ': setEnableList');
+                    }
+                }
+
                 if(options.calendar) {
                     if(options.calendarPosList.indexOf(index) !== -1) {
                         $curIdSel = $('#' + curId);
                         $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"}).on('change', app.calcCurRowChangeDate);
+                    }
+                }
+
+                if(options.addTeamMember) {
+                    if((formFieldsLen - 1) === index) {
+                        $element.prop('disabled', false);
                     }
                 }
 
