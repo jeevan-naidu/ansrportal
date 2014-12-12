@@ -871,6 +871,12 @@ class CreateProjectWizard(SessionWizardView):
                 holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
             data = {'data': list(holidays)}
             context.update({'holidayList': json.dumps(data)})
+
+        if self.steps.current == 'Financial Milestones':
+            projectTotal = self.storage.get_step_data('Define Project')[
+                'Define Project-totalValue'
+            ]
+            context.update({'totalValue': projectTotal})
         return context
 
     def get_form_initial(self, step):
