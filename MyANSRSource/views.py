@@ -671,7 +671,7 @@ class ChangeProjectWizard(SessionWizardView):
                 )['My Projects-project']).values('signed')[0]
             if signed['signed'] is True:
                 form.fields['signed'].widget.attrs[
-                    'readonly'
+                    'disabled'
                 ] = True
 
         if step == 'Change Team Members':
@@ -730,10 +730,6 @@ class ChangeProjectWizard(SessionWizardView):
                     'My Projects'
                 )['My Projects-project']).values(
                     'id',
-                    'endDate',
-                    'plannedEffort',
-                    'totalValue',
-                    'closed',
                     'signed'
                 )[0]
         if step == 'Change Team Members':
@@ -775,6 +771,8 @@ def UpdateProjectInfo(newInfo):
     pci.revisedEffort = newInfo[1]['revisedEffort']
     pci.revisedTotal = newInfo[1]['revisedTotal']
     pci.closed = newInfo[1]['closed']
+    if pci.closed is True:
+        pci.closedOn = datetime.now()
     pci.signed = newInfo[1]['signed']
     pci.save()
 
@@ -783,9 +781,6 @@ def UpdateProjectInfo(newInfo):
     pcicr.save()
 
     prc = Project.objects.get(id=newInfo[1]['id'])
-    prc.endDate = pci.endDate
-    prc.plannedEffort = pci.revisedEffort
-    prc.totalValue = pci.revisedTotal
     prc.closed = pci.closed
     prc.signed = pci.signed
     prc.save()

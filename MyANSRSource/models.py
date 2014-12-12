@@ -216,14 +216,12 @@ class ProjectChangeInfo(models.Model):
     revisedEffort = models.IntegerField(default=0,
                                         verbose_name="Revised Effort")
     revisedTotal = models.IntegerField(default=0,
-                                       verbose_name="Revised Total")
+                                       verbose_name="Revised amount")
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
+    closedOn = models.DateField(default=None, blank=True, null=True)
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
-    # Check lateset change or not
-    status = models.BooleanField(default=False,
-                                 verbose_name="Status")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
