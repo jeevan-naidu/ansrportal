@@ -639,11 +639,13 @@ app.getIdNo = function(str) {
                 var $deliverables = $table.find('.milestone-item-deliverable'),
                     $amounts = $table.find('.milestone-item-amount'),
                     $amountTotal = $table.parent().parent().find('.milestone-total-amount'),
-                    $links = $('#add-milestone-btn, #del-milestone-btn');
+                    $links = $('#add-milestone-btn, #del-milestone-btn'),
+                    $projectTotalValueHidden = $('.project-total-value-hidden'),
+                    projectTotalValueHidden = Number($projectTotalValueHidden.val());
 
                 // amount validation
                 var amountValidatoinFun = function() {
-                    if(Number(localStorage.contigencyEffort) > Number($amountTotal.text()) || Number(localStorage.contigencyEffort) < Number($amountTotal.text())) {
+                    if(projectTotalValueHidden !== Number($amountTotal.text())) {
                         if(!($amountTotal.hasClass('t-danger'))) {
                             $amountTotal.addClass('t-danger');
                         }
@@ -653,8 +655,6 @@ app.getIdNo = function(str) {
                         }
                     }
                 };
-
-                amountValidatoinFun();
 
                 var amountTotal = function () {
                     var $amountsLen = $amounts.length,

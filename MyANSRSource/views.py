@@ -854,36 +854,35 @@ class CreateProjectWizard(SessionWizardView):
                     eachForm.fields['description'].widget.attrs[
                         'readonly'
                     ] = True
+                    eachForm.fields['description'].widget.attrs[
+                        'value'
+                    ] = None
                     eachForm.fields['amount'].widget.attrs[
                         'readonly'
                     ] = True
                     eachForm.fields['DELETE'].widget.attrs[
                         'readonly'
                     ] = True
-            if form.is_valid():
-                projectTotal = self.storage.get_step_data('Define Project')[
-                    'Define Project-totalValue'
-                ]
-                totalRate = 0
-                for t in form.cleaned_data:
-                    totalRate += t['amount']
-                for eachForm in form:
-                    if int(projectTotal) != totalRate:
-                        errors = eachForm._errors.setdefault(
-                            totalRate,
-                            ErrorList())
-                        errors.append(u'Total amount must be \
-                                        equal to project value')
+            else:
+                if form.is_valid():
+                    projectTotal = self.storage.get_step_data('Define Project')[
+                        'Define Project-totalValue'
+                    ]
+                    totalRate = 0
+                    for t in form.cleaned_data:
+                        totalRate += t['amount']
+                    for eachForm in form:
+                        if int(projectTotal) != totalRate:
+                            errors = eachForm._errors.setdefault(
+                                totalRate,
+                                ErrorList())
+                            errors.append(u'Total amount must be \
+                                            equal to project value')
         return form
 
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
-        if self.steps.current == 'Financial Milestones':
-            projectTotal = self.storage.get_step_data('Define Project')[
-                'Define Project-totalValue'
-            ]
-            context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
