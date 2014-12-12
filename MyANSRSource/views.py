@@ -835,8 +835,11 @@ class CreateProjectWizard(SessionWizardView):
                 ].strftime('%Y-%m-%d')
 
         if step == 'Define Team':
+            for eachForm in form:
+                eachForm.fields['DELETE'].widget.attrs[
+                    'disabled'
+                ] = True
             if form.is_valid():
-                for eachForm in form:
                     if eachForm.cleaned_data['rate'] > 100:
                         rate = eachForm.cleaned_data['rate']
                         errors = eachForm._errors.setdefault(rate, ErrorList())
@@ -846,6 +849,10 @@ class CreateProjectWizard(SessionWizardView):
             internalStatus = self.storage.get_step_data('Basic Information')[
                 'Basic Information-internal'
             ]
+            for eachForm in form:
+                eachForm.fields['DELETE'].widget.attrs[
+                    'disabled'
+                ] = True
             if internalStatus == 'True':
                 for eachForm in form:
                     eachForm.fields['milestoneDate'].widget.attrs[
