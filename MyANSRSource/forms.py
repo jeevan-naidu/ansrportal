@@ -1,11 +1,13 @@
+import autocomplete_light
+autocomplete_light.autodiscover()
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
-import CompanyMaster
 from smart_selects.form_fields import ChainedModelChoiceField
+import CompanyMaster
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
@@ -282,7 +284,8 @@ class ProjectBasicInfoForm(forms.ModelForm):
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
             'endDate': DateTimePicker(options=dateTimeOption),
-            'projectManager': forms.HiddenInput(), }
+            'projectManager': forms.HiddenInput(),
+        }
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
@@ -296,8 +299,12 @@ class ProjectBasicInfoForm(forms.ModelForm):
             "form-control"
         self.fields['book'].widget.attrs['class'] = \
             "form-control"
+        self.fields['book'].widget.attrs['id'] = \
+            "id_Define_Project-book"
         self.fields['chapters'].widget.attrs['class'] = \
             "form-control"
+        self.fields['chapters'].widget.attrs['id'] = \
+            "id_Define_Project-chapters"
         self.fields['startDate'].widget.attrs['class'] = \
             "start-date-input form-control"
         self.fields['endDate'].widget.attrs['class'] = \
@@ -358,8 +365,12 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
     class Meta:
         model = ProjectTeamMember
         fields = (
-            'member', 'role', 'startDate',
-            'rate', 'endDate', 'plannedEffort'
+            'member',
+            'role',
+            'startDate',
+            'endDate',
+            'rate',
+            'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -385,7 +396,7 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'deliverables', 'description',
+            'milestoneDate', 'description',
             'amount'
         )
         widgets = {
@@ -397,23 +408,48 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
         super(ChangeProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
-        self.fields['deliverables'].widget.attrs['class'] = "form-control"
         self.fields['description'].widget.attrs['class'] = "form-control"
         self.fields['amount'].widget.attrs['class'] = "form-control"
 
 
+class CloseProjectMilestoneForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
+
+    class Meta:
+        model = ProjectMilestone
+        fields = (
+            'milestoneDate', 'description',
+            'amount', 'reason', 'closed'
+        )
+        widgets = {
+            'project': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CloseProjectMilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
+        self.fields['milestoneDate'].widget.attrs['readonly'] = True
+        self.fields['description'].widget.attrs['class'] = "form-control"
+        self.fields['description'].widget.attrs['readonly'] = True
+        self.fields['amount'].widget.attrs['class'] = "form-control"
+        self.fields['reason'].widget.attrs['class'] = "form-control"
+        self.fields['closed'].widget.attrs['class'] = "form-control"
+
+
 # Form Class to create team for project
-class ProjectTeamForm(forms.ModelForm):
+class ProjectTeamForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = ProjectTeamMember
         fields = (
             'member',
             'role',
-            'plannedEffort',
-            'rate',
             'startDate',
             'endDate',
+            'rate',
+            'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -426,12 +462,13 @@ class ProjectTeamForm(forms.ModelForm):
             Q(groups__name='project manager') |
             Q(is_superuser=True)
         )
-        self.fields['member'].widget.attrs['class'] = "form-control"
+        self.fields['member'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs['class'] = \
-            "form-control pro-start-date"
+            "form-control pro-start-date min-100"
         self.fields['endDate'].widget.attrs['class'] = \
-            "form-control pro-end-date"
-        self.fields['role'].widget.attrs['class'] = "w-100 form-control"
+            "form-control pro-end-date min-100"
+        self.fields['role'].widget.attrs['class'] = "form-control min-180 \
+            max-200"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "w-100 form-control pro-planned-effort"
         self.fields['rate'].widget.attrs['class'] = \
@@ -468,7 +505,6 @@ class ProjectMilestoneForm(forms.ModelForm):
         fields = (
             'milestoneDate',
             'description',
-            'deliverables',
             'amount'
         )
         widgets = {
@@ -478,14 +514,11 @@ class ProjectMilestoneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['milestoneDate'].widget.attrs['class'] = \
-            "date-picker d-item"
-        self.fields['deliverables'].widget.attrs['class'] = \
-            "milestone-item-deliverable d-item input-item"
+            "date-picker d-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
-            "milestone-item-amount d-item input-item"
+            "milestone-item-amount d-item input-item form-control"
         self.fields['description'].widget.attrs['class'] = \
-            "milestone-item-amount d-item input-item"
-        self.fields['deliverables'].widget.attrs['value'] = 0
+            "d-item input-item form-control"
 
 
 # Form Class to create front-End Login

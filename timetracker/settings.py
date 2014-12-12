@@ -105,6 +105,7 @@ TEMPLATE_DIRS = (
 # Application definition
 
 INSTALLED_APPS = (
+    'autocomplete_light',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',

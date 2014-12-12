@@ -18,6 +18,9 @@
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger">
+		{% for k, v in form.errors.items %}
+			{{ v|striptags }}
+		{% endfor %}
 		<button type="button" class="close" data-dismiss="alert">×</button>
 		{% for field in form %} 
 		{% if field.errors %}									
@@ -27,6 +30,7 @@
 	</div>
 {% endif %}
 	{% if forloop.first %}
+        <div class="col-sm-8 center-block">
 		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
 	{% endif %}
 		{% for t in form %}
@@ -34,7 +38,18 @@
 				{% if '-0' in t.id_for_label %}
 					<thead>
 						{% for field in form.visible_fields %}
-							<th>
+                            {% if field.label == 'Milestone Date' %}
+                                <th class="w-150">
+                            {% elif field.label == 'Description' %}
+                                <th class="min-200">
+                            {% elif field.label == 'Deliverables' or field.label == 'Amount' %}
+                                <th class="w-100">
+                            {% elif field.label == 'Delete' %}
+                                <th class="w-50">
+                            {% else %}
+                                <th>
+                            {% endif %}
+
 								<small>{{ field.label }}</small>
 								{% if field.field.required %}
 									<span class="required">*</span>
@@ -57,17 +72,13 @@
 	{% if forloop.last %}
 
 		</table>
-
+    </div>
 
 
     <div class="row">
-        <div class="col-md-4 pull-right">
+        <div class="col-sm-4 center-block">
             <table class="table table-bordered">
                 <tbody>
-                <tr>
-                    <td><strong>Deliverables</strong></td>
-		    <td><span class="milestone-total-deliverable">0</span> {{ pt }}</td>
-                </tr>
                 <tr>
                     <td><strong>Amount</strong></td>
                     <td><span class="milestone-total-amount">0</span></td>

@@ -1,16 +1,7 @@
-{% extends 'changeProjectMaster.inc' %}
+{% extends 'closeMilestoneMaster.inc' %}
 
 
-{% block addForm %}
-<span class="pull-right">
-	<a class="btn btn-success btn-xs" id="add-milestone-btn">
-		<span class="glyphicon glyphicon-plus"></span>
-			Add Milestone
-	</a>
-</span>
-{% endblock %}
-
-{% block CFMactiveClass %}active{% endblock %}
+{% block CMSactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger">
@@ -56,23 +47,6 @@
 			{% endif %}
 	      {% endfor %}
 	{% if forloop.last %}
-
 		</table>
-
-
-
-    <div class="row">
-        <div class="col-md-4 pull-right">
-            <table class="table table-bordered">
-                <tbody>
-                <tr>
-                    <td><strong>Amount</strong></td>
-                    <td><span class="milestone-total-amount">0</span></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
 	{% endif %}
 {% endblock %}{% endblock %}
