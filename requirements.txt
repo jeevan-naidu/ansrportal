@@ -2,6 +2,7 @@ Django==1.7.1
 Pillow==2.6.1
 argparse==1.2.1
 django-auth-ldap==1.2.2
+django-autocomplete-light==2.0.3
 django-bootstrap3==4.11.0
 -e git+https://github.com/vivekfantain/django-bootstrap3-datetimepicker.git@46204a78521dd9b4a57571113cc0101f7de5bfee#egg=django_bootstrap3_datetimepicker-master
 django-datetime-widget==0.9

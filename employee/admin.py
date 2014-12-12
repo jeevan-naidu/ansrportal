@@ -5,8 +5,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
 
-class EmpAddressInline(admin.TabularInline):
+class EmpAddressInline(admin.StackedInline):
     model = EmpAddress
+    extra = 1
+    fields = ('address_type', 'address1', 'address2',
+              ('city', 'state', 'zipcode'))
 
 
 class EducationInline(admin.TabularInline):

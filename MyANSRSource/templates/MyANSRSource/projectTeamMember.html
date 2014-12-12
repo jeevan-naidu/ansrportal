@@ -13,11 +13,13 @@
 	</a>
 </span>
 {% endblock %}
-
 {% block DTactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
+		{% for k, v in form.errors.items %}
+			{{ v|striptags }}
+		{% endfor %}
 		{% for field in form %} 
 		{% if field.errors %}
 			{{ field.label }}: {{ field.errors|striptags }}
@@ -26,7 +28,8 @@
 	</div>
 {% endif %}
 	{% if forloop.first %}
-		<table class="table table-condensed table-responsive" id="add-team-members">
+        <div class="table-responsive">
+		<table class="table" id="add-team-members">
 	{% endif %}
 		{% for t in form %}
 			{% if forloop.first %}
@@ -34,7 +37,15 @@
 					<thead>
                     				<tr>
 						{% for field in form %}
-							<th>
+                            {% if field.label == 'Start date on project' or field.label == 'End date on project' %}
+                                <th class="w-170">
+                            {% elif field.label == 'Planned Effort' or field.label == '%' %}
+                                <th class="w-100">
+                            {% elif field.label == 'Member' %}
+                                <th class="min-200">
+                            {% else %}
+							    <th>
+                            {% endif %}
 								<small>{{ field.label }}</small>
 								{% if field.field.required %}
 									<span class="required">*</span>
@@ -57,7 +68,13 @@
 	      {% endfor %}
 	{% if forloop.last %}
 		</table>
+        </div>
 	{% endif %}
+{% autoescape off %}
+<script type="text/javascript">
+    window.holidays = {{ holidayList }};
+</script>
+{% endautoescape %}
 
 {% endblock %}{% endblock %}
 
