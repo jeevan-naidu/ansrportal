@@ -61,6 +61,20 @@ app.calcCurRowChangeDate = function() {
 };
 
 
+app.projectTypeFun = function() {
+    var $this = $(this),
+        billableSelectProject = $('.billable-select-project'),
+        $rows = $this.closest('tr'),
+        $projectUnit =
+
+    billableSelectProject.on('change', function() {
+        console.log('select box changed');
+    });
+};
+
+
+
+
 
 // Main
 (function() {

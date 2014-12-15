@@ -192,7 +192,7 @@ def TimesheetFormset(currentUser):
                     auto_choose=False,
                     required=False
                 )
-            self.fields['project'].widget.attrs['class'] = "form-control d-item"
+            self.fields['project'].widget.attrs['class'] = "form-control d-item billable-select-project"
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item"
             self.fields['chapter'].widget.attrs['class'] = "form-control d-item"
