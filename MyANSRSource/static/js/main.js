@@ -65,6 +65,7 @@ app.calcCurRowChangeDate = function() {
 // Main
 (function() {
     $(document).ready(function() {
+        var $popover = $('.popover');
         var $changeTeamMembers = $('#change-team-members');
         if($changeTeamMembers.length > 0) {
             app.spaceToUnderscore($changeTeamMembers);
@@ -225,7 +226,6 @@ app.calcCurRowChangeDate = function() {
         contigencyEffortEle.on('keyup', function() {
             localStorage.contigencyEffort = $(this).val();
         });
-
     });
 }());
 
@@ -626,6 +626,13 @@ app.getIdNo = function(str) {
                 $dayPopoverBtn.on('keyup', function(e) {
                     if(e.keyCode === 9) {
                         $(this).trigger('click');
+                    }
+                });
+
+                $(document).on('keyup', function(e) {
+                    if(e.keyCode === 27) {
+                        var $popover = $('.popover');
+                        $popover.popover('hide');
                     }
                 });
 
