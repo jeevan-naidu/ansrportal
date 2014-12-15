@@ -555,6 +555,7 @@ app.getIdNo = function(str) {
                             var $rTotalIdleHoursList = $table.find('.r-total-idle-hours'),
                                 $rTotalBillableHoursList = $table.find('.r-total-billable-hours'),
                                 rTotalIdleHoursListLen = $rTotalIdleHoursList.length,
+                                rTotalBillableHoursListLen = $rTotalBillableHoursList.length,
                                 tempIdleTotal = $rTotalIdleHoursList.text(),
                                 tempBillableTotal = $rTotalBillableHoursList.text(),
                                 curIdleTotal,
@@ -566,14 +567,13 @@ app.getIdNo = function(str) {
                             tempIdleTotal = Number(tempIdleTotal);
                             tempBillableTotal = Number(tempBillableTotal);
 
-
-
                             for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
-                                console.log('total idle list item: ' + i);
                                 curIdleTotal = Number($($rTotalIdleHoursList[i]).val());
-                                curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
-
                                 tempIdleTotal += curIdleTotal;
+                            }
+
+                            for(i = 0; i < rTotalBillableHoursListLen; i += 1) {
+                                curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
                                 tempBillableTotal += curBillableTotal;
                             }
 
