@@ -56,8 +56,8 @@ app.calcCurRowChangeDate = function() {
         plannedEffortPercentItem = row.find('.pro-planned-effort-percent'),
         plannedResult = app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem);
 
-    plannedEffortItem.val(plannedResult.plannedEffortPercent);
-    plannedEffortPercentItem.val(plannedResult.plannedEffort);
+    plannedEffortItem.val(plannedResult.plannedEffort);
+    //plannedEffortPercentItem.val(plannedResult.plannedEffortPercent);
 };
 
 
@@ -139,7 +139,7 @@ app.calcCurRowChangeDate = function() {
 
 
             // Calculate PlannedEffort when change effort
-            app.calcPlannedEffortCurRow = function() {
+            app.calcPlannedEffortCurRow = function(e) {
                 item = $(this);
                 row = item.closest('tr');
                 starDateItem = row.find('.pro-start-date');
@@ -152,9 +152,8 @@ app.calcCurRowChangeDate = function() {
                 }
 
                 if(item.hasClass('pro-planned-effort')) {
-                    plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffortPercent);
+                    plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem, 'percent').plannedEffortPercent);
                 }
-
             };
 
 
@@ -758,7 +757,7 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
     return days - holidayCount;
 };
 
-app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPercent) {
+app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPercent, percent) {
     // get value and formatting
     var startDateVal = $startDate.val();
     var startDate = startDateVal.split('-');
@@ -794,19 +793,29 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
     // Calculate planned effort
     var totalPlannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
 
-    var plannedEffortPercent = (plannedEffortVal/totalPlannedEffort) * 100;  // Calculate effort percentage
 
-    var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
 
-    plannedEffortPercent = Math.round(plannedEffortPercent);
-    plannedEffort = Math.round(plannedEffort);
-    plannedEffortPercent = Number(plannedEffortPercent);
 
-    return {
-        plannedEffortPercent: plannedEffortPercent,
-        plannedEffort: plannedEffort
-    };
+    if(percent) {
+        var plannedEffortPercent = (plannedEffortVal/totalPlannedEffort) * 100;  // Calculate effort percentage
+        plannedEffortPercent = Math.round(plannedEffortPercent);
+        plannedEffortPercent = Number(plannedEffortPercent);
+
+        return {
+            plannedEffortPercent: plannedEffortPercent
+        };
+    } else {
+        var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
+        plannedEffort = Math.round(plannedEffort);
+
+        return {
+            plannedEffort: plannedEffort
+        };
+    }
+
+
 };
+
 
 
 
