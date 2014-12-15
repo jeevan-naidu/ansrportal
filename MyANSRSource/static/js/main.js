@@ -246,7 +246,7 @@ app.getIdNo = function(str) {
             rowCount = Number(rowCountElement.val());
 
         if(options.addTeamMember || options.financialTotal) {
-            rowCountElement = $table.parent().find('input[type="hidden"]:nth-of-type(3)');
+            rowCountElement = $table.parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
 
