@@ -116,7 +116,7 @@ def TimesheetFormset(currentUser):
         project = forms.ModelChoiceField(
             queryset=None,
             label="Project",
-            required=True
+            required=True,
         )
         location = forms.ModelChoiceField(
             queryset=CompanyMaster.models.OfficeLocation.objects.all(),

@@ -24,8 +24,18 @@
 	</legend>
 
     {{ tsFormset.management_form }}
+	{% for eachError in  ErrorList %}
+		{% if eachError.items|length > 0 %}
+			<div class="alert alert-danger" role="alert">
+				{% for k, v in eachError.items %}
+					{{ k }} : {{ v|striptags }}
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endfor %}
 	<table class="table table-condensed table-responsive">
 	{% for form in tsFormset %}
+		{{ form.errors }}
 		{% if forloop.first %}
 		<thead>
             	<tr>
