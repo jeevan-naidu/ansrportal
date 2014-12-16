@@ -104,7 +104,8 @@ class Project(models.Model):
 
 
 class TimeSheetEntry(models.Model):
-    project = models.ForeignKey(Project, verbose_name="Project Name", null=True)
+    project = models.ForeignKey(Project, blank=False,
+                                verbose_name="Project Name", null=True)
     # Week details
     wkstart = models.DateField(default=None, blank=True,
                                verbose_name="Week Start")
@@ -115,7 +116,8 @@ class TimeSheetEntry(models.Model):
         verbose_name="Location",
         null=True
     )
-    chapter = models.ForeignKey(Chapter, verbose_name="Chapter", null=True)
+    chapter = models.ForeignKey(Chapter, blank=False,
+                                verbose_name="Chapter", null=True)
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
     # Effort capture

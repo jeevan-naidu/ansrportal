@@ -320,7 +320,37 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
-        return HttpResponseRedirect(request.get_full_path())
+            return HttpResponseRedirect(request.get_full_path())
+        else:
+            if request.GET.get('week') == 'prev':
+                weekstartDate = datetime.strptime(
+                    request.GET.get('startdate'), '%d%m%Y'
+                ).date() - timedelta(days=7)
+                ansrEndDate = datetime.strptime(
+                    request.GET.get('enddate'), '%d%m%Y'
+                ).date() - timedelta(days=7)
+                disabled = 'prev'
+            elif request.GET.get('week') == 'next':
+                disabled = 'next'
+            tsErrorList = timesheets.errors
+            tsError = [k.cleaned_data for k in timesheets]
+            atError = [k for k in activities.cleaned_data]
+            tsFormset = formset_factory(tsform,
+                                        extra=0,
+                                        can_delete=True)
+            tsFormset = tsFormset(initial=tsError)
+            atFormset = formset_factory(ActivityForm,
+                                        extra=0,
+                                        can_delete=True)
+            atFormset = atFormset(initial=atError, prefix='at')
+            data = {'weekstartDate': weekstartDate,
+                    'weekendDate': ansrEndDate,
+                    'disabled': disabled,
+                    'ErrorList': tsErrorList,
+                    'tsFormset': tsFormset,
+                    'hold': False,
+                    'atFormset': atFormset}
+            return render(request, 'MyANSRSource/timesheetEntry.html', data)
     else:
         if request.GET.get('week') == 'prev':
             weekstartDate = datetime.strptime(
