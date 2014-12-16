@@ -13,8 +13,8 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 TASK = (
     ('D', 'Develop'),
-    ('R', 'Review'),
-    ('C', 'Copy Edit'),
+    ('E', 'EA'),
+    ('C', 'CE'),
     ('Q', 'QA'),
     ('I', 'Idle'),
     ('W', 'ReWork'),
@@ -75,8 +75,8 @@ class ActivityForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
-        self.fields['activity_feedback'].widget.attrs['readonly'] = True
-        self.fields['activity_total'].widget.attrs['readonly'] = True
+        self.fields['activity_feedback'].widget.attrs['readonly'] = 'True'
+        self.fields['activity_total'].widget.attrs['readonly'] = 'True'
         self.fields['activity'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['class'] = "form-control \
         days input-field"
@@ -244,7 +244,7 @@ def TimesheetFormset(currentUser):
             self.fields['feedback'].widget.attrs[
                 'class'
             ] = "form-control d-item"
-            self.fields['feedback'].widget.attrs['readonly'] = True
+            self.fields['feedback'].widget.attrs['readonly'] = 'True'
             self.fields['mondayH'].widget.attrs['value'] = 0
             self.fields['mondayQ'].widget.attrs['value'] = 0
             self.fields['tuesdayH'].widget.attrs['value'] = 0
@@ -430,9 +430,9 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         super(CloseProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
-        self.fields['milestoneDate'].widget.attrs['readonly'] = True
+        self.fields['milestoneDate'].widget.attrs['readonly'] = 'True'
         self.fields['description'].widget.attrs['class'] = "form-control"
-        self.fields['description'].widget.attrs['readonly'] = True
+        self.fields['description'].widget.attrs['readonly'] = 'True'
         self.fields['amount'].widget.attrs['class'] = "form-control"
         self.fields['reason'].widget.attrs['class'] = "form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
