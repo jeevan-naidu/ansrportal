@@ -80,7 +80,11 @@
 										<span class="b-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
-								{% elif 'mondayH' in data.id_for_label %}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'mondayH' in data.id_for_label %}
 									{% if data.value > 0 %}
 										<span class="b-hours">{{ data.value }}</span> H
 									{% else %}
@@ -102,7 +106,11 @@
 										<span class="b-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
-								{% elif 'tuesdayH' in data.id_for_label %}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'tuesdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
 										<span class="b-hours">{{ data.value }}</span> H
 									{% else %}
@@ -124,7 +132,11 @@
 										<span class="b-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
-								{% elif 'wednesdayH' in data.id_for_label %}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'wednesdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
 										<span class="b-hours">{{ data.value }}</span> H
 									{% else %}
@@ -146,7 +158,11 @@
 										<span class="b-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
-								{% elif 'thursdayH' in data.id_for_label %}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'thursdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
 										<span class="b-hours">{{ data.value }}</span> H
 									{% else %}
@@ -168,7 +184,11 @@
 										<span class="b-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
-								{% elif 'fridayH' in data.id_for_label %}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'fridayH' in data.id_for_label %}
 									{% if data.value > 0 %}
 										<span class="b-hours">{{ data.value }}</span> H
 									{% else %}
@@ -190,7 +210,11 @@
 										<span class="b-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
-								{% elif 'saturdayH' in data.id_for_label %}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'saturdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
 										<span class="b-hours">{{ data.value }}</span> H
 									{% else %}
@@ -212,27 +236,31 @@
 										<span class="t-questions">0</span> Q 
 									{% endif %}
 									{{ data }}
-								{% elif 'totalH' in data.id_for_label %}
-                                    {% for Ndata in form %}
-                                        {% if Ndata.label == 'Task' %}
-                                            {% if Ndata.value == 'I' %}
-                                                 {% if data.value > 0 %}
-                                                    <input type="hidden" class="r-total-idle-hours" value="{{ data.value }}" />
-                                                    <input type="hidden" class="r-total-billable-hours" value="0" />
-                                                 {% else %}
-                                                    <input type="hidden" class="r-total-idle-hours" value="0" />
-                                                 {% endif %}
-                                            {% else %}
-                                                 {% if data.value > 0 %}
-                                                    <input type="hidden" class="r-total-billable-hours" value="{{ data.value }}" />
-                                                    <input type="hidden" class="r-total-idle-hours" value="0" />
-                                                 {% else %}
-                                                    <input type="hidden" class="r-total-billable-hours" value="0" />
-                                                    <input type="hidden" class="r-total-idle-hours" value="0" />
-                                                 {% endif %}
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'totalH' in data.id_for_label %}
+								    {% for Ndata in form %}
+									{% if Ndata.label == 'Task' %}
+									    {% if Ndata.value == 'I' %}
+										 {% if data.value > 0 %}
+										    <input type="hidden" class="r-total-idle-hours" value="{{ data.value }}" />
+										    <input type="hidden" class="r-total-billable-hours" value="0" />
+										 {% else %}
+										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										 {% endif %}
+									    {% else %}
+										 {% if data.value > 0 %}
+										    <input type="hidden" class="r-total-billable-hours" value="{{ data.value }}" />
+										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										 {% else %}
+										    <input type="hidden" class="r-total-billable-hours" value="0" />
+										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										 {% endif %}
+									    {% endif %}
+									{% endif %}
+								    {% endfor %}
 									{% if data.value > 0 %}
 										<span class="t-hours">{{ data.value }}</span> H
 									{% else %}
