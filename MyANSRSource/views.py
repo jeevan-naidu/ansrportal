@@ -702,6 +702,17 @@ class ChangeProjectWizard(SessionWizardView):
     def get_template_names(self):
         return [CTEMPLATES[self.steps.current]]
 
+    def get_context_data(self, form, **kwargs):
+        context = super(ChangeProjectWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Change Team Members':
+            holidays = Holiday.objects.all().values('name', 'date')
+            for holiday in holidays:
+                holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+            data = {'data': list(holidays)}
+            context.update({'holidayList': json.dumps(data)})
+        return context
+
     def get_form(self, step=None, data=None, files=None):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
         step = step or self.steps.current
@@ -743,6 +754,9 @@ class ChangeProjectWizard(SessionWizardView):
                             'readonly'
                         ] = True
                         eachForm.fields['endDate'].widget.attrs[
+                            'readonly'
+                        ] = True
+                        eachForm.fields['rate'].widget.attrs[
                             'readonly'
                         ] = True
                         eachForm.fields['plannedEffort'].widget.attrs[
