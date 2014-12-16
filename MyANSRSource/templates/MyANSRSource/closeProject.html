@@ -28,13 +28,13 @@
 					{{ field.choice_label }}
 				</td>
 				{% with superId=forloop.counter %}
-					<td class="col-lg-1 text-center">
-						{% for t in msCount %}
-							{% if forloop.counter == superId %}
-								{{ t.msCount }}
-							{% endif %}
-						{% endfor %}
-					</td>
+				<td class="col-lg-1 text-center">
+					{% for t in msCount %}
+						{% if forloop.counter == superId %}
+							{{ t.msCount }}
+						{% endif %}
+					{% endfor %}
+				</td>
 				{% endwith %}
 			</tr>
 		{% endfor %}

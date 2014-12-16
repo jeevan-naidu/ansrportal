@@ -648,10 +648,15 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step or self.steps.current
         if step == 'My Projects':
+            activeMSCount = ProjectMilestone.objects.filter(
+                project__projectManager=self.request.user,
+                closed=False
+            ).count()
+            print activeMSCount
             form.fields['project'].queryset = Project.objects.filter(
                 projectManager=self.request.user,
                 internal=False,
-                closed=False
+                closed=False,
             )
         return form
 
@@ -678,7 +683,8 @@ class TrackMilestoneWizard(SessionWizardView):
         if self.steps.current == 'My Projects':
             ms = ProjectMilestone.objects.filter(
                 project__projectManager=self.request.user,
-                closed=False
+                closed=False,
+                project__closed=False
             ).values('project').annotate(
                 msCount=Count('project')
             ).values('msCount')
