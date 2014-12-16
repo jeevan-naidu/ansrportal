@@ -705,6 +705,11 @@ class ChangeProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ChangeProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Change Milestones':
+            projectTotal = self.storage.get_step_data('Change Basic Information')[
+                'Change Basic Information-revisedTotal'
+            ]
+            context.update({'totalValue': projectTotal})
         if self.steps.current == 'Change Team Members':
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
@@ -945,6 +950,11 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Financial Milestones':
+            projectTotal = self.storage.get_step_data('Define Project')[
+                'Define Project-totalValue'
+            ]
+            context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
