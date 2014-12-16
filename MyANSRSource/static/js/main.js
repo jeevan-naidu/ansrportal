@@ -479,8 +479,8 @@ app.getIdNo = function(str) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label pro-type">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
 
                 $dayPopoverBtn.popover({
                     trigger: 'click',
@@ -612,6 +612,16 @@ app.getIdNo = function(str) {
 
                         calculateTotal();
                     };
+
+                   var inputToView = function() {
+                       $curQuestionsView.text($curQuestionsInput.val());
+                       $curHoursView.text($curHoursInput.val());
+
+                       $curQuestionsHidden.val($curQuestionsInput.val());
+                       $curHoursHidden.val($curHoursInput.val());
+
+                       calculateTotal();
+                   };
 
                     $curQuestionsInput.on({
                         keyup: inputToView,
@@ -833,9 +843,9 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
             plannedEffort: plannedEffort
         };
     }
-
-
 };
+
+
 
 
 
