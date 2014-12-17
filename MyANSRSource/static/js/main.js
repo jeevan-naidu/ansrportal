@@ -70,7 +70,7 @@ app.changeProject = function() {
             // get current project by id
         selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
 
-        console.log(selectedProject);
+        //console.log(selectedProject);
 
         if(selectedProject.project__projectType === 'Q') {
             app.curProjectUnitShort = 'Q';
