@@ -381,13 +381,12 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectTeamMemberForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        self.fields['member'].widget.attrs['class'] = "form-control"
-        self.fields['role'].widget.attrs['class'] = "form-control"
-        self.fields['startDate'].widget.attrs['class'] = "form-control"
-        self.fields['endDate'].widget.attrs['class'] = "form-control"
-        self.fields['plannedEffort'].widget.attrs['class'] = "form-control"
-        self.fields['plannedEffort'].widget.attrs['class'] = "form-control"
-
+        self.fields['member'].widget.attrs['class'] = "form-control min-200"
+        self.fields['role'].widget.attrs['class'] = "form-control min-180 max-200"
+        self.fields['startDate'].widget.attrs['class'] = "form-control min-100 pro-start-date"
+        self.fields['endDate'].widget.attrs['class'] = "form-control  min-100 pro-end-date"
+        self.fields['rate'].widget.attrs['class'] = "form-control w-100 pro-planned-effort-percent"
+        self.fields['plannedEffort'].widget.attrs['class'] = "form-control w-100 pro-planned-effort"
 
 class ChangeProjectMilestoneForm(forms.ModelForm):
 
@@ -407,9 +406,9 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
-        self.fields['description'].widget.attrs['class'] = "form-control"
-        self.fields['amount'].widget.attrs['class'] = "form-control"
+        self.fields['milestoneDate'].widget.attrs['class'] = "form-control min-100"
+        self.fields['description'].widget.attrs['class'] = "form-control min-200"
+        self.fields['amount'].widget.attrs['class'] = "form-control w-100 milestone-item-amount"
 
 
 class CloseProjectMilestoneForm(forms.ModelForm):
