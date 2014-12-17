@@ -12,7 +12,7 @@ helper.range = function(start, end) {
     return result;
 };
 
-app.billableSetZeroList = helper.range(0, 35);
+app.billableSetZeroList = helper.range(0, 43);
 
 
 
@@ -378,13 +378,17 @@ app.getIdNo = function(str) {
 
                 if(options.defaultValues.setZeroList) {
                     if(options.defaultValues.setZeroList.indexOf(index) !== -1) {
-                        if($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
-                            $element.val('0');
-                            //console.log('input');
-                        } else {
-                            $element.text('0');
-                            //console.log('not input');
+                        // For project unit not set zero
+                        if(!$element.hasClass('project-unit')) {
+                            if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
+                                $element.val('0');
+                                //console.log('input');
+                            } else {
+                                $element.text('0');
+                                //console.log('not input');
+                            }
                         }
+
                     }
 
                     //console.log(index + ': set zero');
@@ -417,7 +421,9 @@ app.getIdNo = function(str) {
                     }
                 }
 
-                //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+
+
+                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
             });
 
             daysTotalFun();
