@@ -56,8 +56,8 @@ app.calcCurRowChangeDate = function() {
         plannedEffortPercentItem = row.find('.pro-planned-effort-percent'),
         plannedResult = app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem);
 
-    plannedEffortItem.val(plannedResult.plannedEffortPercent);
-    plannedEffortPercentItem.val(plannedResult.plannedEffort);
+    plannedEffortItem.val(plannedResult.plannedEffort);
+    //plannedEffortPercentItem.val(plannedResult.plannedEffortPercent);
 };
 
 
@@ -65,6 +65,7 @@ app.calcCurRowChangeDate = function() {
 // Main
 (function() {
     $(document).ready(function() {
+        var $popover = $('.popover');
         var $changeTeamMembers = $('#change-team-members');
         if($changeTeamMembers.length > 0) {
             app.spaceToUnderscore($changeTeamMembers);
@@ -139,7 +140,7 @@ app.calcCurRowChangeDate = function() {
 
 
             // Calculate PlannedEffort when change effort
-            app.calcPlannedEffortCurRow = function() {
+            app.calcPlannedEffortCurRow = function(e) {
                 item = $(this);
                 row = item.closest('tr');
                 starDateItem = row.find('.pro-start-date');
@@ -152,9 +153,8 @@ app.calcCurRowChangeDate = function() {
                 }
 
                 if(item.hasClass('pro-planned-effort')) {
-                    plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffortPercent);
+                    plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem, 'percent').plannedEffortPercent);
                 }
-
             };
 
 
@@ -214,6 +214,19 @@ app.calcCurRowChangeDate = function() {
             });
         }
 
+
+
+
+        var contigencyEffortEle = $('.contigency-effort-input');
+
+        if(contigencyEffortEle.length > 0) {
+            localStorage.contigencyEffort = contigencyEffortEle.val();
+        }
+
+        contigencyEffortEle.on('keyup', function() {
+            localStorage.contigencyEffort = $(this).val();
+        });
+
     });
 }());
 
@@ -235,7 +248,7 @@ app.getIdNo = function(str) {
             rowCount = Number(rowCountElement.val());
 
         if(options.addTeamMember || options.financialTotal) {
-            rowCountElement = $table.parent().find('input[type="hidden"]:nth-of-type(3)');
+            rowCountElement = $table.parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
 
@@ -543,6 +556,7 @@ app.getIdNo = function(str) {
                             var $rTotalIdleHoursList = $table.find('.r-total-idle-hours'),
                                 $rTotalBillableHoursList = $table.find('.r-total-billable-hours'),
                                 rTotalIdleHoursListLen = $rTotalIdleHoursList.length,
+                                rTotalBillableHoursListLen = $rTotalBillableHoursList.length,
                                 tempIdleTotal = $rTotalIdleHoursList.text(),
                                 tempBillableTotal = $rTotalBillableHoursList.text(),
                                 curIdleTotal,
@@ -554,14 +568,13 @@ app.getIdNo = function(str) {
                             tempIdleTotal = Number(tempIdleTotal);
                             tempBillableTotal = Number(tempBillableTotal);
 
-
-
                             for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
-                                console.log('total idle list item: ' + i);
                                 curIdleTotal = Number($($rTotalIdleHoursList[i]).val());
-                                curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
-
                                 tempIdleTotal += curIdleTotal;
+                            }
+
+                            for(i = 0; i < rTotalBillableHoursListLen; i += 1) {
+                                curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
                                 tempBillableTotal += curBillableTotal;
                             }
 
@@ -614,6 +627,13 @@ app.getIdNo = function(str) {
                 $dayPopoverBtn.on('keyup', function(e) {
                     if(e.keyCode === 9) {
                         $(this).trigger('click');
+                    }
+                });
+
+                $(document).on('keyup', function(e) {
+                    if(e.keyCode === 27) {
+                        var $popover = $('.popover');
+                        $popover.popover('hide');
                     }
                 });
 
@@ -746,7 +766,7 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
     return days - holidayCount;
 };
 
-app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPercent) {
+app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPercent, percent) {
     // get value and formatting
     var startDateVal = $startDate.val();
     var startDate = startDateVal.split('-');
@@ -782,18 +802,27 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
     // Calculate planned effort
     var totalPlannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
 
-    var plannedEffortPercent = (plannedEffortVal/totalPlannedEffort) * 100;  // Calculate effort percentage
 
-    var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
 
-    plannedEffortPercent = Math.round(plannedEffortPercent);
-    plannedEffort = Math.round(plannedEffort);
-    plannedEffortPercent = Number(plannedEffortPercent);
 
-    return {
-        plannedEffortPercent: plannedEffortPercent,
-        plannedEffort: plannedEffort
-    };
+    if(percent) {
+        var plannedEffortPercent = (plannedEffortVal/totalPlannedEffort) * 100;  // Calculate effort percentage
+        plannedEffortPercent = Math.round(plannedEffortPercent);
+        plannedEffortPercent = Number(plannedEffortPercent);
+
+        return {
+            plannedEffortPercent: plannedEffortPercent
+        };
+    } else {
+        var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
+        plannedEffort = Math.round(plannedEffort);
+
+        return {
+            plannedEffort: plannedEffort
+        };
+    }
+
+
 };
 
 
@@ -845,6 +874,7 @@ var confirmExitIfModified = (function() {
 confirmExitIfModified('timesheetForm', "You have unsaved changes.");
 
 console.log('suren');
+
 
 
 

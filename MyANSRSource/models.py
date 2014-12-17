@@ -104,7 +104,8 @@ class Project(models.Model):
 
 
 class TimeSheetEntry(models.Model):
-    project = models.ForeignKey(Project, verbose_name="Project Name", null=True)
+    project = models.ForeignKey(Project, blank=False,
+                                verbose_name="Project Name", null=True)
     # Week details
     wkstart = models.DateField(default=None, blank=True,
                                verbose_name="Week Start")
@@ -115,7 +116,8 @@ class TimeSheetEntry(models.Model):
         verbose_name="Location",
         null=True
     )
-    chapter = models.ForeignKey(Chapter, verbose_name="Chapter", null=True)
+    chapter = models.ForeignKey(Chapter, blank=False,
+                                verbose_name="Chapter", null=True)
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
     # Effort capture
@@ -133,7 +135,8 @@ class TimeSheetEntry(models.Model):
     saturdayH = models.IntegerField(default=0, verbose_name="Sat")
     totalQ = models.IntegerField(default=0, verbose_name="Total")
     totalH = models.IntegerField(default=0, verbose_name="Total")
-    approved = models.BooleanField(default=False, verbose_name="Approved")
+    approved = models.BooleanField(default=False)
+    hold = models.BooleanField(default=False)
 
     # Approval related details
     approvedon = models.DateTimeField(default=None, null=True, blank=True,
@@ -216,14 +219,12 @@ class ProjectChangeInfo(models.Model):
     revisedEffort = models.IntegerField(default=0,
                                         verbose_name="Revised Effort")
     revisedTotal = models.IntegerField(default=0,
-                                       verbose_name="Revised Total")
+                                       verbose_name="Revised amount")
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
+    closedOn = models.DateField(default=None, blank=True, null=True)
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
-    # Check lateset change or not
-    status = models.BooleanField(default=False,
-                                 verbose_name="Status")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

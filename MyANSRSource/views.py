@@ -230,6 +230,7 @@ def Timesheet(request):
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
                     nonbillableTS.teamMember = request.user
+                    nonbillableTS.hold = True
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
                         nonbillableTS.exception = \
@@ -268,6 +269,7 @@ def Timesheet(request):
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.billable = True
+                    billableTS.hold = True
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
                         billableTS.exception = \
@@ -296,6 +298,7 @@ def Timesheet(request):
                     nonbillableTS.activity = activity
                     nonbillableTS.teamMember = request.user
                     nonbillableTS.approved = True
+                    nonbillableTS.hold = True
                     nonbillableTS.approvedon = datetime.now()
                     for k, v in eachActivity.iteritems():
                         setattr(nonbillableTS, k, v)
@@ -313,10 +316,41 @@ def Timesheet(request):
                     billableTS.billable = True
                     billableTS.approved = True
                     billableTS.approvedon = datetime.now()
+                    billableTS.hold = True
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
-        return HttpResponseRedirect(request.get_full_path())
+            return HttpResponseRedirect(request.get_full_path())
+        else:
+            if request.GET.get('week') == 'prev':
+                weekstartDate = datetime.strptime(
+                    request.GET.get('startdate'), '%d%m%Y'
+                ).date() - timedelta(days=7)
+                ansrEndDate = datetime.strptime(
+                    request.GET.get('enddate'), '%d%m%Y'
+                ).date() - timedelta(days=7)
+                disabled = 'prev'
+            elif request.GET.get('week') == 'next':
+                disabled = 'next'
+            tsErrorList = timesheets.errors
+            tsError = [k.cleaned_data for k in timesheets]
+            atError = [k for k in activities.cleaned_data]
+            tsFormset = formset_factory(tsform,
+                                        extra=0,
+                                        can_delete=True)
+            tsFormset = tsFormset(initial=tsError)
+            atFormset = formset_factory(ActivityForm,
+                                        extra=0,
+                                        can_delete=True)
+            atFormset = atFormset(initial=atError, prefix='at')
+            data = {'weekstartDate': weekstartDate,
+                    'weekendDate': ansrEndDate,
+                    'disabled': disabled,
+                    'ErrorList': tsErrorList,
+                    'tsFormset': tsFormset,
+                    'hold': False,
+                    'atFormset': atFormset}
+            return render(request, 'MyANSRSource/timesheetEntry.html', data)
     else:
         if request.GET.get('week') == 'prev':
             weekstartDate = datetime.strptime(
@@ -356,7 +390,7 @@ def Timesheet(request):
             )
         ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
-                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ',
+                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
                  'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
                  )
         tsData = {}
@@ -488,16 +522,24 @@ def Timesheet(request):
             return render(request, 'MyANSRSource/timesheetApproved.html', data)
         else:
             if cwTimesheet > 0:
-                messages.warning(request,
-                              'This timesheet is sent for approval \
-                              to your manager')
+                hold = cwTimesheetData[0]['hold']
+                if hold is True:
+                    messages.warning(request,
+                                'This timesheet is sent for approval \
+                                to your manager')
+                else:
+                    messages.warning(request,
+                                'Your manager kept this timesheet on hold, \
+                                     please resubmit')
             else:
                 messages.info(request,
                               'Please fill timesheet for this week')
+                hold = False
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'tsFormset': tsFormset,
+                    'hold': hold,
                     'billableHours': billableHours,
                     'idleHours': idleHours,
                     'bTotal': bTotal,
@@ -522,6 +564,10 @@ def ApproveTimesheet(request):
                     TimeSheetEntry.objects.filter(
                         id=updateRec
                     ).update(approved=True, approvedon=datetime.now())
+                else:
+                    TimeSheetEntry.objects.filter(
+                        id=updateRec
+                    ).update(hold=False)
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(
@@ -671,7 +717,7 @@ class ChangeProjectWizard(SessionWizardView):
                 )['My Projects-project']).values('signed')[0]
             if signed['signed'] is True:
                 form.fields['signed'].widget.attrs[
-                    'readonly'
+                    'disabled'
                 ] = True
 
         if step == 'Change Team Members':
@@ -730,10 +776,6 @@ class ChangeProjectWizard(SessionWizardView):
                     'My Projects'
                 )['My Projects-project']).values(
                     'id',
-                    'endDate',
-                    'plannedEffort',
-                    'totalValue',
-                    'closed',
                     'signed'
                 )[0]
         if step == 'Change Team Members':
@@ -775,6 +817,8 @@ def UpdateProjectInfo(newInfo):
     pci.revisedEffort = newInfo[1]['revisedEffort']
     pci.revisedTotal = newInfo[1]['revisedTotal']
     pci.closed = newInfo[1]['closed']
+    if pci.closed is True:
+        pci.closedOn = datetime.now()
     pci.signed = newInfo[1]['signed']
     pci.save()
 
@@ -783,9 +827,6 @@ def UpdateProjectInfo(newInfo):
     pcicr.save()
 
     prc = Project.objects.get(id=newInfo[1]['id'])
-    prc.endDate = pci.endDate
-    prc.plannedEffort = pci.revisedEffort
-    prc.totalValue = pci.revisedTotal
     prc.closed = pci.closed
     prc.signed = pci.signed
     prc.save()
