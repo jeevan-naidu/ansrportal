@@ -65,15 +65,42 @@ app.changeProject = function() {
     app.billableSelectProject.on('change', function() {
         var $this = $(this),
             $rows = $this.closest('tr'),
-            $projectUnitsElement = $rows.find('.project-unit');
+            $projectUnitsElement = $rows.find('.project-unit'),
+            selectedValue = Number($this.val()),
+            selectedProject;
 
+
+            // get current project by id
+        selectedProject = app.getById(app.projectsList, selectedValue);
+
+        console.log(selectedProject);
+
+        if(selectedProject.project__projectType === 'Q') {
+            app.curProjectUnitShort = 'Q';
+            app.curProjectUnit      = 'Questions';
+        }
+
+        if(selectedProject.project__projectType === 'P') {
             app.curProjectUnitShort = 'P';
             app.curProjectUnit      = 'Powerpoint';
+        }
+
+        if(selectedProject.project__projectType === 'I') {
+            app.curProjectUnitShort = 'I';
+            app.curProjectUnit      = 'Instructional';
+        }
 
         $projectUnitsElement.text(app.curProjectUnitShort);
     });
 };
 
+app.getById = function(arr, id) {
+    for (var d = 0, len = arr.length; d < len; d += 1) {
+        if (arr[d].project__id === id) {
+            return arr[d];
+        }
+    }
+};
 
 // Main
 (function() {
@@ -208,6 +235,17 @@ app.changeProject = function() {
                 }
             });
 
+            $.ajax({
+                url: '/myansrsource/getprojecttype',
+                dataType: 'json',
+                success: function(data) {
+                    app.projectsList = data.data;
+                },
+                error: function(data) {
+                    console.log('Error: ' + data);
+                }
+            });
+
             app.billableSelectProject = $('.billable-select-project');
             app.changeProject();
         }
@@ -225,8 +263,6 @@ app.changeProject = function() {
                 }
             });
         }
-
-
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
