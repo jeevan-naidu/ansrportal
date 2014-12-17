@@ -237,6 +237,10 @@ body {
     width: 100%;
 }
 
+.day-popover-button {
+    min-width: 100px;
+}
+
 
 
 

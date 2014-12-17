@@ -71,7 +71,7 @@ app.changeProject = function() {
 
 
             // get current project by id
-        selectedProject = app.getById(app.projectsList, selectedValue);
+        selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
 
         console.log(selectedProject);
 
@@ -94,9 +94,10 @@ app.changeProject = function() {
     });
 };
 
-app.getById = function(arr, id) {
+// Get particular object from array of object
+app.getById = function(arr, propName, id) {
     for (var d = 0, len = arr.length; d < len; d += 1) {
-        if (arr[d].project__id === id) {
+        if (arr[d][propName] === id) {
             return arr[d];
         }
     }
@@ -245,6 +246,12 @@ app.getById = function(arr, id) {
                     console.log('Error: ' + data);
                 }
             });
+
+            app.projectsUnits = {
+                q: 'Questions',
+                p: 'Powerpoint',
+                i: 'Instructional'
+            };
 
             app.billableSelectProject = $('.billable-select-project');
             app.changeProject();
@@ -518,7 +525,7 @@ app.getIdNo = function(str) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
 
                 $dayPopoverBtn.popover({
@@ -562,7 +569,15 @@ app.getIdNo = function(str) {
                     };
 
                     var projectUnitViewToPopUp = function() {
-                        $curProjectPopupUnit.text(app.curProjectUnit);
+                        if(curProjectUnit === 'Q') {
+                            $curProjectPopupUnit.text(app.projectsUnits.q);
+                        }
+                        if(curProjectUnit === 'P') {
+                            $curProjectPopupUnit.text(app.projectsUnits.p);
+                        }
+                        if(curProjectUnit === 'I') {
+                            $curProjectPopupUnit.text(app.projectsUnits.i);
+                        }
                     };
 
                     projectUnitViewToPopUp();
