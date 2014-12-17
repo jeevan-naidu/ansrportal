@@ -1217,10 +1217,17 @@ def GetChapters(request, bookid):
     return HttpResponse(json_chapters, content_type="application/javascript")
 
 
-def GetHolidays(request):
-    holidays = Holiday.objects.all()
-    json_holidays = serializers.serialize("json", holidays)
-    return HttpResponse(json_holidays, content_type="application/javascript")
+def GetProjectType(request):
+    typeData = ProjectTeamMember.objects.values(
+        'project__id',
+        'project__name',
+        'project__projectType'
+    ).filter(project__closed=False,
+             member=request.user
+             )
+    data = {'data': list(typeData)}
+    json_data = json.dumps(data)
+    return HttpResponse(json_data, content_type="application/json")
 
 
 def Logout(request):
