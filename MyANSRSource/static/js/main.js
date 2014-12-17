@@ -12,7 +12,7 @@ helper.range = function(start, end) {
     return result;
 };
 
-app.billableSetZeroList = helper.range(0, 43);
+app.billableSetZeroList = helper.range(0, 41);
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -472,7 +472,7 @@ app.getIdNo = function(str) {
                     }
                 }*/
 
-                //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });
 
