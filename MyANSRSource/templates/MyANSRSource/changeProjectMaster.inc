@@ -63,7 +63,7 @@
         <label class="form-step-label">Summary</label>
     </li>
 </ul>
-<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+<div>
  <div id="create">
     <form id="changeProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}

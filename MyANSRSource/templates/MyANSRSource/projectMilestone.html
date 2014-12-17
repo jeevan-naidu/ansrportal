@@ -31,7 +31,8 @@
 {% endif %}
 	{% if forloop.first %}
         <div class="col-sm-8 center-block">
-		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
+        <div class="table-responsive">
+		<table class="table table-condensed bottom" id="financial-milestones">
 	{% endif %}
 		{% for t in form %}
 			{% if forloop.first %}

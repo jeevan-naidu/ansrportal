@@ -23,56 +23,68 @@
 	</div>
 {% endif %}
 	{% if forloop.first %}
-		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
-	{% endif %}
-		{% for t in form %}
-			{% if forloop.first %}
-				{% if '-0' in t.id_for_label %}
-					<thead>
-						{% for field in form %}
-							<th>
-								{% if field.label != 'msRecId' %}
-									<small>{{ field.label }}</small>
-									{% if field.field.required %}
-										<span class="required">*</span>
-									{% endif %}
-								{% endif %}
-							</th>
-						{% endfor %}
-					</thead>
-				{% endif %}
-			{% endif %}
-		{% endfor %}
-	      {% for t in form %}
-			{% if forloop.first %}
-			   	<tr>
-			{% endif %}
-					{% for hField in t.hidden_fields %}
-						<td>{{ hField }}</td>
-					{% endfor %}
-					<td>{{ t }}</td>
-			{% if forloop.last %}
-				</tr>
-			{% endif %}
-	      {% endfor %}
-	{% if forloop.last %}
+         <div class="col-sm-8 center-block">
+            <div class="table-responsive">
+            <table class="table bottom" id="change-milestones">
+            {% endif %}
+                {% for t in form %}
+                    {% if forloop.first %}
+                        {% if '-0' in t.id_for_label %}
+                            <thead>
+                                {% for field in form %}
+                                    {% if field.label == 'Milestone Date' %}
+                                    <th class="w-150">
+                                    {% elif field.label == 'Description' %}
+                                    <th class="min-200">
+                                    {% elif field.label == 'Amount' %}
+                                    <th class="w-100">
+                                    {% else %}
+                                    <th>
+                                    {% endif %}
+                                        {% if field.label != 'msRecId' %}
+                                            <small>{{ field.label }}</small>
+                                            {% if field.field.required %}
+                                                <span class="required">*</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </th>
+                                {% endfor %}
+                            </thead>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                  {% for t in form %}
+                    {% if forloop.first %}
+                        <tr>
+                    {% endif %}
+                            {% for hField in t.hidden_fields %}
+                                <td>{{ hField }}</td>
+                            {% endfor %}
+                            <td>{{ t }}</td>
+                    {% if forloop.last %}
+                        </tr>
+                    {% endif %}
+                  {% endfor %}
+            {% if forloop.last %}
 
-		</table>
-
+                </table>
+            </div>
+        </div>
 
 
     <div class="row">
-        <div class="col-md-4 pull-right">
+        <div class="col-sm-4 center-block">
             <table class="table table-bordered">
                 <tbody>
                 <tr>
                     <td><strong>Amount</strong></td>
-                    <td><span class="milestone-total-amount">0</span></td>
+		    <td><span class="milestone-total-amount">0</span></td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
+    <input type="hidden" value="{{ totalValue }}" class="project-total-value-hidden" />
 
 	{% endif %}
 {% endblock %}{% endblock %}

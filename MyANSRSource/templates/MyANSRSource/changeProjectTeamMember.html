@@ -22,44 +22,56 @@
 	</div>
 {% endif %}
 	{% if forloop.first %}
-		<table class="table table-condensed table-responsive" id="change-team-members">
+        <div class="table-responsive">
+            <table class="table" id="change-team-members">
+        {% endif %}
+            {% for t in form %}
+                {% if forloop.first %}
+                    {% if '-0' in t.id_for_label %}
+                        <thead>
+                            <tr>
+                                {% for field in form.visible_fields %}
+                                {% if field.label == 'Start date on project' or field.label == 'End date on project' %}
+                                <th class="w-170">
+                                    {% elif field.label == 'Planned Effort' or field.label == '%' %}
+                                <th class="w-100">
+                                    {% elif field.label == 'Member' %}
+                                <th class="min-200">
+                                    {% else %}
+                                <th>
+                                    {% endif %}
+                                    <small>{{ field.label }}</small>
+                                    {% if field.field.required %}
+                                    <span class="required">*</span>
+                                    {% endif %}
+                                </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                    {% endif %}
+                {% endif %}
+              {% endfor %}
+              {% for t in form %}
+                {% if forloop.first %}
+                    <tr>
+                {% endif %}
+                        {% for hField in t.hidden_fields %}
+                            <td>{{ hField }}</td>
+                        {% endfor %}
+                        <td>{{ t }}</td>
+                {% if forloop.last %}
+                    </tr>
+                {% endif %}
+              {% endfor %}
+        {% if forloop.last %}
+            </table>
+        </div>
 	{% endif %}
-		{% for t in form %}
-			{% if forloop.first %}
-				{% if '-0' in t.id_for_label %}
-					<thead>
-                    				<tr>
-						{% for field in form %}
-							<th>
-								{% if field.label != 'teamRecId' %}
-									<small>{{ field.label }}</small>
-									{% if field.field.required %}
-										<span class="required">*</span>
-									{% endif %}
-								{% endif %}
-							</th>
-						{% endfor %}
-                    				</tr>
-					</thead>
-				{% endif %}
-			{% endif %}
-	      {% endfor %}
-	      {% for t in form %}
-			{% if forloop.first %}
-			   	<tr>
-			{% endif %}
-					{% for hField in t.hidden_fields %}
-						<td>{{ hField }}</td>
-					{% endfor %}
-					<td>{{ t }}</td>
-			{% if forloop.last %}
-				</tr>
-			{% endif %}
-	      {% endfor %}
-	{% if forloop.last %}
-		</table>
-	{% endif %}
-
+{% autoescape off %}
+<script type="text/javascript">
+    window.holidays = {{ holidayList }};
+</script>
+{% endautoescape %}
 {% endblock %}{% endblock %}
 
 
