@@ -61,19 +61,18 @@ app.calcCurRowChangeDate = function() {
 };
 
 
-app.projectTypeFun = function() {
-    var $this = $(this),
-        billableSelectProject = $('.billable-select-project'),
-        $rows = $this.closest('tr'),
-        $projectUnit =
+app.changeProject = function() {
+    app.billableSelectProject.on('change', function() {
+        var $this = $(this),
+            $rows = $this.closest('tr'),
+            $projectUnitsElement = $rows.find('.project-unit');
 
-    billableSelectProject.on('change', function() {
-        console.log('select box changed');
+            app.curProjectUnitShort = 'P';
+            app.curProjectUnit      = 'Powerpoint';
+
+        $projectUnitsElement.text(app.curProjectUnitShort);
     });
 };
-
-
-
 
 
 // Main
@@ -151,8 +150,6 @@ app.projectTypeFun = function() {
                 }
             });
 
-
-
             // Calculate PlannedEffort when change effort
             app.calcPlannedEffortCurRow = function(e) {
                 item = $(this);
@@ -171,7 +168,6 @@ app.projectTypeFun = function() {
                 }
             };
 
-
             app.proPlannedEffortPercentItems.on({
                 'keyup': app.calcPlannedEffortCurRow,
                 'click': app.calcPlannedEffortCurRow
@@ -180,8 +176,6 @@ app.projectTypeFun = function() {
             app.getEffortCurRowId();
 
             $('.date').on('change', app.calcCurRowChangeDate);
-
-
         }
 
         var financialMilestones = $('#financial-milestones');
@@ -202,6 +196,7 @@ app.projectTypeFun = function() {
 
         // TimeSheet
         var timesheetBillable = $('#timesheet-billable');
+
         if(timesheetBillable.length > 0) {
             timesheetBillable.dynamicForm({
                 add: '#timesheet-billable-add-btn',
@@ -212,6 +207,9 @@ app.projectTypeFun = function() {
                     setEmptyList: null
                 }
             });
+
+            app.billableSelectProject = $('.billable-select-project');
+            app.changeProject();
         }
 
         var timesheetNonBillable = $('#timesheet-non-billable');
@@ -393,6 +391,11 @@ app.getIdNo = function(str) {
 
                 app.getEffortCurRowId();
             }
+
+            if(options.billableTotal) {
+                app.billableSelectProject = $('.billable-select-project');
+                app.changeProject();
+            }
         };
 
         var del = function() {
@@ -479,7 +482,7 @@ app.getIdNo = function(str) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label pro-type">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
 
                 $dayPopoverBtn.popover({
@@ -509,8 +512,11 @@ app.getIdNo = function(str) {
                         $curHoursHidden         = $curDayBtn.find('.b-hours-hidden'),
                         $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
+                        $curProjectUnit         = $curDayBtn.find('.project-unit'),
+                        $curProjectPopupUnit    = $curDayBtn.next().find('.project-type-popup'),
                         curQuestionsViewText    = $curQuestionsView.text(),
-                        curHoursViewText        = $curHoursView.text();
+                        curHoursViewText        = $curHoursView.text(),
+                        curProjectUnit          = $curProjectUnit.text();
 
 
 
@@ -518,6 +524,12 @@ app.getIdNo = function(str) {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
                     };
+
+                    var projectUnitViewToPopUp = function() {
+                        $curProjectPopupUnit.text(app.curProjectUnit);
+                    };
+
+                    projectUnitViewToPopUp();
 
                     viewToInput();
 
@@ -613,17 +625,7 @@ app.getIdNo = function(str) {
                         calculateTotal();
                     };
 
-                   var inputToView = function() {
-                       $curQuestionsView.text($curQuestionsInput.val());
-                       $curHoursView.text($curHoursInput.val());
-
-                       $curQuestionsHidden.val($curQuestionsInput.val());
-                       $curHoursHidden.val($curHoursInput.val());
-
-                       calculateTotal();
-                   };
-
-                    $curQuestionsInput.on({
+                   $curQuestionsInput.on({
                         keyup: inputToView,
                         click: inputToView
                     }, calculateTotal);

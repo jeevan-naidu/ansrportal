@@ -75,9 +75,9 @@
 							{% for data in form.hidden_fields %}
 								{% if 'mondayQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-questions">{{ data.value }}</span> Q 
+										<span class="b-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
 									{% else %}
-										<span class="b-questions">0</span> Q 
+										<span class="b-questions">0</span> <span class="project-unit">Q</span>
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -101,9 +101,9 @@
 							{% for data in form.hidden_fields %}
 								{% if 'tuesdayQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-questions">{{ data.value }}</span> Q 
+										<span class="b-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
 									{% else %}
-										<span class="b-questions">0</span> Q 
+										<span class="b-questions">0</span> <span class="project-unit">Q</span>
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -127,9 +127,9 @@
 							{% for data in form.hidden_fields %}
 								{% if 'wednesdayQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-questions">{{ data.value }}</span> Q 
+										<span class="b-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
 									{% else %}
-										<span class="b-questions">0</span> Q 
+										<span class="b-questions">0</span> <span class="project-unit">Q</span>
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -153,9 +153,9 @@
 							{% for data in form.hidden_fields %}
 								{% if 'thursdayQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-questions">{{ data.value }}</span> Q 
+										<span class="b-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
 									{% else %}
-										<span class="b-questions">0</span> Q 
+										<span class="b-questions">0</span> <span class="project-unit">Q</span>
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -179,9 +179,9 @@
 							{% for data in form.hidden_fields %}
 								{% if 'fridayQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-questions">{{ data.value }}</span> Q 
+										<span class="b-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
 									{% else %}
-										<span class="b-questions">0</span> Q 
+										<span class="b-questions">0</span> <span class="project-unit">Q</span>
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -205,9 +205,9 @@
 							{% for data in form.hidden_fields %}
 								{% if 'saturdayQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-questions">{{ data.value }}</span> Q 
+										<span class="b-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
 									{% else %}
-										<span class="b-questions">0</span> Q 
+										<span class="b-questions">0</span> <span class="project-unit">Q</span>
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -231,9 +231,9 @@
 							{% for data in form.hidden_fields %}
 								{% if 'totalQ' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="t-questions">{{ data.value }}</span> Q 
+										<span class="t-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
 									{% else %}
-										<span class="t-questions">0</span> Q 
+										<span class="t-questions">0</span> <span class="project-unit">Q</span>
 									{% endif %}
 									{{ data }}
 								{% endif %}
