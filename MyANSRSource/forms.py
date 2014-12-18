@@ -60,6 +60,11 @@ class ActivityForm(forms.Form):
         min_value=0,
         max_value=24
     )
+    activity_sunday = forms.IntegerField(
+        label="Sun",
+        min_value=0,
+        max_value=24
+    )
     activity_total = forms.IntegerField(
         label="Total",
         min_value=0,
@@ -90,6 +95,8 @@ class ActivityForm(forms.Form):
         days input-field"
         self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
         days input-field"
+        self.fields['activity_sunday'].widget.attrs['class'] = "form-control \
+        days input-field"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
         self.fields['activity_feedback'].widget.attrs['class'] = "form-control"
@@ -99,6 +106,7 @@ class ActivityForm(forms.Form):
         self.fields['activity_thursday'].widget.attrs['value'] = 0
         self.fields['activity_friday'].widget.attrs['value'] = 0
         self.fields['activity_saturday'].widget.attrs['value'] = 0
+        self.fields['activity_sunday'].widget.attrs['value'] = 0
         self.fields['activity_total'].widget.attrs['value'] = 0
         self.fields['atId'].widget.attrs['value'] = 0
 
@@ -162,6 +170,11 @@ def TimesheetFormset(currentUser):
                                        widget=forms.HiddenInput())
         saturdayQ = forms.IntegerField(label="Questions",
                                        widget=forms.HiddenInput())
+        sunday = forms.CharField(label="Sun", required=False)
+        sundayH = forms.IntegerField(label="Hours",
+                                     widget=forms.HiddenInput())
+        sundayQ = forms.IntegerField(label="Questions",
+                                     widget=forms.HiddenInput())
         total = forms.CharField(label="Total", required=False)
         totalH = forms.IntegerField(label="Hours",
                                     widget=forms.HiddenInput())
@@ -192,7 +205,8 @@ def TimesheetFormset(currentUser):
                     auto_choose=False,
                     required=False
                 )
-            self.fields['project'].widget.attrs['class'] = "form-control d-item billable-select-project"
+            self.fields['project'].widget.attrs[
+                'class'] = "form-control d-item billable-select-project"
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item"
             self.fields['chapter'].widget.attrs['class'] = "form-control d-item"
@@ -235,6 +249,12 @@ def TimesheetFormset(currentUser):
             self.fields['saturdayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item"
+            self.fields['sundayQ'].widget.attrs[
+                'class'
+            ] = "b-questions-hidden d-item"
+            self.fields['sundayH'].widget.attrs[
+                'class'
+            ] = "b-hours-hidden d-item"
             self.fields['totalQ'].widget.attrs[
                 'class'
             ] = "t-questions-hidden d-item"
@@ -257,6 +277,8 @@ def TimesheetFormset(currentUser):
             self.fields['fridayQ'].widget.attrs['value'] = 0
             self.fields['saturdayH'].widget.attrs['value'] = 0
             self.fields['saturdayQ'].widget.attrs['value'] = 0
+            self.fields['sundayH'].widget.attrs['value'] = 0
+            self.fields['sundayQ'].widget.attrs['value'] = 0
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['totalQ'].widget.attrs['value'] = 0
             self.fields['tsId'].widget.attrs['value'] = 0
@@ -382,11 +404,17 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         super(ChangeProjectTeamMemberForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
-        self.fields['role'].widget.attrs['class'] = "form-control min-180 max-200"
-        self.fields['startDate'].widget.attrs['class'] = "form-control min-100 pro-start-date"
-        self.fields['endDate'].widget.attrs['class'] = "form-control  min-100 pro-end-date"
-        self.fields['rate'].widget.attrs['class'] = "form-control w-100 pro-planned-effort-percent"
-        self.fields['plannedEffort'].widget.attrs['class'] = "form-control w-100 pro-planned-effort"
+        self.fields['role'].widget.attrs[
+            'class'] = "form-control min-180 max-200"
+        self.fields['startDate'].widget.attrs[
+            'class'] = "form-control min-100 pro-start-date"
+        self.fields['endDate'].widget.attrs[
+            'class'] = "form-control  min-100 pro-end-date"
+        self.fields['rate'].widget.attrs[
+            'class'] = "form-control w-100 pro-planned-effort-percent"
+        self.fields['plannedEffort'].widget.attrs[
+            'class'] = "form-control w-100 pro-planned-effort"
+
 
 class ChangeProjectMilestoneForm(forms.ModelForm):
 
@@ -406,9 +434,12 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        self.fields['milestoneDate'].widget.attrs['class'] = "form-control min-100"
-        self.fields['description'].widget.attrs['class'] = "form-control min-200"
-        self.fields['amount'].widget.attrs['class'] = "form-control w-100 milestone-item-amount"
+        self.fields['milestoneDate'].widget.attrs[
+            'class'] = "form-control min-100"
+        self.fields['description'].widget.attrs[
+            'class'] = "form-control min-200"
+        self.fields['amount'].widget.attrs[
+            'class'] = "form-control w-100 milestone-item-amount"
 
 
 class CloseProjectMilestoneForm(forms.ModelForm):
