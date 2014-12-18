@@ -343,6 +343,13 @@ def Timesheet(request):
                 disabled = 'next'
             tsErrorList = timesheets.errors
             tsError = [k.cleaned_data for k in timesheets]
+            for eachErrorData in tsError:
+                for k, v in eachErrorData.iteritems():
+                    if k == 'project':
+                        ptype = Project.objects.filter(
+                            id=eachErrorData['project'].id
+                        ).values('projectType')[0]['projectType']
+                        eachErrorData['projectType'] = ptype
             atError = [k for k in activities.cleaned_data]
             tsFormset = formset_factory(tsform,
                                         extra=0,
@@ -401,7 +408,7 @@ def Timesheet(request):
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
                  'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ',
-                 'totalH', 'totalQ', 'managerFeedback'
+                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType'
                  )
         tsData = {}
         tsDataList = []
@@ -412,6 +419,8 @@ def Timesheet(request):
                     tsData['feedback'] = v
                 if k == 'id':
                     tsData['tsId'] = v
+                if k == 'project__projectType':
+                    tsData['projectType'] = v
             tsDataList.append(tsData.copy())
             tsData.clear()
         atData = {}

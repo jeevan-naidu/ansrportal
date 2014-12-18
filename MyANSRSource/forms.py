@@ -139,6 +139,8 @@ def TimesheetFormset(currentUser):
             show_all=False,
             auto_choose=True
         )
+        projectType = forms.CharField(label="pt",
+                                      widget=forms.HiddenInput())
         task = forms.ChoiceField(choices=TASK, label='Task')
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.IntegerField(label="Hours",
@@ -282,6 +284,7 @@ def TimesheetFormset(currentUser):
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['totalQ'].widget.attrs['value'] = 0
             self.fields['tsId'].widget.attrs['value'] = 0
+            self.fields['projectType'].widget.attrs['value'] = 'Q'
     return TimeSheetEntryForm
 
 
