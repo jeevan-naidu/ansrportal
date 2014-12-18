@@ -391,7 +391,8 @@ def Timesheet(request):
         ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-                 'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
+                 'project__type', 'saturdayH', 'saturdayQ', 'totalH', 'totalQ',
+                 'managerFeedback'
                  )
         tsData = {}
         tsDataList = []
@@ -525,11 +526,11 @@ def Timesheet(request):
                 hold = cwTimesheetData[0]['hold']
                 if hold is True:
                     messages.warning(request,
-                                'This timesheet is sent for approval \
-                                to your manager')
+                                     'This timesheet is sent for approval \
+                                     to your manager')
                 else:
                     messages.warning(request,
-                                'Your manager kept this timesheet on hold, \
+                                     'Your manager kept this timesheet on hold, \
                                      please resubmit')
             else:
                 messages.info(request,
@@ -706,9 +707,9 @@ class ChangeProjectWizard(SessionWizardView):
         context = super(ChangeProjectWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Change Milestones':
-            projectTotal = self.storage.get_step_data('Change Basic Information')[
-                'Change Basic Information-revisedTotal'
-            ]
+            projectTotal = self.storage.get_step_data(
+                'Change Basic Information'
+            )['Change Basic Information-revisedTotal']
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Change Team Members':
             holidays = Holiday.objects.all().values('name', 'date')
