@@ -703,6 +703,12 @@ class TrackMilestoneWizard(SessionWizardView):
             CloseMilestone.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
 
+TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
+
+@login_required
+def WrappedTrackMilestoneView(request):
+    return TrackMilestone(request)
+
 
 class ChangeProjectWizard(SessionWizardView):
     def get_template_names(self):
@@ -882,6 +888,11 @@ def UpdateProjectInfo(newInfo):
 
     return {'crId': pcicr.crId}
 
+changeProject = ChangeProjectWizard.as_view(CFORMS)
+
+@login_required
+def WrappedChangeProjectView(request):
+    return changeProject(request)
 
 class CreateProjectWizard(SessionWizardView):
 
@@ -1173,6 +1184,11 @@ def saveProject(request):
         data = {'projectId': pru.projectId, 'projectName': pr.name}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
+createProject = CreateProjectWizard.as_view(FORMS)
+
+@login_required
+def WrappedCreateProjectView(request):
+    return createProject(request)
 
 @login_required
 def notify(request):
