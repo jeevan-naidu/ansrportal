@@ -597,6 +597,7 @@ def Dashboard(request):
         totalEmployees = User.objects.all().count()
         activeMilestones = ProjectMilestone.objects.filter(
             project__projectManager=request.user,
+            project__closed=False,
             closed=False
         ).count()
     else:
@@ -648,15 +649,14 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step or self.steps.current
         if step == 'My Projects':
-            activeMSCount = ProjectMilestone.objects.filter(
+            projects = ProjectMilestone.objects.filter(
                 project__projectManager=self.request.user,
+                project__closed=False,
                 closed=False
-            ).count()
-            print activeMSCount
+            ).values('project__id')
+            projectsList = list(set([key['project__id'] for key in projects]))
             form.fields['project'].queryset = Project.objects.filter(
-                projectManager=self.request.user,
-                internal=False,
-                closed=False,
+                id__in=projectsList
             )
         return form
 
