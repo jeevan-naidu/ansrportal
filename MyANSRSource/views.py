@@ -708,6 +708,22 @@ class ChangeProjectWizard(SessionWizardView):
     def get_template_names(self):
         return [CTEMPLATES[self.steps.current]]
 
+    def get_context_data(self, form, **kwargs):
+        context = super(ChangeProjectWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Change Milestones':
+            projectTotal = self.storage.get_step_data('Change Basic Information')[
+                'Change Basic Information-revisedTotal'
+            ]
+            context.update({'totalValue': projectTotal})
+        if self.steps.current == 'Change Team Members':
+            holidays = Holiday.objects.all().values('name', 'date')
+            for holiday in holidays:
+                holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+            data = {'data': list(holidays)}
+            context.update({'holidayList': json.dumps(data)})
+        return context
+
     def get_form(self, step=None, data=None, files=None):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
         step = step or self.steps.current
@@ -749,6 +765,9 @@ class ChangeProjectWizard(SessionWizardView):
                             'readonly'
                         ] = True
                         eachForm.fields['endDate'].widget.attrs[
+                            'readonly'
+                        ] = True
+                        eachForm.fields['rate'].widget.attrs[
                             'readonly'
                         ] = True
                         eachForm.fields['plannedEffort'].widget.attrs[
@@ -937,6 +956,11 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Financial Milestones':
+            projectTotal = self.storage.get_step_data('Define Project')[
+                'Define Project-totalValue'
+            ]
+            context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
@@ -1223,10 +1247,17 @@ def GetChapters(request, bookid):
     return HttpResponse(json_chapters, content_type="application/javascript")
 
 
-def GetHolidays(request):
-    holidays = Holiday.objects.all()
-    json_holidays = serializers.serialize("json", holidays)
-    return HttpResponse(json_holidays, content_type="application/javascript")
+def GetProjectType(request):
+    typeData = ProjectTeamMember.objects.values(
+        'project__id',
+        'project__name',
+        'project__projectType'
+    ).filter(project__closed=False,
+             member=request.user
+             )
+    data = {'data': list(typeData)}
+    json_data = json.dumps(data)
+    return HttpResponse(json_data, content_type="application/json")
 
 
 def Logout(request):

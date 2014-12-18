@@ -12,9 +12,7 @@ helper.range = function(start, end) {
     return result;
 };
 
-app.billableSetZeroList = helper.range(0, 35);
-
-
+app.billableSetZeroList = helper.range(0, 41);
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -35,7 +33,6 @@ app.spaceToUnderscore = function($containerEle) {
 };
 
 
-
 app.getEffortCurRowId = function() {
     var calenderBtn = $('.date .input-group-addon');
 
@@ -47,8 +44,8 @@ app.getEffortCurRowId = function() {
     });
 };
 
-app.calcCurRowChangeDate = function() {
-    var table = $('#add-team-members'),
+app.calcCurRowChangeDate = function($tableEle) {
+    var table = $tableEle,
         row = table.find('tr:eq(' + app.effortRowIdNo + ')'),
         starDateItem = row.find('.pro-start-date'),
         endDateItem = row.find('.pro-end-date'),
@@ -61,11 +58,54 @@ app.calcCurRowChangeDate = function() {
 };
 
 
+app.changeProject = function() {
+    app.billableSelectProject.on('change', function() {
+        var $this = $(this),
+            $rows = $this.closest('tr'),
+            $projectUnitsElement = $rows.find('.project-unit'),
+            selectedValue = Number($this.val()),
+            selectedProject;
+
+
+            // get current project by id
+        selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
+
+        //console.log(selectedProject);
+
+        if(selectedProject.project__projectType === 'Q') {
+            app.curProjectUnitShort = 'Q';
+            app.curProjectUnit      = 'Questions';
+        }
+
+        if(selectedProject.project__projectType === 'P') {
+            app.curProjectUnitShort = 'P';
+            app.curProjectUnit      = 'Powerpoint';
+        }
+
+        if(selectedProject.project__projectType === 'I') {
+            app.curProjectUnitShort = 'I';
+            app.curProjectUnit      = 'Instructional';
+        }
+
+        $projectUnitsElement.text(app.curProjectUnitShort);
+    });
+};
+
+// Get particular object from array of object
+app.getById = function(arr, propName, id) {
+    for (var d = 0, len = arr.length; d < len; d += 1) {
+        if (arr[d][propName] === id) {
+            return arr[d];
+        }
+    }
+};
 
 // Main
 (function() {
     $(document).ready(function() {
         var $popover = $('.popover');
+
+        // Manage project
         var $changeTeamMembers = $('#change-team-members');
         if($changeTeamMembers.length > 0) {
             app.spaceToUnderscore($changeTeamMembers);
@@ -74,10 +114,29 @@ app.calcCurRowChangeDate = function() {
                 add: '#addForm',
                 del: '#delete-member',
                 calendar: true,
-                calendarPosList: [3, 8],
-                addTeamMember: true,
+                plannedEffortCalc: true,
+                changeTeamMember: true,
+                setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [13],
+                    setZeroList: null,
+                    setEmptyList: null
+                }
+            });
+        }
+
+        var $changeMilestone = $('#change-milestones');
+        if($changeMilestone.length > 0) {
+            app.spaceToUnderscore($changeMilestone);
+
+            $changeMilestone.dynamicForm({
+                add: '#add-milestone-btn',
+                del: '#delete-member',
+                calendar: true,
+                changeMilestone: true,
+                isAmountTotal: true,
+                setEditableAll: true,
+                defaultValues: {  // When add row, set the elements default values
+                    setZeroList: null,
                     setEmptyList: null
                 }
             });
@@ -99,6 +158,7 @@ app.calcCurRowChangeDate = function() {
                     setEmptyList: null
                 }
             });
+
 
             var $addTeamRows = addTeamMembers.find('tr'),
                 item,
@@ -137,8 +197,6 @@ app.calcCurRowChangeDate = function() {
                 }
             });
 
-
-
             // Calculate PlannedEffort when change effort
             app.calcPlannedEffortCurRow = function(e) {
                 item = $(this);
@@ -157,7 +215,6 @@ app.calcCurRowChangeDate = function() {
                 }
             };
 
-
             app.proPlannedEffortPercentItems.on({
                 'keyup': app.calcPlannedEffortCurRow,
                 'click': app.calcPlannedEffortCurRow
@@ -166,7 +223,6 @@ app.calcCurRowChangeDate = function() {
             app.getEffortCurRowId();
 
             $('.date').on('change', app.calcCurRowChangeDate);
-
 
         }
 
@@ -177,7 +233,8 @@ app.calcCurRowChangeDate = function() {
                 del: '#del-milestone-btn',
                 calendar: true,
                 calendarPosList: [0],
-                financialTotal: true,
+                isAmountTotal: true,
+                isFinancialMilestone: true,
                 defaultValues: {  // When add row, set the elements default values
                     setZeroList: null,
                     setEmptyList: null
@@ -188,6 +245,7 @@ app.calcCurRowChangeDate = function() {
 
         // TimeSheet
         var timesheetBillable = $('#timesheet-billable');
+
         if(timesheetBillable.length > 0) {
             timesheetBillable.dynamicForm({
                 add: '#timesheet-billable-add-btn',
@@ -198,6 +256,26 @@ app.calcCurRowChangeDate = function() {
                     setEmptyList: null
                 }
             });
+
+            $.ajax({
+                url: '/myansrsource/getprojecttype',
+                dataType: 'json',
+                success: function(data) {
+                    app.projectsList = data.data;
+                },
+                error: function(data) {
+                    console.log('Error: ' + data);
+                }
+            });
+
+            app.projectsUnits = {
+                q: 'Questions',
+                p: 'Powerpoint',
+                i: 'Instructional'
+            };
+
+            app.billableSelectProject = $('.billable-select-project');
+            app.changeProject();
         }
 
         var timesheetNonBillable = $('#timesheet-non-billable');
@@ -213,8 +291,6 @@ app.calcCurRowChangeDate = function() {
                 }
             });
         }
-
-
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
@@ -245,10 +321,17 @@ app.getIdNo = function(str) {
             rowCountElement = $table.find('input[type="hidden"]:first'),
             rowCount = Number(rowCountElement.val());
 
-        if(options.addTeamMember || options.financialTotal) {
+        if(options.addTeamMember || options.isFinancialMilestone || options.changeTeamMember) {
             rowCountElement = $table.parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
+
+        if(options.changeMilestone) {
+            rowCountElement = $table.parent().parent().parent().find('input[type="hidden"]:nth-of-type(3)');
+            rowCount = Number(rowCountElement.val());
+        }
+
+
 
         var add = function() {
             var lastRow = $($table).find('tr').last(),
@@ -323,13 +406,17 @@ app.getIdNo = function(str) {
 
                 if(options.defaultValues.setZeroList) {
                     if(options.defaultValues.setZeroList.indexOf(index) !== -1) {
-                        if($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
-                            $element.val('0');
-                            //console.log('input');
-                        } else {
-                            $element.text('0');
-                            //console.log('not input');
+                        // For project unit not set zero
+                        if(!$element.hasClass('project-unit')) {
+                            if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
+                                $element.val('0');
+                                //console.log('input');
+                            } else {
+                                $element.text('0');
+                                //console.log('not input');
+                            }
                         }
+
                     }
 
                     //console.log(index + ': set zero');
@@ -349,10 +436,26 @@ app.getIdNo = function(str) {
                     }
                 }
 
+                if(options.setEditable) {
+                    if(options.setEditable.indexOf(index) !== -1) {
+                        $element.prop('readonly', false);
+                        //console.log(index + ': setEditable');
+                    }
+                }
+
+                if(options.setEditableAll) {
+                    $element.removeAttr('readonly');
+
+                }
+
                 if(options.calendar) {
-                    if(options.calendarPosList.indexOf(index) !== -1) {
-                        $curIdSel = $('#' + curId);
-                        $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"}).on('change', app.calcCurRowChangeDate);
+                    if(curId) {
+                        if (curId.match('Date_pickers')) {
+                            $curIdSel = $('#' + curId);
+                            $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"}).on('change', function() {
+                                app.calcCurRowChangeDate($table);
+                            });
+                        }
                     }
                 }
 
@@ -362,14 +465,22 @@ app.getIdNo = function(str) {
                     }
                 }
 
-                //console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+
+                /*if(options.plannedEffortCalc) {
+                    if($element.hasClass('pro-planned-effort-percent')) {
+                        $element.val(100);
+                    }
+                }*/
+
+                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+
             });
 
             daysTotalFun();
             billableTotalFun();
-            financialTotalFun();
+            amountTotalFun();
 
-            if(options.addTeamMember) {
+            if(options.plannedEffortCalc) {
                 app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
 
                 app.proPlannedEffortPercentItems.on({
@@ -378,6 +489,11 @@ app.getIdNo = function(str) {
                 });
 
                 app.getEffortCurRowId();
+            }
+
+            if(options.billableTotal) {
+                app.billableSelectProject = $('.billable-select-project');
+                app.changeProject();
             }
         };
 
@@ -465,8 +581,8 @@ app.getIdNo = function(str) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label">Question</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
 
                 $dayPopoverBtn.popover({
                     trigger: 'click',
@@ -495,8 +611,11 @@ app.getIdNo = function(str) {
                         $curHoursHidden         = $curDayBtn.find('.b-hours-hidden'),
                         $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
+                        $curProjectUnit         = $curDayBtn.find('.project-unit'),
+                        $curProjectPopupUnit    = $curDayBtn.next().find('.project-type-popup'),
                         curQuestionsViewText    = $curQuestionsView.text(),
-                        curHoursViewText        = $curHoursView.text();
+                        curHoursViewText        = $curHoursView.text(),
+                        curProjectUnit          = $curProjectUnit.text();
 
 
 
@@ -504,6 +623,20 @@ app.getIdNo = function(str) {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
                     };
+
+                    var projectUnitViewToPopUp = function() {
+                        if(curProjectUnit === 'Q') {
+                            $curProjectPopupUnit.text(app.projectsUnits.q);
+                        }
+                        if(curProjectUnit === 'P') {
+                            $curProjectPopupUnit.text(app.projectsUnits.p);
+                        }
+                        if(curProjectUnit === 'I') {
+                            $curProjectPopupUnit.text(app.projectsUnits.i);
+                        }
+                    };
+
+                    projectUnitViewToPopUp();
 
                     viewToInput();
 
@@ -599,7 +732,7 @@ app.getIdNo = function(str) {
                         calculateTotal();
                     };
 
-                    $curQuestionsInput.on({
+                   $curQuestionsInput.on({
                         keyup: inputToView,
                         click: inputToView
                     }, calculateTotal);
@@ -644,8 +777,8 @@ app.getIdNo = function(str) {
             }
         };
 
-        var financialTotalFun = function() {
-            if(options.financialTotal) {
+        var amountTotalFun = function() {
+            if(options.isAmountTotal) {
                 var $datePickers = $('.date-picker');
 
                 if($($datePickers[0]).prop('readonly') == true) {
@@ -659,7 +792,7 @@ app.getIdNo = function(str) {
 
                 var $deliverables = $table.find('.milestone-item-deliverable'),
                     $amounts = $table.find('.milestone-item-amount'),
-                    $amountTotal = $table.parent().parent().find('.milestone-total-amount'),
+                    $amountTotal = $('.milestone-total-amount'),
                     $links = $('#add-milestone-btn, #del-milestone-btn'),
                     $projectTotalValueHidden = $('.project-total-value-hidden'),
                     projectTotalValueHidden = Number($projectTotalValueHidden.val());
@@ -704,7 +837,11 @@ app.getIdNo = function(str) {
 
         daysTotalFun();
         billableTotalFun();
-        financialTotalFun();
+        amountTotalFun();
+
+        if(options.plannedEffortCalc) {
+            app.plannedEfforInit($table);
+        }
 
         // Dom events
         $addBtn.on('click', add);
@@ -800,9 +937,6 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
     // Calculate planned effort
     var totalPlannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
 
-
-
-
     if(percent) {
         var plannedEffortPercent = (plannedEffortVal/totalPlannedEffort) * 100;  // Calculate effort percentage
         plannedEffortPercent = Math.round(plannedEffortPercent);
@@ -819,8 +953,81 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
             plannedEffort: plannedEffort
         };
     }
+};
 
 
+
+
+
+app.plannedEfforInit = function($table) {
+    var $tableRows = $table.find('tr'),
+        item,
+        starDateItem,
+        endDateItem,
+        plannedEffortItem,
+        plannedEffortPercentItem,
+        row,
+        holiday,
+        holidayDay,
+        totalHolidayLen = window.holidays.data.length;
+    app.holidaysList = [];
+
+
+    app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
+
+    for(var i = 0; i < totalHolidayLen; i += 1) {
+        holiday = new Date(window.holidays.data[i].date);
+        holidayDay = holiday.getDay();
+
+        if(holidayDay !== 0 && holidayDay !== 6) {
+            app.holidaysList.push(holiday);
+        }
+    }
+
+    // Calculate effort for each row
+    $tableRows.each(function(index) {
+        if(index > 0) {
+            item = $(this);
+            starDateItem = item.find('.pro-start-date');
+            endDateItem = item.find('.pro-end-date');
+            plannedEffortItem = item.find('.pro-planned-effort'),
+                plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
+
+            plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
+        }
+    });
+
+
+
+    // Calculate PlannedEffort when change effort
+    app.calcPlannedEffortCurRow = function(e) {
+        item = $(this);
+        row = item.closest('tr');
+        starDateItem = row.find('.pro-start-date');
+        endDateItem = row.find('.pro-end-date');
+        plannedEffortItem = row.find('.pro-planned-effort');
+        plannedEffortPercentItem = row.find('.pro-planned-effort-percent');
+
+        if(item.hasClass('pro-planned-effort-percent')) {
+            plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
+        }
+
+        if(item.hasClass('pro-planned-effort')) {
+            plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem, 'percent').plannedEffortPercent);
+        }
+    };
+
+
+    app.proPlannedEffortPercentItems.on({
+        'keyup': app.calcPlannedEffortCurRow,
+        'click': app.calcPlannedEffortCurRow
+    });
+
+    app.getEffortCurRowId();
+
+    $('.date').on('change', function() {
+        app.calcCurRowChangeDate($table);
+    });
 };
 
 
