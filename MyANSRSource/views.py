@@ -138,6 +138,7 @@ def Timesheet(request):
             thursdayTotal = 0
             fridayTotal = 0
             saturdayTotal = 0
+            sundayTotal = 0
             weekTotal = 0
             billableTotal = 0
             nonbillableTotal = 0
@@ -165,6 +166,7 @@ def Timesheet(request):
                     del(timesheet.cleaned_data['thursday'])
                     del(timesheet.cleaned_data['friday'])
                     del(timesheet.cleaned_data['saturday'])
+                    del(timesheet.cleaned_data['sunday'])
                     del(timesheet.cleaned_data['total'])
                     for k, v in timesheet.cleaned_data.iteritems():
                         if k == 'mondayH':
@@ -179,6 +181,8 @@ def Timesheet(request):
                             fridayTotal += v
                         elif k == 'saturdayH':
                             saturdayTotal += v
+                        elif k == 'sundayH':
+                            sundayTotal += v
                         elif k == 'totalH':
                             billableTotal += v
                             weekTotal += v
@@ -205,6 +209,8 @@ def Timesheet(request):
                             fridayTotal += v
                         elif k == 'activity_saturday':
                             saturdayTotal += v
+                        elif k == 'activity_sunday':
+                            sundayTotal += v
                         elif k == 'total':
                             nonbillableTotal += v
                             weekTotal += v
@@ -213,7 +219,8 @@ def Timesheet(request):
                     activityDict.clear()
             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
-                    (fridayTotal > 24) | (saturdayTotal > 24):
+                    (fridayTotal > 24) | (saturdayTotal > 24) | \
+                    (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
             elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove) | \
                  (billableTotal > 44) | (nonbillableTotal > 40) | \
@@ -251,6 +258,8 @@ def Timesheet(request):
                             nonbillableTS.fridayH = v
                         elif k == 'activity_saturday':
                             nonbillableTS.saturdayH = v
+                        elif k == 'activity_sunday':
+                            nonbillableTS.sundayH = v
                         elif k == 'activity_total':
                             nonbillableTS.totalH = v
                         elif k == 'activity_feedback':
@@ -377,7 +386,7 @@ def Timesheet(request):
                 project__isnull=True
             )
         ).values('id', 'activity', 'mondayH', 'tuesdayH', 'wednesdayH',
-                 'thursdayH', 'fridayH', 'saturdayH', 'totalH',
+                 'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
                  'managerFeedback'
                  )
         cwTimesheetData = TimeSheetEntry.objects.filter(
@@ -391,7 +400,8 @@ def Timesheet(request):
         ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-                 'saturdayH', 'saturdayQ', 'totalH', 'totalQ', 'managerFeedback'
+                 'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ',
+                 'totalH', 'totalQ', 'managerFeedback'
                  )
         tsData = {}
         tsDataList = []
@@ -420,6 +430,8 @@ def Timesheet(request):
                     atData['activity_friday'] = v
                 if 'saturday' in k:
                     atData['activity_saturday'] = v
+                if 'sunday' in k:
+                    atData['activity_sunday'] = v
                 if 'total' in k:
                     atData['activity_total'] = v
                 if k == 'managerFeedback':
@@ -459,7 +471,7 @@ def Timesheet(request):
                 project__isnull=True
             )
         ).values('activity', 'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
-                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
+                 'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback'
                  )
         cwApprovedTimesheetData = TimeSheetEntry.objects.filter(
             Q(
@@ -471,7 +483,7 @@ def Timesheet(request):
             )
         ).values('project__name', 'location__name', 'chapter__name', 'mondayH',
                  'tuesdayH', 'wednesdayH', 'thursdayH', 'task',
-                 'fridayH', 'saturdayH', 'totalH', 'managerFeedback'
+                 'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback'
                  )
         billableHours = TimeSheetEntry.objects.filter(
             Q(
@@ -525,11 +537,11 @@ def Timesheet(request):
                 hold = cwTimesheetData[0]['hold']
                 if hold is True:
                     messages.warning(request,
-                                'This timesheet is sent for approval \
+                                     'This timesheet is sent for approval \
                                 to your manager')
                 else:
                     messages.warning(request,
-                                'Your manager kept this timesheet on hold, \
+                                     'Your manager kept this timesheet on hold, \
                                      please resubmit')
             else:
                 messages.info(request,
@@ -642,6 +654,7 @@ def checkUser(userName, password, request, form):
 
 
 class TrackMilestoneWizard(SessionWizardView):
+
     def get_template_names(self):
         return [TMTEMPLATES[self.steps.current]]
 
@@ -705,12 +718,14 @@ class TrackMilestoneWizard(SessionWizardView):
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 
+
 @login_required
 def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
 
 
 class ChangeProjectWizard(SessionWizardView):
+
     def get_template_names(self):
         return [CTEMPLATES[self.steps.current]]
 
@@ -718,9 +733,9 @@ class ChangeProjectWizard(SessionWizardView):
         context = super(ChangeProjectWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Change Milestones':
-            projectTotal = self.storage.get_step_data('Change Basic Information')[
-                'Change Basic Information-revisedTotal'
-            ]
+            projectTotal = self.storage.get_step_data(
+                'Change Basic Information')[
+                'Change Basic Information-revisedTotal']
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Change Team Members':
             holidays = Holiday.objects.all().values('name', 'date')
@@ -753,8 +768,8 @@ class ChangeProjectWizard(SessionWizardView):
                 project__id=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
-                    'startDate',
-                    'endDate',
+                'startDate',
+                'endDate',
                 )
             for eachData in currentProject:
                 startDateDelta = eachData['startDate'] - datetime.now().date()
@@ -806,21 +821,21 @@ class ChangeProjectWizard(SessionWizardView):
                 id=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
-                    'id',
-                    'signed'
+                'id',
+                'signed'
                 )[0]
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
                 project__id=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
-                    'id',
-                    'member',
-                    'role',
-                    'startDate',
-                    'endDate',
-                    'plannedEffort',
-                    'rate'
+                'id',
+                'member',
+                'role',
+                'startDate',
+                'endDate',
+                'plannedEffort',
+                'rate'
                 )
 
         if step == 'Change Milestones':
@@ -828,10 +843,10 @@ class ChangeProjectWizard(SessionWizardView):
                 project__id=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
-                    'id',
-                    'milestoneDate',
-                    'description',
-                    'amount',
+                'id',
+                'milestoneDate',
+                'description',
+                'amount',
                 )
         return self.initial_dict.get(step, currentProject)
 
@@ -890,9 +905,11 @@ def UpdateProjectInfo(newInfo):
 
 changeProject = ChangeProjectWizard.as_view(CFORMS)
 
+
 @login_required
 def WrappedChangeProjectView(request):
     return changeProject(request)
+
 
 class CreateProjectWizard(SessionWizardView):
 
@@ -917,10 +934,10 @@ class CreateProjectWizard(SessionWizardView):
                     'disabled'
                 ] = True
             if form.is_valid():
-                    if eachForm.cleaned_data['rate'] > 100:
-                        rate = eachForm.cleaned_data['rate']
-                        errors = eachForm._errors.setdefault(rate, ErrorList())
-                        errors.append(u'% value cannot be greater than 100')
+                if eachForm.cleaned_data['rate'] > 100:
+                    rate = eachForm.cleaned_data['rate']
+                    errors = eachForm._errors.setdefault(rate, ErrorList())
+                    errors.append(u'% value cannot be greater than 100')
 
         if step == 'Financial Milestones':
             internalStatus = self.storage.get_step_data('Basic Information')[
@@ -1186,9 +1203,11 @@ def saveProject(request):
 
 createProject = CreateProjectWizard.as_view(FORMS)
 
+
 @login_required
 def WrappedCreateProjectView(request):
     return createProject(request)
+
 
 @login_required
 def notify(request):

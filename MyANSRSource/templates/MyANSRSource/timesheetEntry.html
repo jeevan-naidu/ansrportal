@@ -225,6 +225,32 @@
 							{% endfor %}
 						</a>
 					</td>
+				{% elif data.label == 'Sun' %}
+					<td>
+						<a class="btn btn-default day-popover-button" href="javascript:;">
+							{% for data in form.hidden_fields %}
+								{% if 'sundayQ' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-questions">{{ data.value }}</span> <span class="project-unit">Q</span>
+									{% else %}
+										<span class="b-questions">0</span> <span class="project-unit">Q</span>
+									{% endif %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
+							in
+							{% for data in form.hidden_fields %}
+								{% if 'sundayH' in data.id_for_label %}
+									{% if data.value > 0 %}
+										<span class="b-hours">{{ data.value }}</span> H
+									{% else %}
+										<span class="b-hours">0</span> H
+									{% endif %}
+									{{ data }}
+								{% endif %}
+							{% endfor %}
+						</a>
+					</td>
 				{% elif data.label == 'Total' %}
 					<td>
 						<a class="btn btn-default row-total-view" href="javascript:;">

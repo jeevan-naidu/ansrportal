@@ -133,6 +133,8 @@ class TimeSheetEntry(models.Model):
     fridayH = models.IntegerField(default=0, verbose_name="Fri")
     saturdayQ = models.IntegerField(default=0, verbose_name="Sat")
     saturdayH = models.IntegerField(default=0, verbose_name="Sat")
+    sundayQ = models.IntegerField(default=0, verbose_name="Sun")
+    sundayH = models.IntegerField(default=0, verbose_name="Sun")
     totalQ = models.IntegerField(default=0, verbose_name="Total")
     totalH = models.IntegerField(default=0, verbose_name="Total")
     approved = models.BooleanField(default=False)
