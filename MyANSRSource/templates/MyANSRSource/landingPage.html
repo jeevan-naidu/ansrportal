@@ -2,6 +2,22 @@
 
 {% block siteTitle %}MyANSRSource-Dashboard{% endblock %}
 
+{% block events %}
+	{% for eachHoliday in holidayList %}
+		{
+			start : '{{ eachHoliday.date }}',
+			title : '{{ eachHoliday.name }}'
+		},
+	{% endfor %}
+	{% for eachProject in projectsList %}
+		{
+			start : '{{ eachProject.project__startDate }}',
+			end : '{{ eachProject.project__endDate }}',
+			title : '{{ eachProject.project__name }}'
+		},
+	{% endfor %}
+{% endblock %}
+
 {% block ansrMenu %}
 <li class="ansrLogout"><a href="{% url 'logout' %}">
 	<span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
@@ -9,72 +25,158 @@
 </a></li>
 {% endblock %}
 
-{% block content %}
-<div class="col-md-12 text-center">
-	<h1><small>Welcome <b>{{ username }}</b>, Quo Vadis?</small></h1>
+{%block content %}
+<div class="row">
+	<div class="col-md-12">
+		<legend class="overflowHidden text-center">
+			<span class="top-5"><small>Welcome <b>{{ username }}</b>, Quo Vadis?</small></span>
+		{% if usertype == 'pm' %}
+		<button type="button" class="btn btn-info mar-bot-15 pull-right disabled" data-toggle="modal" data-target="#myStatus">My Work Status</button>
+		{% else %}
+		<button type="button" class="btn btn-info mar-bot-15 pull-right" data-toggle="modal" data-target="#myStatus">My Work Status</button>
+		{% endif %}
+		</legend>
+	</div>
 </div>
-{% if usertype == 'pm' %}
-<div class="col-md-6">
-<div class="jumbotron shadow">
-	<legend><h2><small><b>Timesheet</b></small></h2></legend>
-	<ul class="list-group">
-		<a href="timesheet/entry" class="list-group-item">Enter Your Timesheet</a>
-		<a href="timesheet/approve" class="list-group-item">
-			<span class="badge">{{ unapprovedts }}</span>
-			Approve Timesheet
-		</a>
-	</ul>
+<div class="row">
+	<div class="col-md-4">
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="ts">
+				<a data-toggle="collapse" data-parent="#accordion" href="#tsCollapse" aria-expanded="true" aria-controls="collapseOne">
+					Timesheet Management
+				</a>
+			</div>
+			<div id="tsCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="ts">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="timesheet/entry" class="list-group-item">Enter Your Timesheet</a>
+					{% if usertype == 'pm' %}
+					<a href="timesheet/approve" class="list-group-item">
+						<span class="badge">{{ unapprovedts }}</span>
+						Approve Timesheet
+					</a>
+					{% endif %}
+				</ul>
+			</div>
+			</div>
+		</div>
+		{% if usertype == 'pm' %}
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="pt">
+				<a data-toggle="collapse" data-parent="#accordion" href="#ptCollapse" aria-expanded="false" aria-controls="collapseTwo">
+					Project Management
+				</a>
+			</div>
+			<div id="ptCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="pt">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="project/add" class="list-group-item">Create Project</a>
+					<a href="project/modify" class="list-group-item">
+						<span class="badge">{{ activeProjects }}</span>
+						Manage Projects
+					</a>
+					<a href="project/trackmilestone" class="list-group-item">
+						<span class="badge">{{ activeMilestones }}</span>
+						Track Milestones
+					</a>
+				</ul>
+			</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="em">
+				<a data-toggle="collapse" data-parent="#accordion" href="#emCollapse" aria-expanded="false" aria-controls="collapseThree">
+					Employee Management
+				</a>
+			</div>
+			<div id="emCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="em">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="#" class="list-group-item">
+						<span class="badge">{{ totalemp }}</span>
+						Manage Employees
+					</a>
+				</ul>
+			</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="rt">
+				<a data-toggle="collapse" data-parent="#accordion" href="#rtCollapse" aria-expanded="false" aria-controls="collapseFour">
+					Reports Management
+				</a>
+			</div>
+			<div id="rtCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="rt">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="#" class="list-group-item">
+						Team Progress
+					</a>
+					<a href="#" class="list-group-item">
+						Team Member Perfomance
+					</a>
+					<a href="#" class="list-group-item">
+						Project Status
+					</a>
+				</ul>
+			</div>
+			</div>
+		</div>
+		{% endif %}
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div id='calendar'></div>	
+	</div>
+	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			 <div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel"><b>My Work Status</b>
+						<small>"You are involved in <b>{{ billableProjects }}</b> billable Project(s)"</small>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-condensed">
+						<thead>
+						<tr>
+							<th>On-Going Project(s)</th>
+							<th>About to complete by</th>
+						<tr>
+						</thead>
+						{% for eachProject in currentProjects %}
+						<tr>
+							<td>{{ eachProject.project__name }}</td>
+							<td><b>{{ eachProject.yearDiff }}</b> <small>years</small> &nbsp;&nbsp;&nbsp;
+						            <b>{{ eachProject.monthDiff }}</b> <small>months</small> &nbsp;&nbsp;&nbsp;
+							    <b>{{ eachProject.dayDiff }}</b> <small>days</small></td>
+						</tr>
+						{% endfor %}
+					</table>
+					<table class="table table-condensed">
+						<thead>
+						<tr>
+							<th>Future Project(s)</th>
+							<th>About to start in</th>
+						<tr>
+						</thead>
+						{% for eachProject in futureProjects %}
+						<tr>
+							<td>{{ eachProject.project__name }}</td>
+							<td><b>{{ eachProject.yearDiff }}</b> <small>years</small> &nbsp;&nbsp;&nbsp;
+						            <b>{{ eachProject.monthDiff }}</b> <small>months</small> &nbsp;&nbsp;&nbsp;
+							    <b>{{ eachProject.dayDiff }}</b> <small>days</small></td>
+						</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-</div>
-<div class="col-md-6">
-<div class="jumbotron shadow">
-	<legend><h2><small><b>Projects</b></small></h2></legend>
-	<ul class="list-group">
-		<a href="project/add" class="list-group-item">Create Project</a>
-		<a href="project/modify" class="list-group-item">
-			<span class="badge">{{ activeProjects }}</span>
-			Manage Projects
-		</a>
-		<a href="project/trackmilestone" class="list-group-item">
-			<span class="badge">{{ activeMilestones }}</span>
-			Track Milestones
-		</a>
-	</ul>
-</div>
-</div>
-<div class="col-md-6">
-<div class="jumbotron shadow">
-	<legend><h2><small><b>Employees</b></small></h2></legend>
-	<ul class="list-group">
-		<a href="#" class="list-group-item">
-			<span class="badge">{{ totalemp }}</span>
-			Manage Employees
-		</a>
-	</ul>
-</div>
-</div>
-<div class="col-md-6">
-<div class="jumbotron shadow">
-	<legend><h2><small><b>Reports</b></small></h2></legend>
-	<ul class="list-group">
-		<a href="#" class="list-group-item">
-			Team Progress
-		</a>
-		<a href="#" class="list-group-item">
-			Team Member Perfomance
-		</a>
-		<a href="#" class="list-group-item">
-			Project Status
-		</a>
-	</ul>
-</div>
-</div>
-{% else %}
-<div class="col-md-6 col-md-offset-3">
-<div class="jumbotron shadow">
-	<legend><h2><small><b>Timesheet</b></small></h2></legend>
-	<a href="timesheet/entry">Enter Your Timesheet</a>
-</div>
-</div>
-{% endif %}
 {% endblock %}

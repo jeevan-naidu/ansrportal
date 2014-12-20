@@ -626,9 +626,64 @@ def Dashboard(request):
         unApprovedTimeSheet = 0
         totalEmployees = 0
         activeMilestones = 0
+    billableProjects = ProjectTeamMember.objects.filter(
+        project__closed=False,
+        member=request.user,
+        project__internal=False
+    ).count()
+    currentProjects = ProjectTeamMember.objects.filter(
+        project__closed=False,
+        member=request.user,
+        project__startDate__lte=datetime.now(),
+        project__endDate__gte=datetime.now()
+    ).values('project__name', 'project__endDate')
+    futureProjects = ProjectTeamMember.objects.filter(
+        project__closed=False,
+        member=request.user,
+        project__startDate__gte=datetime.now()
+    ).values('project__name', 'project__startDate')
+    for eachProject in futureProjects:
+        today = datetime.now()
+        projectDate = eachProject['project__startDate']
+        dayDiff = projectDate.day - today.day
+        monthDiff = projectDate.month - today.month
+        yearDiff = projectDate.year - today.year
+        eachProject['dayDiff'] = str(abs(dayDiff)).zfill(2)
+        eachProject['monthDiff'] = str(abs(monthDiff)).zfill(2)
+        eachProject['yearDiff'] = abs(yearDiff)
+        del eachProject['project__startDate']
+    for eachProject in currentProjects:
+        today = datetime.now()
+        projectDate = eachProject['project__endDate']
+        dayDiff = projectDate.day - today.day
+        monthDiff = projectDate.month - today.month
+        yearDiff = projectDate.year - today.year
+        eachProject['dayDiff'] = str(abs(dayDiff)).zfill(2)
+        eachProject['monthDiff'] = str(abs(monthDiff)).zfill(2)
+        eachProject['yearDiff'] = abs(yearDiff)
+        del eachProject['project__endDate']
+    myprojects = ProjectTeamMember.objects.filter(
+        project__closed=False,
+        member=request.user
+    ).values('project__name', 'project__startDate', 'project__endDate')
+    for eachProject in myprojects:
+        eachProject['project__startDate'] = eachProject[
+            'project__startDate'
+        ].strftime('%Y-%m-%d')
+        eachProject['project__endDate'] = eachProject[
+            'project__endDate'
+        ].strftime('%Y-%m-%d')
+    holidayList = Holiday.objects.all().values('name', 'date')
+    for eachHoliday in holidayList:
+        eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
     data = {
         'username': request.session['username'],
         'usertype': request.session['usertype'],
+        'holidayList': holidayList,
+        'projectsList': myprojects,
+        'billableProjects': billableProjects,
+        'currentProjects': currentProjects,
+        'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,
         'unapprovedts': unApprovedTimeSheet,

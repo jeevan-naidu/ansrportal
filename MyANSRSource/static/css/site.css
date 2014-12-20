@@ -20,6 +20,13 @@ body {
 .overflowHidden {
 	overflow: hidden;
 }
+.top-5 {
+	position: relative;
+	top: 5px;
+}
+.mar-bot-15 {
+	margin-bottom: 15px;
+}
 
 /* Menu */
 .ansrLogo { 

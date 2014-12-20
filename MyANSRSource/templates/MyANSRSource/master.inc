@@ -16,6 +16,23 @@
 
        {# Load Ansr CSS and JS #}
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
+
+       {# Load FullCalendar CSS and JS #}
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+       <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.css" media="screen" rel="stylesheet">
+       <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.js"></script>
+       
+       <script>
+	$(document).ready(function() {
+		$('#calendar').fullCalendar({
+			aspectRatio: 2,
+			events: [
+				{% block events %}{% endblock %}
+			]
+		})
+
+	});
+       </script>
        
        {% block addFormMedia %}{% endblock %}
 
