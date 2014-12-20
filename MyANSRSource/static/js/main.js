@@ -321,12 +321,17 @@ app.getIdNo = function(str) {
             rowCountElement = $table.find('input[type="hidden"]:first'),
             rowCount = Number(rowCountElement.val());
 
-        if(options.addTeamMember || options.isFinancialMilestone || options.changeTeamMember) {
+        if(options.addTeamMember || options.changeTeamMember) {
             rowCountElement = $table.parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
 
-        if(options.changeMilestone) {
+        if(options.isFinancialMilestone) {
+            rowCountElement = $table.parent().parent().parent().find('input[type="hidden"]:nth-of-type(3)');
+            rowCount = Number(rowCountElement.val());
+        }
+        
+	if(options.changeMilestone) {
             rowCountElement = $table.parent().parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
