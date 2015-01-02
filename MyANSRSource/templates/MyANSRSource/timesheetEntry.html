@@ -167,10 +167,26 @@
 						</a>
 					</td>
 				{% elif 'Feedback' in data.label %}
-			       		<td>	
-						<a class="btn btn-default">
+			       		<td>
+						{% if  data.value == None %}	
+						<button type="button" class="btn btn-default" disabled='disabled'>
+						{% else %}
+						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
-						</a>
+						</button>
+						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<b>Your Feedback</b>
+									</div>
+									<div class="modal-body">
+										{{ data.value }}
+									</div>
+								</div>
+							</div>
+						</div>	
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label %}
 					<td>{{ data }}</td>
@@ -232,6 +248,28 @@
 			{% for data in form %}
 		    		{% if 'id' not in data.label %}
 					<td>{{ data }}</td>
+				{% elif 'Feedback' in data.label %}
+			       		<td>
+						{% if  data.value == None %}	
+						<button type="button" class="btn btn-default" disabled='disabled'>
+						{% else %}
+						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+						{% endif %}
+							<span class="glyphicon glyphicon-comment"></span>
+						</button>
+						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<b>Your Feedback</b>
+									</div>
+									<div class="modal-body">
+										{{ data.value }}
+									</div>
+								</div>
+							</div>
+						</div>	
+					</td>
 				{% endif %}
 			{% endfor %}
 		</tr>
