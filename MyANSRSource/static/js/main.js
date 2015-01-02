@@ -464,15 +464,15 @@ app.getIdNo = function(str) {
                     }
                 }
 
-                if(options.addTeamMember) {
+                if(options.addTeamMember || options.changeTeamMember) {
                     if((formFieldsLen - 1) === index) {
                         $element.prop('disabled', false);
                     }
                     // For team member autocomplete
-                    if($element.hasClass('autocomplete-light-widget')) {
+                    if($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
                         if($element.find('.hilight').length === 0) {
                             console.log('initialize autocomplete');
-                            //$element.yourlabsWidget();
+                            $element.yourlabsWidget();
                         }
                     }
                 }
