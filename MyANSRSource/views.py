@@ -595,9 +595,10 @@ def ApproveTimesheet(request):
             project__projectManager=request.user,
             approved=False
         ).values('id', 'project__id', 'project__name', 'wkstart', 'wkend',
-                 'teamMember__first_name', 'totalH', 'exception', 'approved',
+                 'teamMember__username', 'totalH', 'exception', 'approved',
                  'managerFeedback').order_by('project__id')
 
+        print unApprovedTimeSheet
         data = {
             'timesheetInfo': unApprovedTimeSheet
         }
