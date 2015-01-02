@@ -322,7 +322,7 @@ app.getIdNo = function(str) {
             rowCount = Number(rowCountElement.val());
 
         if(options.addTeamMember || options.changeTeamMember) {
-            rowCountElement = $table.parent().parent().find('input[type="hidden"]:nth-of-type(3)');
+            rowCountElement = $table.parent().parent().find('input[type="hidden"]:nth-of-type(3), input[type="hidden"]:nth-of-type(4)');
             rowCount = Number(rowCountElement.val());
         }
 
