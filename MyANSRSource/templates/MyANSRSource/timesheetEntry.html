@@ -246,7 +246,7 @@
 				{% endif %}
 			{% endfor %}
 			{% for data in form %}
-		    		{% if 'id' not in data.label %}
+		    		{% if 'id' not in data.label and 'Feedback' not in data.label %}
 					<td>{{ data }}</td>
 				{% elif 'Feedback' in data.label %}
 			       		<td>
