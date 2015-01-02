@@ -382,10 +382,16 @@
 							{% endfor %}
 						</a>
 					</td>
-				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}
+				{% elif 'Feedback' in data.label %}
+			       		<td>	
+						<a class="btn btn-default">
+							<span class="glyphicon glyphicon-comment"></span>
+						</a>
+					</td>
+				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label %}
 					<td>{{ data }}</td>
-                {% endif %}
-            {% endspaceless %}
+                		{% endif %}
+            		{% endspaceless %}
 			{% endfor %}
 		</tr>
 		{% if forloop.last %}
