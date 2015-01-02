@@ -45,7 +45,7 @@
 				{% endif %}
 			{% endfor %}
 			{% for data in form.visible_fields %}
-				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}	
+				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}
 				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 4 %}
 					<th class="res-14-per">
 				{% else %}
@@ -72,6 +72,7 @@
 				{% endif %}
 			{% endfor %}
 			{% for data in form.visible_fields %}
+                {% spaceless %}
 				{% if data.label == 'Mon' %}
 					<td>
 						<a class="btn btn-default day-popover-button" href="javascript:;">
@@ -80,8 +81,8 @@
 									{% for typeData in form.hidden_fields %}
 										{% if 'projectType' in typeData.id_for_label %}
 										{% if data.value > 0 %}
-											<span class="b-questions">{{ data.value }}</span> 
-											<span class="project-unit">{{ typeData.value }}</span>
+											<span class="b-questions">{{data.value}}</span>
+											<span class="project-unit">{{typeData.value}}</span>
 										{% else %}
 											<span class="b-questions">0</span> 
 											{% if typeData.value == None %}
@@ -95,13 +96,13 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
 								{% if 'mondayH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="b-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="b-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -131,13 +132,13 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
 								{% if 'tuesdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="b-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="b-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -167,13 +168,13 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
 								{% if 'wednesdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="b-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="b-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -203,13 +204,13 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
 								{% if 'thursdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="b-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="b-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -239,13 +240,13 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
 								{% if 'fridayH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="b-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="b-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -275,13 +276,13 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
 								{% if 'saturdayH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="b-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="b-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -311,13 +312,13 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
 								{% if 'sundayH' in data.id_for_label %}
 									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span> H
+										<span class="b-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="b-hours">0</span> H
+										<span class="b-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -332,10 +333,10 @@
 									{% for typeData in form.hidden_fields %}
 										{% if 'projectType' in typeData.id_for_label %}
 										{% if data.value > 0 %}
-											<span class="b-questions">{{ data.value }}</span> 
+											<span class="t-questions">{{ data.value }}</span>
 											<span class="project-unit">{{ typeData.value }}</span>
 										{% else %}
-											<span class="b-questions">0</span> 
+											<span class="t-questions">0</span>
 											{% if typeData.value == None %}
 												<span class="project-unit">Q</span>
 											{% else %}
@@ -347,8 +348,9 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							in
+							-
 							{% for data in form.hidden_fields %}
+
 								{% if 'totalH' in data.id_for_label %}
 								    {% for Ndata in form %}
 									{% if Ndata.label == 'Task' %}
@@ -371,9 +373,9 @@
 									{% endif %}
 								    {% endfor %}
 									{% if data.value > 0 %}
-										<span class="t-hours">{{ data.value }}</span> H
+										<span class="t-hours">{{ data.value }}</span>H
 									{% else %}
-										<span class="t-hours">0</span> H
+										<span class="t-hours">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -382,7 +384,8 @@
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label %}
 					<td>{{ data }}</td>
-				{% endif %}
+                {% endif %}
+            {% endspaceless %}
 			{% endfor %}
 		</tr>
 		{% if forloop.last %}

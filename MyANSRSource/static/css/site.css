@@ -244,12 +244,20 @@ body {
     width: 100%;
 }
 
+.day-popover-button,
+.row-total-view {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
 .day-popover-button {
-    min-width: 100px;
+    min-width: 80px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 .row-total-view {
-    min-width: 120px;
+    min-width: 90px;
 }
 
 
