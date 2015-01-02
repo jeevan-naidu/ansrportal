@@ -468,6 +468,13 @@ app.getIdNo = function(str) {
                     if((formFieldsLen - 1) === index) {
                         $element.prop('disabled', false);
                     }
+                    // For team member autocomplete
+                    if($element.hasClass('autocomplete-light-widget')) {
+                        if($element.find('.hilight').length === 0) {
+                            console.log('initialize autocomplete');
+                            //$element.yourlabsWidget();
+                        }
+                    }
                 }
 
 
