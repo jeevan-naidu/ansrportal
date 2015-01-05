@@ -374,7 +374,7 @@ def Timesheet(request):
             ).date() - timedelta(days=7)
             ansrEndDate = datetime.strptime(
                 request.GET.get('enddate'), '%d%m%Y'
-            ).date() - timedelta(days=7)
+            ).date() - timedelta(days=8)
             disabled = 'prev'
         elif request.GET.get('week') == 'next':
             disabled = 'next'
@@ -535,7 +535,7 @@ def Timesheet(request):
         if cwApprovedTimesheet > 0:
             messages.success(request, 'Timesheet is approved for this week')
             data = {'weekstartDate': weekstartDate,
-                    'weekendDate': ansrEndDate,
+                    'weekendDate': ansrEndDate + timedelta(days=1),
                     'disabled': disabled,
                     'currentTimesheet': cwApprovedTimesheetData,
                     'currentActivity': cwApprovedActivityData
@@ -557,7 +557,7 @@ def Timesheet(request):
                               'Please fill timesheet for this week')
                 hold = False
             data = {'weekstartDate': weekstartDate,
-                    'weekendDate': ansrEndDate,
+                    'weekendDate': ansrEndDate + timedelta(days=1),
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'hold': hold,
