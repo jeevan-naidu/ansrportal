@@ -485,14 +485,17 @@ app.getIdNo = function(str) {
                 }*/
 
                 if(options.billableTotal) {
+                    app.rowChapter = $('#id_form-' + newRowId + '-chapter');
                     if($element.hasClass('billable-select-project')) {
-                        //app.autoFillField($element);
+                        app.rowProject = $element;
                     }
                 }
 
                 console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });
+
+            app.autoFillInit(app.rowProject, app.rowChapter);
 
             daysTotalFun();
             billableTotalFun();
@@ -1047,7 +1050,7 @@ app.plannedEfforInit = function($table) {
 
 
 
-(function($) {
+app.autoFillInit = function($currentElement, $currentChapter) {
     function fireEvent(element,event){
         if (document.createEventObject){
             // dispatch for IE
@@ -1074,57 +1077,66 @@ app.plannedEfforInit = function($table) {
         win.close();
     }
 
-    app.autoFillField = function($curElement){
-        function fill_field(val, init_value){
-            if (!val || val==''){
-                options = '<option value="">---------<'+'/option>';
-                $curElement.html(options);
-                $($curElement[0].options[0]).attr('selected', 'selected');
-                $curElement.trigger('change');
-                return;
-            }
-            $.getJSON("/chaining/filter/MyANSRSource/Chapter/project/"+val+"/", function(j){
-                var options = '<option value="">---------<'+'/option>';
-                for (var i = 0; i < j.length; i++) {
-                    options += '<option value="' + j[i].value + '">' + j[i].display + '<'+'/option>';
-                }
-                var width = $curElement.outerWidth();
-                $curElement.html(options);
-                if (navigator.appVersion.indexOf("MSIE") != -1)
-                    $curElement.width(width + 'px');
-                $curElement[0].options[0].attr('selected', 'selected');
-                var auto_choose = true;
-                if(init_value){
-                    $curElement.option[value="'+ init_value +'"].attr('selected', 'selected');
-                }
-                if(auto_choose && j.length == 1){
-                    $curElement.option[value="'+ j[0].value +'"].attr('selected', 'selected');
-                }
-                $curElement.trigger('change');
-            })
-        }
+    app.autoFillField($currentElement, $currentChapter);
 
-        if(!$curElement.hasClass("chained")){
-            var val = $curElement.val();
-            fill_field(val, "None");
-        }
-
-        $curElement.change(function(){
-            var start_value = $curElement.val();
-            var val = $(this).val();
-            fill_field(val, start_value);
-        });
-    };
     if (typeof(dismissAddAnotherPopup) !== 'undefined') {
         var oldDismissAddAnotherPopup = dismissAddAnotherPopup;
         dismissAddAnotherPopup = function(win, newId, newRepr) {
             oldDismissAddAnotherPopup(win, newId, newRepr);
-            if (windowname_to_id(win.name) == "id_form-1-project") {
-                $("#id_form-1-project").change();
+            if (windowname_to_id(win.name) == $curElement.attr('id')) {
+                $curElement.change();
             }
         }
     }
-})(jQuery);
+};
+
+
+app.autoFillField = function($curElement, $chapter){
+    function fill_field(val, init_value){
+        /*if (!val || val==''){
+            options = '<option value="">---------<'+'/option>';
+            $curElement.html(options);
+            $($curElement[0].options[0]).attr('selected', 'selected');
+            $curElement.trigger('change');
+            return;
+        }*/
+
+        //var $chapter = $('#id_form-2-chapter');
+
+        $.getJSON("/chaining/filter/MyANSRSource/Chapter/project/"+val+"/", function(j){
+            var options = '<option value="">---------<'+'/option>';
+            for (var i = 0; i < j.length; i++) {
+                options += '<option value="' + j[i].value + '">' + j[i].display + '<'+'/option>';
+            }
+            var width = $chapter.outerWidth();
+            $($chapter[0]).html(options);
+            if (navigator.appVersion.indexOf("MSIE") != -1)
+                $curElement.width(width + 'px');
+            //$($chapter[0].options[0]).attr('selected', 'selected');
+
+            var auto_choose = true;
+            if(val){
+                $($chapter[0].options[1]).attr('selected', 'selected');
+            }
+            /*if(auto_choose && j.length == 1){
+                $($chapter[0].options[value="'+ j[0].value +'"]).attr('selected', 'selected');
+            }*/
+            //$chapter.trigger('change');
+        })
+    }
+
+    if(!$curElement.hasClass("chained")){
+        var val = $curElement.val();
+        fill_field(val, "None");
+    }
+
+    $curElement.change(function(){
+        var start_value = $chapter.val();
+        var val = $(this).val();
+        fill_field(val, start_value);
+    });
+
+};
 
 
 
