@@ -383,7 +383,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['signed'].widget.attrs['class'] = "form-control"
 
 
-class ChangeProjectTeamMemberForm(forms.ModelForm):
+class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
 
     id = forms.IntegerField(label="teamRecId", widget=forms.HiddenInput())
 
