@@ -486,7 +486,7 @@ app.getIdNo = function(str) {
 
                 if(options.billableTotal) {
                     if($element.hasClass('billable-select-project')) {
-                        app.autoFillField($element);
+                        //app.autoFillField($element);
                     }
                 }
 

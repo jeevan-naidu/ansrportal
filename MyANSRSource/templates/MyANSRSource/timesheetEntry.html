@@ -8,7 +8,7 @@
 {% block endDate %}
 {{ weekendDate }}
 {% endblock %}
-
+{% block container %}"container container-timesheet" {% endblock %}
 {% block timesheetContent %}
   <form id="timesheet" method="post" action="" enctype="multipart/form-data">
 	{% csrf_token %}
