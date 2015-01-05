@@ -175,18 +175,22 @@
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
-						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<div class="modal-header">
-										<b>Your Feedback</b>
-									</div>
-									<div class="modal-body">
-										{{ data.value }}
+						{% with recIdString=forloop.counter0|stringformat:"s" %}
+							{% with apId="myModal-"|add:recIdString %}
+							<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<b>Your Feedback</b>
+											</div>
+											<div class="modal-body">
+												{{ data.value }}
+											</div>
+										</div>
 									</div>
 								</div>
-							</div>
-						</div>	
+							{% endwith %}	
+						{% endwith %}
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label %}
 					<td>{{ data }}</td>
@@ -257,18 +261,22 @@
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
-						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<div class="modal-header">
-										<b>Your Feedback</b>
+						{% with recIdString=forloop.counter0|stringformat:"s" %}
+							{% with apId="myModal-"|add:recIdString %}
+								<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<b>Your Feedback</b>
+											</div>
+											<div class="modal-body">
+												{{ data.value }}
+											</div>
+										</div>
 									</div>
-									<div class="modal-body">
-										{{ data.value }}
-									</div>
-								</div>
-							</div>
-						</div>	
+								</div>	
+							{% endwith %}
+						{% endwith %}
 					</td>
 				{% endif %}
 			{% endfor %}
