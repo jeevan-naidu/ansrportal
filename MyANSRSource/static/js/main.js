@@ -12,7 +12,7 @@ helper.range = function(start, end) {
     return result;
 };
 
-app.billableSetZeroList = helper.range(0, 41);
+app.billableSetZeroList = helper.range(3, 41);
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -464,9 +464,16 @@ app.getIdNo = function(str) {
                     }
                 }
 
-                if(options.addTeamMember) {
+                if(options.addTeamMember || options.changeTeamMember) {
                     if((formFieldsLen - 1) === index) {
                         $element.prop('disabled', false);
+                    }
+                    // For team member autocomplete
+                    if($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
+                        if($element.find('.hilight').length === 0) {
+                            console.log('initialize autocomplete');
+                            $element.yourlabsWidget();
+                        }
                     }
                 }
 
@@ -477,9 +484,18 @@ app.getIdNo = function(str) {
                     }
                 }*/
 
+                if(options.billableTotal) {
+                    app.rowChapter = $('#id_form-' + newRowId + '-chapter');
+                    if($element.hasClass('billable-select-project')) {
+                        app.rowProject = $element;
+                    }
+                }
+
                 console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });
+
+            app.autoFillInit(app.rowProject, app.rowChapter);
 
             daysTotalFun();
             billableTotalFun();
@@ -961,9 +977,6 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
 };
 
 
-
-
-
 app.plannedEfforInit = function($table) {
     var $tableRows = $table.find('tr'),
         item,
@@ -1033,6 +1046,96 @@ app.plannedEfforInit = function($table) {
     $('.date').on('change', function() {
         app.calcCurRowChangeDate($table);
     });
+};
+
+
+
+app.autoFillInit = function($currentElement, $currentChapter) {
+    function fireEvent(element,event){
+        if (document.createEventObject){
+            // dispatch for IE
+            var evt = document.createEventObject();
+            return element.fireEvent('on'+event,evt)
+        }
+        else{
+            // dispatch for firefox + others
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent(event, true, true ); // event type,bubbling,cancelable
+            return !element.dispatchEvent(evt);
+        }
+    }
+
+    function dismissRelatedLookupPopup(win, chosenId) {
+        var name = windowname_to_id(win.name);
+        var elem = document.getElementById(name);
+        if (elem.className.indexOf('vManyToManyRawIdAdminField') != -1 && elem.value) {
+            elem.value += ',' + chosenId;
+        } else {
+            elem.value = chosenId;
+        }
+        fireEvent(elem, 'change');
+        win.close();
+    }
+
+    app.autoFillField($currentElement, $currentChapter);
+
+    if (typeof(dismissAddAnotherPopup) !== 'undefined') {
+        var oldDismissAddAnotherPopup = dismissAddAnotherPopup;
+        dismissAddAnotherPopup = function(win, newId, newRepr) {
+            oldDismissAddAnotherPopup(win, newId, newRepr);
+            if (windowname_to_id(win.name) == $curElement.attr('id')) {
+                $curElement.change();
+            }
+        }
+    }
+};
+
+
+app.autoFillField = function($curElement, $chapter){
+    function fill_field(val, init_value){
+        /*if (!val || val==''){
+            options = '<option value="">---------<'+'/option>';
+            $curElement.html(options);
+            $($curElement[0].options[0]).attr('selected', 'selected');
+            $curElement.trigger('change');
+            return;
+        }*/
+
+        //var $chapter = $('#id_form-2-chapter');
+
+        $.getJSON("/chaining/filter/MyANSRSource/Chapter/project/"+val+"/", function(j){
+            var options = '<option value="">---------<'+'/option>';
+            for (var i = 0; i < j.length; i++) {
+                options += '<option value="' + j[i].value + '">' + j[i].display + '<'+'/option>';
+            }
+            var width = $chapter.outerWidth();
+            $($chapter[0]).html(options);
+            if (navigator.appVersion.indexOf("MSIE") != -1)
+                $curElement.width(width + 'px');
+            //$($chapter[0].options[0]).attr('selected', 'selected');
+
+            var auto_choose = true;
+            if(val){
+                $($chapter[0].options[1]).attr('selected', 'selected');
+            }
+            /*if(auto_choose && j.length == 1){
+                $($chapter[0].options[value="'+ j[0].value +'"]).attr('selected', 'selected');
+            }*/
+            //$chapter.trigger('change');
+        })
+    }
+
+    if(!$curElement.hasClass("chained")){
+        var val = $curElement.val();
+        fill_field(val, "None");
+    }
+
+    $curElement.change(function(){
+        var start_value = $chapter.val();
+        var val = $(this).val();
+        fill_field(val, start_value);
+    });
+
 };
 
 
