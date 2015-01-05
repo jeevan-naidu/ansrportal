@@ -1222,6 +1222,7 @@ def saveProject(request):
         )
         pru = Project.objects.get(id=pr.id)
         pru.projectId = "{0}{1}".format(projectIdPrefix, projectName)
+        print pru.projectId
         pru.save()
         request.session['currentProjectId'] = pru.projectId
 
