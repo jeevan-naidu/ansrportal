@@ -12,7 +12,7 @@ helper.range = function(start, end) {
     return result;
 };
 
-app.billableSetZeroList = helper.range(0, 41);
+app.billableSetZeroList = helper.range(3, 41);
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -483,6 +483,12 @@ app.getIdNo = function(str) {
                         $element.val(100);
                     }
                 }*/
+
+                if(options.billableTotal) {
+                    if($element.hasClass('billable-select-project')) {
+                        app.autoFillField($element);
+                    }
+                }
 
                 console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
@@ -968,9 +974,6 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
 };
 
 
-
-
-
 app.plannedEfforInit = function($table) {
     var $tableRows = $table.find('tr'),
         item,
@@ -1041,6 +1044,87 @@ app.plannedEfforInit = function($table) {
         app.calcCurRowChangeDate($table);
     });
 };
+
+
+
+(function($) {
+    function fireEvent(element,event){
+        if (document.createEventObject){
+            // dispatch for IE
+            var evt = document.createEventObject();
+            return element.fireEvent('on'+event,evt)
+        }
+        else{
+            // dispatch for firefox + others
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent(event, true, true ); // event type,bubbling,cancelable
+            return !element.dispatchEvent(evt);
+        }
+    }
+
+    function dismissRelatedLookupPopup(win, chosenId) {
+        var name = windowname_to_id(win.name);
+        var elem = document.getElementById(name);
+        if (elem.className.indexOf('vManyToManyRawIdAdminField') != -1 && elem.value) {
+            elem.value += ',' + chosenId;
+        } else {
+            elem.value = chosenId;
+        }
+        fireEvent(elem, 'change');
+        win.close();
+    }
+
+    app.autoFillField = function($curElement){
+        function fill_field(val, init_value){
+            if (!val || val==''){
+                options = '<option value="">---------<'+'/option>';
+                $curElement.html(options);
+                $($curElement[0].options[0]).attr('selected', 'selected');
+                $curElement.trigger('change');
+                return;
+            }
+            $.getJSON("/chaining/filter/MyANSRSource/Chapter/project/"+val+"/", function(j){
+                var options = '<option value="">---------<'+'/option>';
+                for (var i = 0; i < j.length; i++) {
+                    options += '<option value="' + j[i].value + '">' + j[i].display + '<'+'/option>';
+                }
+                var width = $curElement.outerWidth();
+                $curElement.html(options);
+                if (navigator.appVersion.indexOf("MSIE") != -1)
+                    $curElement.width(width + 'px');
+                $curElement[0].options[0].attr('selected', 'selected');
+                var auto_choose = true;
+                if(init_value){
+                    $curElement.option[value="'+ init_value +'"].attr('selected', 'selected');
+                }
+                if(auto_choose && j.length == 1){
+                    $curElement.option[value="'+ j[0].value +'"].attr('selected', 'selected');
+                }
+                $curElement.trigger('change');
+            })
+        }
+
+        if(!$curElement.hasClass("chained")){
+            var val = $curElement.val();
+            fill_field(val, "None");
+        }
+
+        $curElement.change(function(){
+            var start_value = $curElement.val();
+            var val = $(this).val();
+            fill_field(val, start_value);
+        });
+    };
+    if (typeof(dismissAddAnotherPopup) !== 'undefined') {
+        var oldDismissAddAnotherPopup = dismissAddAnotherPopup;
+        dismissAddAnotherPopup = function(win, newId, newRepr) {
+            oldDismissAddAnotherPopup(win, newId, newRepr);
+            if (windowname_to_id(win.name) == "id_form-1-project") {
+                $("#id_form-1-project").change();
+            }
+        }
+    }
+})(jQuery);
 
 
 
