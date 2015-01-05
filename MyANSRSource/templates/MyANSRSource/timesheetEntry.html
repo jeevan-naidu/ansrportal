@@ -73,7 +73,7 @@
 			{% endfor %}
 			{% for data in form.visible_fields %}
                 {% spaceless %}
-				{% if data.label == 'Mon' or data.label == 'Tue' or data.label == 'Wed' or data.label == 'Thu' or data.label == 'Fri' or data.label == 'Sat' or data.label == 'Sun' %}
+			{% if data.label in shortDays %} 
 					<td> 
 						<a class="btn btn-default day-popover-button" href="javascript:;">
 							{% for tdata in form.hidden_fields %}

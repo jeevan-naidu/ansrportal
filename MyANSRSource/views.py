@@ -561,6 +561,8 @@ def Timesheet(request):
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'hold': hold,
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu', \
+                                  'Fri', 'Sat', 'Sun'],
                     'billableHours': billableHours,
                     'idleHours': idleHours,
                     'bTotal': bTotal,
