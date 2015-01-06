@@ -9,9 +9,9 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('employee', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('CompanyMaster', '0001_initial'),
-        ('employee', '0001_initial'),
     ]
 
     operations = [
@@ -41,18 +41,6 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Location',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=100, verbose_name=b'Location Name')),
-                ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
-                ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
             name='Project',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -61,7 +49,7 @@ class Migration(migrations.Migration):
                 ('currentProject', models.BooleanField(default=True, verbose_name=b'Project Stage')),
                 ('signed', models.BooleanField(default=True, verbose_name=b'Contact Signed')),
                 ('internal', models.BooleanField(default=True, verbose_name=b'Internal Project')),
-                ('projectId', models.CharField(max_length=15)),
+                ('projectId', models.CharField(max_length=60)),
                 ('startDate', models.DateTimeField(verbose_name=b'Project Start Date')),
                 ('endDate', models.DateTimeField(verbose_name=b'Project End Date')),
                 ('plannedEffort', models.IntegerField(default=0, verbose_name=b'Planned Effort')),
@@ -84,16 +72,17 @@ class Migration(migrations.Migration):
             name='ProjectChangeInfo',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('crId', models.CharField(default=None, max_length=100, verbose_name=b'Change Request ID', blank=True)),
+                ('crId', models.CharField(default=None, max_length=100, null=True, verbose_name=b'Change Request ID', blank=True)),
                 ('reason', models.CharField(default=None, max_length=100, verbose_name=b'Reason for change', blank=True)),
                 ('endDate', models.DateField(default=None, verbose_name=b'Revised Project End Date', blank=True)),
                 ('revisedEffort', models.IntegerField(default=0, verbose_name=b'Revised Effort')),
-                ('revisedTotal', models.IntegerField(default=0, verbose_name=b'Revised Total')),
+                ('revisedTotal', models.IntegerField(default=0, verbose_name=b'Revised amount')),
                 ('closed', models.BooleanField(default=False, verbose_name=b'Close the Project')),
+                ('closedOn', models.DateField(default=None, null=True, blank=True)),
                 ('signed', models.BooleanField(default=False, verbose_name=b'Contract Signed')),
-                ('status', models.BooleanField(default=False, verbose_name=b'Status')),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
+                ('project', models.ForeignKey(verbose_name=b'Project Name', to='MyANSRSource.Project')),
             ],
             options={
             },
@@ -104,9 +93,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('milestoneDate', models.DateField(default=django.utils.timezone.now, verbose_name=b'Milestone Date')),
-                ('deliverables', models.CharField(default=None, max_length=100, verbose_name=b'Deliverables', blank=True)),
-                ('description', models.CharField(default=None, max_length=1000, verbose_name=b'Description', blank=True)),
+                ('description', models.CharField(default=None, max_length=1000, null=True, verbose_name=b'Description')),
                 ('amount', models.IntegerField(default=0, verbose_name=b'Amount')),
+                ('closed', models.BooleanField(default=False, verbose_name=b'Completed')),
+                ('reason', models.CharField(default=None, max_length=100, null=True, verbose_name=b'Reason for change', blank=True)),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
                 ('project', models.ForeignKey(to='MyANSRSource.Project')),
@@ -122,6 +112,7 @@ class Migration(migrations.Migration):
                 ('startDate', models.DateField(default=django.utils.timezone.now, verbose_name=b'Start date on project')),
                 ('endDate', models.DateField(default=django.utils.timezone.now, verbose_name=b'End date on project')),
                 ('plannedEffort', models.IntegerField(default=0, verbose_name=b'Planned Effort')),
+                ('rate', models.IntegerField(default=100, verbose_name=b'%')),
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
                 ('member', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
@@ -152,9 +143,12 @@ class Migration(migrations.Migration):
                 ('fridayH', models.IntegerField(default=0, verbose_name=b'Fri')),
                 ('saturdayQ', models.IntegerField(default=0, verbose_name=b'Sat')),
                 ('saturdayH', models.IntegerField(default=0, verbose_name=b'Sat')),
+                ('sundayQ', models.IntegerField(default=0, verbose_name=b'Sun')),
+                ('sundayH', models.IntegerField(default=0, verbose_name=b'Sun')),
                 ('totalQ', models.IntegerField(default=0, verbose_name=b'Total')),
                 ('totalH', models.IntegerField(default=0, verbose_name=b'Total')),
-                ('approved', models.BooleanField(default=False, verbose_name=b'Approved')),
+                ('approved', models.BooleanField(default=False)),
+                ('hold', models.BooleanField(default=False)),
                 ('approvedon', models.DateTimeField(default=None, verbose_name=b'Approved On', null=True, editable=False, blank=True)),
                 ('managerFeedback', models.CharField(default=None, max_length=1000, null=True, verbose_name=b'Manager Feedback', blank=True)),
                 ('exception', models.CharField(default=b'No Exception', max_length=75)),
@@ -162,7 +156,7 @@ class Migration(migrations.Migration):
                 ('createdOn', models.DateTimeField(auto_now_add=True, verbose_name=b'created Date')),
                 ('updatedOn', models.DateTimeField(auto_now=True, verbose_name=b'Updated Date')),
                 ('chapter', models.ForeignKey(verbose_name=b'Chapter', to='MyANSRSource.Chapter', null=True)),
-                ('location', models.ForeignKey(verbose_name=b'Location', to='MyANSRSource.Location', null=True)),
+                ('location', models.ForeignKey(verbose_name=b'Location', to='CompanyMaster.OfficeLocation', null=True)),
                 ('project', models.ForeignKey(verbose_name=b'Project Name', to='MyANSRSource.Project', null=True)),
                 ('teamMember', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL)),
             ],
@@ -171,23 +165,5 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Timesheet Entries',
             },
             bases=(models.Model,),
-        ),
-        migrations.AddField(
-            model_name='projectchangeinfo',
-            name='milestone',
-            field=models.ForeignKey(to='MyANSRSource.ProjectMilestone'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='projectchangeinfo',
-            name='project',
-            field=models.ForeignKey(verbose_name=b'Project Name', to='MyANSRSource.Project'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='projectchangeinfo',
-            name='teamMember',
-            field=models.ForeignKey(to='MyANSRSource.ProjectTeamMember'),
-            preserve_default=True,
         ),
     ]
