@@ -117,7 +117,7 @@ def Timesheet(request):
     maxAutoApprove = 44
     leaveDayWork = False
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
-    ansrEndDate = weekstartDate + timedelta(days=5)
+    ansrEndDate = weekstartDate + timedelta(days=6)
     disabled = 'next'
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
@@ -363,6 +363,8 @@ def Timesheet(request):
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'ErrorList': tsErrorList,
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
+                                  'Fri', 'Sat', 'Sun'],
                     'tsFormset': tsFormset,
                     'hold': False,
                     'atFormset': atFormset}
@@ -561,7 +563,7 @@ def Timesheet(request):
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'hold': hold,
-                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu', \
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
                                   'Fri', 'Sat', 'Sun'],
                     'billableHours': billableHours,
                     'idleHours': idleHours,

@@ -42,7 +42,7 @@
     </head>
     <body>
 	<!-- Ansr -->
-	<div class="container">
+	<div class={% block container %}"container"{% endblock %}>
 		<!-- Ansr Logo and role based menuset -->
 		<div class="row">
 			<nav class="navbar navbar-default navbar-fixed-top ansrMenuShadow" role="navigation">
