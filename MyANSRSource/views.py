@@ -1223,8 +1223,7 @@ def saveProject(request):
             str(pr.id).zfill(4)
         )
         pru = Project.objects.get(id=pr.id)
-        pru.projectId = "{0}{1}".format(projectIdPrefix, projectName)
-        print pru.projectId
+        pru.projectId = "{0}{1}".format(projectIdPrefix, projectName.upper())
         pru.save()
         request.session['currentProjectId'] = pru.projectId
 
