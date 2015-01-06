@@ -337,7 +337,7 @@ def Timesheet(request):
                 ).date() - timedelta(days=7)
                 ansrEndDate = datetime.strptime(
                     request.GET.get('enddate'), '%d%m%Y'
-                ).date() - timedelta(days=7)
+                ).date() - timedelta(days=8)
                 disabled = 'prev'
             elif request.GET.get('week') == 'next':
                 disabled = 'next'
@@ -363,6 +363,8 @@ def Timesheet(request):
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'ErrorList': tsErrorList,
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
+                                  'Fri', 'Sat', 'Sun'],
                     'tsFormset': tsFormset,
                     'hold': False,
                     'atFormset': atFormset}
@@ -561,7 +563,7 @@ def Timesheet(request):
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'hold': hold,
-                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu', \
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
                                   'Fri', 'Sat', 'Sun'],
                     'billableHours': billableHours,
                     'idleHours': idleHours,
