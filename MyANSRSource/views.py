@@ -117,7 +117,7 @@ def Timesheet(request):
     maxAutoApprove = 44
     leaveDayWork = False
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
-    ansrEndDate = weekstartDate + timedelta(days=5)
+    ansrEndDate = weekstartDate + timedelta(days=6)
     disabled = 'next'
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
@@ -337,7 +337,7 @@ def Timesheet(request):
                 ).date() - timedelta(days=7)
                 ansrEndDate = datetime.strptime(
                     request.GET.get('enddate'), '%d%m%Y'
-                ).date() - timedelta(days=8)
+                ).date() - timedelta(days=7)
                 disabled = 'prev'
             elif request.GET.get('week') == 'next':
                 disabled = 'next'
@@ -376,7 +376,7 @@ def Timesheet(request):
             ).date() - timedelta(days=7)
             ansrEndDate = datetime.strptime(
                 request.GET.get('enddate'), '%d%m%Y'
-            ).date() - timedelta(days=8)
+            ).date() - timedelta(days=7)
             disabled = 'prev'
         elif request.GET.get('week') == 'next':
             disabled = 'next'
@@ -537,7 +537,7 @@ def Timesheet(request):
         if cwApprovedTimesheet > 0:
             messages.success(request, 'Timesheet is approved for this week')
             data = {'weekstartDate': weekstartDate,
-                    'weekendDate': ansrEndDate + timedelta(days=1),
+                    'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'currentTimesheet': cwApprovedTimesheetData,
                     'currentActivity': cwApprovedActivityData
@@ -559,7 +559,7 @@ def Timesheet(request):
                               'Please fill timesheet for this week')
                 hold = False
             data = {'weekstartDate': weekstartDate,
-                    'weekendDate': ansrEndDate + timedelta(days=1),
+                    'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'hold': hold,
