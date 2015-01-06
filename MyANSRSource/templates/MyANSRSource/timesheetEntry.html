@@ -171,7 +171,11 @@
 						{% if  data.value == None %}	
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
-						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+						{% with recIdString=forloop.counter0|stringformat:"s" %}
+							{% with apIdT="#myModal-"|add:recIdString %}
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+							{% endwith %}
+						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
@@ -257,7 +261,11 @@
 						{% if  data.value == None %}	
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
-						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+						{% with recIdString=forloop.counter0|stringformat:"s" %}
+							{% with apIdT="#myModal-"|add:recIdString %}
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+							{% endwith %}
+						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
