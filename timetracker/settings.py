@@ -160,6 +160,8 @@ DATABASES = {
         "NAME": "myansrsource",
         "USER": "root",
         "PASSWORD": "root",
+        "HOST": "localhost",
+        "PORT": "3306",
         },
     }
 
