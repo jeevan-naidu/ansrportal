@@ -192,3 +192,6 @@ EMAIL_HOST_USER = 'niranj@fantain.com'
 EMAIL_HOST_PASSWORD = 'Nov@123!'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+#Grappelli Customizations
+GRAPPELLI_ADMIN_TITLE = 'My ANSRSource'
