@@ -1,12 +1,16 @@
 import autocomplete_light
 autocomplete_light.autodiscover()
+
+from django.conf import settings
+from django.db.models import Q
 from django import forms
 from django.contrib.auth.models import User
-from django.db.models import Q
+
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
+
 import CompanyMaster
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -17,7 +21,7 @@ TASK = (
     ('C', 'CE'),
     ('Q', 'QA'),
     ('I', 'Idle'),
-    ('W', 'ReWork'),
+    ('W', 'Rework'),
 )
 
 NONBILLABLE = (
@@ -197,7 +201,8 @@ def TimesheetFormset(currentUser):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             )
-            if currentUser.groups.all()[0].name == "project manager":
+            if currentUser.groups.filter(
+                    name=settings.AUTH_PM_GROUP).count() > 0:
                 self.fields['chapter'] = ChainedModelChoiceField(
                     'MyANSRSource',
                     'Chapter',
@@ -211,7 +216,8 @@ def TimesheetFormset(currentUser):
                 'class'] = "form-control d-item billable-select-project"
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item"
-            self.fields['chapter'].widget.attrs['class'] = "form-control d-item"
+            self.fields['chapter'].widget.attrs[
+                'class'] = "form-control d-item"
             self.fields['task'].widget.attrs[
                 'class'
             ] = "form-control d-item b-task"
@@ -492,7 +498,7 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectTeamForm, self).__init__(*args, **kwargs)
         self.fields['member'].queryset = User.objects.exclude(
-            Q(groups__name='project manager') |
+            Q(groups__name=settings.AUTH_PM_GROUP) |
             Q(is_superuser=True)
         )
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
