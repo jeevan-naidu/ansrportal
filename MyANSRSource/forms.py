@@ -201,8 +201,7 @@ def TimesheetFormset(currentUser):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             )
-            if currentUser.groups.filter(
-                    name=settings.AUTH_PM_GROUP).count() > 0:
+            if currentUser.has_perm('manage_project'):
                 self.fields['chapter'] = ChainedModelChoiceField(
                     'MyANSRSource',
                     'Chapter',
@@ -497,10 +496,8 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectTeamForm, self).__init__(*args, **kwargs)
-        self.fields['member'].queryset = User.objects.exclude(
-            Q(groups__name=settings.AUTH_PM_GROUP) |
-            Q(is_superuser=True)
-        )
+        self.fields['member'].queryset = User.objects.filter(
+            groups__name=settings.AUTH_TEAM_GROUP)
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs['class'] = \
             "form-control pro-start-date min-100"
