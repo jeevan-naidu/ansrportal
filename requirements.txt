@@ -1,15 +1,14 @@
 Django==1.7.1
-MySQL-python==1.2.5
 Pillow==2.6.1
 argparse==1.2.1
 django-auth-ldap==1.2.2
 django-autocomplete-light==2.0.3
 django-bootstrap3==4.11.0
--e git+https://github.com/vivekfantain/django-bootstrap3-datetimepicker.git#egg=django_bootstrap3_datetimepicker-master
+-e git+https://github.com/vivekfantain/django-bootstrap3-datetimepicker.git@46204a78521dd9b4a57571113cc0101f7de5bfee#egg=django_bootstrap3_datetimepicker-master
 django-datetime-widget==0.9
 django-grappelli==2.6.3
 django-session-security==2.2.2
--e git+https://github.com/digi604/django-smart-selects.git#egg=django_smart_selects-master
+-e git+https://github.com/digi604/django-smart-selects.git@f5f7b826a543da2e6eeac37729edff9b7b8e8a64#egg=django_smart_selects-master
 python-dateutil==2.2
 python-ldap==2.4.18
 pytz==2014.7
