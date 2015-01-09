@@ -12,70 +12,73 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 from django.conf import global_settings
 # For LDAP
-from django_auth_ldap.config import PosixGroupType
+import ldap
+from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
+from django_auth_ldap.config import ActiveDirectoryGroupType, NestedActiveDirectoryGroupType
+
+AUTH_LDAP_GLOBAL_OPTIONS = {
+    ldap.OPT_X_TLS_REQUIRE_CERT: False,
+    ldap.OPT_REFERRALS: False,
+    ldap.OPT_DEBUG_LEVEL: 0,
+}
 
 AUTHENTICATION_BACKENDS = (
-    #    'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
-AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
-#AUTH_LDAP_BASE_DN = "dc=fantain,dc=com"
-AUTH_LDAP_BIND_DN = "cn=admin,dc=fantain,dc=com"
-AUTH_LDAP_BIND_PASSWORD = "fant@in"
-#AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=fantainusers,dc=fantain,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
-#AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=fantainusers,dc=fantain,dc=com"
-# AUTH_LDAP_GROUP_SEARCH = LDAPSearch("cn=users,ou=fantaingroups,dc=fantain,dc=com",
-#    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)")
-AUTH_LDAP_REQUIRE_GROUP = "cn=users,ou=fantaingroups,dc=fantain,dc=com"
-AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")
+AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
+AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
+AUTH_LDAP_BIND_PASSWORD = "P@ssword"
+AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
+    LDAPSearch(
+        "OU=ANSR Users,DC=ANSR,DC=com",
+        ldap.SCOPE_SUBTREE,
+        '(sAMAccountName=%(user)s)'),
+    LDAPSearch(
+        "DC=ANSR,DC=com",
+        ldap.SCOPE_SUBTREE,
+        '(sAMAccountName=%(user)s)'))
+
+
+# Set up the basic group
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+    "OU=ANSR Users,DC=ANSR,DC=com",
+    ldap.SCOPE_SUBTREE) # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
+
+# !important! set group type
+AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
 AUTH_LDAP_VERSION = 3
-# Optional
-AUTH_LDAP_FIELD_USERAUTH = "uid"
-# user authentication shall be done.
-AUTH_LDAP_FIELD_AUTHUNIT = "fantainusers"
-AUTH_LDAP_FIELD_USERNAME = "uid"
 
 
 AUTH_LDAP_USER_ATTR_MAP = {
-    "first_name": "sn",
-    "last_name": "givenName",
-    'email': 'mail',
-    }
-
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
-#AUTH_PROFILE_MODULE = "employee.UserProfile"
-
-AUTH_LDAP_PROFILE_ATTR_MAP = {
-    "employee_number": "employeeNumber"
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "Email",
+    "username": "sAMAccountName"
 }
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_active": "cn=active,cn=users,ou=fantaingroups,dc=fantain,dc=com",
-    "is_staff": "cn=staff,ou=django,ou=groups,dc=example,dc=com",
-    "is_superuser": "cn=superuser,ou=django,ou=groups,dc=example,dc=com"
+    "is_active": ["cn=Domain Admins,cn=Users,DC=ANSR,DC=com",
+                  "cn=Domain Users,cn=Users,DC=ANSR,DC=com",
+                  "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
+                  ],
+    "is_staff": ["cn=Domain Admins,cn=Users,DC=ANSR,DC=com",
+                 "cn=Domain Users,cn=Users,DC=ANSR,DC=com",
+                 "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
+                 ],
+    "is_superuser": "cn=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
 }
 
+AUTH_LDAP_MIRROR_GROUPS = True
+
+# AUTH_LDAP_PROFILE_ATTR_MAP = {
+#    "employee_number": "employeeNumber"
+#}
+
+
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
-#AUTH_LDAP_FIND_GROUP_PERMS = True
-#AUTH_LDAP_CACHE_TIMEOUT = 3600
+AUTH_LDAP_FIND_GROUP_PERMS = True
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -196,3 +199,16 @@ EMAIL_HOST_USER = 'niranj@fantain.com'
 EMAIL_HOST_PASSWORD = 'Nov@123!'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+import logging
+
+logger = logging.getLogger('django_auth_ldap')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
+
+# Grappelli Customizations
+GRAPPELLI_ADMIN_TITLE = 'MyANSRSource Administration'
+
+# Groups for various permissions
+AUTH_PM_GROUP = 'MyANSRSourceAdmin'
+AUTH_TEAM_GROUP = 'MyANSRSourceUsers'
