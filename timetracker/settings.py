@@ -44,7 +44,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
     "OU=ANSR Users,DC=ANSR,DC=com",
-    ldap.SCOPE_SUBTREE) # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
+    ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
@@ -59,14 +59,15 @@ AUTH_LDAP_USER_ATTR_MAP = {
 }
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_active": ["cn=Domain Admins,cn=Users,DC=ANSR,DC=com",
-                  "cn=Domain Users,cn=Users,DC=ANSR,DC=com",
-                  "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
-                  ],
-    "is_staff": ["cn=Domain Admins,cn=Users,DC=ANSR,DC=com",
-                 "cn=Domain Users,cn=Users,DC=ANSR,DC=com",
-                 "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
-                 ],
+    "is_active":  [
+        "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourceHR,OU=ANSR Users,DC=ANSR,DC=com",
+        ],
+    "is_staff": [
+        "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourceHR,OU=ANSR Users,DC=ANSR,DC=com",
+        ],
     "is_superuser": "cn=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
 }
 
