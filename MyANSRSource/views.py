@@ -11,7 +11,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter
-from CompanyMaster.models import Holiday
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -19,6 +18,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ChangeProjectMilestoneForm, ChangeProjectForm, \
     CloseProjectMilestoneForm
 import CompanyMaster
+from CompanyMaster.models import Holiday
 import employee
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
@@ -682,6 +682,7 @@ def Dashboard(request):
         eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
     data = {
         'username': request.session['username'],
+        'firstname': request.session['firstname'],
         'usertype': request.session['usertype'],
         'holidayList': holidayList,
         'projectsList': myprojects,
@@ -702,14 +703,24 @@ def checkUser(userName, password, request, form):
         if user.is_active:
             auth.login(request, user)
             try:
-                if user.groups.all()[0].name == "project manager":
+                if user.groups.filter(name=settings.AUTH_PM_GROUP).count() > 0:
                     request.session['username'] = userName
                     request.session['usertype'] = 'pm'
+                    request.session['firstname'] = user.first_name
                     return HttpResponseRedirect('dashboard')
-                elif user.groups.all()[0].name == "project team":
+                elif user.groups.filter(name=settings.AUTH_TEAM_GROUP).count() > 0:
                     request.session['username'] = userName
                     request.session['usertype'] = 'tm'
+                    request.session['firstname'] = user.first_name
                     return HttpResponseRedirect('dashboard')
+                else:
+                    # We have an unknow group
+                    messages.error(request, 'This user does not have access.')
+                    return loginResponse(
+                        request,
+                        form,
+                        'MyANSRSource/index.html')
+
             except IndexError:
                 messages.error(request, 'This user does not have access.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
@@ -1136,7 +1147,8 @@ class CreateProjectWizard(SessionWizardView):
                 for k, v in milestoneData.iteritems():
                     k = "{0}-{1}".format(k, milestoneDataCounter)
                     changedMilestoneData[k] = v
-                milestoneDate = 'milestoneDate-{0}'.format(milestoneDataCounter)
+                milestoneDate = 'milestoneDate-{0}'.format(
+                    milestoneDataCounter)
                 changedMilestoneData[milestoneDate] = changedMilestoneData.get(
                     milestoneDate
                 ).strftime('%Y-%m-%d')
