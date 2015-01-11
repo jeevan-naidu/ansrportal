@@ -1,5 +1,5 @@
 {% extends 'master.inc' %}
-
+{% load permissions %}
 {% block siteTitle %}MyANSRSource-Dashboard{% endblock %}
 
 {% block events %}
@@ -29,8 +29,8 @@
 <div class="row">
 	<div class="col-md-12">
 		<legend class="overflowHidden text-center">
-			<span class="top-5"><small>Welcome <b>{{ username }}</b>, Quo Vadis?</small></span>
-		{% if usertype == 'pm' %}
+			<span class="top-5"><small>Welcome <b>{{ firstname }}</b>, Quo Vadis?</small></span>
+		{% if user|approve_timesheet  %}
 		<button type="button" class="btn btn-info mar-bot-15 pull-right disabled" data-toggle="modal" data-target="#myStatus">My Work Status</button>
 		{% else %}
 		<button type="button" class="btn btn-info mar-bot-15 pull-right" data-toggle="modal" data-target="#myStatus">My Work Status</button>
@@ -51,7 +51,7 @@
 			<div class="panel-body">
 				<ul class="list-group">
 					<a href="timesheet/entry" class="list-group-item">Enter Your Timesheet</a>
-					{% if usertype == 'pm' %}
+					{% if user|approve_timesheet %}
 					<a href="timesheet/approve" class="list-group-item">
 						<span class="badge">{{ unapprovedts }}</span>
 						Approve Timesheet
@@ -61,7 +61,7 @@
 			</div>
 			</div>
 		</div>
-		{% if usertype == 'pm' %}
+		{% if user|manage_project %}
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="pt">
 				<a data-toggle="collapse" data-parent="#accordion" href="#ptCollapse" aria-expanded="false" aria-controls="collapseTwo">
@@ -75,15 +75,17 @@
 					<a href="project/modify" class="list-group-item">
 						<span class="badge">{{ activeProjects }}</span>
 						Manage Projects
-					</a>
+                    </a>
+                    {% if user|manage_milestones %}
 					<a href="project/trackmilestone" class="list-group-item">
 						<span class="badge">{{ activeMilestones }}</span>
 						Track Milestones
-					</a>
+                    </a>
+                    {% endif %}
 				</ul>
 			</div>
 			</div>
-		</div>
+        </div>
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="em">
 				<a data-toggle="collapse" data-parent="#accordion" href="#emCollapse" aria-expanded="false" aria-controls="collapseThree">
@@ -93,7 +95,7 @@
 			<div id="emCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="em">
 			<div class="panel-body">
 				<ul class="list-group">
-					<a href="#" class="list-group-item">
+					<a href="/admin" class="list-group-item">
 						<span class="badge">{{ totalemp }}</span>
 						Manage Employees
 					</a>
@@ -114,7 +116,7 @@
 						Team Progress
 					</a>
 					<a href="#" class="list-group-item">
-						Team Member Perfomance
+						Team Member Performance
 					</a>
 					<a href="#" class="list-group-item">
 						Project Status
