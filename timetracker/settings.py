@@ -14,7 +14,7 @@ from django.conf import global_settings
 # For LDAP
 import ldap
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
-from django_auth_ldap.config import ActiveDirectoryGroupType, NestedActiveDirectoryGroupType
+from django_auth_ldap.config import NestedActiveDirectoryGroupType
 
 AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
@@ -30,9 +30,12 @@ AUTHENTICATION_BACKENDS = (
 AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
+
+BASE_DN = "DC=Ansr Source,dc=ansr,dc=com"
+
 AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
     LDAPSearch(
-        "OU=ANSR Users,DC=ANSR,DC=com",
+        BASE_DN,
         ldap.SCOPE_SUBTREE,
         '(sAMAccountName=%(user)s)'),
     LDAPSearch(
@@ -43,7 +46,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    "OU=ANSR Users,DC=ANSR,DC=com",
+    BASE_DN,
     ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
@@ -60,15 +63,15 @@ AUTH_LDAP_USER_ATTR_MAP = {
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     "is_active":  [
-        "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
-        "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
-        "CN=MyANSRSourceHR,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourcePM," + BASE_DN,
+        "CN=MyANSRSourceUsers," + BASE_DN,
+        "CN=MyANSRSourceHR," + BASE_DN,
         ],
     "is_staff": [
-        "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
-        "CN=MyANSRSourceHR,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourcePM," + BASE_DN,
+        "CN=MyANSRSourceHR," + BASE_DN,
         ],
-    "is_superuser": "cn=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
+    "is_superuser": "cn=MyANSRSourcePM," + BASE_DN,
 }
 
 AUTH_LDAP_MIRROR_GROUPS = True
@@ -199,6 +202,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 EMAIL_HOST = 'smtp.office365.com'
 EMAIL_HOST_USER = 'myansrsource@ansrsource.com'
 EMAIL_HOST_PASSWORD = 'P@ssword'
+EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
