@@ -27,11 +27,12 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     )
 
-AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
+AUTH_LDAP_SERVER_URI = "ldap://172.16.16.5"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
 
-BASE_DN = "DC=Ansr Source,dc=ansr,dc=com"
+BASE_DN = "ou=AnsrSource,dc=ansr,dc=com"
+GROUP_BASE_DN = "ou=global group,ou=ansrsource,dc=ansr,dc=com"
 
 AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
     LDAPSearch(
@@ -46,7 +47,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    BASE_DN,
+    GROUP_BASE_DN,
     ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
@@ -63,15 +64,15 @@ AUTH_LDAP_USER_ATTR_MAP = {
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     "is_active":  [
-        "CN=MyANSRSourcePM," + BASE_DN,
-        "CN=MyANSRSourceUsers," + BASE_DN,
-        "CN=MyANSRSourceHR," + BASE_DN,
+        "CN=MyANSRSourcePM," + GROUP_BASE_DN,
+        "CN=MyANSRSourceUsers," + GROUP_BASE_DN,
+        "CN=MyANSRSourceHR," + GROUP_BASE_DN,
         ],
     "is_staff": [
-        "CN=MyANSRSourcePM," + BASE_DN,
-        "CN=MyANSRSourceHR," + BASE_DN,
+        "CN=MyANSRSourcePM," + GROUP_BASE_DN,
+        "CN=MyANSRSourceHR," + GROUP_BASE_DN,
         ],
-    "is_superuser": "cn=MyANSRSourcePM," + BASE_DN,
+    "is_superuser": "cn=MyANSRSourcePM," + GROUP_BASE_DN,
 }
 
 AUTH_LDAP_MIRROR_GROUPS = True
