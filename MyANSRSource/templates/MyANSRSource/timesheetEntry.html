@@ -62,6 +62,18 @@
 		</thead>
 		<tbody>
 		{% endif %}
+		{% if forloop.first %}
+		<tr>
+			<td colspan="4" class="text-center"><h5></small><b>Swipe Card Hours</b></small></h5></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+		</tr>
+		{% endif %}
 		<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
@@ -80,17 +92,17 @@
 								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
 									{% for typeData in form.hidden_fields %}
 										{% if 'projectType' in typeData.id_for_label %}
-										{% if data.value > 0 %}
-											<span class="b-questions">{{data.value}}</span>
-											<span class="project-unit">{{typeData.value}}</span>
-										{% else %}
-											<span class="b-questions">0</span> 
-											{% if typeData.value == None %}
-												<span class="project-unit">Q</span>
-											{% else %}
+											{% if tdata.value > 0 %}
+												<span class="b-questions">{{ tdata.value }}</span>
 												<span class="project-unit">{{ typeData.value }}</span>
+											{% else %}
+												<span class="b-questions">0</span> 
+												{% if typeData.value == None %}
+													<span class="project-unit">Q</span>
+												{% else %}
+													<span class="project-unit">{{ typeData.value }}</span>
+												{% endif %}
 											{% endif %}
-										{% endif %}
 										{% endif %}
 									{% endfor %}
 									{{ tdata }}
@@ -99,8 +111,8 @@
 							-
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-									{% if data.value > 0 %}
-										<span class="b-hours">{{ data.value }}</span>H
+									{% if tdata.value > 0 %}
+										<span class="b-hours">{{ tdata.value }}</span>H
 									{% else %}
 										<span class="b-hours">0</span>H
 									{% endif %}
@@ -166,12 +178,16 @@
 							{% endfor %}
 						</a>
 					</td>
-				{% elif 'Feedback' in data.label %}
+				{% elif data.label == 'Feedback' %}
 			       		<td>
-						{% if  data.value == None %}	
+						{% if  data.value == None or data.value == '' %}	
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
-						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+						{% with recIdString=forloop.counter0|stringformat:"s" %}
+							{% with apIdT="#myModal-"|add:recIdString %}
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+							{% endwith %}
+						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
@@ -254,10 +270,14 @@
 					<td>{{ data }}</td>
 				{% elif 'Feedback' in data.label %}
 			       		<td>
-						{% if  data.value == None %}	
+						{% if  data.value == None or data.value == '' %}	
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
-						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+						{% with recIdString=forloop.counter0|stringformat:"s" %}
+							{% with apIdT="#myModal-"|add:recIdString %}
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+							{% endwith %}
+						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>

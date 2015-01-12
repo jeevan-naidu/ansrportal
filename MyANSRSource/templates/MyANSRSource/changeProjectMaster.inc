@@ -10,7 +10,7 @@
 
 {% load bootstrap3 %}
 
-{% block siteTitle %}MyANSRSource-Manager{% endblock %}
+{% block siteTitle %}myansrsource:Manager{% endblock %}
 
 {% block responsiveMenu %}
 <button type="button" class="navbar-toggle" data-toggle="collapse" 

@@ -11,12 +11,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='projectchangeinfo',
-            name='milestone',
-        ),
-        migrations.RemoveField(
-            model_name='projectchangeinfo',
-            name='teamMember',
+        migrations.AlterModelOptions(
+            name='project',
+            options={'permissions': (('manage_project', 'Create/Manage ANSR Project'), ('approve_timesheet', 'Approve timesheets'), ('manage_milestones', 'Manage Project Milestones'))},
         ),
     ]

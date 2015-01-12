@@ -72,7 +72,7 @@ class Project(models.Model):
         null=False,
         verbose_name="Internal Project"
     )
-    projectId = models.CharField(max_length=15, null=False)
+    projectId = models.CharField(max_length=60, null=False)
     startDate = models.DateTimeField(verbose_name="Project Start Date")
     endDate = models.DateTimeField(verbose_name="Project End Date")
     plannedEffort = models.IntegerField(default=0,
@@ -101,6 +101,13 @@ class Project(models.Model):
 
     def __unicode__(self):
         return unicode(self.name)
+
+    class Meta:
+        permissions = (
+            ("manage_project", "Create/Manage ANSR Project"),
+            ("approve_timesheet", "Approve timesheets"),
+            ("manage_milestones", "Manage Project Milestones"),
+            )
 
 
 class TimeSheetEntry(models.Model):
@@ -159,6 +166,9 @@ class TimeSheetEntry(models.Model):
     class Meta:
         verbose_name = 'Timesheet Entry'
         verbose_name_plural = 'Timesheet Entries'
+        permissions = (
+            ("enter_timesheet", "Allow timetracking"),
+            )
 
 
 class ProjectMilestone(models.Model):

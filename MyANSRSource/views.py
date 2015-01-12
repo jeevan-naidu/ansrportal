@@ -11,7 +11,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter
-from CompanyMaster.models import Holiday
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -19,6 +18,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ChangeProjectMilestoneForm, ChangeProjectForm, \
     CloseProjectMilestoneForm
 import CompanyMaster
+from CompanyMaster.models import Holiday
 import employee
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
@@ -117,7 +117,7 @@ def Timesheet(request):
     maxAutoApprove = 44
     leaveDayWork = False
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
-    ansrEndDate = weekstartDate + timedelta(days=5)
+    ansrEndDate = weekstartDate + timedelta(days=6)
     disabled = 'next'
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
@@ -363,6 +363,8 @@ def Timesheet(request):
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
                     'ErrorList': tsErrorList,
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
+                                  'Fri', 'Sat', 'Sun'],
                     'tsFormset': tsFormset,
                     'hold': False,
                     'atFormset': atFormset}
@@ -561,7 +563,7 @@ def Timesheet(request):
                     'disabled': disabled,
                     'tsFormset': tsFormset,
                     'hold': hold,
-                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu', \
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
                                   'Fri', 'Sat', 'Sun'],
                     'billableHours': billableHours,
                     'idleHours': idleHours,
@@ -608,26 +610,23 @@ def ApproveTimesheet(request):
 
 @login_required
 def Dashboard(request):
-    if request.session['usertype'] == 'pm':
-        totalActiveProjects = Project.objects.filter(
-            projectManager=request.user,
-            closed=False
-        ).count()
-        unApprovedTimeSheet = TimeSheetEntry.objects.filter(
-            project__projectManager=request.user,
-            approved=False
-        ).count()
-        totalEmployees = User.objects.all().count()
-        activeMilestones = ProjectMilestone.objects.filter(
-            project__projectManager=request.user,
-            project__closed=False,
-            closed=False
-        ).count()
-    else:
-        totalActiveProjects = 0
-        unApprovedTimeSheet = 0
-        totalEmployees = 0
-        activeMilestones = 0
+    totalActiveProjects = Project.objects.filter(
+        projectManager=request.user,
+        closed=False
+    ).count() if request.user.has_perm('manage_project') else 0
+
+    unApprovedTimeSheet = TimeSheetEntry.objects.filter(
+        project__projectManager=request.user,
+        approved=False
+    ).count() if request.user.has_perm('approve_timesheet') else 0
+
+    totalEmployees = User.objects.all().count()
+    activeMilestones = ProjectMilestone.objects.filter(
+        project__projectManager=request.user,
+        project__closed=False,
+        closed=False
+    ).count() if request.user.has_perm('manage_milestones') else 0
+
     billableProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
         member=request.user,
@@ -680,7 +679,7 @@ def Dashboard(request):
         eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
     data = {
         'username': request.session['username'],
-        'usertype': request.session['usertype'],
+        'firstname': request.session['firstname'],
         'holidayList': holidayList,
         'projectsList': myprojects,
         'billableProjects': billableProjects,
@@ -700,19 +699,23 @@ def checkUser(userName, password, request, form):
         if user.is_active:
             auth.login(request, user)
             try:
-                if user.groups.all()[0].name == "project manager":
+                if user.has_perm('enter_timesheet'):
                     request.session['username'] = userName
-                    request.session['usertype'] = 'pm'
+                    request.session['firstname'] = user.first_name
                     return HttpResponseRedirect('dashboard')
-                elif user.groups.all()[0].name == "project team":
-                    request.session['username'] = userName
-                    request.session['usertype'] = 'tm'
-                    return HttpResponseRedirect('dashboard')
+                else:
+                    # We have an unknow group
+                    messages.error(request, 'This user does not have access to timesheets.')
+                    return loginResponse(
+                        request,
+                        form,
+                        'MyANSRSource/index.html')
+
             except IndexError:
-                messages.error(request, 'This user does not have access.')
+                messages.error(request, 'This user does not have access to MyANSRSource.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
-            messages.error(request, 'Sorry this user is not active')
+            messages.error(request, 'Sorry this user is not active.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     else:
         messages.error(request, 'Sorry login failed')
@@ -1134,7 +1137,8 @@ class CreateProjectWizard(SessionWizardView):
                 for k, v in milestoneData.iteritems():
                     k = "{0}-{1}".format(k, milestoneDataCounter)
                     changedMilestoneData[k] = v
-                milestoneDate = 'milestoneDate-{0}'.format(milestoneDataCounter)
+                milestoneDate = 'milestoneDate-{0}'.format(
+                    milestoneDataCounter)
                 changedMilestoneData[milestoneDate] = changedMilestoneData.get(
                     milestoneDate
                 ).strftime('%Y-%m-%d')
@@ -1221,7 +1225,7 @@ def saveProject(request):
             str(pr.id).zfill(4)
         )
         pru = Project.objects.get(id=pr.id)
-        pru.projectId = "{0}{1}".format(projectIdPrefix, projectName)
+        pru.projectId = "{0}{1}".format(projectIdPrefix, projectName.upper())
         pru.save()
         request.session['currentProjectId'] = pru.projectId
 

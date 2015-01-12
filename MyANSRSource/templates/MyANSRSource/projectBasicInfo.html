@@ -16,21 +16,19 @@
 	<table class="table">
 		{% for field in form %}
 			<tr>
-				<td class="col-lg-1">
+				<td class="col-lg-2 text-center">
 						{{ field.label }}
 						{% if field.field.required %}
 							<span class="required">*</span>
 						{% endif %}
 				</td>
-				<td class="col-lg-4">
-					{% for choice in field %}
-						{% if field.label == "Project Stage" %}
-							<span class="col-lg-5">{{ choice }}</span>
-						{% else %}
-							<span class="col-lg-2">{{ choice }}</span>
-						{% endif %}
-					{% endfor %}
-				</td>
+				{% for choice in field %}
+					{% if field.label == "Project Stage" %}
+					<td class="col-lg-1">{{ choice }}</td>
+					{% else %}
+					<td class="col-lg-1">{{ choice }}</td>
+					{% endif %}
+				{% endfor %}
 			</tr>
 		{% endfor %}
 	</table>
