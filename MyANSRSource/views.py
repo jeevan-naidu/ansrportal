@@ -613,19 +613,19 @@ def Dashboard(request):
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
         closed=False
-    ).count() if request.user.has_perm('manage_project') else 0
+    ).count() if request.user.has_perm('MyANSRSource.manage_project') else 0
 
     unApprovedTimeSheet = TimeSheetEntry.objects.filter(
         project__projectManager=request.user,
         approved=False
-    ).count() if request.user.has_perm('approve_timesheet') else 0
+    ).count() if request.user.has_perm('MyANSRSource.approve_timesheet') else 0
 
     totalEmployees = User.objects.all().count()
     activeMilestones = ProjectMilestone.objects.filter(
         project__projectManager=request.user,
         project__closed=False,
         closed=False
-    ).count() if request.user.has_perm('manage_milestones') else 0
+    ).count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
 
     billableProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
@@ -699,7 +699,7 @@ def checkUser(userName, password, request, form):
         if user.is_active:
             auth.login(request, user)
             try:
-                if user.has_perm('enter_timesheet'):
+                if user.has_perm('MyANSRSource.enter_timesheet'):
                     request.session['username'] = userName
                     request.session['firstname'] = user.first_name
                     return HttpResponseRedirect('dashboard')
