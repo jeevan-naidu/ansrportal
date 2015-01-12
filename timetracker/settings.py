@@ -208,7 +208,7 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
 # Grappelli Customizations
-GRAPPELLI_ADMIN_TITLE = 'MyANSRSource Administration'
+GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
 # Groups for various permissions
 AUTH_PM_GROUP = 'MyANSRSourceAdmin'

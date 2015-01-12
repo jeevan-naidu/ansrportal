@@ -2,14 +2,14 @@
 
 {% load bootstrap3 %}
 
-{% block siteTitle %}MyANSRSource-Login{% endblock %}
+{% block siteTitle %}myansrsource:Login{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="col-lg-6 col-md-12 col-xs-12
             col-lg-offset-3 jumbotron shadow"> 
             <div class="col-lg-12 col-md-12 col-xs-12">
-                <legend>Logon&nbsp;to&nbsp;MyANSRSource&nbsp;</legend>
+                <legend>Logon&nbsp;to&nbsp;myansrsource&nbsp;</legend>
                 <form id="loginForm"  action="{% url 'index' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% bootstrap_messages %}
