@@ -195,11 +195,6 @@ LOGIN_URL = '/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_HOST_USER = 'niranj@fantain.com'
-EMAIL_HOST_PASSWORD = 'Nov@123!'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 
 import logging
 
@@ -208,8 +203,16 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
 # Grappelli Customizations
-GRAPPELLI_ADMIN_TITLE = 'MyANSRSource Administration'
+GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
-# Groups for various permissions
-AUTH_PM_GROUP = 'MyANSRSourceAdmin'
-AUTH_TEAM_GROUP = 'MyANSRSourceUsers'
+# Django email configuration
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_HOST_USER = 'niranj@fantain.com'
+EMAIL_HOST_PASSWORD = 'Nov@123!'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+#DJango Templated email
+
+TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
+TEMPLATED_EMAIL_TEMPLATE_DIR = 'email/' #Use '' for top level template dir
+TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
