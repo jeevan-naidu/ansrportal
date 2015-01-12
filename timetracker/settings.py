@@ -14,7 +14,7 @@ from django.conf import global_settings
 # For LDAP
 import ldap
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
-from django_auth_ldap.config import ActiveDirectoryGroupType, NestedActiveDirectoryGroupType
+from django_auth_ldap.config import NestedActiveDirectoryGroupType
 
 AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
@@ -30,6 +30,8 @@ AUTHENTICATION_BACKENDS = (
 AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
+
+
 AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
     LDAPSearch(
         "OU=ANSR Users,DC=ANSR,DC=com",
@@ -195,9 +197,10 @@ LOGIN_URL = '/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_HOST_USER = 'niranj@fantain.com'
-EMAIL_HOST_PASSWORD = 'Nov@123!'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_HOST_USER = 'myansrsource@ansrsource.com'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
