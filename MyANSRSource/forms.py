@@ -201,7 +201,7 @@ def TimesheetFormset(currentUser):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             )
-            if currentUser.has_perm('manage_project'):
+            if currentUser.has_perm('MyANSRSource.manage_project'):
                 self.fields['chapter'] = ChainedModelChoiceField(
                     'MyANSRSource',
                     'Chapter',
