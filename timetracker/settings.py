@@ -195,9 +195,9 @@ LOGIN_URL = '/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_HOST_USER = 'niranj@fantain.com'
-EMAIL_HOST_PASSWORD = 'Nov@123!'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_HOST_USER = 'myansrsource@ansrsource.com'
+EMAIL_HOST_PASSWORD = 'P@ssword'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 

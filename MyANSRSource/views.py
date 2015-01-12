@@ -705,20 +705,30 @@ def checkUser(userName, password, request, form):
                     return HttpResponseRedirect('dashboard')
                 else:
                     # We have an unknow group
-                    messages.error(request, 'This user does not have access to timesheets.')
+                    messages.error(
+                        request,
+                        'This user does not belong to the right Active \
+                        directory groups.   Access denied.  Please \
+                        contact the IT team.')
                     return loginResponse(
                         request,
                         form,
                         'MyANSRSource/index.html')
 
             except IndexError:
-                messages.error(request, 'This user does not have access to MyANSRSource.')
+                messages.error(
+                    request,
+                    'This user does not have access to MyANSRSource.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
-            messages.error(request, 'Sorry this user is not active.')
+            messages.error(
+                request,
+                'Sorry this user is in-active.  Please contact the IT team.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     else:
-        messages.error(request, 'Sorry login failed')
+        messages.error(
+            request,
+            'Sorry login failed. Invalid user / password combination.')
         return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
