@@ -102,6 +102,13 @@ class Project(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
+    class Meta:
+        permissions = (
+            ("manage_project", "Create/Manage ANSR Project"),
+            ("approve_timesheet", "Approve timesheets"),
+            ("manage_milestones", "Manage Project Milestones"),
+            )
+
 
 class TimeSheetEntry(models.Model):
     project = models.ForeignKey(Project, blank=False,
@@ -159,6 +166,9 @@ class TimeSheetEntry(models.Model):
     class Meta:
         verbose_name = 'Timesheet Entry'
         verbose_name_plural = 'Timesheet Entries'
+        permissions = (
+            ("enter_timesheet", "Allow timetracking"),
+            )
 
 
 class ProjectMilestone(models.Model):

@@ -2,7 +2,7 @@
 
 {% load bootstrap3 %}
 
-{% block siteTitle %}MyANSRSource-Timesheet Entry{% endblock %}
+{% block siteTitle %}myansrsource:Timesheet Entry{% endblock %}
 
 {% block content  %}
 <legend class="clearfix pad-bot-10">

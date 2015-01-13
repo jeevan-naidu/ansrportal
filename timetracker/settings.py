@@ -14,7 +14,7 @@ from django.conf import global_settings
 # For LDAP
 import ldap
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
-from django_auth_ldap.config import ActiveDirectoryGroupType, NestedActiveDirectoryGroupType
+from django_auth_ldap.config import NestedActiveDirectoryGroupType
 
 AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
@@ -30,6 +30,8 @@ AUTHENTICATION_BACKENDS = (
 AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
+
+
 AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
     LDAPSearch(
         "OU=ANSR Users,DC=ANSR,DC=com",
@@ -44,7 +46,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
     "OU=ANSR Users,DC=ANSR,DC=com",
-    ldap.SCOPE_SUBTREE) # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
+    ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
@@ -59,14 +61,15 @@ AUTH_LDAP_USER_ATTR_MAP = {
 }
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_active": ["cn=Domain Admins,cn=Users,DC=ANSR,DC=com",
-                  "cn=Domain Users,cn=Users,DC=ANSR,DC=com",
-                  "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
-                  ],
-    "is_staff": ["cn=Domain Admins,cn=Users,DC=ANSR,DC=com",
-                 "cn=Domain Users,cn=Users,DC=ANSR,DC=com",
-                 "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
-                 ],
+    "is_active":  [
+        "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourceUsers,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourceHR,OU=ANSR Users,DC=ANSR,DC=com",
+        ],
+    "is_staff": [
+        "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
+        "CN=MyANSRSourceHR,OU=ANSR Users,DC=ANSR,DC=com",
+        ],
     "is_superuser": "cn=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
 }
 
@@ -162,7 +165,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "ax32z241",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -194,9 +197,10 @@ LOGIN_URL = '/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_HOST_USER = 'niranj@fantain.com'
-EMAIL_HOST_PASSWORD = 'Nov@123!'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_HOST_USER = 'myansrsource@ansrsource.com'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -207,7 +211,7 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
 # Grappelli Customizations
-GRAPPELLI_ADMIN_TITLE = 'MyANSRSource Administration'
+GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
 # Groups for various permissions
 AUTH_PM_GROUP = 'MyANSRSourceAdmin'

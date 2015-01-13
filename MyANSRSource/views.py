@@ -610,26 +610,23 @@ def ApproveTimesheet(request):
 
 @login_required
 def Dashboard(request):
-    if request.session['usertype'] == 'pm':
-        totalActiveProjects = Project.objects.filter(
-            projectManager=request.user,
-            closed=False
-        ).count()
-        unApprovedTimeSheet = TimeSheetEntry.objects.filter(
-            project__projectManager=request.user,
-            approved=False
-        ).count()
-        totalEmployees = User.objects.all().count()
-        activeMilestones = ProjectMilestone.objects.filter(
-            project__projectManager=request.user,
-            project__closed=False,
-            closed=False
-        ).count()
-    else:
-        totalActiveProjects = 0
-        unApprovedTimeSheet = 0
-        totalEmployees = 0
-        activeMilestones = 0
+    totalActiveProjects = Project.objects.filter(
+        projectManager=request.user,
+        closed=False
+    ).count() if request.user.has_perm('MyANSRSource.manage_project') else 0
+
+    unApprovedTimeSheet = TimeSheetEntry.objects.filter(
+        project__projectManager=request.user,
+        approved=False
+    ).count() if request.user.has_perm('MyANSRSource.approve_timesheet') else 0
+
+    totalEmployees = User.objects.all().count()
+    activeMilestones = ProjectMilestone.objects.filter(
+        project__projectManager=request.user,
+        project__closed=False,
+        closed=False
+    ).count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
+
     billableProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
         member=request.user,
@@ -683,7 +680,6 @@ def Dashboard(request):
     data = {
         'username': request.session['username'],
         'firstname': request.session['firstname'],
-        'usertype': request.session['usertype'],
         'holidayList': holidayList,
         'projectsList': myprojects,
         'billableProjects': billableProjects,
@@ -703,29 +699,23 @@ def checkUser(userName, password, request, form):
         if user.is_active:
             auth.login(request, user)
             try:
-                if user.groups.filter(name=settings.AUTH_PM_GROUP).count() > 0:
+                if user.has_perm('MyANSRSource.enter_timesheet'):
                     request.session['username'] = userName
-                    request.session['usertype'] = 'pm'
-                    request.session['firstname'] = user.first_name
-                    return HttpResponseRedirect('dashboard')
-                elif user.groups.filter(name=settings.AUTH_TEAM_GROUP).count() > 0:
-                    request.session['username'] = userName
-                    request.session['usertype'] = 'tm'
                     request.session['firstname'] = user.first_name
                     return HttpResponseRedirect('dashboard')
                 else:
                     # We have an unknow group
-                    messages.error(request, 'This user does not have access.')
+                    messages.error(request, 'This user does not have access to timesheets.')
                     return loginResponse(
                         request,
                         form,
                         'MyANSRSource/index.html')
 
             except IndexError:
-                messages.error(request, 'This user does not have access.')
+                messages.error(request, 'This user does not have access to MyANSRSource.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
-            messages.error(request, 'Sorry this user is not active')
+            messages.error(request, 'Sorry this user is not active.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     else:
         messages.error(request, 'Sorry login failed')
