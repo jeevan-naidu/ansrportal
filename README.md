@@ -25,3 +25,10 @@ Use this command to install client files
 
 sudo apt-get install libmysqlclient-dev
 
+Install Supervisor
+------------------
+
+Use this command to install supervisor
+
+Use only pip to install supervisor and uwsgi
+
