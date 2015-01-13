@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
 import employee
+import email
 
 # Database Models
 PROJECT_TYPE = (
