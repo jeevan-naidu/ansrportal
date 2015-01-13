@@ -1,0 +1,23 @@
+{% block subject %}New Project Notification{% endblock %}
+{% block plain %}
+  Hi {{first_name}} {{ lastName }},
+
+  New Project {{ projectId }} has been created.  
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi {{first_name}} {{ lastName }},</p>
+
+  <p>You are now registered on myansrsource.  
+      <dl>
+        <dt>New Project {{ projectId }} has been created. </dd>
+      </dl>
+  </p>
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}

@@ -1,3 +1,4 @@
+from templated_email import send_templated_mail
 from django.core.management.base import BaseCommand
 from MyANSRSource.models import ProjectMilestone
 from datetime import datetime, timedelta
@@ -36,29 +37,22 @@ def sendEmail(self, details, date, label):
                 message = 'Project {0}\'s milestone is about to meet \
                     its deadline by next week. \
                     Make sure you have done the invoice for it.'.format(
-                        eachDetail['project__name']
+                    eachDetail['project__name']
                     )
             elif label == "lastDay":
                 message = 'Project {0}\'s milestone is about to \
                     meet its deadline by tommorow.'.format(
-                        eachDetail['project__name']
+                    eachDetail['project__name']
                     )
             else:
                 message = 'Project {0}\'s milestone is expired'.format(
                     eachDetail['project__name']
                 )
-            notifyTeam = EmailMultiAlternatives('Important Information',
-                                                'hai',
-                                                settings.EMAIL_HOST_USER,
-                                                ['{0}'.format(
-                                                    eachDetail[
-                                                        'project__projectManager__email'
-                                                    ]
-                                                )],)
-
-            emailTemp = render_to_string(
-                'projectMilestoneEmailNotification.html',
-                {
+            send_templated_mail(
+                template_name='ProjectMilestoneEmailNotification.html',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[eachDetail['project__projectManager'], ],
+                context={
                     'firstName': eachDetail[
                         'project__projectManager__first_name'
                     ],
@@ -66,11 +60,9 @@ def sendEmail(self, details, date, label):
                         'project__projectManager__last_name'
                     ],
                     'message': message
-                }
+                    },
             )
-            notifyTeam.attach_alternative(emailTemp, 'text/html')
-            notifyTeam.send()
             self.stdout.write('Successfully sent mail to team manager \
                               about {0} project\'s milestone'.format(
-                                  eachDetail['project__name']
-                              ))
+                eachDetail['project__name']
+                ))

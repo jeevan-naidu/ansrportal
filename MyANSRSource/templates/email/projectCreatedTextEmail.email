@@ -1,0 +1,23 @@
+{% block subject %}Greetings{% endblock %}
+{% block plain %}
+  Hi {{first_name}} {{ lastName }},
+
+  You have been selected for {{ projectId  }} project.
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi {{first_name}} {{ lastName }},</p>
+
+  <p>You are now registered on myansrsource.  
+      <dl>
+        <dt>You have been selected for {{ projectId  }} project.</dd>
+      </dl>
+  </p>
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}

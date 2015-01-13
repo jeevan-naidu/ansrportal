@@ -1,3 +1,4 @@
+from templated_email import send_templated_mail
 from django.forms.util import ErrorList
 import json
 from django.core import serializers
@@ -1289,48 +1290,32 @@ def notify(request):
              'relatedMember__last_name')
     for eachHead in projectHead:
         if eachHead['relatedMember__email'] != '':
-            notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                                'hai',
-                                                settings.EMAIL_HOST_USER,
-                                                ['{0}'.format(
-                                                    eachHead[
-                                                        'relatedMember__email'
-                                                    ]
-                                                )],)
-
-            emailTemp = render_to_string(
-                'projectCreatedHeadEmail.html',
-                {
+            send_templated_mail(
+                template_name='projectCreatedHeadEmail',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[eachHead['relatedMember__email'], ],
+                context={
                     'firstName': eachHead['relatedMember__first_name'],
                     'lastName': eachHead['relatedMember__last_name'],
                     'projectId': projectId
-                }
+                    },
             )
-            notifyTeam.attach_alternative(emailTemp, 'text/html')
-            notifyTeam.send()
     projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
     ).values('member__email', 'member__first_name', 'member__last_name')
     for eachMember in teamMembers:
         if eachMember['member__email'] != '':
-            notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                                'hai',
-                                                settings.EMAIL_HOST_USER,
-                                                ['{0}'.format(
-                                                    eachMember['member__email']
-                                                )],)
-
-            emailTemp = render_to_string(
-                'projectCreatedEmail.html',
-                {
+            send_templated_mail(
+                template_name='projectCreatedEmail',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[eachMember['member__email'], ],
+                context={
                     'firstName': eachMember['member__first_name'],
                     'lastName': eachMember['member__last_name'],
                     'projectId': projectId
-                }
+                    },
             )
-            notifyTeam.attach_alternative(emailTemp, 'text/html')
-            notifyTeam.send()
     projectName = request.session['currentProjectName']
     data = {'projectId': request.session['currentProjectId'],
             'projectName': projectName,

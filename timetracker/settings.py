@@ -165,7 +165,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "ax32z241",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },

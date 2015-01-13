@@ -1,0 +1,23 @@
+{% block subject %}Important information{% endblock %}
+{% block plain %}
+  Hi {{first_name}} {{ lastName }},
+
+  {{ message }}
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi {{first_name}} {{ lastName }},</p>
+
+  <p>You are now registered on myansrsource.  
+      <dl>
+        <dt>{{ message }}</dd>
+      </dl>
+  </p>
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}

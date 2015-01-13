@@ -11,7 +11,6 @@ django-grappelli==2.6.3
 django-session-security==2.2.2
 -e git+https://github.com/digi604/django-smart-selects.git@f5f7b826a543da2e6eeac37729edff9b7b8e8a64#egg=django_smart_selects-master
 django-templated-email==0.4.9
-meld3==1.0.0
 python-dateutil==2.2
 python-ldap==2.4.18
 pytz==2014.7
