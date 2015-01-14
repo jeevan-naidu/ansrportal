@@ -840,7 +840,7 @@ class ChangeProjectWizard(SessionWizardView):
             if signed['signed'] is True:
                 form.fields['signed'].widget.attrs[
                     'disabled'
-                ] = True
+                ] = 'True'
 
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
@@ -1011,7 +1011,7 @@ class CreateProjectWizard(SessionWizardView):
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
-                ] = True
+                ] = 'True'
             if form.is_valid():
                 if eachForm.cleaned_data['rate'] > 100:
                     rate = eachForm.cleaned_data['rate']
@@ -1025,7 +1025,7 @@ class CreateProjectWizard(SessionWizardView):
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
-                ] = True
+                ] = 'True'
             if internalStatus == 'True':
                 for eachForm in form:
                     eachForm.fields['milestoneDate'].widget.attrs[
@@ -1094,6 +1094,10 @@ class CreateProjectWizard(SessionWizardView):
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
+        pType = basicInfo['projectType']
+        self.request.session['projectType'] = pType
+        P = Project(projectType=pType)
+        basicInfo['projectType'] = P.get_projectType_display()
         if basicInfo['plannedEffort'] > 0:
             revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
         else:
@@ -1184,7 +1188,7 @@ def saveProject(request):
     if request.method == 'POST':
         pr = Project()
         pr.name = request.POST.get('name')
-        pr.projectType = request.POST.get('projectType')
+        pr.projectType = request.session['projectType']
         projectname = request.POST.get('name')
         projectname = projectname.replace(' ', '_').lower()
         projectname = re.sub('[^a-z_]+', '', projectname)

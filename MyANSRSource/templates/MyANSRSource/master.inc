@@ -7,6 +7,10 @@
        <meta name="viewport" content="width=device-width, initial-scale=1">                                                                                   
        <title>{% block siteTitle %}myansrsource{% endblock %}</title>
 
+       {# Load Pace CSS and JS #}
+       <script src="{% static 'js/pace.js' %}" async></script>
+       <link href="{% static 'css/pace.css' %}" rel="stylesheet" />
+       
        {# Load the tag library #}
        {% load bootstrap3 %}
 

@@ -1,16 +1,11 @@
 import autocomplete_light
 autocomplete_light.autodiscover()
-
-from django.conf import settings
 from django.db.models import Q
 from django import forms
-from django.contrib.auth.models import User
-
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
-
 import CompanyMaster
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -496,8 +491,6 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectTeamForm, self).__init__(*args, **kwargs)
-        self.fields['member'].queryset = User.objects.filter(
-            groups__name=settings.AUTH_TEAM_GROUP)
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs['class'] = \
             "form-control pro-start-date min-100"
