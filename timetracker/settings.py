@@ -32,7 +32,7 @@ AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
 
 BASE_DN = "ou=AnsrSource,dc=ansr,dc=com"
-GROUP_BASE_DN = "ou=global group,ou=ansrsource,dc=ansr,dc=com"
+GROUP_BASE_DN = "ou=Security Group,ou=global group,ou=ansrsource,dc=ansr,dc=com"
 
 AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
     LDAPSearch(
@@ -213,3 +213,10 @@ GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 # Groups for various permissions
 AUTH_PM_GROUP = 'MyANSRSourceAdmin'
 AUTH_TEAM_GROUP = 'MyANSRSourceUsers'
+
+import logging
+
+logger = logging.getLogger('django_auth_ldap')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
+
