@@ -834,7 +834,7 @@ class ChangeProjectWizard(SessionWizardView):
             if signed['signed'] is True:
                 form.fields['signed'].widget.attrs[
                     'disabled'
-                ] = True
+                ] = 'True'
 
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
@@ -1005,7 +1005,7 @@ class CreateProjectWizard(SessionWizardView):
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
-                ] = True
+                ] = 'True'
             if form.is_valid():
                 if eachForm.cleaned_data['rate'] > 100:
                     rate = eachForm.cleaned_data['rate']
@@ -1019,7 +1019,7 @@ class CreateProjectWizard(SessionWizardView):
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
-                ] = True
+                ] = 'True'
             if internalStatus == 'True':
                 for eachForm in form:
                     eachForm.fields['milestoneDate'].widget.attrs[
