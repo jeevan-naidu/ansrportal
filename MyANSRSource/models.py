@@ -73,8 +73,8 @@ class Project(models.Model):
         verbose_name="Internal Project"
     )
     projectId = models.CharField(max_length=60, null=False)
-    startDate = models.DateTimeField(verbose_name="Project Start Date")
-    endDate = models.DateTimeField(verbose_name="Project End Date")
+    startDate = models.DateField(verbose_name="Project Start Date")
+    endDate = models.DateField(verbose_name="Project End Date")
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort")
     contingencyEffort = models.IntegerField(default=0,
