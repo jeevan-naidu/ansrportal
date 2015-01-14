@@ -68,7 +68,7 @@ class Project(models.Model):
     )
     internal = models.BooleanField(
         blank=False,
-        default=True,
+        default=False,
         null=False,
         verbose_name="Internal Project"
     )
