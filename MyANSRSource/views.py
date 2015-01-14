@@ -705,14 +705,18 @@ def checkUser(userName, password, request, form):
                     return HttpResponseRedirect('dashboard')
                 else:
                     # We have an unknow group
-                    messages.error(request, 'This user does not have access to timesheets.')
+                    messages.error(
+                        request,
+                        'This user does not have access to timesheets.')
                     return loginResponse(
                         request,
                         form,
                         'MyANSRSource/index.html')
 
             except IndexError:
-                messages.error(request, 'This user does not have access to MyANSRSource.')
+                messages.error(
+                    request,
+                    'This user does not have access to MyANSRSource.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
             messages.error(request, 'Sorry this user is not active.')
@@ -1084,6 +1088,10 @@ class CreateProjectWizard(SessionWizardView):
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
+        pType = basicInfo['projectType']
+        self.request.session['projectType'] = pType
+        P = Project(projectType=pType)
+        basicInfo['projectType'] = P.get_projectType_display()
         if basicInfo['plannedEffort'] > 0:
             revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
         else:
@@ -1174,7 +1182,7 @@ def saveProject(request):
     if request.method == 'POST':
         pr = Project()
         pr.name = request.POST.get('name')
-        pr.projectType = request.POST.get('projectType')
+        pr.projectType = request.session['projectType']
         projectname = request.POST.get('name')
         projectname = projectname.replace(' ', '_').lower()
         projectname = re.sub('[^a-z_]+', '', projectname)
