@@ -1002,15 +1002,24 @@ class CreateProjectWizard(SessionWizardView):
                 ].strftime('%Y-%m-%d')
 
         if step == 'Define Team':
+            c = {}
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
                 ] = 'True'
-            if form.is_valid():
-                if eachForm.cleaned_data['rate'] > 100:
-                    rate = eachForm.cleaned_data['rate']
-                    errors = eachForm._errors.setdefault(rate, ErrorList())
-                    errors.append(u'% value cannot be greater than 100')
+                if eachForm.is_valid():
+                    c.setdefault(eachForm.cleaned_data['member'], []
+                                 ).append(eachForm.cleaned_data['rate'])
+                    if eachForm.cleaned_data['rate'] > 100:
+                        rate = eachForm.cleaned_data['rate']
+                        errors = eachForm._errors.setdefault(rate, ErrorList())
+                        errors.append(u'% value cannot be greater than 100')
+                    for k, v in c.iteritems():
+                        if sum(tuple(v)) > 100:
+                            errors = eachForm._errors.setdefault(
+                                sum(tuple(v)), ErrorList())
+                            errors.append(
+                                u'No person can have more than 100% as effort')
 
         if step == 'Financial Milestones':
             internalStatus = self.storage.get_step_data('Basic Information')[
