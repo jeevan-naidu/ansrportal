@@ -1,8 +1,9 @@
-{% block subject %}Greetings{% endblock %}
+{% block subject %}New Project Notification - {{ projectId }} {% endblock %}
 {% block plain %}
-  Hi {{first_name}} {{ lastName }},
+  Hi {{first_name}},
 
-  You have been selected for {{ projectId  }} project.
+     A new project {{ projectId }} has been created and you have been added as
+a member of this project.
 
   Thanks,
   myansrsource team
@@ -10,11 +11,14 @@
 {% endblock %}
 
 {% block html %}
-  <p>Hi {{first_name}} {{ lastName }},</p>
+  <p>Hi {{first_name}},</p>
 
   <p>You are now registered on myansrsource.  
       <dl>
-        <dt>You have been selected for {{ projectId  }} project.</dd>
+        <dt>A new Project {{ projectId }} has been created </dt>
+        <dd>You have been added as a member of this project. </dt>
+        <dd>{{ pmname }} is the Project manager.  Please contact him/her for further details. </dd>
+        <dd>{{ startdate }} is the Project start date.  You will be starting in the project on {{ mystartdate }}.</dd>
       </dl>
   </p>
 
