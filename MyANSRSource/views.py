@@ -1342,9 +1342,7 @@ def GetProjectType(request):
         'project__id',
         'project__name',
         'project__projectType'
-    ).filter(project__closed=False,
-             member=request.user
-             )
+    ).filter(project__closed=False)
     data = {'data': list(typeData)}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
