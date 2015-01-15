@@ -835,6 +835,11 @@ class ChangeProjectWizard(SessionWizardView):
                 form.fields['signed'].widget.attrs[
                     'disabled'
                 ] = 'True'
+            if form.is_valid():
+                if form.has_changed():
+                    self.request.session['changed'] = True
+                else:
+                    self.request.session['changed'] = False
 
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
@@ -867,6 +872,12 @@ class ChangeProjectWizard(SessionWizardView):
                         eachForm.fields['plannedEffort'].widget.attrs[
                             'readonly'
                         ] = 'True'
+            if self.request.session['changed'] is False:
+                if form.is_valid():
+                    if form.has_changed():
+                        self.request.session['changed'] = True
+                    else:
+                        self.request.session['changed'] = False
         if step == 'Change Milestones':
             currentProject = ProjectMilestone.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -885,6 +896,12 @@ class ChangeProjectWizard(SessionWizardView):
                         eachForm.fields['amount'].widget.attrs[
                             'readonly'
                         ] = 'True'
+            if self.request.session['changed'] is False:
+                if form.is_valid():
+                    if form.has_changed():
+                        self.request.session['changed'] = True
+                    else:
+                        self.request.session['changed'] = False
         return form
 
     def get_form_initial(self, step):
@@ -925,8 +942,11 @@ class ChangeProjectWizard(SessionWizardView):
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
-        data = UpdateProjectInfo([form.cleaned_data for form in form_list])
-        return render(self.request, 'MyANSRSource/changeProjectId.html', data)
+        if self.request.session['changed'] is True:
+            data = UpdateProjectInfo([form.cleaned_data for form in form_list])
+            return render(self.request, 'MyANSRSource/changeProjectId.html', data)
+        else:
+            return render(self.request, 'MyANSRSource/NochangeProject.html', {})
 
 
 def UpdateProjectInfo(newInfo):
