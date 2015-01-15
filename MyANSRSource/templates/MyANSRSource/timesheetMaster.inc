@@ -6,7 +6,7 @@
 
 {% block content  %}
 <legend class="clearfix pad-bot-10">
- <div class="col-md-6">
+ <div class="col-md-1">
  <form id="prevWeek" method="get" action="" enctype="multipart/form-data">
 	<input type="hidden" name="week" value="prev" />
 	<input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
@@ -20,12 +20,12 @@
 			<span class="glyphicon glyphicon-arrow-left"></span>
 		</button>
 	{% endif %}
- 	<span>Start : {% block startDate %}{% endblock %}</span>
  </form>
  </div>
- <div class="col-md-6 text-right">
+	<div class="col-md-7 text-right">Enter Timesheet : {% block startDate %}{% endblock %} - {% block endDate %}{% endblock %}</div>
+
+ <div class="col-md-4 text-right">
  <form id="nextWeek" method="get" action="" enctype="multipart/form-data">
- 	<span>End : {% block endDate %}{% endblock %}</span>
 	<input type="hidden" name="week" value="next" />
 	<input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
 	<input type="hidden" name="endDate" value="{{ weekendDate|date:"dmY" }}" />

@@ -48,7 +48,7 @@ FORMS = [
     )),
     ("Financial Milestones", formset_factory(
         ProjectMilestoneForm,
-        extra=2,
+        extra=1,
         can_delete=True
     )),
 ]
