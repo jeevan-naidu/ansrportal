@@ -729,7 +729,7 @@ def checkUser(userName, password, request, form):
         else:
             messages.error(
                 request,
-                'Login failed / This user could not be found on Active Directory.')
+                'Invalid userid & passowrd / User could not be found on Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     except LDAPError as e:
         messages.error(
