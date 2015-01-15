@@ -1096,7 +1096,7 @@ class CreateProjectWizard(SessionWizardView):
                     for t in form.cleaned_data:
                         totalRate += t['amount']
                     for eachForm in form:
-                        if int(projectTotal) != totalRate:
+                        if float(projectTotal) != totalRate:
                             errors = eachForm._errors.setdefault(
                                 totalRate,
                                 ErrorList())

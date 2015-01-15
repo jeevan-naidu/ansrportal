@@ -89,7 +89,10 @@ class Project(models.Model):
                              null=False
                              )
     chapters = models.ManyToManyField(Chapter)
-    totalValue = models.IntegerField(default=0, verbose_name="Total Value")
+    totalValue = models.DecimalField(default=0.0,
+                                     max_digits=12,
+                                     decimal_places=2,
+                                     verbose_name="Total Value")
     closed = models.BooleanField(
         default=False,
         null=False,
@@ -179,7 +182,10 @@ class ProjectMilestone(models.Model):
                                      default=timezone.now)
     description = models.CharField(default=None, blank=False, max_length=1000,
                                    null=True, verbose_name="Description")
-    amount = models.IntegerField(default=0, verbose_name="Amount")
+    amount = models.DecimalField(default=0.0,
+                                 max_digits=12,
+                                 decimal_places=2,
+                                 verbose_name="Amount")
     closed = models.BooleanField(
         default=False,
         null=False,
@@ -232,7 +238,9 @@ class ProjectChangeInfo(models.Model):
                                default=None, blank=False, null=False)
     revisedEffort = models.IntegerField(default=0,
                                         verbose_name="Revised Effort")
-    revisedTotal = models.IntegerField(default=0,
+    revisedTotal = models.DecimalField(default=0.0,
+                                       max_digits=12,
+                                       decimal_places=2,
                                        verbose_name="Revised amount")
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
