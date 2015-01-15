@@ -118,7 +118,7 @@ app.getById = function(arr, propName, id) {
                 changeTeamMember: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [14, 7],
+                    setZeroList: [23],
                     setEmptyList: null
                 }
             });
@@ -136,7 +136,7 @@ app.getById = function(arr, propName, id) {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: null,
+                    setZeroList: [7],
                     setEmptyList: null
                 }
             });
