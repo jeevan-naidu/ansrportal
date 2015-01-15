@@ -12,7 +12,7 @@
 {% block html %}
   <p>Hi {{first_name}},</p>
 
-  <p>You are now registered on myansrsource.  
+  <p>
       <dl>
         <dt>A new Project {{ projectId }} has been created </dt>
         <dd>You have been added as a member of this project. </dd>

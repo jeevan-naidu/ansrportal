@@ -706,14 +706,18 @@ def checkUser(userName, password, request, form):
                     return HttpResponseRedirect('dashboard')
                 else:
                     # We have an unknow group
-                    messages.error(request, 'This user does not have access to timesheets.')
+                    messages.error(
+                        request,
+                        'This user does not have access to timesheets.')
                     return loginResponse(
                         request,
                         form,
                         'MyANSRSource/index.html')
 
             except IndexError:
-                messages.error(request, 'This user does not have access to MyANSRSource.')
+                messages.error(
+                    request,
+                    'This user does not have access to MyANSRSource.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
             messages.error(request, 'Sorry this user is not active.')
@@ -1283,6 +1287,9 @@ def WrappedCreateProjectView(request):
 @login_required
 def notify(request):
     projectId = request.session['currentProject']
+    projectDetails = Project.objects.filter(
+        id=projectId,
+    ).values('startDate', 'projectManager')
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=request.session['customer'],
     ).values('relatedMember__email',
@@ -1295,25 +1302,29 @@ def notify(request):
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachHead['relatedMember__email'], ],
                 context={
-                    'firstName': eachHead['relatedMember__first_name'],
-                    'lastName': eachHead['relatedMember__last_name'],
-                    'projectId': projectId
+                    'first_name': eachHead['relatedMember__first_name'],
+                    'projectId': projectId,
+                    'pmname': projectDetails['projectManager'],
+                    'startDate': projectDetails['startDate']
                     },
             )
     projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
-    ).values('member__email', 'member__first_name', 'member__last_name')
+    ).values('member__email', 'member__first_name',
+             'member__last_name', 'startDate')
     for eachMember in teamMembers:
         if eachMember['member__email'] != '':
             send_templated_mail(
-                template_name='projectCreatedEmail',
+                template_name='projectCreatedTextEmail',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachMember['member__email'], ],
                 context={
-                    'firstName': eachMember['member__first_name'],
-                    'lastName': eachMember['member__last_name'],
-                    'projectId': projectId
+                    'first_name': eachMember['member__first_name'],
+                    'projectId': projectId,
+                    'pmname': projectDetails['projectManager'],
+                    'startDate': projectDetails['startDate'],
+                    'mystartdate': eachmember['startDate']
                     },
             )
     projectName = request.session['currentProjectName']

@@ -24,8 +24,10 @@ def getContent(deadlineDate):
     return ProjectMilestone.objects.filter(
         milestoneDate=deadlineDate
     ).values('project__name',
+             'project__id',
+             'description',
+             'milestoneDate',
              'project__projectManager__first_name',
-             'project__projectManager__last_name',
              'project__projectManager__email'
              )
 
@@ -33,36 +35,27 @@ def getContent(deadlineDate):
 def sendEmail(self, details, date, label):
     if len(details) > 0:
         for eachDetail in details:
-            if label == "week":
-                message = 'Project {0}\'s milestone is about to meet \
-                    its deadline by next week. \
-                    Make sure you have done the invoice for it.'.format(
-                    eachDetail['project__name']
-                    )
-            elif label == "lastDay":
-                message = 'Project {0}\'s milestone is about to \
-                    meet its deadline by tommorow.'.format(
-                    eachDetail['project__name']
-                    )
-            else:
-                message = 'Project {0}\'s milestone is expired'.format(
-                    eachDetail['project__name']
-                )
             send_templated_mail(
                 template_name='ProjectMilestoneEmailNotification.html',
                 from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[eachDetail['project__projectManager'], ],
+                recipient_list=[eachDetail['project__projectManager__email'], ],
                 context={
-                    'firstName': eachDetail[
+                    'first_name': eachDetail[
                         'project__projectManager__first_name'
                     ],
-                    'lastName': eachDetail[
-                        'project__projectManager__last_name'
+                    'projectId': eachDetail[
+                        'project__id'
+                    ],
+                    'projectname': eachDetail[
+                        'project__name'
+                    ],
+                    'milestonename': eachDetail[
+                        'description'
+                    ],
+                    'milestonedate': eachDetail[
+                        'milestoneDate'
                     ],
                     'message': message
                     },
             )
-            self.stdout.write('Successfully sent mail to team manager \
-                              about {0} project\'s milestone'.format(
-                eachDetail['project__name']
-                ))
+            self.stdout.write('Successfully sent mail to team manager')
