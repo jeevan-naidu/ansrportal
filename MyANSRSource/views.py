@@ -851,22 +851,22 @@ class ChangeProjectWizard(SessionWizardView):
                     for eachForm in form:
                         eachForm.fields['member'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['role'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['startDate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['endDate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['rate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['plannedEffort'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
         if step == 'Change Milestones':
             currentProject = ProjectMilestone.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -878,13 +878,13 @@ class ChangeProjectWizard(SessionWizardView):
                     for eachForm in form:
                         eachForm.fields['milestoneDate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['description'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['amount'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
         return form
 
     def get_form_initial(self, step):
@@ -1033,19 +1033,19 @@ class CreateProjectWizard(SessionWizardView):
                 for eachForm in form:
                     eachForm.fields['milestoneDate'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
                     eachForm.fields['description'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
                     eachForm.fields['description'].widget.attrs[
                         'value'
                     ] = None
                     eachForm.fields['amount'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
                     eachForm.fields['DELETE'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
             else:
                 if form.is_valid():
                     projectTotal = self.storage.get_step_data('Define Project')[

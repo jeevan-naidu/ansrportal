@@ -227,7 +227,7 @@ class ProjectChangeInfo(models.Model):
     reason = models.CharField(max_length=100, default=None, blank=True,
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
-                               default=None, blank=True)
+                               default=None, blank=False, null=False)
     revisedEffort = models.IntegerField(default=0,
                                         verbose_name="Revised Effort")
     revisedTotal = models.IntegerField(default=0,
