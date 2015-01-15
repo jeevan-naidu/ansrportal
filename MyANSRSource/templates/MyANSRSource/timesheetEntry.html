@@ -38,6 +38,16 @@
 		{{ form.errors }}
 		{% if forloop.first %}
 		<thead>
+		<tr>
+			<td colspan="4" class="text-right"><h5></small><b>Swipe Card Hours</b></small></h5></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+			<td class="text-center"><b>0</b></td>
+		</tr>
             	<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
@@ -61,18 +71,6 @@
             	</tr>
 		</thead>
 		<tbody>
-		{% endif %}
-		{% if forloop.first %}
-		<tr>
-			<td colspan="4" class="text-center"><h5></small><b>Swipe Card Hours</b></small></h5></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-		</tr>
 		{% endif %}
 		<tr>
 			{% for field in form.hidden_fields %}
