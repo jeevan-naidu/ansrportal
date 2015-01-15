@@ -99,9 +99,27 @@
 		</thead>
 		<tbody>
 		<tr>
-			<td>{{ flagData.internal }}</td>
-			<td>{{ flagData.currentProject }}</td>
-			<td>{{ flagData.signed }}</td>
+			<td>
+				{% if flagData.internal == True  %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if flagData.currentProject == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if flagData.signed == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
 			{% for rec, value in flagData.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
