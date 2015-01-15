@@ -895,7 +895,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'My Projects'
                 )['My Projects-project']).values(
                 'id',
-                'signed'
+                'signed',
+                'endDate'
                 )[0]
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
