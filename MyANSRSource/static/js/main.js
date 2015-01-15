@@ -495,7 +495,6 @@ app.getIdNo = function(str) {
 
             });
 
-            app.autoFillInit(app.rowProject, app.rowChapter);
 
             daysTotalFun();
             billableTotalFun();
@@ -515,6 +514,7 @@ app.getIdNo = function(str) {
             if(options.billableTotal) {
                 app.billableSelectProject = $('.billable-select-project');
                 app.changeProject();
+		app.autoFillInit(app.rowProject, app.rowChapter);
             }
         };
 
