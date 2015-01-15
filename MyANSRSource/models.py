@@ -87,7 +87,7 @@ class Project(models.Model):
                              null=False
                              )
     chapters = models.ManyToManyField(Chapter)
-    totalValue = models.DecimalField(default=0,
+    totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,
                                      verbose_name="Total Value")
@@ -180,7 +180,7 @@ class ProjectMilestone(models.Model):
                                      default=timezone.now)
     description = models.CharField(default=None, blank=False, max_length=1000,
                                    null=True, verbose_name="Description")
-    amount = models.DecimalField(default=0,
+    amount = models.DecimalField(default=0.0,
                                  max_digits=12,
                                  decimal_places=2,
                                  verbose_name="Amount")
@@ -236,7 +236,7 @@ class ProjectChangeInfo(models.Model):
                                default=None, blank=False, null=False)
     revisedEffort = models.IntegerField(default=0,
                                         verbose_name="Revised Effort")
-    revisedTotal = models.DecimalField(default=0,
+    revisedTotal = models.DecimalField(default=0.0,
                                        max_digits=12,
                                        decimal_places=2,
                                        verbose_name="Revised amount")
