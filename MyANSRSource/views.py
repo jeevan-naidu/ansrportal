@@ -732,6 +732,12 @@ def checkUser(userName, password, request, form):
             request,
             'This user has LDAP setup issue:' + str(e))
         return loginResponse(request, form, 'MyANSRSource/index.html')
+    except:
+        messages.error(
+            request,
+            'Unknown Active directory error occured.\
+            Please check your userid/password.  Do not use ANSR prefix in your username.')
+        return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
 class TrackMilestoneWizard(SessionWizardView):
