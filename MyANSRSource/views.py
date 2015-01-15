@@ -841,6 +841,11 @@ class ChangeProjectWizard(SessionWizardView):
                 form.fields['signed'].widget.attrs[
                     'disabled'
                 ] = 'True'
+            if form.is_valid():
+                if form.has_changed():
+                    self.request.session['changed'] = True
+                else:
+                    self.request.session['changed'] = False
 
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
@@ -857,22 +862,28 @@ class ChangeProjectWizard(SessionWizardView):
                     for eachForm in form:
                         eachForm.fields['member'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['role'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['startDate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['endDate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['rate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['plannedEffort'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
+            if self.request.session['changed'] is False:
+                if form.is_valid():
+                    if form.has_changed():
+                        self.request.session['changed'] = True
+                    else:
+                        self.request.session['changed'] = False
         if step == 'Change Milestones':
             currentProject = ProjectMilestone.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -884,13 +895,19 @@ class ChangeProjectWizard(SessionWizardView):
                     for eachForm in form:
                         eachForm.fields['milestoneDate'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['description'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
                         eachForm.fields['amount'].widget.attrs[
                             'readonly'
-                        ] = True
+                        ] = 'True'
+            if self.request.session['changed'] is False:
+                if form.is_valid():
+                    if form.has_changed():
+                        self.request.session['changed'] = True
+                    else:
+                        self.request.session['changed'] = False
         return form
 
     def get_form_initial(self, step):
@@ -901,7 +918,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'My Projects'
                 )['My Projects-project']).values(
                 'id',
-                'signed'
+                'signed',
+                'endDate'
                 )[0]
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
@@ -930,8 +948,11 @@ class ChangeProjectWizard(SessionWizardView):
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
-        data = UpdateProjectInfo([form.cleaned_data for form in form_list])
-        return render(self.request, 'MyANSRSource/changeProjectId.html', data)
+        if self.request.session['changed'] is True:
+            data = UpdateProjectInfo([form.cleaned_data for form in form_list])
+            return render(self.request, 'MyANSRSource/changeProjectId.html', data)
+        else:
+            return render(self.request, 'MyANSRSource/NochangeProject.html', {})
 
 
 def UpdateProjectInfo(newInfo):
@@ -1008,15 +1029,24 @@ class CreateProjectWizard(SessionWizardView):
                 ].strftime('%Y-%m-%d')
 
         if step == 'Define Team':
+            c = {}
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
                 ] = 'True'
-            if form.is_valid():
-                if eachForm.cleaned_data['rate'] > 100:
-                    rate = eachForm.cleaned_data['rate']
-                    errors = eachForm._errors.setdefault(rate, ErrorList())
-                    errors.append(u'% value cannot be greater than 100')
+                if eachForm.is_valid():
+                    c.setdefault(eachForm.cleaned_data['member'], []
+                                 ).append(eachForm.cleaned_data['rate'])
+                    if eachForm.cleaned_data['rate'] > 100:
+                        rate = eachForm.cleaned_data['rate']
+                        errors = eachForm._errors.setdefault(rate, ErrorList())
+                        errors.append(u'% value cannot be greater than 100')
+                    for k, v in c.iteritems():
+                        if sum(tuple(v)) > 100:
+                            errors = eachForm._errors.setdefault(
+                                sum(tuple(v)), ErrorList())
+                            errors.append(
+                                u'No person can have more than 100% as effort')
 
         if step == 'Financial Milestones':
             internalStatus = self.storage.get_step_data('Basic Information')[
@@ -1030,19 +1060,19 @@ class CreateProjectWizard(SessionWizardView):
                 for eachForm in form:
                     eachForm.fields['milestoneDate'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
                     eachForm.fields['description'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
                     eachForm.fields['description'].widget.attrs[
                         'value'
                     ] = None
                     eachForm.fields['amount'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
                     eachForm.fields['DELETE'].widget.attrs[
                         'readonly'
-                    ] = True
+                    ] = 'True'
             else:
                 if form.is_valid():
                     projectTotal = self.storage.get_step_data('Define Project')[
