@@ -1,5 +1,6 @@
-from django.forms.util import ErrorList
 import json
+
+from django.forms.util import ErrorList
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
@@ -8,18 +9,6 @@ from django.contrib import auth, messages
 from django.shortcuts import render
 from django.db.models import Count
 from django.http import HttpResponseRedirect, HttpResponse
-from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter
-from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
-    ProjectTeamForm, ProjectMilestoneForm, \
-    ActivityForm, TimesheetFormset, ProjectFlagForm, \
-    ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
-    ChangeProjectMilestoneForm, ChangeProjectForm, \
-    CloseProjectMilestoneForm
-import CompanyMaster
-from CompanyMaster.models import Holiday
-import employee
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
@@ -28,6 +17,25 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from django.conf import settings
 import re
+
+
+from MyANSRSource.models import Project, TimeSheetEntry, \
+    ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
+    Chapter
+
+from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
+    ProjectTeamForm, ProjectMilestoneForm, \
+    ActivityForm, TimesheetFormset, ProjectFlagForm, \
+    ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
+    ChangeProjectMilestoneForm, ChangeProjectForm, \
+    CloseProjectMilestoneForm
+
+import CompanyMaster
+from CompanyMaster.models import Holiday
+import employee
+
+
+from ldap import LDAPError
 # views for ansr
 
 FORMS = [
@@ -694,11 +702,11 @@ def Dashboard(request):
 
 
 def checkUser(userName, password, request, form):
-    user = authenticate(username=userName, password=password)
-    if user is not None:
-        if user.is_active:
-            auth.login(request, user)
-            try:
+    try:
+        user = authenticate(username=userName, password=password)
+        if user is not None:
+            if user.is_active:
+                auth.login(request, user)
                 if user.has_perm('MyANSRSource.enter_timesheet'):
                     request.session['username'] = userName
                     request.session['firstname'] = user.first_name
@@ -715,20 +723,18 @@ def checkUser(userName, password, request, form):
                         form,
                         'MyANSRSource/index.html')
 
-            except IndexError:
-                messages.error(
-                    request,
-                    'This user does not have access to MyANSRSource.')
+            else:
+                messages.error(request, 'Sorry this user is not active.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
             messages.error(
                 request,
-                'Sorry this user is in-active.  Please contact the IT team.')
+                'Login failed / This user could not be found on Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
-    else:
+    except LDAPError as e:
         messages.error(
             request,
-            'Sorry login failed. Invalid user / password combination.')
+            'This user has Active Directory setup issue:' + str(e))
         return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
@@ -950,9 +956,15 @@ class ChangeProjectWizard(SessionWizardView):
     def done(self, form_list, **kwargs):
         if self.request.session['changed'] is True:
             data = UpdateProjectInfo([form.cleaned_data for form in form_list])
-            return render(self.request, 'MyANSRSource/changeProjectId.html', data)
+            return render(
+                self.request,
+                'MyANSRSource/changeProjectId.html',
+                data)
         else:
-            return render(self.request, 'MyANSRSource/NochangeProject.html', {})
+            return render(
+                self.request,
+                'MyANSRSource/NochangeProject.html',
+                {})
 
 
 def UpdateProjectInfo(newInfo):
