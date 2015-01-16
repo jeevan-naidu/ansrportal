@@ -1,15 +1,27 @@
 from django.contrib import admin
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter
+    ProjectMilestone, ProjectTeamMember, Book, Chapter, ProjectChangeInfo
+
+
+class ChapterInline(admin.TabularInline):
+    model = Chapter
+    extra = 2
+    exclude = []
 
 
 # Admin Models for ansr
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-
-
-class ChapterAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'author')
+    # which fields should appear on the filter column
+    list_filter = ['name', 'author']
+    # Search capabilitiy
+    search_fields = ['name', 'author']
+    # Which of the fields can be edited in list mode
+    # list_editable = ['']
+    # Ordering of the books
+    ordering = ['-updatedOn']
+    # Inline forms
+    inlines = [ChapterInline, ]
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -45,7 +57,6 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
-admin.site.register(Chapter, ChapterAdmin)
-# admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
+#admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
 admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
 admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)

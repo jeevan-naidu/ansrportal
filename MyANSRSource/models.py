@@ -15,6 +15,8 @@ PROJECT_TYPE = (
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
                             verbose_name="Book Name")
+    author = models.CharField(max_length=100, null=False,
+                              verbose_name="Author")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
