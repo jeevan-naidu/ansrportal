@@ -43,15 +43,13 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
         ldap.SCOPE_SUBTREE,
         '(sAMAccountName=%(user)s)'))
 
-"""
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
     "OU=ANSR Users,DC=ANSR,DC=com",
     ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
-# AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
-"""
+AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
 
 AUTH_LDAP_VERSION = 3
 
@@ -63,7 +61,7 @@ AUTH_LDAP_USER_ATTR_MAP = {
     "username": "sAMAccountName"
 }
 
-"""
+"""  Turn this on for LDAP Group  based authentication
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     "is_active":  [
         "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
@@ -76,8 +74,8 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
         ],
     "is_superuser": "cn=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
 }
+AUTH_LDAP_MIRROR_GROUPS = True
 """
-# AUTH_LDAP_MIRROR_GROUPS = True
 
 # AUTH_LDAP_PROFILE_ATTR_MAP = {
 #    "employee_number": "employeeNumber"
@@ -217,3 +215,6 @@ logger.setLevel(logging.DEBUG)
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
+
+# myansrsource default group to which all users will be added
+MYANSRSOURCE_GROUP = 'MyANSRSourceUsers'
