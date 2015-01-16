@@ -57,7 +57,7 @@ AUTH_LDAP_VERSION = 3
 AUTH_LDAP_USER_ATTR_MAP = {
     "first_name": "givenName",
     "last_name": "sn",
-    "email": "Email",
+    "email": "mail",
     "username": "sAMAccountName"
 }
 
@@ -214,6 +214,3 @@ logger.setLevel(logging.DEBUG)
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
-# Groups for various permissions
-AUTH_PM_GROUP = 'MyANSRSourceAdmin'
-AUTH_TEAM_GROUP = 'MyANSRSourceUsers'
