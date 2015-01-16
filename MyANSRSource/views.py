@@ -18,7 +18,6 @@ from django.db.models import Q
 from django.conf import settings
 import re
 
-
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter
@@ -29,6 +28,8 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     ChangeProjectMilestoneForm, ChangeProjectForm, \
     CloseProjectMilestoneForm
+
+import groupsupport
 
 import CompanyMaster
 from CompanyMaster.models import Holiday
@@ -731,7 +732,9 @@ def checkUser(userName, password, request, form):
                 messages.error(request, 'Sorry this user is not active.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
-            messages.error(request, 'Sorry login failed')
+            messages.error(
+                request,
+                'Invalid userid & password / User could not be found on Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     except LDAPError as e:
         messages.error(
