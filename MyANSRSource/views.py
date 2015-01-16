@@ -563,8 +563,6 @@ def Timesheet(request):
                                      'Your manager kept this timesheet on hold, \
                                      please resubmit')
             else:
-                messages.info(request,
-                              'Please fill timesheet for this week')
                 hold = False
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
