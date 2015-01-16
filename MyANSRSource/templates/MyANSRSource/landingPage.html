@@ -50,7 +50,15 @@
 			<div id="tsCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="ts">
 			<div class="panel-body">
 				<ul class="list-group">
-					<a href="timesheet/entry" class="list-group-item">Enter Your Timesheet</a>
+					{% if TSProjectsCount > 0 %}
+						<a href="timesheet/entry" class="list-group-item">Enter Your Timesheet
+							<span class="badge">{{ TSProjectsCount }}</span>
+						</a>
+					{% else %}
+						<a href="#" class="list-group-item">Enter Your Timesheet
+							<span class="badge">0</span>
+						</a>
+					{% endif %}
 					{% if user|approve_timesheet %}
 					<a href="timesheet/approve" class="list-group-item">
 						<span class="badge">{{ unapprovedts }}</span>

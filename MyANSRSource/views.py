@@ -635,6 +635,13 @@ def Dashboard(request):
         closed=False
     ).count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
 
+    tsProjectsCount = ProjectTeamMember.objects.filter(
+        project__closed=False,
+        member=request.user
+    ).values('project__id').annotate(dcount=Count('project__id'))
+
+    TSProjectsCount = len(tsProjectsCount)
+
     billableProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
         member=request.user,
@@ -688,6 +695,7 @@ def Dashboard(request):
     data = {
         'username': request.session['username'],
         'firstname': request.session['firstname'],
+        'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
         'billableProjects': billableProjects,
