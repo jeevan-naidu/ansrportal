@@ -726,7 +726,9 @@ def checkUser(userName, password, request, form):
                 messages.error(request, 'Sorry this user is not active.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
         else:
-            messages.error(request, 'Sorry login failed')
+            messages.error(
+                request,
+                'Invalid userid & password / User could not be found on Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     except LDAPError as e:
         messages.error(
