@@ -18,7 +18,6 @@ from django.db.models import Q
 from django.conf import settings
 import re
 
-
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter
@@ -29,6 +28,8 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     ChangeProjectMilestoneForm, ChangeProjectForm, \
     CloseProjectMilestoneForm
+
+import groupsupport
 
 import CompanyMaster
 from CompanyMaster.models import Holiday
