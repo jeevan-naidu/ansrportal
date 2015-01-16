@@ -48,7 +48,7 @@ FORMS = [
     )),
     ("Financial Milestones", formset_factory(
         ProjectMilestoneForm,
-        extra=2,
+        extra=1,
         can_delete=True
     )),
 ]
@@ -1100,7 +1100,7 @@ class CreateProjectWizard(SessionWizardView):
                     for t in form.cleaned_data:
                         totalRate += t['amount']
                     for eachForm in form:
-                        if int(projectTotal) != totalRate:
+                        if float(projectTotal) != totalRate:
                             errors = eachForm._errors.setdefault(
                                 totalRate,
                                 ErrorList())
