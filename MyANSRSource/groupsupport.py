@@ -9,7 +9,8 @@ def update_user_flags(sender, user=None, ldap_user=None, **kwargs):
     if user:
         usergrp = Group.objects.get_by_natural_key(name=settings.MYANSRSOURCE_GROUP)
         user.is_active = True
-        user.is_staff = True
+        if user.is_staff is None:
+            user.is_staff = False
         user.groups.add(usergrp)
 
 
