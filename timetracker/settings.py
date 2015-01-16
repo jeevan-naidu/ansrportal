@@ -24,8 +24,8 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # 'django_auth_ldap.backend.LDAPBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    'django_auth_ldap.backend.LDAPBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
     )
 
 AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
@@ -43,14 +43,16 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
         ldap.SCOPE_SUBTREE,
         '(sAMAccountName=%(user)s)'))
 
-
+"""
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
     "OU=ANSR Users,DC=ANSR,DC=com",
     ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
-AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
+# AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
+"""
+
 AUTH_LDAP_VERSION = 3
 
 
@@ -61,6 +63,7 @@ AUTH_LDAP_USER_ATTR_MAP = {
     "username": "sAMAccountName"
 }
 
+"""
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     "is_active":  [
         "CN=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
@@ -73,8 +76,8 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
         ],
     "is_superuser": "cn=MyANSRSourceAdmin,OU=ANSR Users,DC=ANSR,DC=com",
 }
-
-AUTH_LDAP_MIRROR_GROUPS = True
+"""
+# AUTH_LDAP_MIRROR_GROUPS = True
 
 # AUTH_LDAP_PROFILE_ATTR_MAP = {
 #    "employee_number": "employeeNumber"
@@ -82,7 +85,8 @@ AUTH_LDAP_MIRROR_GROUPS = True
 
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
-AUTH_LDAP_FIND_GROUP_PERMS = True
+# Dont use LDAP Groups
+AUTH_LDAP_FIND_GROUP_PERMS = False
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -166,7 +170,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "mysqlroot",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -213,4 +217,3 @@ logger.setLevel(logging.DEBUG)
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
-
