@@ -564,8 +564,6 @@ def Timesheet(request):
                                      'Your manager kept this timesheet on hold, \
                                      please resubmit')
             else:
-                messages.info(request,
-                              'Please fill timesheet for this week')
                 hold = False
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
@@ -636,6 +634,13 @@ def Dashboard(request):
         closed=False
     ).count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
 
+    tsProjectsCount = ProjectTeamMember.objects.filter(
+        project__closed=False,
+        member=request.user
+    ).values('project__id').annotate(dcount=Count('project__id'))
+
+    TSProjectsCount = len(tsProjectsCount)
+
     billableProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
         member=request.user,
@@ -689,6 +694,7 @@ def Dashboard(request):
     data = {
         'username': request.session['username'],
         'firstname': request.session['firstname'],
+        'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
         'billableProjects': billableProjects,
@@ -730,7 +736,7 @@ def checkUser(userName, password, request, form):
         else:
             messages.error(
                 request,
-                'Invalid userid & passowrd / User could not be found on Active Directory.')
+                'Invalid userid & password / User could not be found on Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     except LDAPError as e:
         messages.error(
