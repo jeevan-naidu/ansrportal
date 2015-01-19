@@ -7,9 +7,11 @@ class AutocompleteUser(autocomplete_light.AutocompleteModelBase):
     autocomplete_js_attributes = {'placeholder': 'Enter a member name'}
 
     def choices_for_request(self):
+        q = self.request.GET.get('q', '')
         choices = self.choices.filter(
             Q(is_superuser=False)
         )
+        choices = choices.filter(username__icontains=q)
         return self.order_choices(choices)[0:self.limit_choices]
 
 autocomplete_light.register(User, AutocompleteUser)

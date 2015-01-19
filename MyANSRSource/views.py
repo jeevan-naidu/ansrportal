@@ -688,7 +688,12 @@ def Dashboard(request):
         eachProject['project__endDate'] = eachProject[
             'project__endDate'
         ].strftime('%Y-%m-%d')
-    holidayList = Holiday.objects.all().values('name', 'date')
+    locationId = employee.models.Employee.objects.filter(
+        user=request.user
+    ).values('location')[0]['location']
+    holidayList = Holiday.objects.filter(
+        location=locationId
+    ).values('name', 'date')
     for eachHoliday in holidayList:
         eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
     data = {

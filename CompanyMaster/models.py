@@ -75,6 +75,7 @@ class Holiday(models.Model):
                             null=True,
                             blank=True)
     date = models.DateField(verbose_name="Holiday Date")
+    location = models.ManyToManyField(OfficeLocation, default=None)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
