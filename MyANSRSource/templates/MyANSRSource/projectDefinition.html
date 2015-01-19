@@ -50,6 +50,18 @@
 			} 
 		}
 	} 
+	function filterChapters() { 
+		var url = "/myansrsource/getchapters/"+ $("select#id_Define_Project-book").val();
+		var options = '';
+		$.getJSON(url, function(json_chapters) {
+			var chapters = json_chapters;
+			for (var i = 0; i < chapters.length; i++) {
+				options += '<option value="' + chapters[i].pk + '">' + chapters[i].fields['name'] + '</option>';
+			}
+			$("select#id_Define_Project-chapters").html(options);
+			$("select#id_Define_Project-chapters option:first").attr('selected', 'selected');
+		});
+	}
 	$(document).ready(
 		function() {
 			// Initializing the chapters value
@@ -58,18 +70,13 @@
 				$("select#id_Define_Project-chapters").html('');
 			}
 			// To Filter the chapters based on the selected book
+			else {
+				filterChapters();
+			}
+			// To Filter the chapters based on the book selected on the fly
 			$("select#id_Define_Project-book").change(function() {
-			var url = "/myansrsource/getchapters/"+ $(this).val();
-			var options = '';
-			$.getJSON(url, function(json_chapters) {
-				var chapters = json_chapters;
-				for (var i = 0; i < chapters.length; i++) {
-					options += '<option value="' + chapters[i].pk + '">' + chapters[i].fields['name'] + '</option>';
-				}
-				$("select#id_Define_Project-chapters").html(options);
-				$("select#id_Define_Project-chapters option:first").attr('selected', 'selected');
+				filterChapters();
 			});
-		});
 	});
     var app = app || {};
 
@@ -78,5 +85,3 @@
     }());
 </script>
 {% endblock %}{% endblock %}
-
-
