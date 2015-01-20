@@ -153,7 +153,11 @@ def Timesheet(request):
             nonbillableTotal = 0
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
+            locationId = employee.models.Employee.objects.filter(
+                user=request.user
+            ).values('location')[0]['location']
             weekHolidays = Holiday.objects.filter(
+                location=locationId,
                 date__range=[changedStartDate, changedEndDate]
             ).values('date')
             for timesheet in timesheets:
@@ -839,6 +843,12 @@ class ChangeProjectWizard(SessionWizardView):
             )['Change Basic Information-revisedTotal']
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Change Team Members':
+            locationId = employee.models.Employee.objects.filter(
+                user=self.request.user
+            ).values('location')[0]['location']
+            holidays = Holiday.objects.filter(
+                location=locationId
+            ).values('name', 'date')
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
                 holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
@@ -1127,6 +1137,12 @@ class CreateProjectWizard(SessionWizardView):
             ]
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
+            locationId = employee.models.Employee.objects.filter(
+                user=self.request.user
+            ).values('location')[0]['location']
+            holidays = Holiday.objects.filter(
+                location=locationId
+            ).values('name', 'date')
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
                 holiday['date'] = int(holiday['date'].strftime("%s")) * 1000

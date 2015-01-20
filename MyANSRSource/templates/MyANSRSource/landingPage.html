@@ -60,10 +60,17 @@
 						</a>
 					{% endif %}
 					{% if user|approve_timesheet %}
-					<a href="timesheet/approve" class="list-group-item">
-						<span class="badge">{{ unapprovedts }}</span>
-						Approve Timesheet
-					</a>
+						{% if unapprovedts > 0 %}
+							<a href="timesheet/approve" class="list-group-item">
+								<span class="badge">{{ unapprovedts }}</span>
+								Approve Timesheet
+							</a>
+						{% else %}
+							<a href="#" class="list-group-item">
+								<span class="badge">0</span>
+								Approve Timesheet
+							</a>
+						{% endif %}
 					{% endif %}
 				</ul>
 			</div>
@@ -80,15 +87,29 @@
 			<div class="panel-body">
 				<ul class="list-group">
 					<a href="project/add" class="list-group-item">Create Project</a>
-					<a href="project/modify" class="list-group-item">
-						<span class="badge">{{ activeProjects }}</span>
-						Manage Projects
-                    </a>
+					{% if activeProjects > 0 %}
+						<a href="project/modify" class="list-group-item">
+							<span class="badge">{{ activeProjects }}</span>
+							Manage Projects
+						</a>
+					{% else %}
+						<a href="#" class="list-group-item">
+							<span class="badge">0</span>
+							Manage Projects
+						</a>
+					{% endif %}
                     {% if user|manage_milestones %}
-					<a href="project/trackmilestone" class="list-group-item">
-						<span class="badge">{{ activeMilestones }}</span>
-						Track Milestones
-                    </a>
+			{% if activeMilestones > 0 %}
+				<a href="project/trackmilestone" class="list-group-item">
+					<span class="badge">{{ activeMilestones }}</span>
+					Track Milestones
+				</a>
+			{% else %}
+				<a href="#" class="list-group-item">
+					<span class="badge">0</span>
+					Track Milestones
+				</a>
+			{% endif %}
                     {% endif %}
 				</ul>
 			</div>
