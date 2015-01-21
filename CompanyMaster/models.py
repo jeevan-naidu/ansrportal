@@ -10,7 +10,7 @@ class Customer(models.Model):
                             blank=False)
     relatedMember = models.ManyToManyField(
         User,
-        verbose_name="Related Members",
+        verbose_name="Select Account Relationship team",
         blank=False,
         null=False
     )
