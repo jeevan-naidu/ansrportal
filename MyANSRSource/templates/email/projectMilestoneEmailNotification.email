@@ -1,0 +1,25 @@
+{% block subject %}Milestones status update for Project: {{ projectId }} {% endblock %}
+{% block plain %}
+  Hi {{first_name}}, 
+
+  The milestone {{ milestonename }} for the project 
+{{ projectname }} falls on {{ milestonedate }}.  
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi {{first_name}},</p>
+
+  <p>
+      <dl>
+        <dt>Milestone status update for Project : {{ projectId }}</dt>
+  <dd>The milestone {{ milestonename }} for project {{ projectname }} falls on {{ milestonedate }}. </dd>
+      </dl>
+  </p>
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}

@@ -207,6 +207,7 @@ EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
+<<<<<<< HEAD
 import logging
 
 logger = logging.getLogger('django_auth_ldap')
@@ -218,3 +219,6 @@ GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
 # myansrsource default group to which all users will be added
 MYANSRSOURCE_GROUP = 'MyANSRSourceUsers'
+TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
+TEMPLATED_EMAIL_TEMPLATE_DIR = 'email/'  # Use '' for top level template dir
+TEMPLATED_EMAIL_FILE_EXTENSION = 'email'

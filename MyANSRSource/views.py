@@ -1,3 +1,5 @@
+from templated_email import send_templated_mail
+from django.forms.util import ErrorList
 import json
 
 from django.forms.util import ErrorList
@@ -736,7 +738,6 @@ def checkUser(userName, password, request, form):
                         request,
                         form,
                         'MyANSRSource/index.html')
-
             else:
                 messages.error(request, 'Sorry this user is not active.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
@@ -1370,6 +1371,9 @@ def WrappedCreateProjectView(request):
 @login_required
 def notify(request):
     projectId = request.session['currentProject']
+    projectDetails = Project.objects.filter(
+        id=projectId,
+    ).values('startDate', 'projectManager')
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=request.session['customer'],
     ).values('relatedMember__email',
@@ -1377,48 +1381,36 @@ def notify(request):
              'relatedMember__last_name')
     for eachHead in projectHead:
         if eachHead['relatedMember__email'] != '':
-            notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                                'hai',
-                                                settings.EMAIL_HOST_USER,
-                                                ['{0}'.format(
-                                                    eachHead[
-                                                        'relatedMember__email'
-                                                    ]
-                                                )],)
-
-            emailTemp = render_to_string(
-                'projectCreatedHeadEmail.html',
-                {
-                    'firstName': eachHead['relatedMember__first_name'],
-                    'lastName': eachHead['relatedMember__last_name'],
-                    'projectId': projectId
-                }
+            send_templated_mail(
+                template_name='projectCreatedHeadEmail',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[eachHead['relatedMember__email'], ],
+                context={
+                    'first_name': eachHead['relatedMember__first_name'],
+                    'projectId': projectId,
+                    'pmname': projectDetails['projectManager'],
+                    'startDate': projectDetails['startDate']
+                    },
             )
-            notifyTeam.attach_alternative(emailTemp, 'text/html')
-            notifyTeam.send()
     projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
-    ).values('member__email', 'member__first_name', 'member__last_name')
+    ).values('member__email', 'member__first_name',
+             'member__last_name', 'startDate')
     for eachMember in teamMembers:
         if eachMember['member__email'] != '':
-            notifyTeam = EmailMultiAlternatives('Congrats!!!',
-                                                'hai',
-                                                settings.EMAIL_HOST_USER,
-                                                ['{0}'.format(
-                                                    eachMember['member__email']
-                                                )],)
-
-            emailTemp = render_to_string(
-                'projectCreatedEmail.html',
-                {
-                    'firstName': eachMember['member__first_name'],
-                    'lastName': eachMember['member__last_name'],
-                    'projectId': projectId
-                }
+            send_templated_mail(
+                template_name='projectCreatedTextEmail',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[eachMember['member__email'], ],
+                context={
+                    'first_name': eachMember['member__first_name'],
+                    'projectId': projectId,
+                    'pmname': projectDetails['projectManager'],
+                    'startDate': projectDetails['startDate'],
+                    'mystartdate': eachmember['startDate']
+                    },
             )
-            notifyTeam.attach_alternative(emailTemp, 'text/html')
-            notifyTeam.send()
     projectName = request.session['currentProjectName']
     data = {'projectId': request.session['currentProjectId'],
             'projectName': projectName,
