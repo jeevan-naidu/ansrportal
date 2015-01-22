@@ -14,6 +14,7 @@ class OfficeLocatonAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
+    readonly_fields = ('seqNumber', )
     list_display = ('name',)
 
 

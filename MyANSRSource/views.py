@@ -1264,23 +1264,6 @@ def saveProject(request):
         pr = Project()
         pr.name = request.POST.get('name')
         pr.projectType = request.session['projectType']
-        projectname = request.POST.get('name')
-        projectname = projectname.replace(' ', '_').lower()
-        projectname = re.sub('[^a-z_]+', '', projectname)
-        if projectname.endswith('_'):
-            projectname = projectname[:-1]
-        minWordCount = len(min(projectname.split('_'), key=len))
-        strippedWord = [e[:minWordCount] for e in projectname.split('_')]
-        projectname = '_'.join(strippedWord)
-        pnLength = len(projectname)
-        while (pnLength > 15):
-            strippedWord = [
-                e[:-1]
-                for e in projectname.split('_')
-            ]
-            pnLength = len('_'.join(strippedWord))
-            projectname = '_'.join(strippedWord)
-        projectName = projectname
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
@@ -1300,6 +1283,18 @@ def saveProject(request):
         pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
             id=request.session['bu']
         )[0]
+        customerCode = CompanyMaster.models.Customer.objects.filter(
+            id=request.session['customer']
+        ).values('customerCode')[0]['customerCode']
+        seqNumber = CompanyMaster.models.Customer.objects.filter(
+            id=request.session['customer']
+        ).values('seqNumber')[0]['seqNumber']
+        seqNumber = seqNumber + 1
+        cm = CompanyMaster.models.Customer.objects.get(
+            id=request.session['customer']
+        )
+        cm.seqNumber = seqNumber
+        cm.save()
         pr.customer = CompanyMaster.models.Customer.objects.filter(
             id=request.session['customer']
         )[0]
@@ -1308,13 +1303,13 @@ def saveProject(request):
         request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
 
-        projectIdPrefix = "{0}_{1}_{2}_".format(
-            request.POST.get('projectType'),
+        projectIdPrefix = "{0}_{1}_{2}".format(
+            customerCode,
             datetime.now().year,
-            str(pr.id).zfill(4)
+            str(seqNumber).zfill(4)
         )
         pru = Project.objects.get(id=pr.id)
-        pru.projectId = "{0}{1}".format(projectIdPrefix, projectName.upper())
+        pru.projectId = "{0}".format(projectIdPrefix)
         pru.save()
         request.session['currentProjectId'] = pru.projectId
 
