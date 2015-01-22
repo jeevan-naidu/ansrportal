@@ -3,14 +3,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
 import employee
-import email
-
-# Database Models
-PROJECT_TYPE = (
-    ('Q', 'Questions'),
-    ('P', 'Powerpoint'),
-    ('I', 'Instructional')
-)
 
 
 class Book(models.Model):
@@ -27,6 +19,20 @@ class Book(models.Model):
         return self.name
 
 
+class projectType(models.Model):
+    code = models.CharField(max_length=2, null=False,
+                            verbose_name="Code")
+    description = models.CharField(max_length=100, null=False,
+                                   verbose_name="Description")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.description
+
+
 class Chapter(models.Model):
     book = models.ForeignKey(Book)
     name = models.CharField(max_length=100, verbose_name="Chapter Name")
@@ -40,10 +46,8 @@ class Chapter(models.Model):
 
 
 class Project(models.Model):
-    projectType = models.CharField(
-        default='Q',
-        choices=PROJECT_TYPE,
-        max_length=2,
+    projectType = models.ForeignKey(
+        projectType,
         verbose_name="Project Type"
     )
     bu = models.ForeignKey(
