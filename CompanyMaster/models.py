@@ -8,6 +8,14 @@ class Customer(models.Model):
                             max_length=100,
                             null=False,
                             blank=False)
+    customerCode = models.CharField(
+        verbose_name="Customer Code",
+        null=False,
+        blank=False,
+        max_length=3,
+        default=None
+    )
+    seqNumber = models.PositiveIntegerField(null=False, default=0)
     relatedMember = models.ManyToManyField(
         User,
         verbose_name="Related Members",
