@@ -72,20 +72,8 @@ app.changeProject = function() {
 
         //console.log(selectedProject);
 
-        if(selectedProject.project__projectType === 'Q') {
-            app.curProjectUnitShort = 'Q';
-            app.curProjectUnit      = 'Questions';
-        }
-
-        if(selectedProject.project__projectType === 'P') {
-            app.curProjectUnitShort = 'P';
-            app.curProjectUnit      = 'Powerpoint';
-        }
-
-        if(selectedProject.project__projectType === 'I') {
-            app.curProjectUnitShort = 'I';
-            app.curProjectUnit      = 'Instructional';
-        }
+        app.curProjectUnitShort = selectedProject.project__projectType__code;
+        app.curProjectUnit      = selectedProject.project__projectType__description;
 
         $projectUnitsElement.text(app.curProjectUnitShort);
     });
@@ -267,12 +255,6 @@ app.getById = function(arr, propName, id) {
                     console.log('Error: ' + data);
                 }
             });
-
-            app.projectsUnits = {
-                q: 'Questions',
-                p: 'Powerpoint',
-                i: 'Instructional'
-            };
 
             app.billableSelectProject = $('.billable-select-project');
             app.changeProject();
@@ -646,15 +628,7 @@ app.getIdNo = function(str) {
                     };
 
                     var projectUnitViewToPopUp = function() {
-                        if(curProjectUnit === 'Q') {
-                            $curProjectPopupUnit.text(app.projectsUnits.q);
-                        }
-                        if(curProjectUnit === 'P') {
-                            $curProjectPopupUnit.text(app.projectsUnits.p);
-                        }
-                        if(curProjectUnit === 'I') {
-                            $curProjectPopupUnit.text(app.projectsUnits.i);
-                        }
+                            $curProjectPopupUnit.text(app.curProjectUnit);
                     };
 
                     projectUnitViewToPopUp();

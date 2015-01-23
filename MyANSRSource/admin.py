@@ -1,6 +1,7 @@
 from django.contrib import admin
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter, ProjectChangeInfo
+    ProjectMilestone, ProjectTeamMember, Book, Chapter, \
+    ProjectChangeInfo, projectType
 
 
 class ChapterInline(admin.TabularInline):
@@ -31,6 +32,10 @@ class ProjectAdmin(admin.ModelAdmin):
     filter_fields = ('startDate', 'endDate')
 
 
+class projectTypeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'description',)
+
+
 class TimeSheetEntryAdmin(admin.ModelAdmin):
     list_display = ['project']
 
@@ -57,6 +62,7 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
+admin.site.register(projectType, projectTypeAdmin)
 #admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
 admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
 admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)
