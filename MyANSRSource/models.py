@@ -48,6 +48,7 @@ class Chapter(models.Model):
 class Project(models.Model):
     projectType = models.ForeignKey(
         projectType,
+        null=False,
         verbose_name="Project Type"
     )
     bu = models.ForeignKey(

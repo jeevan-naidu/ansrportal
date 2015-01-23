@@ -22,7 +22,7 @@ import re
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter
+    Chapter, projectType
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
@@ -1169,10 +1169,6 @@ class CreateProjectWizard(SessionWizardView):
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
-        pType = basicInfo['projectType']
-        self.request.session['projectType'] = pType
-        P = Project(projectType=pType)
-        basicInfo['projectType'] = P.get_projectType_display()
         if basicInfo['plannedEffort'] > 0:
             revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
         else:
@@ -1263,7 +1259,9 @@ def saveProject(request):
     if request.method == 'POST':
         pr = Project()
         pr.name = request.POST.get('name')
-        pr.projectType = request.session['projectType']
+        pType = projectType.objects.get(
+            description=request.POST.get('projectType'))
+        pr.projectType = pType
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
         pr.plannedEffort = request.POST.get('plannedEffort')
@@ -1431,7 +1429,8 @@ def GetProjectType(request):
     typeData = ProjectTeamMember.objects.values(
         'project__id',
         'project__name',
-        'project__projectType'
+        'project__projectType__code',
+        'project__projectType__description'
     ).filter(project__closed=False)
     data = {'data': list(typeData)}
     json_data = json.dumps(data)
