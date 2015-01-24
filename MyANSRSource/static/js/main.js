@@ -106,7 +106,7 @@ app.getById = function(arr, propName, id) {
                 changeTeamMember: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [23],
+                    setZeroList: null,
                     setEmptyList: null
                 }
             });
@@ -454,22 +454,39 @@ app.getIdNo = function(str) {
                     if($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
                         if($element.find('.hilight').length === 0) {
                             console.log('initialize autocomplete');
-                            $element.yourlabsWidget();
+                            if(options.addTeamMember) {
+                                $element.yourlabsWidget();
+                            } else {
+                                $element.find('.remove').trigger('click');
+                            }
+                        } else {
+                           /*$element.yourlabsWidget('destroy');
+                           $element.find('input').yourlabsAutocomplete('destroy');*/
+                           $element.find('.remove').trigger('click');
                         }
                     }
                 }
 
 
-                /*if(options.plannedEffortCalc) {
+                if(options.plannedEffortCalc) {
                     if($element.hasClass('pro-planned-effort-percent')) {
                         $element.val(100);
                     }
-                }*/
+                }
 
                 if(options.billableTotal) {
                     app.rowChapter = $('#id_form-' + newRowId + '-chapter');
                     if($element.hasClass('billable-select-project')) {
                         app.rowProject = $element;
+                    }
+                }
+
+                if($element.hasClass('set-empty')) {
+                    var elementType = $element.prop('tagName');
+                    if(elementType === 'SELECT' || elementType === 'INPUT') {
+                        $element.val('');
+                    } else {
+                        $element.text('');
                     }
                 }
 
@@ -491,12 +508,21 @@ app.getIdNo = function(str) {
                 });
 
                 app.getEffortCurRowId();
+
+                // Calculate effort for new row
+                var item = $($table).find('tr').last(),
+                starDateItem = item.find('.pro-start-date'),
+                endDateItem = item.find('.pro-end-date'),
+                plannedEffortItem = item.find('.pro-planned-effort'),
+                plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
+
+                plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
             }
 
             if(options.billableTotal) {
                 app.billableSelectProject = $('.billable-select-project');
                 app.changeProject();
-		app.autoFillInit(app.rowProject, app.rowChapter);
+		        app.autoFillInit(app.rowProject, app.rowChapter);
             }
         };
 

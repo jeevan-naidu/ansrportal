@@ -408,7 +408,7 @@ class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
         self.fields['role'].widget.attrs[
-            'class'] = "form-control min-180 max-200"
+            'class'] = "form-control min-180 max-200 set-empty"
         self.fields['startDate'].widget.attrs[
             'class'] = "form-control min-100 pro-start-date"
         self.fields['endDate'].widget.attrs[
