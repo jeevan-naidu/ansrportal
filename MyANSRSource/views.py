@@ -2,7 +2,6 @@ from templated_email import send_templated_mail
 from django.forms.util import ErrorList
 import json
 
-from django.forms.util import ErrorList
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
@@ -14,11 +13,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.db.models import Q
 from django.conf import settings
-import re
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
@@ -31,9 +27,11 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ChangeProjectMilestoneForm, ChangeProjectForm, \
     CloseProjectMilestoneForm
 
+# do not remove this import.  This is needed to initialize the app
 import groupsupport
 
 import CompanyMaster
+from CompanyMaster import holidaycache
 from CompanyMaster.models import Holiday
 import employee
 
@@ -137,12 +135,15 @@ def Timesheet(request):
         activities = atFormset(request.POST, prefix='at')
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
+
             changedStartDate = datetime.strptime(
                 request.POST.get('startdate'), '%d%m%Y'
             ).date()
+
             changedEndDate = datetime.strptime(
                 request.POST.get('enddate'), '%d%m%Y'
             ).date()
+
             mondayTotal = 0
             tuesdayTotal = 0
             wednesdayTotal = 0
@@ -153,16 +154,21 @@ def Timesheet(request):
             weekTotal = 0
             billableTotal = 0
             nonbillableTotal = 0
-            (timesheetList, activitiesList,
-             timesheetDict, activityDict) = ([], [], {}, {})
-            locationId = employee.models.Employee.objects.filter(
-                user=request.user
-            ).values('location')[0]['location']
-            weekHolidays = Holiday.objects.filter(
-                location=locationId,
-                date__range=[changedStartDate, changedEndDate]
-            ).values('date')
+
+            totalHours = {}
+            (timesheetList, activitiesList, activityDict) = ([], [], {})
+
+            weekHolidays = holidaycache.getUserHolidaysBetween(
+                request.user,
+                changedStartDate,
+                changedEndDate)
+
+            totallist = ('monday', 'tuesday', 'wednesday',
+                         'thursday', 'friday', 'saturday', 'sunday', 'total')
+
             for timesheet in timesheets:
+                timesheetDict = {}
+
                 if timesheet.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
                         id=timesheet.cleaned_data['tsId']
@@ -174,64 +180,39 @@ def Timesheet(request):
                         )
                         if timesheet.cleaned_data[holidayDay] > 0:
                             leaveDayWork = True
-                    del(timesheet.cleaned_data['DELETE'])
-                    del(timesheet.cleaned_data['monday'])
-                    del(timesheet.cleaned_data['tuesday'])
-                    del(timesheet.cleaned_data['wednesday'])
-                    del(timesheet.cleaned_data['thursday'])
-                    del(timesheet.cleaned_data['friday'])
-                    del(timesheet.cleaned_data['saturday'])
-                    del(timesheet.cleaned_data['sunday'])
-                    del(timesheet.cleaned_data['total'])
-                    for k, v in timesheet.cleaned_data.iteritems():
-                        if k == 'mondayH':
-                            mondayTotal += v
-                        elif k == 'tuesdayH':
-                            tuesdayTotal += v
-                        elif k == 'wednesdayH':
-                            wednesdayTotal += v
-                        elif k == 'thursdayH':
-                            thursdayTotal += v
-                        elif k == 'fridayH':
-                            fridayTotal += v
-                        elif k == 'saturdayH':
-                            saturdayTotal += v
-                        elif k == 'sundayH':
-                            sundayTotal += v
-                        elif k == 'totalH':
-                            billableTotal += v
-                            weekTotal += v
-                        timesheetDict[k] = v
-                    timesheetList.append(timesheetDict.copy())
-                    timesheetDict.clear()
+
+                    # Efficiently remove some data
+                    [timesheet.cleaned_data.pop
+                     (k, None)
+                     for k
+                     in('DELETE', 'monday', 'tuesday', 'wednesday',
+                         'thursday', 'friday', 'saturday', 'sunday', 'total')]
+
+                    for anitem in totallist:
+                        if timesheet.cleaned_data[anitem + 'H']:
+                            totalHours[anitem] = timesheet.cleaned_data[
+                                anitem +
+                                'H']
+
+                            billableTotal += totalHours[anitem]
+                            timesheetDict[anitem + 'H'] = totalHours[anitem]
+                timesheetList.append(timesheetDict)
+
             for activity in activities:
+                activityDict = {}
                 if activity.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
                         id=activity.cleaned_data['atId']
                     ).delete()
                 else:
                     del(activity.cleaned_data['DELETE'])
-                    for k, v in activity.cleaned_data.iteritems():
-                        if k == 'activity_monday':
-                            mondayTotal += v
-                        elif k == 'activity_tuesday':
-                            tuesdayTotal += v
-                        elif k == 'activity_wednesday':
-                            wednesdayTotal += v
-                        elif k == 'activity_thursday':
-                            thursdayTotal += v
-                        elif k == 'activity_friday':
-                            fridayTotal += v
-                        elif k == 'activity_saturday':
-                            saturdayTotal += v
-                        elif k == 'activity_sunday':
-                            sundayTotal += v
-                        elif k == 'total':
-                            nonbillableTotal += v
-                            weekTotal += v
-                        activityDict[k] = v
-                    activitiesList.append(activityDict.copy())
-                    activityDict.clear()
+                    for anitem in totallist:
+                        if timesheet.cleaned_data['activity_' + anitem]:
+                            totalHours[anitem] += timesheet.cleaned_data[
+                                'activity_' + anitem]
+                        activityDict['activity_' + anitem] = totalHours[anitem]
+                    activitiesList.append(activityDict)
+
             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
@@ -694,12 +675,9 @@ def Dashboard(request):
         eachProject['project__endDate'] = eachProject[
             'project__endDate'
         ].strftime('%Y-%m-%d')
-    locationId = employee.models.Employee.objects.filter(
-        user=request.user
-    ).values('location')[0]['location']
-    holidayList = Holiday.objects.filter(
-        location=locationId
-    ).values('name', 'date')
+
+    # Find the right holidays
+    holidayList = holidaycache.getUserHolidays(request.user)
     for eachHoliday in holidayList:
         eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
     data = {
@@ -892,25 +870,20 @@ class ChangeProjectWizard(SessionWizardView):
                 startDateDelta = eachData['startDate'] - datetime.now().date()
                 endDateDelta = eachData['endDate'] - datetime.now().date()
                 if startDateDelta.days <= 0 or endDateDelta.days <= 0:
-                    for eachForm in form:
-                        eachForm.fields['member'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['role'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['startDate'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['endDate'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['rate'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['plannedEffort'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
+                    readonlyfields = (
+                        'member',
+                        'role',
+                        'startDate',
+                        'endDate',
+                        'rate',
+                        'plannedEffort',
+                        )
+                    for fieldname in readonlyfields:
+                        for eachForm in form:
+                            eachForm.fields[fieldname].widget.attrs[
+                                'readonly'
+                            ] = 'True'
+
             if self.request.session['changed'] is False:
                 if form.is_valid():
                     if form.has_changed():
@@ -1138,12 +1111,6 @@ class CreateProjectWizard(SessionWizardView):
             ]
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
-            locationId = employee.models.Employee.objects.filter(
-                user=self.request.user
-            ).values('location')[0]['location']
-            holidays = Holiday.objects.filter(
-                location=locationId
-            ).values('name', 'date')
             holidays = Holiday.objects.all().values('name', 'date')
             for holiday in holidays:
                 holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
@@ -1353,8 +1320,6 @@ def saveProject(request):
         data = {'projectId': pru.projectId, 'projectName': pr.name}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
-createProject = CreateProjectWizard.as_view(FORMS)
-
 
 @login_required
 def WrappedCreateProjectView(request):
@@ -1364,14 +1329,17 @@ def WrappedCreateProjectView(request):
 @login_required
 def notify(request):
     projectId = request.session['currentProject']
+
     projectDetails = Project.objects.filter(
         id=projectId,
     ).values('startDate', 'projectManager')
+
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=request.session['customer'],
     ).values('relatedMember__email',
              'relatedMember__first_name',
              'relatedMember__last_name')
+
     for eachHead in projectHead:
         if eachHead['relatedMember__email'] != '':
             send_templated_mail(
@@ -1385,11 +1353,12 @@ def notify(request):
                     'startDate': projectDetails['startDate']
                     },
             )
-    projectId = request.session['currentProject']
+
     teamMembers = ProjectTeamMember.objects.filter(
         project=projectId
     ).values('member__email', 'member__first_name',
              'member__last_name', 'startDate')
+
     for eachMember in teamMembers:
         if eachMember['member__email'] != '':
             send_templated_mail(
@@ -1401,9 +1370,10 @@ def notify(request):
                     'projectId': projectId,
                     'pmname': projectDetails['projectManager'],
                     'startDate': projectDetails['startDate'],
-                    'mystartdate': eachmember['startDate']
+                    'mystartdate': eachMember['startDate']
                     },
             )
+
     projectName = request.session['currentProjectName']
     data = {'projectId': request.session['currentProjectId'],
             'projectName': projectName,
@@ -1444,3 +1414,6 @@ def Logout(request):
         from django.contrib.auth.models import AnonymousUser
         request.user = AnonymousUser()
     return HttpResponseRedirect('/myansrsource')
+
+
+createProject = CreateProjectWizard.as_view(FORMS)
