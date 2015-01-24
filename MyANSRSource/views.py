@@ -28,7 +28,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     CloseProjectMilestoneForm
 
 # do not remove this import.  This is needed to initialize the app
-import groupsupport
+from . import groupsupport
 
 import CompanyMaster
 from CompanyMaster import holidaycache
@@ -120,59 +120,51 @@ def Timesheet(request):
     atFormset = formset_factory(
         ActivityForm, extra=2, can_delete=True
     )
-    # Week Calculation.
+    # Initializing values
+    days = ['monday', 'tuesday', 'wednesday', 'thursday',
+            'friday', 'saturday', 'sunday']
     today = datetime.now().date()
-    minAutoApprove = 36
-    maxAutoApprove = 44
     leaveDayWork = False
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=6)
     disabled = 'next'
-    # Getting the form values and storing it to DB.
+    # Handler for form post
     if request.method == 'POST':
         # Getting the forms with submitted values
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
-        # User values for timsheet
+
+        # Checking for form errors
         if timesheets.is_valid() and activities.is_valid():
 
+            # Setting new start and end date
             changedStartDate = datetime.strptime(
                 request.POST.get('startdate'), '%d%m%Y'
             ).date()
-
             changedEndDate = datetime.strptime(
                 request.POST.get('enddate'), '%d%m%Y'
             ).date()
 
-            mondayTotal = 0
-            tuesdayTotal = 0
-            wednesdayTotal = 0
-            thursdayTotal = 0
-            fridayTotal = 0
-            saturdayTotal = 0
-            sundayTotal = 0
-            weekTotal = 0
-            billableTotal = 0
-            nonbillableTotal = 0
+            # Initializing eachday total to 0
+            totals = {"{0}{1}".format(eachDay, 'Total'): 0 for eachDay in days}
+            totals['weekTotal'] = 0
 
-            totalHours = {}
-            (timesheetList, activitiesList, activityDict) = ([], [], {})
+            locationId = employee.models.Employee.objects.filter(
+                user=request.user
+            ).values('location')[0]['location']
 
-            weekHolidays = holidaycache.getUserHolidaysBetween(
-                request.user,
-                changedStartDate,
-                changedEndDate)
+            weekHolidays = Holiday.objects.filter(
+                location=locationId,
+                date__range=[changedStartDate, changedEndDate]
+            ).values('date')
 
-            totallist = ('monday', 'tuesday', 'wednesday',
-                         'thursday', 'friday', 'saturday', 'sunday', 'total')
+            totallist = days
+            totallist.append('total')
 
-            for timesheet in timesheets:
-                timesheetDict = {}
-
-                if timesheet.cleaned_data['DELETE'] is True:
-                    TimeSheetEntry.objects.filter(
-                        id=timesheet.cleaned_data['tsId']
-                    ).delete()
+            for timesheet in timesheets.cleaned_data:
+                # To check the form should be deleted or not
+                if timesheet['DELETE'] is True:
+                    deleteRecord(timesheet['tsId'])
                 else:
                     for holiday in weekHolidays:
                         holidayDay = '{0}H'.format(
@@ -181,102 +173,67 @@ def Timesheet(request):
                         if timesheet.cleaned_data[holidayDay] > 0:
                             leaveDayWork = True
 
-                    # Efficiently remove some data
-                    [timesheet.cleaned_data.pop
-                     (k, None)
-                     for k
-                     in('DELETE', 'monday', 'tuesday', 'wednesday',
-                         'thursday', 'friday', 'saturday', 'sunday', 'total')]
+                    # Calculates weekly total, daily total
+                    totals = calculateTotals(totallist, timesheet,
+                                             totals, activity=False)
+            # Calculating billable total
+            billableTotal = totals['weekTotal']
 
-                    for anitem in totallist:
-                        if timesheet.cleaned_data[anitem + 'H']:
-                            totalHours[anitem] = timesheet.cleaned_data[
-                                anitem +
-                                'H']
-
-                            billableTotal += totalHours[anitem]
-                            timesheetDict[anitem + 'H'] = totalHours[anitem]
-                timesheetList.append(timesheetDict)
-
-            for activity in activities:
-                activityDict = {}
-                if activity.cleaned_data['DELETE'] is True:
-                    TimeSheetEntry.objects.filter(
-                        id=activity.cleaned_data['atId']
-                    ).delete()
+            for activity in activities.cleaned_data:
+                # To check the form should be deleted or not
+                if activity['DELETE'] is True:
+                    deleteRecord(timesheet['atId'])
                 else:
-                    del(activity.cleaned_data['DELETE'])
-                    for anitem in totallist:
-                        if timesheet.cleaned_data['activity_' + anitem]:
-                            totalHours[anitem] += timesheet.cleaned_data[
-                                'activity_' + anitem]
-                        activityDict['activity_' + anitem] = totalHours[anitem]
-                    activitiesList.append(activityDict)
+                    # Calculates weekly total, daily total
+                    totals = calculateTotals(totallist, activity,
+                                             totals, activity=True)
+            # Calculating non-billable total
+            nonbillableTotal = totals['weekTotal'] - billableTotal
 
-            if (mondayTotal > 24) | (tuesdayTotal > 24) | \
-                    (wednesdayTotal > 24) | (thursdayTotal > 24) | \
-                    (fridayTotal > 24) | (saturdayTotal > 24) | \
-                    (sundayTotal > 24):
+            # Validations on various grounds based in weekly and daily totals
+            hardWorkingDay = [
+                eachTotal
+                for eachTotal in
+                totals
+                if totals[eachTotal] > 24 and eachTotal !=
+                'weekTotal']
+            if len(hardWorkingDay):
                 messages.error(request, 'You can only work for 24 hours a day')
-            elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove) | \
+            elif (totals['weekTotal'] < 36) | (totals['weekTotal'] > 44) | \
                  (billableTotal > 44) | (nonbillableTotal > 40) | \
                  (leaveDayWork is True):
-                for eachActivity in activitiesList:
-                    # Getting objects for models
+                for eachActivity in activities.cleaned_data:
+                    # A check to update or insert data
                     if eachActivity['atId'] > 0:
+                        # Update Instance
                         nonbillableTS = TimeSheetEntry.objects.filter(
                             id=eachActivity['atId']
                         )[0]
                     else:
+                        # Insert Instance
                         nonbillableTS = TimeSheetEntry()
-                    # Common values for Billable and Non-Billable
-                    nonbillableTS.wkstart = changedStartDate
-                    nonbillableTS.wkend = changedEndDate
-                    nonbillableTS.teamMember = request.user
-                    nonbillableTS.hold = True
-                    if (weekTotal < minAutoApprove) | \
-                            (weekTotal > maxAutoApprove):
-                        nonbillableTS.exception = \
-                            '10% deviation in totalhours for this week'
-                    elif nonbillableTotal > 40:
-                        nonbillableTS.exception = \
-                            'NonBillable activity more than 40 Hours'
-                    for k, v in eachActivity.iteritems():
-                        if k == 'activity_monday':
-                            nonbillableTS.mondayH = v
-                        elif k == 'activity_tuesday':
-                            nonbillableTS.tuesdayH = v
-                        elif k == 'activity_wednesday':
-                            nonbillableTS.wednesdayH = v
-                        elif k == 'activity_thursday':
-                            nonbillableTS.thursdayH = v
-                        elif k == 'activity_friday':
-                            nonbillableTS.fridayH = v
-                        elif k == 'activity_saturday':
-                            nonbillableTS.saturdayH = v
-                        elif k == 'activity_sunday':
-                            nonbillableTS.sundayH = v
-                        elif k == 'activity_total':
-                            nonbillableTS.totalH = v
-                        elif k == 'activity_feedback':
-                            nonbillableTS.feedback = v
-                        elif k == 'activity':
-                            nonbillableTS.activity = v
-                    nonbillableTS.save()
-                for eachTimesheet in timesheetList:
+
+                    saveTS(nonbillableTS, changedStartDate, changedEndDate,
+                           request.user, totals, nonbillableTotal,
+                           days, eachActivity, hold=True)
+
+                # A check to update or insert data
+                for eachTimesheet in timesheets.cleaned_data:
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
                             id=eachTimesheet['tsId']
                         )[0]
                     else:
                         billableTS = TimeSheetEntry()
+
+                    # Assigning billable items to DB
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.billable = True
                     billableTS.hold = True
-                    if (weekTotal < minAutoApprove) | \
-                            (weekTotal > maxAutoApprove):
+                    if (totals['weekTotal'] < 36) | \
+                            (totals['weekTotal'] > 44):
                         billableTS.exception = \
                             '10% deviation in totalhours for this week'
                     elif billableTotal > 40:
@@ -289,7 +246,7 @@ def Timesheet(request):
                     billableTS.save()
             else:
                 # Save Timesheet
-                for eachActivity in activitiesList:
+                for eachActivity in activities.cleaned_data:
                     # Getting objects for models
                     if eachActivity['atId'] > 0:
                         nonbillableTS = TimeSheetEntry.objects.filter(
@@ -308,7 +265,7 @@ def Timesheet(request):
                     for k, v in eachActivity.iteritems():
                         setattr(nonbillableTS, k, v)
                     nonbillableTS.save()
-                for eachTimesheet in timesheetList:
+                for eachTimesheet in timesheets.cleaned_data:
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
                             id=eachTimesheet['tsId']
@@ -327,6 +284,7 @@ def Timesheet(request):
                     billableTS.save()
             return HttpResponseRedirect(request.get_full_path())
         else:
+            # Handler for form errors
             if request.GET.get('week') == 'prev':
                 weekstartDate = datetime.strptime(
                     request.GET.get('startdate'), '%d%m%Y'
@@ -568,6 +526,63 @@ def Timesheet(request):
             return render(request, 'MyANSRSource/timesheetEntry.html', data)
 
 
+# Deletes a TS Record
+def deleteRecord(recId):
+        TimeSheetEntry.objects.get(id=recId).delete()
+        return 1
+
+
+# Function to calculate weekly and daily totals
+def calculateTotals(totallist, timesheet, totals, activity):
+    if activity is False:
+        for anitem in totallist:
+            if timesheet[anitem + 'H']:
+                if anitem == 'total':
+                    totals['weekTotal'] += timesheet['totalH']
+                else:
+                    totals[anitem + 'Total'] += timesheet[anitem + 'H']
+    else:
+        for anitem in totallist:
+            if timesheet['activity_' + anitem]:
+                if 'total' in anitem:
+                    totals['weekTotal'] += timesheet['activity_total']
+                else:
+                    totals[anitem + 'Total'] += timesheet['activity_' + anitem]
+    return totals
+
+
+def saveTS(nonbillableTS, changedStartDate, changedEndDate, currentUser,
+           totals, nonbillableTotal, days, eachActivity, hold):
+    # Assigning non-Billable items to DB
+    nonbillableTS.wkstart = changedStartDate
+    nonbillableTS.wkend = changedEndDate
+    nonbillableTS.teamMember = currentUser
+    nonbillableTS.hold = True
+    if (totals['weekTotal'] < 36) | \
+            (totals['weekTotal'] > 44):
+        nonbillableTS.exception = \
+            '10% deviation in totalhours for this week'
+    elif nonbillableTotal > 40:
+        nonbillableTS.exception = \
+            'NonBillable activity more than 40 Hours'
+    # Assigning eachday values to DB
+    for k, v in eachActivity.iteritems():
+        for eachDay in days:
+            if k == 'activity_{0}'.format(eachDay):
+                variable = "{0}.{1}H".format(
+                    'nonbillableTS',
+                    eachDay)
+                exec("%s = %d" % (variable, v))
+        if k == 'activity_total':
+            nonbillableTS.totalH = v
+        if k == 'activity_feedback':
+            nonbillableTS.feedback = v
+        if k == 'activity':
+            nonbillableTS.activity = v
+    nonbillableTS.save()
+    return 1
+
+
 @login_required
 def ApproveTimesheet(request):
     if request.method == 'POST':
@@ -677,7 +692,12 @@ def Dashboard(request):
         ].strftime('%Y-%m-%d')
 
     # Find the right holidays
-    holidayList = holidaycache.getUserHolidays(request.user)
+    locationId = employee.models.Employee.objects.filter(
+        user=request.user
+    ).values('location')[0]['location']
+    holidayList = Holiday.objects.filter(
+        location=locationId
+    ).values('name', 'date')
     for eachHoliday in holidayList:
         eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
     data = {
@@ -722,7 +742,8 @@ def checkUser(userName, password, request, form):
         else:
             messages.error(
                 request,
-                'Invalid userid & password / User could not be found on Active Directory.')
+                'Invalid userid & password / User could not be found on \
+                Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     except LDAPError as e:
         messages.error(
