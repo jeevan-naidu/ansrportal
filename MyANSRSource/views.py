@@ -114,12 +114,10 @@ def loginResponse(request, form, template):
 def Timesheet(request):
     # Creating Formset
     tsform = TimesheetFormset(request.user)
-    tsFormset = formset_factory(
-        tsform, extra=2, can_delete=True
-    )
-    atFormset = formset_factory(
-        ActivityForm, extra=2, can_delete=True
-    )
+    tsFormset = createFormset(form=tsform, extra=2, initial=None,
+                              prefix=None, delete=True)
+    atFormset = createFormset(form=ActivityForm, extra=2, initial=None,
+                              prefix=None, delete=True)
     # Initializing values
     days = ['monday', 'tuesday', 'wednesday', 'thursday',
             'friday', 'saturday', 'sunday']
@@ -213,9 +211,10 @@ def Timesheet(request):
                         # Insert Instance
                         nonbillableTS = TimeSheetEntry()
 
-                    saveTS(nonbillableTS, changedStartDate, changedEndDate,
-                           request.user, totals, nonbillableTotal,
-                           days, eachActivity, hold=True)
+                    saveUnApprovedTS(nonbillableTS, changedStartDate,
+                                     changedEndDate, request.user,
+                                     nonbillableTotal, days,
+                                     eachActivity, hold=True, billable=False)
 
                 # A check to update or insert data
                 for eachTimesheet in timesheets.cleaned_data:
@@ -226,24 +225,10 @@ def Timesheet(request):
                     else:
                         billableTS = TimeSheetEntry()
 
-                    # Assigning billable items to DB
-                    billableTS.wkstart = changedStartDate
-                    billableTS.wkend = changedEndDate
-                    billableTS.teamMember = request.user
-                    billableTS.billable = True
-                    billableTS.hold = True
-                    if (totals['weekTotal'] < 36) | \
-                            (totals['weekTotal'] > 44):
-                        billableTS.exception = \
-                            '10% deviation in totalhours for this week'
-                    elif billableTotal > 40:
-                        billableTS.exception = \
-                            'Billable activity more than 40 Hours'
-                    elif leaveDayWork is True:
-                        billableTS.exception = 'Worked on Holiday'
-                    for k, v in eachTimesheet.iteritems():
-                        setattr(billableTS, k, v)
-                    billableTS.save()
+                    saveUnApprovedTS(billableTS, changedStartDate,
+                                     changedEndDate, request.user,
+                                     billableTotal, days,
+                                     eachTimesheet, hold=True, billable=True)
             else:
                 # Save Timesheet
                 for eachActivity in activities.cleaned_data:
@@ -255,16 +240,9 @@ def Timesheet(request):
                     else:
                         nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
-                    nonbillableTS.wkstart = changedStartDate
-                    nonbillableTS.wkend = changedEndDate
-                    nonbillableTS.activity = activity
-                    nonbillableTS.teamMember = request.user
-                    nonbillableTS.approved = True
-                    nonbillableTS.hold = True
-                    nonbillableTS.approvedon = datetime.now()
-                    for k, v in eachActivity.iteritems():
-                        setattr(nonbillableTS, k, v)
-                    nonbillableTS.save()
+                    saveApprovedTS(nonbillableTS, changedStartDate,
+                                   changedEndDate, request.user,
+                                   eachActivity, hold=True, billable=False)
                 for eachTimesheet in timesheets.cleaned_data:
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
@@ -272,29 +250,13 @@ def Timesheet(request):
                         )[0]
                     else:
                         billableTS = TimeSheetEntry()
-                    billableTS.wkstart = changedStartDate
-                    billableTS.wkend = changedEndDate
-                    billableTS.teamMember = request.user
-                    billableTS.billable = True
-                    billableTS.approved = True
-                    billableTS.approvedon = datetime.now()
-                    billableTS.hold = True
-                    for k, v in eachTimesheet.iteritems():
-                        setattr(billableTS, k, v)
-                    billableTS.save()
+                    saveApprovedTS(nonbillableTS, changedStartDate,
+                                   changedEndDate, request.user,
+                                   eachActivity, hold=True, billable=True)
             return HttpResponseRedirect(request.get_full_path())
         else:
             # Handler for form errors
-            if request.GET.get('week') == 'prev':
-                weekstartDate = datetime.strptime(
-                    request.GET.get('startdate'), '%d%m%Y'
-                ).date() - timedelta(days=7)
-                ansrEndDate = datetime.strptime(
-                    request.GET.get('enddate'), '%d%m%Y'
-                ).date() - timedelta(days=7)
-                disabled = 'prev'
-            elif request.GET.get('week') == 'next':
-                disabled = 'next'
+            returnValue = switchWeeks(request)
             tsErrorList = timesheets.errors
             tsError = [k.cleaned_data for k in timesheets]
             for eachErrorData in tsError:
@@ -305,41 +267,21 @@ def Timesheet(request):
                         ).values('projectType')[0]['projectType']
                         eachErrorData['projectType'] = ptype
             atError = [k for k in activities.cleaned_data]
-            tsFormset = formset_factory(tsform,
-                                        extra=0,
-                                        can_delete=True)
-            tsFormset = tsFormset(initial=tsError)
-            atFormset = formset_factory(ActivityForm,
-                                        extra=0,
-                                        can_delete=True)
-            atFormset = atFormset(initial=atError, prefix='at')
-            data = {'weekstartDate': weekstartDate,
-                    'weekendDate': ansrEndDate,
-                    'disabled': disabled,
-                    'ErrorList': tsErrorList,
-                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
-                                  'Fri', 'Sat', 'Sun'],
-                    'tsFormset': tsFormset,
+            tsFormset = createFormset(form=tsform, extra=0, initial=tsError,
+                                      prefix=None, delete=True)
+            atFormset = createFormset(form=ActivityForm, extra=0,
+                                      initial=atError, prefix='at', delete=True)
+            data = {'ErrorList': tsErrorList,
+                    'shortDays': [eachDay.capitalize()[:3] for eachDay in days],
                     'hold': False,
+                    'tsFormset': tsFormset,
                     'atFormset': atFormset}
-            return render(request, 'MyANSRSource/timesheetEntry.html', data)
+            finalData = dict(returnValue.items() + data.items())
+            return render(request, 'MyANSRSource/timesheetEntry.html',
+                          finalData)
     else:
-        if request.GET.get('week') == 'prev':
-            weekstartDate = datetime.strptime(
-                request.GET.get('startdate'), '%d%m%Y'
-            ).date() - timedelta(days=7)
-            ansrEndDate = datetime.strptime(
-                request.GET.get('enddate'), '%d%m%Y'
-            ).date() - timedelta(days=7)
-            disabled = 'prev'
-        elif request.GET.get('week') == 'next':
-            disabled = 'next'
+        returnValue = switchWeeks(request)
         # Creating data for templates
-        cwTimesheet = TimeSheetEntry.objects.filter(
-            wkstart=weekstartDate, wkend=ansrEndDate,
-            teamMember=request.user,
-            approved=False, activity__isnull=True
-        ).count()
         cwActivityData = TimeSheetEntry.objects.filter(
             Q(
                 wkstart=weekstartDate,
@@ -383,50 +325,29 @@ def Timesheet(request):
         atDataList = []
         for eachData in cwActivityData:
             for k, v in eachData.iteritems():
-                if 'monday' in k:
-                    atData['activity_monday'] = v
-                if 'tuesday' in k:
-                    atData['activity_tuesday'] = v
-                if 'wednesday' in k:
-                    atData['activity_wednesday'] = v
-                if 'thursday' in k:
-                    atData['activity_thursday'] = v
-                if 'friday' in k:
-                    atData['activity_friday'] = v
-                if 'saturday' in k:
-                    atData['activity_saturday'] = v
-                if 'sunday' in k:
-                    atData['activity_sunday'] = v
-                if 'total' in k:
-                    atData['activity_total'] = v
+                [
+                    atData['activity_{0}.'format(listItem)] = v
+                    for listItem in totallist
+                    if listItem in k
+                ]
                 if k == 'managerFeedback':
                     atData['feedback'] = v
                 if k == 'id':
                     atData['atId'] = v
             atDataList.append(atData.copy())
             atData.clear()
-        if cwTimesheet > 0:
-            tsFormset = formset_factory(tsform,
-                                        extra=0,
-                                        can_delete=True)
-            tsFormset = tsFormset(initial=tsDataList)
-            atFormset = formset_factory(ActivityForm,
-                                        extra=0,
-                                        can_delete=True)
-            atFormset = atFormset(initial=atDataList, prefix='at')
+        if len(cwTimesheetData):
+            tsFormset = createFormset(form=tsform, extra=0, initial=tsDataList,
+                                      prefix=None, delete=True)
+            atFormset = createFormset(form=ActivityForm, extra=0,
+                                      initial=atDataList, prefix='at',
+                                      delete=True)
         else:
-            tsFormset = formset_factory(tsform,
-                                        extra=2,
-                                        can_delete=True)
-            atFormset = formset_factory(ActivityForm,
-                                        extra=2,
-                                        can_delete=True)
-            atFormset = atFormset(prefix='at')
-        cwApprovedTimesheet = TimeSheetEntry.objects.filter(
-            wkstart=weekstartDate, wkend=ansrEndDate,
-            teamMember=request.user,
-            approved=True
-        ).count()
+            tsFormset = createFormset(form=tsform, extra=2, initial=None,
+                                      prefix=None, delete=True)
+            atFormset = createFormset(form=ActivityForm, extra=2,
+                                      initial=None, prefix='at',
+                                      delete=True)
         cwApprovedActivityData = TimeSheetEntry.objects.filter(
             Q(
                 wkstart=weekstartDate,
@@ -488,7 +409,7 @@ def Timesheet(request):
         othersTotal = 0
         for others in othersHours:
             othersTotal += others['totalH']
-        if cwApprovedTimesheet > 0:
+        if len(cwApprovedTimesheetData):
             messages.success(request, 'Timesheet is approved for this week')
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
@@ -498,7 +419,7 @@ def Timesheet(request):
                     }
             return render(request, 'MyANSRSource/timesheetApproved.html', data)
         else:
-            if cwTimesheet > 0:
+            if len(cwTimesheetData):
                 hold = cwTimesheetData[0]['hold']
                 if hold is True:
                     messages.warning(request,
@@ -510,20 +431,18 @@ def Timesheet(request):
                                      please resubmit')
             else:
                 hold = False
-            data = {'weekstartDate': weekstartDate,
-                    'weekendDate': ansrEndDate,
-                    'disabled': disabled,
-                    'tsFormset': tsFormset,
+            data = {'tsFormset': tsFormset,
                     'hold': hold,
-                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
-                                  'Fri', 'Sat', 'Sun'],
+                    'shortDays': [eachDay.capitalize()[:3] for eachDay in days],
                     'billableHours': billableHours,
                     'idleHours': idleHours,
                     'bTotal': bTotal,
                     'idleTotal': idleTotal,
                     'othersTotal': othersTotal,
                     'atFormset': atFormset}
-            return render(request, 'MyANSRSource/timesheetEntry.html', data)
+            finalData = dict(returnValue.items() + data.items())
+            return render(request, 'MyANSRSource/timesheetEntry.html',
+                          finalData)
 
 
 # Deletes a TS Record
@@ -551,36 +470,77 @@ def calculateTotals(totallist, timesheet, totals, activity):
     return totals
 
 
-def saveTS(nonbillableTS, changedStartDate, changedEndDate, currentUser,
-           totals, nonbillableTotal, days, eachActivity, hold):
-    # Assigning non-Billable items to DB
-    nonbillableTS.wkstart = changedStartDate
-    nonbillableTS.wkend = changedEndDate
-    nonbillableTS.teamMember = currentUser
-    nonbillableTS.hold = True
-    if (totals['weekTotal'] < 36) | \
-            (totals['weekTotal'] > 44):
-        nonbillableTS.exception = \
-            '10% deviation in totalhours for this week'
-    elif nonbillableTotal > 40:
-        nonbillableTS.exception = \
-            'NonBillable activity more than 40 Hours'
+def saveUnApprovedTS(*args, **argv):
+    # Assigning UnApprovedTS items to DB
+    args[0].wkstart = args[1]
+    args[0].wkend = args[2]
+    args[0].teamMember = args[3]
+    args[0].hold = argv['hold']
+    args[0].exception = '10% deviation in totalhours for this week'
+    if args[4] > 40:
+        args[0].exception = 'Activity more than 40 Hours'
     # Assigning eachday values to DB
-    for k, v in eachActivity.iteritems():
-        for eachDay in days:
-            if k == 'activity_{0}'.format(eachDay):
-                variable = "{0}.{1}H".format(
-                    'nonbillableTS',
-                    eachDay)
-                exec("%s = %d" % (variable, v))
-        if k == 'activity_total':
-            nonbillableTS.totalH = v
-        if k == 'activity_feedback':
-            nonbillableTS.feedback = v
-        if k == 'activity':
-            nonbillableTS.activity = v
-    nonbillableTS.save()
+    for k, v in args[6].iteritems():
+        if argv['billable']:
+            setattr(args[0], k, v)
+        else:
+            for eachDay in args[5]:
+                if k == 'activity_{0}'.format(eachDay):
+                    variable = "{0}.{1}H".format(
+                        args[0],
+                        eachDay)
+                    exec("%s = %d" % (variable, v))
+            if k == 'activity_total':
+                args[0].totalH = v
+            if k == 'activity_feedback':
+                args[0].feedback = v
+            if k == 'activity':
+                args[0].activity = v
+    args[0].save()
     return 1
+
+
+def saveApprovedTS(*args, **argv):
+    # Assigning ApprovedTS items to DB
+    args[0].wkstart = args[1]
+    args[0].wkend = args[2]
+    args[0].teamMember = args[3]
+    args[0].hold = argv['hold']
+    args[0].approved = True
+    args[0].approvedon = datetime.now()
+    if argv['billable']:
+        args[0].billable = True
+    for k, v in args[4].iteritems():
+        setattr(args[0], k, v)
+    args[0].save()
+    return 1
+
+
+def switchWeeks(request):
+    if request.GET.get('week') == 'prev':
+        weekstartDate = datetime.strptime(
+            request.GET.get('startdate'), '%d%m%Y'
+        ).date() - timedelta(days=7)
+        ansrEndDate = datetime.strptime(
+            request.GET.get('enddate'), '%d%m%Y'
+        ).date() - timedelta(days=7)
+        disabled = 'prev'
+    elif request.GET.get('week') == 'next':
+        disabled = 'next'
+    returnValue = {weekstartDate: weekstartDate,
+                   ansrEndDate: ansrEndDate,
+                   disabled: disabled}
+    return returnValue
+
+
+def createFormset(**argv):
+    ff = formset_factory(argv['form'], extra=argv['extra'],
+                         can_delete=argv['delete'])
+    if argv['initial'] is not None:
+        ff = ff(initial=argv['initial'])
+    if argv['prefix'] is not None:
+        ff = ff(prefix=argv['prefix'])
+    return ff
 
 
 @login_required
