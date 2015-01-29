@@ -155,9 +155,8 @@ def Timesheet(request):
             nonbillableTotal = 0
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
-            locationId = employee.models.Employee.objects.filter(
-                user=request.user
-            ).values('location')[0]['location']
+            if hasattr(request.user, 'employee'):
+                locationId = request.user.employee.location
             weekHolidays = Holiday.objects.filter(
                 location=locationId,
                 date__range=[changedStartDate, changedEndDate]
@@ -694,14 +693,15 @@ def Dashboard(request):
         eachProject['project__endDate'] = eachProject[
             'project__endDate'
         ].strftime('%Y-%m-%d')
-    locationId = employee.models.Employee.objects.filter(
-        user=request.user
-    ).values('location')[0]['location']
-    holidayList = Holiday.objects.filter(
-        location=locationId
-    ).values('name', 'date')
-    for eachHoliday in holidayList:
-        eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
+    if hasattr(request.user, 'employee'):
+        locationId = request.user.employee.location
+        holidayList = Holiday.objects.filter(
+            location=locationId
+        ).values('name', 'date')
+        for eachHoliday in holidayList:
+            eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
+    else:
+        holidayList = []
     data = {
         'username': request.session['username'],
         'firstname': request.session['firstname'],
@@ -844,16 +844,17 @@ class ChangeProjectWizard(SessionWizardView):
             )['Change Basic Information-revisedTotal']
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Change Team Members':
-            locationId = employee.models.Employee.objects.filter(
-                user=self.request.user
-            ).values('location')[0]['location']
-            holidays = Holiday.objects.filter(
-                location=locationId
-            ).values('name', 'date')
-            holidays = Holiday.objects.all().values('name', 'date')
-            for holiday in holidays:
-                holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
-            data = {'data': list(holidays)}
+            if hasattr(self.request.user, 'employee'):
+                locationId = self.request.user.employee.location
+                holidays = Holiday.objects.filter(
+                    location=locationId
+                ).values('name', 'date')
+                holidays = Holiday.objects.all().values('name', 'date')
+                for holiday in holidays:
+                    holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+                data = {'data': list(holidays)}
+            else:
+                data = {}
             context.update({'holidayList': json.dumps(data)})
         return context
 
@@ -1138,16 +1139,17 @@ class CreateProjectWizard(SessionWizardView):
             ]
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
-            locationId = employee.models.Employee.objects.filter(
-                user=self.request.user
-            ).values('location')[0]['location']
-            holidays = Holiday.objects.filter(
-                location=locationId
-            ).values('name', 'date')
-            holidays = Holiday.objects.all().values('name', 'date')
-            for holiday in holidays:
-                holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
-            data = {'data': list(holidays)}
+            if hasattr(self.request.user, 'employee'):
+                locationId = self.request.user.employee.location
+                holidays = Holiday.objects.filter(
+                    location=locationId
+                ).values('name', 'date')
+                holidays = Holiday.objects.all().values('name', 'date')
+                for holiday in holidays:
+                    holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+                data = {'data': list(holidays)}
+            else:
+                data = {}
             context.update({'holidayList': json.dumps(data)})
         return context
 
