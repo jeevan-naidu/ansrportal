@@ -9,7 +9,7 @@
  <div class="col-md-1">
  <form id="prevWeek" method="get" action="" enctype="multipart/form-data">
 	<input type="hidden" name="week" value="prev" />
-	<input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
+	<input type="hidden" name="enddate" value="{{ ansrEndDate|date:"dmY" }}" />
 	<input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
 	{% if disabled == 'prev' %}
 		<button type="submit" value="submit" disabled="disabled" class="btn btn-default">
@@ -28,7 +28,7 @@
  <form id="nextWeek" method="get" action="" enctype="multipart/form-data">
 	<input type="hidden" name="week" value="next" />
 	<input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
-	<input type="hidden" name="endDate" value="{{ weekendDate|date:"dmY" }}" />
+	<input type="hidden" name="enddate" value="{{ ansrEndDate|date:"dmY" }}" />
 	{% if disabled == 'next' %}
 		<button type="submit" value="submit" disabled="disabled" class="btn btn-default">
 			<span class="glyphicon glyphicon-arrow-right"></span>

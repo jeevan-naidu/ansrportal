@@ -24,8 +24,8 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
-    # 'django.contrib.auth.backends.ModelBackend',
+    #'django_auth_ldap.backend.LDAPBackend',
+     'django.contrib.auth.backends.ModelBackend',
     )
 
 AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
@@ -168,7 +168,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -207,7 +207,6 @@ EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-<<<<<<< HEAD
 import logging
 
 logger = logging.getLogger('django_auth_ldap')
