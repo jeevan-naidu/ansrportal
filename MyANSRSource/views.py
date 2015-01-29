@@ -854,7 +854,7 @@ class ChangeProjectWizard(SessionWizardView):
                     holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
-                data = {}
+                data = {'data': ''}
             context.update({'holidayList': json.dumps(data)})
         return context
 
@@ -1149,7 +1149,7 @@ class CreateProjectWizard(SessionWizardView):
                     holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
-                data = {}
+                data = {'data': ''}
             context.update({'holidayList': json.dumps(data)})
         return context
 
