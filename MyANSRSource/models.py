@@ -21,7 +21,7 @@ class Book(models.Model):
 
 class projectType(models.Model):
     code = models.CharField(max_length=2, null=False,
-                            verbose_name="Code")
+                            verbose_name="Unit of Work")
     description = models.CharField(max_length=100, null=False,
                                    verbose_name="Description")
     createdOn = models.DateTimeField(verbose_name="created Date",
