@@ -364,6 +364,10 @@ def calculateTotals(totallist, timesheet, totals, activity):
 # Function to save UnApprovedTS to DB
 def saveUnApprovedTS(*args, **argv):
     # Assigning UnApprovedTS items to DB
+    # NIRANJ: IF you are going to use magic numbers (args[1]) give a detailed
+    # explanation in the comments on what each array element contains in the
+    # args[] array.
+
     args[0].wkstart = args[1]
     args[0].wkend = args[2]
     args[0].teamMember = args[3]
@@ -526,6 +530,9 @@ def CreateDataList(*args, **argv):
 
 # Function to calculate summary totals
 def CalculateSummary(*args):
+
+    #  NIRANJ:This entire Code can be cleaned up..  See this chapter
+    # https://docs.djangoproject.com/en/dev/topics/db/aggregation/
     billableHours = TimeSheetEntry.objects.filter(
         Q(
             wkstart=args[0],
