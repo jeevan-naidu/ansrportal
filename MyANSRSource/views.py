@@ -1029,7 +1029,7 @@ def UpdateProjectInfo(newInfo):
     pcicr.crId = "CR-{0}".format(pci.id)
     pcicr.save()
 
-    prc = Project.objects.get(id=newInfo[1]['id'])
+    prc = Project.objects.get(id=newInfo[0]['project'].id)
     prc.closed = newInfo[1]['closed']
     prc.signed = newInfo[1]['signed']
     prc.save()
