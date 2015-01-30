@@ -1,13 +1,27 @@
+from django import forms
 from django.contrib import admin
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, Chapter, \
     ProjectChangeInfo, projectType
 
 
+class ChapterInlineFormSet(forms.models.BaseInlineFormSet):
+
+    class Meta:
+        widgets = {'name': forms.TextInput(attrs={'size': 80})
+                   }
+
+
 class ChapterInline(admin.TabularInline):
     model = Chapter
     extra = 2
     exclude = []
+    fieldsets = (
+        ('Chapters', {
+            'classes': ('size : 40',),
+            'fields': ('name',)
+            }),
+        )
 
 
 # Admin Models for ansr
@@ -64,5 +78,5 @@ admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(projectType, projectTypeAdmin)
 #admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
-admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
-admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)
+#admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
+#admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)

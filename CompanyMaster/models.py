@@ -45,7 +45,7 @@ class OfficeLocation(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.name + '::' + self.city
+        return self.name + ' - ' + self.city
 
 
 class Department(models.Model):
@@ -74,7 +74,7 @@ class Division(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.department.name + '::' + self.name
+        return self.department.name + ' - ' + self.name
 
 
 class Holiday(models.Model):
