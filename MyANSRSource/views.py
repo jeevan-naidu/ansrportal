@@ -1006,14 +1006,8 @@ def UpdateProjectInfo(request, newInfo):
         newInfo[2] ==> TeamMembers object(Old Data + Newly added member if any)
         newInfo[3] ==> Milesonte Object(old Data + Newly add milestones if any)
     """
-    logging.info('Form data : ' + str(newInfo[0]))
-    logging.info('Form data : ' + str(newInfo[1]))
-    logging.info('Form data : ' + str(newInfo[2]))
-    logging.info('Form data : ' + str(newInfo[3]))
-
-    #
     try:
-        prc = Project.objects.get(id=newInfo[0]['project'].id)
+        prc = newInfo[0]['project']
         prc.closed = newInfo[1]['closed']
         prc.signed = newInfo[1]['signed']
         prc.save()
@@ -1059,8 +1053,7 @@ def UpdateProjectInfo(request, newInfo):
             pmc.save()
 
         return {'crId': pci.crId}
-    except (Project.DoesNotExist,
-            ProjectTeamMember.DoesNotExist,
+    except (ProjectTeamMember.DoesNotExist,
             ProjectMilestone.DoesNotExist) as e:
         messages.error(request, 'Could not save change request information')
         logging.error('Exception in UpdateProjectInfo :' + str(e))
@@ -1307,35 +1300,30 @@ def saveProject(request):
         pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
             id=request.session['bu']
         )[0]
-        customerCode = CompanyMaster.models.Customer.objects.filter(
-            id=request.session['customer']
-        ).values('customerCode')[0]['customerCode']
-        seqNumber = CompanyMaster.models.Customer.objects.filter(
-            id=request.session['customer']
-        ).values('seqNumber')[0]['seqNumber']
-        seqNumber = seqNumber + 1
         cm = CompanyMaster.models.Customer.objects.get(
             id=request.session['customer']
         )
-        cm.seqNumber = seqNumber
-        cm.save()
-        pr.customer = CompanyMaster.models.Customer.objects.filter(
-            id=request.session['customer']
-        )[0]
+        pr.customer = cm
         pr.book = Book.objects.filter(id=request.session['book'])[0]
         pr.save()
         request.session['currentProject'] = pr.id
         request.session['currentProjectName'] = pr.name
 
         projectIdPrefix = "{0}_{1}_{2}".format(
-            customerCode,
+            cm.customerCode,
             datetime.now().year,
-            str(seqNumber).zfill(4)
+            str(cm.seqNumber).zfill(4)
         )
-        pru = Project.objects.get(id=pr.id)
-        pru.projectId = "{0}".format(projectIdPrefix)
-        pru.save()
-        request.session['currentProjectId'] = pru.projectId
+
+        pr.projectId = "{0}".format(projectIdPrefix)
+        pr.save()
+        # Increment sequence numbre and save.
+        cm.seqNumber = cm.seqNumber + 1
+        cm.save()
+
+        # NIRANJ: This is NOT OK.  Where is this data being sent? fix that code
+        # as well
+        request.session['currentProjectId'] = pr.projectId
 
         for eachId in request.session['chapters']:
             pr.chapters.add(eachId)
@@ -1354,6 +1342,9 @@ def saveProject(request):
                 pk=request.POST.get(teamMemberId)
             )
             ptm.role = employee.models.Designation.objects.filter(
+                # NIRANJ: This is meaningless.  How can we assign current user Role to
+                # everyone  You should be assigning the role from what was
+                # selected in the form
                 pk=request.session[role]
             )[0]
             ptm.plannedEffort = request.POST.get(plannedEffort)
@@ -1376,7 +1367,7 @@ def saveProject(request):
                 pms.amount = request.POST.get(amount)
                 pms.save()
 
-        data = {'projectId': pru.projectId, 'projectName': pr.name}
+        data = {'projectId': pr.id, 'projectName': pr.name}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 createProject = CreateProjectWizard.as_view(FORMS)
