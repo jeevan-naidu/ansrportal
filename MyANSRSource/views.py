@@ -1013,7 +1013,7 @@ def UpdateProjectInfo(request, newInfo):
 
     #
     try:
-        prc = Project.objects.get(id=newInfo[0]['id'])
+        prc = Project.objects.get(id=newInfo[0]['project'].id)
         prc.closed = newInfo[1]['closed']
         prc.signed = newInfo[1]['signed']
         prc.save()
@@ -1058,7 +1058,7 @@ def UpdateProjectInfo(request, newInfo):
             pmc.description = eachMilestone['description']
             pmc.save()
 
-            return {'crId': pci.crId}
+        return {'crId': pci.crId}
     except (Project.DoesNotExist,
             ProjectTeamMember.DoesNotExist,
             ProjectMilestone.DoesNotExist) as e:
