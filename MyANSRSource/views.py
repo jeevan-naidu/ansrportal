@@ -96,6 +96,7 @@ TMTEMPLATES = {
 
 def index(request):
     if request.user.is_authenticated():
+        print request.user.userid
         return HttpResponseRedirect('dashboard')
     elif request.method == 'POST':
         form = LoginForm(request.POST)
@@ -1005,14 +1006,6 @@ def UpdateProjectInfo(newInfo):
         newInfo[2] ==> TeamMembers object(Old Data + Newly added member if any)
         newInfo[3] ==> Milesonte Object(old Data + Newly add milestones if any)
     """
-    print 'newInfo[0]:'
-    print newInfo[0]
-    print 'newInfo[1]:'
-    print newInfo[1]
-    print 'newInfo[2]:'
-    print newInfo[2]
-    print 'newInfo[3]:'
-    print newInfo[3]
     pci = ProjectChangeInfo()
     pci.project = newInfo[0]['project']
     pci.reason = newInfo[1]['reason']
