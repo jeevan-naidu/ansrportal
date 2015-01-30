@@ -1,5 +1,4 @@
-from templated_email import send_templated_mail
-from django.forms.util import ErrorList
+import logging
 import json
 
 from django.forms.util import ErrorList
@@ -14,11 +13,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.db.models import Q
 from django.conf import settings
-import re
+
+from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
@@ -853,7 +851,8 @@ class ChangeProjectWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                    holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+                    holiday['date'] = int(
+                        holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
                 data = {'data': ''}
@@ -985,7 +984,9 @@ class ChangeProjectWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         if self.request.session['changed'] is True:
-            data = UpdateProjectInfo([form.cleaned_data for form in form_list])
+            data = UpdateProjectInfo(
+                self.request, [
+                    form.cleaned_data for form in form_list])
             return render(
                 self.request,
                 'MyANSRSource/changeProjectId.html',
@@ -997,7 +998,7 @@ class ChangeProjectWizard(SessionWizardView):
                 {})
 
 
-def UpdateProjectInfo(newInfo):
+def UpdateProjectInfo(request, newInfo):
     """
         newInfo[0] ==> Selected Project Object
         newInfo[1] ==> 'reason' , 'endDate', 'revisedEffort', 'revisedTotal',
@@ -1005,60 +1006,66 @@ def UpdateProjectInfo(newInfo):
         newInfo[2] ==> TeamMembers object(Old Data + Newly added member if any)
         newInfo[3] ==> Milesonte Object(old Data + Newly add milestones if any)
     """
-    print 'newInfo[0]:'
-    print newInfo[0]
-    print 'newInfo[1]:'
-    print newInfo[1]
-    print 'newInfo[2]:'
-    print newInfo[2]
-    print 'newInfo[3]:'
-    print newInfo[3]
-    pci = ProjectChangeInfo()
-    pci.project = newInfo[0]['project']
-    pci.reason = newInfo[1]['reason']
-    pci.endDate = newInfo[1]['endDate']
-    pci.revisedEffort = newInfo[1]['revisedEffort']
-    pci.revisedTotal = newInfo[1]['revisedTotal']
-    pci.closed = newInfo[1]['closed']
-    if pci.closed is True:
-        pci.closedOn = datetime.now()
-    pci.signed = newInfo[1]['signed']
-    pci.save()
+    logging.info('Form data : ' + str(newInfo[0]))
+    logging.info('Form data : ' + str(newInfo[1]))
+    logging.info('Form data : ' + str(newInfo[2]))
+    logging.info('Form data : ' + str(newInfo[3]))
 
-    pcicr = ProjectChangeInfo.objects.get(id=pci.id)
-    pcicr.crId = "CR-{0}".format(pci.id)
-    pcicr.save()
+    #
+    try:
+        prc = Project.objects.get(id=newInfo[0]['id'])
+        prc.closed = newInfo[1]['closed']
+        prc.signed = newInfo[1]['signed']
+        prc.save()
 
-    prc = Project.objects.get(id=newInfo[1]['id'])
-    prc.closed = newInfo[1]['closed']
-    prc.signed = newInfo[1]['signed']
-    prc.save()
+        pci = ProjectChangeInfo()
+        pci.project = prc
+        pci.reason = newInfo[1]['reason']
+        pci.endDate = newInfo[1]['endDate']
+        pci.revisedEffort = newInfo[1]['revisedEffort']
+        pci.revisedTotal = newInfo[1]['revisedTotal']
+        pci.closed = newInfo[1]['closed']
+        if pci.closed is True:
+            pci.closedOn = datetime.now()
+        pci.signed = newInfo[1]['signed']
+        pci.save()
 
-    for eachmember in newInfo[2]:
-        if eachmember['id'] == 0:
-            ptmc = ProjectTeamMember()
-        else:
-            ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
-        ptmc.project = pci.project
-        ptmc.member = eachmember['member']
-        ptmc.role = eachmember['role']
-        ptmc.startDate = eachmember['startDate']
-        ptmc.endDate = eachmember['endDate']
-        ptmc.plannedEffort = eachmember['plannedEffort']
-        ptmc.rate = eachmember['rate']
-        ptmc.save()
+        # We need the Primary key to create the CRId
+        pci.crId = "CR-{0}".format(pci.id)
+        pci.save()
 
-    for eachMilestone in newInfo[3]:
-        if eachMilestone['id'] == 0:
-            pmc = ProjectMilestone()
-        else:
-            pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
-        pmc.project = pci.project
-        pmc.milestoneDate = eachMilestone['milestoneDate']
-        pmc.description = eachMilestone['description']
-        pmc.save()
+        for eachmember in newInfo[2]:
+            if eachmember['id'] == 0:
+                ptmc = ProjectTeamMember()
+            else:
+                ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
+            ptmc.project = prc
+            ptmc.member = eachmember['member']
+            ptmc.role = eachmember['role']
+            ptmc.startDate = eachmember['startDate']
+            ptmc.endDate = eachmember['endDate']
+            ptmc.plannedEffort = eachmember['plannedEffort']
+            ptmc.rate = eachmember['rate']
+            ptmc.save()
 
-    return {'crId': pcicr.crId}
+        for eachMilestone in newInfo[3]:
+            if eachMilestone['id'] == 0:
+                pmc = ProjectMilestone()
+            else:
+                pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
+            pmc.project = prc
+            pmc.milestoneDate = eachMilestone['milestoneDate']
+            pmc.description = eachMilestone['description']
+            pmc.save()
+
+            return {'crId': pci.crId}
+    except (Project.DoesNotExist,
+            ProjectTeamMember.DoesNotExist,
+            ProjectMilestone.DoesNotExist) as e:
+        messages.error(request, 'Could not save change request information')
+        logging.error('Exception in UpdateProjectInfo :' + str(e))
+        return {'crId': None}
+
 
 changeProject = ChangeProjectWizard.as_view(CFORMS)
 
@@ -1163,7 +1170,8 @@ class CreateProjectWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                    holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+                    holiday['date'] = int(
+                        holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
                 data = {'data': ''}
