@@ -95,7 +95,9 @@ TMTEMPLATES = {
 
 
 def index(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('dashboard')
+    elif request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             return checkUser(
@@ -996,6 +998,21 @@ class ChangeProjectWizard(SessionWizardView):
 
 
 def UpdateProjectInfo(newInfo):
+    """
+        newInfo[0] ==> Selected Project Object
+        newInfo[1] ==> 'reason' , 'endDate', 'revisedEffort', 'revisedTotal',
+                       'closed', 'signed'
+        newInfo[2] ==> TeamMembers object(Old Data + Newly added member if any)
+        newInfo[3] ==> Milesonte Object(old Data + Newly add milestones if any)
+    """
+    print 'newInfo[0]:'
+    print newInfo[0]
+    print 'newInfo[1]:'
+    print newInfo[1]
+    print 'newInfo[2]:'
+    print newInfo[2]
+    print 'newInfo[3]:'
+    print newInfo[3]
     pci = ProjectChangeInfo()
     pci.project = newInfo[0]['project']
     pci.reason = newInfo[1]['reason']
@@ -1013,8 +1030,8 @@ def UpdateProjectInfo(newInfo):
     pcicr.save()
 
     prc = Project.objects.get(id=newInfo[1]['id'])
-    prc.closed = pci.closed
-    prc.signed = pci.signed
+    prc.closed = newInfo[1]['closed']
+    prc.signed = newInfo[1]['signed']
     prc.save()
 
     for eachmember in newInfo[2]:
