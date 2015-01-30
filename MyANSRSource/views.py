@@ -1066,7 +1066,6 @@ def UpdateProjectInfo(request, newInfo):
         logging.error('Exception in UpdateProjectInfo :' + str(e))
         return {'crId': None}
 
-
 changeProject = ChangeProjectWizard.as_view(CFORMS)
 
 
