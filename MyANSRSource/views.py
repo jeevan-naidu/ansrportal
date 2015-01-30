@@ -1192,13 +1192,7 @@ class CreateProjectWizard(SessionWizardView):
             revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
         else:
             revenueRec = 0
-        chapterList = []
-        for eachChapter in basicInfo['chapters']:
-            chapterList.append(eachChapter.id)
-        self.request.session['chapters'] = chapterList
-        self.request.session['bu'] = basicInfo['bu'].id
-        self.request.session['book'] = basicInfo['book'].id
-        self.request.session['customer'] = basicInfo['customer'].id
+        chapterIdList = [eachRec.id for eachRec in basicInfo['chapters']]
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
         ).strftime('%Y-%m-%d')
@@ -1216,8 +1210,6 @@ class CreateProjectWizard(SessionWizardView):
                     effortTotal += v
                 k = "{0}-{1}".format(k, teamDataCounter)
                 changedTeamData[k] = v
-                if 'role' in k:
-                    self.request.session[k] = v.id
             startDate = 'startDate-{0}'.format(teamDataCounter)
             changedTeamData[startDate] = changedTeamData.get(
                 startDate
@@ -1231,7 +1223,6 @@ class CreateProjectWizard(SessionWizardView):
             changedTeamData[teamMemberId] = changedTeamData.get(member).id
             DELETE = 'DELETE-{0}'.format(teamDataCounter)
             del changedTeamData[DELETE]
-            self.request.session['totalMemberCount'] = teamDataCounter + 1
             cleanedTeamData.append(changedTeamData.copy())
             changedTeamData.clear()
 
@@ -1248,14 +1239,12 @@ class CreateProjectWizard(SessionWizardView):
                 ).strftime('%Y-%m-%d')
                 DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
                 del changedMilestoneData[DELETE]
-                self.request.session[
-                    'totalMilestoneCount'
-                ] = milestoneDataCounter + 1
                 cleanedMilestoneData.append(changedMilestoneData.copy())
                 changedMilestoneData.clear()
         if [form.cleaned_data for form in form_list][1]['internal'] is True:
             data = {
                 'basicInfo': basicInfo,
+                'chapterId': chapterIdList,
                 'flagData': flagData,
                 'effortTotal': effortTotal,
                 'revenueRec': revenueRec,
@@ -1264,6 +1253,7 @@ class CreateProjectWizard(SessionWizardView):
         else:
             data = {
                 'basicInfo': basicInfo,
+                'chapterId': chapterIdList,
                 'flagData': flagData,
                 'effortTotal': effortTotal,
                 'revenueRec': revenueRec,
@@ -1279,7 +1269,8 @@ def saveProject(request):
         pr = Project()
         pr.name = request.POST.get('name')
         pType = projectType.objects.get(
-            description=request.POST.get('projectType'))
+            id=int(request.POST.get('projectType'))
+        )
         pr.projectType = pType
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
@@ -1298,16 +1289,16 @@ def saveProject(request):
         pr.contingencyEffort = request.POST.get('contingencyEffort')
         pr.projectManager = request.user
         pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
-            id=request.session['bu']
+            id=int(request.POST.get('bu'))
         )[0]
         cm = CompanyMaster.models.Customer.objects.get(
-            id=request.session['customer']
+            id=int(request.POST.get('customer'))
         )
         pr.customer = cm
-        pr.book = Book.objects.filter(id=request.session['book'])[0]
+        pr.book = Book.objects.filter(
+            id=int(request.POST.get('book'))
+        )[0]
         pr.save()
-        request.session['currentProject'] = pr.id
-        request.session['currentProjectName'] = pr.name
 
         projectIdPrefix = "{0}_{1}_{2}".format(
             cm.customerCode,
@@ -1315,20 +1306,17 @@ def saveProject(request):
             str(cm.seqNumber).zfill(4)
         )
 
-        pr.projectId = "{0}".format(projectIdPrefix)
+        pr.projectId = projectIdPrefix
         pr.save()
-        # Increment sequence numbre and save.
         cm.seqNumber = cm.seqNumber + 1
         cm.save()
 
-        # NIRANJ: This is NOT OK.  Where is this data being sent? fix that code
-        # as well
-        request.session['currentProjectId'] = pr.projectId
-
-        for eachId in request.session['chapters']:
+        for eachId in eval(request.POST.get('chapters')):
             pr.chapters.add(eachId)
 
-        for memberCount in range(1, request.session['totalMemberCount']):
+        memberTotal = int(request.POST.get('teamMemberTotal')) + 1
+
+        for memberCount in range(1, memberTotal):
             ptm = ProjectTeamMember()
             ptm.project = pr
             teamMemberId = "teamMemberId-{0}".format(memberCount)
@@ -1342,10 +1330,7 @@ def saveProject(request):
                 pk=request.POST.get(teamMemberId)
             )
             ptm.role = employee.models.Designation.objects.filter(
-                # NIRANJ: This is meaningless.  How can we assign current user Role to
-                # everyone  You should be assigning the role from what was
-                # selected in the form
-                pk=request.session[role]
+                pk=request.POST.get(role)
             )[0]
             ptm.plannedEffort = request.POST.get(plannedEffort)
             ptm.rate = request.POST.get(rate)
@@ -1354,9 +1339,8 @@ def saveProject(request):
             ptm.save()
 
         if internalValue is False:
-            for milestoneCount in range(1, request.session[
-                'totalMilestoneCount'
-            ]):
+            milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
+            for milestoneCount in range(1, milestoneTotal):
                 pms = ProjectMilestone()
                 pms.project = pr
                 milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
@@ -1367,7 +1351,8 @@ def saveProject(request):
                 pms.amount = request.POST.get(amount)
                 pms.save()
 
-        data = {'projectId': pr.id, 'projectName': pr.name}
+        data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
+                'projectName': pr.name, 'customerId': cm.id }
         return render(request, 'MyANSRSource/projectSuccess.html', data)
 
 createProject = CreateProjectWizard.as_view(FORMS)
@@ -1380,12 +1365,12 @@ def WrappedCreateProjectView(request):
 
 @login_required
 def notify(request):
-    projectId = request.session['currentProject']
+    projectId = int(request.POST.get('projectId'))
     projectDetails = Project.objects.filter(
         id=projectId,
     ).values('startDate', 'projectManager')
     projectHead = CompanyMaster.models.Customer.objects.filter(
-        id=request.session['customer'],
+        id=int(request.POST.get('customer')),
     ).values('relatedMember__email',
              'relatedMember__first_name',
              'relatedMember__last_name')
@@ -1402,9 +1387,8 @@ def notify(request):
                     'startDate': projectDetails['startDate']
                     },
             )
-    projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
-        project=projectId
+        project__id=projectId
     ).values('member__email', 'member__first_name',
              'member__last_name', 'startDate')
     for eachMember in teamMembers:
@@ -1421,8 +1405,8 @@ def notify(request):
                     'mystartdate': eachmember['startDate']
                     },
             )
-    projectName = request.session['currentProjectName']
-    data = {'projectId': request.session['currentProjectId'],
+    projectName = request.POST.get('projectName')
+    data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
     return render(request, 'MyANSRSource/projectSuccess.html', data)
