@@ -242,9 +242,9 @@ def Timesheet(request):
                 for eachActivity in activitiesList:
                     # Getting objects for models
                     if eachActivity['atId'] > 0:
-                        nonbillableTS = TimeSheetEntry.objects.filter(
-                            id=eachActivity['atId']
-                        )[0]
+                        nonbillableTS = TimeSheetEntry.objects.get(
+                            pk=eachActivity['atId']
+                        )
                     else:
                         nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
@@ -1265,6 +1265,11 @@ class CreateProjectWizard(SessionWizardView):
 
 @login_required
 def saveProject(request):
+    # NIRANJ : Error checking and reporting is missing in this function.
+    # Please go back and clean up error handling - for example a int() call
+    # with throw ValueError.  You ahve to handle it.  Once you handle how do
+    # you send them back to the summary page?
+
     if request.method == 'POST':
         pr = Project()
         pr.name = request.POST.get('name')
@@ -1274,42 +1279,32 @@ def saveProject(request):
         pr.projectType = pType
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
-        pr.plannedEffort = request.POST.get('plannedEffort')
+        pr.plannedEffort = int(request.POST.get('plannedEffort'))
         pr.currentProject = request.POST.get('currentProject')
-        if request.POST.get('signed') == 'False':
-            signed = False
-        else:
-            signed = True
-        pr.signed = signed
-        if request.POST.get('internal') == 'False':
-            internalValue = False
-        else:
-            internalValue = True
-        pr.internal = internalValue
-        pr.contingencyEffort = request.POST.get('contingencyEffort')
+        pr.signed = (request.POST.get('signed') == 'True')
+        pr.internal = (request.POST.get('internal') == 'True')
+        pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
         pr.projectManager = request.user
-        pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
-            id=int(request.POST.get('bu'))
-        )[0]
-        cm = CompanyMaster.models.Customer.objects.get(
-            id=int(request.POST.get('customer'))
+        pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
+            pk=int(request.POST.get('bu'))
         )
-        pr.customer = cm
-        pr.book = Book.objects.filter(
-            id=int(request.POST.get('book'))
-        )[0]
-        pr.save()
+        pr.customer = CompanyMaster.models.Customer.objects.get(
+            pk=int(request.POST.get('customer'))
+        )
+        pr.book = Book.objects.get(
+            pk=int(request.POST.get('book'))
+        )
 
         projectIdPrefix = "{0}_{1}_{2}".format(
-            cm.customerCode,
+            pr.customer.customerCode,
             datetime.now().year,
-            str(cm.seqNumber).zfill(4)
+            str(pr.customer.seqNumber).zfill(4)
         )
 
         pr.projectId = projectIdPrefix
         pr.save()
-        cm.seqNumber = cm.seqNumber + 1
-        cm.save()
+        pr.customer.seqNumber = pr.customer.seqNumber + 1
+        pr.customer.save()
 
         for eachId in eval(request.POST.get('chapters')):
             pr.chapters.add(eachId)
@@ -1329,31 +1324,39 @@ def saveProject(request):
             ptm.member = User.objects.get(
                 pk=request.POST.get(teamMemberId)
             )
-            ptm.role = employee.models.Designation.objects.filter(
+            ptm.role = employee.models.Designation.objects.get(
                 pk=request.POST.get(role)
-            )[0]
+            )
             ptm.plannedEffort = request.POST.get(plannedEffort)
             ptm.rate = request.POST.get(rate)
             ptm.startDate = request.POST.get(startDate)
             ptm.endDate = request.POST.get(endDate)
             ptm.save()
 
-        if internalValue is False:
+        if pr.internal is False:
             milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
             for milestoneCount in range(1, milestoneTotal):
-                pms = ProjectMilestone()
-                pms.project = pr
-                milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
-                description = 'description-{0}'.format(milestoneCount)
-                amount = 'amount-{0}'.format(milestoneCount)
-                pms.milestoneDate = request.POST.get(milestoneDate)
-                pms.description = request.POST.get(description)
-                pms.amount = request.POST.get(amount)
-                pms.save()
+                try:
+                    pms = ProjectMilestone()
+                    pms.project = pr
+                    milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
+                    description = 'description-{0}'.format(milestoneCount)
+                    amount = 'amount-{0}'.format(milestoneCount)
+                    pms.milestoneDate = request.POST.get(milestoneDate)
+                    pms.description = request.POST.get(description)
+                    pms.amount = int(request.POST.get(amount))
+                    pms.save()
+                except ValueError:  # Assuming any of the data conversions fail
+                    # We cannot save a bad record we simply skip over
+                    pass
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
-                'projectName': pr.name, 'customerId': cm.id }
+                'projectName': pr.name, 'customerId': pr.customer.id}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
+    # This is not a post request.  This cannot be possible unless someone is
+    # trying to hack things.  Let us just send them back to dashboard.
+    else:
+        return HttpResponseRedirect(request, '/myansrsource/dashboard')
 
 createProject = CreateProjectWizard.as_view(FORMS)
 
@@ -1402,7 +1405,7 @@ def notify(request):
                     'projectId': projectId,
                     'pmname': projectDetails['projectManager'],
                     'startDate': projectDetails['startDate'],
-                    'mystartdate': eachmember['startDate']
+                    'mystartdate': eachMember['startDate']
                     },
             )
     projectName = request.POST.get('projectName')
@@ -1427,6 +1430,8 @@ def GetChapters(request, bookid):
 
 
 def GetProjectType(request):
+    # NIRANJ: Why is this being filtered from Project Team member and not
+    # project directly?  this will result in duplicate records.
     typeData = ProjectTeamMember.objects.values(
         'project__id',
         'project__name',
