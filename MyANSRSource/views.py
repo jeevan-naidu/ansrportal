@@ -1,5 +1,4 @@
-from templated_email import send_templated_mail
-from django.forms.util import ErrorList
+import logging
 import json
 
 from django.forms.util import ErrorList
@@ -14,11 +13,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.db.models import Q
 from django.conf import settings
-import re
+
+from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
@@ -95,7 +93,9 @@ TMTEMPLATES = {
 
 
 def index(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('dashboard')
+    elif request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             return checkUser(
@@ -242,9 +242,9 @@ def Timesheet(request):
                 for eachActivity in activitiesList:
                     # Getting objects for models
                     if eachActivity['atId'] > 0:
-                        nonbillableTS = TimeSheetEntry.objects.filter(
-                            id=eachActivity['atId']
-                        )[0]
+                        nonbillableTS = TimeSheetEntry.objects.get(
+                            pk=eachActivity['atId']
+                        )
                     else:
                         nonbillableTS = TimeSheetEntry()
                     # Common values for Billable and Non-Billable
@@ -851,7 +851,8 @@ class ChangeProjectWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                    holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+                    holiday['date'] = int(
+                        holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
                 data = {'data': ''}
@@ -983,7 +984,9 @@ class ChangeProjectWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         if self.request.session['changed'] is True:
-            data = UpdateProjectInfo([form.cleaned_data for form in form_list])
+            data = UpdateProjectInfo(
+                self.request, [
+                    form.cleaned_data for form in form_list])
             return render(
                 self.request,
                 'MyANSRSource/changeProjectId.html',
@@ -995,53 +998,66 @@ class ChangeProjectWizard(SessionWizardView):
                 {})
 
 
-def UpdateProjectInfo(newInfo):
-    pci = ProjectChangeInfo()
-    pci.project = newInfo[0]['project']
-    pci.reason = newInfo[1]['reason']
-    pci.endDate = newInfo[1]['endDate']
-    pci.revisedEffort = newInfo[1]['revisedEffort']
-    pci.revisedTotal = newInfo[1]['revisedTotal']
-    pci.closed = newInfo[1]['closed']
-    if pci.closed is True:
-        pci.closedOn = datetime.now()
-    pci.signed = newInfo[1]['signed']
-    pci.save()
+def UpdateProjectInfo(request, newInfo):
+    """
+        newInfo[0] ==> Selected Project Object
+        newInfo[1] ==> 'reason' , 'endDate', 'revisedEffort', 'revisedTotal',
+                       'closed', 'signed'
+        newInfo[2] ==> TeamMembers object(Old Data + Newly added member if any)
+        newInfo[3] ==> Milesonte Object(old Data + Newly add milestones if any)
+    """
+    try:
+        prc = newInfo[0]['project']
+        prc.closed = newInfo[1]['closed']
+        prc.signed = newInfo[1]['signed']
+        prc.save()
 
-    pcicr = ProjectChangeInfo.objects.get(id=pci.id)
-    pcicr.crId = "CR-{0}".format(pci.id)
-    pcicr.save()
+        pci = ProjectChangeInfo()
+        pci.project = prc
+        pci.reason = newInfo[1]['reason']
+        pci.endDate = newInfo[1]['endDate']
+        pci.revisedEffort = newInfo[1]['revisedEffort']
+        pci.revisedTotal = newInfo[1]['revisedTotal']
+        pci.closed = newInfo[1]['closed']
+        if pci.closed is True:
+            pci.closedOn = datetime.now()
+        pci.signed = newInfo[1]['signed']
+        pci.save()
 
-    prc = Project.objects.get(id=newInfo[1]['id'])
-    prc.closed = pci.closed
-    prc.signed = pci.signed
-    prc.save()
+        # We need the Primary key to create the CRId
+        pci.crId = "CR-{0}".format(pci.id)
+        pci.save()
 
-    for eachmember in newInfo[2]:
-        if eachmember['id'] == 0:
-            ptmc = ProjectTeamMember()
-        else:
-            ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
-        ptmc.project = pci.project
-        ptmc.member = eachmember['member']
-        ptmc.role = eachmember['role']
-        ptmc.startDate = eachmember['startDate']
-        ptmc.endDate = eachmember['endDate']
-        ptmc.plannedEffort = eachmember['plannedEffort']
-        ptmc.rate = eachmember['rate']
-        ptmc.save()
+        for eachmember in newInfo[2]:
+            if eachmember['id'] == 0:
+                ptmc = ProjectTeamMember()
+            else:
+                ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
+            ptmc.project = prc
+            ptmc.member = eachmember['member']
+            ptmc.role = eachmember['role']
+            ptmc.startDate = eachmember['startDate']
+            ptmc.endDate = eachmember['endDate']
+            ptmc.plannedEffort = eachmember['plannedEffort']
+            ptmc.rate = eachmember['rate']
+            ptmc.save()
 
-    for eachMilestone in newInfo[3]:
-        if eachMilestone['id'] == 0:
-            pmc = ProjectMilestone()
-        else:
-            pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
-        pmc.project = pci.project
-        pmc.milestoneDate = eachMilestone['milestoneDate']
-        pmc.description = eachMilestone['description']
-        pmc.save()
+        for eachMilestone in newInfo[3]:
+            if eachMilestone['id'] == 0:
+                pmc = ProjectMilestone()
+            else:
+                pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
+            pmc.project = prc
+            pmc.milestoneDate = eachMilestone['milestoneDate']
+            pmc.description = eachMilestone['description']
+            pmc.save()
 
-    return {'crId': pcicr.crId}
+        return {'crId': pci.crId}
+    except (ProjectTeamMember.DoesNotExist,
+            ProjectMilestone.DoesNotExist) as e:
+        messages.error(request, 'Could not save change request information')
+        logging.error('Exception in UpdateProjectInfo :' + str(e))
+        return {'crId': None}
 
 changeProject = ChangeProjectWizard.as_view(CFORMS)
 
@@ -1146,7 +1162,8 @@ class CreateProjectWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                    holiday['date'] = int(holiday['date'].strftime("%s")) * 1000
+                    holiday['date'] = int(
+                        holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
                 data = {'data': ''}
@@ -1175,13 +1192,7 @@ class CreateProjectWizard(SessionWizardView):
             revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
         else:
             revenueRec = 0
-        chapterList = []
-        for eachChapter in basicInfo['chapters']:
-            chapterList.append(eachChapter.id)
-        self.request.session['chapters'] = chapterList
-        self.request.session['bu'] = basicInfo['bu'].id
-        self.request.session['book'] = basicInfo['book'].id
-        self.request.session['customer'] = basicInfo['customer'].id
+        chapterIdList = [eachRec.id for eachRec in basicInfo['chapters']]
         basicInfo['startDate'] = basicInfo.get(
             'startDate'
         ).strftime('%Y-%m-%d')
@@ -1199,8 +1210,6 @@ class CreateProjectWizard(SessionWizardView):
                     effortTotal += v
                 k = "{0}-{1}".format(k, teamDataCounter)
                 changedTeamData[k] = v
-                if 'role' in k:
-                    self.request.session[k] = v.id
             startDate = 'startDate-{0}'.format(teamDataCounter)
             changedTeamData[startDate] = changedTeamData.get(
                 startDate
@@ -1214,7 +1223,6 @@ class CreateProjectWizard(SessionWizardView):
             changedTeamData[teamMemberId] = changedTeamData.get(member).id
             DELETE = 'DELETE-{0}'.format(teamDataCounter)
             del changedTeamData[DELETE]
-            self.request.session['totalMemberCount'] = teamDataCounter + 1
             cleanedTeamData.append(changedTeamData.copy())
             changedTeamData.clear()
 
@@ -1231,14 +1239,12 @@ class CreateProjectWizard(SessionWizardView):
                 ).strftime('%Y-%m-%d')
                 DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
                 del changedMilestoneData[DELETE]
-                self.request.session[
-                    'totalMilestoneCount'
-                ] = milestoneDataCounter + 1
                 cleanedMilestoneData.append(changedMilestoneData.copy())
                 changedMilestoneData.clear()
         if [form.cleaned_data for form in form_list][1]['internal'] is True:
             data = {
                 'basicInfo': basicInfo,
+                'chapterId': chapterIdList,
                 'flagData': flagData,
                 'effortTotal': effortTotal,
                 'revenueRec': revenueRec,
@@ -1247,6 +1253,7 @@ class CreateProjectWizard(SessionWizardView):
         else:
             data = {
                 'basicInfo': basicInfo,
+                'chapterId': chapterIdList,
                 'flagData': flagData,
                 'effortTotal': effortTotal,
                 'revenueRec': revenueRec,
@@ -1258,65 +1265,53 @@ class CreateProjectWizard(SessionWizardView):
 
 @login_required
 def saveProject(request):
+    # NIRANJ : Error checking and reporting is missing in this function.
+    # Please go back and clean up error handling - for example a int() call
+    # with throw ValueError.  You ahve to handle it.  Once you handle how do
+    # you send them back to the summary page?
+
     if request.method == 'POST':
         pr = Project()
         pr.name = request.POST.get('name')
         pType = projectType.objects.get(
-            description=request.POST.get('projectType'))
+            id=int(request.POST.get('projectType'))
+        )
         pr.projectType = pType
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
-        pr.plannedEffort = request.POST.get('plannedEffort')
+        pr.plannedEffort = int(request.POST.get('plannedEffort'))
         pr.currentProject = request.POST.get('currentProject')
-        if request.POST.get('signed') == 'False':
-            signed = False
-        else:
-            signed = True
-        pr.signed = signed
-        if request.POST.get('internal') == 'False':
-            internalValue = False
-        else:
-            internalValue = True
-        pr.internal = internalValue
-        pr.contingencyEffort = request.POST.get('contingencyEffort')
+        pr.signed = (request.POST.get('signed') == 'True')
+        pr.internal = (request.POST.get('internal') == 'True')
+        pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
         pr.projectManager = request.user
-        pr.bu = CompanyMaster.models.BusinessUnit.objects.filter(
-            id=request.session['bu']
-        )[0]
-        customerCode = CompanyMaster.models.Customer.objects.filter(
-            id=request.session['customer']
-        ).values('customerCode')[0]['customerCode']
-        seqNumber = CompanyMaster.models.Customer.objects.filter(
-            id=request.session['customer']
-        ).values('seqNumber')[0]['seqNumber']
-        seqNumber = seqNumber + 1
-        cm = CompanyMaster.models.Customer.objects.get(
-            id=request.session['customer']
+        pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
+            pk=int(request.POST.get('bu'))
         )
-        cm.seqNumber = seqNumber
-        cm.save()
-        pr.customer = CompanyMaster.models.Customer.objects.filter(
-            id=request.session['customer']
-        )[0]
-        pr.book = Book.objects.filter(id=request.session['book'])[0]
-        pr.save()
-        request.session['currentProject'] = pr.id
-        request.session['currentProjectName'] = pr.name
+        pr.customer = CompanyMaster.models.Customer.objects.get(
+            pk=int(request.POST.get('customer'))
+        )
+        pr.book = Book.objects.get(
+            pk=int(request.POST.get('book'))
+        )
 
         projectIdPrefix = "{0}_{1}_{2}".format(
-            customerCode,
+            pr.customer.customerCode,
             datetime.now().year,
-            str(seqNumber).zfill(4)
+            str(pr.customer.seqNumber).zfill(4)
         )
-        pru = Project.objects.get(id=pr.id)
-        pru.projectId = "{0}".format(projectIdPrefix)
-        pru.save()
-        request.session['currentProjectId'] = pru.projectId
 
-        for eachId in request.session['chapters']:
+        pr.projectId = projectIdPrefix
+        pr.save()
+        pr.customer.seqNumber = pr.customer.seqNumber + 1
+        pr.customer.save()
+
+        for eachId in eval(request.POST.get('chapters')):
             pr.chapters.add(eachId)
 
-        for memberCount in range(1, request.session['totalMemberCount']):
+        memberTotal = int(request.POST.get('teamMemberTotal')) + 1
+
+        for memberCount in range(1, memberTotal):
             ptm = ProjectTeamMember()
             ptm.project = pr
             teamMemberId = "teamMemberId-{0}".format(memberCount)
@@ -1329,31 +1324,39 @@ def saveProject(request):
             ptm.member = User.objects.get(
                 pk=request.POST.get(teamMemberId)
             )
-            ptm.role = employee.models.Designation.objects.filter(
-                pk=request.session[role]
-            )[0]
+            ptm.role = employee.models.Designation.objects.get(
+                pk=request.POST.get(role)
+            )
             ptm.plannedEffort = request.POST.get(plannedEffort)
             ptm.rate = request.POST.get(rate)
             ptm.startDate = request.POST.get(startDate)
             ptm.endDate = request.POST.get(endDate)
             ptm.save()
 
-        if internalValue is False:
-            for milestoneCount in range(1, request.session[
-                'totalMilestoneCount'
-            ]):
-                pms = ProjectMilestone()
-                pms.project = pr
-                milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
-                description = 'description-{0}'.format(milestoneCount)
-                amount = 'amount-{0}'.format(milestoneCount)
-                pms.milestoneDate = request.POST.get(milestoneDate)
-                pms.description = request.POST.get(description)
-                pms.amount = request.POST.get(amount)
-                pms.save()
+        if pr.internal is False:
+            milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
+            for milestoneCount in range(1, milestoneTotal):
+                try:
+                    pms = ProjectMilestone()
+                    pms.project = pr
+                    milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
+                    description = 'description-{0}'.format(milestoneCount)
+                    amount = 'amount-{0}'.format(milestoneCount)
+                    pms.milestoneDate = request.POST.get(milestoneDate)
+                    pms.description = request.POST.get(description)
+                    pms.amount = int(request.POST.get(amount))
+                    pms.save()
+                except ValueError:  # Assuming any of the data conversions fail
+                    # We cannot save a bad record we simply skip over
+                    pass
 
-        data = {'projectId': pru.projectId, 'projectName': pr.name}
+        data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
+                'projectName': pr.name, 'customerId': pr.customer.id}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
+    # This is not a post request.  This cannot be possible unless someone is
+    # trying to hack things.  Let us just send them back to dashboard.
+    else:
+        return HttpResponseRedirect(request, '/myansrsource/dashboard')
 
 createProject = CreateProjectWizard.as_view(FORMS)
 
@@ -1365,12 +1368,12 @@ def WrappedCreateProjectView(request):
 
 @login_required
 def notify(request):
-    projectId = request.session['currentProject']
+    projectId = int(request.POST.get('projectId'))
     projectDetails = Project.objects.filter(
         id=projectId,
     ).values('startDate', 'projectManager')
     projectHead = CompanyMaster.models.Customer.objects.filter(
-        id=request.session['customer'],
+        id=int(request.POST.get('customer')),
     ).values('relatedMember__email',
              'relatedMember__first_name',
              'relatedMember__last_name')
@@ -1387,9 +1390,8 @@ def notify(request):
                     'startDate': projectDetails['startDate']
                     },
             )
-    projectId = request.session['currentProject']
     teamMembers = ProjectTeamMember.objects.filter(
-        project=projectId
+        project__id=projectId
     ).values('member__email', 'member__first_name',
              'member__last_name', 'startDate')
     for eachMember in teamMembers:
@@ -1403,11 +1405,11 @@ def notify(request):
                     'projectId': projectId,
                     'pmname': projectDetails['projectManager'],
                     'startDate': projectDetails['startDate'],
-                    'mystartdate': eachmember['startDate']
+                    'mystartdate': eachMember['startDate']
                     },
             )
-    projectName = request.session['currentProjectName']
-    data = {'projectId': request.session['currentProjectId'],
+    projectName = request.POST.get('projectName')
+    data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
     return render(request, 'MyANSRSource/projectSuccess.html', data)
@@ -1428,6 +1430,8 @@ def GetChapters(request, bookid):
 
 
 def GetProjectType(request):
+    # NIRANJ: Why is this being filtered from Project Team member and not
+    # project directly?  this will result in duplicate records.
     typeData = ProjectTeamMember.objects.values(
         'project__id',
         'project__name',
