@@ -207,7 +207,6 @@ EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-<<<<<<< HEAD
 import logging
 
 logger = logging.getLogger('django_auth_ldap')
