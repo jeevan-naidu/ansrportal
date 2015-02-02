@@ -724,8 +724,8 @@ def checkUser(userName, password, request, form):
         user = authenticate(username=userName, password=password)
         if user is not None:
             if user.is_active:
-                auth.login(request, user)
                 if user.has_perm('MyANSRSource.enter_timesheet'):
+                    auth.login(request, user)
                     return HttpResponseRedirect('dashboard')
                 else:
                     # We have an unknow group
