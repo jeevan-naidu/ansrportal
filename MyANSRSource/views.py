@@ -703,8 +703,8 @@ def Dashboard(request):
     else:
         holidayList = []
     data = {
-        'username': request.session['username'],
-        'firstname': request.session['firstname'],
+        'username': request.user.username,
+        'firstname': request.user.first_name,
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
@@ -726,8 +726,6 @@ def checkUser(userName, password, request, form):
             if user.is_active:
                 auth.login(request, user)
                 if user.has_perm('MyANSRSource.enter_timesheet'):
-                    request.session['username'] = userName
-                    request.session['firstname'] = user.first_name
                     return HttpResponseRedirect('dashboard')
                 else:
                     # We have an unknow group
