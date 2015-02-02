@@ -1138,7 +1138,7 @@ class CreateProjectWizard(SessionWizardView):
                     for t in form.cleaned_data:
                         totalRate += t['amount']
                     for eachForm in form:
-                        if float(projectTotal) != totalRate:
+                        if float(projectTotal) != float(totalRate):
                             errors = eachForm._errors.setdefault(
                                 totalRate,
                                 ErrorList())
@@ -1279,6 +1279,7 @@ def saveProject(request):
         pr.projectType = pType
         pr.startDate = request.POST.get('startDate')
         pr.endDate = request.POST.get('endDate')
+        pr.totalValue = float(request.POST.get('totalValue'))
         pr.plannedEffort = int(request.POST.get('plannedEffort'))
         pr.currentProject = request.POST.get('currentProject')
         pr.signed = (request.POST.get('signed') == 'True')
@@ -1342,12 +1343,15 @@ def saveProject(request):
                     milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
                     description = 'description-{0}'.format(milestoneCount)
                     amount = 'amount-{0}'.format(milestoneCount)
-                    pms.milestoneDate = request.POST.get(milestoneDate)
+                    date = datetime.strptime(request.POST.get(milestoneDate),
+                                             '%Y-%m-%d')
+                    pms.milestoneDate = date
                     pms.description = request.POST.get(description)
-                    pms.amount = int(request.POST.get(amount))
+                    pms.amount = float(request.POST.get(amount))
                     pms.save()
                 except ValueError:  # Assuming any of the data conversions fail
                     # We cannot save a bad record we simply skip over
+                    print 'fail'
                     pass
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
