@@ -181,30 +181,26 @@
 						{% if  data.value == None or data.value == '' %}	
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
-						{% with recIdString=forloop.counter0|stringformat:"s" %}
-							{% with apIdT="#myModal-"|add:recIdString %}
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-							{% endwith %}
+						{% with apIdT="#myModal-"|add:data.id_for_label %}
+							<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
-						{% with recIdString=forloop.counter0|stringformat:"s" %}
-							{% with apId="myModal-"|add:recIdString %}
-							<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-									<div class="modal-dialog">
-										<div class="modal-content">
-											<div class="modal-header">
-												<b>Your Feedback</b>
-											</div>
-											<div class="modal-body">
-												{{ data.value }}
-											</div>
+						{% with apId="myModal-"|add:data.id_for_label %}
+						<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<b>Your Feedback</b>
+										</div>
+										<div class="modal-body">
+											{{ data.value }}
 										</div>
 									</div>
 								</div>
-							{% endwith %}	
-						{% endwith %}
+							</div>
+						{% endwith %}	
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label %}
 					<td>{{ data }}</td>
@@ -271,29 +267,25 @@
 						{% if  data.value == None or data.value == '' %}	
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
-						{% with recIdString=forloop.counter0|stringformat:"s" %}
-							{% with apIdT="#myModal-"|add:recIdString %}
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-							{% endwith %}
+						{% with apIdT="#actModal-"|add:data.id_for_label %}
+							<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
-						{% with recIdString=forloop.counter0|stringformat:"s" %}
-							{% with apId="myModal-"|add:recIdString %}
-								<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-									<div class="modal-dialog">
-										<div class="modal-content">
-											<div class="modal-header">
-												<b>Your Feedback</b>
-											</div>
-											<div class="modal-body">
-												{{ data.value }}
-											</div>
+						{% with apId="actModal-"|add:data.id_for_label %}
+							<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="actModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<b>Your Feedback</b>
+										</div>
+										<div class="modal-body">
+											{{ data.value }}
 										</div>
 									</div>
-								</div>	
-							{% endwith %}
+								</div>
+							</div>	
 						{% endwith %}
 					</td>
 				{% endif %}
