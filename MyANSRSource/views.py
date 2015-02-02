@@ -94,7 +94,7 @@ TMTEMPLATES = {
 
 def index(request):
     if request.user.is_authenticated():
-        return HttpResponseRedirect('dashboard')
+        return HttpResponseRedirect('/myansrsource/dashboard')
     elif request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -726,12 +726,15 @@ def checkUser(userName, password, request, form):
             if user.is_active:
                 if user.has_perm('MyANSRSource.enter_timesheet'):
                     auth.login(request, user)
-                    return HttpResponseRedirect('dashboard')
+                    return HttpResponseRedirect('/myansrsource/dashboard')
                 else:
                     # We have an unknow group
                     messages.error(
                         request,
                         'This user does not have access to timesheets.')
+                    logging.error('User {0} permission details {1}'.format(
+                        user.username,
+                        user.get_all_permissions()))
                     return loginResponse(
                         request,
                         form,
