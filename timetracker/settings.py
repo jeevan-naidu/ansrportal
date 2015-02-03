@@ -45,7 +45,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    "OU=ANSR Users,DC=ANSR,DC=com",
+    "OU=ANSRsource,DC=ANSR,DC=com",
     ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
@@ -207,7 +207,6 @@ EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-<<<<<<< HEAD
 import logging
 
 logger = logging.getLogger('django_auth_ldap')
