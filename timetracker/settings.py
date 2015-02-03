@@ -20,7 +20,7 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
     ldap.OPT_REFERRALS: False,
     ldap.OPT_DEBUG_LEVEL: 0,
-    ldap.OPT_PROTOCOL_VERSION : 3,
+    ldap.OPT_PROTOCOL_VERSION: 3,
 }
 
 AUTHENTICATION_BACKENDS = (
@@ -28,7 +28,7 @@ AUTHENTICATION_BACKENDS = (
     # 'django.contrib.auth.backends.ModelBackend',
     )
 
-AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
+AUTH_LDAP_SERVER_URI = "ldap://172.16.16.5"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
 
