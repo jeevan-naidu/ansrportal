@@ -1088,9 +1088,10 @@ class CreateProjectWizard(SessionWizardView):
         if step == 'Define Team':
             c = {}
             for eachForm in form:
-                eachForm.fields['DELETE'].widget.attrs[
-                    'disabled'
-                ] = 'True'
+                if int(eachForm.prefix.split('-')[1]) < 2:
+                    eachForm.fields['DELETE'].widget.attrs[
+                        'disabled'
+                    ] = 'True'
                 if eachForm.is_valid():
                     c.setdefault(eachForm.cleaned_data['member'], []
                                  ).append(eachForm.cleaned_data['rate'])
@@ -1272,68 +1273,73 @@ def saveProject(request):
     # you send them back to the summary page?
 
     if request.method == 'POST':
-        pr = Project()
-        pr.name = request.POST.get('name')
-        pType = projectType.objects.get(
-            id=int(request.POST.get('projectType'))
-        )
-        pr.projectType = pType
-        pr.startDate = request.POST.get('startDate')
-        pr.endDate = request.POST.get('endDate')
-        pr.totalValue = float(request.POST.get('totalValue'))
-        pr.plannedEffort = int(request.POST.get('plannedEffort'))
-        pr.currentProject = request.POST.get('currentProject')
-        pr.signed = (request.POST.get('signed') == 'True')
-        pr.internal = (request.POST.get('internal') == 'True')
-        pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
-        pr.projectManager = request.user
-        pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
-            pk=int(request.POST.get('bu'))
-        )
-        pr.customer = CompanyMaster.models.Customer.objects.get(
-            pk=int(request.POST.get('customer'))
-        )
-        pr.book = Book.objects.get(
-            pk=int(request.POST.get('book'))
-        )
-
-        projectIdPrefix = "{0}_{1}_{2}".format(
-            pr.customer.customerCode,
-            datetime.now().year,
-            str(pr.customer.seqNumber).zfill(4)
-        )
-
-        pr.projectId = projectIdPrefix
-        pr.save()
-        pr.customer.seqNumber = pr.customer.seqNumber + 1
-        pr.customer.save()
-
-        for eachId in eval(request.POST.get('chapters')):
-            pr.chapters.add(eachId)
-
-        memberTotal = int(request.POST.get('teamMemberTotal')) + 1
-
-        for memberCount in range(1, memberTotal):
-            ptm = ProjectTeamMember()
-            ptm.project = pr
-            teamMemberId = "teamMemberId-{0}".format(memberCount)
-            role = "role-{0}".format(memberCount)
-            plannedEffort = "plannedEffort-{0}".format(memberCount)
-            rate = "rate-{0}".format(memberCount)
-            startDate = "startDate-{0}".format(memberCount)
-            endDate = "endDate-{0}".format(memberCount)
-
-            ptm.member = User.objects.get(
-                pk=request.POST.get(teamMemberId)
+        try:
+            pr = Project()
+            pr.name = request.POST.get('name')
+            pType = projectType.objects.get(
+                id=int(request.POST.get('projectType'))
             )
-            ptm.role = employee.models.Designation.objects.get(
-                pk=request.POST.get(role)
+            pr.projectType = pType
+            pr.startDate = request.POST.get('startDate')
+            pr.endDate = request.POST.get('endDate')
+            pr.totalValue = float(request.POST.get('totalValue'))
+            pr.plannedEffort = int(request.POST.get('plannedEffort'))
+            pr.currentProject = request.POST.get('currentProject')
+            pr.signed = (request.POST.get('signed') == 'True')
+            pr.internal = (request.POST.get('internal') == 'True')
+            pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
+            pr.projectManager = request.user
+            pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
+                pk=int(request.POST.get('bu'))
             )
-            ptm.plannedEffort = request.POST.get(plannedEffort)
-            ptm.rate = request.POST.get(rate)
-            ptm.startDate = request.POST.get(startDate)
-            ptm.endDate = request.POST.get(endDate)
-            ptm.save()
+            pr.customer = CompanyMaster.models.Customer.objects.get(
+                pk=int(request.POST.get('customer'))
+            )
+            pr.book = Book.objects.get(
+                pk=int(request.POST.get('book'))
+            )
+
+            projectIdPrefix = "{0}_{1}_{2}".format(
+                pr.customer.customerCode,
+                datetime.now().year,
+                str(pr.customer.seqNumber).zfill(4)
+            )
+
+            pr.projectId = projectIdPrefix
+            pr.save()
+            pr.customer.seqNumber = pr.customer.seqNumber + 1
+            pr.customer.save()
+            for eachId in eval(request.POST.get('chapters')):
+                pr.chapters.add(eachId)
+        except ValueError:
+            pass
+
+        try:
+            memberTotal = int(request.POST.get('teamMemberTotal')) + 1
+
+            for memberCount in range(1, memberTotal):
+                ptm = ProjectTeamMember()
+                ptm.project = pr
+                teamMemberId = "teamMemberId-{0}".format(memberCount)
+                role = "role-{0}".format(memberCount)
+                plannedEffort = "plannedEffort-{0}".format(memberCount)
+                rate = "rate-{0}".format(memberCount)
+                startDate = "startDate-{0}".format(memberCount)
+                endDate = "endDate-{0}".format(memberCount)
+
+                ptm.member = User.objects.get(
+                    pk=request.POST.get(teamMemberId)
+                )
+                ptm.role = employee.models.Designation.objects.get(
+                    pk=request.POST.get(role)
+                )
+                ptm.plannedEffort = request.POST.get(plannedEffort)
+                ptm.rate = request.POST.get(rate)
+                ptm.startDate = request.POST.get(startDate)
+                ptm.endDate = request.POST.get(endDate)
+                ptm.save()
+        except ValueError:
+            pass
 
         if pr.internal is False:
             milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
@@ -1352,7 +1358,6 @@ def saveProject(request):
                     pms.save()
                 except ValueError:  # Assuming any of the data conversions fail
                     # We cannot save a bad record we simply skip over
-                    print 'fail'
                     pass
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
