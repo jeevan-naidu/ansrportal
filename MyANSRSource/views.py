@@ -153,14 +153,15 @@ def Timesheet(request):
             weekTotal = 0
             billableTotal = 0
             nonbillableTotal = 0
+            weekHolidays = []
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
             if hasattr(request.user, 'employee'):
                 locationId = request.user.employee.location
-            weekHolidays = Holiday.objects.filter(
-                location=locationId,
-                date__range=[changedStartDate, changedEndDate]
-            ).values('date')
+                weekHolidays = Holiday.objects.filter(
+                    location=locationId,
+                    date__range=[changedStartDate, changedEndDate]
+                ).values('date')
             for timesheet in timesheets:
                 if timesheet.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
@@ -1311,8 +1312,8 @@ def saveProject(request):
             pr.customer.save()
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
-        except ValueError:
-            pass
+        except ValueError as e:
+            messages.error(request, 'DataConversion Error:' + str(e))
 
         try:
             memberTotal = int(request.POST.get('teamMemberTotal')) + 1
@@ -1338,8 +1339,8 @@ def saveProject(request):
                 ptm.startDate = request.POST.get(startDate)
                 ptm.endDate = request.POST.get(endDate)
                 ptm.save()
-        except ValueError:
-            pass
+        except ValueError as e:
+            messages.error(request, 'DataConversion Error:' + str(e))
 
         if pr.internal is False:
             milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
@@ -1356,9 +1357,9 @@ def saveProject(request):
                     pms.description = request.POST.get(description)
                     pms.amount = float(request.POST.get(amount))
                     pms.save()
-                except ValueError:  # Assuming any of the data conversions fail
+                except ValueError as e:  # Assuming any of the data conversions fail
                     # We cannot save a bad record we simply skip over
-                    pass
+                    messages.error(request, 'DataConversion Error:' + str(e))
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
