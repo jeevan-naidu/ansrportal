@@ -1374,9 +1374,9 @@ def WrappedCreateProjectView(request):
 @login_required
 def notify(request):
     projectId = int(request.POST.get('projectId'))
-    projectDetails = Project.objects.filter(
+    projectDetails = Project.objects.get(
         id=projectId,
-    ).values('startDate', 'projectManager')
+    )
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=int(request.POST.get('customer')),
     ).values('relatedMember__email',
@@ -1391,8 +1391,8 @@ def notify(request):
                 context={
                     'first_name': eachHead['relatedMember__first_name'],
                     'projectId': projectId,
-                    'pmname': projectDetails['projectManager'],
-                    'startDate': projectDetails['startDate']
+                    'pmname': projectDetails.projectManager,
+                    'startDate': projectDetails.startDate
                     },
             )
     teamMembers = ProjectTeamMember.objects.filter(
@@ -1408,8 +1408,8 @@ def notify(request):
                 context={
                     'first_name': eachMember['member__first_name'],
                     'projectId': projectId,
-                    'pmname': projectDetails['projectManager'],
-                    'startDate': projectDetails['startDate'],
+                    'pmname': projectDetails.projectManager,
+                    'startDate': projectDetails.startDate,
                     'mystartdate': eachMember['startDate']
                     },
             )
