@@ -1076,6 +1076,11 @@ class CreateProjectWizard(SessionWizardView):
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step or self.steps.current
+        if step == 'Basic Information':
+            print self.storage.get_step_data('Define Project')[
+                'Define Project-chapters'
+            ]
+
         if step == 'Define Project':
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
