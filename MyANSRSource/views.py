@@ -1456,6 +1456,10 @@ def GetProjectType(request):
     return HttpResponse(json_data, content_type="application/json")
 
 
+def csrf_failure(request, reason=""):
+    return render(request, 'MyANSRSource/csrfFailure.html', {'reason': reason})
+
+
 def Logout(request):
     logout(request)
     request.session.flush()

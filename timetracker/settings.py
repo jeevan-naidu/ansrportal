@@ -111,6 +111,8 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'employee/emp_photo/'),
 )
 
+CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'
+
 # Application definition
 
 INSTALLED_APPS = (
