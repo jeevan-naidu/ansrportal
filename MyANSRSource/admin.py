@@ -60,7 +60,7 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
                     'startDate', 'plannedEffort')
 
 admin.site.register(Project, ProjectAdmin)
-admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
+#admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(projectType, projectTypeAdmin)
 #admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
