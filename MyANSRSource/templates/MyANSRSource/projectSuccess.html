@@ -34,28 +34,38 @@
         <label class="form-step-label">Complete!</label>
     </li>
 </ul>
+<form id="success" name="success" method="POST" action="notify-team">
+{% csrf_token %}
+<input type="hidden" name="projectId" value="{{ projectId }}" />
+<input type="hidden" name="projectCode" value="{{ projectCode }}" />
+<input type="hidden" name="projectName" value="{{ projectName }}" />
+<input type="hidden" name="customer" value="{{ customerId }}" />
+
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
 	<div class="alert alert-success" role="alert">
 		<h3>Congratulations!!!</h3><br /> <h5>Your project " <b>{{ projectName }}</b> " has been created.</h5>
 	</div>
 	<div class="alert alert-info" role="alert">
-		<h5>Assigned Project ID : {{ projectId }}</h5>
+		<h5>Assigned Project ID : {{ projectCode }}</h5>
 		{% if notify == 'F' %}
-			<a type="submit" value="submit" href="notify-team" class="btn btn-sm disabled btn-info">
+			<a type="submit" value="submit" class="btn btn-sm disabled btn-info">
 				<span class="glyphicon glyphicon-ok"></span>
 				<b>Notified</b>
 			</a>
 		{% else %}
-			<a type="submit" value="submit" href="notify-team" class="btn btn-sm btn-info">
+			<button type="submit" value="submit" class="btn btn-sm btn-info">
 				<span class="glyphicon glyphicon-globe"></span>
 				<b>Notify Team & Heads</b>
-			</a>
+			</button>
 		{% endif %}
 	</div>
 <a href="/myansrsource/dashboard" class="btn btn-success pull-right">
         <span class="glyphicon glyphicon-saved"></span>
 	<b>Complete</b>
+	<form id="success" method="post">
+	</form>
 </a>
 </div>
+</form>
 
 {% endblock %}

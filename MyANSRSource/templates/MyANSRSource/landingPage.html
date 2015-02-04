@@ -12,7 +12,6 @@
 	{% for eachProject in projectsList %}
 		{
 			start : '{{ eachProject.project__startDate }}',
-			end : '{{ eachProject.project__endDate }}',
 			title : '{{ eachProject.project__name }}'
 		},
 	{% endfor %}

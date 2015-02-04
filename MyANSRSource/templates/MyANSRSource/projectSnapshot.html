@@ -83,6 +83,11 @@
 			{% for rec, value in basicInfo.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
+				<input type="hidden" name="chapters" value="{{ chapterId }}">
+				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
+				<input type="hidden" name="bu" value="{{ basicInfo.bu.id }}">
+				<input type="hidden" name="customer" value="{{ basicInfo.customer.id }}">
+				<input type="hidden" name="projectType" value="{{ basicInfo.projectType.id }}">
 		</tr>
 		</tbody>
 	</table>
@@ -145,6 +150,7 @@
 			<th>Planned Effort</th>
 			<th>%</th>
 		</thead>
+				<input type="hidden" name="teamMemberTotal" value="{{ teamMember|length }}">
 		{% for teamData in teamMember %}
 		<tr>
 			{% with counter=forloop.counter|stringformat:"s" %}
@@ -162,6 +168,7 @@
 						{% for rec, value in teamData.iteritems %}
 							{% if roleId == rec %}
 								{{ value }}
+				<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
 							{% endif %}
 						{% endfor %}
 					{% endwith %}
@@ -204,7 +211,9 @@
 				</td>
 			{% endwith %}
 			{% for rec, value in teamData.iteritems %}
+			{% if 'role' not in rec %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
+			{% endif %}
 			{% endfor %}
 		</tr>
 		{% endfor %}
@@ -221,6 +230,7 @@
 			<th>Deadline</th>
 			<th>Amount</th>
 		</thead>
+				<input type="hidden" name="milestoneTotal" value="{{ milestone|length }}">
 		{% for milestoneData in milestone %}
 		<tr>
 			{% with counter=forloop.counter|stringformat:"s" %}
