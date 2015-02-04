@@ -696,6 +696,15 @@ def Dashboard(request):
         eachProject['project__endDate'] = eachProject[
             'project__endDate'
         ].strftime('%Y-%m-%d')
+    trainings = CompanyMaster.models.Training.objects.all().values(
+        'batch', 'trainingDate')
+    if len(trainings):
+        for eachTraining in trainings:
+            eachTraining['trainingDate'] = eachTraining[
+                'trainingDate'
+            ].strftime('%Y-%m-%d')
+    else:
+        trainings = []
     if hasattr(request.user, 'employee'):
         locationId = request.user.employee.location
         holidayList = Holiday.objects.filter(
@@ -711,6 +720,7 @@ def Dashboard(request):
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
+        'trainingList': trainings,
         'billableProjects': billableProjects,
         'currentProjects': currentProjects,
         'futureProjects': futureProjects,

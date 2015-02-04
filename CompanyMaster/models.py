@@ -48,6 +48,40 @@ class OfficeLocation(models.Model):
         return self.name + '::' + self.city
 
 
+class Training(models.Model):
+    location = models.ForeignKey(OfficeLocation,
+                                 verbose_name='Location',
+                                 blank=False, null=False)
+    batch = models.CharField(
+        verbose_name="Batch",
+        null=False,
+        blank=False,
+        max_length=30,
+        default=None
+    )
+    exercise = models.CharField(
+        verbose_name="Exercise",
+        null=False,
+        blank=False,
+        max_length=30,
+        default=None
+    )
+    trainer = models.ForeignKey(
+        User,
+        verbose_name="Trainer",
+        blank=False,
+        null=False
+    )
+    trainingDate = models.DateField(verbose_name="Training Date")
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.batch)
+
+
 class Department(models.Model):
     name = models.CharField(
         verbose_name="Department Name",
