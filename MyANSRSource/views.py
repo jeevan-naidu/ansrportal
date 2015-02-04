@@ -117,10 +117,10 @@ def Timesheet(request):
     # Creating Formset
     tsform = TimesheetFormset(request.user)
     tsFormset = formset_factory(
-        tsform, extra=2, can_delete=True
+        tsform, extra=1, can_delete=True
     )
     atFormset = formset_factory(
-        ActivityForm, extra=2, can_delete=True
+        ActivityForm, extra=1, can_delete=True
     )
     # Week Calculation.
     today = datetime.now().date()
@@ -162,6 +162,8 @@ def Timesheet(request):
                     location=locationId,
                     date__range=[changedStartDate, changedEndDate]
                 ).values('date')
+            else:
+                weekHolidays = []
             for timesheet in timesheets:
                 if timesheet.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
@@ -363,7 +365,7 @@ def Timesheet(request):
                     if k == 'project':
                         ptype = Project.objects.filter(
                             id=eachErrorData['project'].id
-                        ).values('projectType')[0]['projectType']
+                        ).values('projectType__code')[0]['projectType__code']
                         eachErrorData['projectType'] = ptype
             atError = [k for k in activities.cleaned_data]
             tsFormset = formset_factory(tsform,
@@ -425,7 +427,7 @@ def Timesheet(request):
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
                  'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ',
-                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType'
+                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code'
                  )
         tsData = {}
         tsDataList = []
@@ -436,7 +438,7 @@ def Timesheet(request):
                     tsData['feedback'] = v
                 if k == 'id':
                     tsData['tsId'] = v
-                if k == 'project__projectType':
+                if k == 'project__projectType__code':
                     tsData['projectType'] = v
             tsDataList.append(tsData.copy())
             tsData.clear()
@@ -477,10 +479,10 @@ def Timesheet(request):
             atFormset = atFormset(initial=atDataList, prefix='at')
         else:
             tsFormset = formset_factory(tsform,
-                                        extra=2,
+                                        extra=1,
                                         can_delete=True)
             atFormset = formset_factory(ActivityForm,
-                                        extra=2,
+                                        extra=1,
                                         can_delete=True)
             atFormset = atFormset(prefix='at')
         cwApprovedTimesheet = TimeSheetEntry.objects.filter(

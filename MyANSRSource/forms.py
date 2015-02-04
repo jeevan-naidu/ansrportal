@@ -146,56 +146,56 @@ def TimesheetFormset(currentUser):
                                      widget=forms.HiddenInput())
         mondayQ = forms.DecimalField(label="Questions",
                                      max_value=12,
-                                     decimal_places=1,
+                                     decimal_places=2,
                                      widget=forms.HiddenInput())
         tuesday = forms.CharField(label="Tue", required=False)
         tuesdayH = forms.IntegerField(label="Hours",
                                       widget=forms.HiddenInput())
         tuesdayQ = forms.DecimalField(label="Questions",
                                       max_value=12,
-                                      decimal_places=1,
+                                      decimal_places=2,
                                       widget=forms.HiddenInput())
         wednesday = forms.CharField(label="Wed", required=False)
         wednesdayH = forms.IntegerField(label="Hours",
                                         widget=forms.HiddenInput())
         wednesdayQ = forms.DecimalField(label="Questions",
                                         max_value=12,
-                                        decimal_places=1,
+                                        decimal_places=2,
                                         widget=forms.HiddenInput())
         thursday = forms.CharField(label="Thu", required=False)
         thursdayH = forms.IntegerField(label="Hours",
                                        widget=forms.HiddenInput())
         thursdayQ = forms.DecimalField(label="Questions",
                                        max_value=12,
-                                       decimal_places=1,
+                                       decimal_places=2,
                                        widget=forms.HiddenInput())
         friday = forms.CharField(label="Fri", required=False)
         fridayH = forms.IntegerField(label="Hours",
                                      widget=forms.HiddenInput())
         fridayQ = forms.DecimalField(label="Questions",
                                      max_value=12,
-                                     decimal_places=1,
+                                     decimal_places=2,
                                      widget=forms.HiddenInput())
         saturday = forms.CharField(label="Sat", required=False)
         saturdayH = forms.IntegerField(label="Hours",
                                        widget=forms.HiddenInput())
         saturdayQ = forms.DecimalField(label="Questions",
                                        max_value=12,
-                                       decimal_places=1,
+                                       decimal_places=2,
                                        widget=forms.HiddenInput())
         sunday = forms.CharField(label="Sun", required=False)
         sundayH = forms.IntegerField(label="Hours",
                                      widget=forms.HiddenInput())
         sundayQ = forms.DecimalField(label="Questions",
                                      max_value=12,
-                                     decimal_places=1,
+                                     decimal_places=2,
                                      widget=forms.HiddenInput())
         total = forms.CharField(label="Total", required=False)
         totalH = forms.IntegerField(label="Hours",
                                     widget=forms.HiddenInput())
         totalQ = forms.DecimalField(label="Questions",
                                     max_value=12,
-                                    decimal_places=1,
+                                    decimal_places=2,
                                     widget=forms.HiddenInput())
         feedback = forms.CharField(
             max_length="50", label="Feedback", required=False
