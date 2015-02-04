@@ -526,9 +526,11 @@ class ProjectFlagForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
+            'maxProductivityUnits',
             'currentProject',
             'signed',
-            'internal', )
+            'internal',
+        )
         widgets = {
             'currentProject': forms.RadioSelect(
                 choices=[(True, 'New Development'), (False, 'Enhancement')]
@@ -540,6 +542,11 @@ class ProjectFlagForm(forms.ModelForm):
                 choices=[(True, 'Yes'), (False, 'No')]
             )
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectFlagForm, self).__init__(*args, **kwargs)
+        self.fields['maxProductivityUnits'].widget.attrs['class'] = \
+            "form-control"
 
 
 # Form Class to create milestones for project

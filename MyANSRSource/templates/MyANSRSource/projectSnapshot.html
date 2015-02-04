@@ -98,12 +98,14 @@
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
+				<th>Norms</th>
 				<th>Is it an internal Project?</th>
 				<th>Is this a new project?</th>
 				<th>Is this contract signed?</th>
 		</thead>
 		<tbody>
 		<tr>
+			<td>{{ flagData.maxProductivityUnits }}</td>
 			<td>
 				{% if flagData.internal == True  %}
 					Yes

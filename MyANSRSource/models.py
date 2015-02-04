@@ -51,6 +51,12 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Type"
     )
+    maxProductivityUnits = models.DecimalField(
+        default=0.0,
+        max_digits=12,
+        decimal_places=2,
+        verbose_name="Norm"
+    )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
         verbose_name="Business Unit"

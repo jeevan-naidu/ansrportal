@@ -1293,6 +1293,7 @@ def saveProject(request):
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
+            pr.maxProductivityUnits = float(request.POST.get('maxProductivityUnits'))
             pr.startDate = request.POST.get('startDate')
             pr.endDate = request.POST.get('endDate')
             pr.totalValue = float(request.POST.get('totalValue'))
@@ -1459,8 +1460,12 @@ def GetProjectType(request):
         'project__id',
         'project__name',
         'project__projectType__code',
+        'project__maxProductivityUnits',
         'project__projectType__description'
     ).filter(project__closed=False)
+    for eachData in typeData:
+        eachData['project__maxProductivityUnits'] = float(
+            eachData['project__maxProductivityUnits'])
     data = {'data': list(typeData)}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
