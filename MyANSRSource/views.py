@@ -1089,11 +1089,6 @@ class CreateProjectWizard(SessionWizardView):
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step or self.steps.current
-        if step == 'Basic Information':
-            print self.storage.get_step_data('Define Project')[
-                'Define Project-chapters'
-            ]
-
         if step == 'Define Project':
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
@@ -1102,6 +1097,8 @@ class CreateProjectWizard(SessionWizardView):
                 self.request.session['PEndDate'] = form.cleaned_data[
                     'endDate'
                 ].strftime('%Y-%m-%d')
+                print form.fields['chapters'].selected
+                selectedChapters = [eachChapter.id for eachChapter in form.cleaned_data['chapters']]
 
         if step == 'Define Team':
             c = {}
