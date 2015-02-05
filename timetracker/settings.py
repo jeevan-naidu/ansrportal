@@ -24,8 +24,8 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
-    # 'django.contrib.auth.backends.ModelBackend',
+    # 'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
     )
 
 AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
@@ -111,6 +111,8 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'employee/emp_photo/'),
 )
 
+CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -168,7 +170,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },

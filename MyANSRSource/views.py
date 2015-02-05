@@ -117,10 +117,10 @@ def Timesheet(request):
     # Creating Formset
     tsform = TimesheetFormset(request.user)
     tsFormset = formset_factory(
-        tsform, extra=2, can_delete=True
+        tsform, extra=1, can_delete=True
     )
     atFormset = formset_factory(
-        ActivityForm, extra=2, can_delete=True
+        ActivityForm, extra=1, can_delete=True
     )
     # Week Calculation.
     today = datetime.now().date()
@@ -153,14 +153,17 @@ def Timesheet(request):
             weekTotal = 0
             billableTotal = 0
             nonbillableTotal = 0
+            weekHolidays = []
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
             if hasattr(request.user, 'employee'):
                 locationId = request.user.employee.location
-            weekHolidays = Holiday.objects.filter(
-                location=locationId,
-                date__range=[changedStartDate, changedEndDate]
-            ).values('date')
+                weekHolidays = Holiday.objects.filter(
+                    location=locationId,
+                    date__range=[changedStartDate, changedEndDate]
+                ).values('date')
+            else:
+                weekHolidays = []
             for timesheet in timesheets:
                 if timesheet.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
@@ -362,7 +365,7 @@ def Timesheet(request):
                     if k == 'project':
                         ptype = Project.objects.filter(
                             id=eachErrorData['project'].id
-                        ).values('projectType')[0]['projectType']
+                        ).values('projectType__code')[0]['projectType__code']
                         eachErrorData['projectType'] = ptype
             atError = [k for k in activities.cleaned_data]
             tsFormset = formset_factory(tsform,
@@ -424,7 +427,7 @@ def Timesheet(request):
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
                  'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ',
-                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType'
+                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code'
                  )
         tsData = {}
         tsDataList = []
@@ -435,7 +438,7 @@ def Timesheet(request):
                     tsData['feedback'] = v
                 if k == 'id':
                     tsData['tsId'] = v
-                if k == 'project__projectType':
+                if k == 'project__projectType__code':
                     tsData['projectType'] = v
             tsDataList.append(tsData.copy())
             tsData.clear()
@@ -476,10 +479,10 @@ def Timesheet(request):
             atFormset = atFormset(initial=atDataList, prefix='at')
         else:
             tsFormset = formset_factory(tsform,
-                                        extra=2,
+                                        extra=1,
                                         can_delete=True)
             atFormset = formset_factory(ActivityForm,
-                                        extra=2,
+                                        extra=1,
                                         can_delete=True)
             atFormset = atFormset(prefix='at')
         cwApprovedTimesheet = TimeSheetEntry.objects.filter(
@@ -693,6 +696,15 @@ def Dashboard(request):
         eachProject['project__endDate'] = eachProject[
             'project__endDate'
         ].strftime('%Y-%m-%d')
+    trainings = CompanyMaster.models.Training.objects.all().values(
+        'batch', 'trainingDate')
+    if len(trainings):
+        for eachTraining in trainings:
+            eachTraining['trainingDate'] = eachTraining[
+                'trainingDate'
+            ].strftime('%Y-%m-%d')
+    else:
+        trainings = []
     if hasattr(request.user, 'employee'):
         locationId = request.user.employee.location
         holidayList = Holiday.objects.filter(
@@ -708,6 +720,7 @@ def Dashboard(request):
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
+        'trainingList': trainings,
         'billableProjects': billableProjects,
         'currentProjects': currentProjects,
         'futureProjects': futureProjects,
@@ -1285,6 +1298,7 @@ def saveProject(request):
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
+            pr.maxProductivityUnits = float(request.POST.get('maxProductivityUnits'))
             pr.startDate = request.POST.get('startDate')
             pr.endDate = request.POST.get('endDate')
             pr.totalValue = float(request.POST.get('totalValue'))
@@ -1316,8 +1330,8 @@ def saveProject(request):
             pr.customer.save()
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
-        except ValueError:
-            pass
+        except ValueError as e:
+            messages.error(request, 'DataConversion Error:' + str(e))
 
         try:
             memberTotal = int(request.POST.get('teamMemberTotal')) + 1
@@ -1343,8 +1357,8 @@ def saveProject(request):
                 ptm.startDate = request.POST.get(startDate)
                 ptm.endDate = request.POST.get(endDate)
                 ptm.save()
-        except ValueError:
-            pass
+        except ValueError as e:
+            messages.error(request, 'DataConversion Error:' + str(e))
 
         if pr.internal is False:
             milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
@@ -1361,9 +1375,9 @@ def saveProject(request):
                     pms.description = request.POST.get(description)
                     pms.amount = float(request.POST.get(amount))
                     pms.save()
-                except ValueError:  # Assuming any of the data conversions fail
+                except ValueError as e:  # Assuming any of the data conversions fail
                     # We cannot save a bad record we simply skip over
-                    pass
+                    messages.error(request, 'DataConversion Error:' + str(e))
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
@@ -1451,11 +1465,19 @@ def GetProjectType(request):
         'project__id',
         'project__name',
         'project__projectType__code',
+        'project__maxProductivityUnits',
         'project__projectType__description'
     ).filter(project__closed=False)
+    for eachData in typeData:
+        eachData['project__maxProductivityUnits'] = float(
+            eachData['project__maxProductivityUnits'])
     data = {'data': list(typeData)}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
+
+
+def csrf_failure(request, reason=""):
+    return render(request, 'MyANSRSource/csrfFailure.html', {'reason': reason})
 
 
 def Logout(request):

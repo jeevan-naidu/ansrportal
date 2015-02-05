@@ -263,7 +263,15 @@ body {
 .container-timesheet {
     width: 96%;
 }
+/* Event Colors */
+.holiday { 
+	background-color : #009452;
+}
 
+.my-project { 
+	background-color : #D6412B;
+}
 
-
-
+.training { 
+	background-color : #176CED;
+}

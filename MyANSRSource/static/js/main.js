@@ -12,7 +12,7 @@ helper.range = function(start, end) {
     return result;
 };
 
-app.billableSetZeroList = helper.range(3, 41);
+app.billableSetZeroList = helper.range(1, 41);
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -74,6 +74,7 @@ app.changeProject = function() {
 
         app.curProjectUnitShort = selectedProject.project__projectType__code;
         app.curProjectUnit      = selectedProject.project__projectType__description;
+        app.norms               = selectedProject.project__maxProductivityUnits;
 
         $projectUnitsElement.text(app.curProjectUnitShort);
     });
@@ -606,12 +607,14 @@ app.getIdNo = function(str) {
                 var $totalBillableHours     = $('.total-billable-hours'),
                     $totalIdleHours         = $('.total-idle-hours');
 
+
                 var $dayPopoverBtn = $table.find('.day-popover-button');
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
                 var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0/DAY</label></div>';
 
                 $dayPopoverBtn.popover({
                     trigger: 'click',
@@ -642,6 +645,7 @@ app.getIdNo = function(str) {
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
                         $curProjectUnit         = $curDayBtn.find('.project-unit'),
                         $curProjectPopupUnit    = $curDayBtn.next().find('.project-type-popup'),
+                        $curProjectPopupNorm    = $curDayBtn.next().find('.norm-input'),
                         curQuestionsViewText    = $curQuestionsView.text(),
                         curHoursViewText        = $curHoursView.text(),
                         curProjectUnit          = $curProjectUnit.text();
@@ -655,6 +659,8 @@ app.getIdNo = function(str) {
 
                     var projectUnitViewToPopUp = function() {
                             $curProjectPopupUnit.text(app.curProjectUnit);
+			    app.norms += '/DAY';
+                            $curProjectPopupNorm.text(app.norms);
                     };
 
                     projectUnitViewToPopUp();
