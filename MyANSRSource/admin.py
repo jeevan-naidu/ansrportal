@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import AdminTextInputWidget
+
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, Chapter, \
     ProjectChangeInfo, projectType
@@ -8,20 +10,27 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
 class ChapterInlineFormSet(forms.models.BaseInlineFormSet):
 
     class Meta:
-        widgets = {'name': forms.TextInput(attrs={'size': 80})
-                   }
+        widgets = {
+            'name': forms.TextInput(
+                attrs={
+                    'style': 'width : 1024px',
+                    'class' : 'vivek'})
+        }
 
 
 class ChapterInline(admin.TabularInline):
     model = Chapter
     extra = 2
     exclude = []
-    fieldsets = (
-        ('Chapters', {
-            'classes': ('size : 40',),
-            'fields': ('name',)
-            }),
-        )
+    formset = ChapterInlineFormSet
+    #class Meta:
+    #    widgets = { 'name' :  forms.TextInput(attrs = {'style' : 'width : 1024px'}),}
+    # fieldsets = (
+    #   ('Chapters', {
+    #       'classes': ('wide', 'extrapretty',),
+    #       'fields': ('name',)
+    #       }),
+    #   )
 
 
 # Admin Models for ansr
