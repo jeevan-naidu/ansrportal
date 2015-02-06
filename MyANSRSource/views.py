@@ -1449,6 +1449,46 @@ def deleteProject(request):
     return HttpResponseRedirect('add')
 
 
+@login_required
+def ViewProject(request):
+    if request.method == 'POST':
+        projectId = int(request.POST.get('project'))
+        projectObj = Project.objects.filter(id=projectId)
+        basicInfo = projectObj.values(
+            'projectType__description', 'bu__name', 'customer__name',
+            'name', 'startDate', 'endDate', 'book__name',
+            'plannedEffort', 'contingencyEffort',
+            'totalValue'
+        )[0]
+        flagData = projectObj.values(
+            'maxProductivityUnits', 'signed', 'internal', 'currentProject'
+        )[0]
+        cleanedTeamData = ProjectTeamMember.objects.filter(
+            project=projectObj).values(
+                'member__username', 'role', 'startDate', 'endDate',
+                'plannedEffort', 'rate'
+            )
+        chapters = projectObj.values('chapters__name')
+        if flagData['internal']:
+            cleanedMilestoneData = []
+        else:
+            cleanedMilestoneData = ProjectMilestone.objects.filter(
+                project=projectObj).values('milestoneDate', 'description',
+                                           'amount')
+        data = {
+            'basicInfo': basicInfo,
+            'chapters': chapters,
+            'flagData': flagData,
+            'teamMember': cleanedTeamData,
+            'milestone': cleanedMilestoneData
+        }
+        return render(request, 'MyANSRSource/viewProjectSummary.html', data)
+    data = Project.objects.filter(projectManager=request.user).values(
+        'name', 'id'
+    )
+    return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
+
+
 def GetChapters(request, bookid):
     chapters = Chapter.objects.filter(book__id=bookid)
     json_chapters = serializers.serialize("json", chapters)
