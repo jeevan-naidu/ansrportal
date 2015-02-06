@@ -106,6 +106,17 @@
 							Manage Projects
 						</a>
 					{% endif %}
+					{% if activeProjects > 0 %}
+						<a href="project/view-project" class="list-group-item">
+							<span class="badge">{{ activeProjects }}</span>
+							View Projects
+						</a>
+					{% else %}
+						<a href="#" class="list-group-item">
+							<span class="badge">0</span>
+							View Projects
+						</a>
+					{% endif %}
                     {% if user|manage_milestones %}
 			{% if activeMilestones > 0 %}
 				<a href="project/trackmilestone" class="list-group-item">
@@ -169,8 +180,8 @@
 		<div id='calendar'></div>
 		<div class="text-center">
 			<span class="label label-default holiday">Holiday</span>
-			<span class="label label-default my-project">My Project</span>
-			<span class="label label-default training">Training & development</span>
+			<span class="label label-default my-project">My Milestones</span>
+			<span class="label label-default training">Learning & development</span>
 		</div>
 	</div>
 	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
