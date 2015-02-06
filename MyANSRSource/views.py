@@ -1150,8 +1150,27 @@ class CreateProjectWizard(SessionWizardView):
                         'Define Project-totalValue'
                     ]
                     totalRate = 0
-                    for t in form.cleaned_data:
-                        totalRate += t['amount']
+                    for eachForm in form:
+                        if eachForm.is_valid():
+                            if eachForm.cleaned_data['financial'] is False:
+                                if eachForm.cleaned_data['amount'] > 0:
+                                    amount = form.cleaned_data[0]['amount']
+                                    errors = eachForm._errors.setdefault(
+                                        amount,
+                                        ErrorList())
+                                    errors.append(u'Please select milestone as \
+                                                    financial')
+                            else:
+                                if eachForm.cleaned_data['amount'] == 0:
+                                    amount = form.cleaned_data[0]['amount']
+                                    errors = eachForm._errors.setdefault(
+                                        amount,
+                                        ErrorList())
+                                    errors.append(u'Financial Milestone Value \
+                                                  cannot be 0')
+                    for eachForm in form:
+                        if eachForm.is_valid():
+                            totalRate += eachForm.cleaned_data['amount']
                     for eachForm in form:
                         if float(projectTotal) != float(totalRate):
                             errors = eachForm._errors.setdefault(
@@ -1372,10 +1391,12 @@ def saveProject(request):
                     milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
                     description = 'description-{0}'.format(milestoneCount)
                     amount = 'amount-{0}'.format(milestoneCount)
+                    financial = 'financial-{0}'.format(milestoneCount)
                     date = datetime.strptime(request.POST.get(milestoneDate),
                                              '%Y-%m-%d')
                     pms.milestoneDate = date
                     pms.description = request.POST.get(description)
+                    pms.financial = (request.POST.get(financial) == 'True')
                     pms.amount = float(request.POST.get(amount))
                     pms.save()
                 except ValueError as e:  # Assuming any of the data conversions fail

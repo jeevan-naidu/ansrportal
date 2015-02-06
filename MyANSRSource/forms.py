@@ -557,7 +557,8 @@ class ProjectMilestoneForm(forms.ModelForm):
         fields = (
             'milestoneDate',
             'description',
-            'amount'
+            'amount',
+            'financial'
         )
         widgets = {
             'milestoneDate': DateTimePicker(options=dateTimeOption),
@@ -570,6 +571,8 @@ class ProjectMilestoneForm(forms.ModelForm):
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['description'].widget.attrs['class'] = \
+            "d-item input-item form-control"
+        self.fields['financial'].widget.attrs['class'] = \
             "d-item input-item form-control"
 
 

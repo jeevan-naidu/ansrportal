@@ -231,6 +231,7 @@
 			<th>Description</th>
 			<th>Deadline</th>
 			<th>Amount</th>
+			<th>Financial Milestone</th>
 		</thead>
 				<input type="hidden" name="milestoneTotal" value="{{ milestone|length }}">
 		{% for milestoneData in milestone %}
@@ -258,6 +259,15 @@
 				{% with amountId="amount-"|add:counter %}
 					{% for rec, value in milestoneData.iteritems %}
 						{% if amountId == rec %}
+							{{ value }}
+						{% endif %}
+					{% endfor %}
+				{% endwith %}
+			</td>
+			<td>
+				{% with financialId="financial-"|add:counter %}
+					{% for rec, value in milestoneData.iteritems %}
+						{% if financialId == rec %}
 							{{ value }}
 						{% endif %}
 					{% endfor %}

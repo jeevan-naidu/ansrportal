@@ -212,6 +212,12 @@ class ProjectMilestone(models.Model):
         blank=False,
         verbose_name="Completed"
     )
+    financial = models.BooleanField(
+        default=False,
+        null=False,
+        blank=True,
+        verbose_name="Financial Milestone?"
+    )
     reason = models.CharField(default=None, blank=True, max_length=100,
                               verbose_name="Reason for change", null=True)
     # Record Entered / Updated Date
