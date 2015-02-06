@@ -35,7 +35,6 @@ class projectType(models.Model):
 
 class Chapter(models.Model):
     book = models.ForeignKey(Book)
-    seq = models.IntegerField(default=1, verbose_name='Number', max_length=2)
     name = models.CharField(max_length=100, verbose_name="Name")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

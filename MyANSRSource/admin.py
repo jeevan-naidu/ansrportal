@@ -7,30 +7,31 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectChangeInfo, projectType
 
 
-class ChapterInlineFormSet(forms.models.BaseInlineFormSet):
-
+class ChapterInlineFormSet(forms.ModelForm):
     class Meta:
         widgets = {
             'name': forms.TextInput(
                 attrs={
-                    'style': 'width : 1024px',
-                    'class' : 'vivek'})
+                    'style': 'width:1024px',
+                    })
         }
 
+# widgets = { 'construct_name': forms.TextInput(attrs={'size': 20})
 
 class ChapterInline(admin.TabularInline):
     model = Chapter
     extra = 2
     exclude = []
-    formset = ChapterInlineFormSet
+    #formset = ChapterInlineFormSet
+    form = ChapterInlineFormSet
     #class Meta:
     #    widgets = { 'name' :  forms.TextInput(attrs = {'style' : 'width : 1024px'}),}
     # fieldsets = (
-    #   ('Chapters', {
-    #       'classes': ('wide', 'extrapretty',),
-    #       'fields': ('name',)
-    #       }),
-    #   )
+    #    ('Chapters', {
+    #        'classes': ('wide', 'extrapretty',),
+    #        'fields': ('name',)
+    #        }),
+    #    )
 
 
 # Admin Models for ansr
