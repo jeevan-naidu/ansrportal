@@ -198,7 +198,7 @@ class Employee(models.Model):
         max_length=15,
         unique=True,
         blank=False)
-    division = models.ForeignKey('CompanyMaster.Division')
+    #division = models.ForeignKey('CompanyMaster.Division')
     category = models.CharField(
         "Employment Category",
         max_length=3,
