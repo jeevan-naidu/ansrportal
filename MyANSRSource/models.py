@@ -35,7 +35,7 @@ class projectType(models.Model):
 
 class Chapter(models.Model):
     book = models.ForeignKey(Book)
-    name = models.CharField(max_length=100, verbose_name="Chapter Name")
+    name = models.CharField(max_length=100, verbose_name="Name")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
