@@ -8,9 +8,12 @@ from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 class EmpAddressInline(admin.StackedInline):
     model = EmpAddress
     extra = 1
+    inline_classes = ('grp-collapse grp-open',)
     fields = ('address_type', 'address1', 'address2',
               ('city', 'state', 'zipcode'))
 
+    verbose_name = 'Address'
+    verbose_name = 'Addresses'
     def get_extra(self, request, obj=None, **kwargs):
         if obj:
             # Don't add any extra forms if
@@ -23,8 +26,10 @@ class EmpAddressInline(admin.StackedInline):
 class EducationInline(admin.TabularInline):
     model = Education
     extra = 1
-    classes = ('grp-collapse grp-closed',)
+    classes = ('grp-collapse grp-open',)
 
+    verbose_name = 'Qualification'
+    verbose_name_plural = 'Qualifications'
     def get_extra(self, request, obj=None, **kwargs):
         if obj:
             # Don't add any extra forms if
@@ -37,7 +42,7 @@ class EducationInline(admin.TabularInline):
 class FamilyMemberInline(admin.TabularInline):
     model = FamilyMember
     extra = 1
-    classes = ('grp-collapse grp-closed',)
+    classes = ('grp-collapse grp-open',)
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj:
@@ -51,7 +56,8 @@ class FamilyMemberInline(admin.TabularInline):
 class PreviousEmploymentInline(admin.StackedInline):
     model = PreviousEmployment
     extra = 1
-    classes = ('grp-collapse grp-closed',)
+    classes = ('grp-collapse grp-open',)
+    inline_classes = ('grp-collapse grp-open',)
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj:
@@ -64,25 +70,26 @@ class PreviousEmploymentInline(admin.StackedInline):
 
 class UserInline(admin.StackedInline):
     extra = 0
-    verbose_name_plural = 'Employee'
+    verbose_name= 'Click to open/close...'
+    verbose_name_plural = 'Employee Information'
     model = Employee
     can_delete = False
     # Grappelli stylesheets
     classes = ('grp-collapse grp-open',)
-    inline_classes = ('grp-collapse grp-open',)
+    inline_classes = ('grp-collapse grp-closed',)
+
+    max_num = 1
+    min_num = 1
 
     fieldsets = (
         ('Employee Identification', {
-            'fields': (
-                'middle_name', )}),
+            'fields': (('middle_name',),
+                ('date_of_birth', 'gender', 'nationality'),
+                ('marital_status', 'blood_group'), 'exprience'),}),
         ('Contact Details', {
             'fields': (
                 ('mobile_phone', 'land_phone',
                  'emergency_phone'), 'personal_email',)}),
-        ('Other Details', {
-            'fields': (
-                ('date_of_birth', 'gender', 'nationality'),
-                ('marital_status', 'blood_group'), 'exprience')}),
         ('Role and Job', {
             'fields': (('employee_assigned_id', 'designation'),
                        ('business_unit', 'division', 'location'),
@@ -112,6 +119,8 @@ class EmployeeAdmin(OriginalUserAdmin):
     inlines = [UserInline, EmpAddressInline, EducationInline,
                FamilyMemberInline,
                PreviousEmploymentInline, ]
+    max_num = 1
+    min_num = 1
 
     super_fieldsets = (
         (None, {'fields': ('username', 'password')}),
