@@ -1097,8 +1097,6 @@ class CreateProjectWizard(SessionWizardView):
                 self.request.session['PEndDate'] = form.cleaned_data[
                     'endDate'
                 ].strftime('%Y-%m-%d')
-                print form.fields['chapters'].selected
-                selectedChapters = [eachChapter.id for eachChapter in form.cleaned_data['chapters']]
 
         if step == 'Define Team':
             c = {}
@@ -1166,6 +1164,14 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Define Project':
+            if form.is_valid():
+                bookId = form.cleaned_data['book']
+                chapters = form.cleaned_data['chapters']
+                chapterId = [int(eachChapter.id) for eachChapter in chapters]
+                data = {'bookId': bookId.id , 'chapterId': chapterId}
+                context.update(data)
+
         if self.steps.current == 'Financial Milestones':
             projectTotal = self.storage.get_step_data('Define Project')[
                 'Define Project-totalValue'
