@@ -490,7 +490,14 @@ app.getIdNo = function(str) {
                     }
                 }
 
-                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                if($element.hasClass('set-zero')) {
+                    var elementType2 = $element.prop('tagName');
+                    if(elementType2 === 'SELECT' || elementType2 === 'INPUT') {
+                        $element.attr('value', 0);
+                    } else {
+                        $element.text('0');
+                    }
+                }
 
             });
 
