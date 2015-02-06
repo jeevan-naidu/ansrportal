@@ -443,7 +443,7 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
         model = ProjectMilestone
         fields = (
             'milestoneDate', 'description',
-            'amount'
+            'amount', 'financial'
         )
         widgets = {
             'milestoneDate': DateTimePicker(options=dateTimeOption),
@@ -459,6 +459,8 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
             'class'] = "form-control min-200"
         self.fields['amount'].widget.attrs[
             'class'] = "form-control w-100 milestone-item-amount"
+        self.fields['financial'].widget.attrs['class'] = \
+            "d-item input-item form-control"
 
 
 class CloseProjectMilestoneForm(forms.ModelForm):
