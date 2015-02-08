@@ -78,7 +78,7 @@ class Project(models.Model):
         blank=False,
         default=True,
         null=False,
-        verbose_name="Contact Signed"
+        verbose_name="Contract Signed"
     )
     internal = models.BooleanField(
         blank=False,
