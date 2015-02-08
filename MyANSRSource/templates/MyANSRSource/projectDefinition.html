@@ -59,8 +59,18 @@
 				options += '<option value="' + chapters[i].pk + '">' + chapters[i].fields['name'] + '</option>';
 			}
 			$("select#id_Define_Project-chapters").html(options);
-			$("select#id_Define_Project-chapters option:first").attr('selected', 'selected');
+			chooseChapters($("select#id_Define_Project-book").val());
 		});
+	}
+	function chooseChapters(bookid) {
+		{% if bookId == None %}
+			$("select#id_Define_Project-chapters").val('');
+		{% else %}
+		if (bookid == {{ bookId  }})
+			$("select#id_Define_Project-chapters").val({{ chapterId }});
+		else
+			$("select#id_Define_Project-chapters").val('');
+		{% endif %}
 	}
 	$(document).ready(
 		function() {

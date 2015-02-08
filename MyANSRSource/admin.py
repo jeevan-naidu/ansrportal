@@ -1,13 +1,37 @@
+from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import AdminTextInputWidget
+
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, Chapter, \
     ProjectChangeInfo, projectType
 
 
+class ChapterInlineFormSet(forms.ModelForm):
+    class Meta:
+        widgets = {
+            'name': forms.TextInput(
+                attrs={
+                    'style': 'width:1024px',
+                    })
+        }
+
+# widgets = { 'construct_name': forms.TextInput(attrs={'size': 20})
+
 class ChapterInline(admin.TabularInline):
     model = Chapter
     extra = 2
     exclude = []
+    #formset = ChapterInlineFormSet
+    form = ChapterInlineFormSet
+    #class Meta:
+    #    widgets = { 'name' :  forms.TextInput(attrs = {'style' : 'width : 1024px'}),}
+    # fieldsets = (
+    #    ('Chapters', {
+    #        'classes': ('wide', 'extrapretty',),
+    #        'fields': ('name',)
+    #        }),
+    #    )
 
 
 # Admin Models for ansr
@@ -60,9 +84,9 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
                     'startDate', 'plannedEffort')
 
 admin.site.register(Project, ProjectAdmin)
-admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
+#admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(projectType, projectTypeAdmin)
 #admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
-admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
-admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)
+#admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
+#admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)

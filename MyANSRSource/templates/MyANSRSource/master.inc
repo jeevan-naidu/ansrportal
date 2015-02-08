@@ -29,10 +29,11 @@
        <script>
 	$(document).ready(function() {
 		$('#calendar').fullCalendar({
-			aspectRatio: 2,
+			aspectRatio: 2.12,
+			eventLimit: true,
 			events: [
 				{% block events %}{% endblock %}
-			]
+			],
 		})
 
 	});

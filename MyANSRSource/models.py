@@ -35,7 +35,7 @@ class projectType(models.Model):
 
 class Chapter(models.Model):
     book = models.ForeignKey(Book)
-    name = models.CharField(max_length=100, verbose_name="Chapter Name")
+    name = models.CharField(max_length=100, verbose_name="Name")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -50,6 +50,12 @@ class Project(models.Model):
         projectType,
         null=False,
         verbose_name="Project Type"
+    )
+    maxProductivityUnits = models.DecimalField(
+        default=0.0,
+        max_digits=12,
+        decimal_places=2,
+        verbose_name="Norm"
     )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
@@ -72,7 +78,7 @@ class Project(models.Model):
         blank=False,
         default=True,
         null=False,
-        verbose_name="Contact Signed"
+        verbose_name="Contract Signed"
     )
     internal = models.BooleanField(
         blank=False,
@@ -139,21 +145,29 @@ class TimeSheetEntry(models.Model):
     activity = models.CharField(max_length=2, null=True)
     task = models.CharField(null=True, max_length=2)
     # Effort capture
-    mondayQ = models.IntegerField(default=0, verbose_name="Mon")
+    mondayQ = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Mon")
     mondayH = models.IntegerField(default=0, verbose_name="Mon")
-    tuesdayQ = models.IntegerField(default=0, verbose_name="Tue")
+    tuesdayQ = models.DecimalField(default=0.0, max_digits=12,
+                                   decimal_places=2, verbose_name="Tue")
     tuesdayH = models.IntegerField(default=0, verbose_name="Tue")
-    wednesdayQ = models.IntegerField(default=0, verbose_name="Wed")
+    wednesdayQ = models.DecimalField(default=0.0, max_digits=12,
+                                     decimal_places=2, verbose_name="Wed")
     wednesdayH = models.IntegerField(default=0, verbose_name="Wed")
-    thursdayQ = models.IntegerField(default=0, verbose_name="Thu")
+    thursdayQ = models.DecimalField(default=0.0, max_digits=12,
+                                    decimal_places=2, verbose_name="Thu")
     thursdayH = models.IntegerField(default=0, verbose_name="Thu")
-    fridayQ = models.IntegerField(default=0, verbose_name="Fri")
+    fridayQ = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Fri")
     fridayH = models.IntegerField(default=0, verbose_name="Fri")
-    saturdayQ = models.IntegerField(default=0, verbose_name="Sat")
+    saturdayQ = models.DecimalField(default=0.0, max_digits=12,
+                                    decimal_places=2, verbose_name="Sat")
     saturdayH = models.IntegerField(default=0, verbose_name="Sat")
-    sundayQ = models.IntegerField(default=0, verbose_name="Sun")
+    sundayQ = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Sun")
     sundayH = models.IntegerField(default=0, verbose_name="Sun")
-    totalQ = models.IntegerField(default=0, verbose_name="Total")
+    totalQ = models.DecimalField(default=0.0, max_digits=12,
+                                 decimal_places=2, verbose_name="Total")
     totalH = models.IntegerField(default=0, verbose_name="Total")
     approved = models.BooleanField(default=False)
     hold = models.BooleanField(default=False)

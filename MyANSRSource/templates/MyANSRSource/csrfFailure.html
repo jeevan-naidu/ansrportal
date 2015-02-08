@@ -1,0 +1,25 @@
+{% extends 'master.inc' %}
+{% block siteTitle %}myansrsource:Re-Login{% endblock %}
+
+
+{%block content %}
+<div class="row">
+        <div class="col-lg-10 col-md-12 col-xs-12 col-lg-offset-1  jumbotron shadow"> 
+            <div class="col-lg-12 col-md-12 col-xs-12">
+		    <div class="panel panel-danger">
+			    <div class="panel-heading">Uh!Oh!</div>
+			    <div class="panel-body">  
+				Sorry! we have detected some strange activity on your browser.  You will have to login again.  
+				Please click on the link below to get started
+				<div class="text-right">
+					<a href="{% url 'logout'  %}" class="btn btn-sm btn-info">
+							<span class="glyphicon glyphicon-globe"></span>
+							<b>Login Again</b>
+					</a>
+				</div>
+			    </div>
+		    </div>
+	    </div>
+	</div>
+</div>
+{% endblock %}

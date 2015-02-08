@@ -153,6 +153,7 @@ def Timesheet(request):
             weekTotal = 0
             billableTotal = 0
             nonbillableTotal = 0
+            weekHolidays = []
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
             if hasattr(request.user, 'employee'):
@@ -695,6 +696,15 @@ def Dashboard(request):
         eachProject['project__endDate'] = eachProject[
             'project__endDate'
         ].strftime('%Y-%m-%d')
+    trainings = CompanyMaster.models.Training.objects.all().values(
+        'batch', 'trainingDate')
+    if len(trainings):
+        for eachTraining in trainings:
+            eachTraining['trainingDate'] = eachTraining[
+                'trainingDate'
+            ].strftime('%Y-%m-%d')
+    else:
+        trainings = []
     if hasattr(request.user, 'employee'):
         locationId = request.user.employee.location
         holidayList = Holiday.objects.filter(
@@ -710,6 +720,7 @@ def Dashboard(request):
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
+        'trainingList': trainings,
         'billableProjects': billableProjects,
         'currentProjects': currentProjects,
         'futureProjects': futureProjects,
@@ -1154,6 +1165,14 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Define Project':
+            if form.is_valid():
+                bookId = form.cleaned_data['book']
+                chapters = form.cleaned_data['chapters']
+                chapterId = [int(eachChapter.id) for eachChapter in chapters]
+                data = {'bookId': bookId.id , 'chapterId': chapterId}
+                context.update(data)
+
         if self.steps.current == 'Financial Milestones':
             projectTotal = self.storage.get_step_data('Define Project')[
                 'Define Project-totalValue'
@@ -1283,6 +1302,7 @@ def saveProject(request):
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
+            pr.maxProductivityUnits = float(request.POST.get('maxProductivityUnits'))
             pr.startDate = request.POST.get('startDate')
             pr.endDate = request.POST.get('endDate')
             pr.totalValue = float(request.POST.get('totalValue'))
@@ -1314,8 +1334,8 @@ def saveProject(request):
             pr.customer.save()
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
-        except ValueError:
-            pass
+        except ValueError as e:
+            messages.error(request, 'DataConversion Error:' + str(e))
 
         try:
             memberTotal = int(request.POST.get('teamMemberTotal')) + 1
@@ -1341,8 +1361,8 @@ def saveProject(request):
                 ptm.startDate = request.POST.get(startDate)
                 ptm.endDate = request.POST.get(endDate)
                 ptm.save()
-        except ValueError:
-            pass
+        except ValueError as e:
+            messages.error(request, 'DataConversion Error:' + str(e))
 
         if pr.internal is False:
             milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
@@ -1359,9 +1379,9 @@ def saveProject(request):
                     pms.description = request.POST.get(description)
                     pms.amount = float(request.POST.get(amount))
                     pms.save()
-                except ValueError:  # Assuming any of the data conversions fail
+                except ValueError as e:  # Assuming any of the data conversions fail
                     # We cannot save a bad record we simply skip over
-                    pass
+                    messages.error(request, 'DataConversion Error:' + str(e))
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
@@ -1436,6 +1456,46 @@ def deleteProject(request):
     return HttpResponseRedirect('add')
 
 
+@login_required
+def ViewProject(request):
+    if request.method == 'POST':
+        projectId = int(request.POST.get('project'))
+        projectObj = Project.objects.filter(id=projectId)
+        basicInfo = projectObj.values(
+            'projectType__description', 'bu__name', 'customer__name',
+            'name', 'startDate', 'endDate', 'book__name',
+            'plannedEffort', 'contingencyEffort',
+            'totalValue'
+        )[0]
+        flagData = projectObj.values(
+            'maxProductivityUnits', 'signed', 'internal', 'currentProject'
+        )[0]
+        cleanedTeamData = ProjectTeamMember.objects.filter(
+            project=projectObj).values(
+                'member__username', 'role', 'startDate', 'endDate',
+                'plannedEffort', 'rate'
+            )
+        chapters = projectObj.values('chapters__name')
+        if flagData['internal']:
+            cleanedMilestoneData = []
+        else:
+            cleanedMilestoneData = ProjectMilestone.objects.filter(
+                project=projectObj).values('milestoneDate', 'description',
+                                           'amount')
+        data = {
+            'basicInfo': basicInfo,
+            'chapters': chapters,
+            'flagData': flagData,
+            'teamMember': cleanedTeamData,
+            'milestone': cleanedMilestoneData
+        }
+        return render(request, 'MyANSRSource/viewProjectSummary.html', data)
+    data = Project.objects.filter(projectManager=request.user).values(
+        'name', 'id'
+    )
+    return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
+
+
 def GetChapters(request, bookid):
     chapters = Chapter.objects.filter(book__id=bookid)
     json_chapters = serializers.serialize("json", chapters)
@@ -1449,11 +1509,19 @@ def GetProjectType(request):
         'project__id',
         'project__name',
         'project__projectType__code',
+        'project__maxProductivityUnits',
         'project__projectType__description'
     ).filter(project__closed=False)
+    for eachData in typeData:
+        eachData['project__maxProductivityUnits'] = float(
+            eachData['project__maxProductivityUnits'])
     data = {'data': list(typeData)}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
+
+
+def csrf_failure(request, reason=""):
+    return render(request, 'MyANSRSource/csrfFailure.html', {'reason': reason})
 
 
 def Logout(request):

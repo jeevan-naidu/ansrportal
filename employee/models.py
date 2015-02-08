@@ -47,6 +47,7 @@ RELATION_CHOICES = (
     ('SP', 'Spouse'),
     ('C1', 'Child1'),
     ('C2', 'Child2'),
+    ('OO', 'Others'),
     )
 
 EMP_STATUS_CHOICES = (
@@ -58,6 +59,12 @@ ADDRESSTYPE_CHOICES = (
     ('PR', 'Permanent'),
     ('TM', 'Temporary'),
     )
+
+
+NATURE_OF_EDUCATION = (
+    ('FT', 'Full-time'),
+    ('PT', 'Part-time'),
+)
 
 
 class Designation(models.Model):
@@ -136,6 +143,9 @@ class Employee(models.Model):
         max_length=10,
         choices=MARITAL_CHOICES,
         blank=False)
+    wedding_date = models.DateField(verbose_name='Wedding Date',
+                                    null=True,
+                                    blank=True)
     blood_group = models.CharField(
         "Blood Group",
         max_length=3,
@@ -188,7 +198,7 @@ class Employee(models.Model):
         max_length=15,
         unique=True,
         blank=False)
-    division = models.ForeignKey('CompanyMaster.Division')
+    #division = models.ForeignKey('CompanyMaster.Division')
     category = models.CharField(
         "Employment Category",
         max_length=3,
@@ -257,7 +267,13 @@ class Employee(models.Model):
 class FamilyMember(models.Model):
     employee = models.ForeignKey(User)
     name = models.CharField("Name", max_length=50, blank=False)
-    dob = models.DateField("DOB", blank=False)
+    gender = models.CharField(
+        verbose_name='Gender',
+        max_length=1,
+        choices=GENDER_CHOICES,
+        blank=False,
+        default=GENDER_CHOICES[0][0])
+    dob = models.DateField("DOB", blank=True, null=True)
     rela_type = models.CharField(
         "Relation Type",
         max_length=50,
@@ -276,6 +292,16 @@ class Education(models.Model):
 
     employee = models.ForeignKey(User)
     name = models.CharField("Qualification", max_length=50, blank=False)
+    specialization = models.CharField(
+        verbose_name='Specialization',
+        max_length=30,
+        blank=True,
+        null=True)
+    nature_of_education = models.CharField('Nature of Education',
+                                           max_length=2,
+                                           blank=False,
+                                           choices = NATURE_OF_EDUCATION,
+                                           default=NATURE_OF_EDUCATION[0][0])
     from_date = models.DateField("From Date", blank=False)
     to_date = models.DateField("To Date", blank=False)
     institute = models.CharField("Institution", max_length=50, blank=False)
