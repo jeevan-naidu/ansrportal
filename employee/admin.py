@@ -92,7 +92,7 @@ class UserInline(admin.StackedInline):
                  'emergency_phone'), 'personal_email',)}),
         ('Role and Job', {
             'fields': (('employee_assigned_id', 'designation'),
-                       ('business_unit', 'division', 'location'),
+                       ('business_unit', 'location'),
                        ('category', 'idcard'),)}),
         ('Financial Information', {
             'fields': (('bank_name', 'bank_branch'),

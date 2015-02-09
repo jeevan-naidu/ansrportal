@@ -37,7 +37,7 @@ class TrainingAdmin(admin.ModelAdmin):
 
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Holiday, HolidayAdmin)
-admin.site.register(Department, DepartmentAdmin)
+# admin.site.register(Department, DepartmentAdmin)
 admin.site.register(BusinessUnit, BusinessUnitAdmin)
 admin.site.register(OfficeLocation, OfficeLocatonAdmin)
 admin.site.register(Training, TrainingAdmin)
