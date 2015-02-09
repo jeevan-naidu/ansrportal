@@ -327,11 +327,12 @@
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
     {% if hold == True  %}
- 	<button type="submit" value="submit" class="btn btn-info pull-right" disabled="disabled">
+    	<button type="submit" value="submit" name="submit" class="btn btn-info pull-right disabled">Submit Timesheet</button>
+    	<button type="submit" value="save" name="save" class="btn btn-info disabled">Save Timesheet</button>
     {% else %}
- 	<button type="submit" value="submit" class="btn btn-info pull-right">
+    	<button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
+    	<button type="submit" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</button>
     {% endif %}
-	 Save Timesheet
  </button>
  </form>
 {% endblock %}
