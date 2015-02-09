@@ -964,7 +964,7 @@ class ChangeProjectWizard(SessionWizardView):
                             'readonly'
                         ] = 'True'
                         eachForm.fields['financial'].widget.attrs[
-                            'disabled'
+                            'readonly'
                         ] = 'True'
                         eachForm.fields['DELETE'].widget.attrs[
                             'readonly'
@@ -1006,8 +1006,10 @@ class ChangeProjectWizard(SessionWizardView):
                 )['My Projects-project']).values(
                 'id',
                 'signed',
-                'endDate'
+                'endDate',
+                'totalValue'
                 )[0]
+            currentProject['revisedTotal'] = currentProject['totalValue']
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
                 project__id=self.storage.get_step_data(
