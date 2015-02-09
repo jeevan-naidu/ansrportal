@@ -576,8 +576,7 @@ def Timesheet(request):
                                      to your manager')
                 else:
                     messages.warning(request,
-                                     'Your manager kept this timesheet on hold, \
-                                     please resubmit')
+                                     'Rework on your timesheet')
             else:
                 hold = False
             data = {'weekstartDate': weekstartDate,
