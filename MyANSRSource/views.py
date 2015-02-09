@@ -951,6 +951,9 @@ class ChangeProjectWizard(SessionWizardView):
                         eachForm.fields['amount'].widget.attrs[
                             'readonly'
                         ] = 'True'
+                        eachForm.fields['financial'].widget.attrs[
+                            'disabled'
+                        ] = 'True'
             if self.request.session['changed'] is False:
                 if form.is_valid():
                     if form.has_changed():
@@ -993,6 +996,7 @@ class ChangeProjectWizard(SessionWizardView):
                 'milestoneDate',
                 'description',
                 'amount',
+                'financial'
                 )
         return self.initial_dict.get(step, currentProject)
 

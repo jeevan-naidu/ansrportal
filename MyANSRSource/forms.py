@@ -194,7 +194,7 @@ def TimesheetFormset(currentUser):
         totalH = forms.IntegerField(label="Hours",
                                     widget=forms.HiddenInput())
         totalQ = forms.DecimalField(label="Questions",
-                                    max_value=12,
+                                    max_digits=10,
                                     decimal_places=2,
                                     widget=forms.HiddenInput())
         feedback = forms.CharField(
@@ -460,7 +460,7 @@ class ChangeProjectMilestoneForm(forms.ModelForm):
         self.fields['amount'].widget.attrs[
             'class'] = "form-control w-100 milestone-item-amount"
         self.fields['financial'].widget.attrs['class'] = \
-            "d-item input-item form-control"
+            "milestone-item-financial w-100 form-control"
 
 
 class CloseProjectMilestoneForm(forms.ModelForm):
