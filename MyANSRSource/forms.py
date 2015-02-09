@@ -422,6 +422,7 @@ class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectTeamMemberForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
+        self.fields['id'].widget.attrs['class'] = "set-zero"
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
         self.fields['role'].widget.attrs[
             'class'] = "form-control min-180 max-200 set-empty"

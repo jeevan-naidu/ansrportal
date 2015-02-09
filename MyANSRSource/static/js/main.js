@@ -482,10 +482,23 @@ app.getIdNo = function(str) {
                     }
                 }
 
+
+
                 if($element.hasClass('set-empty')) {
                     var elementType = $element.prop('tagName');
                     if(elementType === 'SELECT' || elementType === 'INPUT') {
                         $element.val('');
+                    } else {
+                        $element.text('');
+                    }
+                }
+
+
+                if($element.hasClass('set-zero')) {
+                    var elementType2 = $element.prop('tagName');
+                    if(elementType2 === 'SELECT' || elementType2 === 'INPUT') {
+                        $element.attr('value', 0);
+                        console.log($element.attr('value'));
                     } else {
                         $element.text('');
                     }
