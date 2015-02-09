@@ -1007,9 +1007,11 @@ class ChangeProjectWizard(SessionWizardView):
                 'id',
                 'signed',
                 'endDate',
+                'plannedEffort',
                 'totalValue'
                 )[0]
             currentProject['revisedTotal'] = currentProject['totalValue']
+            currentProject['revisedEffort'] = currentProject['plannedEffort']
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
                 project__id=self.storage.get_step_data(
