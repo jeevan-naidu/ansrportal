@@ -331,7 +331,13 @@
     	<button type="submit" value="save" name="save" class="btn btn-info disabled">Save Timesheet</button>
     {% else %}
     	<button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
-    	<button type="submit" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</button>
+	<script>
+		function display_alert()
+		{
+			  return confirm("Do you want to submit your timesheet?");
+		}
+	</script>
+    	<button type="submit" onclick="return display_alert()" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</button>
     {% endif %}
  </button>
  </form>
