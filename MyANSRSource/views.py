@@ -66,10 +66,12 @@ CFORMS = [
     ("Change Team Members", formset_factory(
         ChangeProjectTeamMemberForm,
         extra=0,
+        can_delete=True
     )),
     ("Change Milestones", formset_factory(
         ChangeProjectMilestoneForm,
         extra=0,
+        can_delete=True
     )),
 ]
 CTEMPLATES = {
@@ -254,7 +256,9 @@ def Timesheet(request):
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
                     nonbillableTS.teamMember = request.user
-                    nonbillableTS.hold = True
+                    if 'save' not in request.POST:
+                        nonbillableTS.hold = True
+                        nonbillableTS.toApprove = True
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
                         nonbillableTS.exception = \
@@ -294,8 +298,10 @@ def Timesheet(request):
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
+                    if 'save' not in request.POST:
+                        billableTS.hold = True
+                        billableTS.toApprove = True
                     billableTS.billable = True
-                    billableTS.hold = True
                     if (weekTotal < minAutoApprove) | \
                             (weekTotal > maxAutoApprove):
                         billableTS.exception = \
@@ -308,7 +314,7 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
-            else:
+            elif 'save' not in request.POST:
                 # Save Timesheet
                 for eachActivity in activitiesList:
                     # Getting objects for models
@@ -426,7 +432,7 @@ def Timesheet(request):
         ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-                 'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ',
+                 'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'toApprove',
                  'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code'
                  )
         tsData = {}
@@ -563,14 +569,14 @@ def Timesheet(request):
         else:
             if cwTimesheet > 0:
                 hold = cwTimesheetData[0]['hold']
-                if hold is True:
+                toApprove = cwTimesheetData[0]['toApprove']
+                if hold is True and toApprove is True:
                     messages.warning(request,
                                      'This timesheet is sent for approval \
                                      to your manager')
                 else:
                     messages.warning(request,
-                                     'Your manager kept this timesheet on hold, \
-                                     please resubmit')
+                                     'Rework on your timesheet')
             else:
                 hold = False
             data = {'weekstartDate': weekstartDate,
@@ -607,12 +613,12 @@ def ApproveTimesheet(request):
                 else:
                     TimeSheetEntry.objects.filter(
                         id=updateRec
-                    ).update(hold=False)
+                    ).update(hold=False, toApprove=False)
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(
             project__projectManager=request.user,
-            approved=False
+            approved=False, toApprove=True
         ).values('id', 'project__id', 'project__name', 'wkstart', 'wkend',
                  'teamMember__username', 'totalH', 'exception', 'approved',
                  'managerFeedback').order_by('project__id')
@@ -632,7 +638,7 @@ def Dashboard(request):
 
     unApprovedTimeSheet = TimeSheetEntry.objects.filter(
         project__projectManager=request.user,
-        approved=False
+        approved=False, toApprove=True
     ).count() if request.user.has_perm('MyANSRSource.approve_timesheet') else 0
 
     totalEmployees = User.objects.all().count()
@@ -889,7 +895,7 @@ class ChangeProjectWizard(SessionWizardView):
                 )['My Projects-project']).values('signed')[0]
             if signed['signed'] is True:
                 form.fields['signed'].widget.attrs[
-                    'disabled'
+                    'readonly'
                 ] = 'True'
             if form.is_valid():
                 if form.has_changed():
@@ -928,6 +934,12 @@ class ChangeProjectWizard(SessionWizardView):
                         eachForm.fields['plannedEffort'].widget.attrs[
                             'readonly'
                         ] = 'True'
+                        eachForm.fields['DELETE'].widget.attrs[
+                            'readonly'
+                        ] = 'True'
+                        eachForm.fields['DELETE'].widget.attrs[
+                            'class'
+                        ] = 'form-control'
             if self.request.session['changed'] is False:
                 if form.is_valid():
                     if form.has_changed():
@@ -952,6 +964,32 @@ class ChangeProjectWizard(SessionWizardView):
                         eachForm.fields['amount'].widget.attrs[
                             'readonly'
                         ] = 'True'
+                        eachForm.fields['financial'].widget.attrs[
+                            'readonly'
+                        ] = 'True'
+                        eachForm.fields['DELETE'].widget.attrs[
+                            'readonly'
+                        ] = 'True'
+                        eachForm.fields['DELETE'].widget.attrs[
+                            'class'
+                        ] = 'form-control'
+                for eachForm in form:
+                    if eachForm.is_valid():
+                        if eachForm.cleaned_data['financial'] is False:
+                            if eachForm.cleaned_data['amount'] > 0:
+                                amount = form.cleaned_data[0]['amount']
+                                errors = eachForm._errors.setdefault(
+                                    amount,
+                                    ErrorList())
+                                errors.append(u'Please select milestone as \
+                                                financial')
+                        elif eachForm.cleaned_data['amount'] == 0:
+                            amount = form.cleaned_data[0]['amount']
+                            errors = eachForm._errors.setdefault(
+                                    amount,
+                                    ErrorList())
+                            errors.append(u'Financial Milestone amount \
+                                        cannot be 0')
             if self.request.session['changed'] is False:
                 if form.is_valid():
                     if form.has_changed():
@@ -969,8 +1007,12 @@ class ChangeProjectWizard(SessionWizardView):
                 )['My Projects-project']).values(
                 'id',
                 'signed',
-                'endDate'
+                'endDate',
+                'plannedEffort',
+                'totalValue'
                 )[0]
+            currentProject['revisedTotal'] = currentProject['totalValue']
+            currentProject['revisedEffort'] = currentProject['plannedEffort']
         if step == 'Change Team Members':
             currentProject = ProjectTeamMember.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -994,6 +1036,7 @@ class ChangeProjectWizard(SessionWizardView):
                 'milestoneDate',
                 'description',
                 'amount',
+                'financial'
                 )
         return self.initial_dict.get(step, currentProject)
 
@@ -1024,6 +1067,7 @@ def UpdateProjectInfo(request, newInfo):
     try:
         prc = newInfo[0]['project']
         prc.closed = newInfo[1]['closed']
+        print newInfo[1]['signed']
         prc.signed = newInfo[1]['signed']
         prc.save()
 
@@ -1065,6 +1109,8 @@ def UpdateProjectInfo(request, newInfo):
             pmc.project = prc
             pmc.milestoneDate = eachMilestone['milestoneDate']
             pmc.description = eachMilestone['description']
+            pmc.amount = eachMilestone['amount']
+            pmc.financial = eachMilestone['financial']
             pmc.save()
 
         return {'crId': pci.crId}
@@ -1151,15 +1197,30 @@ class CreateProjectWizard(SessionWizardView):
                         'Define Project-totalValue'
                     ]
                     totalRate = 0
-                    for t in form.cleaned_data:
-                        totalRate += t['amount']
                     for eachForm in form:
-                        if float(projectTotal) != float(totalRate):
-                            errors = eachForm._errors.setdefault(
-                                totalRate,
+                        if eachForm.is_valid():
+                            totalRate += eachForm.cleaned_data['amount']
+                            if eachForm.cleaned_data['financial'] is False:
+                                if eachForm.cleaned_data['amount'] > 0:
+                                    amount = form.cleaned_data[0]['amount']
+                                    errors = eachForm._errors.setdefault(
+                                    amount,
+                                    ErrorList())
+                                    errors.append(u'Please select milestone as \
+                                                  financial')
+                            elif eachForm.cleaned_data['amount'] == 0:
+                                amount = form.cleaned_data[0]['amount']
+                                errors = eachForm._errors.setdefault(
+                                amount,
                                 ErrorList())
-                            errors.append(u'Total amount must be \
-                                            equal to project value')
+                                errors.append(u'Financial Milestone amount \
+                                            cannot be 0')
+                            if float(projectTotal) != float(totalRate):
+                                errors = eachForm._errors.setdefault(
+                                    totalRate,
+                                    ErrorList())
+                                errors.append(u'Total amount must be \
+                                                equal to project value')
         return form
 
     def get_context_data(self, form, **kwargs):
@@ -1373,10 +1434,12 @@ def saveProject(request):
                     milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
                     description = 'description-{0}'.format(milestoneCount)
                     amount = 'amount-{0}'.format(milestoneCount)
+                    financial = 'financial-{0}'.format(milestoneCount)
                     date = datetime.strptime(request.POST.get(milestoneDate),
                                              '%Y-%m-%d')
                     pms.milestoneDate = date
                     pms.description = request.POST.get(description)
+                    pms.financial = (request.POST.get(financial) == 'True')
                     pms.amount = float(request.POST.get(amount))
                     pms.save()
                 except ValueError as e:  # Assuming any of the data conversions fail

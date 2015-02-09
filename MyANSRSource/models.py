@@ -171,6 +171,7 @@ class TimeSheetEntry(models.Model):
     totalH = models.IntegerField(default=0, verbose_name="Total")
     approved = models.BooleanField(default=False)
     hold = models.BooleanField(default=False)
+    toApprove = models.BooleanField(default=False)
 
     # Approval related details
     approvedon = models.DateTimeField(default=None, null=True, blank=True,
@@ -212,6 +213,11 @@ class ProjectMilestone(models.Model):
         blank=False,
         verbose_name="Completed"
     )
+    financial = models.BooleanField(default=False,
+                                    verbose_name="Financial",
+                                    blank=False,
+                                    null=False
+                                    )
     reason = models.CharField(default=None, blank=True, max_length=100,
                               verbose_name="Reason for change", null=True)
     # Record Entered / Updated Date

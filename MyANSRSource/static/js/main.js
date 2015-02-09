@@ -67,16 +67,18 @@ app.changeProject = function() {
             selectedProject;
 
 
-            // get current project by id
-        selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
+        // get current project by id
+        if(selectedValue != 0) {
+            selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
 
-        //console.log(selectedProject);
+            //console.log(selectedProject);
 
-        app.curProjectUnitShort = selectedProject.project__projectType__code;
-        app.curProjectUnit      = selectedProject.project__projectType__description;
-        app.norms               = selectedProject.project__maxProductivityUnits;
+            app.curProjectUnitShort = selectedProject.project__projectType__code;
+            app.curProjectUnit = selectedProject.project__projectType__description;
+            app.norms = selectedProject.project__maxProductivityUnits;
 
-        $projectUnitsElement.text(app.curProjectUnitShort);
+            $projectUnitsElement.text(app.curProjectUnitShort);
+        }
     });
 };
 
@@ -93,7 +95,7 @@ app.getById = function(arr, propName, id) {
 (function() {
     $(document).ready(function() {
         var $popover = $('.popover');
-
+        app.norms = '0.0 / Days';
         // Manage project
         var $changeTeamMembers = $('#change-team-members');
         if($changeTeamMembers.length > 0) {
@@ -107,9 +109,10 @@ app.getById = function(arr, propName, id) {
                 changeTeamMember: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: null,
+                    setZeroList: [23],
                     setEmptyList: null
-                }
+                },
+                setEnableList: [24]
             });
         }
 
@@ -125,9 +128,10 @@ app.getById = function(arr, propName, id) {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [7],
+                    setZeroList: [8],
                     setEmptyList: null
-                }
+                },
+                setEnableList: [7, 9]
             });
         }
 
@@ -228,7 +232,7 @@ app.getById = function(arr, propName, id) {
                     setZeroList: null,
                     setEmptyList: null
                 },
-                setEnableList: [7]
+                setEnableList: [8]
             });
         }
 
@@ -627,7 +631,7 @@ app.getIdNo = function(str) {
 
                 var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0/DAY</label></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0 / DAY</label></div>';
 
                 $dayPopoverBtn.popover({
                     trigger: 'click',
@@ -661,9 +665,10 @@ app.getIdNo = function(str) {
                         $curProjectPopupNorm    = $curDayBtn.next().find('.norm-input'),
                         curQuestionsViewText    = $curQuestionsView.text(),
                         curHoursViewText        = $curHoursView.text(),
-                        curProjectUnit          = $curProjectUnit.text();
-
-
+                        curProjectUnit          = $curProjectUnit.text(),
+                        $curSelectProject       = $curRow.find('.billable-select-project'),
+                        selectedValue   = Number($curSelectProject.val()),
+                        selectedProject;
 
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
@@ -671,9 +676,22 @@ app.getIdNo = function(str) {
                     };
 
                     var projectUnitViewToPopUp = function() {
-                            $curProjectPopupUnit.text(app.curProjectUnit);
-			    app.norms += '/DAY';
-                            $curProjectPopupNorm.text(app.norms);
+                        $curProjectPopupUnit.text(app.curProjectUnit);
+
+                        // get current project by id
+                        if(selectedValue != 0) {
+                            selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
+
+                            //console.log(selectedProject);
+                            app.curProjectUnitShort = selectedProject.project__projectType__code;
+                            app.curProjectUnit      = selectedProject.project__projectType__description;
+                            app.norms               = selectedProject.project__maxProductivityUnits;
+                        } else {
+                            app.norms = 0.0;
+                        }
+
+                        // Get project norms
+                        $curProjectPopupNorm.text(app.norms + '/DAY');
                     };
 
                     projectUnitViewToPopUp();
