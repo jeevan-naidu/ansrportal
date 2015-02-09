@@ -109,9 +109,10 @@ app.getById = function(arr, propName, id) {
                 changeTeamMember: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: null,
+                    setZeroList: [23],
                     setEmptyList: null
-                }
+                },
+                setEnableList: [24]
             });
         }
 
@@ -127,9 +128,10 @@ app.getById = function(arr, propName, id) {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [7],
+                    setZeroList: [8],
                     setEmptyList: null
-                }
+                },
+                setEnableList: [7, 9]
             });
         }
 
@@ -230,7 +232,7 @@ app.getById = function(arr, propName, id) {
                     setZeroList: null,
                     setEmptyList: null
                 },
-                setEnableList: [7]
+                setEnableList: [8]
             });
         }
 
