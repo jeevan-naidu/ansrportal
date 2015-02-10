@@ -145,16 +145,16 @@ def Timesheet(request):
             changedEndDate = datetime.strptime(
                 request.POST.get('enddate'), '%d%m%Y'
             ).date()
-            mondayTotal = 0
-            tuesdayTotal = 0
-            wednesdayTotal = 0
-            thursdayTotal = 0
-            fridayTotal = 0
-            saturdayTotal = 0
-            sundayTotal = 0
-            weekTotal = 0
-            billableTotal = 0
-            nonbillableTotal = 0
+            mondayTotal = 0.0
+            tuesdayTotal = 0.0
+            wednesdayTotal = 0.0
+            thursdayTotal = 0.0
+            fridayTotal = 0.0
+            saturdayTotal = 0.0
+            sundayTotal = 0.0
+            weekTotal = 0.0
+            billableTotal = 0.0
+            nonbillableTotal = 0.0
             weekHolidays = []
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
@@ -189,22 +189,22 @@ def Timesheet(request):
                     del(timesheet.cleaned_data['total'])
                     for k, v in timesheet.cleaned_data.iteritems():
                         if k == 'mondayH':
-                            mondayTotal += v
+                            mondayTotal += float(v)
                         elif k == 'tuesdayH':
-                            tuesdayTotal += v
+                            tuesdayTotal += float(v)
                         elif k == 'wednesdayH':
-                            wednesdayTotal += v
+                            wednesdayTotal += float(v)
                         elif k == 'thursdayH':
-                            thursdayTotal += v
+                            thursdayTotal += float(v)
                         elif k == 'fridayH':
-                            fridayTotal += v
+                            fridayTotal += float(v)
                         elif k == 'saturdayH':
-                            saturdayTotal += v
+                            saturdayTotal += float(v)
                         elif k == 'sundayH':
-                            sundayTotal += v
+                            sundayTotal += float(v)
                         elif k == 'totalH':
-                            billableTotal += v
-                            weekTotal += v
+                            billableTotal += float(v)
+                            weekTotal += float(v)
                         timesheetDict[k] = v
                     timesheetList.append(timesheetDict.copy())
                     timesheetDict.clear()
@@ -217,22 +217,22 @@ def Timesheet(request):
                     del(activity.cleaned_data['DELETE'])
                     for k, v in activity.cleaned_data.iteritems():
                         if k == 'activity_monday':
-                            mondayTotal += v
+                            mondayTotal += float(v)
                         elif k == 'activity_tuesday':
-                            tuesdayTotal += v
+                            tuesdayTotal += float(v)
                         elif k == 'activity_wednesday':
-                            wednesdayTotal += v
+                            wednesdayTotal += float(v)
                         elif k == 'activity_thursday':
-                            thursdayTotal += v
+                            thursdayTotal += float(v)
                         elif k == 'activity_friday':
-                            fridayTotal += v
+                            fridayTotal += float(v)
                         elif k == 'activity_saturday':
-                            saturdayTotal += v
+                            saturdayTotal += float(v)
                         elif k == 'activity_sunday':
-                            sundayTotal += v
+                            sundayTotal += float(v)
                         elif k == 'total':
-                            nonbillableTotal += v
-                            weekTotal += v
+                            nonbillableTotal += float(v)
+                            weekTotal += float(v)
                         activityDict[k] = v
                     activitiesList.append(activityDict.copy())
                     activityDict.clear()

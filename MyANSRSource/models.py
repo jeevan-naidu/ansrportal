@@ -147,28 +147,36 @@ class TimeSheetEntry(models.Model):
     # Effort capture
     mondayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Mon")
-    mondayH = models.IntegerField(default=0, verbose_name="Mon")
+    mondayH = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Mon")
     tuesdayQ = models.DecimalField(default=0.0, max_digits=12,
                                    decimal_places=2, verbose_name="Tue")
-    tuesdayH = models.IntegerField(default=0, verbose_name="Tue")
+    tuesdayH = models.DecimalField(default=0.0, max_digits=12,
+                                   decimal_places=2, verbose_name="Tue")
     wednesdayQ = models.DecimalField(default=0.0, max_digits=12,
                                      decimal_places=2, verbose_name="Wed")
-    wednesdayH = models.IntegerField(default=0, verbose_name="Wed")
+    wednesdayH = models.DecimalField(default=0.0, max_digits=12,
+                                     decimal_places=2, verbose_name="Wed")
     thursdayQ = models.DecimalField(default=0.0, max_digits=12,
                                     decimal_places=2, verbose_name="Thu")
-    thursdayH = models.IntegerField(default=0, verbose_name="Thu")
+    thursdayH = models.DecimalField(default=0.0, max_digits=12,
+                                    decimal_places=2, verbose_name="Thu")
     fridayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Fri")
-    fridayH = models.IntegerField(default=0, verbose_name="Fri")
+    fridayH = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Fri")
     saturdayQ = models.DecimalField(default=0.0, max_digits=12,
                                     decimal_places=2, verbose_name="Sat")
-    saturdayH = models.IntegerField(default=0, verbose_name="Sat")
+    saturdayH = models.DecimalField(default=0.0, max_digits=12,
+                                    decimal_places=2, verbose_name="Sat")
     sundayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Sun")
-    sundayH = models.IntegerField(default=0, verbose_name="Sun")
+    sundayH = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Sun")
     totalQ = models.DecimalField(default=0.0, max_digits=12,
                                  decimal_places=2, verbose_name="Total")
-    totalH = models.IntegerField(default=0, verbose_name="Total")
+    totalH = models.DecimalField(default=0.0, max_digits=12,
+                                 decimal_places=2, verbose_name="Total")
     approved = models.BooleanField(default=False)
     hold = models.BooleanField(default=False)
     toApprove = models.BooleanField(default=False)
