@@ -452,6 +452,8 @@ def Timesheet(request):
         atDataList = []
         for eachData in cwActivityData:
             for k, v in eachData.iteritems():
+                if k == 'activity':
+                    atData['activity'] = v
                 if 'monday' in k:
                     atData['activity_monday'] = v
                 if 'tuesday' in k:

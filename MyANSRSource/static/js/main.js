@@ -273,7 +273,7 @@ app.getById = function(arr, propName, id) {
                 daysTotal: true,
                 nonBillable: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [2, 3, 4, 5, 6],
+                    setZeroList: [0, 2, 3, 4, 5, 6, 7, 8, 9],
                     setEmptyList: null
                 }
             });
@@ -731,6 +731,8 @@ app.getIdNo = function(str) {
                             }
                         }
 
+			questionsTemp = questionsTemp.toFixed(2);
+			hoursTemp = hoursTemp.toFixed(2)
                         $totalQuestions.text(questionsTemp);
                         $totalHours.text(hoursTemp);
 
