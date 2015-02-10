@@ -330,6 +330,7 @@ def Timesheet(request):
                     nonbillableTS.activity = activity
                     nonbillableTS.teamMember = request.user
                     nonbillableTS.approved = True
+                    nonbillableTS.managerFeedback = 'System Approved'
                     nonbillableTS.hold = True
                     nonbillableTS.approvedon = datetime.now()
                     for k, v in eachActivity.iteritems():
@@ -346,6 +347,7 @@ def Timesheet(request):
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.billable = True
+                    billableTS.managerFeedback = 'System Approved'
                     billableTS.approved = True
                     billableTS.approvedon = datetime.now()
                     billableTS.hold = True
