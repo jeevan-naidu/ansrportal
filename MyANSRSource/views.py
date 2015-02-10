@@ -1225,6 +1225,12 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Basic Information':
+            ptId = self.storage.get_step_data('Define Project')[
+                'Define Project-projectType'
+            ]
+            data = {'pt': projectType.objects.get(id=int(ptId)).description}
+            context.update(data)
         if self.steps.current == 'Define Project':
             if form.is_valid():
                 bookId = form.cleaned_data['book']

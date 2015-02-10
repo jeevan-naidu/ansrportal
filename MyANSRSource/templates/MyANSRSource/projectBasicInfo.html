@@ -22,6 +22,12 @@
 							<span class="required">*</span>
 						{% endif %}
 				</td>
+				{% if field.label == "Norm" %}
+                                <td>
+					<span class="col-lg-8">{{ field }}</span> 
+					<span class="col-lg-4"><b><span class="label label-default form-control"> {{ pt  }} /  DAY</span></b></span>
+				</td>
+				{% else %}
 				{% for choice in field %}
 					{% if field.label == "Project Stage" %}
 					<td class="col-lg-1">{{ choice }}</td>
@@ -29,6 +35,7 @@
 					<td class="col-lg-1">{{ choice }}</td>
 					{% endif %}
 				{% endfor %}
+				{% endif %}
 			</tr>
 		{% endfor %}
 	</table>

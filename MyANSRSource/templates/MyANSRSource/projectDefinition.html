@@ -18,7 +18,7 @@
                     <table class="table">
                         {% for field in form %}
                             <tr>
-                                <td class="col-xs-6">
+                                <td class="col-lg-6">
                                         {{ field.label }}
                                         {% if field.field.required %}
                                             <span class="required">*</span>
@@ -34,7 +34,15 @@
                                             </span>
                                         {% endif %}
                                 </td>
-                                <td class="col-xs-6">{{ field }}</td>
+                                        {% if field.label == 'Planned Effort' or field.label == 'Contigency Effort' %}
+                                <td class="col-lg-6">
+					<span class="col-lg-8">{{ field }}</span> 
+					<span class="col-lg-4"><b><span class="label label-default form-control">  /  PH(s)</span></b></span>
+					{% else %}
+                                <td class="col-lg-6">
+						{{ field }}
+					{% endif %}
+				</td>
                             </tr>
                         {% endfor %}
                     </table>
