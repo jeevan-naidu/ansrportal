@@ -314,6 +314,8 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
+                if 'save' not in request.POST:
+                    messages.warning(request, 'Your timesheet has been sent to your manager for approval')
             elif 'save' not in request.POST:
                 # Save Timesheet
                 for eachActivity in activitiesList:
@@ -354,7 +356,40 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
-            return HttpResponseRedirect(request.get_full_path())
+                messages.success(request, 'Your timesheet has been approved')
+            tsContent = [k.cleaned_data for k in timesheets]
+            tsFormset = formset_factory(tsform,
+                                        extra=0,
+                                        can_delete=True)
+            tsFormset = tsFormset(initial=tsContent)
+            atContent = [k.cleaned_data for k in activities]
+            atFormset = formset_factory(ActivityForm,
+                                        extra=0,
+                                        can_delete=True)
+            atFormset = atFormset(initial=atContent, prefix='at')
+            if request.GET.get('week') == 'prev':
+                weekstartDate = datetime.strptime(
+                    request.GET.get('startdate'), '%d%m%Y'
+                ).date() - timedelta(days=7)
+                ansrEndDate = datetime.strptime(
+                    request.GET.get('enddate'), '%d%m%Y'
+                ).date() - timedelta(days=7)
+                disabled = 'prev'
+            elif request.GET.get('week') == 'next':
+                disabled = 'next'
+            if 'save' in request.POST:
+                msg = 'Your timesheet has been saved. You can continue to \
+                    make changes. Please submit your timesheet once \
+                    you have completed it'
+                messages.success(request, msg)
+            data = {'weekstartDate': weekstartDate,
+                    'weekendDate': ansrEndDate,
+                    'disabled': disabled,
+                    'tsFormset': tsFormset,
+                    'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
+                                  'Fri', 'Sat', 'Sun'],
+                    'atFormset': atFormset}
+            return renderTimesheet(request, data)
         else:
             if request.GET.get('week') == 'prev':
                 weekstartDate = datetime.strptime(
@@ -391,7 +426,7 @@ def Timesheet(request):
                     'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
                                   'Fri', 'Sat', 'Sun'],
                     'tsFormset': tsFormset,
-                    'hold': False,
+                    'hold': True,
                     'atFormset': atFormset}
             return render(request, 'MyANSRSource/timesheetEntry.html', data)
     else:
@@ -575,14 +610,13 @@ def Timesheet(request):
                 hold = cwTimesheetData[0]['hold']
                 toApprove = cwTimesheetData[0]['toApprove']
                 if hold is True and toApprove is True:
-                    messages.warning(request,
-                                     'This timesheet is sent for approval \
-                                     to your manager')
+                    messages.warning(request, 'Your timesheet is currently pending with your manager for review')
                 else:
                     messages.warning(request,
-                                     'Rework on your timesheet')
+                                     'Please update your timesheet')
             else:
                 hold = False
+                messages.success(request, 'Please enter your timesheet for this week')
             data = {'weekstartDate': weekstartDate,
                     'weekendDate': ansrEndDate,
                     'disabled': disabled,
@@ -597,6 +631,11 @@ def Timesheet(request):
                     'othersTotal': othersTotal,
                     'atFormset': atFormset}
             return render(request, 'MyANSRSource/timesheetEntry.html', data)
+
+
+@login_required
+def renderTimesheet(request, data):
+    return render(request, 'MyANSRSource/timesheetEntry.html', data)
 
 
 @login_required
