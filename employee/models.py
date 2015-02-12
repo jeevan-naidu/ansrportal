@@ -311,12 +311,13 @@ class Education(models.Model):
         blank=False)
 
     def __unicode__(self):
-        return '{0},{1},{2},{3},{4}'.format(
-            self.degree,
+        return '{0}({4})-{3} / {1} to {2}'.format(
+            self.name,
             self.from_date,
             self.to_date,
             self.institute,
-            self.overall_marks)
+            self.specialization
+        )
 
 
 class PreviousEmployment(models.Model):
