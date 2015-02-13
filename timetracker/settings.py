@@ -223,3 +223,6 @@ MYANSRSOURCE_GROUP = 'MyANSRSourceUsers'
 TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
 TEMPLATED_EMAIL_TEMPLATE_DIR = 'email/'  # Use '' for top level template dir
 TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
+
+#Backup directory
+BACKUPDIR='.backup'
