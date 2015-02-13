@@ -236,20 +236,24 @@ class ProjectMilestone(models.Model):
 
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
-    member = models.ForeignKey(User)
+    member = models.ForeignKey(User, blank=True, null=True)
     role = models.ForeignKey(
         employee.models.Designation,
         verbose_name="Role",
+        blank=True,
         default=None,
-        null=False,
+        null=True,
     )
     startDate = models.DateField(verbose_name='Start date on project',
+                                 blank=True,
                                  default=timezone.now)
     endDate = models.DateField(verbose_name='End date on project',
+                               blank=True,
                                default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
+                                        blank=True,
                                         verbose_name="Planned Effort")
-    rate = models.IntegerField(default=100, verbose_name="%")
+    rate = models.IntegerField(default=100, verbose_name="%", blank=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

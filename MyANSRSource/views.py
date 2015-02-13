@@ -1203,18 +1203,19 @@ class CreateProjectWizard(SessionWizardView):
                         'disabled'
                     ] = 'True'
                 if eachForm.is_valid():
-                    c.setdefault(eachForm.cleaned_data['member'], []
-                                 ).append(eachForm.cleaned_data['rate'])
-                    if eachForm.cleaned_data['rate'] > 100:
-                        rate = eachForm.cleaned_data['rate']
-                        errors = eachForm._errors.setdefault(rate, ErrorList())
-                        errors.append(u'% value cannot be greater than 100')
-                    for k, v in c.iteritems():
-                        if sum(tuple(v)) > 100:
-                            errors = eachForm._errors.setdefault(
-                                sum(tuple(v)), ErrorList())
-                            errors.append(
-                                u'No person can have more than 100% as effort')
+                    if eachForm.cleaned_data['member'] is not None:
+                        c.setdefault(eachForm.cleaned_data['member'], []
+                                    ).append(eachForm.cleaned_data['rate'])
+                        if eachForm.cleaned_data['rate'] > 100:
+                            rate = eachForm.cleaned_data['rate']
+                            errors = eachForm._errors.setdefault(rate, ErrorList())
+                            errors.append(u'% value cannot be greater than 100')
+                        for k, v in c.iteritems():
+                            if sum(tuple(v)) > 100:
+                                errors = eachForm._errors.setdefault(
+                                    sum(tuple(v)), ErrorList())
+                                errors.append(
+                                    u'No person can have more than 100% as effort')
 
         if step == 'Financial Milestones':
             internalStatus = self.storage.get_step_data('Basic Information')[
@@ -1296,19 +1297,20 @@ class CreateProjectWizard(SessionWizardView):
             ]
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
-            if hasattr(self.request.user, 'employee'):
-                locationId = self.request.user.employee.location
-                holidays = Holiday.objects.filter(
-                    location=locationId
-                ).values('name', 'date')
-                holidays = Holiday.objects.all().values('name', 'date')
-                for holiday in holidays:
-                    holiday['date'] = int(
-                        holiday['date'].strftime("%s")) * 1000
-                data = {'data': list(holidays)}
-            else:
-                data = {'data': ''}
-            context.update({'holidayList': json.dumps(data)})
+            if form.is_valid():
+                if hasattr(self.request.user, 'employee'):
+                    locationId = self.request.user.employee.location
+                    holidays = Holiday.objects.filter(
+                        location=locationId
+                    ).values('name', 'date')
+                    holidays = Holiday.objects.all().values('name', 'date')
+                    for holiday in holidays:
+                        holiday['date'] = int(
+                            holiday['date'].strftime("%s")) * 1000
+                    data = {'data': list(holidays)}
+                else:
+                    data = {'data': ''}
+                context.update({'holidayList': json.dumps(data)})
         return context
 
     def get_form_initial(self, step):
@@ -1344,28 +1346,29 @@ class CreateProjectWizard(SessionWizardView):
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
             flagData[k] = v
         effortTotal = 0
-        for teamData in [form.cleaned_data for form in form_list][2]:
-            teamDataCounter += 1
-            for k, v in teamData.iteritems():
-                if k == 'plannedEffort':
-                    effortTotal += v
-                k = "{0}-{1}".format(k, teamDataCounter)
-                changedTeamData[k] = v
-            startDate = 'startDate-{0}'.format(teamDataCounter)
-            changedTeamData[startDate] = changedTeamData.get(
-                startDate
-            ).strftime('%Y-%m-%d')
-            endDate = 'endDate-{0}'.format(teamDataCounter)
-            changedTeamData[endDate] = changedTeamData.get(
-                endDate
-            ).strftime('%Y-%m-%d')
-            teamMemberId = 'teamMemberId-{0}'.format(teamDataCounter)
-            member = 'member-{0}'.format(teamDataCounter)
-            changedTeamData[teamMemberId] = changedTeamData.get(member).id
-            DELETE = 'DELETE-{0}'.format(teamDataCounter)
-            del changedTeamData[DELETE]
-            cleanedTeamData.append(changedTeamData.copy())
-            changedTeamData.clear()
+        if [form.cleaned_data for form in form_list][2][0]['member'] is not None:
+            for teamData in [form.cleaned_data for form in form_list][2]:
+                teamDataCounter += 1
+                for k, v in teamData.iteritems():
+                    if k == 'plannedEffort':
+                        effortTotal += v
+                    k = "{0}-{1}".format(k, teamDataCounter)
+                    changedTeamData[k] = v
+                startDate = 'startDate-{0}'.format(teamDataCounter)
+                changedTeamData[startDate] = changedTeamData.get(
+                    startDate
+                ).strftime('%Y-%m-%d')
+                endDate = 'endDate-{0}'.format(teamDataCounter)
+                changedTeamData[endDate] = changedTeamData.get(
+                    endDate
+                ).strftime('%Y-%m-%d')
+                teamMemberId = 'teamMemberId-{0}'.format(teamDataCounter)
+                member = 'member-{0}'.format(teamDataCounter)
+                changedTeamData[teamMemberId] = changedTeamData.get(member).id
+                DELETE = 'DELETE-{0}'.format(teamDataCounter)
+                del changedTeamData[DELETE]
+                cleanedTeamData.append(changedTeamData.copy())
+                changedTeamData.clear()
 
         if [form.cleaned_data for form in form_list][1]['internal'] is False:
             for milestoneData in [form.cleaned_data for form in form_list][3]:
