@@ -275,3 +275,10 @@ body {
 .training { 
 	background-color : #176CED;
 }
+
+.ansr-disabled {
+	pointer-events: none;
+	cursor: not-allowed;
+	box-shadow: none;
+	opacity: 0.65;
+}
