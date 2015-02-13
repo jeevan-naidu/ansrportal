@@ -365,13 +365,15 @@
     	<button type="submit" value="save" name="save" class="btn btn-info disabled">Save Timesheet</button>
     {% else %}
     	<button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
+    	<a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
 	<script>
-		function display_alert()
-		{
-			  return confirm("Do you want to submit your timesheet?");
-		}
+ 		$(document).on("click", "#submitTS", function(e) {		
+			bootbox.confirm("Once submitted, your timesheet will be approved by the system and cannot be modified. If you wanted to save for now and change it later, please click cancel and press the save button. Otherwise please click OK", function(result) {
+				if (result)
+					$("#timesheet").submit();		
+			});			
+		});			
 	</script>
-    	<button type="submit" onclick="return display_alert()" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</button>
     {% endif %}
  </button>
  </form>
