@@ -29,8 +29,6 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ChangeProjectMilestoneForm, ChangeProjectForm, \
     CloseProjectMilestoneForm
 
-import groupsupport
-
 import CompanyMaster
 from CompanyMaster.models import Holiday
 import employee
@@ -117,25 +115,19 @@ def loginResponse(request, form, template):
 @login_required
 def Timesheet(request):
     # Creating Formset
-    tsform = TimesheetFormset(request.user)
-    tsFormset = formset_factory(
-        tsform, extra=1, can_delete=True
-    )
-    atFormset = formset_factory(
-        ActivityForm, extra=1, can_delete=True
-    )
     # Week Calculation.
-    today = datetime.now().date()
-    minAutoApprove = 36
-    maxAutoApprove = 44
     leaveDayWork = False
-    weekstartDate = today - timedelta(days=datetime.now().date().weekday())
-    ansrEndDate = weekstartDate + timedelta(days=6)
-    disabled = 'next'
     # Getting the form values and storing it to DB.
     tsStatus = {}
     if request.method == 'POST':
         # Getting the forms with submitted values
+        tsform = TimesheetFormset(request.user)
+        tsFormset = formset_factory(
+            tsform, extra=1, can_delete=True
+        )
+        atFormset = formset_factory(
+            ActivityForm, extra=1, can_delete=True
+        )
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
         # User values for timsheet
@@ -242,7 +234,7 @@ def Timesheet(request):
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
-            elif (weekTotal < minAutoApprove) | (weekTotal > maxAutoApprove) | \
+            elif (weekTotal < 36) | (weekTotal > 44) | \
                  (billableTotal > 44) | (nonbillableTotal > 40) | \
                  (leaveDayWork is True):
                 for eachActivity in activitiesList:
@@ -259,8 +251,7 @@ def Timesheet(request):
                     nonbillableTS.teamMember = request.user
                     if 'save' not in request.POST:
                         nonbillableTS.hold = True
-                    if (weekTotal < minAutoApprove) | \
-                            (weekTotal > maxAutoApprove):
+                    if (weekTotal < 36) | (weekTotal > 44):
                         nonbillableTS.exception = \
                             '10% deviation in totalhours for this week'
                     elif nonbillableTotal > 40:
@@ -288,6 +279,7 @@ def Timesheet(request):
                         elif k == 'activity':
                             nonbillableTS.activity = v
                     nonbillableTS.save()
+                    eachActivity['atId'] = nonbillableTS.id
                 tsStatus = []
                 for eachTimesheet in timesheetList:
                     statusD = {}
@@ -303,8 +295,7 @@ def Timesheet(request):
                     if 'save' not in request.POST:
                         billableTS.hold = True
                     billableTS.billable = True
-                    if (weekTotal < minAutoApprove) | \
-                            (weekTotal > maxAutoApprove):
+                    if (weekTotal < 36) | (weekTotal > 44):
                         billableTS.exception = \
                             '10% deviation in totalhours for this week'
                     elif billableTotal > 40:
@@ -315,11 +306,16 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
+                    eachTimesheet['tsId'] = billableTS.id
                     statusD['toApprove'] = True
                     statusD['id'] = int(billableTS.project.id)
                     tsStatus.append(statusD)
                 if 'save' not in request.POST:
-                    messages.warning(request, 'Your timesheet has been sent to your manager for approval')
+                    messages.warning(
+                        request,
+                        'Your timesheet has been sent to your \
+                        manager for approval')
+                    hold = True
             elif 'save' not in request.POST:
                 # Save Timesheet
                 for eachActivity in activitiesList:
@@ -342,9 +338,10 @@ def Timesheet(request):
                     for k, v in eachActivity.iteritems():
                         setattr(nonbillableTS, k, v)
                     nonbillableTS.save()
+                    eachActivity['atId'] = nonbillableTS.id
                 tsStatus = []
                 for eachTimesheet in timesheetList:
-                    statusD={}
+                    statusD = {}
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
                             id=eachTimesheet['tsId']
@@ -362,35 +359,28 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         setattr(billableTS, k, v)
                     billableTS.save()
+                    eachTimesheet['tsId'] = billableTS.id
                     statusD['approved'] = True
                     statusD['id'] = int(billableTS.project.id)
                     tsStatus.append(statusD)
+                    hold = False
                 messages.success(request, 'Your timesheet has been approved')
-            if request.GET.get('week') == 'prev':
-                weekstartDate = datetime.strptime(
-                    request.GET.get('startdate'), '%d%m%Y'
-                ).date() - timedelta(days=7)
-                ansrEndDate = datetime.strptime(
-                    request.GET.get('enddate'), '%d%m%Y'
-                ).date() - timedelta(days=7)
-                disabled = 'prev'
-            elif request.GET.get('week') == 'next':
-                disabled = 'next'
+            dates = switchWeeks(request)
             if 'save' in request.POST:
                 msg = 'Your timesheet has been saved. You can continue to \
                     make changes. Please submit your timesheet once \
                     you have completed it'
                 messages.success(request, msg)
-            tsContent = [eachTS.cleaned_data for eachTS in timesheets]
-            atContent = [eachTS.cleaned_data for eachTS in activities]
+                hold = False
+            tsContent = timesheetList
+            atContent = activitiesList
             tsErrorList = []
-            hold = True
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
             tsErrorList = timesheets.errors
             tsContent = [k.cleaned_data for k in timesheets]
-            for eachErrorData in tsError:
+            for eachErrorData in tsContent:
                 for k, v in eachErrorData.iteritems():
                     if k == 'project':
                         ptype = Project.objects.filter(
@@ -406,15 +396,19 @@ def Timesheet(request):
                 'extra': 0,
                 'ErrorList': tsErrorList,
                 'tsFormList': tsContent,
-                'atFormList': atContent}
-        return renderTimesheet(data, tsform, ActivityForm)
+                'atFormList': atContent,
+                'tsId': billableTS.id,
+                'atId': nonbillableTS.id}
+        return renderTimesheet(request, data)
     else:
         # Switch dates back and forth
         dates = switchWeeks(request)
 
         # Getting Data for timesheet and activity
-        unApprovedData = getUnapprovedDataList(dates['start'], dates['end'])
-        approvedData = getApprovedDataList(dates['start'], dates['end'])
+        unApprovedData = getUnapprovedDataList(request, dates['start'],
+                                               dates['end'])
+        approvedData = getApprovedDataList(request, dates['start'],
+                                           dates['end'])
 
         # Common values initialization
         extra = 0
@@ -429,7 +423,7 @@ def Timesheet(request):
 
         # To be approved TS data
         elif len(unApprovedData['tsData']):
-            hold = cwTimesheetData[0]['hold']
+            hold = unApprovedData['tsData'][0]['hold']
             tsFormList = unApprovedData['tsData']
             atFormList = unApprovedData['atData']
             if hold:
@@ -452,11 +446,15 @@ def Timesheet(request):
                 'extra': extra,
                 'tsFormList': tsFormList,
                 'atFormList': atFormList}
-        return renderTimesheet(data, tsform, ActivityForm)
+        return renderTimesheet(request, data)
 
 
 @login_required
 def switchWeeks(request):
+    today = datetime.now().date()
+    weekstartDate = today - timedelta(days=datetime.now().date().weekday())
+    ansrEndDate = weekstartDate + timedelta(days=6)
+    disabled = 'next'
     if request.GET.get('week') == 'prev':
         weekstartDate = datetime.strptime(
             request.GET.get('startdate'), '%d%m%Y'
@@ -482,9 +480,9 @@ def getUnapprovedDataList(request, weekstartDate, ansrEndDate):
             project__isnull=True
         )
     ).values('id', 'activity', 'mondayH', 'tuesdayH', 'wednesdayH',
-                'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
-                'managerFeedback'
-                )
+             'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
+             'managerFeedback', 'approved', 'hold'
+             )
     cwTimesheetData = TimeSheetEntry.objects.filter(
         Q(
             wkstart=weekstartDate,
@@ -494,11 +492,11 @@ def getUnapprovedDataList(request, weekstartDate, ansrEndDate):
             activity__isnull=True
         )
     ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
-                'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
-                'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-                'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ',
-                'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code'
-                )
+             'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+             'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
+             'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
+             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code'
+             )
 
     # Changing data TS data
     tsData = {}
@@ -557,8 +555,9 @@ def getApprovedDataList(request, weekstartDate, ansrEndDate):
             project__isnull=True
         )
     ).values('activity', 'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
-                'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback'
-                )
+             'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback',
+             'approved', 'hold'
+             )
     cwApprovedTimesheetData = TimeSheetEntry.objects.filter(
         Q(
             wkstart=weekstartDate,
@@ -568,79 +567,81 @@ def getApprovedDataList(request, weekstartDate, ansrEndDate):
             activity__isnull=True
         )
     ).values('project__name', 'location__name', 'chapter__name', 'mondayH',
-                'tuesdayH', 'wednesdayH', 'thursdayH', 'task', 'id',
-                'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback'
-                )
+             'tuesdayH', 'wednesdayH', 'thursdayH', 'task', 'id',
+             'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback',
+             'approved', 'hold'
+             )
     return {'tsData': cwApprovedTimesheetData, 'atData': cwApprovedActivityData}
 
 
 @login_required
-def renderTimesheet(request, data, tsform, ActivityForm):
-        billableHours = TimeSheetEntry.objects.filter(
-            Q(
-                wkstart=data['weekstartDate'],
-                wkend=data['weekendDate'],
-                teamMember=request.user,
-                approved=False,
-                activity__isnull=True
-            ),
-            ~Q(task='I')
-        ).values('totalH')
-        idleHours = TimeSheetEntry.objects.filter(
-            Q(
-                wkstart=data['weekstartDate'],
-                wkend=data['weekendDate'],
-                task='I',
-                teamMember=request.user,
-                approved=False,
-                activity__isnull=True
-            ),
-        ).values('totalH')
-        othersHours = TimeSheetEntry.objects.filter(
-            Q(
-                wkstart=data['weekstartDate'],
-                wkend=data['weekendDate'],
-                teamMember=request.user,
-                approved=False,
-                project__isnull=True
-            ),
-        ).values('totalH')
-        bTotal = 0
-        for billable in billableHours:
-            bTotal += billable['totalH']
-        idleTotal = 0
-        for idle in idleHours:
-            idleTotal += idle['totalH']
-        othersTotal = 0
-        for others in othersHours:
-            othersTotal += others['totalH']
-        tsFormset = formset_factory(tsform,
-                                    extra=data['extra'],
-                                    can_delete=True)
-        atFormset = formset_factory(ActivityForm,
-                                    extra=data['extra'],
-                                    can_delete=True)
-        if len(data['tsFormList']):
-            atFormset = atFormset(initial=data['atFormList'], prefix='at')
-            tsFormset = tsFormset(initial=data['tsFormList'])
-        else:
-            atFormset = atFormset(prefix='at')
-        finalData = {'weekstartDate': data['weekstartDate'],
-                     'weekendDate': data['weekendDate'],
-                     'disabled': data['disabled'],
-                     'hold': data['hold'],
-                     'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
-                                    'Fri', 'Sat', 'Sun'],
-                     'billableHours': billableHours,
-                     'idleHours': idleHours,
-                     'bTotal': bTotal,
-                     'idleTotal': idleTotal,
-                     'othersTotal': othersTotal,
-                     'tsFormset': tsFormset,
-                     'atFormset': atFormset}
-        if 'tsErrorList' in data:
-            finalData['tsErrorList'] = data['tsErrorList']
-        return render(request, 'MyANSRSource/timesheetEntry.html', finalData)
+def renderTimesheet(request, data):
+    billableHours = TimeSheetEntry.objects.filter(
+        Q(
+            wkstart=data['weekstartDate'],
+            wkend=data['weekendDate'],
+            teamMember=request.user,
+            approved=False,
+            activity__isnull=True
+        ),
+        ~Q(task='I')
+    ).values('totalH')
+    idleHours = TimeSheetEntry.objects.filter(
+        Q(
+            wkstart=data['weekstartDate'],
+            wkend=data['weekendDate'],
+            task='I',
+            teamMember=request.user,
+            approved=False,
+            activity__isnull=True
+        ),
+    ).values('totalH')
+    othersHours = TimeSheetEntry.objects.filter(
+        Q(
+            wkstart=data['weekstartDate'],
+            wkend=data['weekendDate'],
+            teamMember=request.user,
+            approved=False,
+            project__isnull=True
+        ),
+    ).values('totalH')
+    bTotal = 0
+    for billable in billableHours:
+        bTotal += billable['totalH']
+    idleTotal = 0
+    for idle in idleHours:
+        idleTotal += idle['totalH']
+    othersTotal = 0
+    for others in othersHours:
+        othersTotal += others['totalH']
+    tsform = TimesheetFormset(request.user)
+    tsFormset = formset_factory(tsform,
+                                extra=data['extra'],
+                                can_delete=True)
+    atFormset = formset_factory(ActivityForm,
+                                extra=data['extra'],
+                                can_delete=True)
+    if len(data['tsFormList']):
+        atFormset = atFormset(initial=data['atFormList'], prefix='at')
+        tsFormset = tsFormset(initial=data['tsFormList'])
+    else:
+        atFormset = atFormset(prefix='at')
+    finalData = {'weekstartDate': data['weekstartDate'],
+                 'weekendDate': data['weekendDate'],
+                 'disabled': data['disabled'],
+                 'hold': data['hold'],
+                 'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
+                               'Fri', 'Sat', 'Sun'],
+                 'billableHours': billableHours,
+                 'idleHours': idleHours,
+                 'bTotal': bTotal,
+                 'idleTotal': idleTotal,
+                 'othersTotal': othersTotal,
+                 'tsFormset': tsFormset,
+                 'atFormset': atFormset}
+    if 'tsErrorList' in data:
+        finalData['tsErrorList'] = data['tsErrorList']
+    return render(request, 'MyANSRSource/timesheetEntry.html', finalData)
 
 
 @login_required
@@ -812,7 +813,8 @@ def checkUser(userName, password, request, form):
         else:
             messages.error(
                 request,
-                'Invalid userid & password / User could not be found on Active Directory.')
+                'Invalid userid & password / User could not be found \
+                on Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
     except LDAPError as e:
         messages.error(
@@ -823,7 +825,8 @@ def checkUser(userName, password, request, form):
         messages.error(
             request,
             'Unknown Active directory error occured.\
-            Please check your userid/password.  Do not use ANSR prefix in your username.')
+            Please check your userid/password.  Do not use ANSR prefix \
+            in your username.')
         return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
@@ -1033,8 +1036,8 @@ class ChangeProjectWizard(SessionWizardView):
                         elif eachForm.cleaned_data['amount'] == 0:
                             amount = form.cleaned_data[0]['amount']
                             errors = eachForm._errors.setdefault(
-                                    amount,
-                                    ErrorList())
+                                amount,
+                                ErrorList())
                             errors.append(u'Financial Milestone amount \
                                         cannot be 0')
             if self.request.session['changed'] is False:
@@ -1251,15 +1254,15 @@ class CreateProjectWizard(SessionWizardView):
                                 if eachForm.cleaned_data['amount'] > 0:
                                     amount = form.cleaned_data[0]['amount']
                                     errors = eachForm._errors.setdefault(
-                                    amount,
-                                    ErrorList())
+                                        amount,
+                                        ErrorList())
                                     errors.append(u'Please select milestone as \
                                                   financial')
                             elif eachForm.cleaned_data['amount'] == 0:
                                 amount = form.cleaned_data[0]['amount']
                                 errors = eachForm._errors.setdefault(
-                                amount,
-                                ErrorList())
+                                    amount,
+                                    ErrorList())
                                 errors.append(u'Financial Milestone amount \
                                             cannot be 0')
                             if float(projectTotal) != float(totalRate):
@@ -1284,7 +1287,7 @@ class CreateProjectWizard(SessionWizardView):
                 bookId = form.cleaned_data['book']
                 chapters = form.cleaned_data['chapters']
                 chapterId = [int(eachChapter.id) for eachChapter in chapters]
-                data = {'bookId': bookId.id , 'chapterId': chapterId}
+                data = {'bookId': bookId.id, 'chapterId': chapterId}
                 context.update(data)
 
         if self.steps.current == 'Financial Milestones':
@@ -1416,7 +1419,8 @@ def saveProject(request):
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
-            pr.maxProductivityUnits = float(request.POST.get('maxProductivityUnits'))
+            pr.maxProductivityUnits = float(
+                request.POST.get('maxProductivityUnits'))
             pr.startDate = request.POST.get('startDate')
             pr.endDate = request.POST.get('endDate')
             pr.totalValue = float(request.POST.get('totalValue'))
@@ -1495,7 +1499,8 @@ def saveProject(request):
                     pms.financial = (request.POST.get(financial) == 'True')
                     pms.amount = float(request.POST.get(amount))
                     pms.save()
-                except ValueError as e:  # Assuming any of the data conversions fail
+                # Assuming any of the data conversions fail
+                except ValueError as e:
                     # We cannot save a bad record we simply skip over
                     messages.error(request, 'DataConversion Error:' + str(e))
 
@@ -1588,8 +1593,8 @@ def ViewProject(request):
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
-                'member__username', 'role', 'startDate', 'endDate',
-                'plannedEffort', 'rate'
+            'member__username', 'role', 'startDate', 'endDate',
+            'plannedEffort', 'rate'
             )
         chapters = projectObj.values('chapters__name')
         if flagData['internal']:
