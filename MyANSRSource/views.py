@@ -63,7 +63,8 @@ CFORMS = [
     ("Change Basic Information", ChangeProjectBasicInfoForm),
     ("Change Team Members", formset_factory(
         ChangeProjectTeamMemberForm,
-        extra=0,
+        extra=1,
+        max_num=1,
         can_delete=True
     )),
     ("Change Milestones", formset_factory(
