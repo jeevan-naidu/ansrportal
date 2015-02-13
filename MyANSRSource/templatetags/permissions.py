@@ -3,6 +3,11 @@ from django import template
 register = template.Library()
 
 
+@register.filter('create_project')
+def manage_project(user):
+    return user.has_perm('MyANSRSource.create_project')
+
+
 @register.filter('manage_project')
 def manage_project(user):
     return user.has_perm('MyANSRSource.manage_project')
