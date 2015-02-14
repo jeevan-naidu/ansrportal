@@ -180,7 +180,6 @@ class TimeSheetEntry(models.Model):
                                  decimal_places=2, verbose_name="Total")
     approved = models.BooleanField(default=False)
     hold = models.BooleanField(default=False)
-    toApprove = models.BooleanField(default=False)
 
     # Approval related details
     approvedon = models.DateTimeField(default=None, null=True, blank=True,

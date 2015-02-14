@@ -67,6 +67,10 @@ class ActivityForm(forms.Form):
     atId = forms.IntegerField(label="id",
                               required=False,
                               widget=forms.HiddenInput())
+    approved = forms.BooleanField(label="approved",
+                                  required=False)
+    hold = forms.BooleanField(label="hold",
+                              required=False)
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
@@ -210,6 +214,10 @@ def TimesheetFormset(currentUser):
         tsId = forms.IntegerField(label="id",
                                   required=False,
                                   widget=forms.HiddenInput())
+        approved = forms.BooleanField(label="approved",
+                                    required=False)
+        hold = forms.BooleanField(label="hold",
+                                required=False)
 
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
