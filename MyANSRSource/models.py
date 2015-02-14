@@ -121,7 +121,8 @@ class Project(models.Model):
 
     class Meta:
         permissions = (
-            ("manage_project", "Create/Manage ANSR Project"),
+            ("create_project", 'Create ANSR projects'),
+            ("manage_project", "Manage ANSR Project"),
             ("approve_timesheet", "Approve timesheets"),
             ("manage_milestones", "Manage Project Milestones"),
             )
