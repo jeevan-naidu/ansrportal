@@ -539,7 +539,7 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
 
 
 # Project Flag Form
-class ProjectFlagForm(forms.ModelForm):
+class ProjectFlagForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = Project
@@ -548,6 +548,7 @@ class ProjectFlagForm(forms.ModelForm):
             'currentProject',
             'signed',
             'internal',
+            'projectManager'
         )
         widgets = {
             'currentProject': forms.RadioSelect(
@@ -564,6 +565,8 @@ class ProjectFlagForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectFlagForm, self).__init__(*args, **kwargs)
         self.fields['maxProductivityUnits'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['projectManager'].widget.attrs['class'] = \
             "form-control"
 
 
