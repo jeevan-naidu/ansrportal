@@ -2,7 +2,7 @@
 {% block plain %}
   Hi {{first_name}},
 
-        A new Project {{ projectId }} has been created. This project will start on {{ startdate }}.  You have been added as a member of this project. You are scheduled to start on {{ mystartdate }}.  {{ pmname is the Project leader.  Please contact him/her for further details. 
+        A new Project {{ projectId }} has been created. This project will start on {{ startdate }}.  You have been assigned the role of {{ myrole }} in this project. You are scheduled to start on {{ mystartdate }}.  {{ pmname }} is the Project leader.  Please contact him/her for further details. 
 
   Thanks,
   myansrsource team
@@ -15,7 +15,7 @@
   <p>
       <dl>
         <dt>A new Project {{ projectId }} has been created. This project will start on {{ startdate }} </dt>
-        <dd>You have been added as a member of this project. You are scheduled to start on {{ mystartdate }} </dt>
+        <dd>You have been assigned the role of {{ myrole }} in this project. You are scheduled to start on {{ mystartdate }} </dt>
         <dd>{{ pmname }} is the Project leader.  Please contact him/her for further details. </dd>
       </dl>
   </p>

@@ -1553,7 +1553,7 @@ def notify(request):
     teamMembers = ProjectTeamMember.objects.filter(
         project__id=projectId
     ).values('member__email', 'member__first_name',
-             'member__last_name', 'startDate')
+             'member__last_name', 'startDate', 'role__name')
     for eachMember in teamMembers:
         if eachMember['member__email'] != '':
             send_templated_mail(
@@ -1567,7 +1567,8 @@ def notify(request):
                     'pmname': '{0} {1}'.format(projectDetails.projectManager.first_name,
                                                projectDetails.projectManager.last_name),
                     'startDate': projectDetails.startDate,
-                    'mystartdate': eachMember['startDate']
+                    'mystartdate': eachMember['startDate'],
+                    'myrole' : eachMember['role__name'],
                     },
             )
     data = {'projectCode': request.POST.get('projectCode'),
