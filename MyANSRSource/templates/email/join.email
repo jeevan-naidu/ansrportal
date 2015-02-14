@@ -14,13 +14,13 @@
 {% block html %}
   <p>Hi {{first_name}},</p>
 
-  <p>You are now registered on myansrsource.  
+  <p>Thanks for registering on myansrsource portal.
       <dl>
         <dt>username</dt><dd>{{username}}</dd>
         <dt>join date</dt><dd>{{signup_date}}</dd>
       </dl>
   </p>
 
-  <p>Thanks, </p>
+  <p>Regards, </p>
   <p> myansrsource team</p>
 {% endblock %}

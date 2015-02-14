@@ -485,19 +485,13 @@ def getUnapprovedDataList(request, weekstartDate, ansrEndDate):
              'managerFeedback', 'approved', 'hold'
              )
     cwTimesheetData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=request.user,
-            approved=False,
-            activity__isnull=True
-        )
-    ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
-             'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
-             'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-             'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
-             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code'
-             )
+        Q(wkstart=weekstartDate, wkend=ansrEndDate, teamMember=request.user,
+          approved=False, activity__isnull=True)).values(
+        'id', 'project', 'location', 'chapter', 'task', 'mondayH', 'mondayQ',
+        'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH', 'thursdayH',
+        'thursdayQ', 'fridayH', 'fridayQ', 'hold', 'saturdayH', 'saturdayQ',
+        'sundayH', 'sundayQ', 'approved', 'totalH', 'totalQ',
+        'managerFeedback', 'project__projectType__code')
 
     # Changing data TS data
     tsData = {}
@@ -572,7 +566,9 @@ def getApprovedDataList(request, weekstartDate, ansrEndDate):
              'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback',
              'approved', 'hold'
              )
-    return {'tsData': cwApprovedTimesheetData, 'atData': cwApprovedActivityData}
+    return {
+        'tsData': cwApprovedTimesheetData,
+        'atData': cwApprovedActivityData}
 
 
 @login_required
@@ -1206,11 +1202,14 @@ class CreateProjectWizard(SessionWizardView):
                 if eachForm.is_valid():
                     if eachForm.cleaned_data['member'] is not None:
                         c.setdefault(eachForm.cleaned_data['member'], []
-                                    ).append(eachForm.cleaned_data['rate'])
+                                     ).append(eachForm.cleaned_data['rate'])
                         if eachForm.cleaned_data['rate'] > 100:
                             rate = eachForm.cleaned_data['rate']
-                            errors = eachForm._errors.setdefault(rate, ErrorList())
-                            errors.append(u'% value cannot be greater than 100')
+                            errors = eachForm._errors.setdefault(
+                                rate,
+                                ErrorList())
+                            errors.append(
+                                u'% value cannot be greater than 100')
                         for k, v in c.iteritems():
                             if sum(tuple(v)) > 100:
                                 errors = eachForm._errors.setdefault(
@@ -1527,8 +1526,9 @@ def WrappedCreateProjectView(request):
 @login_required
 def notify(request):
     projectId = int(request.POST.get('projectId'))
+    projectName = request.POST.get('projectName')
     projectDetails = Project.objects.get(
-        id=projectId,
+        pk=projectId,
     )
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=int(request.POST.get('customer')),
@@ -1538,13 +1538,15 @@ def notify(request):
     for eachHead in projectHead:
         if eachHead['relatedMember__email'] != '':
             send_templated_mail(
-                template_name='projectCreatedHeadEmail',
+                template_name='projectCreatedMgmt',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachHead['relatedMember__email'], ],
                 context={
                     'first_name': eachHead['relatedMember__first_name'],
-                    'projectId': projectId,
-                    'pmname': projectDetails.projectManager,
+                    'projectId': projectDetails.projectId,
+                    'projectName' : projectName,
+                    'pmname': '{0} {1}'.format(projectDetails.projectManager.first_name,
+                                               projectDetails.projectManager.last_name),
                     'startDate': projectDetails.startDate
                     },
             )
@@ -1555,18 +1557,19 @@ def notify(request):
     for eachMember in teamMembers:
         if eachMember['member__email'] != '':
             send_templated_mail(
-                template_name='projectCreatedTextEmail',
+                template_name='projectCreatedMember',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachMember['member__email'], ],
                 context={
                     'first_name': eachMember['member__first_name'],
-                    'projectId': projectId,
-                    'pmname': projectDetails.projectManager,
+                    'projectId': projectDetails.projectId,
+                    'projectName' : projectName,
+                    'pmname': '{0} {1}'.format(projectDetails.projectManager.first_name,
+                                               projectDetails.projectManager.last_name),
                     'startDate': projectDetails.startDate,
                     'mystartdate': eachMember['startDate']
                     },
             )
-    projectName = request.POST.get('projectName')
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}

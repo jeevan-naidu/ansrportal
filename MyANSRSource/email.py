@@ -10,12 +10,12 @@ def email_new_user(sender, **kwargs):
         new_user = kwargs["instance"]
         # send email to new_user.email ..
         if new_user.email:
-            print 'sending email'
             send_templated_mail(
                 template_name='join',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[new_user.email, ],
                 context={
+                    'username': new_user.username,
                     'first_name': new_user.first_name,
                     'signup_date': new_user.date_joined,
                     },
