@@ -98,6 +98,7 @@
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
+				<th>Project Manager</th>
 				<th>Norms</th>
 				<th>Is it an internal Project?</th>
 				<th>Is this a new project?</th>
@@ -105,6 +106,7 @@
 		</thead>
 		<tbody>
 		<tr>
+			<td>{{ flagData.projectManager }}</td>
 			<td>{{ flagData.maxProductivityUnits }}</td>
 			<td>
 				{% if flagData.internal == True  %}
@@ -128,7 +130,11 @@
 				{% endif %}
 			</td>
 			{% for rec, value in flagData.iteritems %}
-				<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				{% if rec == 'projectManager' %}
+					<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
+				{% else %}
+					<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				{% endif %}
 			{% endfor %}
 		</tr>
 		</tbody>
