@@ -20,7 +20,7 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
     ldap.OPT_REFERRALS: False,
     ldap.OPT_DEBUG_LEVEL: 0,
-    ldap.OPT_PROTOCOL_VERSION : 3,
+    ldap.OPT_PROTOCOL_VERSION: 3,
 }
 
 AUTHENTICATION_BACKENDS = (
@@ -28,7 +28,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     )
 
-AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
+AUTH_LDAP_SERVER_URI = "ldap://ansr-blr-pdc.ansr.com"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
 
@@ -45,7 +45,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    "OU=ANSR Users,DC=ANSR,DC=com",
+    "OU=ANSRsource,DC=ANSR,DC=com",
     ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
 
 # !important! set group type
@@ -111,6 +111,7 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'employee/emp_photo/'),
 )
 
+# When CRSF failurers happen we just ask them to relogin using our own template
 CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'
 
 # Application definition
@@ -224,5 +225,5 @@ TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
 TEMPLATED_EMAIL_TEMPLATE_DIR = 'email/'  # Use '' for top level template dir
 TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
 
-#Backup directory
-BACKUPDIR='.backup'
+# Backup directory
+BACKUPDIR = '.backup'

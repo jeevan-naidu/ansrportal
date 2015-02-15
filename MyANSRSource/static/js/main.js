@@ -95,7 +95,7 @@ app.getById = function(arr, propName, id) {
 (function() {
     $(document).ready(function() {
         var $popover = $('.popover');
-        app.norms = '0.0 / Days';
+        app.norms = '0.0 / Day';
         // Manage project
         var $changeTeamMembers = $('#change-team-members');
         if($changeTeamMembers.length > 0) {
@@ -497,18 +497,15 @@ app.getIdNo = function(str) {
                     }
                 }
 
-
                 if($element.hasClass('set-zero')) {
                     var elementType2 = $element.prop('tagName');
                     if(elementType2 === 'SELECT' || elementType2 === 'INPUT') {
                         $element.attr('value', 0);
-                        console.log($element.attr('value'));
+                        console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
                     } else {
-                        $element.text('');
+                        $element.text('0');
                     }
                 }
-
-                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });
 
