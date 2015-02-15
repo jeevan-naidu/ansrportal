@@ -121,7 +121,8 @@ class Project(models.Model):
 
     class Meta:
         permissions = (
-            ("manage_project", "Create/Manage ANSR Project"),
+            ("create_project", 'Create ANSR projects'),
+            ("manage_project", "Manage ANSR Project"),
             ("approve_timesheet", "Approve timesheets"),
             ("manage_milestones", "Manage Project Milestones"),
             )
@@ -147,31 +148,38 @@ class TimeSheetEntry(models.Model):
     # Effort capture
     mondayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Mon")
-    mondayH = models.IntegerField(default=0, verbose_name="Mon")
+    mondayH = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Mon")
     tuesdayQ = models.DecimalField(default=0.0, max_digits=12,
                                    decimal_places=2, verbose_name="Tue")
-    tuesdayH = models.IntegerField(default=0, verbose_name="Tue")
+    tuesdayH = models.DecimalField(default=0.0, max_digits=12,
+                                   decimal_places=2, verbose_name="Tue")
     wednesdayQ = models.DecimalField(default=0.0, max_digits=12,
                                      decimal_places=2, verbose_name="Wed")
-    wednesdayH = models.IntegerField(default=0, verbose_name="Wed")
+    wednesdayH = models.DecimalField(default=0.0, max_digits=12,
+                                     decimal_places=2, verbose_name="Wed")
     thursdayQ = models.DecimalField(default=0.0, max_digits=12,
                                     decimal_places=2, verbose_name="Thu")
-    thursdayH = models.IntegerField(default=0, verbose_name="Thu")
+    thursdayH = models.DecimalField(default=0.0, max_digits=12,
+                                    decimal_places=2, verbose_name="Thu")
     fridayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Fri")
-    fridayH = models.IntegerField(default=0, verbose_name="Fri")
+    fridayH = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Fri")
     saturdayQ = models.DecimalField(default=0.0, max_digits=12,
                                     decimal_places=2, verbose_name="Sat")
-    saturdayH = models.IntegerField(default=0, verbose_name="Sat")
+    saturdayH = models.DecimalField(default=0.0, max_digits=12,
+                                    decimal_places=2, verbose_name="Sat")
     sundayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Sun")
-    sundayH = models.IntegerField(default=0, verbose_name="Sun")
+    sundayH = models.DecimalField(default=0.0, max_digits=12,
+                                  decimal_places=2, verbose_name="Sun")
     totalQ = models.DecimalField(default=0.0, max_digits=12,
                                  decimal_places=2, verbose_name="Total")
-    totalH = models.IntegerField(default=0, verbose_name="Total")
+    totalH = models.DecimalField(default=0.0, max_digits=12,
+                                 decimal_places=2, verbose_name="Total")
     approved = models.BooleanField(default=False)
     hold = models.BooleanField(default=False)
-    toApprove = models.BooleanField(default=False)
 
     # Approval related details
     approvedon = models.DateTimeField(default=None, null=True, blank=True,
@@ -229,20 +237,24 @@ class ProjectMilestone(models.Model):
 
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
-    member = models.ForeignKey(User)
+    member = models.ForeignKey(User, blank=True, null=True)
     role = models.ForeignKey(
         employee.models.Designation,
         verbose_name="Role",
+        blank=True,
         default=None,
-        null=False,
+        null=True,
     )
     startDate = models.DateField(verbose_name='Start date on project',
+                                 blank=True,
                                  default=timezone.now)
     endDate = models.DateField(verbose_name='End date on project',
+                               blank=True,
                                default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
+                                        blank=True,
                                         verbose_name="Planned Effort")
-    rate = models.IntegerField(default=100, verbose_name="%")
+    rate = models.IntegerField(default=100, verbose_name="%", blank=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

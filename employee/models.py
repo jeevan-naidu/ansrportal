@@ -264,6 +264,15 @@ class Employee(models.Model):
             self.user.last_name)
 
 
+class TeamMember(User):
+
+    class Meta:
+        proxy = True
+        app_label = 'auth'
+        verbose_name = 'Team Member'
+        verbose_name_plural = 'Team Members'
+
+
 class FamilyMember(models.Model):
     employee = models.ForeignKey(User)
     name = models.CharField("Name", max_length=50, blank=False)
@@ -300,7 +309,7 @@ class Education(models.Model):
     nature_of_education = models.CharField('Nature of Education',
                                            max_length=2,
                                            blank=False,
-                                           choices = NATURE_OF_EDUCATION,
+                                           choices=NATURE_OF_EDUCATION,
                                            default=NATURE_OF_EDUCATION[0][0])
     from_date = models.DateField("From Date", blank=False)
     to_date = models.DateField("To Date", blank=False)

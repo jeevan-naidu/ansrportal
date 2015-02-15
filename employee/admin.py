@@ -1,8 +1,8 @@
 from django.contrib import admin
-from employee.models import Employee, PreviousEmployment, EmpAddress,\
-    FamilyMember, Education, Designation
-from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
+
+from employee.models import Employee, PreviousEmployment, EmpAddress,\
+    FamilyMember, Education, Designation, TeamMember
 
 
 class EmpAddressInline(admin.StackedInline):
@@ -14,6 +14,7 @@ class EmpAddressInline(admin.StackedInline):
 
     verbose_name = 'Address'
     verbose_name = 'Addresses'
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj:
             # Don't add any extra forms if
@@ -30,6 +31,7 @@ class EducationInline(admin.TabularInline):
 
     verbose_name = 'Qualification'
     verbose_name_plural = 'Qualifications'
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj:
             # Don't add any extra forms if
@@ -70,7 +72,7 @@ class PreviousEmploymentInline(admin.StackedInline):
 
 class UserInline(admin.StackedInline):
     extra = 0
-    verbose_name= 'Click to open/close...'
+    verbose_name = 'Click to open/close...'
     verbose_name_plural = 'Employee Information'
     model = Employee
     can_delete = False
@@ -85,7 +87,7 @@ class UserInline(admin.StackedInline):
         ('Employee Identification', {
             'fields': (('middle_name',),
                 ('date_of_birth', 'gender', 'nationality'),
-                ('marital_status', 'blood_group'), 'exprience'),}),
+                ('marital_status', 'blood_group'), 'exprience'), }),
         ('Contact Details', {
             'fields': (
                 ('mobile_phone', 'land_phone',
@@ -149,13 +151,20 @@ class EmployeeAdmin(OriginalUserAdmin):
         else:
             return self.ord_fieldsets
 
+    def get_queryset(self, request):
+        qs = super(OriginalUserAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            # If you are an user with is_staff = True we still wont allow
+            # you to see superuser's records.
+            qs = qs.exclude(is_superuser=True)
+            return qs
+
 
 class DesignationAdmin(admin.ModelAdmin):
     pass
 
-try:
-    admin.site.unregister(User)
-finally:
-    admin.site.register(User, EmployeeAdmin)
 
+admin.site.register(TeamMember, EmployeeAdmin)
 admin.site.register(Designation, DesignationAdmin)
