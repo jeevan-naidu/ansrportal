@@ -14,9 +14,12 @@ class Book(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
-
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Book/Title'
+        verbose_name_plural = 'Books/Titles'
 
 
 class projectType(models.Model):
@@ -44,6 +47,9 @@ class Chapter(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Chapter/Subtitle'
+        verbose_name_plural = 'Chapters/Subtitles'
 
 class Project(models.Model):
     projectType = models.ForeignKey(
