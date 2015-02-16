@@ -89,10 +89,12 @@
 			}
 			// To Filter the chapters based on the selected book
 			else {
+				$("select#id_Define_Project-chapters").html('');
 				filterChapters();
 			}
 			// To Filter the chapters based on the book selected on the fly
 			$("select#id_Define_Project-book").change(function() {
+				$("select#id_Define_Project-chapters").html('');
 				filterChapters();
 			});
 	});
