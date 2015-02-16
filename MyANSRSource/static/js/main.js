@@ -367,11 +367,22 @@ app.getIdNo = function(str) {
             
 	    lastRow.after(newRow);
 
-
-
             $formFields = newRow.find('select, input, div, span');
             formFieldsLen = $formFields.length;
             rowCount += 1;
+
+            if(options.billableTotal || options.nonBillable) {
+                var disableElms = newRow.find('.ansr-disabled'),
+                    disableElms2 = newRow.find('.disabled');
+
+                if(disableElms.length > 0) {
+                    disableElms.removeClass('ansr-disabled');
+                }
+
+                if(disableElms2.length > 0) {
+                    disableElms2.removeClass('disabled');
+                }
+            }
 
             $(rowCountElement).attr('value', rowCount);
 
@@ -437,7 +448,6 @@ app.getIdNo = function(str) {
 
                 if(options.setEditableAll) {
                     $element.removeAttr('readonly');
-
                 }
 
                 if(options.calendar) {
