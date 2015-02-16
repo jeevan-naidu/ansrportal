@@ -552,7 +552,7 @@ class ProjectFlagForm(autocomplete_light.ModelForm):
         )
         widgets = {
             'currentProject': forms.RadioSelect(
-                choices=[(True, 'New Development'), (False, 'Enhancement')]
+                choices=[(True, 'New Development'), (False, 'Revision')]
             ),
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
