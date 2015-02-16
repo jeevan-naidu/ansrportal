@@ -152,9 +152,13 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 
 )
 
-# Session Expire Configuration
-SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
+# Session Configuration
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_AGE = 60*60
+# Settings for Django-session-security
+SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
 SESSION_SECURITY_EXPIRE_AFTER = 10*60
 
 
