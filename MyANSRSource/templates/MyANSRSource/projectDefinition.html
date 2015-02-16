@@ -59,7 +59,7 @@
 		}
 	} 
 	function filterChapters() { 
-		var url = "/myansrsource/getchapters/"+ $("select#id_Define_Project-book").val();
+		var url = "/myansrsource/getchapters/"+ $("select#id_Define_Project-book").val() + "/";
 		var options = '';
 		$.getJSON(url, function(json_chapters) {
 			var chapters = json_chapters;
