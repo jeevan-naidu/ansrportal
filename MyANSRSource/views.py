@@ -799,9 +799,10 @@ def checkUser(userName, password, request, form):
                     messages.error(
                         request,
                         'This user does not have access to timesheets.')
-                    logging.error('User {0} permission details {1}'.format(
+                    logging.error('User {0} permission details {1} group perms'.format(
                         user.username,
-                        user.get_all_permissions()))
+                        user.get_all_permissions(),
+                        user.get_group_permissions()))
                     return loginResponse(
                         request,
                         form,
