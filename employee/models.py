@@ -94,15 +94,15 @@ class EmpAddress(models.Model):
                                     default='TM')
     address1 = models.CharField(
         verbose_name="Address 1",
-        max_length=30,
+        max_length=100,
         blank=False)
     address2 = models.CharField(
         verbose_name="Address 2",
-        max_length=30,
+        max_length=100,
         blank=False)
-    city = models.CharField("City", max_length=15, blank=False)
-    state = models.CharField("State", max_length=20, blank=False)
-    zipcode = models.CharField("Zip Code", max_length=6, blank=False)
+    city = models.CharField("City", max_length=30, blank=False)
+    state = models.CharField("State", max_length=30, blank=False)
+    zipcode = models.CharField("Zip Code", max_length=10, blank=False)
 
     def __unicode__(self):
         return '{0}, {1}, {2}, {3}, {4}'.format(
