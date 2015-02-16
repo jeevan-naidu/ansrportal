@@ -24,7 +24,7 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # 'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
