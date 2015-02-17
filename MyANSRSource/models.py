@@ -4,6 +4,11 @@ from django.utils import timezone
 import CompanyMaster
 import employee
 
+TASKTYPEFLAG = (
+    ('B', 'Billable'),
+    ('I', 'Idle'),
+)
+
 
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
@@ -19,6 +24,22 @@ class Book(models.Model):
         return self.name
 
 
+class Activity(models.Model):
+    name = models.CharField(max_length=100, null=False,
+                            verbose_name="Activity")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Activity'
+        verbose_name_plural = 'Activities'
+
+
 class projectType(models.Model):
     code = models.CharField(max_length=2, null=False,
                             verbose_name="Unit of Work")
@@ -31,6 +52,22 @@ class projectType(models.Model):
 
     def __unicode__(self):
         return self.description
+
+
+class Task(models.Model):
+    projectType = models.ForeignKey(projectType, verbose_name="Project Type")
+    name = models.CharField(max_length=100, verbose_name="Task")
+    taskType = models.CharField(max_length=2,
+                                choices=TASKTYPEFLAG,
+                                verbose_name='Task type',
+                                default=None)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Chapter(models.Model):
@@ -143,8 +180,10 @@ class TimeSheetEntry(models.Model):
     )
     chapter = models.ForeignKey(Chapter, blank=False,
                                 verbose_name="Chapter", null=True)
-    activity = models.CharField(max_length=2, null=True)
-    task = models.CharField(null=True, max_length=2)
+    activity = models.ForeignKey(Activity, blank=False,
+                                 verbose_name="Activity", null=True)
+    task = models.ForeignKey(Task, blank=False,
+                             verbose_name="Task", null=True)
     # Effort capture
     mondayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Mon")

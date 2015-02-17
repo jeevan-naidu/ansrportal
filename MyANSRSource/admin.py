@@ -4,7 +4,7 @@ from django.contrib.admin.widgets import AdminTextInputWidget
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, Chapter, \
-    ProjectChangeInfo, projectType
+    ProjectChangeInfo, projectType, Task, Activity
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -79,6 +79,14 @@ class ProjectMileStoneAdmin(admin.ModelAdmin):
     list_display = ('milestoneDate', 'description')
 
 
+class ActivityAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+
+
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+
+
 class ProjectTeamMemberAdmin(admin.ModelAdmin):
     list_display = ('member', 'role',
                     'startDate', 'plannedEffort')
@@ -87,6 +95,8 @@ admin.site.register(Project, ProjectAdmin)
 #admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(projectType, projectTypeAdmin)
+admin.site.register(Activity, ActivityAdmin)
+admin.site.register(Task, TaskAdmin)
 #admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
 #admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
 #admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)

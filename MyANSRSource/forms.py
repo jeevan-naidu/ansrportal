@@ -3,32 +3,20 @@ autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, ProjectChangeInfo
+    ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 import CompanyMaster
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
-TASK = (
-    ('D', 'Develop'),
-    ('E', 'EA'),
-    ('C', 'CE'),
-    ('Q', 'QA'),
-    ('I', 'Idle'),
-    ('W', 'Rework'),
-)
-
-NONBILLABLE = (
-    ('S', 'Self Development'),
-    ('R', 'Leave'),
-    ('C', 'Training'),
-    ('Q', 'Others'),
-)
-
 
 class ActivityForm(forms.Form):
-    activity = forms.ChoiceField(choices=NONBILLABLE, label="Activity")
+    activity = forms.ModelChoiceField(
+        queryset=Activity.objects.all(),
+        label="Activity",
+        required=True,
+    )
     activity_monday = forms.DecimalField(label="Mon",
                                          max_digits=12,
                                          decimal_places=2,
@@ -135,7 +123,14 @@ def TimesheetFormset(currentUser):
         )
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
-        task = forms.ChoiceField(choices=TASK, label='Task')
+        task = ChainedModelChoiceField(
+            'MyANSRSource',
+            'Task',
+            chain_field='project',
+            model_field='projectType',
+            show_all=False,
+            auto_choose=True
+        )
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,

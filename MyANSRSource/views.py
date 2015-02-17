@@ -575,34 +575,22 @@ def getApprovedDataList(request, weekstartDate, ansrEndDate):
 
 @login_required
 def renderTimesheet(request, data):
-    billableHours = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=data['weekstartDate'],
-            wkend=data['weekendDate'],
-            teamMember=request.user,
-            approved=False,
-            activity__isnull=True
-        ),
-        ~Q(task='I')
+    tsObj = TimeSheetEntry.objects.filter(
+        wkstart=data['weekstartDate'],
+        wkend=data['weekendDate'],
+        teamMember=request.user,
+        approved=False
+    )
+    billableHours = tsObj.filter(
+        activity__isnull=True,
+        task__taskType='B'
     ).values('totalH')
-    idleHours = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=data['weekstartDate'],
-            wkend=data['weekendDate'],
-            task='I',
-            teamMember=request.user,
-            approved=False,
-            activity__isnull=True
-        ),
+    idleHours = tsObj.filter(
+        activity__isnull=True,
+        task__taskType='I'
     ).values('totalH')
-    othersHours = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=data['weekstartDate'],
-            wkend=data['weekendDate'],
-            teamMember=request.user,
-            approved=False,
-            project__isnull=True
-        ),
+    othersHours = tsObj.filter(
+        project__isnull=True
     ).values('totalH')
     bTotal = 0
     for billable in billableHours:
