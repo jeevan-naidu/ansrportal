@@ -244,14 +244,20 @@ def Timesheet(request):
                         nonbillableTS = TimeSheetEntry.objects.get(
                             pk=eachActivity['atId']
                         )
+                        update = 1
                     else:
                         nonbillableTS = TimeSheetEntry()
+                        update = 0
                     # Common values for Billable and Non-Billable
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
                     nonbillableTS.teamMember = request.user
-                    if 'save' not in request.POST:
-                        nonbillableTS.hold = True
+                    if update:
+                        if 'save' not in request.POST:
+                            nonbillableTS.hold = True
+                    else:
+                        if 'save' not in request.POST:
+                            nonbillableTS.hold = True
                     if (weekTotal < 36) | (weekTotal > 44):
                         nonbillableTS.exception = \
                             '10% deviation in totalhours for this week'
@@ -281,20 +287,24 @@ def Timesheet(request):
                             nonbillableTS.activity = v
                     nonbillableTS.save()
                     eachActivity['atId'] = nonbillableTS.id
-                tsStatus = []
                 for eachTimesheet in timesheetList:
-                    statusD = {}
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
                             id=eachTimesheet['tsId']
                         )[0]
+                        update = 1
                     else:
                         billableTS = TimeSheetEntry()
+                        update = 0
                     billableTS.wkstart = changedStartDate
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
-                    if 'save' not in request.POST:
-                        billableTS.hold = True
+                    if update:
+                        if 'save' not in request.POST:
+                            billableTS.hold = True
+                    else:
+                        if 'save' not in request.POST:
+                            billableTS.hold = True
                     billableTS.billable = True
                     if (weekTotal < 36) | (weekTotal > 44):
                         billableTS.exception = \
@@ -305,12 +315,10 @@ def Timesheet(request):
                     elif leaveDayWork is True:
                         billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
-                        setattr(billableTS, k, v)
+                        if k != 'hold':
+                            setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
-                    statusD['toApprove'] = True
-                    statusD['id'] = int(billableTS.project.id)
-                    tsStatus.append(statusD)
                 if 'save' not in request.POST:
                     messages.warning(
                         request,
@@ -340,9 +348,7 @@ def Timesheet(request):
                         setattr(nonbillableTS, k, v)
                     nonbillableTS.save()
                     eachActivity['atId'] = nonbillableTS.id
-                tsStatus = []
                 for eachTimesheet in timesheetList:
-                    statusD = {}
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
                             id=eachTimesheet['tsId']
@@ -358,12 +364,10 @@ def Timesheet(request):
                     billableTS.approvedon = datetime.now()
                     billableTS.hold = True
                     for k, v in eachTimesheet.iteritems():
-                        setattr(billableTS, k, v)
+                        if k != 'hold':
+                            setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
-                    statusD['approved'] = True
-                    statusD['id'] = int(billableTS.project.id)
-                    tsStatus.append(statusD)
                     hold = False
                 messages.success(request, 'Your timesheet has been approved')
             dates = switchWeeks(request)
@@ -441,7 +445,6 @@ def Timesheet(request):
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
                 'disabled': dates['disabled'],
-                'hold': hold,
                 'extra': extra,
                 'tsFormList': tsFormList,
                 'atFormList': atFormList}
@@ -628,7 +631,6 @@ def renderTimesheet(request, data):
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
-                 'hold': data['hold'],
                  'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
                                'Fri', 'Sat', 'Sun'],
                  'billableHours': billableHours,
@@ -1432,7 +1434,7 @@ def saveProject(request):
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
             pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
-            manager = User.objects.get(id=int(request.POST.get('projectManager')))
+            manager = User.objects.get(pk=int(request.POST.get('projectManager')))
             pr.projectManager = manager
             pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                 pk=int(request.POST.get('bu'))
