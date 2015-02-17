@@ -397,9 +397,7 @@ def Timesheet(request):
                 'extra': 0,
                 'ErrorList': tsErrorList,
                 'tsFormList': tsContent,
-                'atFormList': atContent,
-                'tsId': billableTS.id,
-                'atId': nonbillableTS.id}
+                'atFormList': atContent}
         return renderTimesheet(request, data)
     else:
         # Switch dates back and forth

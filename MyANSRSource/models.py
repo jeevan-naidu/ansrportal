@@ -93,7 +93,7 @@ class Project(models.Model):
                                         verbose_name="Planned Effort")
     contingencyEffort = models.IntegerField(default=0,
                                             verbose_name="Contigency Effort")
-    projectManager = models.ForeignKey(User)
+    projectManager = models.ForeignKey(User, verbose_name="Project Leader")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book",
