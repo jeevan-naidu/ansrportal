@@ -92,6 +92,20 @@ TMTEMPLATES = {
     "Close Milestone": "MyANSRSource/closeProjectMilestone.html",
 }
 
+MEMBERFORMS = [
+    ("My Projects", ChangeProjectForm),
+    ("Update Member", formset_factory(
+        ChangeProjectTeamMemberForm,
+        extra=1,
+        max_num=1,
+        can_delete=True
+    )),
+]
+MEMBERTEMPLATES = {
+    "My Projects": "MyANSRSource/manageProjectTeam.html",
+    "Update Member": "MyANSRSource/manageProjectMember.html",
+}
+
 
 def index(request):
     if request.user.is_authenticated():
@@ -1382,6 +1396,65 @@ class CreateProjectWizard(SessionWizardView):
         if basicInfo['internal'] is False:
             data['milestone'] = cleanedMilestoneData
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
+
+
+class ManageTeamWizard(SessionWizardView):
+
+    def get_template_names(self):
+        return [MEMBERTEMPLATES[self.steps.current]]
+
+    def get_form_initial(self, step):
+        currentProject = []
+        if step == 'Update Member':
+            currentProject = ProjectTeamMember.objects.filter(
+                project__id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values('id', 'member', 'role',
+                                                 'startDate', 'endDate',
+                                                 'plannedEffort', 'rate'
+                                                 )
+        return self.initial_dict.get(step, currentProject)
+
+    def get_context_data(self, form, **kwargs):
+        context = super(ManageTeamWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Update Member':
+            if hasattr(self.request.user, 'employee'):
+                locationId = self.request.user.employee.location
+                holidays = Holiday.objects.filter(
+                    location=locationId
+                ).values('name', 'date')
+                holidays = Holiday.objects.all().values('name', 'date')
+                for holiday in holidays:
+                    holiday['date'] = int(
+                        holiday['date'].strftime("%s")) * 1000
+                data = {'data': list(holidays)}
+            else:
+                data = {'data': ''}
+            context.update({'holidayList': json.dumps(data)})
+        return context
+
+    def done(self, form_list, **kwargs):
+        for eachData in [form.cleaned_data for form in form_list][1]:
+            if eachData['id']:
+                if eachData['DELETE']:
+                    ProjectTeamMember.objects.get(pk=eachData['id']).delete()
+                else:
+                    ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
+            else:
+                    ptm = ProjectTeamMember()
+            for k, v in eachData.iteritems():
+                setattr(ptm, k, v)
+            ptm.save()
+        return HttpResponseRedirect('/myansrsource/dashboard')
+
+
+manageTeam = ManageTeamWizard.as_view(MEMBERFORMS)
+
+
+@login_required
+def WrappedManageTeamView(request):
+    return manageTeam(request)
 
 
 @login_required

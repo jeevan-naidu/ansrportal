@@ -1,0 +1,83 @@
+{% extends 'manageProjectTeamMaster.inc' %}
+
+
+{% block addForm %}
+<span class="pull-right">
+	<a id="addForm" href="javascript:;" class="btn btn-success btn-xs addForm">
+		<span class="glyphicon glyphicon-plus"></span>
+			Add Member
+	</a>
+	<a id="delete-member" class="btn btn-danger btn-xs">
+		<span class="glyphicon glyphicon-minus"></span>
+			Delete Member
+	</a>
+</span>
+{% endblock %}
+{% block TMactiveClass %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+		{% for k, v in form.errors.items %}
+			{{ v|striptags }}
+		{% endfor %}
+		{% for field in form %} 
+		{% if field.errors %}
+			{{ field.label }}: {{ field.errors|striptags }}
+		{% endif %}
+		{% endfor %}								
+	</div>
+{% endif %}
+	{% if forloop.first %}
+        <div class="table-responsive">
+		<table class="table" id="add-team-members">
+	{% endif %}
+		{% for t in form %}
+			{% if forloop.first %}
+				{% if '-0' in t.id_for_label %}
+					<thead>
+                    				<tr>
+						{% for field in form %}
+			    {% if field.label != 'teamRecId' %}
+                            {% if field.label == 'Start date on project' or field.label == 'End date on project' %}
+                                <th class="w-170">
+                            {% elif field.label == 'Planned Effort' or field.label == '%' %}
+                                <th class="w-100">
+                            {% elif field.label == 'Member' %}
+                                <th class="min-200">
+                            {% else %}
+							    <th>
+                            {% endif %}
+								<small>{{ field.label }}</small>
+								{% if field.field.required %}
+									<span class="required">*</span>
+								{% endif %}
+							</th>
+								{% endif %}
+						{% endfor %}
+                    		       </tr>
+					</thead>
+				{% endif %}
+			{% endif %}
+	      {% endfor %}
+	      {% for t in form %}
+			{% if forloop.first %}
+			   	<tr>
+			{% endif %}
+					<td>{{ t }}</td>
+			{% if forloop.last %}
+				</tr>
+			{% endif %}
+	      {% endfor %}
+	{% if forloop.last %}
+		</table>
+        </div>
+	{% endif %}
+{% autoescape off %}
+<script type="text/javascript">
+    window.holidays = {{ holidayList }};
+</script>
+{% endautoescape %}
+
+{% endblock %}{% endblock %}
+
+
