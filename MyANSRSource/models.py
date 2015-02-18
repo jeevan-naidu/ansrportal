@@ -124,6 +124,9 @@ class Project(models.Model):
         verbose_name="Internal Project"
     )
     projectId = models.CharField(max_length=60, null=False)
+    po = models.CharField(max_length=60, null=False,
+                          blank=False, default=None,
+                          verbose_name="P.O.")
     startDate = models.DateField(verbose_name="Project Start Date")
     endDate = models.DateField(verbose_name="Project End Date")
     plannedEffort = models.IntegerField(default=0,

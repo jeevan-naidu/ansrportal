@@ -16,13 +16,11 @@
 				<th>Business Unit</th>
 				<th>Name</th>
 				<th>Customer</th>
-				<th>Planned Effort</th>
-				<th>Contigency Effort</th>
 				<th>Book</th>
 				<th>Chapters</th>
-				<th>Start Date</th>
-				<th>End Date</th>
-				<th>Total Value</th>
+				<th>Is it an internal Project?</th>
+				<th>Is this a new project?</th>
+				<th>Is this contract signed?</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -30,8 +28,6 @@
 			<td>{{ basicInfo.bu__name }}</td>
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer__name }}</td>
-			<td>{{ basicInfo.plannedEffort }}</td>
-			<td>{{ basicInfo.contingencyEffort }}</td>
 			<td>{{ basicInfo.book__name }}</td>
 			<td>
 				{% for eachChapter in chapters %}
@@ -42,9 +38,27 @@
 					{% endif %}
 				{% endfor %}
 			</td>
-			<td>{{ basicInfo.startDate }}</td>
-			<td>{{ basicInfo.endDate }}</td>
-			<td>{{ basicInfo.totalValue }}</td>
+			<td>
+				{% if basicInfo.internal == True  %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.currentProject == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.signed == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
 		</tr>
 		</tbody>
 	</table>
@@ -56,34 +70,22 @@
 	<table class="table table-condensed">
 		<thead>
 				<th>Norm</th>
-				<th>Is it an internal Project?</th>
-				<th>Is this a new project?</th>
-				<th>Is this contract signed?</th>
+				<th>Planned Effort</th>
+				<th>Contigency Effort</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Total Value</th>
+				<th>P.O.</th>
 		</thead>
 		<tbody>
 		<tr>
 			<td>{{ flagData.maxProductivityUnits }} / DAY</td>
-			<td>
-				{% if flagData.internal == True  %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
-			<td>
-				{% if flagData.currentProject == True %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
-			<td>
-				{% if flagData.signed == True %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
+			<td>{{ flagData.plannedEffort }}</td>
+			<td>{{ flagData.contingencyEffort }}</td>
+			<td>{{ flagData.startDate }}</td>
+			<td>{{ flagData.endDate }}</td>
+			<td>{{ flagData.totalValue }}</td>
+			<td>{{ flagData.po }}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -130,7 +132,7 @@
 	</table>
 </div>
 </div>
-{% if flagData.internal == False %} 
+{% if basicInfo.internal == False %} 
 <div class="panel panel-default">
 	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
 <div class="panel-body">

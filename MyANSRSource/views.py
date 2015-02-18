@@ -1174,7 +1174,7 @@ class CreateProjectWizard(SessionWizardView):
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step or self.steps.current
-        if step == 'Define Project':
+        if step == 'Basic Information':
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
                     'startDate'
@@ -1206,8 +1206,8 @@ class CreateProjectWizard(SessionWizardView):
                                     u'No person can have more than 100% as effort')
 
         if step == 'Financial Milestones':
-            internalStatus = self.storage.get_step_data('Basic Information')[
-                'Basic Information-internal'
+            internalStatus = self.storage.get_step_data('Define Project')[
+                'Define Project-internal'
             ]
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -1232,8 +1232,8 @@ class CreateProjectWizard(SessionWizardView):
                     ] = 'True'
             else:
                 if form.is_valid():
-                    projectTotal = self.storage.get_step_data('Define Project')[
-                        'Define Project-totalValue'
+                    projectTotal = self.storage.get_step_data('Basic Information')[
+                        'Basic Information-totalValue'
                     ]
                     totalRate = 0
                     for eachForm in form:
@@ -1280,8 +1280,8 @@ class CreateProjectWizard(SessionWizardView):
                 context.update(data)
 
         if self.steps.current == 'Financial Milestones':
-            projectTotal = self.storage.get_step_data('Define Project')[
-                'Define Project-totalValue'
+            projectTotal = self.storage.get_step_data('Basic Information')[
+                'Basic Information-totalValue'
             ]
             context.update({'totalValue': projectTotal})
         if self.steps.current == 'Define Team':
@@ -1319,19 +1319,13 @@ class CreateProjectWizard(SessionWizardView):
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
-        if basicInfo['plannedEffort'] > 0:
-            revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
-        else:
-            revenueRec = 0
         chapterIdList = [eachRec.id for eachRec in basicInfo['chapters']]
-        basicInfo['startDate'] = basicInfo.get(
-            'startDate'
-        ).strftime('%Y-%m-%d')
-        basicInfo['endDate'] = basicInfo.get(
-            'endDate'
-        ).strftime('%Y-%m-%d')
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
+            if k == 'startDate':
+                flagData['startDate'] = v.strftime('%Y-%m-%d')
+            if k == 'endDate':
+                flagData['endDate'] = v.strftime('%Y-%m-%d')
             flagData[k] = v
         effortTotal = 0
         if [form.cleaned_data for form in form_list][2][0]['member'] is not None:
@@ -1358,7 +1352,7 @@ class CreateProjectWizard(SessionWizardView):
                 cleanedTeamData.append(changedTeamData.copy())
                 changedTeamData.clear()
 
-        if [form.cleaned_data for form in form_list][1]['internal'] is False:
+        if basicInfo['internal'] is False:
             for milestoneData in [form.cleaned_data for form in form_list][3]:
                 milestoneDataCounter += 1
                 for k, v in milestoneData.iteritems():
@@ -1373,25 +1367,20 @@ class CreateProjectWizard(SessionWizardView):
                 del changedMilestoneData[DELETE]
                 cleanedMilestoneData.append(changedMilestoneData.copy())
                 changedMilestoneData.clear()
-        if [form.cleaned_data for form in form_list][1]['internal'] is True:
-            data = {
-                'basicInfo': basicInfo,
-                'chapterId': chapterIdList,
-                'flagData': flagData,
-                'effortTotal': effortTotal,
-                'revenueRec': revenueRec,
-                'teamMember': cleanedTeamData,
-            }
+        if flagData['plannedEffort']:
+            revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
-            data = {
-                'basicInfo': basicInfo,
-                'chapterId': chapterIdList,
-                'flagData': flagData,
-                'effortTotal': effortTotal,
-                'revenueRec': revenueRec,
-                'teamMember': cleanedTeamData,
-                'milestone': cleanedMilestoneData
-            }
+            revenueRec = 0
+        data = {
+            'basicInfo': basicInfo,
+            'chapterId': chapterIdList,
+            'flagData': flagData,
+            'effortTotal': effortTotal,
+            'revenueRec': revenueRec,
+            'teamMember': cleanedTeamData,
+        }
+        if basicInfo['internal'] is False:
+            data['milestone'] = cleanedMilestoneData
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
@@ -1412,8 +1401,11 @@ def saveProject(request):
             pr.projectType = pType
             pr.maxProductivityUnits = float(
                 request.POST.get('maxProductivityUnits'))
-            pr.startDate = request.POST.get('startDate')
-            pr.endDate = request.POST.get('endDate')
+            startDate = datetime.strptime(request.POST.get('startDate'), "%b. %d, %Y").date()
+            endDate = datetime.strptime(request.POST.get('endDate'), "%b. %d, %Y").date()
+            pr.startDate = startDate
+            pr.endDate = endDate
+            pr.po = request.POST.get('po')
             pr.totalValue = float(request.POST.get('totalValue'))
             pr.plannedEffort = int(request.POST.get('plannedEffort'))
             pr.currentProject = request.POST.get('currentProject')
@@ -1576,12 +1568,11 @@ def ViewProject(request):
         projectObj = Project.objects.filter(id=projectId)
         basicInfo = projectObj.values(
             'projectType__description', 'bu__name', 'customer__name',
-            'name', 'startDate', 'endDate', 'book__name',
-            'plannedEffort', 'contingencyEffort',
-            'totalValue'
+            'name', 'book__name', 'signed', 'internal', 'currentProject'
         )[0]
         flagData = projectObj.values(
-            'maxProductivityUnits', 'signed', 'internal', 'currentProject'
+            'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
+            'totalValue', 'maxProductivityUnits', 'po'
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
@@ -1589,7 +1580,7 @@ def ViewProject(request):
             'plannedEffort', 'rate'
             )
         chapters = projectObj.values('chapters__name')
-        if flagData['internal']:
+        if basicInfo['internal']:
             cleanedMilestoneData = []
         else:
             cleanedMilestoneData = ProjectMilestone.objects.filter(

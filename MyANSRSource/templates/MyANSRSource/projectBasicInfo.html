@@ -12,36 +12,34 @@
 		{% endfor %}								
 	</div>
 {% endif %}
-	<div class="table-responsive col-lg-12">
-	<table class="table">
-		{% for field in form %}
-			<tr>
-				<td class="col-lg-2 text-center">
-						{{ field.label }}
-						{% if field.field.required %}
-							<span class="required">*</span>
-						{% endif %}
+        <div class="row">
+            <div class="col-sm-6 center-block">
+                <div class="table-responsive">
+                    <table class="table">
+                        {% for field in form %}
+                            <tr>
+                                <td class="col-lg-6">
+                                        {{ field.label }}
+                                        {% if field.field.required %}
+                                            <span class="required">*</span>
+                                        {% endif %}
 				</td>
-				{% if field.label == "ProjectManager" %}
-				<input type="hidden" name="pm" id="pm" value="{{ field.value }}"></input>
-				{% endif %}
-				{% if field.label == "Norm" %}
-                                <td>
-					<span class="col-lg-8">{{ field }}</span> 
-					<span class="col-lg-4"><b><span class="label label-default form-control"> {{ pt  }} /  DAY</span></b></span>
-				</td>
-				{% else %}
-				{% for choice in field %}
-					{% if field.label == "Project Stage" %}
-					<td class="col-lg-1">{{ choice }}</td>
+				<td class="col-lg-6">
+					{% if field.label == 'Planned Effort' or field.label == 'Contigency Effort' %}
+						<span class="col-lg-10">{{ field }}</span>
+						<span class="col-lg-2"><b><span class="label label-default form-control"> PH(s)</span></b></span>
+					{% elif field.label == 'Norm' %}
+						<span class="col-lg-10">{{ field }}</span>
+						<span class="col-lg-2"><b><span class="label label-default form-control"> {{ pt }}</span></b></span>
 					{% else %}
-					<td class="col-lg-1">{{ choice }}</td>
+						{{ field }}
 					{% endif %}
-				{% endfor %}
-				{% endif %}
-			</tr>
-		{% endfor %}
-	</table>
+				</td>
+			    </tr>
+			{% endfor %}
+		    </table>
+		</div>
+	   </div>
 	</div>
 <script>
     var app = app || {};

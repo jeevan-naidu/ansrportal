@@ -51,13 +51,12 @@
 				<th>Business Unit</th>
 				<th>Name</th>
 				<th>Customer</th>
-				<th>Planned Effort</th>
-				<th>Contigency Effort</th>
 				<th>Book</th>
 				<th>Chapters</th>
-				<th>Start Date</th>
-				<th>End Date</th>
-				<th>Total Value</th>
+				<th>Project Leader</th>
+				<th>Is it an internal Project?</th>
+				<th>Is this a new project?</th>
+				<th>Is this contract signed?</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -65,8 +64,6 @@
 			<td>{{ basicInfo.bu }}</td>
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer }}</td>
-			<td>{{ basicInfo.plannedEffort }}</td>
-			<td>{{ basicInfo.contingencyEffort }}</td>
 			<td>{{ basicInfo.book }}</td>
 			<td>
 				{% for eachChapter in basicInfo.chapters %}
@@ -77,11 +74,34 @@
 					{% endif %}
 				{% endfor %}
 			</td>
-			<td>{{ basicInfo.startDate }}</td>
-			<td>{{ basicInfo.endDate }}</td>
-			<td>{{ basicInfo.totalValue }}</td>
+			<td>{{ basicInfo.projectManager }}</td>
+			<td>
+				{% if basicInfo.internal == True  %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.currentProject == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.signed == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
 			{% for rec, value in basicInfo.iteritems %}
-				<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				{% if rec == 'projectManager' %}
+					<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
+				{% else %}
+					<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				{% endif %}
 			{% endfor %}
 				<input type="hidden" name="chapters" value="{{ chapterId }}">
 				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
@@ -98,43 +118,25 @@
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-				<th>Project Manager</th>
 				<th>Norms</th>
-				<th>Is it an internal Project?</th>
-				<th>Is this a new project?</th>
-				<th>Is this contract signed?</th>
+				<th>Planned Effort</th>
+				<th>Contigency Effort</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Total Value</th>
+				<th>P.O.</th>
 		</thead>
 		<tbody>
 		<tr>
-			<td>{{ flagData.projectManager }}</td>
 			<td>{{ flagData.maxProductivityUnits }}</td>
-			<td>
-				{% if flagData.internal == True  %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
-			<td>
-				{% if flagData.currentProject == True %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
-			<td>
-				{% if flagData.signed == True %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
+			<td>{{ flagData.plannedEffort }}</td>
+			<td>{{ flagData.contingencyEffort }}</td>
+			<td>{{ flagData.startDate }}</td>
+			<td>{{ flagData.endDate }}</td>
+			<td>{{ flagData.totalValue }}</td>
+			<td>{{ flagData.po }}</td>
 			{% for rec, value in flagData.iteritems %}
-				{% if rec == 'projectManager' %}
-					<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
-				{% else %}
-					<input type="hidden" name="{{ rec }}" value="{{ value }}">
-				{% endif %}
+				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
 		</tr>
 		</tbody>
@@ -228,7 +230,7 @@
 	</table>
 </div>
 </div>
-{% if flagData.internal == False %} 
+{% if basicInfo.internal == False %} 
 <div class="panel panel-default">
 	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
 <div class="panel-body">

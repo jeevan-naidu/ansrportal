@@ -3,7 +3,7 @@ autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
+    ProjectMilestone, Chapter, ProjectChangeInfo, Activity
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 import CompanyMaster
@@ -210,9 +210,9 @@ def TimesheetFormset(currentUser):
                                   required=False,
                                   widget=forms.HiddenInput())
         approved = forms.BooleanField(label="approved",
-                                    required=False)
+                                      required=False)
         hold = forms.BooleanField(label="hold",
-                                required=False)
+                                  required=False)
 
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
@@ -315,7 +315,7 @@ def TimesheetFormset(currentUser):
 
 
 # Form Class to create project
-class ProjectBasicInfoForm(forms.ModelForm):
+class ProjectBasicInfoForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = Project
@@ -324,23 +324,30 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'bu',
             'customer',
             'name',
-            'startDate',
-            'endDate',
             'book',
             'chapters',
-            'plannedEffort',
-            'contingencyEffort',
-            'totalValue'
+            'projectManager',
+            'signed',
+            'internal',
+            'currentProject',
         )
         widgets = {
-            'startDate': DateTimePicker(options=dateTimeOption),
-            'endDate': DateTimePicker(options=dateTimeOption),
-            'projectManager': forms.HiddenInput(),
+            'currentProject': forms.RadioSelect(
+                choices=[(True, 'New Development'), (False, 'Revision')]
+            ),
+            'signed': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            ),
+            'internal': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            )
         }
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['projectType'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['projectManager'].widget.attrs['class'] = \
             "form-control"
         self.fields['bu'].widget.attrs['class'] = \
             "form-control"
@@ -354,18 +361,14 @@ class ProjectBasicInfoForm(forms.ModelForm):
             "id_Define_Project-book"
         self.fields['chapters'].widget.attrs['class'] = \
             "form-control"
+        self.fields['currentProject'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['signed'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['internal'].widget.attrs['class'] = \
+            "form-control"
         self.fields['chapters'].widget.attrs['id'] = \
             "id_Define_Project-chapters"
-        self.fields['startDate'].widget.attrs['class'] = \
-            "start-date-input form-control"
-        self.fields['endDate'].widget.attrs['class'] = \
-            "end-date-input form-control"
-        self.fields['plannedEffort'].widget.attrs['class'] = \
-            "planned-effort-input form-control"
-        self.fields['contingencyEffort'].widget.attrs['class'] = \
-            "contigency-effort-input form-control"
-        self.fields['totalValue'].widget.attrs['class'] = \
-            "total-value-input form-control"
 
 
 # Change Project Basic Form
@@ -534,35 +537,40 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
 
 
 # Project Flag Form
-class ProjectFlagForm(autocomplete_light.ModelForm):
+class ProjectFlagForm(forms.ModelForm):
 
     class Meta:
         model = Project
         fields = (
             'maxProductivityUnits',
-            'currentProject',
-            'signed',
-            'internal',
-            'projectManager'
+            'startDate',
+            'endDate',
+            'plannedEffort',
+            'contingencyEffort',
+            'totalValue',
+            'po'
         )
         widgets = {
-            'currentProject': forms.RadioSelect(
-                choices=[(True, 'New Development'), (False, 'Revision')]
-            ),
-            'signed': forms.RadioSelect(
-                choices=[(True, 'Yes'), (False, 'No')]
-            ),
-            'internal': forms.RadioSelect(
-                choices=[(True, 'Yes'), (False, 'No')]
-            )
+            'startDate': DateTimePicker(options=dateTimeOption),
+            'endDate': DateTimePicker(options=dateTimeOption),
         }
 
     def __init__(self, *args, **kwargs):
         super(ProjectFlagForm, self).__init__(*args, **kwargs)
         self.fields['maxProductivityUnits'].widget.attrs['class'] = \
             "form-control"
-        self.fields['projectManager'].widget.attrs['class'] = \
+        self.fields['po'].widget.attrs['class'] = \
             "form-control"
+        self.fields['plannedEffort'].widget.attrs['class'] = \
+            "planned-effort-input form-control"
+        self.fields['contingencyEffort'].widget.attrs['class'] = \
+            "contigency-effort-input form-control"
+        self.fields['totalValue'].widget.attrs['class'] = \
+            "total-value-input form-control"
+        self.fields['startDate'].widget.attrs['class'] = \
+            "start-date-input form-control"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "end-date-input form-control"
 
 
 # Form Class to create milestones for project
