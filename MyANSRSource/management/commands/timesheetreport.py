@@ -20,7 +20,7 @@ class Command(BaseCommand):
 def sendEmail(self, data, start, end):
     for eachDetail in data:
         send_templated_mail(
-            template_name='timesheetStatus.html',
+            template_name='timesheetStatus',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[eachDetail['manager'].email, ],
             context={
