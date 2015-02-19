@@ -1274,6 +1274,7 @@ class ManageTeamWizard(SessionWizardView):
                     ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
             else:
                     ptm = ProjectTeamMember()
+            del(eachData['id'])
             for k, v in eachData.iteritems():
                 setattr(ptm, k, v)
             ptm.save()
