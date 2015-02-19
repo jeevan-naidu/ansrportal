@@ -168,6 +168,8 @@ app.getById = function(arr, propName, id) {
 
             app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
 
+            helper.clearArray(app.holidaysList);
+
             for(var i = 0; i < totalHolidayLen; i += 1) {
                 holiday = new Date(window.holidays.data[i].date);
                 holidayDay = holiday.getDay();
@@ -1183,9 +1185,42 @@ $.fn.getMemberHolidayList = function(options) {
         $select = o.parent().find('.value-select'),
         selectedVal = $select.val();
 
+    $.ajax({
+        url: '/myansrsource/getholidays/' + selectedVal + '/' ,
+        dataType: 'json',
+        success: function( data ) {
+            data = data.data;
+
+            helper.clearArray(app.holidaysList);
+
+            var holiday,
+                holidayDay,
+                totalHolidayLen = data.length;
+
+            for(var i = 0; i < totalHolidayLen; i += 1) {
+                holiday = new Date(data[i].date);
+                holidayDay = holiday.getDay();
+
+                if(holidayDay !== 0 && holidayDay !== 6) {
+                    app.holidaysList.push(holiday);
+                }
+            }
+
+            console.log(app.holidaysList);
+        },
+        error: function( data ) {
+            console.log( "ERROR:  " + data );
+        }
+    });
+
     console.log('Selected Val: ' + selectedVal);
 };
 
+helper.clearArray = function(arr) {
+    while (arr.length) {
+        arr.pop();
+    }
+};
 
 
 
