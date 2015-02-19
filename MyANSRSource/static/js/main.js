@@ -457,18 +457,20 @@ app.getIdNo = function(str) {
                     }
                     // For team member autocomplete
                     if($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
-                        if($element.find('.hilight').length === 0) {
-                            console.log('initialize autocomplete');
-                            if(options.addTeamMember) {
-                                $element.yourlabsWidget();
-                            } else {
-                                $element.find('.remove').trigger('click');
-                            }
+                        var $remove = $element.find('.remove');
+                        if($remove.css('display') === 'none') {
+                            $element.yourlabsWidget().input.bind('selectChoice', function(e, choice, autocomplete) {
+                                var $this = $(this);
+                                $this.getMemberHolidayList();
+                            });
                         } else {
-                           /*$element.yourlabsWidget('destroy');
-                           $element.find('input').yourlabsAutocomplete('destroy');*/
-                           $element.find('.remove').trigger('click');
+                            $element.yourlabsWidget().input.bind('selectChoice', function(e, choice, autocomplete) {
+                                var $this = $(this);
+                                $this.getMemberHolidayList();
+                            });
+                            $remove.trigger('click');
                         }
+
                     }
                 }
 
@@ -1172,6 +1174,16 @@ app.autoFillField = function($curElement, $chapter){
         fill_field(val, start_value);
     });
 
+};
+
+
+// Get holiday list when change member
+$.fn.getMemberHolidayList = function(options) {
+    var o = $(this),
+        $select = o.parent().find('.value-select'),
+        selectedVal = $select.val();
+
+    console.log('Selected Val: ' + selectedVal);
 };
 
 
