@@ -1483,6 +1483,22 @@ def GetChapters(request, bookid):
     return HttpResponse(json_chapters, content_type="application/javascript")
 
 
+def GetHolidays(request, memberid):
+    currentUser = User.objects.get(pk=memberid)
+    if hasattr(currentUser, 'employee'):
+        locationId = currentUser.employee.location
+        holidayList = Holiday.objects.filter(
+            location=locationId
+        ).values('name', 'date')
+        for holiday in holidayList:
+            holiday['date'] = int(
+                holiday['date'].strftime("%s")) * 1000
+        data = {'data': list(holidayList)}
+    else:
+        data = {'data': ''}
+    return HttpResponse(json.dumps(data), content_type="application/javascript")
+
+
 def GetProjectType(request):
     # NIRANJ: Why is this being filtered from Project Team member and not
     # project directly?  this will result in duplicate records.
