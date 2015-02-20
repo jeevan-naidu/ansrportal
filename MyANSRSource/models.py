@@ -191,7 +191,7 @@ class TimeSheetEntry(models.Model):
         null=True
     )
     chapter = models.ForeignKey(Chapter, blank=False,
-                                verbose_name="Chapter", null=True)
+                                verbose_name="Chapter/Subtitle", null=True)
     activity = models.ForeignKey(Activity, blank=False,
                                  verbose_name="Activity", null=True)
     task = models.ForeignKey(Task, blank=False,
