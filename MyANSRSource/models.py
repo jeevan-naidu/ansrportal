@@ -133,8 +133,10 @@ class Project(models.Model):
     po = models.CharField(max_length=60, null=False,
                           blank=False, default=None,
                           verbose_name="P.O.")
-    startDate = models.DateField(verbose_name="Project Start Date")
-    endDate = models.DateField(verbose_name="Project End Date")
+    startDate = models.DateField(verbose_name="Project Start Date",
+                                 default=timezone.now)
+    endDate = models.DateField(verbose_name="Project End Date",
+                               default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
                                         validators=[MinValueValidator(0)])
