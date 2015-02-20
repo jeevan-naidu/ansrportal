@@ -13,7 +13,7 @@ TASKTYPEFLAG = (
 
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
-                            verbose_name="Book Name")
+                            verbose_name="Name")
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
     createdOn = models.DateTimeField(verbose_name="created Date",
@@ -144,11 +144,11 @@ class Project(models.Model):
     projectManager = models.ForeignKey(User, verbose_name="Project Leader")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
-                             verbose_name="Book",
+                             verbose_name="Book/Title",
                              default=None,
                              null=False
                              )
-    chapters = models.ManyToManyField(Chapter)
+    chapters = models.ManyToManyField(Chapter, verbose_name="Chapter/Subtitle")
     totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,
