@@ -3,11 +3,17 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
 import employee
+from django.core.validators import MinValueValidator
+
+TASKTYPEFLAG = (
+    ('B', 'Billable'),
+    ('I', 'Idle'),
+)
 
 
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
-                            verbose_name="Book Name")
+                            verbose_name="Name")
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
     createdOn = models.DateTimeField(verbose_name="created Date",
@@ -17,6 +23,24 @@ class Book(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class Activity(models.Model):
+    name = models.CharField(max_length=100, null=False,
+                            verbose_name="Activity")
+    code = models.CharField(max_length=1, null=False,
+                            verbose_name="Short Code", default=None)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Activity'
+        verbose_name_plural = 'Activities'
 
 
 class projectType(models.Model):
@@ -31,6 +55,24 @@ class projectType(models.Model):
 
     def __unicode__(self):
         return self.description
+
+
+class Task(models.Model):
+    projectType = models.ForeignKey(projectType, verbose_name="Project Type")
+    name = models.CharField(max_length=100, verbose_name="Task")
+    code = models.CharField(max_length=1, null=False,
+                            verbose_name="Short Code", default=None)
+    taskType = models.CharField(max_length=2,
+                                choices=TASKTYPEFLAG,
+                                verbose_name='Task type',
+                                default=None)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Chapter(models.Model):
@@ -55,7 +97,8 @@ class Project(models.Model):
         default=0.0,
         max_digits=12,
         decimal_places=2,
-        verbose_name="Norm"
+        verbose_name="Norm",
+        validators=[MinValueValidator(0.0)]
     )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
@@ -87,24 +130,32 @@ class Project(models.Model):
         verbose_name="Internal Project"
     )
     projectId = models.CharField(max_length=60, null=False)
-    startDate = models.DateField(verbose_name="Project Start Date")
-    endDate = models.DateField(verbose_name="Project End Date")
+    po = models.CharField(max_length=60, null=False,
+                          blank=False, default=None,
+                          verbose_name="P.O.")
+    startDate = models.DateField(verbose_name="Project Start Date",
+                                 default=timezone.now)
+    endDate = models.DateField(verbose_name="Project End Date",
+                               default=timezone.now)
     plannedEffort = models.IntegerField(default=0,
-                                        verbose_name="Planned Effort")
+                                        verbose_name="Planned Effort",
+                                        validators=[MinValueValidator(0)])
     contingencyEffort = models.IntegerField(default=0,
-                                            verbose_name="Contigency Effort")
+                                            verbose_name="Contigency Effort",
+                                            validators=[MinValueValidator(0)])
     projectManager = models.ForeignKey(User, verbose_name="Project Leader")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
-                             verbose_name="Book",
+                             verbose_name="Book/Title",
                              default=None,
                              null=False
                              )
-    chapters = models.ManyToManyField(Chapter)
+    chapters = models.ManyToManyField(Chapter, verbose_name="Chapter/Subtitle")
     totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,
-                                     verbose_name="Total Value")
+                                     verbose_name="Total Value",
+                                     validators=[MinValueValidator(0.0)])
     closed = models.BooleanField(
         default=False,
         null=False,
@@ -142,9 +193,11 @@ class TimeSheetEntry(models.Model):
         null=True
     )
     chapter = models.ForeignKey(Chapter, blank=False,
-                                verbose_name="Chapter", null=True)
-    activity = models.CharField(max_length=2, null=True)
-    task = models.CharField(null=True, max_length=2)
+                                verbose_name="Chapter/Subtitle", null=True)
+    activity = models.ForeignKey(Activity, blank=False,
+                                 verbose_name="Activity", null=True)
+    task = models.ForeignKey(Task, blank=False,
+                             verbose_name="Task", null=True)
     # Effort capture
     mondayQ = models.DecimalField(default=0.0, max_digits=12,
                                   decimal_places=2, verbose_name="Mon")

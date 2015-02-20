@@ -2,8 +2,6 @@ from templated_email import send_templated_mail
 from django.core.management.base import BaseCommand
 from MyANSRSource.models import ProjectMilestone
 from datetime import datetime, timedelta
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.conf import settings
 
 
@@ -36,7 +34,7 @@ def sendEmail(self, details, date, label):
     if len(details) > 0:
         for eachDetail in details:
             send_templated_mail(
-                template_name='ProjectMilestoneEmailNotification.html',
+                template_name='ProjectMilestoneEmailNotification',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachDetail['project__projectManager__email'], ],
                 context={
@@ -55,7 +53,6 @@ def sendEmail(self, details, date, label):
                     'milestonedate': eachDetail[
                         'milestoneDate'
                     ],
-                    'message': message
                     },
             )
             self.stdout.write('Successfully sent mail to team manager')

@@ -110,6 +110,17 @@
                             </a>
                         {% endif %}
                         {% if activeProjects > 0 %}
+                            <a href="project/manage-team" class="list-group-item">
+                                <span class="badge">{{ activeProjects }}</span>
+                                Manage Team
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                Manage Team
+                            </a>
+                        {% endif %}
+                        {% if activeProjects > 0 %}
                             <a href="project/view-project" class="list-group-item">
                                 <span class="badge">{{ activeProjects }}</span>
                                 View Projects

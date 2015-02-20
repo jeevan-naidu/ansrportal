@@ -34,10 +34,17 @@
                                             </span>
                                         {% endif %}
                                 </td>
-                                        {% if field.label == 'Planned Effort' or field.label == 'Contigency Effort' %}
+					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'Project Stage' %}
                                 <td class="col-lg-6">
-					<span class="col-lg-8">{{ field }}</span> 
-					<span class="col-lg-4"><b><span class="label label-default form-control">  /  PH(s)</span></b></span>
+						{% for radio in field %}
+							{% if field.label == 'Project Stage' %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4"><h5><small><b>{{ radio.choice_label }}</b></small></h5></span>
+							{% else %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4"><h5><b>{{ radio.choice_label }}</b></h5></span>
+							{% endif %}
+						{% endfor %}
 					{% else %}
                                 <td class="col-lg-6">
 						{{ field }}

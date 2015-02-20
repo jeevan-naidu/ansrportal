@@ -63,7 +63,11 @@
 				{% else %}
 					<th>
 				{% endif %}
+				{% if 'Chapter' in data.label %}
+					Chapter/Subtitle
+				{% else %}
 				{{ data.label }}
+				{% endif %}
 				{% if data.field.required %}
 					<span class="required">*</span>
 				{% endif %}

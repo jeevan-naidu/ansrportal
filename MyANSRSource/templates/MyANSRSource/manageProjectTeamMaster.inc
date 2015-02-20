@@ -37,35 +37,20 @@
 {% endblock %}
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-fifth {% block DPactiveClass %}{% endblock %}">
+    <li class="form-step one-half {% block MPactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
-        <label class="form-step-label">Define Project</label>
+        <label class="form-step-label">My Projects</label>
     </li>
-    <li class="form-step one-fifth {% block BIactiveClass %}{% endblock %}">
+    <li class="form-step one-half {% block TMactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
-        <label class="form-step-label">Basic Information</label>
-    </li>
-    <li class="form-step one-fifth {% block FMactiveClass %}{% endblock %}">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">3</span>
-        <label class="form-step-label">Financial Milestones</label>
-    </li>
-    <li class="form-step one-fifth {% block VactiveClass %}{% endblock %}">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
-        <label class="form-step-label">Validate</label>
-    </li>
-    <li class="form-step one-fifth {% block CactiveClass %}{% endblock %}">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">5</span>
-        <label class="form-step-label">Complete!</label>
+        <label class="form-step-label">Create / Update Team</label>
     </li>
 </ul>
 <div>
  <div id="create">
-    <form id="createProject" method="post" action="" enctype="multipart/form-data">
+    <form id="changeProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 	<legend>
 		<b>{{ wizard.steps.current }}</b>
@@ -88,14 +73,14 @@
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
                         <span class="glyphicon glyphicon-chevron-left"></span>
-		        <b>Previous</b>
+		        <b>Choose Project</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
-		    <b>Confirm & Create Project</b>
+		    <b>Create / Update Team</b>
                 {% else %}
-		    <b>Next</b>
+		    <b>View Team</b>
                     <span class="glyphicon glyphicon-chevron-right"></span>
                 {% endif %}
             </button>

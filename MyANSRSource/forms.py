@@ -3,32 +3,21 @@ autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, ProjectChangeInfo
+    ProjectMilestone, Chapter, ProjectChangeInfo, Activity
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
-import CompanyMaster
+from CompanyMaster.models import OfficeLocation
+from employee.models import Employee
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
-TASK = (
-    ('D', 'Develop'),
-    ('E', 'EA'),
-    ('C', 'CE'),
-    ('Q', 'QA'),
-    ('I', 'Idle'),
-    ('W', 'Rework'),
-)
-
-NONBILLABLE = (
-    ('S', 'Self Development'),
-    ('R', 'Leave'),
-    ('C', 'Training'),
-    ('Q', 'Others'),
-)
-
 
 class ActivityForm(forms.Form):
-    activity = forms.ChoiceField(choices=NONBILLABLE, label="Activity")
+    activity = forms.ModelChoiceField(
+        queryset=Activity.objects.all(),
+        label="Activity",
+        required=True,
+    )
     activity_monday = forms.DecimalField(label="Mon",
                                          max_digits=12,
                                          decimal_places=2,
@@ -121,7 +110,7 @@ def TimesheetFormset(currentUser):
             required=True,
         )
         location = forms.ModelChoiceField(
-            queryset=CompanyMaster.models.OfficeLocation.objects.all(),
+            queryset=None,
             label="Location",
             required=True
         )
@@ -135,7 +124,14 @@ def TimesheetFormset(currentUser):
         )
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
-        task = forms.ChoiceField(choices=TASK, label='Task')
+        task = ChainedModelChoiceField(
+            'MyANSRSource',
+            'Task',
+            chain_field='project',
+            model_field='projectType',
+            show_all=False,
+            auto_choose=True
+        )
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
@@ -215,9 +211,9 @@ def TimesheetFormset(currentUser):
                                   required=False,
                                   widget=forms.HiddenInput())
         approved = forms.BooleanField(label="approved",
-                                    required=False)
+                                      required=False)
         hold = forms.BooleanField(label="hold",
-                                required=False)
+                                  required=False)
 
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
@@ -226,6 +222,11 @@ def TimesheetFormset(currentUser):
                     Q(member=currentUser.id) |
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
+            )
+            self.fields['location'].queryset = OfficeLocation.objects.filter(
+                id__in=Employee.objects.filter(
+                    user=currentUser
+                ).values('location__id')
             )
             if currentUser.has_perm('MyANSRSource.manage_project'):
                 self.fields['chapter'] = ChainedModelChoiceField(
@@ -320,7 +321,7 @@ def TimesheetFormset(currentUser):
 
 
 # Form Class to create project
-class ProjectBasicInfoForm(forms.ModelForm):
+class ProjectBasicInfoForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = Project
@@ -329,23 +330,30 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'bu',
             'customer',
             'name',
-            'startDate',
-            'endDate',
             'book',
             'chapters',
-            'plannedEffort',
-            'contingencyEffort',
-            'totalValue'
+            'projectManager',
+            'signed',
+            'internal',
+            'currentProject',
         )
         widgets = {
-            'startDate': DateTimePicker(options=dateTimeOption),
-            'endDate': DateTimePicker(options=dateTimeOption),
-            'projectManager': forms.HiddenInput(),
+            'currentProject': forms.RadioSelect(
+                choices=[(True, 'New Development'), (False, 'Revision')]
+            ),
+            'signed': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            ),
+            'internal': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            )
         }
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['projectType'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['projectManager'].widget.attrs['class'] = \
             "form-control"
         self.fields['bu'].widget.attrs['class'] = \
             "form-control"
@@ -359,18 +367,14 @@ class ProjectBasicInfoForm(forms.ModelForm):
             "id_Define_Project-book"
         self.fields['chapters'].widget.attrs['class'] = \
             "form-control"
+        self.fields['currentProject'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['signed'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['internal'].widget.attrs['class'] = \
+            "form-control"
         self.fields['chapters'].widget.attrs['id'] = \
             "id_Define_Project-chapters"
-        self.fields['startDate'].widget.attrs['class'] = \
-            "start-date-input form-control"
-        self.fields['endDate'].widget.attrs['class'] = \
-            "end-date-input form-control"
-        self.fields['plannedEffort'].widget.attrs['class'] = \
-            "planned-effort-input form-control"
-        self.fields['contingencyEffort'].widget.attrs['class'] = \
-            "contigency-effort-input form-control"
-        self.fields['totalValue'].widget.attrs['class'] = \
-            "total-value-input form-control"
 
 
 # Change Project Basic Form
@@ -539,35 +543,40 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
 
 
 # Project Flag Form
-class ProjectFlagForm(autocomplete_light.ModelForm):
+class ProjectFlagForm(forms.ModelForm):
 
     class Meta:
         model = Project
         fields = (
             'maxProductivityUnits',
-            'currentProject',
-            'signed',
-            'internal',
-            'projectManager'
+            'startDate',
+            'endDate',
+            'plannedEffort',
+            'contingencyEffort',
+            'totalValue',
+            'po'
         )
         widgets = {
-            'currentProject': forms.RadioSelect(
-                choices=[(True, 'New Development'), (False, 'Revision')]
-            ),
-            'signed': forms.RadioSelect(
-                choices=[(True, 'Yes'), (False, 'No')]
-            ),
-            'internal': forms.RadioSelect(
-                choices=[(True, 'Yes'), (False, 'No')]
-            )
+            'startDate': DateTimePicker(options=dateTimeOption),
+            'endDate': DateTimePicker(options=dateTimeOption),
         }
 
     def __init__(self, *args, **kwargs):
         super(ProjectFlagForm, self).__init__(*args, **kwargs)
         self.fields['maxProductivityUnits'].widget.attrs['class'] = \
             "form-control"
-        self.fields['projectManager'].widget.attrs['class'] = \
+        self.fields['po'].widget.attrs['class'] = \
             "form-control"
+        self.fields['plannedEffort'].widget.attrs['class'] = \
+            "planned-effort-input form-control"
+        self.fields['contingencyEffort'].widget.attrs['class'] = \
+            "contigency-effort-input form-control"
+        self.fields['totalValue'].widget.attrs['class'] = \
+            "total-value-input form-control"
+        self.fields['startDate'].widget.attrs['class'] = \
+            "start-date-input form-control"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "end-date-input form-control"
 
 
 # Form Class to create milestones for project
