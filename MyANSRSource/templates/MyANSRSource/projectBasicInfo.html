@@ -18,21 +18,22 @@
                     <table class="table">
                         {% for field in form %}
                             <tr>
-                                <td class="col-lg-6">
+                                <td class="col-lg-5">
                                         {{ field.label }}
                                         {% if field.field.required %}
                                             <span class="required">*</span>
                                         {% endif %}
 				</td>
-				<td class="col-lg-6">
+				<td class="col-lg-7">
 					{% if field.label == 'Planned Effort' or field.label == 'Contigency Effort' %}
-						<span class="col-lg-10">{{ field }}</span>
-						<span class="col-lg-2"><b><span class="label label-default form-control"> PH(s)</span></b></span>
+						<span class="col-lg-9">{{ field }}</span>
+						<span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
 					{% elif field.label == 'Norm' %}
-						<span class="col-lg-10">{{ field }}</span>
-						<span class="col-lg-2"><b><span class="label label-default form-control"> {{ pt }}</span></b></span>
+						<span class="col-lg-9">{{ field }}</span>
+						<span class="col-lg-3"><b><span class="label label-default form-control"> {{ pt }}</span></b></span>
 					{% else %}
-						{{ field }}
+						<span class="col-lg-9">{{ field }}</span>
+						<span class="col-lg-3"></span>
 					{% endif %}
 				</td>
 			    </tr>
