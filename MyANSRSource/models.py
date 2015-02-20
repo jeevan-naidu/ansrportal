@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
 import employee
+from django.core.validators import MinValueValidator
 
 TASKTYPEFLAG = (
     ('B', 'Billable'),
@@ -96,7 +97,8 @@ class Project(models.Model):
         default=0.0,
         max_digits=12,
         decimal_places=2,
-        verbose_name="Norm"
+        verbose_name="Norm",
+        validators=[MinValueValidator(0.0)]
     )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
@@ -134,9 +136,11 @@ class Project(models.Model):
     startDate = models.DateField(verbose_name="Project Start Date")
     endDate = models.DateField(verbose_name="Project End Date")
     plannedEffort = models.IntegerField(default=0,
-                                        verbose_name="Planned Effort")
+                                        verbose_name="Planned Effort",
+                                        validators=[MinValueValidator(0)])
     contingencyEffort = models.IntegerField(default=0,
-                                            verbose_name="Contigency Effort")
+                                            verbose_name="Contigency Effort",
+                                            validators=[MinValueValidator(0)])
     projectManager = models.ForeignKey(User, verbose_name="Project Leader")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
@@ -148,7 +152,8 @@ class Project(models.Model):
     totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,
-                                     verbose_name="Total Value")
+                                     verbose_name="Total Value",
+                                     validators=[MinValueValidator(0.0)])
     closed = models.BooleanField(
         default=False,
         null=False,
