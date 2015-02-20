@@ -898,6 +898,13 @@ class ChangeProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ChangeProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Change Basic Information':
+            currentProject = Project.objects.get(
+                pk=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project'])
+            totalEffort = currentProject.plannedEffort
+            context.update({'totalEffort': totalEffort})
         if self.steps.current == 'Change Milestones':
             projectTotal = self.storage.get_step_data(
                 'Change Basic Information'
