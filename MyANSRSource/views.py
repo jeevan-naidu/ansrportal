@@ -1157,12 +1157,12 @@ class CreateProjectWizard(SessionWizardView):
                                     ErrorList())
                                 errors.append(u'Financial Milestone amount \
                                             cannot be 0')
-                            if float(projectTotal) != float(totalRate):
-                                errors = eachForm._errors.setdefault(
-                                    totalRate,
-                                    ErrorList())
-                                errors.append(u'Total amount must be \
-                                                equal to project value')
+                    if float(projectTotal) != float(totalRate):
+                        errors = eachForm._errors.setdefault(
+                            totalRate,
+                            ErrorList())
+                        errors.append(u'Total amount must be \
+                                        equal to project value')
         return form
 
     def get_context_data(self, form, **kwargs):

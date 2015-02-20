@@ -891,7 +891,7 @@ app.getIdNo = function(str) {
                         $curItem = Number($($amounts[i]).val());
                         temp += $curItem;
                     }
-
+		    temp = temp.toFixed(2)
                     $amountTotal.text(temp);
 
                     amountValidatoinFun();
