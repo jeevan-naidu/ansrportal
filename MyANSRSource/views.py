@@ -1330,10 +1330,10 @@ def saveProject(request):
                 pk=int(request.POST.get('book'))
             )
 
-            projectIdPrefix = "{0}_{1}_{2}".format(
+            projectIdPrefix = "{0}-{1}-{2}".format(
                 pr.customer.customerCode,
                 datetime.now().year,
-                str(pr.customer.seqNumber).zfill(4)
+                str(pr.customer.seqNumber).zfill(3)
             )
 
             pr.projectId = projectIdPrefix
