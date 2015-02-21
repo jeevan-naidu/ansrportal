@@ -15,7 +15,7 @@ class Customer(models.Model):
         max_length=3,
         default=None
     )
-    seqNumber = models.PositiveIntegerField(null=False, default=0)
+    seqNumber = models.PositiveIntegerField(null=False, default=1, verbose_name='Project ID Sequence' )
     relatedMember = models.ManyToManyField(
         User,
         verbose_name="Select Account Relationship team",

@@ -130,7 +130,10 @@ class Project(models.Model):
         null=False,
         verbose_name="Internal Project"
     )
-    projectId = models.CharField(max_length=60, null=False)
+    projectId = models.CharField(
+        max_length=60,
+        null=False,
+        verbose_name='Project Code')
     po = models.CharField(max_length=60, null=False,
                           blank=False, default=None,
                           verbose_name="P.O.")
