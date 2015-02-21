@@ -168,6 +168,8 @@ app.getById = function(arr, propName, id) {
 
             app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
 
+            helper.clearArray(app.holidaysList);
+
             for(var i = 0; i < totalHolidayLen; i += 1) {
                 holiday = new Date(window.holidays.data[i].date);
                 holidayDay = holiday.getDay();
@@ -457,18 +459,20 @@ app.getIdNo = function(str) {
                     }
                     // For team member autocomplete
                     if($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
-                        if($element.find('.hilight').length === 0) {
-                            console.log('initialize autocomplete');
-                            if(options.addTeamMember) {
-                                $element.yourlabsWidget();
-                            } else {
-                                $element.find('.remove').trigger('click');
-                            }
+                        var $remove = $element.find('.remove');
+                        if($remove.css('display') === 'none') {
+                            $element.yourlabsWidget().input.bind('selectChoice', function(e, choice, autocomplete) {
+                                var $this = $(this);
+                                $this.getMemberHolidayList();
+                            });
                         } else {
-                           /*$element.yourlabsWidget('destroy');
-                           $element.find('input').yourlabsAutocomplete('destroy');*/
-                           $element.find('.remove').trigger('click');
+                            $element.yourlabsWidget().input.bind('selectChoice', function(e, choice, autocomplete) {
+                                var $this = $(this);
+                                $this.getMemberHolidayList();
+                            });
+                            $remove.trigger('click');
                         }
+
                     }
                 }
 
@@ -877,7 +881,7 @@ app.getIdNo = function(str) {
                         $curItem = Number($($amounts[i]).val());
                         temp += $curItem;
                     }
-
+		    temp = temp.toFixed(2)
                     $amountTotal.text(temp);
 
                     amountValidatoinFun();
@@ -1174,6 +1178,49 @@ app.autoFillField = function($curElement, $chapter){
 
 };
 
+
+// Get holiday list when change member
+$.fn.getMemberHolidayList = function(options) {
+    var o = $(this),
+        $select = o.parent().find('.value-select'),
+        selectedVal = $select.val();
+
+    $.ajax({
+        url: '/myansrsource/getholidays/' + selectedVal + '/' ,
+        dataType: 'json',
+        success: function( data ) {
+            data = data.data;
+
+            helper.clearArray(app.holidaysList);
+
+            var holiday,
+                holidayDay,
+                totalHolidayLen = data.length;
+
+            for(var i = 0; i < totalHolidayLen; i += 1) {
+                holiday = new Date(data[i].date);
+                holidayDay = holiday.getDay();
+
+                if(holidayDay !== 0 && holidayDay !== 6) {
+                    app.holidaysList.push(holiday);
+                }
+            }
+
+            console.log(app.holidaysList);
+        },
+        error: function( data ) {
+            console.log( "ERROR:  " + data );
+        }
+    });
+
+    console.log('Selected Val: ' + selectedVal);
+};
+
+helper.clearArray = function(arr) {
+    while (arr.length) {
+        arr.pop();
+    }
+};
 
 
 

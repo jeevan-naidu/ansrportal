@@ -40,11 +40,6 @@ from ldap import LDAPError
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
-    ("Define Team", formset_factory(
-        ProjectTeamForm,
-        extra=0,
-        can_delete=True
-    )),
     ("Financial Milestones", formset_factory(
         ProjectMilestoneForm,
         extra=1,
@@ -54,19 +49,12 @@ FORMS = [
 TEMPLATES = {
     "Define Project": "MyANSRSource/projectDefinition.html",
     "Basic Information": "MyANSRSource/projectBasicInfo.html",
-    "Define Team": "MyANSRSource/projectTeamMember.html",
     "Financial Milestones": "MyANSRSource/projectMilestone.html",
 }
 
 CFORMS = [
     ("My Projects", ChangeProjectForm),
     ("Change Basic Information", ChangeProjectBasicInfoForm),
-    ("Change Team Members", formset_factory(
-        ChangeProjectTeamMemberForm,
-        extra=1,
-        max_num=1,
-        can_delete=True
-    )),
     ("Change Milestones", formset_factory(
         ChangeProjectMilestoneForm,
         extra=0,
@@ -76,7 +64,6 @@ CFORMS = [
 CTEMPLATES = {
     "My Projects": "MyANSRSource/changeProject.html",
     "Change Basic Information": "MyANSRSource/changeProjectBasicInfo.html",
-    "Change Team Members": "MyANSRSource/changeProjectTeamMember.html",
     "Change Milestones": "MyANSRSource/changeProjectMilestone.html",
 }
 
@@ -90,6 +77,20 @@ TMFORMS = [
 TMTEMPLATES = {
     "My Projects": "MyANSRSource/closeProject.html",
     "Close Milestone": "MyANSRSource/closeProjectMilestone.html",
+}
+
+MEMBERFORMS = [
+    ("My Projects", ChangeProjectForm),
+    ("Update Member", formset_factory(
+        ChangeProjectTeamMemberForm,
+        extra=1,
+        max_num=1,
+        can_delete=True
+    )),
+]
+MEMBERTEMPLATES = {
+    "My Projects": "MyANSRSource/manageProjectTeam.html",
+    "Update Member": "MyANSRSource/manageProjectMember.html",
 }
 
 
@@ -397,9 +398,7 @@ def Timesheet(request):
                 'extra': 0,
                 'ErrorList': tsErrorList,
                 'tsFormList': tsContent,
-                'atFormList': atContent,
-                'tsId': billableTS.id,
-                'atId': nonbillableTS.id}
+                'atFormList': atContent}
         return renderTimesheet(request, data)
     else:
         # Switch dates back and forth
@@ -573,34 +572,22 @@ def getApprovedDataList(request, weekstartDate, ansrEndDate):
 
 @login_required
 def renderTimesheet(request, data):
-    billableHours = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=data['weekstartDate'],
-            wkend=data['weekendDate'],
-            teamMember=request.user,
-            approved=False,
-            activity__isnull=True
-        ),
-        ~Q(task='I')
+    tsObj = TimeSheetEntry.objects.filter(
+        wkstart=data['weekstartDate'],
+        wkend=data['weekendDate'],
+        teamMember=request.user,
+        approved=False
+    )
+    billableHours = tsObj.filter(
+        activity__isnull=True,
+        task__taskType='B'
     ).values('totalH')
-    idleHours = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=data['weekstartDate'],
-            wkend=data['weekendDate'],
-            task='I',
-            teamMember=request.user,
-            approved=False,
-            activity__isnull=True
-        ),
+    idleHours = tsObj.filter(
+        activity__isnull=True,
+        task__taskType='I'
     ).values('totalH')
-    othersHours = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=data['weekstartDate'],
-            wkend=data['weekendDate'],
-            teamMember=request.user,
-            approved=False,
-            project__isnull=True
-        ),
+    othersHours = tsObj.filter(
+        project__isnull=True
     ).values('totalH')
     bTotal = 0
     for billable in billableHours:
@@ -797,10 +784,11 @@ def checkUser(userName, password, request, form):
                     messages.error(
                         request,
                         'This user does not have access to timesheets.')
-                    logging.error('User {0} permission details {1} group perms'.format(
-                        user.username,
-                        user.get_all_permissions(),
-                        user.get_group_permissions()))
+                    logging.error(
+                        'User {0} permission details {1} group perms'.format(
+                            user.username,
+                            user.get_all_permissions(),
+                            user.get_group_permissions()))
                     return loginResponse(
                         request,
                         form,
@@ -907,25 +895,18 @@ class ChangeProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ChangeProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'Change Basic Information':
+            currentProject = Project.objects.get(
+                pk=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project'])
+            totalEffort = currentProject.plannedEffort
+            context.update({'totalEffort': totalEffort})
         if self.steps.current == 'Change Milestones':
             projectTotal = self.storage.get_step_data(
                 'Change Basic Information'
             )['Change Basic Information-revisedTotal']
             context.update({'totalValue': projectTotal})
-        if self.steps.current == 'Change Team Members':
-            if hasattr(self.request.user, 'employee'):
-                locationId = self.request.user.employee.location
-                holidays = Holiday.objects.filter(
-                    location=locationId
-                ).values('name', 'date')
-                holidays = Holiday.objects.all().values('name', 'date')
-                for holiday in holidays:
-                    holiday['date'] = int(
-                        holiday['date'].strftime("%s")) * 1000
-                data = {'data': list(holidays)}
-            else:
-                data = {'data': ''}
-            context.update({'holidayList': json.dumps(data)})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -951,49 +932,6 @@ class ChangeProjectWizard(SessionWizardView):
                 else:
                     self.request.session['changed'] = False
 
-        if step == 'Change Team Members':
-            currentProject = ProjectTeamMember.objects.filter(
-                project__id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values(
-                'startDate',
-                'endDate',
-                )
-            for eachData in currentProject:
-                startDateDelta = eachData['startDate'] - datetime.now().date()
-                endDateDelta = eachData['endDate'] - datetime.now().date()
-                if startDateDelta.days <= 0 or endDateDelta.days <= 0:
-                    for eachForm in form:
-                        eachForm.fields['member'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['role'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['startDate'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['endDate'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['rate'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['plannedEffort'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['DELETE'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['DELETE'].widget.attrs[
-                            'class'
-                        ] = 'form-control'
-            if self.request.session['changed'] is False:
-                if form.is_valid():
-                    if form.has_changed():
-                        self.request.session['changed'] = True
-                    else:
-                        self.request.session['changed'] = False
         if step == 'Change Milestones':
             currentProject = ProjectMilestone.objects.filter(
                 project__id=self.storage.get_step_data(
@@ -1061,19 +999,6 @@ class ChangeProjectWizard(SessionWizardView):
                 )[0]
             currentProject['revisedTotal'] = currentProject['totalValue']
             currentProject['revisedEffort'] = currentProject['plannedEffort']
-        if step == 'Change Team Members':
-            currentProject = ProjectTeamMember.objects.filter(
-                project__id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values(
-                'id',
-                'member',
-                'role',
-                'startDate',
-                'endDate',
-                'plannedEffort',
-                'rate'
-                )
 
         if step == 'Change Milestones':
             currentProject = ProjectMilestone.objects.filter(
@@ -1109,13 +1034,11 @@ def UpdateProjectInfo(request, newInfo):
         newInfo[0] ==> Selected Project Object
         newInfo[1] ==> 'reason' , 'endDate', 'revisedEffort', 'revisedTotal',
                        'closed', 'signed'
-        newInfo[2] ==> TeamMembers object(Old Data + Newly added member if any)
-        newInfo[3] ==> Milesonte Object(old Data + Newly add milestones if any)
+        newInfo[2] ==> Milesonte Object(old Data + Newly add milestones if any)
     """
     try:
         prc = newInfo[0]['project']
         prc.closed = newInfo[1]['closed']
-        print newInfo[1]['signed']
         prc.signed = newInfo[1]['signed']
         prc.save()
 
@@ -1135,21 +1058,7 @@ def UpdateProjectInfo(request, newInfo):
         pci.crId = "CR-{0}".format(pci.id)
         pci.save()
 
-        for eachmember in newInfo[2]:
-            if eachmember['id'] == 0:
-                ptmc = ProjectTeamMember()
-            else:
-                ptmc = ProjectTeamMember.objects.get(id=eachmember['id'])
-            ptmc.project = prc
-            ptmc.member = eachmember['member']
-            ptmc.role = eachmember['role']
-            ptmc.startDate = eachmember['startDate']
-            ptmc.endDate = eachmember['endDate']
-            ptmc.plannedEffort = eachmember['plannedEffort']
-            ptmc.rate = eachmember['rate']
-            ptmc.save()
-
-        for eachMilestone in newInfo[3]:
+        for eachMilestone in newInfo[2]:
             if eachMilestone['id'] == 0:
                 pmc = ProjectMilestone()
             else:
@@ -1184,7 +1093,7 @@ class CreateProjectWizard(SessionWizardView):
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step or self.steps.current
-        if step == 'Define Project':
+        if step == 'Basic Information':
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
                     'startDate'
@@ -1193,34 +1102,9 @@ class CreateProjectWizard(SessionWizardView):
                     'endDate'
                 ].strftime('%Y-%m-%d')
 
-        if step == 'Define Team':
-            c = {}
-            for eachForm in form:
-                if int(eachForm.prefix.split('-')[1]) < 2:
-                    eachForm.fields['DELETE'].widget.attrs[
-                        'disabled'
-                    ] = 'True'
-                if eachForm.is_valid():
-                    if eachForm.cleaned_data['member'] is not None:
-                        c.setdefault(eachForm.cleaned_data['member'], []
-                                     ).append(eachForm.cleaned_data['rate'])
-                        if eachForm.cleaned_data['rate'] > 100:
-                            rate = eachForm.cleaned_data['rate']
-                            errors = eachForm._errors.setdefault(
-                                rate,
-                                ErrorList())
-                            errors.append(
-                                u'% value cannot be greater than 100')
-                        for k, v in c.iteritems():
-                            if sum(tuple(v)) > 100:
-                                errors = eachForm._errors.setdefault(
-                                    sum(tuple(v)), ErrorList())
-                                errors.append(
-                                    u'No person can have more than 100% as effort')
-
         if step == 'Financial Milestones':
-            internalStatus = self.storage.get_step_data('Basic Information')[
-                'Basic Information-internal'
+            internalStatus = self.storage.get_step_data('Define Project')[
+                'Define Project-internal'
             ]
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -1245,8 +1129,8 @@ class CreateProjectWizard(SessionWizardView):
                     ] = 'True'
             else:
                 if form.is_valid():
-                    projectTotal = self.storage.get_step_data('Define Project')[
-                        'Define Project-totalValue'
+                    projectTotal = self.storage.get_step_data('Basic Information')[
+                        'Basic Information-totalValue'
                     ]
                     totalRate = 0
                     for eachForm in form:
@@ -1267,12 +1151,12 @@ class CreateProjectWizard(SessionWizardView):
                                     ErrorList())
                                 errors.append(u'Financial Milestone amount \
                                             cannot be 0')
-                            if float(projectTotal) != float(totalRate):
-                                errors = eachForm._errors.setdefault(
-                                    totalRate,
-                                    ErrorList())
-                                errors.append(u'Total amount must be \
-                                                equal to project value')
+                    if float(projectTotal) != float(totalRate):
+                        errors = eachForm._errors.setdefault(
+                            totalRate,
+                            ErrorList())
+                        errors.append(u'Total amount must be \
+                                        equal to project value')
         return form
 
     def get_context_data(self, form, **kwargs):
@@ -1293,86 +1177,31 @@ class CreateProjectWizard(SessionWizardView):
                 context.update(data)
 
         if self.steps.current == 'Financial Milestones':
-            projectTotal = self.storage.get_step_data('Define Project')[
-                'Define Project-totalValue'
+            projectTotal = self.storage.get_step_data('Basic Information')[
+                'Basic Information-totalValue'
             ]
             context.update({'totalValue': projectTotal})
-        if self.steps.current == 'Define Team':
-            if form.is_valid():
-                if hasattr(self.request.user, 'employee'):
-                    locationId = self.request.user.employee.location
-                    holidays = Holiday.objects.filter(
-                        location=locationId
-                    ).values('name', 'date')
-                    holidays = Holiday.objects.all().values('name', 'date')
-                    for holiday in holidays:
-                        holiday['date'] = int(
-                            holiday['date'].strftime("%s")) * 1000
-                    data = {'data': list(holidays)}
-                else:
-                    data = {'data': ''}
-                context.update({'holidayList': json.dumps(data)})
+
         return context
 
-    def get_form_initial(self, step):
-        initValue = {}
-        if step == 'Define Team':
-            initValue = [{'startDate': self.request.session['PStartDate'],
-                          'endDate': self.request.session['PEndDate']},
-                         {'startDate': self.request.session['PStartDate'],
-                          'endDate': self.request.session['PEndDate']}]
-        return self.initial_dict.get(step, initValue)
-
     def done(self, form_list, **kwargs):
-        teamDataCounter = 0
         milestoneDataCounter = 0
-        changedTeamData = {}
         changedMilestoneData = {}
-        cleanedTeamData = []
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
-        if basicInfo['plannedEffort'] > 0:
-            revenueRec = basicInfo['totalValue'] / basicInfo['plannedEffort']
-        else:
-            revenueRec = 0
         chapterIdList = [eachRec.id for eachRec in basicInfo['chapters']]
-        basicInfo['startDate'] = basicInfo.get(
-            'startDate'
-        ).strftime('%Y-%m-%d')
-        basicInfo['endDate'] = basicInfo.get(
-            'endDate'
-        ).strftime('%Y-%m-%d')
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
+            if k == 'startDate':
+                flagData['startDate'] = v.strftime('%Y-%m-%d')
+            if k == 'endDate':
+                flagData['endDate'] = v.strftime('%Y-%m-%d')
             flagData[k] = v
         effortTotal = 0
-        if [form.cleaned_data for form in form_list][2][0]['member'] is not None:
-            for teamData in [form.cleaned_data for form in form_list][2]:
-                teamDataCounter += 1
-                for k, v in teamData.iteritems():
-                    if k == 'plannedEffort':
-                        effortTotal += v
-                    k = "{0}-{1}".format(k, teamDataCounter)
-                    changedTeamData[k] = v
-                startDate = 'startDate-{0}'.format(teamDataCounter)
-                changedTeamData[startDate] = changedTeamData.get(
-                    startDate
-                ).strftime('%Y-%m-%d')
-                endDate = 'endDate-{0}'.format(teamDataCounter)
-                changedTeamData[endDate] = changedTeamData.get(
-                    endDate
-                ).strftime('%Y-%m-%d')
-                teamMemberId = 'teamMemberId-{0}'.format(teamDataCounter)
-                member = 'member-{0}'.format(teamDataCounter)
-                changedTeamData[teamMemberId] = changedTeamData.get(member).id
-                DELETE = 'DELETE-{0}'.format(teamDataCounter)
-                del changedTeamData[DELETE]
-                cleanedTeamData.append(changedTeamData.copy())
-                changedTeamData.clear()
 
-        if [form.cleaned_data for form in form_list][1]['internal'] is False:
-            for milestoneData in [form.cleaned_data for form in form_list][3]:
+        if basicInfo['internal'] is False:
+            for milestoneData in [form.cleaned_data for form in form_list][2]:
                 milestoneDataCounter += 1
                 for k, v in milestoneData.iteritems():
                     k = "{0}-{1}".format(k, milestoneDataCounter)
@@ -1386,26 +1215,82 @@ class CreateProjectWizard(SessionWizardView):
                 del changedMilestoneData[DELETE]
                 cleanedMilestoneData.append(changedMilestoneData.copy())
                 changedMilestoneData.clear()
-        if [form.cleaned_data for form in form_list][1]['internal'] is True:
-            data = {
-                'basicInfo': basicInfo,
-                'chapterId': chapterIdList,
-                'flagData': flagData,
-                'effortTotal': effortTotal,
-                'revenueRec': revenueRec,
-                'teamMember': cleanedTeamData,
-            }
+        if flagData['plannedEffort']:
+            revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
-            data = {
-                'basicInfo': basicInfo,
-                'chapterId': chapterIdList,
-                'flagData': flagData,
-                'effortTotal': effortTotal,
-                'revenueRec': revenueRec,
-                'teamMember': cleanedTeamData,
-                'milestone': cleanedMilestoneData
-            }
+            revenueRec = 0
+        data = {
+            'basicInfo': basicInfo,
+            'chapterId': chapterIdList,
+            'flagData': flagData,
+            'effortTotal': effortTotal,
+            'revenueRec': revenueRec,
+        }
+        if basicInfo['internal'] is False:
+            data['milestone'] = cleanedMilestoneData
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
+
+
+class ManageTeamWizard(SessionWizardView):
+
+    def get_template_names(self):
+        return [MEMBERTEMPLATES[self.steps.current]]
+
+    def get_form_initial(self, step):
+        currentProject = []
+        if step == 'Update Member':
+            currentProject = ProjectTeamMember.objects.filter(
+                project__id=self.storage.get_step_data(
+                    'My Projects'
+                )['My Projects-project']).values('id', 'member', 'role',
+                                                 'startDate', 'endDate',
+                                                 'plannedEffort', 'rate'
+                                                 )
+        return self.initial_dict.get(step, currentProject)
+
+    def get_context_data(self, form, **kwargs):
+        context = super(ManageTeamWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Update Member':
+            if hasattr(self.request.user, 'employee'):
+                locationId = self.request.user.employee.location
+                holidays = Holiday.objects.filter(
+                    location=locationId
+                ).values('name', 'date')
+                holidays = Holiday.objects.all().values('name', 'date')
+                for holiday in holidays:
+                    holiday['date'] = int(
+                        holiday['date'].strftime("%s")) * 1000
+                data = {'data': list(holidays)}
+            else:
+                data = {'data': ''}
+            context.update({'holidayList': json.dumps(data)})
+        return context
+
+    def done(self, form_list, **kwargs):
+        for eachData in [form.cleaned_data for form in form_list][1]:
+            if eachData['id']:
+                if eachData['DELETE']:
+                    ProjectTeamMember.objects.get(pk=eachData['id']).delete()
+                else:
+                    ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
+            else:
+                ptm = ProjectTeamMember()
+            ptm.project = [
+                form.cleaned_data for form in form_list][0]['project']
+            del(eachData['id'])
+            for k, v in eachData.iteritems():
+                setattr(ptm, k, v)
+            ptm.save()
+        return HttpResponseRedirect('/myansrsource/dashboard')
+
+
+manageTeam = ManageTeamWizard.as_view(MEMBERFORMS)
+
+
+@login_required
+def WrappedManageTeamView(request):
+    return manageTeam(request)
 
 
 @login_required
@@ -1425,15 +1310,24 @@ def saveProject(request):
             pr.projectType = pType
             pr.maxProductivityUnits = float(
                 request.POST.get('maxProductivityUnits'))
-            pr.startDate = request.POST.get('startDate')
-            pr.endDate = request.POST.get('endDate')
+            startDate = datetime.strptime(
+                request.POST.get('startDate'),
+                "%b. %d, %Y").date()
+            endDate = datetime.strptime(
+                request.POST.get('endDate'),
+                "%b. %d, %Y").date()
+            pr.startDate = startDate
+            pr.endDate = endDate
+            pr.po = request.POST.get('po')
             pr.totalValue = float(request.POST.get('totalValue'))
             pr.plannedEffort = int(request.POST.get('plannedEffort'))
             pr.currentProject = request.POST.get('currentProject')
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
             pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
-            manager = User.objects.get(id=int(request.POST.get('projectManager')))
+            manager = User.objects.get(
+                id=int(
+                    request.POST.get('projectManager')))
             pr.projectManager = manager
             pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                 pk=int(request.POST.get('bu'))
@@ -1445,10 +1339,10 @@ def saveProject(request):
                 pk=int(request.POST.get('book'))
             )
 
-            projectIdPrefix = "{0}_{1}_{2}".format(
+            projectIdPrefix = "{0}-{1}-{2}".format(
                 pr.customer.customerCode,
                 datetime.now().year,
-                str(pr.customer.seqNumber).zfill(4)
+                str(pr.customer.seqNumber).zfill(3)
             )
 
             pr.projectId = projectIdPrefix
@@ -1457,33 +1351,6 @@ def saveProject(request):
             pr.customer.save()
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
-        except ValueError as e:
-            messages.error(request, 'DataConversion Error:' + str(e))
-
-        try:
-            memberTotal = int(request.POST.get('teamMemberTotal')) + 1
-
-            for memberCount in range(1, memberTotal):
-                ptm = ProjectTeamMember()
-                ptm.project = pr
-                teamMemberId = "teamMemberId-{0}".format(memberCount)
-                role = "role-{0}".format(memberCount)
-                plannedEffort = "plannedEffort-{0}".format(memberCount)
-                rate = "rate-{0}".format(memberCount)
-                startDate = "startDate-{0}".format(memberCount)
-                endDate = "endDate-{0}".format(memberCount)
-
-                ptm.member = User.objects.get(
-                    pk=request.POST.get(teamMemberId)
-                )
-                ptm.role = employee.models.Designation.objects.get(
-                    pk=request.POST.get(role)
-                )
-                ptm.plannedEffort = request.POST.get(plannedEffort)
-                ptm.rate = request.POST.get(rate)
-                ptm.startDate = request.POST.get(startDate)
-                ptm.endDate = request.POST.get(endDate)
-                ptm.save()
         except ValueError as e:
             messages.error(request, 'DataConversion Error:' + str(e))
 
@@ -1542,16 +1409,18 @@ def notify(request):
             send_templated_mail(
                 template_name='projectCreatedMgmt',
                 from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[eachHead['relatedMember__email'], ],
+                recipient_list=[
+                    eachHead['relatedMember__email'],
+                    ],
                 context={
                     'first_name': eachHead['relatedMember__first_name'],
                     'projectId': projectDetails.projectId,
-                    'projectName' : projectName,
-                    'pmname': '{0} {1}'.format(projectDetails.projectManager.first_name,
-                                               projectDetails.projectManager.last_name),
-                    'startDate': projectDetails.startDate
-                    },
-            )
+                    'projectName': projectName,
+                    'pmname': '{0} {1}'.format(
+                        projectDetails.projectManager.first_name,
+                        projectDetails.projectManager.last_name),
+                    'startDate': projectDetails.startDate},
+                )
     teamMembers = ProjectTeamMember.objects.filter(
         project__id=projectId
     ).values('member__email', 'member__first_name',
@@ -1561,18 +1430,21 @@ def notify(request):
             send_templated_mail(
                 template_name='projectCreatedMember',
                 from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[eachMember['member__email'], ],
+                recipient_list=[
+                    eachMember['member__email'],
+                    ],
                 context={
                     'first_name': eachMember['member__first_name'],
                     'projectId': projectDetails.projectId,
-                    'projectName' : projectName,
-                    'pmname': '{0} {1}'.format(projectDetails.projectManager.first_name,
-                                               projectDetails.projectManager.last_name),
+                    'projectName': projectName,
+                    'pmname': '{0} {1}'.format(
+                        projectDetails.projectManager.first_name,
+                        projectDetails.projectManager.last_name),
                     'startDate': projectDetails.startDate,
                     'mystartdate': eachMember['startDate'],
-                    'myrole' : eachMember['role__name'],
+                    'myrole': eachMember['role__name'],
                     },
-            )
+                )
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
@@ -1594,12 +1466,11 @@ def ViewProject(request):
         projectObj = Project.objects.filter(id=projectId)
         basicInfo = projectObj.values(
             'projectType__description', 'bu__name', 'customer__name',
-            'name', 'startDate', 'endDate', 'book__name',
-            'plannedEffort', 'contingencyEffort',
-            'totalValue'
+            'name', 'book__name', 'signed', 'internal', 'currentProject'
         )[0]
         flagData = projectObj.values(
-            'maxProductivityUnits', 'signed', 'internal', 'currentProject'
+            'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
+            'totalValue', 'maxProductivityUnits', 'po'
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
@@ -1607,7 +1478,7 @@ def ViewProject(request):
             'plannedEffort', 'rate'
             )
         chapters = projectObj.values('chapters__name')
-        if flagData['internal']:
+        if basicInfo['internal']:
             cleanedMilestoneData = []
         else:
             cleanedMilestoneData = ProjectMilestone.objects.filter(
@@ -1631,6 +1502,22 @@ def GetChapters(request, bookid):
     chapters = Chapter.objects.filter(book__id=bookid)
     json_chapters = serializers.serialize("json", chapters)
     return HttpResponse(json_chapters, content_type="application/javascript")
+
+
+def GetHolidays(request, memberid):
+    currentUser = User.objects.get(pk=memberid)
+    if hasattr(currentUser, 'employee'):
+        locationId = currentUser.employee.location
+        holidayList = Holiday.objects.filter(
+            location=locationId
+        ).values('name', 'date')
+        for holiday in holidayList:
+            holiday['date'] = int(
+                holiday['date'].strftime("%s")) * 1000
+        data = {'data': list(holidayList)}
+    else:
+        data = {'data': ''}
+    return HttpResponse(json.dumps(data), content_type="application/javascript")
 
 
 def GetProjectType(request):
