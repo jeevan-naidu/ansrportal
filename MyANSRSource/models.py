@@ -16,6 +16,7 @@ class Book(models.Model):
                             verbose_name="Name")
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
+    edition = models.CharField(max_length=30, null=True, blank=True)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

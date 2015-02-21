@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.admin.widgets import AdminTextInputWidget
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, Chapter, \
@@ -36,11 +35,11 @@ class ChapterInline(admin.TabularInline):
 
 # Admin Models for ansr
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author')
+    list_display = ('name', 'edition', 'author')
     # which fields should appear on the filter column
-    list_filter = ['name', 'author']
+    list_filter = ['name', 'edition', 'author']
     # Search capabilitiy
-    search_fields = ['name', 'author']
+    search_fields = ['name', 'edition', 'author']
     # Which of the fields can be edited in list mode
     # list_editable = ['']
     # Ordering of the books
