@@ -40,6 +40,7 @@ class BookAdmin(admin.ModelAdmin):
     list_filter = ['name', 'edition', 'author']
     # Search capabilitiy
     search_fields = ['name', 'edition', 'author']
+    fields = ('name', 'edition', 'author')
     # Which of the fields can be edited in list mode
     # list_editable = ['']
     # Ordering of the books
