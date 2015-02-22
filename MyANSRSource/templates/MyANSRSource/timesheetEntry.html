@@ -1,7 +1,5 @@
 {% extends 'timesheetMaster.inc'  %}
 
-{% load set_var %}
-
 {% load bootstrap3 %}
 {% block startDate %}
 {{ weekstartDate }}
@@ -89,16 +87,6 @@
 			{% endfor %}
 			{% for data in form.visible_fields %}
 			{% spaceless %}
-			{% if 'hold' in data.label %}
-				{% if data.value %}
-					{% set hold = True %}
-				{% endif %}
-			{% endif %}
-			{% if 'approved' in data.label %}
-				{% if data.value %}
-					{% set approved = True %}
-				{% endif %}
-			{% endif %}
 			{% if data.label in shortDays %}
 					<td>
 						{% for data in form.visible_fields %}
@@ -243,12 +231,16 @@
 						{% endwith %}	
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-					{% if hold or approved %}
-						{% if 'Project' in data.label or 'Chapter' not in data.label or 'Location' not in data.label  or 'Task' not in data.label  %}
-							<td class="ansr-disabled">{{ data }}</td>
+					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
+					{% for holdData in form.visible_fields %}
+						{% if 'hold' in holdData.label or 'approved' in data.label %}
+							{% if holdData.value %}
+								<td class="ansr-disabled">{{ data }}</td>
+							{% else %}		
+								<td>{{ data }}</td>
+							{% endif %}
 						{% endif %}	
-					{% else %}		
-						<td>{{ data }}</td>
+					{% endfor %}
 					{% endif %}
                 		{% endif %}
             		{% endspaceless %}
@@ -307,10 +299,16 @@
 			{% endfor %}
 			{% for data in form %}
 		    		{% if 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-					{% if hold or approved %}
-						<td class="ansr-disabled">{{ data }}</td>
-					{% else %}
-						<td>{{ data }}</td>
+					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
+					{% for holdData in form.visible_fields %}
+						{% if 'hold' in holdData.label %}
+							{% if holdData.value %}
+								<td class="ansr-disabled">{{ data }}</td>
+							{% else %}		
+								<td>{{ data }}</td>
+							{% endif %}
+						{% endif %}	
+					{% endfor %}
 					{% endif %}
 				{% elif 'Feedback' in data.label %}
 			       		<td>
@@ -318,11 +316,15 @@
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#actModal-"|add:data.id_for_label %}
-							{% if hold or approved %}
-								<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-							{% else %}
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-							{% endif %}
+							{% for data in form.visible_fields %}
+								{% if 'hold' in data.label %}
+									{% if data.value %}
+										<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
+									{% else %}
+										<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+									{% endif %}
+								{% endif %}
+							{% endfor %}
 						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
