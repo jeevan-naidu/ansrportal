@@ -21,7 +21,7 @@ def populateValues(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('MyANSRSource', '0035_merge'),
+        ('MyANSRSource', '0032_auto_20150218_1840'),
     ]
 
     operations = [

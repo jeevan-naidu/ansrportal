@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations, Error
+from django.db import models, migrations, IntegrityError
 
 
 def populateValues(apps, schema_editor):
@@ -9,21 +9,26 @@ def populateValues(apps, schema_editor):
     activityModel = apps.get_model("MyANSRSource", "Activity")
     taskModel = apps.get_model("MyANSRSource", "Task")
 
-    try:
-        ts = tsModel.objects.all().values('task', 'activity')
-        for eachData in ts:
+    ts = tsModel.objects.all().values('task', 'activity')
+    for eachData in ts:
+        try:
             act = activityModel.objects.create(code=eachData['activity'])
-            tsk = taskModel.objects.create(code=eachData['task'])
+            ts.activity1 = act
             act.save()
+        except IntegrityError:
+            pass
+        try:
+            tsk = taskModel.objects.create(code=eachData['task'])
+            ts.task1 = tsk
             tsk.save()
-    except Error:
-        pass
+        except IntegrityError:
+            pass
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('MyANSRSource', '0023_activity_task'),
+        ('MyANSRSource', '0042_auto_20150222_1937'),
     ]
 
     operations = [
