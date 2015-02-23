@@ -120,7 +120,6 @@ def Timesheet(request):
     # Week Calculation.
     leaveDayWork = False
     # Getting the form values and storing it to DB.
-    tsStatus = {}
     if request.method == 'POST':
         # Getting the forms with submitted values
         tsform = TimesheetFormset(request.user)
@@ -182,7 +181,11 @@ def Timesheet(request):
                     del(timesheet.cleaned_data['saturday'])
                     del(timesheet.cleaned_data['sunday'])
                     del(timesheet.cleaned_data['total'])
+                    approved = False
                     for k, v in timesheet.cleaned_data.iteritems():
+                        if k == 'tsId':
+                            if v:
+                                approved = TimeSheetEntry.objects.get(pk=v).approved
                         if k == 'mondayH':
                             mondayTotal += float(v)
                         elif k == 'tuesdayH':
@@ -201,6 +204,7 @@ def Timesheet(request):
                             billableTotal += float(v)
                             weekTotal += float(v)
                         timesheetDict[k] = v
+                        timesheetDict['approved'] = approved
                     timesheetList.append(timesheetDict.copy())
                     timesheetDict.clear()
             for activity in activities:
@@ -378,9 +382,16 @@ def Timesheet(request):
                     you have completed it'
                 messages.success(request, msg)
                 hold = False
+            for eachtsList in timesheetList:
+                ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
+                if 'save' not in request.POST:
+                    eachtsList['hold'] = True
+                else:
+                    eachtsList['hold'] = ts.hold
             tsContent = timesheetList
             atContent = activitiesList
             tsErrorList = []
+            atErrorList = []
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -393,14 +404,16 @@ def Timesheet(request):
                             id=eachErrorData['project'].id
                         ).values('projectType__code')[0]['projectType__code']
                         eachErrorData['projectType'] = ptype
-            atContent = [k for k in activities.cleaned_data]
+            atErrorList = activities.errors
+            atContent = [k.cleaned_data for k in activities]
             hold = False
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
                 'disabled': dates['disabled'],
                 'hold': hold,
                 'extra': 0,
-                'ErrorList': tsErrorList,
+                'tsErrorList': tsErrorList,
+                'atErrorList': atErrorList,
                 'tsFormList': tsContent,
                 'atFormList': atContent}
         return renderTimesheet(request, data)
@@ -409,32 +422,16 @@ def Timesheet(request):
         dates = switchWeeks(request)
 
         # Getting Data for timesheet and activity
-        unApprovedData = getUnapprovedDataList(request, dates['start'],
-                                               dates['end'])
-        approvedData = getApprovedDataList(request, dates['start'],
-                                           dates['end'])
+        tsDataList = getTSDataList(request, dates['start'], dates['end'])
 
         # Common values initialization
         extra = 0
         hold = False
 
         # Approved TS data
-        if len(approvedData['tsData']):
-            tsStatus['approved'] = True
-            tsFormList = approvedData['tsData']
-            atFormList = approvedData['atData']
-            messages.success(request, 'Timesheet is approved for this week')
-
-        # To be approved TS data
-        elif len(unApprovedData['tsData']):
-            hold = unApprovedData['tsData'][0]['hold']
-            tsFormList = unApprovedData['tsData']
-            atFormList = unApprovedData['atData']
-            if hold:
-                messages.warning(request, 'Your timesheet is currently \
-                                 pending with your manager for review')
-            else:
-                messages.warning(request, 'Please update your timesheet')
+        if len(tsDataList['tsData']):
+            tsFormList = tsDataList['tsData']
+            atFormList = tsDataList['atData']
 
         # Fresh TS data
         else:
@@ -472,14 +469,13 @@ def switchWeeks(request):
 
 
 @login_required
-def getUnapprovedDataList(request, weekstartDate, ansrEndDate):
+def getTSDataList(request, weekstartDate, ansrEndDate):
     # To be approved TS data
     cwActivityData = TimeSheetEntry.objects.filter(
         Q(
             wkstart=weekstartDate,
             wkend=ansrEndDate,
             teamMember=request.user,
-            approved=False,
             project__isnull=True
         )
     ).values('id', 'activity', 'mondayH', 'tuesdayH', 'wednesdayH',
@@ -491,7 +487,6 @@ def getUnapprovedDataList(request, weekstartDate, ansrEndDate):
             wkstart=weekstartDate,
             wkend=ansrEndDate,
             teamMember=request.user,
-            approved=False,
             activity__isnull=True
         )
     ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
@@ -544,37 +539,6 @@ def getUnapprovedDataList(request, weekstartDate, ansrEndDate):
         atDataList.append(atData.copy())
         atData.clear()
     return {'tsData': tsDataList, 'atData': atDataList}
-
-
-@login_required
-def getApprovedDataList(request, weekstartDate, ansrEndDate):
-    # Approved TS Data
-    cwApprovedActivityData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=request.user,
-            approved=True,
-            project__isnull=True
-        )
-    ).values('activity', 'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
-             'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback',
-             'approved', 'hold'
-             )
-    cwApprovedTimesheetData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=request.user,
-            approved=True,
-            activity__isnull=True
-        )
-    ).values('project__name', 'location__name', 'chapter__name', 'mondayH',
-             'tuesdayH', 'wednesdayH', 'thursdayH', 'task', 'id',
-             'fridayH', 'saturdayH', 'sundayH', 'totalH', 'managerFeedback',
-             'approved', 'hold'
-             )
-    return {'tsData': cwApprovedTimesheetData, 'atData': cwApprovedActivityData}
 
 
 @login_required
@@ -631,6 +595,8 @@ def renderTimesheet(request, data):
                  'atFormset': atFormset}
     if 'tsErrorList' in data:
         finalData['tsErrorList'] = data['tsErrorList']
+    if 'atErrorList' in data:
+        finalData['atErrorList'] = data['atErrorList']
     return render(request, 'MyANSRSource/timesheetEntry.html', finalData)
 
 
@@ -742,7 +708,7 @@ def Dashboard(request):
             'project__endDate'
         ].strftime('%Y-%m-%d')
     trainings = CompanyMaster.models.Training.objects.all().values(
-        'batch', 'trainingDate')
+        'batch', 'exercise', 'trainingDate')
     if len(trainings):
         for eachTraining in trainings:
             eachTraining['trainingDate'] = eachTraining[
