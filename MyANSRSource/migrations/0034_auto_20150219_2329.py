@@ -1,33 +1,41 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations, IntegrityError
+from django.db import models, migrations, IntegrityError, transaction
 
 
 def populateValues(apps, schema_editor):
     tsModel = apps.get_model("MyANSRSource", "TimeSheetEntry")
+    ptModel = apps.get_model("MyANSRSource", "projectType")
     activityModel = apps.get_model("MyANSRSource", "Activity")
     taskModel = apps.get_model("MyANSRSource", "Task")
 
-    ts = tsModel.objects.filter(project__isnull=False).values('activity',
-                                                              'task',
-                                                              'project__projectType')
-    for eachTs in ts:
+    activityts = tsModel.objects.filter(billable=False)
+    for eachTs in activityts:
         try:
-            act = activityModel.objects.create(code=eachTs['activity'],
-                                               name=eachTs['activity'])
-            eachTs.activity1 = act
-            act.save()
+            with transaction.atomic():
+                act = activityModel.objects.create(code=eachTs.activity,
+                                                   name=eachTs.activity)
+                act.save()
+                eachTs.activity1 = act
         except IntegrityError:
-            pass
+            eachTs.activity1 = activityModel.objects.get(
+                code=eachTs.activity)
+        eachTs.save()
+
+    projectts = tsModel.objects.filter(billable=True)
+    for eachTs in projectts:
         try:
-            tsk = taskModel.objects.create(code=eachTs['task'],
-                                           name=eachTs['task'],
-                                           projectType.id=eachTs['project__projectType'])
-            eachTs.task1 = tsk
-            tsk.save()
+            with transaction.atomic():
+                ptObj = ptModel.objects.get(
+                    pk=int(eachTs.project.projectType.id))
+                tsk = taskModel.objects.create(code=eachTs.task,
+                                               name=eachTs.task,
+                                               projectType=ptObj)
+                tsk.save()
+                eachTs.task1 = tsk
         except IntegrityError:
-            pass
+            eachTs.task1 = taskModel.objects.get(code=eachTs.task)
         eachTs.save()
 
 
