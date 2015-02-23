@@ -7,14 +7,14 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('MyANSRSource', '0026_auto_20150217_1621'),
+        ('MyANSRSource', '0041_book_edition'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='timesheetentry',
-            name='task1',
-            field=models.ForeignKey(verbose_name=b'Task1', to='MyANSRSource.Task', null=True),
+        migrations.AlterField(
+            model_name='project',
+            name='projectId',
+            field=models.CharField(max_length=60, verbose_name=b'Project Code'),
             preserve_default=True,
         ),
     ]

@@ -7,14 +7,14 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('MyANSRSource', '0026_auto_20150217_1621'),
+        ('CompanyMaster', '0007_training'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='timesheetentry',
-            name='task1',
-            field=models.ForeignKey(verbose_name=b'Task1', to='MyANSRSource.Task', null=True),
+        migrations.AlterField(
+            model_name='customer',
+            name='seqNumber',
+            field=models.PositiveIntegerField(default=1, verbose_name=b'Project ID Sequence'),
             preserve_default=True,
         ),
     ]

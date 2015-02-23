@@ -14,7 +14,7 @@ class OfficeLocatonAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','customerCode')
 
 
 class DepartmentAdmin(admin.ModelAdmin):

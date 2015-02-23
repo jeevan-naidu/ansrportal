@@ -16,6 +16,7 @@ class Book(models.Model):
                             verbose_name="Name")
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
+    edition = models.CharField(max_length=30, null=True, blank=True)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -28,7 +29,7 @@ class Book(models.Model):
 class Activity(models.Model):
     name = models.CharField(max_length=100, null=False,
                             verbose_name="Activity")
-    code = models.CharField(max_length=1, null=False,
+    code = models.CharField(max_length=1, null=False, unique=True,
                             verbose_name="Short Code", default=None)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -60,7 +61,7 @@ class projectType(models.Model):
 class Task(models.Model):
     projectType = models.ForeignKey(projectType, verbose_name="Project Type")
     name = models.CharField(max_length=100, verbose_name="Task")
-    code = models.CharField(max_length=1, null=False,
+    code = models.CharField(max_length=1, null=False, unique=True,
                             verbose_name="Short Code", default=None)
     taskType = models.CharField(max_length=2,
                                 choices=TASKTYPEFLAG,
@@ -129,7 +130,10 @@ class Project(models.Model):
         null=False,
         verbose_name="Internal Project"
     )
-    projectId = models.CharField(max_length=60, null=False)
+    projectId = models.CharField(
+        max_length=60,
+        null=False,
+        verbose_name='Project Code')
     po = models.CharField(max_length=60, null=False,
                           blank=False, default=None,
                           verbose_name="P.O.")
