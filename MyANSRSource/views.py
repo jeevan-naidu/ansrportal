@@ -324,12 +324,6 @@ def Timesheet(request):
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
-                if 'save' not in request.POST:
-                    messages.warning(
-                        request,
-                        'Your timesheet has been sent to your \
-                        manager for approval')
-                    hold = True
             elif 'save' not in request.POST:
                 # Save Timesheet
                 for eachActivity in activitiesList:
@@ -373,15 +367,7 @@ def Timesheet(request):
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
-                    hold = False
-                messages.success(request, 'Your timesheet has been approved')
             dates = switchWeeks(request)
-            if 'save' in request.POST:
-                msg = 'Your timesheet has been saved. You can continue to \
-                    make changes. Please submit your timesheet once \
-                    you have completed it'
-                messages.success(request, msg)
-                hold = False
             for eachtsList in timesheetList:
                 ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
                 if 'save' not in request.POST:
@@ -406,11 +392,25 @@ def Timesheet(request):
                         eachErrorData['projectType'] = ptype
             atErrorList = activities.errors
             atContent = [k.cleaned_data for k in activities]
-            hold = False
+
+        # Constructing status of timesheet
+        msg = ''
+
+        for eachTS in tsContent:
+            tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+            if eachTS['approved']:
+                msg += '{0} - is approved, '.format(tsObj.project.name)
+            elif eachTS['hold']:
+                msg += '{0} - is sent for approval \
+                    to your manager'.format(tsObj.project.name)
+            elif 'save' in request.POST:
+                msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+
+        messages.info(request, msg)
+
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
                 'disabled': dates['disabled'],
-                'hold': hold,
                 'extra': 0,
                 'tsErrorList': tsErrorList,
                 'atErrorList': atErrorList,
@@ -426,7 +426,6 @@ def Timesheet(request):
 
         # Common values initialization
         extra = 0
-        hold = False
 
         # Approved TS data
         if len(tsDataList['tsData']):
@@ -437,8 +436,25 @@ def Timesheet(request):
         else:
             tsFormList, atFormList = [], []
             extra = 1
-            messages.success(request, 'Please enter your timesheet \
-                             for this week')
+            messages.success(request, 'Please enter your timesheet for \
+                             this week')
+
+        # Constructing status of timesheet
+        msg = ''
+
+        for eachTS in tsFormList:
+            tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+            if eachTS['approved']:
+                msg += '{0} - is approved, '.format(tsObj.project.name)
+            elif eachTS['hold']:
+                msg += '{0} - is sent for approval \
+                    to your manager'.format(tsObj.project.name)
+            elif 'save' in request.POST:
+                msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+            else:
+                msg += '{0} - Rework on your timesheet'.format(tsObj.project.name)
+
+        messages.info(request, msg)
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
