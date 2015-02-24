@@ -1465,7 +1465,7 @@ def ViewProject(request):
         }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
-        'name', 'id'
+        'name', 'id', 'closed'
     )
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
