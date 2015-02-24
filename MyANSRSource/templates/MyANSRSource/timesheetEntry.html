@@ -1,7 +1,5 @@
 {% extends 'timesheetMaster.inc'  %}
 
-{% load set_var %}
-
 {% load bootstrap3 %}
 {% block startDate %}
 {{ weekstartDate }}
@@ -26,7 +24,7 @@
 	</legend>
 
     {{ tsFormset.management_form }}
-	{% for eachError in  ErrorList %}
+	{% for eachError in tsErrorList %}
 		{% if eachError.items|length > 0 %}
 			<div class="alert alert-danger" role="alert">
 				{% for k, v in eachError.items %}
@@ -57,7 +55,7 @@
 				{% endif %}
 			{% endfor %}
 			{% for data in form.visible_fields %}
-				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'hold' not in data.label and 'approved' not in data.label %}
+				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
 				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 4 %}
 					<th class="res-14-per">
 				{% else %}
@@ -89,19 +87,17 @@
 			{% endfor %}
 			{% for data in form.visible_fields %}
 			{% spaceless %}
-			{% if 'hold' in data.label %}
-				{% set hold = data.value %}
-			{% endif %}
-			{% if 'approved' in data.label %}
-				{% set hold = data.value %}
-			{% endif %}
 			{% if data.label in shortDays %}
 					<td>
-						{% if hold == True or approved == True %}
-							<a class="btn btn-default day-popover-button disabled" href="javascript:;">
-						{% else %}
-							<a class="btn btn-default day-popover-button" href="javascript:;">
-						{% endif %}
+						{% for data in form.visible_fields %}
+							{% if 'hold' in data.label %}
+								{% if data.value %}
+									<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">
+								{% else %}
+									<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">
+								{% endif %}
+							{% endif %}
+						{% endfor %}
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
 									{% for typeData in form.hidden_fields %}
@@ -137,11 +133,15 @@
 					</td>
 				{% elif data.label == 'Total' %}
 					<td>
-						{% if hold == True or approved == True %}
-							<a class="btn btn-default row-total-view disabled" href="javascript:;">
-						{% else %}
-							<a class="btn btn-default row-total-view" href="javascript:;">
-						{% endif %}
+						{% for data in form.visible_fields %}
+							{% if 'hold' in data.label %}
+								{% if data.value %}
+									<a class="btn btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
+								{% else %}
+									<a class="btn btn-default row-total-view fixed-btn-size" href="javascript:;">
+								{% endif %}
+							{% endif %}
+						{% endfor %}
 							{% for data in form.hidden_fields %}
 								{% if 'totalQ' in data.id_for_label %}
 									{% for typeData in form.hidden_fields %}
@@ -202,11 +202,15 @@
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#myModal-"|add:data.id_for_label %}
-							{% if hold == True or approved == True %}
-								<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-							{% else %}
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-							{% endif %}
+							{% for data in form.visible_fields %}
+								{% if 'hold' in data.label %}
+									{% if data.value %}
+										<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
+									{% else %}
+										<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+									{% endif %}
+								{% endif %}
+							{% endfor %}
 						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
@@ -226,13 +230,17 @@
 							</div>
 						{% endwith %}	
 					</td>
-				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'hold' not in data.label and 'approved' not in data.label %}
-					{% if hold == True or approved == True %}
-						{% if 'Project' in data.label or 'Chapter' not in data.label or 'Location' not in data.label  or 'Task' not in data.label  %}
-							<td class="ansr-disabled">{{ data }}</td>
+				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
+					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
+					{% for holdData in form.visible_fields %}
+						{% if 'hold' in holdData.label or 'approved' in data.label %}
+							{% if holdData.value %}
+								<td class="ansr-disabled">{{ data }}</td>
+							{% else %}		
+								<td>{{ data }}</td>
+							{% endif %}
 						{% endif %}	
-					{% else %}		
-						<td>{{ data }}</td>
+					{% endfor %}
 					{% endif %}
                 		{% endif %}
             		{% endspaceless %}
@@ -255,8 +263,18 @@
 	</span>
 	</legend>
 	{{ atFormset.management_form }}
+	{% for eachError in atErrorList %}
+		{% if eachError.items|length > 0 %}
+			<div class="alert alert-danger" role="alert">
+				{% for k, v in eachError.items %}
+					{{ k }} : {{ v|striptags }}
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endfor %}
 	<table class="table table-condensed table-responsive">
 	{% for form in atFormset %}
+		{{ form.errors }}
 		{% if forloop.first %}
 		<thead>
             	<tr>
@@ -291,10 +309,16 @@
 			{% endfor %}
 			{% for data in form %}
 		    		{% if 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-					{% if hold == True or approved == True %}
-						<td class="ansr-disabled">{{ data }}</td>
-					{% else %}
-						<td>{{ data }}</td>
+					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
+					{% for holdData in form.visible_fields %}
+						{% if 'hold' in holdData.label %}
+							{% if holdData.value %}
+								<td class="ansr-disabled">{{ data }}</td>
+							{% else %}		
+								<td>{{ data }}</td>
+							{% endif %}
+						{% endif %}	
+					{% endfor %}
 					{% endif %}
 				{% elif 'Feedback' in data.label %}
 			       		<td>
@@ -302,11 +326,15 @@
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#actModal-"|add:data.id_for_label %}
-							{% if hold == True or approved == True %}
-								<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-							{% else %}
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-							{% endif %}
+							{% for data in form.visible_fields %}
+								{% if 'hold' in data.label %}
+									{% if data.value %}
+										<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
+									{% else %}
+										<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+									{% endif %}
+								{% endif %}
+							{% endfor %}
 						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
@@ -364,10 +392,6 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    {% if hold == True  %}
-    	<button type="submit" value="submit" name="submit" class="btn btn-info pull-right disabled">Submit Timesheet</button>
-    	<button type="submit" value="save" name="save" class="btn btn-info disabled">Save Timesheet</button>
-    {% else %}
     	<button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
     	<a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
 	<script>
@@ -378,7 +402,6 @@
 			});			
 		});			
 	</script>
-    {% endif %}
  </button>
  </form>
 {% endblock %}

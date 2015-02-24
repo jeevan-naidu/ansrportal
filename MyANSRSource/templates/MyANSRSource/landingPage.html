@@ -20,7 +20,7 @@
 	{% for eachTraining in trainingList %}
 		{
 			start : '{{ eachTraining.trainingDate }}',
-			title : '{{ eachTraining.batch }}',
+			title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}',
 			color  : '#176CED'
 		},
 	{% endfor %}

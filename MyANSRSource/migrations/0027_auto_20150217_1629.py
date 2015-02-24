@@ -11,10 +11,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.AddField(
             model_name='timesheetentry',
-            name='task',
-            field=models.ForeignKey(verbose_name=b'Task', to='MyANSRSource.Task', null=True),
+            name='task1',
+            field=models.ForeignKey(verbose_name=b'Task1', to='MyANSRSource.Task', null=True),
             preserve_default=True,
         ),
     ]

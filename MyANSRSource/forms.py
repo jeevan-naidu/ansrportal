@@ -610,3 +610,7 @@ class ProjectMilestoneForm(forms.ModelForm):
 class LoginForm(forms.Form):
     userid = forms.CharField(max_length=30)
     password = forms.CharField(max_length=50, widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        self.fields['userid'].widget.attrs['autofocus'] = "autofocus"

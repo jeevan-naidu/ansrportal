@@ -10,6 +10,7 @@
 		<thead>
 			<th class="text-center">Choose</th>
 			<th class="text-center">Project Name</th>
+			<th class="text-center">Project Status</th>
 		</thead>
 		{% for eachProject in projects %}
 			<tr>
@@ -20,8 +21,15 @@
 					<input type="radio" class="form-control" name="project" value="{{ eachProject.id }}">
 					{% endif %}
 				</td>
-				<td>
+				<td style="padding-top: 18px" class="text-center">
 					{{ eachProject.name }}
+				</td>
+				<td class="text-center">
+				        {% if eachProject.closed %}	
+						<h4><span class="label label-default my-project">Closed</span></h4>
+					{% else %}
+						<h4><span class="label label-default holiday">Open</span></h4>
+					{% endif %}
 				</td>
 			<tr>
 		{% endfor %}

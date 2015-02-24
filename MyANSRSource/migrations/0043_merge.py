@@ -4,17 +4,12 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 
-def populateValues(apps, schema_editor):
-    pass
-
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('MyANSRSource', '0032_auto_20150218_1840'),
+        ('MyANSRSource', '0042_auto_20150221_1351'),
+        ('MyANSRSource', '0042_auto_20150223_1115'),
     ]
 
     operations = [
-        migrations.RunPython(populateValues, ),
     ]
