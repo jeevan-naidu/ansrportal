@@ -92,9 +92,9 @@
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
-									<a class="btn btn-default day-popover-button disabled" href="javascript:;">
+									<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">
 								{% else %}
-									<a class="btn btn-default day-popover-button" href="javascript:;">
+									<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">
 								{% endif %}
 							{% endif %}
 						{% endfor %}
@@ -136,9 +136,9 @@
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
-									<a class="btn btn-default row-total-view disabled" href="javascript:;">
+									<a class="btn btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
 								{% else %}
-									<a class="btn btn-default row-total-view" href="javascript:;">
+									<a class="btn btn-default row-total-view fixed-btn-size" href="javascript:;">
 								{% endif %}
 							{% endif %}
 						{% endfor %}
