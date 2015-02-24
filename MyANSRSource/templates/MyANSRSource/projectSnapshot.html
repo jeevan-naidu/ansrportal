@@ -2,34 +2,29 @@
 
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-sixth">
+    <li class="form-step one-fifth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
         <label class="form-step-label">Define Project</label>
     </li>
-    <li class="form-step one-sixth">
+    <li class="form-step one-fifth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
         <label class="form-step-label">Basic Information</label>
     </li>
-    <li class="form-step one-sixth">
+    <li class="form-step one-fifth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
-        <label class="form-step-label">Define Team</label>
-    </li>
-    <li class="form-step one-sixth">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
         <label class="form-step-label">Financial Milestones</label>
     </li>
-    <li class="form-step one-sixth active">
+    <li class="form-step one-fifth active">
         <span class="form-step-bor"></span>
-        <span class="form-step-no">5</span>
+        <span class="form-step-no">4</span>
         <label class="form-step-label">Validate</label>
     </li>
-    <li class="form-step one-sixth">
+    <li class="form-step one-fifth">
         <span class="form-step-bor"></span>
-        <span class="form-step-no">6</span>
+        <span class="form-step-no">5</span>
         <label class="form-step-label">Complete!</label>
     </li>
 </ul>
@@ -51,13 +46,12 @@
 				<th>Business Unit</th>
 				<th>Name</th>
 				<th>Customer</th>
-				<th>Planned Effort</th>
-				<th>Contigency Effort</th>
 				<th>Book</th>
 				<th>Chapters</th>
-				<th>Start Date</th>
-				<th>End Date</th>
-				<th>Total Value</th>
+				<th>Project Leader</th>
+				<th>Is it an internal Project?</th>
+				<th>Is this a new project?</th>
+				<th>Is this contract signed?</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -65,8 +59,6 @@
 			<td>{{ basicInfo.bu }}</td>
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer }}</td>
-			<td>{{ basicInfo.plannedEffort }}</td>
-			<td>{{ basicInfo.contingencyEffort }}</td>
 			<td>{{ basicInfo.book }}</td>
 			<td>
 				{% for eachChapter in basicInfo.chapters %}
@@ -77,11 +69,34 @@
 					{% endif %}
 				{% endfor %}
 			</td>
-			<td>{{ basicInfo.startDate }}</td>
-			<td>{{ basicInfo.endDate }}</td>
-			<td>{{ basicInfo.totalValue }}</td>
+			<td>{{ basicInfo.projectManager }}</td>
+			<td>
+				{% if basicInfo.internal == True  %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.currentProject == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.signed == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
 			{% for rec, value in basicInfo.iteritems %}
-				<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				{% if rec == 'projectManager' %}
+					<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
+				{% else %}
+					<input type="hidden" name="{{ rec }}" value="{{ value }}">
+				{% endif %}
 			{% endfor %}
 				<input type="hidden" name="chapters" value="{{ chapterId }}">
 				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
@@ -98,137 +113,32 @@
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-				<th>Project Manager</th>
 				<th>Norms</th>
-				<th>Is it an internal Project?</th>
-				<th>Is this a new project?</th>
-				<th>Is this contract signed?</th>
+				<th>Planned Effort</th>
+				<th>Contigency Effort</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Total Value</th>
+				<th>P.O.</th>
 		</thead>
 		<tbody>
 		<tr>
-			<td>{{ flagData.projectManager }}</td>
 			<td>{{ flagData.maxProductivityUnits }}</td>
-			<td>
-				{% if flagData.internal == True  %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
-			<td>
-				{% if flagData.currentProject == True %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
-			<td>
-				{% if flagData.signed == True %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
-			</td>
+			<td>{{ flagData.plannedEffort }}</td>
+			<td>{{ flagData.contingencyEffort }}</td>
+			<td>{{ flagData.startDate }}</td>
+			<td>{{ flagData.endDate }}</td>
+			<td>{{ flagData.totalValue }}</td>
+			<td>{{ flagData.po }}</td>
 			{% for rec, value in flagData.iteritems %}
-				{% if rec == 'projectManager' %}
-					<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
-				{% else %}
-					<input type="hidden" name="{{ rec }}" value="{{ value }}">
-				{% endif %}
+				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
 		</tr>
 		</tbody>
 	</table>
 	</div>
 </div>
-<div class="panel panel-default">
-	<div class="panel-heading overflowHidden">
-		<b>
-			<span class="col-lg-6">Team Member(s)</span>
-			<span class="col-lg-6 text-right">Total Effort : {{ effortTotal }}</span>
-		</b>
-	</div>
-<div class="panel-body">
-	<table class="table table-condensed">
-		<thead>
-			<th>Member</th>
-			<th>Role</th>
-			<th>Start Date</th>
-			<th>End Date</th>
-			<th>Planned Effort</th>
-			<th>%</th>
-		</thead>
-				<input type="hidden" name="teamMemberTotal" value="{{ teamMember|length }}">
-		{% for teamData in teamMember %}
-		<tr>
-			{% with counter=forloop.counter|stringformat:"s" %}
-				<td>
-					{% with memberId="member-"|add:counter %}
-						{% for rec, value in teamData.iteritems %}
-							{% if memberId == rec %}
-								{{ value }}
-							{% endif %}
-						{% endfor %}
-					{% endwith %}
-				</td>
-				<td>
-					{% with roleId="role-"|add:counter %}
-						{% for rec, value in teamData.iteritems %}
-							{% if roleId == rec %}
-								{{ value }}
-				<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
-							{% endif %}
-						{% endfor %}
-					{% endwith %}
-				</td>
-				<td>
-					{% with startDateId="startDate-"|add:counter %}
-						{% for rec, value in teamData.iteritems %}
-							{% if startDateId == rec %}
-								{{ value }}
-							{% endif %}
-						{% endfor %}
-					{% endwith %}
-				</td>
-				<td>
-					{% with endDateId="endDate-"|add:counter %}
-						{% for rec, value in teamData.iteritems %}
-							{% if endDateId == rec %}
-								{{ value }}
-							{% endif %}
-						{% endfor %}
-					{% endwith %}
-				</td>
-				<td>
-					{% with effortId="plannedEffort-"|add:counter %}
-						{% for rec, value in teamData.iteritems %}
-							{% if effortId == rec %}
-								{{ value }}
-							{% endif %}
-						{% endfor %}
-					{% endwith %}
-				</td>
-				<td>
-					{% with effortId="rate-"|add:counter %}
-						{% for rec, value in teamData.iteritems %}
-							{% if effortId == rec %}
-								{{ value }}
-							{% endif %}
-						{% endfor %}
-					{% endwith %}
-				</td>
-			{% endwith %}
-			{% for rec, value in teamData.iteritems %}
-			{% if 'role' not in rec %}
-				<input type="hidden" name="{{ rec }}" value="{{ value }}">
-			{% endif %}
-			{% endfor %}
-		</tr>
-		{% endfor %}
-	</table>
-</div>
-</div>
-{% if flagData.internal == False %} 
+{% if basicInfo.internal == False %} 
 <div class="panel panel-default">
 	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
 <div class="panel-body">
