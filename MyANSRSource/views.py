@@ -1269,6 +1269,30 @@ class ManageTeamWizard(SessionWizardView):
             for k, v in eachData.iteritems():
                 setattr(ptm, k, v)
             ptm.save()
+        teamMembers = ProjectTeamMember.objects.filter(
+            project__id=ptm.project.id
+        ).values('member__email', 'member__first_name',
+                 'member__last_name', 'startDate', 'role__name')
+        for eachMember in teamMembers:
+            if eachMember['member__email'] != '':
+                send_templated_mail(
+                    template_name='projectCreatedTeam',
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[
+                        eachMember['member__email'],
+                        ],
+                    context={
+                        'first_name': eachMember['member__first_name'],
+                        'projectId': ptm.project.id,
+                        'projectName': ptm.project.name,
+                        'pmname': '{0} {1}'.format(
+                            ptm.project.projectManager.first_name,
+                            ptm.project.projectManager.last_name),
+                        'startDate': ptm.project.startDate,
+                        'mystartdate': eachMember['startDate'],
+                        'myrole': eachMember['role__name'],
+                        },
+                    )
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1405,30 +1429,6 @@ def notify(request):
                         projectDetails.projectManager.first_name,
                         projectDetails.projectManager.last_name),
                     'startDate': projectDetails.startDate},
-                )
-    teamMembers = ProjectTeamMember.objects.filter(
-        project__id=projectId
-    ).values('member__email', 'member__first_name',
-             'member__last_name', 'startDate', 'role__name')
-    for eachMember in teamMembers:
-        if eachMember['member__email'] != '':
-            send_templated_mail(
-                template_name='projectCreatedMember',
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[
-                    eachMember['member__email'],
-                    ],
-                context={
-                    'first_name': eachMember['member__first_name'],
-                    'projectId': projectDetails.projectId,
-                    'projectName': projectName,
-                    'pmname': '{0} {1}'.format(
-                        projectDetails.projectManager.first_name,
-                        projectDetails.projectManager.last_name),
-                    'startDate': projectDetails.startDate,
-                    'mystartdate': eachMember['startDate'],
-                    'myrole': eachMember['role__name'],
-                    },
                 )
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
