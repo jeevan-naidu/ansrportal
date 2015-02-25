@@ -368,4 +368,4 @@ class Attendance(models.Model):
     employee = models.ForeignKey(Employee)
     swipe_in = models.DateTimeField(null=True, blank=True)
     swipe_out = models.DateTimeField(null=True, blank=True)
-    swipe_location = models.CharField(null=True, blank=True)
+    swipe_location = models.CharField(null=True, blank=True, max_length=100)
