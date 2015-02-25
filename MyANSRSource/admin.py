@@ -104,7 +104,8 @@ class ActivityAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('name', 'projectType', 'taskType', )
+    filter_fields = ('projectType',)
 
 
 class ProjectTeamMemberAdmin(admin.ModelAdmin):
@@ -112,11 +113,7 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
                     'startDate', 'plannedEffort')
 
 admin.site.register(Project, ProjectAdmin)
-#admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(projectType, projectTypeAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Task, TaskAdmin)
-#admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
-#admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
-#admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)
