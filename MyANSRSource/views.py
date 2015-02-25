@@ -1149,14 +1149,14 @@ class CreateProjectWizard(SessionWizardView):
                             totalRate += eachForm.cleaned_data['amount']
                             if eachForm.cleaned_data['financial'] is False:
                                 if eachForm.cleaned_data['amount'] > 0:
-                                    amount = form.cleaned_data[0]['amount']
+                                    amount = eachForm.cleaned_data['amount']
                                     errors = eachForm._errors.setdefault(
                                         amount,
                                         ErrorList())
                                     errors.append(u'Please select milestone as \
                                                   financial')
                             elif eachForm.cleaned_data['amount'] == 0:
-                                amount = form.cleaned_data[0]['amount']
+                                amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount,
                                     ErrorList())
