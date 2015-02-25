@@ -285,3 +285,7 @@ body {
 	box-shadow: none;
 	opacity: 0.65;
 }
+
+input[type='radio'] {
+	width: auto;
+}

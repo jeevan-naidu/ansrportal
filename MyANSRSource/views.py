@@ -1,4 +1,5 @@
 import logging
+logger = logging.getLogger('MyANSRSource')
 import json
 
 from django.forms.util import ErrorList
@@ -1149,14 +1150,14 @@ class CreateProjectWizard(SessionWizardView):
                             totalRate += eachForm.cleaned_data['amount']
                             if eachForm.cleaned_data['financial'] is False:
                                 if eachForm.cleaned_data['amount'] > 0:
-                                    amount = form.cleaned_data[0]['amount']
+                                    amount = eachForm.cleaned_data['amount']
                                     errors = eachForm._errors.setdefault(
                                         amount,
                                         ErrorList())
                                     errors.append(u'Please select milestone as \
                                                   financial')
                             elif eachForm.cleaned_data['amount'] == 0:
-                                amount = form.cleaned_data[0]['amount']
+                                amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount,
                                     ErrorList())
@@ -1357,7 +1358,8 @@ def saveProject(request):
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
         except ValueError as e:
-            messages.error(request, 'DataConversion Error:' + str(e))
+            logger.error(e)
+            return render(request, 'MyANSRSource/projectCreationFailure.html', {})
 
         if pr.internal is False:
             milestoneTotal = int(request.POST.get('milestoneTotal')) + 1

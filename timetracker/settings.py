@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from django.conf import global_settings
+import logging
 # For LDAP
 import ldap
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
@@ -46,7 +47,8 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
     "OU=ANSRsource,DC=ANSR,DC=com",
-    ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
+    ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)
+# (objectClass=organizationalUnit))')
 
 # !important! set group type
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
@@ -79,7 +81,7 @@ AUTH_LDAP_MIRROR_GROUPS = True
 
 # AUTH_LDAP_PROFILE_ATTR_MAP = {
 #    "employee_number": "employeeNumber"
-#}
+# }
 
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
@@ -175,7 +177,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -214,11 +216,57 @@ EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-import logging
-
 logger = logging.getLogger('django_auth_ldap')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        # Include the default Django email handler for errors
+        # This is what you'd get without configuring logging at all.
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            # But the emails are plain text by default - HTML is nicer
+            'include_html': True,
+            },
+        # Log to a text file that can be rotated by logrotate
+        'logfile': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': os.path.join(BASE_DIR, 'errorlogs')
+        },
+    },
+    'loggers': {
+        # Again, default Django configuration to email unhandled exceptions
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        # Might as well log any errors anywhere else in Django
+        'django': {
+            'handlers': ['logfile'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # Your own app - this assumes all your logger names start with
+        # "myapp."
+        'MyANSRSource': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',  # Or maybe INFO or WARNING
+            'propagate': False
+        },
+    },
+
+}
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
