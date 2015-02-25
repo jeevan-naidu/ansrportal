@@ -135,7 +135,7 @@ class Project(models.Model):
         null=False,
         verbose_name='Project Code')
     po = models.CharField(max_length=60, null=False,
-                          blank=False, default=None,
+                          blank=False, default=0,
                           verbose_name="P.O.")
     startDate = models.DateField(verbose_name="Project Start Date",
                                  default=timezone.now)
