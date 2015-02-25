@@ -241,7 +241,7 @@ LOGGING = {
         # Log to a text file that can be rotated by logrotate
         'logfile': {
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': os.path.join(BASE_DIR, 'errorlogs')
+            'filename': os.path.join(BASE_DIR, 'logs', 'django-log')
         },
     },
     'loggers': {
