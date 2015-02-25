@@ -1084,10 +1084,10 @@ class CreateProjectWizard(SessionWizardView):
             signed = self.storage.get_step_data('Define Project')[
                 'Define Project-signed'
             ]
-            if signed == 'True':
-                form.fields['po'].required = 'True'
-            else:
-                form.fields['po'].required = 'False'
+            if signed == 'False':
+                form.fields['po'].widget.attrs[
+                    'readonly'
+                ] = 'True'
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
                     'startDate'
