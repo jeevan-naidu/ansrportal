@@ -1187,6 +1187,14 @@ class CreateProjectWizard(SessionWizardView):
                 chapterId = [int(eachChapter.id) for eachChapter in chapters]
                 data = {'bookId': bookId.id, 'chapterId': chapterId}
                 context.update(data)
+            if self.request.method == 'POST':
+                if not form.is_valid():
+                    if 'chapters' in form.cleaned_data:
+                        chapters = form.cleaned_data['chapters']
+                        chapterId = [int(eachChapter.id)
+                                     for eachChapter in chapters]
+                        data = {'chapterId': chapterId}
+                        context.update(data)
 
         if self.steps.current == 'Financial Milestones':
             projectTotal = self.storage.get_step_data('Basic Information')[

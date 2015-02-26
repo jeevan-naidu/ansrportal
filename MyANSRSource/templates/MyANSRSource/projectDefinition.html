@@ -105,6 +105,17 @@
 				filterChapters();
 			});
 	});
+	{% if form.errors %}
+		{% if chapterId %}
+			$(function() {
+				// $("select#id_Define_Project-chapters").val({{ chapterId }});
+				$("#id_Define_Project-chapters").val([1]);
+				var selectBox = $("#id_Define_Project-chapters");
+				console.log(selectBox)
+				
+			});
+		{% endif %}
+	{% endif %}
     var app = app || {};
 
     (function() {
