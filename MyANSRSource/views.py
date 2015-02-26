@@ -1193,7 +1193,8 @@ class CreateProjectWizard(SessionWizardView):
                         chapters = form.cleaned_data['chapters']
                         chapterId = [int(eachChapter.id)
                                      for eachChapter in chapters]
-                        data = {'chapterId': chapterId}
+                        bookId = form.cleaned_data['book']
+                        data = {'bookId': bookId.id, 'chapterId': chapterId}
                         context.update(data)
 
         if self.steps.current == 'Financial Milestones':
