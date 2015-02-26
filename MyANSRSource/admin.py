@@ -75,6 +75,13 @@ class ProjectAdmin(admin.ModelAdmin):
     filter_fields = ('startDate', 'endDate', 'projectManager')
     inlines = [ProjectMilestoneInline, ]
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "chapters" and getattr(self, 'obj', None):
+            print self.obj
+            kwargs["queryset"] = Chapter.objects.filter(book=1)
+        return super(ProjectAdmin, self).formfield_for_manytomany(
+            db_field, request, **kwargs)
+
 
 class projectTypeAdmin(admin.ModelAdmin):
     list_display = ('code', 'description',)
