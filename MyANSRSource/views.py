@@ -1264,6 +1264,11 @@ class ManageTeamWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ManageTeamWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'My Projects':
+            form.fields['project'].queryset = Project.objects.filter(
+                projectManager=self.request.user,
+                closed=False
+            )
         if self.steps.current == 'Update Member':
             if hasattr(self.request.user, 'employee'):
                 locationId = self.request.user.employee.location
