@@ -81,8 +81,9 @@
 		{% if bookId == None %}
 			$("select#id_Define_Project-chapters").val('');
 		{% else %}
-		if (bookid == {{ bookId  }})
+		if (bookid == {{ bookId  }}){
 			$("select#id_Define_Project-chapters").val({{ chapterId }});
+		}
 		else
 			$("select#id_Define_Project-chapters").val('');
 		{% endif %}
