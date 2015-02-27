@@ -540,6 +540,8 @@ class ProjectTeamForm(autocomplete_light.ModelForm):
             "w-100 form-control pro-planned-effort"
         self.fields['rate'].widget.attrs['class'] = \
             "w-100 form-control pro-planned-effort-percent"
+        self.fields['role'].queryset = self.fields[
+            'role'].queryset.order_by('name')
 
 
 # Project Flag Form
