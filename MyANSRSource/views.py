@@ -1107,9 +1107,6 @@ class CreateProjectWizard(SessionWizardView):
             if internalStatus == 'True':
                 for eachForm in form:
                     eachForm.fields['financial'].widget.attrs[
-                        'checked'
-                    ] = 'False'
-                    eachForm.fields['financial'].widget.attrs[
                         'disabled'
                     ] = 'True'
                     eachForm.fields['amount'].widget.attrs[
@@ -1188,21 +1185,20 @@ class CreateProjectWizard(SessionWizardView):
             flagData[k] = v
         effortTotal = 0
 
-        if basicInfo['internal'] is False:
-            for milestoneData in [form.cleaned_data for form in form_list][2]:
-                milestoneDataCounter += 1
-                for k, v in milestoneData.iteritems():
-                    k = "{0}-{1}".format(k, milestoneDataCounter)
-                    changedMilestoneData[k] = v
-                milestoneDate = 'milestoneDate-{0}'.format(
-                    milestoneDataCounter)
-                changedMilestoneData[milestoneDate] = changedMilestoneData.get(
-                    milestoneDate
-                ).strftime('%Y-%m-%d')
-                DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
-                del changedMilestoneData[DELETE]
-                cleanedMilestoneData.append(changedMilestoneData.copy())
-                changedMilestoneData.clear()
+        for milestoneData in [form.cleaned_data for form in form_list][2]:
+            milestoneDataCounter += 1
+            for k, v in milestoneData.iteritems():
+                k = "{0}-{1}".format(k, milestoneDataCounter)
+                changedMilestoneData[k] = v
+            milestoneDate = 'milestoneDate-{0}'.format(
+                milestoneDataCounter)
+            changedMilestoneData[milestoneDate] = changedMilestoneData.get(
+                milestoneDate
+            ).strftime('%Y-%m-%d')
+            DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
+            del changedMilestoneData[DELETE]
+            cleanedMilestoneData.append(changedMilestoneData.copy())
+            changedMilestoneData.clear()
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -1213,9 +1209,8 @@ class CreateProjectWizard(SessionWizardView):
             'flagData': flagData,
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
+            'milestone': cleanedMilestoneData
         }
-        if basicInfo['internal'] is False:
-            data['milestone'] = cleanedMilestoneData
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
@@ -1364,27 +1359,26 @@ def saveProject(request):
         except ValueError as e:
             messages.error(request, 'DataConversion Error:' + str(e))
 
-        if pr.internal is False:
-            milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
-            for milestoneCount in range(1, milestoneTotal):
-                try:
-                    pms = ProjectMilestone()
-                    pms.project = pr
-                    milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
-                    description = 'description-{0}'.format(milestoneCount)
-                    amount = 'amount-{0}'.format(milestoneCount)
-                    financial = 'financial-{0}'.format(milestoneCount)
-                    date = datetime.strptime(request.POST.get(milestoneDate),
-                                             '%Y-%m-%d')
-                    pms.milestoneDate = date
-                    pms.description = request.POST.get(description)
-                    pms.financial = (request.POST.get(financial) == 'True')
-                    pms.amount = float(request.POST.get(amount))
-                    pms.save()
-                # Assuming any of the data conversions fail
-                except ValueError as e:
-                    # We cannot save a bad record we simply skip over
-                    messages.error(request, 'DataConversion Error:' + str(e))
+        milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
+        for milestoneCount in range(1, milestoneTotal):
+            try:
+                pms = ProjectMilestone()
+                pms.project = pr
+                milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
+                description = 'description-{0}'.format(milestoneCount)
+                amount = 'amount-{0}'.format(milestoneCount)
+                financial = 'financial-{0}'.format(milestoneCount)
+                date = datetime.strptime(request.POST.get(milestoneDate),
+                                            '%Y-%m-%d')
+                pms.milestoneDate = date
+                pms.description = request.POST.get(description)
+                pms.financial = (request.POST.get(financial) == 'True')
+                pms.amount = float(request.POST.get(amount))
+                pms.save()
+            # Assuming any of the data conversions fail
+            except ValueError as e:
+                # We cannot save a bad record we simply skip over
+                messages.error(request, 'DataConversion Error:' + str(e))
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
