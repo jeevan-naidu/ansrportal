@@ -1,6 +1,7 @@
 import logging
 logger = logging.getLogger('MyANSRSource')
 import json
+from collections import OrderedDict
 
 from django.forms.util import ErrorList
 from django.core import serializers
@@ -604,11 +605,16 @@ def renderTimesheet(request, data):
         employee__employee_assigned_id=request.user.id,
         attdate__range=[data['weekstartDate'], data['weekendDate']]
     )
-    d = {}
+    attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
     for eachObj in attendanceObj:
-        d[eachObj.attdate.weekday()] = eachObj.swipe_out - eachObj.swipe_in
+        if eachObj.swipe_out is not None or eachObj.swipe_in is not None:
+            timediff = eachObj.swipe_out - eachObj.swipe_in
+            atttime = "{0}:{1}".format(timediff.seconds // 3600,
+                                    (timediff.seconds % 3600) // 60)
+            attendance['{0}'.format(eachObj.attdate.weekday())] = atttime
 
-    print d
+    attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
+
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
@@ -618,6 +624,7 @@ def renderTimesheet(request, data):
                  'idleHours': idleHours,
                  'bTotal': bTotal,
                  'idleTotal': idleTotal,
+                 'attendance': attendance,
                  'othersTotal': othersTotal,
                  'tsFormset': tsFormset,
                  'atFormset': atFormset}

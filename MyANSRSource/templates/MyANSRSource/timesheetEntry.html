@@ -40,13 +40,9 @@
 		<thead>
 		<tr>
 			<td colspan="4" class="text-right"><h5></small><b>Swipe Card Hours</b></small></h5></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
-			<td class="text-center"><b>0</b></td>
+			{% for k, v in attendance.items %}
+				<td class="text-center"><b>{{ v }}</b></td>
+			{% endfor %}
 		</tr>
             	<tr>
 			{% for field in form.hidden_fields %}
