@@ -126,8 +126,8 @@
 			<td>{{ flagData.maxProductivityUnits }}</td>
 			<td>{{ flagData.plannedEffort }}</td>
 			<td>{{ flagData.contingencyEffort }}</td>
-			<td>{{ flagData.startDate }}</td>
-			<td>{{ flagData.endDate }}</td>
+			<td>{{ flagData.displayStartDate }}</td>
+			<td>{{ flagData.displayEndDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
 			<td>{{ flagData.po }}</td>
 			{% for rec, value in flagData.iteritems %}
@@ -163,7 +163,7 @@
 				{% endwith %}
 			</td>
 			<td>
-				{% with deadlineId="milestoneDate-"|add:counter %}
+				{% with deadlineId="displayMilestoneDate-"|add:counter %}
 					{% for rec, value in milestoneData.iteritems %}
 						{% if deadlineId == rec %}
 							{{ value }}

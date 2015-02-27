@@ -1207,10 +1207,13 @@ class CreateProjectWizard(SessionWizardView):
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
             if k == 'startDate':
-                flagData['startDate'] = v.strftime('%Y-%m-%d')
-            if k == 'endDate':
-                flagData['endDate'] = v.strftime('%Y-%m-%d')
-            flagData[k] = v
+                flagData['displayStartDate'] = v.strftime('%Y-%m-%d')
+                flagData['startDate'] = int(v.strftime('%s'))
+            elif k == 'endDate':
+                flagData['displayEndDate'] = v.strftime('%Y-%m-%d')
+                flagData['endDate'] = int(v.strftime('%s'))
+            else:
+                flagData[k] = v
         effortTotal = 0
 
         if basicInfo['internal'] is False:
@@ -1221,9 +1224,14 @@ class CreateProjectWizard(SessionWizardView):
                     changedMilestoneData[k] = v
                 milestoneDate = 'milestoneDate-{0}'.format(
                     milestoneDataCounter)
-                changedMilestoneData[milestoneDate] = changedMilestoneData.get(
+                displayMilestoneDate = 'displayMilestoneDate-{0}'.format(
+                    milestoneDataCounter)
+                changedMilestoneData[displayMilestoneDate] = changedMilestoneData.get(
                     milestoneDate
                 ).strftime('%Y-%m-%d')
+                changedMilestoneData[milestoneDate] = int(changedMilestoneData.get(
+                    milestoneDate
+                ).strftime('%s'))
                 DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
                 del changedMilestoneData[DELETE]
                 cleanedMilestoneData.append(changedMilestoneData.copy())
@@ -1322,8 +1330,8 @@ def saveProject(request):
             pr.projectType = pType
             pr.maxProductivityUnits = float(
                 request.POST.get('maxProductivityUnits'))
-            startDate = datetime.strptime(request.POST.get('startDate'), "%b. %d, %Y").date()
-            endDate = datetime.strptime(request.POST.get('endDate'), "%b. %d, %Y").date()
+            startDate = datetime.fromtimestamp(int(request.POST.get('startDate'))).date()
+            endDate = datetime.fromtimestamp(int(request.POST.get('endDate'))).date()
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')
@@ -1358,7 +1366,7 @@ def saveProject(request):
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
         except ValueError as e:
-            logger.error(e)
+            logger.exception(e)
             return render(request, 'MyANSRSource/projectCreationFailure.html', {})
 
         if pr.internal is False:
@@ -1371,8 +1379,8 @@ def saveProject(request):
                     description = 'description-{0}'.format(milestoneCount)
                     amount = 'amount-{0}'.format(milestoneCount)
                     financial = 'financial-{0}'.format(milestoneCount)
-                    date = datetime.strptime(request.POST.get(milestoneDate),
-                                             '%Y-%m-%d')
+                    date = datetime.fromtimestamp(int(request.POST.get(milestoneDate))).date()
+
                     pms.milestoneDate = date
                     pms.description = request.POST.get(description)
                     pms.financial = (request.POST.get(financial) == 'True')
@@ -1381,7 +1389,8 @@ def saveProject(request):
                 # Assuming any of the data conversions fail
                 except ValueError as e:
                     # We cannot save a bad record we simply skip over
-                    messages.error(request, 'DataConversion Error:' + str(e))
+                    logger.exception(e)
+                    return render(request, 'MyANSRSource/projectCreationFailure.html', {})
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
