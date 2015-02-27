@@ -1110,7 +1110,7 @@ class CreateProjectWizard(SessionWizardView):
                         'disabled'
                     ] = 'True'
                     eachForm.fields['amount'].widget.attrs[
-                        'disabled'
+                        'readonly'
                     ] = 'True'
             else:
                 if form.is_valid():
