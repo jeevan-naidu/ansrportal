@@ -31,6 +31,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     CloseProjectMilestoneForm
 
 import CompanyMaster
+import employee
 from CompanyMaster.models import Holiday
 
 
@@ -598,6 +599,16 @@ def renderTimesheet(request, data):
         tsFormset = tsFormset(initial=data['tsFormList'])
     else:
         atFormset = atFormset(prefix='at')
+
+    attendanceObj = employee.models.Attendance.objects.filter(
+        employee__employee_assigned_id=request.user.id,
+        attdate__range=[data['weekstartDate'], data['weekendDate']]
+    )
+    d = {}
+    for eachObj in attendanceObj:
+        d[eachObj.attdate.weekday()] = eachObj.swipe_out - eachObj.swipe_in
+
+    print d
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
