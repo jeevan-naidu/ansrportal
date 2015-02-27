@@ -64,7 +64,7 @@ class projectType(models.Model):
 class Task(models.Model):
     projectType = models.ForeignKey(projectType, verbose_name="Project Type")
     name = models.CharField(max_length=100, verbose_name="Task")
-    code = models.CharField(max_length=1, null=False, unique=True,
+    code = models.CharField(max_length=1, null=False,
                             verbose_name="Short Code", default=None)
     taskType = models.CharField(max_length=2,
                                 choices=TASKTYPEFLAG,
@@ -77,6 +77,9 @@ class Task(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        unique_together = (('projectType', 'code'),)
 
 
 class Chapter(models.Model):

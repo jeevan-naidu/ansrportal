@@ -1,4 +1,5 @@
 import logging
+logger = logging.getLogger('MyANSRSource')
 import json
 
 from django.forms.util import ErrorList
@@ -31,7 +32,6 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 import CompanyMaster
 from CompanyMaster.models import Holiday
-import employee
 
 
 from ldap import LDAPError
@@ -185,7 +185,8 @@ def Timesheet(request):
                     for k, v in timesheet.cleaned_data.iteritems():
                         if k == 'tsId':
                             if v:
-                                approved = TimeSheetEntry.objects.get(pk=v).approved
+                                approved = TimeSheetEntry.objects.get(
+                                    pk=v).approved
                         if k == 'mondayH':
                             mondayTotal += float(v)
                         elif k == 'tuesdayH':
@@ -452,7 +453,8 @@ def Timesheet(request):
             elif 'save' in request.POST:
                 msg += '{0} - timesheet is saved'.format(tsObj.project.name)
             else:
-                msg += '{0} - Rework on your timesheet'.format(tsObj.project.name)
+                msg += '{0} - Rework on your timesheet'.format(
+                    tsObj.project.name)
 
         messages.info(request, msg)
 
@@ -771,7 +773,7 @@ def checkUser(userName, password, request, form):
                     messages.error(
                         request,
                         'This user does not have access to timesheets.')
-                    logging.error(
+                    logger.error(
                         'User {0} permission details {1} group perms'.format(
                             user.username,
                             user.get_all_permissions(),
@@ -1061,7 +1063,7 @@ def UpdateProjectInfo(request, newInfo):
     except (ProjectTeamMember.DoesNotExist,
             ProjectMilestone.DoesNotExist) as e:
         messages.error(request, 'Could not save change request information')
-        logging.error('Exception in UpdateProjectInfo :' + str(e))
+        logger.error('Exception in UpdateProjectInfo :' + str(e))
         return {'crId': None}
 
 changeProject = ChangeProjectWizard.as_view(CFORMS)
@@ -1123,14 +1125,14 @@ class CreateProjectWizard(SessionWizardView):
                             totalRate += eachForm.cleaned_data['amount']
                             if eachForm.cleaned_data['financial'] is False:
                                 if eachForm.cleaned_data['amount'] > 0:
-                                    amount = form.cleaned_data[0]['amount']
+                                    amount = eachForm.cleaned_data['amount']
                                     errors = eachForm._errors.setdefault(
                                         amount,
                                         ErrorList())
                                     errors.append(u'Please select milestone as \
                                                   financial')
                             elif eachForm.cleaned_data['amount'] == 0:
-                                amount = form.cleaned_data[0]['amount']
+                                amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount,
                                     ErrorList())
@@ -1160,6 +1162,15 @@ class CreateProjectWizard(SessionWizardView):
                 chapterId = [int(eachChapter.id) for eachChapter in chapters]
                 data = {'bookId': bookId.id, 'chapterId': chapterId}
                 context.update(data)
+            if self.request.method == 'POST':
+                if not form.is_valid():
+                    if 'chapters' in form.cleaned_data:
+                        chapters = form.cleaned_data['chapters']
+                        chapterId = [int(eachChapter.id)
+                                     for eachChapter in chapters]
+                        bookId = form.cleaned_data['book']
+                        data = {'bookId': bookId.id, 'chapterId': chapterId}
+                        context.update(data)
 
         if self.steps.current == 'Financial Milestones':
             projectTotal = self.storage.get_step_data('Basic Information')[
@@ -1179,10 +1190,13 @@ class CreateProjectWizard(SessionWizardView):
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
             if k == 'startDate':
-                flagData['startDate'] = v.strftime('%Y-%m-%d')
-            if k == 'endDate':
-                flagData['endDate'] = v.strftime('%Y-%m-%d')
-            flagData[k] = v
+                flagData['displayStartDate'] = v.strftime('%Y-%m-%d')
+                flagData['startDate'] = int(v.strftime('%s'))
+            elif k == 'endDate':
+                flagData['displayEndDate'] = v.strftime('%Y-%m-%d')
+                flagData['endDate'] = int(v.strftime('%s'))
+            else:
+                flagData[k] = v
         effortTotal = 0
 
         for milestoneData in [form.cleaned_data for form in form_list][2]:
@@ -1199,6 +1213,7 @@ class CreateProjectWizard(SessionWizardView):
             del changedMilestoneData[DELETE]
             cleanedMilestoneData.append(changedMilestoneData.copy())
             changedMilestoneData.clear()
+
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -1234,6 +1249,11 @@ class ManageTeamWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ManageTeamWizard, self).get_context_data(
             form=form, **kwargs)
+        if self.steps.current == 'My Projects':
+            form.fields['project'].queryset = Project.objects.filter(
+                projectManager=self.request.user,
+                closed=False
+            )
         if self.steps.current == 'Update Member':
             if hasattr(self.request.user, 'employee'):
                 locationId = self.request.user.employee.location
@@ -1317,12 +1337,10 @@ def saveProject(request):
             pr.projectType = pType
             pr.maxProductivityUnits = float(
                 request.POST.get('maxProductivityUnits'))
-            startDate = datetime.strptime(
-                request.POST.get('startDate'),
-                "%b. %d, %Y").date()
-            endDate = datetime.strptime(
-                request.POST.get('endDate'),
-                "%b. %d, %Y").date()
+            startDate = datetime.fromtimestamp(
+                int(request.POST.get('startDate'))).date()
+            endDate = datetime.fromtimestamp(
+                int(request.POST.get('endDate'))).date()
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')
@@ -1332,7 +1350,9 @@ def saveProject(request):
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
             pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
-            manager = User.objects.get(pk=int(request.POST.get('projectManager')))
+            manager = User.objects.get(
+                pk=int(
+                    request.POST.get('projectManager')))
             pr.projectManager = manager
             pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                 pk=int(request.POST.get('bu'))
@@ -1357,7 +1377,11 @@ def saveProject(request):
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
         except ValueError as e:
-            messages.error(request, 'DataConversion Error:' + str(e))
+            logger.exception(e)
+            return render(
+                request,
+                'MyANSRSource/projectCreationFailure.html',
+                {})
 
         milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
         for milestoneCount in range(1, milestoneTotal):
@@ -1369,7 +1393,7 @@ def saveProject(request):
                 amount = 'amount-{0}'.format(milestoneCount)
                 financial = 'financial-{0}'.format(milestoneCount)
                 date = datetime.strptime(request.POST.get(milestoneDate),
-                                            '%Y-%m-%d')
+                                         '%Y-%m-%d')
                 pms.milestoneDate = date
                 pms.description = request.POST.get(description)
                 pms.financial = (request.POST.get(financial) == 'True')
@@ -1377,8 +1401,11 @@ def saveProject(request):
                 pms.save()
             # Assuming any of the data conversions fail
             except ValueError as e:
-                # We cannot save a bad record we simply skip over
-                messages.error(request, 'DataConversion Error:' + str(e))
+                logger.exception(e)
+                return render(
+                    request,
+                    'MyANSRSource/projectCreationFailure.html',
+                    {})
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
