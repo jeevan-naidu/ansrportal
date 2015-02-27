@@ -1106,20 +1106,14 @@ class CreateProjectWizard(SessionWizardView):
                 ] = 'True'
             if internalStatus == 'True':
                 for eachForm in form:
-                    eachForm.fields['milestoneDate'].widget.attrs[
-                        'readonly'
+                    eachForm.fields['financial'].widget.attrs[
+                        'checked'
+                    ] = 'False'
+                    eachForm.fields['financial'].widget.attrs[
+                        'disabled'
                     ] = 'True'
-                    eachForm.fields['description'].widget.attrs[
-                        'readonly'
-                    ] = 'True'
-                    eachForm.fields['description'].widget.attrs[
-                        'value'
-                    ] = None
                     eachForm.fields['amount'].widget.attrs[
-                        'readonly'
-                    ] = 'True'
-                    eachForm.fields['DELETE'].widget.attrs[
-                        'readonly'
+                        'disabled'
                     ] = 'True'
             else:
                 if form.is_valid():
