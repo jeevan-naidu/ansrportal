@@ -295,3 +295,7 @@ body {
 	display: block;
 	text-overflow: ellipsis;
 }
+
+input[type='radio'] {
+	width: auto;
+}
