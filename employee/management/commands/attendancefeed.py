@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('MyANSRSource')
+logger = logging.getLogger('employee')
 import os
 import glob
 import csv
@@ -38,12 +38,12 @@ class Command(BaseCommand):
                             os.system('mkdir {0}'.format(SUCCESS_DIR))
 
                         os.system('mv {0} {1}'.format(eachFile,
-                                                        SUCCESS_DIR))
+                                                      SUCCESS_DIR))
             else:
-                self.stdout.write("No more files to backup")
+                logger.exception("No more files to backup")
         else:
             # No Such backup folder found
-            self.stdout.write("No Backup folder found")
+            logger.exception("No Backup folder found")
 
 
 def feedData(filereader):
@@ -58,7 +58,7 @@ def feedData(filereader):
             # Converting string to datetime object if time is given
             if eachRow[2]:
                 intime = datetime.strptime(eachRow[2],
-                                        '%H:%M:%S').time()
+                                           '%H:%M:%S').time()
                 swipe_in = datetime.combine(attdate, intime)
 
             if eachRow[3]:
@@ -72,7 +72,7 @@ def feedData(filereader):
 
         # To catch any error in values if any
         except ValueError as e:
-            print e
+            logger.exception(e)
 
 
 def insertToDb(employee, attdate, swipe_in, swipe_out):
@@ -97,4 +97,4 @@ def insertToDb(employee, attdate, swipe_in, swipe_out):
 
         # To catch any validation errors if any
         except ValidationError as e:
-            print e
+            logger.exception(e)
