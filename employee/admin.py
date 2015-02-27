@@ -167,8 +167,8 @@ class DesignationAdmin(admin.ModelAdmin):
 
 
 class AttendanceAdmin(admin.ModelAdmin):
-    readonly_fields = ('employee', 'swipe_in', 'swipe_out', 'swipe_location')
-    list_display = ('swipe_in', 'swipe_out', 'swipe_location')
+    readonly_fields = ('employee', 'swipe_in', 'swipe_out')
+    list_display = ('swipe_in', 'swipe_out')
 
 admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(TeamMember, EmployeeAdmin)

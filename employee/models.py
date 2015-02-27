@@ -365,7 +365,10 @@ class PreviousEmployment(models.Model):
 
 
 class Attendance(models.Model):
-    employee = models.ForeignKey(Employee)
+    employee = models.ForeignKey(Employee, null=True)
+    attdate = models.DateField(null=True, blank=True)
     swipe_in = models.DateTimeField(null=True, blank=True)
     swipe_out = models.DateTimeField(null=True, blank=True)
-    swipe_location = models.CharField(null=True, blank=True, max_length=100)
+
+    class Meta:
+        unique_together = ('employee', 'attdate',)
