@@ -18,6 +18,9 @@
        {% bootstrap_css %}
        {% bootstrap_javascript %}
 
+       {# Load Bootstrap Box JS #}
+       <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.min.js"></script>
+       
        {# Load Ansr CSS and JS #}
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
 
@@ -29,10 +32,11 @@
        <script>
 	$(document).ready(function() {
 		$('#calendar').fullCalendar({
-			aspectRatio: 2,
+			aspectRatio: 2.12,
+			eventLimit: true,
 			events: [
 				{% block events %}{% endblock %}
-			]
+			],
 		})
 
 	});

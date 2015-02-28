@@ -154,6 +154,9 @@ body {
 .one-fifth {
 	width: 20%;
 }
+.one-fourth {
+	width: 25%;
+}
 .one-sixth {
 	width: 16%;
 }
@@ -263,7 +266,36 @@ body {
 .container-timesheet {
     width: 96%;
 }
+/* Event Colors */
+.holiday { 
+	background-color : #009452;
+}
 
+.my-project { 
+	background-color : #D6412B;
+}
 
+.training { 
+	background-color : #176CED;
+}
 
+/* Disabled class for ansr */
+.ansr-disabled {
+	pointer-events: none;
+	cursor: not-allowed;
+	box-shadow: none;
+	opacity: 0.65;
+}
 
+/* To fix the button overflow text */
+.fixed-btn-size {
+	width: 10px;
+	overflow: hidden;
+	white-space: nowrap;
+	display: block;
+	text-overflow: ellipsis;
+}
+
+input[type='radio'] {
+	width: auto;
+}

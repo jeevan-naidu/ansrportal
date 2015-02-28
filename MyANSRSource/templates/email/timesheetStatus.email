@@ -1,0 +1,23 @@
+{% block subject %}Timesheet report for week {{ startDate }} to {{ endDate }}{% endblock %}
+{% block plain %}
+  Project name : {{ project }}
+  -----------------------------------------------------------------------------
+  {{ teamMember }} | {{ billableHours }} | {{ status }} | {{ nonBillableHours }}
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Project name : {{ project }}</p>
+
+  <p>
+      <dl>
+  	<dt>{{ teamMember }} | {{ billableHours }} | {{ status }} | {{ nonBillableHours }}<dt>
+      </dl>
+  </p>
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}

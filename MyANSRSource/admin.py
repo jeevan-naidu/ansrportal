@@ -1,21 +1,48 @@
+from django import forms
 from django.contrib import admin
+
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter, ProjectChangeInfo
+    ProjectMilestone, ProjectTeamMember, Book, Chapter, \
+    ProjectChangeInfo, projectType, Task, Activity
+
+
+class ChapterInlineFormSet(forms.ModelForm):
+
+    class Meta:
+        widgets = {
+            'name': forms.TextInput(
+                attrs={
+                    'style': 'width:1024px',
+                    })
+        }
+
+# widgets = { 'construct_name': forms.TextInput(attrs={'size': 20})
 
 
 class ChapterInline(admin.TabularInline):
     model = Chapter
     extra = 2
     exclude = []
+    #formset = ChapterInlineFormSet
+    form = ChapterInlineFormSet
+    # class Meta:
+    #    widgets = { 'name' :  forms.TextInput(attrs = {'style' : 'width : 1024px'}),}
+    # fieldsets = (
+    #    ('Chapters', {
+    #        'classes': ('wide', 'extrapretty',),
+    #        'fields': ('name',)
+    #        }),
+    #    )
 
 
 # Admin Models for ansr
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author')
+    list_display = ('name', 'edition', 'author')
     # which fields should appear on the filter column
-    list_filter = ['name', 'author']
+    list_filter = ['name', 'edition', 'author']
     # Search capabilitiy
-    search_fields = ['name', 'author']
+    search_fields = ['name', 'edition', 'author']
+    fields = ('name', 'edition', 'author')
     # Which of the fields can be edited in list mode
     # list_editable = ['']
     # Ordering of the books
@@ -24,11 +51,33 @@ class BookAdmin(admin.ModelAdmin):
     inlines = [ChapterInline, ]
 
 
+class ProjectMilestoneInline(admin.TabularInline):
+    model = ProjectMilestone
+    extra = 1
+
+
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'startDate', 'endDate',
-                    'plannedEffort', 'contingencyEffort', 'projectManager')
-    search_fields = ('name', 'projectManager', 'startDate', 'endDate')
-    filter_fields = ('startDate', 'endDate')
+    list_display = (
+        'name',
+        'startDate',
+        'endDate',
+        'plannedEffort',
+        'contingencyEffort',
+        'projectManager',
+        'projectId',
+        'totalValue')
+    search_fields = (
+        'name',
+        'projectManager',
+        'startDate',
+        'endDate',
+        'customer')
+    filter_fields = ('startDate', 'endDate', 'projectManager')
+    inlines = [ProjectMilestoneInline, ]
+
+
+class projectTypeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'description',)
 
 
 class TimeSheetEntryAdmin(admin.ModelAdmin):
@@ -50,13 +99,21 @@ class ProjectMileStoneAdmin(admin.ModelAdmin):
     list_display = ('milestoneDate', 'description')
 
 
+class ActivityAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+
+
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ('name', 'projectType', 'taskType', )
+    filter_fields = ('projectType',)
+
+
 class ProjectTeamMemberAdmin(admin.ModelAdmin):
     list_display = ('member', 'role',
                     'startDate', 'plannedEffort')
 
 admin.site.register(Project, ProjectAdmin)
-admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(Book, BookAdmin)
-#admin.site.register(ProjectChangeInfo, ProjectChangeInfoAdmin)
-admin.site.register(ProjectMilestone, ProjectMileStoneAdmin)
-admin.site.register(ProjectTeamMember, ProjectTeamMemberAdmin)
+admin.site.register(projectType, projectTypeAdmin)
+admin.site.register(Activity, ActivityAdmin)
+admin.site.register(Task, TaskAdmin)

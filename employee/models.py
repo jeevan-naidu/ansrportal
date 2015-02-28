@@ -47,6 +47,7 @@ RELATION_CHOICES = (
     ('SP', 'Spouse'),
     ('C1', 'Child1'),
     ('C2', 'Child2'),
+    ('OO', 'Others'),
     )
 
 EMP_STATUS_CHOICES = (
@@ -58,6 +59,12 @@ ADDRESSTYPE_CHOICES = (
     ('PR', 'Permanent'),
     ('TM', 'Temporary'),
     )
+
+
+NATURE_OF_EDUCATION = (
+    ('FT', 'Full-time'),
+    ('PT', 'Part-time'),
+)
 
 
 class Designation(models.Model):
@@ -87,15 +94,15 @@ class EmpAddress(models.Model):
                                     default='TM')
     address1 = models.CharField(
         verbose_name="Address 1",
-        max_length=30,
+        max_length=100,
         blank=False)
     address2 = models.CharField(
         verbose_name="Address 2",
-        max_length=30,
+        max_length=100,
         blank=False)
-    city = models.CharField("City", max_length=15, blank=False)
-    state = models.CharField("State", max_length=20, blank=False)
-    zipcode = models.CharField("Zip Code", max_length=6, blank=False)
+    city = models.CharField("City", max_length=30, blank=False)
+    state = models.CharField("State", max_length=30, blank=False)
+    zipcode = models.CharField("Zip Code", max_length=10, blank=False)
 
     def __unicode__(self):
         return '{0}, {1}, {2}, {3}, {4}'.format(
@@ -136,6 +143,9 @@ class Employee(models.Model):
         max_length=10,
         choices=MARITAL_CHOICES,
         blank=False)
+    wedding_date = models.DateField(verbose_name='Wedding Date',
+                                    null=True,
+                                    blank=True)
     blood_group = models.CharField(
         "Blood Group",
         max_length=3,
@@ -188,7 +198,7 @@ class Employee(models.Model):
         max_length=15,
         unique=True,
         blank=False)
-    division = models.ForeignKey('CompanyMaster.Division')
+    #division = models.ForeignKey('CompanyMaster.Division')
     category = models.CharField(
         "Employment Category",
         max_length=3,
@@ -254,10 +264,25 @@ class Employee(models.Model):
             self.user.last_name)
 
 
+class TeamMember(User):
+
+    class Meta:
+        proxy = True
+        app_label = 'auth'
+        verbose_name = 'Team Member'
+        verbose_name_plural = 'Team Members'
+
+
 class FamilyMember(models.Model):
     employee = models.ForeignKey(User)
     name = models.CharField("Name", max_length=50, blank=False)
-    dob = models.DateField("DOB", blank=False)
+    gender = models.CharField(
+        verbose_name='Gender',
+        max_length=1,
+        choices=GENDER_CHOICES,
+        blank=False,
+        default=GENDER_CHOICES[0][0])
+    dob = models.DateField("DOB", blank=True, null=True)
     rela_type = models.CharField(
         "Relation Type",
         max_length=50,
@@ -276,6 +301,16 @@ class Education(models.Model):
 
     employee = models.ForeignKey(User)
     name = models.CharField("Qualification", max_length=50, blank=False)
+    specialization = models.CharField(
+        verbose_name='Specialization',
+        max_length=30,
+        blank=True,
+        null=True)
+    nature_of_education = models.CharField('Nature of Education',
+                                           max_length=2,
+                                           blank=False,
+                                           choices=NATURE_OF_EDUCATION,
+                                           default=NATURE_OF_EDUCATION[0][0])
     from_date = models.DateField("From Date", blank=False)
     to_date = models.DateField("To Date", blank=False)
     institute = models.CharField("Institution", max_length=50, blank=False)
@@ -285,12 +320,13 @@ class Education(models.Model):
         blank=False)
 
     def __unicode__(self):
-        return '{0},{1},{2},{3},{4}'.format(
-            self.degree,
+        return '{0}({4})-{3} / {1} to {2}'.format(
+            self.name,
             self.from_date,
             self.to_date,
             self.institute,
-            self.overall_marks)
+            self.specialization
+        )
 
 
 class PreviousEmployment(models.Model):
@@ -326,3 +362,13 @@ class PreviousEmployment(models.Model):
     def __unicode__(self):
         return self.company_name + ':' + \
             str(self.employed_from) + ' ~ ' + str(self.employed_upto)
+
+
+class Attendance(models.Model):
+    employee = models.ForeignKey(Employee, null=True)
+    attdate = models.DateField(null=True, blank=True)
+    swipe_in = models.DateTimeField(null=True, blank=True)
+    swipe_out = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('employee', 'attdate',)

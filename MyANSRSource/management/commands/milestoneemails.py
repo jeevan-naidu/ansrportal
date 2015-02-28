@@ -1,8 +1,7 @@
+from templated_email import send_templated_mail
 from django.core.management.base import BaseCommand
 from MyANSRSource.models import ProjectMilestone
 from datetime import datetime, timedelta
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.conf import settings
 
 
@@ -23,8 +22,10 @@ def getContent(deadlineDate):
     return ProjectMilestone.objects.filter(
         milestoneDate=deadlineDate
     ).values('project__name',
+             'project__id',
+             'description',
+             'milestoneDate',
              'project__projectManager__first_name',
-             'project__projectManager__last_name',
              'project__projectManager__email'
              )
 
@@ -32,45 +33,26 @@ def getContent(deadlineDate):
 def sendEmail(self, details, date, label):
     if len(details) > 0:
         for eachDetail in details:
-            if label == "week":
-                message = 'Project {0}\'s milestone is about to meet \
-                    its deadline by next week. \
-                    Make sure you have done the invoice for it.'.format(
-                        eachDetail['project__name']
-                    )
-            elif label == "lastDay":
-                message = 'Project {0}\'s milestone is about to \
-                    meet its deadline by tommorow.'.format(
-                        eachDetail['project__name']
-                    )
-            else:
-                message = 'Project {0}\'s milestone is expired'.format(
-                    eachDetail['project__name']
-                )
-            notifyTeam = EmailMultiAlternatives('Important Information',
-                                                'hai',
-                                                settings.EMAIL_HOST_USER,
-                                                ['{0}'.format(
-                                                    eachDetail[
-                                                        'project__projectManager__email'
-                                                    ]
-                                                )],)
-
-            emailTemp = render_to_string(
-                'projectMilestoneEmailNotification.html',
-                {
-                    'firstName': eachDetail[
+            send_templated_mail(
+                template_name='ProjectMilestoneEmailNotification',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[eachDetail['project__projectManager__email'], ],
+                context={
+                    'first_name': eachDetail[
                         'project__projectManager__first_name'
                     ],
-                    'lastName': eachDetail[
-                        'project__projectManager__last_name'
+                    'projectId': eachDetail[
+                        'project__id'
                     ],
-                    'message': message
-                }
+                    'projectname': eachDetail[
+                        'project__name'
+                    ],
+                    'milestonename': eachDetail[
+                        'description'
+                    ],
+                    'milestonedate': eachDetail[
+                        'milestoneDate'
+                    ],
+                    },
             )
-            notifyTeam.attach_alternative(emailTemp, 'text/html')
-            notifyTeam.send()
-            self.stdout.write('Successfully sent mail to team manager \
-                              about {0} project\'s milestone'.format(
-                                  eachDetail['project__name']
-                              ))
+            self.stdout.write('Successfully sent mail to team manager')

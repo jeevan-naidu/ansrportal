@@ -12,26 +12,35 @@
 		{% endfor %}								
 	</div>
 {% endif %}
-	<div class="table-responsive col-lg-12">
-	<table class="table">
-		{% for field in form %}
-			<tr>
-				<td class="col-lg-2 text-center">
-						{{ field.label }}
-						{% if field.field.required %}
-							<span class="required">*</span>
-						{% endif %}
+        <div class="row">
+            <div class="col-sm-6 center-block">
+                <div class="table-responsive">
+                    <table class="table">
+                        {% for field in form %}
+                            <tr>
+                                <td class="col-lg-5">
+                                        {{ field.label }}
+                                        {% if field.field.required %}
+                                            <span class="required">*</span>
+                                        {% endif %}
 				</td>
-				{% for choice in field %}
-					{% if field.label == "Project Stage" %}
-					<td class="col-lg-1">{{ choice }}</td>
+				<td class="col-lg-7">
+					{% if field.label == 'Planned Effort' or field.label == 'Contigency Effort' %}
+						<span class="col-lg-9">{{ field }}</span>
+						<span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
+					{% elif field.label == 'Norm' %}
+						<span class="col-lg-9">{{ field }}</span>
+						<span class="col-lg-3"><b><span class="label label-default form-control"> {{ pt }}</span></b></span>
 					{% else %}
-					<td class="col-lg-1">{{ choice }}</td>
+						<span class="col-lg-9">{{ field }}</span>
+						<span class="col-lg-3"></span>
 					{% endif %}
-				{% endfor %}
-			</tr>
-		{% endfor %}
-	</table>
+				</td>
+			    </tr>
+			{% endfor %}
+		    </table>
+		</div>
+	   </div>
 	</div>
 <script>
     var app = app || {};

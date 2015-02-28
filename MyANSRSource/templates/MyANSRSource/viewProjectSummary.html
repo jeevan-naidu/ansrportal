@@ -1,0 +1,164 @@
+{% extends 'viewProjectMaster.inc' %}
+
+{% block PSactiveClass %}active{% endblock %}
+{% block viewProjectContent %}
+<legend><b>Summary</b></legend>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden">
+		<b>
+			<span class="col-lg-6">Project Definition</span>
+		</b>
+	</div>
+	<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+				<th>Type</th>
+				<th>Business Unit</th>
+				<th>Name</th>
+				<th>Customer</th>
+				<th>Book</th>
+				<th>Chapters</th>
+				<th>Is it an internal Project?</th>
+				<th>Is this a new project?</th>
+				<th>Is this contract signed?</th>
+		</thead>
+		<tbody>
+		<tr>
+			<td>{{ basicInfo.projectType__description }}</td>
+			<td>{{ basicInfo.bu__name }}</td>
+			<td>{{ basicInfo.name }}</td>
+			<td>{{ basicInfo.customer__name }}</td>
+			<td>{{ basicInfo.book__name }}</td>
+			<td>
+				{% for eachChapter in chapters %}
+					{% if forloop.last %}
+						{{ eachChapter.chapters__name }}
+					{% else %}
+						{{ eachChapter.chapters__name }},
+					{% endif %}
+				{% endfor %}
+			</td>
+			<td>
+				{% if basicInfo.internal == True  %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.currentProject == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+			<td>
+				{% if basicInfo.signed == True %}
+					Yes
+				{% else %}
+					No
+				{% endif %}
+			</td>
+		</tr>
+		</tbody>
+	</table>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Project Basic Information</span></b></div>
+	<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+				<th>Norm</th>
+				<th>Planned Effort</th>
+				<th>Contigency Effort</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Total Value</th>
+				<th>P.O.</th>
+		</thead>
+		<tbody>
+		<tr>
+			<td>{{ flagData.maxProductivityUnits }} / DAY</td>
+			<td>{{ flagData.plannedEffort }}</td>
+			<td>{{ flagData.contingencyEffort }}</td>
+			<td>{{ flagData.startDate }}</td>
+			<td>{{ flagData.endDate }}</td>
+			<td>{{ flagData.totalValue }}</td>
+			<td>{{ flagData.po }}</td>
+		</tr>
+		</tbody>
+	</table>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden">
+		<b>
+			<span class="col-lg-6">Team Member(s)</span>
+		</b>
+	</div>
+<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+			<th>Member</th>
+			<th>Role</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Planned Effort</th>
+			<th>%</th>
+		</thead>
+		{% for teamData in teamMember %}
+		<tr>
+			<td>
+				{{ teamData.member__username }}
+			</td>
+			<td>
+				{{ teamData.role }}
+			</td>
+			<td>
+				{{ teamData.startDate }}
+			</td>
+			<td>
+				{{ teamData.endDate }}
+			</td>
+			<td>
+				{{ teamData.plannedEffort }}
+			</td>
+			<td>
+				{{ teamData.rate }}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
+<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+			<th>Description</th>
+			<th>Deadline</th>
+			<th>Amount</th>
+		</thead>
+		{% for milestoneData in milestone %}
+		<tr>
+			<td>
+				{{ milestoneData.Description }}
+			</td>
+			<td>
+				{{ milestoneData.milestoneDate }}
+			</td>
+			<td>
+				{{ milestoneData.amount }}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+</div>
+<a href="view-project" class="btn btn-primary pull-right">
+        <span class="glyphicon glyphicon-ok"></span>
+	<b>Choose another project</b>
+</a>
+{% endblock %}

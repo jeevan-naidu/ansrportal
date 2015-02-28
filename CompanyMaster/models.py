@@ -8,9 +8,17 @@ class Customer(models.Model):
                             max_length=100,
                             null=False,
                             blank=False)
+    customerCode = models.CharField(
+        verbose_name="Customer Code",
+        null=False,
+        blank=False,
+        max_length=3,
+        default=None
+    )
+    seqNumber = models.PositiveIntegerField(null=False, default=1, verbose_name='Project ID Sequence' )
     relatedMember = models.ManyToManyField(
         User,
-        verbose_name="Related Members",
+        verbose_name="Select Account Relationship team",
         blank=False,
         null=False
     )
@@ -37,7 +45,41 @@ class OfficeLocation(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.name + '::' + self.city
+        return self.name + ' - ' + self.city
+
+
+class Training(models.Model):
+    location = models.ForeignKey(OfficeLocation,
+                                 verbose_name='Location',
+                                 blank=False, null=False)
+    batch = models.CharField(
+        verbose_name="Batch",
+        null=False,
+        blank=False,
+        max_length=30,
+        default=None
+    )
+    exercise = models.CharField(
+        verbose_name="Exercise",
+        null=False,
+        blank=False,
+        max_length=30,
+        default=None
+    )
+    trainer = models.ForeignKey(
+        User,
+        verbose_name="Trainer",
+        blank=False,
+        null=False
+    )
+    trainingDate = models.DateField(verbose_name="Training Date")
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.exercise + ' - ' + self.batch
 
 
 class Department(models.Model):
@@ -66,7 +108,7 @@ class Division(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.department.name + '::' + self.name
+        return self.department.name + ' - ' + self.name
 
 
 class Holiday(models.Model):
@@ -75,6 +117,7 @@ class Holiday(models.Model):
                             null=True,
                             blank=True)
     date = models.DateField(verbose_name="Holiday Date")
+    location = models.ManyToManyField(OfficeLocation, default=None)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

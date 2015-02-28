@@ -12,7 +12,7 @@ helper.range = function(start, end) {
     return result;
 };
 
-app.billableSetZeroList = helper.range(3, 41);
+app.billableSetZeroList = helper.range(1, 41);
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -67,27 +67,18 @@ app.changeProject = function() {
             selectedProject;
 
 
-            // get current project by id
-        selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
+        // get current project by id
+        if(selectedValue != 0) {
+            selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
 
-        //console.log(selectedProject);
+            //console.log(selectedProject);
 
-        if(selectedProject.project__projectType === 'Q') {
-            app.curProjectUnitShort = 'Q';
-            app.curProjectUnit      = 'Questions';
+            app.curProjectUnitShort = selectedProject.project__projectType__code;
+            app.curProjectUnit = selectedProject.project__projectType__description;
+            app.norms = selectedProject.project__maxProductivityUnits;
+
+            $projectUnitsElement.text(app.curProjectUnitShort);
         }
-
-        if(selectedProject.project__projectType === 'P') {
-            app.curProjectUnitShort = 'P';
-            app.curProjectUnit      = 'Powerpoint';
-        }
-
-        if(selectedProject.project__projectType === 'I') {
-            app.curProjectUnitShort = 'I';
-            app.curProjectUnit      = 'Instructional';
-        }
-
-        $projectUnitsElement.text(app.curProjectUnitShort);
     });
 };
 
@@ -104,7 +95,7 @@ app.getById = function(arr, propName, id) {
 (function() {
     $(document).ready(function() {
         var $popover = $('.popover');
-
+        app.norms = '0.0 / Day';
         // Manage project
         var $changeTeamMembers = $('#change-team-members');
         if($changeTeamMembers.length > 0) {
@@ -120,7 +111,8 @@ app.getById = function(arr, propName, id) {
                 defaultValues: {  // When add row, set the elements default values
                     setZeroList: [23],
                     setEmptyList: null
-                }
+                },
+                setEnableList: [24]
             });
         }
 
@@ -136,9 +128,10 @@ app.getById = function(arr, propName, id) {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [7],
+                    setZeroList: [8],
                     setEmptyList: null
-                }
+                },
+                setEnableList: [7, 9]
             });
         }
 
@@ -174,6 +167,8 @@ app.getById = function(arr, propName, id) {
 
 
             app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
+
+            helper.clearArray(app.holidaysList);
 
             for(var i = 0; i < totalHolidayLen; i += 1) {
                 holiday = new Date(window.holidays.data[i].date);
@@ -239,7 +234,7 @@ app.getById = function(arr, propName, id) {
                     setZeroList: null,
                     setEmptyList: null
                 },
-                setEnableList: [7]
+                setEnableList: [8]
             });
         }
 
@@ -268,12 +263,6 @@ app.getById = function(arr, propName, id) {
                 }
             });
 
-            app.projectsUnits = {
-                q: 'Questions',
-                p: 'Powerpoint',
-                i: 'Instructional'
-            };
-
             app.billableSelectProject = $('.billable-select-project');
             app.changeProject();
         }
@@ -286,7 +275,7 @@ app.getById = function(arr, propName, id) {
                 daysTotal: true,
                 nonBillable: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [2, 3, 4, 5, 6],
+                    setZeroList: [0, 2, 3, 4, 5, 6, 7, 8, 9],
                     setEmptyList: null
                 }
             });
@@ -380,11 +369,22 @@ app.getIdNo = function(str) {
             
 	    lastRow.after(newRow);
 
-
-
             $formFields = newRow.find('select, input, div, span');
             formFieldsLen = $formFields.length;
             rowCount += 1;
+
+            if(options.billableTotal || options.nonBillable) {
+                var disableElms = newRow.find('.ansr-disabled'),
+                    disableElms2 = newRow.find('.disabled');
+
+                if(disableElms.length > 0) {
+                    disableElms.removeClass('ansr-disabled');
+                }
+
+                if(disableElms2.length > 0) {
+                    disableElms2.removeClass('disabled');
+                }
+            }
 
             $(rowCountElement).attr('value', rowCount);
 
@@ -450,7 +450,6 @@ app.getIdNo = function(str) {
 
                 if(options.setEditableAll) {
                     $element.removeAttr('readonly');
-
                 }
 
                 if(options.calendar) {
@@ -470,19 +469,29 @@ app.getIdNo = function(str) {
                     }
                     // For team member autocomplete
                     if($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
-                        if($element.find('.hilight').length === 0) {
-                            console.log('initialize autocomplete');
-                            $element.yourlabsWidget();
+                        var $remove = $element.find('.remove');
+                        if($remove.css('display') === 'none') {
+                            $element.yourlabsWidget().input.bind('selectChoice', function(e, choice, autocomplete) {
+                                var $this = $(this);
+                                $this.getMemberHolidayList();
+                            });
+                        } else {
+                            $element.yourlabsWidget().input.bind('selectChoice', function(e, choice, autocomplete) {
+                                var $this = $(this);
+                                $this.getMemberHolidayList();
+                            });
+                            $remove.trigger('click');
                         }
+
                     }
                 }
 
 
-                /*if(options.plannedEffortCalc) {
+                if(options.plannedEffortCalc) {
                     if($element.hasClass('pro-planned-effort-percent')) {
                         $element.val(100);
                     }
-                }*/
+                }
 
                 if(options.billableTotal) {
                     app.rowChapter = $('#id_form-' + newRowId + '-chapter');
@@ -491,7 +500,26 @@ app.getIdNo = function(str) {
                     }
                 }
 
-                console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+
+
+                if($element.hasClass('set-empty')) {
+                    var elementType = $element.prop('tagName');
+                    if(elementType === 'SELECT' || elementType === 'INPUT') {
+                        $element.val('');
+                    } else {
+                        $element.text('');
+                    }
+                }
+
+                if($element.hasClass('set-zero')) {
+                    var elementType2 = $element.prop('tagName');
+                    if(elementType2 === 'SELECT' || elementType2 === 'INPUT') {
+                        $element.attr('value', 0);
+                        console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                    } else {
+                        $element.text('0');
+                    }
+                }
 
             });
 
@@ -509,12 +537,21 @@ app.getIdNo = function(str) {
                 });
 
                 app.getEffortCurRowId();
+
+                // Calculate effort for new row
+                var item = $($table).find('tr').last(),
+                starDateItem = item.find('.pro-start-date'),
+                endDateItem = item.find('.pro-end-date'),
+                plannedEffortItem = item.find('.pro-planned-effort'),
+                plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
+
+                plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
             }
 
             if(options.billableTotal) {
                 app.billableSelectProject = $('.billable-select-project');
                 app.changeProject();
-		app.autoFillInit(app.rowProject, app.rowChapter);
+		        app.autoFillInit(app.rowProject, app.rowChapter);
             }
         };
 
@@ -598,12 +635,14 @@ app.getIdNo = function(str) {
                 var $totalBillableHours     = $('.total-billable-hours'),
                     $totalIdleHours         = $('.total-idle-hours');
 
+
                 var $dayPopoverBtn = $table.find('.day-popover-button');
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
                 var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0 / DAY</label></div>';
 
                 $dayPopoverBtn.popover({
                     trigger: 'click',
@@ -634,11 +673,13 @@ app.getIdNo = function(str) {
                         $curHoursInput          = $curDayBtn.next().find('.hours-input'),
                         $curProjectUnit         = $curDayBtn.find('.project-unit'),
                         $curProjectPopupUnit    = $curDayBtn.next().find('.project-type-popup'),
+                        $curProjectPopupNorm    = $curDayBtn.next().find('.norm-input'),
                         curQuestionsViewText    = $curQuestionsView.text(),
                         curHoursViewText        = $curHoursView.text(),
-                        curProjectUnit          = $curProjectUnit.text();
-
-
+                        curProjectUnit          = $curProjectUnit.text(),
+                        $curSelectProject       = $curRow.find('.billable-select-project'),
+                        selectedValue   = Number($curSelectProject.val()),
+                        selectedProject;
 
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
@@ -646,15 +687,22 @@ app.getIdNo = function(str) {
                     };
 
                     var projectUnitViewToPopUp = function() {
-                        if(curProjectUnit === 'Q') {
-                            $curProjectPopupUnit.text(app.projectsUnits.q);
+                        $curProjectPopupUnit.text(app.curProjectUnit);
+
+                        // get current project by id
+                        if(selectedValue != 0) {
+                            selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
+
+                            //console.log(selectedProject);
+                            app.curProjectUnitShort = selectedProject.project__projectType__code;
+                            app.curProjectUnit      = selectedProject.project__projectType__description;
+                            app.norms               = selectedProject.project__maxProductivityUnits;
+                        } else {
+                            app.norms = 0.0;
                         }
-                        if(curProjectUnit === 'P') {
-                            $curProjectPopupUnit.text(app.projectsUnits.p);
-                        }
-                        if(curProjectUnit === 'I') {
-                            $curProjectPopupUnit.text(app.projectsUnits.i);
-                        }
+
+                        // Get project norms
+                        $curProjectPopupNorm.text(app.norms + '/DAY');
                     };
 
                     projectUnitViewToPopUp();
@@ -694,6 +742,8 @@ app.getIdNo = function(str) {
                             }
                         }
 
+			questionsTemp = questionsTemp.toFixed(2);
+			hoursTemp = hoursTemp.toFixed(2)
                         $totalQuestions.text(questionsTemp);
                         $totalHours.text(hoursTemp);
 
@@ -841,7 +891,7 @@ app.getIdNo = function(str) {
                         $curItem = Number($($amounts[i]).val());
                         temp += $curItem;
                     }
-
+		    temp = temp.toFixed(2)
                     $amountTotal.text(temp);
 
                     amountValidatoinFun();
@@ -1138,6 +1188,49 @@ app.autoFillField = function($curElement, $chapter){
 
 };
 
+
+// Get holiday list when change member
+$.fn.getMemberHolidayList = function(options) {
+    var o = $(this),
+        $select = o.parent().find('.value-select'),
+        selectedVal = $select.val();
+
+    $.ajax({
+        url: '/myansrsource/getholidays/' + selectedVal + '/' ,
+        dataType: 'json',
+        success: function( data ) {
+            data = data.data;
+
+            helper.clearArray(app.holidaysList);
+
+            var holiday,
+                holidayDay,
+                totalHolidayLen = data.length;
+
+            for(var i = 0; i < totalHolidayLen; i += 1) {
+                holiday = new Date(data[i].date);
+                holidayDay = holiday.getDay();
+
+                if(holidayDay !== 0 && holidayDay !== 6) {
+                    app.holidaysList.push(holiday);
+                }
+            }
+
+            console.log(app.holidaysList);
+        },
+        error: function( data ) {
+            console.log( "ERROR:  " + data );
+        }
+    });
+
+    console.log('Selected Val: ' + selectedVal);
+};
+
+helper.clearArray = function(arr) {
+    while (arr.length) {
+        arr.pop();
+    }
+};
 
 
 

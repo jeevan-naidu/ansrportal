@@ -6,14 +6,22 @@
 	{% for eachHoliday in holidayList %}
 		{
 			start : '{{ eachHoliday.date }}',
-			title : '{{ eachHoliday.name }}'
+			title : '{{ eachHoliday.name }}',
+			color  : '#009452'
 		},
 	{% endfor %}
 	{% for eachProject in projectsList %}
 		{
 			start : '{{ eachProject.project__startDate }}',
-			end : '{{ eachProject.project__endDate }}',
-			title : '{{ eachProject.project__name }}'
+			title : '{{ eachProject.project__name }}',
+			color  : '#D6412B'
+		},
+	{% endfor %}
+	{% for eachTraining in trainingList %}
+		{
+			start : '{{ eachTraining.trainingDate }}',
+			title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}',
+			color  : '#176CED'
 		},
 	{% endfor %}
 {% endblock %}
@@ -55,21 +63,28 @@
 							<span class="badge">{{ TSProjectsCount }}</span>
 						</a>
 					{% else %}
-						<a href="#" class="list-group-item">Enter Your Timesheet
+						<div class="list-group-item">Enter Your Timesheet
 							<span class="badge">0</span>
-						</a>
+						</div>
 					{% endif %}
 					{% if user|approve_timesheet %}
-					<a href="timesheet/approve" class="list-group-item">
-						<span class="badge">{{ unapprovedts }}</span>
-						Approve Timesheet
-					</a>
+						{% if unapprovedts > 0 %}
+							<a href="timesheet/approve" class="list-group-item">
+								<span class="badge">{{ unapprovedts }}</span>
+								Approve Timesheet
+							</a>
+						{% else %}
+							<div class="list-group-item">
+								<span class="badge">0</span>
+								Approve Timesheet
+							</div>
+						{% endif %}
 					{% endif %}
 				</ul>
 			</div>
 			</div>
 		</div>
-		{% if user|manage_project %}
+		{% if user|manage_project or user|create_project %}
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="pt">
 				<a data-toggle="collapse" data-parent="#accordion" href="#ptCollapse" aria-expanded="false" aria-controls="collapseTwo">
@@ -78,18 +93,58 @@
 			</div>
 			<div id="ptCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="pt">
 			<div class="panel-body">
-				<ul class="list-group">
-					<a href="project/add" class="list-group-item">Create Project</a>
-					<a href="project/modify" class="list-group-item">
-						<span class="badge">{{ activeProjects }}</span>
-						Manage Projects
-                    </a>
-                    {% if user|manage_milestones %}
-					<a href="project/trackmilestone" class="list-group-item">
-						<span class="badge">{{ activeMilestones }}</span>
-						Track Milestones
-                    </a>
+                <ul class="list-group">
+                    {% if user|create_project or user|manage_project %}
+                    <a href="project/add" class="list-group-item">Create Project</a>
                     {% endif %}
+                    {% if user|manage_project %}
+                        {% if activeProjects > 0 %}
+                            <a href="project/modify" class="list-group-item">
+                                <span class="badge">{{ activeProjects }}</span>
+                                Manage Projects
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                Manage Projects
+                            </a>
+                        {% endif %}
+                        {% if activeProjects > 0 %}
+                            <a href="project/manage-team" class="list-group-item">
+                                <span class="badge">{{ activeProjects }}</span>
+                                Manage Team
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                Manage Team
+                            </a>
+                        {% endif %}
+                        {% if activeProjects > 0 %}
+                            <a href="project/view-project" class="list-group-item">
+                                <span class="badge">{{ activeProjects }}</span>
+                                View Projects
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                View Projects
+                            </a>
+                        {% endif %}
+                    {% endif %}
+            {% if user|manage_milestones %}
+			{% if activeMilestones > 0 %}
+				<a href="project/trackmilestone" class="list-group-item">
+					<span class="badge">{{ activeMilestones }}</span>
+					Track Milestones
+				</a>
+			{% else %}
+				<a href="#" class="list-group-item">
+					<span class="badge">0</span>
+					Track Milestones
+				</a>
+			{% endif %}
+            {% endif %}
 				</ul>
 			</div>
 			</div>
@@ -97,7 +152,7 @@
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="em">
 				<a data-toggle="collapse" data-parent="#accordion" href="#emCollapse" aria-expanded="false" aria-controls="collapseThree">
-					Employee Management
+					Administration
 				</a>
 			</div>
 			<div id="emCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="em">
@@ -105,7 +160,7 @@
 				<ul class="list-group">
 					<a href="/admin" class="list-group-item">
 						<span class="badge">{{ totalemp }}</span>
-						Manage Employees
+						Manage Employee(s)
 					</a>
 				</ul>
 			</div>
@@ -137,7 +192,13 @@
 		</div>
 	</div>
 	<div class="col-md-8">
-		<div id='calendar'></div>	
+		<div id='calendar'></div>
+		<div class="pull-right">
+			<span><small><b>Legend:</b></small></span>
+			<span class="label label-default holiday">Holiday</span>
+			<span class="label label-default my-project">My Milestones</span>
+			<span class="label label-default training">Learning & development</span>
+		</div>
 	</div>
 	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">

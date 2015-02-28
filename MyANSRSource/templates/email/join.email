@@ -1,0 +1,26 @@
+{% block subject %}My subject for {{username}}{% endblock %}
+{% block plain %}
+  Hi {{first_name}},
+
+  You are now registered on myansrsource.  
+      username: {{username}}
+      join date: {{signup_date}}
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi {{first_name}},</p>
+
+  <p>Thanks for registering on myansrsource portal.
+      <dl>
+        <dt>username</dt><dd>{{username}}</dd>
+        <dt>join date</dt><dd>{{signup_date}}</dd>
+      </dl>
+  </p>
+
+  <p>Regards, </p>
+  <p> myansrsource team</p>
+{% endblock %}

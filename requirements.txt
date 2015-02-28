@@ -9,6 +9,7 @@ django-bootstrap3==4.11.0
 django-datetime-widget==0.9
 django-grappelli==2.6.3
 django-session-security==2.2.2
+django-templated-email==0.4.9
 -e git+https://github.com/digi604/django-smart-selects.git#egg=django_smart_selects-master
 python-dateutil==2.2
 python-ldap==2.4.18

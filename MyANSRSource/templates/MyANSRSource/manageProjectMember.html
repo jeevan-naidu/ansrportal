@@ -1,4 +1,4 @@
-{% extends 'projectMaster.inc' %}
+{% extends 'manageProjectTeamMaster.inc' %}
 
 
 {% block addForm %}
@@ -13,7 +13,7 @@
 	</a>
 </span>
 {% endblock %}
-{% block DTactiveClass %}active{% endblock %}
+{% block TMactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
@@ -37,6 +37,7 @@
 					<thead>
                     				<tr>
 						{% for field in form %}
+			    {% if field.label != 'teamRecId' %}
                             {% if field.label == 'Start date on project' or field.label == 'End date on project' %}
                                 <th class="w-170">
                             {% elif field.label == 'Planned Effort' or field.label == '%' %}
@@ -51,6 +52,7 @@
 									<span class="required">*</span>
 								{% endif %}
 							</th>
+								{% endif %}
 						{% endfor %}
                     		       </tr>
 					</thead>

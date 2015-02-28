@@ -18,12 +18,12 @@
                     <table class="table">
                         {% for field in form %}
                             <tr>
-                                <td class="col-xs-6">
+                                <td class="col-lg-6">
                                         {{ field.label }}
                                         {% if field.field.required %}
                                             <span class="required">*</span>
                                         {% endif %}
-                                        {% if field.label == 'Chapters' %}
+                                        {% if field.label == 'Chapter/Subtitle' %}
                                             <br />
                                             <br />
 					    <span>
@@ -34,7 +34,22 @@
                                             </span>
                                         {% endif %}
                                 </td>
-                                <td class="col-xs-6">{{ field }}</td>
+					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'Project Stage' %}
+                                <td class="col-lg-6">
+						{% for radio in field %}
+							{% if field.label == 'Project Stage' %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4" style="padding-top: 10px"><small><b>{{ radio.choice_label }}</b></small></span>
+							{% else %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4" style="padding-top: 4px"><h5><b>{{ radio.choice_label }}</b></h5></span>
+							{% endif %}
+						{% endfor %}
+					{% else %}
+                                <td class="col-lg-6">
+						{{ field }}
+					{% endif %}
+				</td>
                             </tr>
                         {% endfor %}
                     </table>
@@ -50,6 +65,29 @@
 			} 
 		}
 	} 
+	function filterChapters() { 
+		var url = "/myansrsource/getchapters/"+ $("select#id_Define_Project-book").val() + "/";
+		var options = '';
+		$.getJSON(url, function(json_chapters) {
+			var chapters = json_chapters;
+			for (var i = 0; i < chapters.length; i++) {
+				options += '<option value="' + chapters[i].pk + '">' + chapters[i].fields['name'] + '</option>';
+			}
+			$("select#id_Define_Project-chapters").html(options);
+			chooseChapters($("select#id_Define_Project-book").val());
+		});
+	}
+	function chooseChapters(bookid) {
+		{% if bookId == None %}
+			$("select#id_Define_Project-chapters").val('');
+		{% else %}
+		if (bookid == {{ bookId  }}){
+			$("select#id_Define_Project-chapters").val({{ chapterId }});
+		}
+		else
+			$("select#id_Define_Project-chapters").val('');
+		{% endif %}
+	}
 	$(document).ready(
 		function() {
 			// Initializing the chapters value
@@ -58,18 +96,15 @@
 				$("select#id_Define_Project-chapters").html('');
 			}
 			// To Filter the chapters based on the selected book
+			else {
+				$("select#id_Define_Project-chapters").html('');
+				filterChapters();
+			}
+			// To Filter the chapters based on the book selected on the fly
 			$("select#id_Define_Project-book").change(function() {
-			var url = "/myansrsource/getchapters/"+ $(this).val();
-			var options = '';
-			$.getJSON(url, function(json_chapters) {
-				var chapters = json_chapters;
-				for (var i = 0; i < chapters.length; i++) {
-					options += '<option value="' + chapters[i].pk + '">' + chapters[i].fields['name'] + '</option>';
-				}
-				$("select#id_Define_Project-chapters").html(options);
-				$("select#id_Define_Project-chapters option:first").attr('selected', 'selected');
+				$("select#id_Define_Project-chapters").html('');
+				filterChapters();
 			});
-		});
 	});
     var app = app || {};
 
@@ -78,5 +113,3 @@
     }());
 </script>
 {% endblock %}{% endblock %}
-
-

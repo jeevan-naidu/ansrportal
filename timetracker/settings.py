@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from django.conf import global_settings
+import logging
 # For LDAP
 import ldap
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
@@ -20,15 +21,15 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
     ldap.OPT_REFERRALS: False,
     ldap.OPT_DEBUG_LEVEL: 0,
-    ldap.OPT_PROTOCOL_VERSION : 3,
+    ldap.OPT_PROTOCOL_VERSION: 3,
 }
 
 AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
-    # 'django.contrib.auth.backends.ModelBackend',
+    # 'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
     )
 
-AUTH_LDAP_SERVER_URI = "ldap://192.168.1.5"
+AUTH_LDAP_SERVER_URI = "ldap://ansr-blr-pdc.ansr.com"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
 AUTH_LDAP_BIND_PASSWORD = "P@ssword"
 
@@ -45,8 +46,9 @@ AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
 
 # Set up the basic group
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    "OU=ANSR Users,DC=ANSR,DC=com",
-    ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)(objectClass=organizationalUnit))')
+    "OU=ANSRsource,DC=ANSR,DC=com",
+    ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)
+# (objectClass=organizationalUnit))')
 
 # !important! set group type
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
@@ -79,7 +81,7 @@ AUTH_LDAP_MIRROR_GROUPS = True
 
 # AUTH_LDAP_PROFILE_ATTR_MAP = {
 #    "employee_number": "employeeNumber"
-#}
+# }
 
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
@@ -110,6 +112,9 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'employee/template/'),
     os.path.join(BASE_DIR, 'employee/emp_photo/'),
 )
+
+# When CRSF failurers happen we just ask them to relogin using our own template
+CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'
 
 # Application definition
 
@@ -149,9 +154,13 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 
 )
 
-# Session Expire Configuration
-SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
+# Session Configuration
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_AGE = 60*60
+# Settings for Django-session-security
+SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
 SESSION_SECURITY_EXPIRE_AFTER = 10*60
 
 
@@ -168,7 +177,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -202,19 +211,76 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 EMAIL_HOST = 'smtp.office365.com'
 EMAIL_HOST_USER = 'myansrsource@ansrsource.com'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'P@ssword'
 EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-import logging
-
 logger = logging.getLogger('django_auth_ldap')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        # Include the default Django email handler for errors
+        # This is what you'd get without configuring logging at all.
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            # But the emails are plain text by default - HTML is nicer
+            'include_html': True,
+            },
+        # Log to a text file that can be rotated by logrotate
+        'logfile': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': os.path.join(BASE_DIR, 'errorlogs')
+        },
+    },
+    'loggers': {
+        # Again, default Django configuration to email unhandled exceptions
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        # Might as well log any errors anywhere else in Django
+        'django': {
+            'handlers': ['logfile'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # Your own app - this assumes all your logger names start with
+        # "myapp."
+        'MyANSRSource': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',  # Or maybe INFO or WARNING
+            'propagate': False
+        },
+        'employee': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',  # Or maybe INFO or WARNING
+            'propagate': False
+        },
+    },
+
+}
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
 # myansrsource default group to which all users will be added
 MYANSRSOURCE_GROUP = 'MyANSRSourceUsers'
+TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
+TEMPLATED_EMAIL_TEMPLATE_DIR = 'email/'  # Use '' for top level template dir
+TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
+
+# Backup directory
+BACKUPDIR = '.backup'
