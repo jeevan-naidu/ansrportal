@@ -835,7 +835,6 @@ class TrackMilestoneWizard(SessionWizardView):
             projects = ProjectMilestone.objects.filter(
                 project__projectManager=self.request.user,
                 project__closed=False,
-                closed=False
             ).values('project__id')
             projectsList = list(set([key['project__id'] for key in projects]))
             form.fields['project'].queryset = Project.objects.filter(
@@ -851,12 +850,12 @@ class TrackMilestoneWizard(SessionWizardView):
             )['My Projects-project']
             projectMS = ProjectMilestone.objects.filter(
                 project__id=selectedProjectId,
-                closed=False
             ).values(
                 'id',
                 'milestoneDate',
                 'description',
-                'amount'
+                'amount',
+                'closed'
             )
         return self.initial_dict.get(step, projectMS)
 
