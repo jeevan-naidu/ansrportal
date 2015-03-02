@@ -505,6 +505,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['description'].widget.attrs['class'] = "form-control"
         self.fields['description'].widget.attrs['readonly'] = 'True'
         self.fields['amount'].widget.attrs['class'] = "form-control"
+        self.fields['amount'].widget.attrs['readonly'] = 'True'
         self.fields['reason'].widget.attrs['class'] = "form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
 
