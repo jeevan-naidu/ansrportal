@@ -3,12 +3,15 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
 import employee
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 
 TASKTYPEFLAG = (
     ('B', 'Billable'),
     ('I', 'Idle'),
 )
+
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$',
+                              'Only alphanumeric characters are allowed.')
 
 
 class Book(models.Model):
@@ -139,7 +142,7 @@ class Project(models.Model):
         verbose_name='Project Code')
     po = models.CharField(max_length=60, null=False,
                           blank=False, default=0,
-                          verbose_name="P.O.")
+                          verbose_name="P.O.", validators=[alphanumeric])
     startDate = models.DateField(verbose_name="Project Start Date",
                                  default=timezone.now)
     endDate = models.DateField(verbose_name="Project End Date",
@@ -335,9 +338,11 @@ class ProjectChangeInfo(models.Model):
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
     revisedEffort = models.IntegerField(default=0,
+                                        validators=[MinValueValidator(0)],
                                         verbose_name="Revised Effort")
     revisedTotal = models.DecimalField(default=0.0,
                                        max_digits=12,
+                                       validators=[MinValueValidator(0)],
                                        decimal_places=2,
                                        verbose_name="Revised amount")
     closed = models.BooleanField(default=False,

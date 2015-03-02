@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
 from employee.models import Employee, PreviousEmployment, EmpAddress,\
-    FamilyMember, Education, Designation, TeamMember
+    FamilyMember, Education, Designation, TeamMember, Attendance
 
 
 class EmpAddressInline(admin.StackedInline):
@@ -166,5 +166,10 @@ class DesignationAdmin(admin.ModelAdmin):
     pass
 
 
+class AttendanceAdmin(admin.ModelAdmin):
+    readonly_fields = ('employee', 'swipe_in', 'swipe_out')
+    list_display = ('swipe_in', 'swipe_out')
+
+admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(TeamMember, EmployeeAdmin)
 admin.site.register(Designation, DesignationAdmin)

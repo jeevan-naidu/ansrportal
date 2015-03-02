@@ -279,11 +279,21 @@ body {
 	background-color : #176CED;
 }
 
+/* Disabled class for ansr */
 .ansr-disabled {
 	pointer-events: none;
 	cursor: not-allowed;
 	box-shadow: none;
 	opacity: 0.65;
+}
+
+/* To fix the button overflow text */
+.fixed-btn-size {
+	width: 10px;
+	overflow: hidden;
+	white-space: nowrap;
+	display: block;
+	text-overflow: ellipsis;
 }
 
 input[type='radio'] {

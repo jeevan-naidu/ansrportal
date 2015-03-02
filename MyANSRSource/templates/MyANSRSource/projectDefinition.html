@@ -23,7 +23,7 @@
                                         {% if field.field.required %}
                                             <span class="required">*</span>
                                         {% endif %}
-                                        {% if field.label == 'Chapters' %}
+                                        {% if field.label == 'Chapter/Subtitle' %}
                                             <br />
                                             <br />
 					    <span>
@@ -39,10 +39,10 @@
 						{% for radio in field %}
 							{% if field.label == 'Project Stage' %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
-								<span class="col-lg-4"><h5><small><b>{{ radio.choice_label }}</b></small></h5></span>
+								<span class="col-lg-4" style="padding-top: 10px"><small><b>{{ radio.choice_label }}</b></small></span>
 							{% else %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
-								<span class="col-lg-4"><h5><b>{{ radio.choice_label }}</b></h5></span>
+								<span class="col-lg-4" style="padding-top: 4px"><h5><b>{{ radio.choice_label }}</b></h5></span>
 							{% endif %}
 						{% endfor %}
 					{% else %}

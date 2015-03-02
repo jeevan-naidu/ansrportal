@@ -79,7 +79,7 @@ class Training(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return unicode(self.batch)
+        return self.exercise + ' - ' + self.batch
 
 
 class Department(models.Model):

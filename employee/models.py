@@ -362,3 +362,13 @@ class PreviousEmployment(models.Model):
     def __unicode__(self):
         return self.company_name + ':' + \
             str(self.employed_from) + ' ~ ' + str(self.employed_upto)
+
+
+class Attendance(models.Model):
+    employee = models.ForeignKey(Employee, null=True)
+    attdate = models.DateField(null=True, blank=True)
+    swipe_in = models.DateTimeField(null=True, blank=True)
+    swipe_out = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('employee', 'attdate',)

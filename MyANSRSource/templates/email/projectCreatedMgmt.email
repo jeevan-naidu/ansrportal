@@ -1,0 +1,26 @@
+{% block subject %}New Project Notification - {{ projectId }} {% endblock %}
+{% block plain %}
+  Hi {{first_name}},
+
+     A new project {{ projectName }} wth ID : {{ projectId }} has been created.  This project starts on {{ startDate }}.  You are being notified since you are part of the management team for this project/account.  Please contact the project leader, {{ pmname }} for futher details.
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi {{first_name}},</p>
+
+  <p>
+      <dl>
+     <dd>A new project {{ projectName }} wth ID : {{ projectId }} has been created.  </dd>
+    <dd>This project starts on {{ startDate }}.  </dd>
+    <dd>You are being notified since you are part of the management team for this project/account.  </dd>
+    <dd>Please contact the project leader, {{ pmname }} for futher details.</dd>
+      </dl>
+  </p>
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}

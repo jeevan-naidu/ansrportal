@@ -264,6 +264,11 @@ LOGGING = {
             'level': 'DEBUG',  # Or maybe INFO or WARNING
             'propagate': False
         },
+        'employee': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',  # Or maybe INFO or WARNING
+            'propagate': False
+        },
     },
 
 }
