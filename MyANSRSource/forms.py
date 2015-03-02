@@ -3,7 +3,7 @@ autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, ProjectChangeInfo, Activity
+    ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 from CompanyMaster.models import OfficeLocation
@@ -124,13 +124,10 @@ def TimesheetFormset(currentUser):
         )
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
-        task = ChainedModelChoiceField(
-            'MyANSRSource',
-            'Task',
-            chain_field='project',
-            model_field='projectType',
-            show_all=False,
-            auto_choose=True
+        task = forms.ModelChoiceField(
+            queryset=Task.objects.all(),
+            label="Task",
+            required=True,
         )
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",

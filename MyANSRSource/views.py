@@ -22,7 +22,7 @@ from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType
+    Chapter, projectType, Task
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
@@ -1531,6 +1531,14 @@ def GetChapters(request, bookid):
     chapters = Chapter.objects.filter(book__id=bookid)
     json_chapters = serializers.serialize("json", chapters)
     return HttpResponse(json_chapters, content_type="application/javascript")
+
+
+def GetTasks(request, projectid):
+    tasks = Task.objects.filter(
+        projectType=Project.objects.get(pk=projectid).projectType
+    ).values('code', 'name', 'id')
+    data = {'data': list(tasks)}
+    return HttpResponse(json.dumps(data), content_type="application/javascript")
 
 
 def GetHolidays(request, memberid):
