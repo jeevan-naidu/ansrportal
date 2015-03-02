@@ -3,7 +3,7 @@ autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, ProjectChangeInfo, Activity
+    ProjectMilestone, Chapter, ProjectChangeInfo, Activity, projectType
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 from CompanyMaster.models import OfficeLocation
