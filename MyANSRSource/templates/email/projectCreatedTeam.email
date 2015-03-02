@@ -14,7 +14,7 @@
 
   <p>
       <dl>
-        <dt>A new Project {{ projectId }} named {{ projectName }} has been created. This project will start on {{ startdate }} </dt>
+        <dt>A new Project {{ projectId }} named {{ projectName }} has been created. This project will start on {{ startDate }} </dt>
         <dd>You have been assigned the role of {{ myrole }} in this project. You are scheduled to start on {{ mystartdate }} </dt>
         <dd>{{ pmname }} is the Project leader.  Please contact him/her for further details. </dd>
       </dl>
