@@ -381,6 +381,19 @@ def Timesheet(request):
             atContent = activitiesList
             tsErrorList = []
             atErrorList = []
+            msg = ''
+
+            for eachTS in tsContent:
+                tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+                if eachTS['approved']:
+                    msg += '{0} - is approved, '.format(tsObj.project.name)
+                elif eachTS['hold']:
+                    msg += '{0} - is sent for approval \
+                        to your manager'.format(tsObj.project.name)
+                elif 'save' in request.POST:
+                    msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+
+            messages.info(request, msg)
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -397,19 +410,6 @@ def Timesheet(request):
             atContent = [k.cleaned_data for k in activities]
 
         # Constructing status of timesheet
-        msg = ''
-
-        for eachTS in tsContent:
-            tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-            if eachTS['approved']:
-                msg += '{0} - is approved, '.format(tsObj.project.name)
-            elif eachTS['hold']:
-                msg += '{0} - is sent for approval \
-                    to your manager'.format(tsObj.project.name)
-            elif 'save' in request.POST:
-                msg += '{0} - timesheet is saved'.format(tsObj.project.name)
-
-        messages.info(request, msg)
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
