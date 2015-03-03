@@ -377,7 +377,7 @@ def Timesheet(request):
                 if 'save' not in request.POST:
                     eachtsList['hold'] = True
                 else:
-                    eachtsList['hold'] = ts.hold
+                    eachtsList['hold'] = False
             tsContent = timesheetList
             atContent = activitiesList
             tsErrorList = []
