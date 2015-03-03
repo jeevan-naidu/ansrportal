@@ -215,6 +215,7 @@ def TimesheetFormset(currentUser):
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
+                closed=False,
                 id__in=ProjectTeamMember.objects.filter(
                     Q(member=currentUser.id) |
                     Q(project__projectManager=currentUser.id)
