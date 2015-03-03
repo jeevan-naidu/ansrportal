@@ -7,7 +7,6 @@ from MyANSRSource.models import Project, ProjectTeamMember, \
 from bootstrap3_datetime.widgets import DateTimePicker
 from smart_selects.form_fields import ChainedModelChoiceField
 from CompanyMaster.models import OfficeLocation
-from employee.models import Employee
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
@@ -215,16 +214,14 @@ def TimesheetFormset(currentUser):
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
+                closed=False,
                 id__in=ProjectTeamMember.objects.filter(
                     Q(member=currentUser.id) |
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             )
-            self.fields['location'].queryset = OfficeLocation.objects.filter(
-                id__in=Employee.objects.filter(
-                    user=currentUser
-                ).values('location__id')
-            )
+            self.fields['location'].queryset = OfficeLocation.objects.all()
+            self.initial['location'] = currentUser.employee.location
             if currentUser.has_perm('MyANSRSource.manage_project'):
                 self.fields['chapter'] = ChainedModelChoiceField(
                     'MyANSRSource',
