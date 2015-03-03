@@ -17,6 +17,7 @@ from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.db.models import Q
 from django.conf import settings
+from pprint import pprint
 
 from templated_email import send_templated_mail
 
@@ -327,7 +328,7 @@ def Timesheet(request):
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
-            elif 'save' not in request.POST:
+            else:
                 # Save Timesheet
                 for eachActivity in activitiesList:
                     # Getting objects for models
@@ -340,7 +341,7 @@ def Timesheet(request):
                     # Common values for Billable and Non-Billable
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
-                    nonbillableTS.activity = activity
+                    nonbillableTS.activity = eachActivity['activity']
                     nonbillableTS.teamMember = request.user
                     nonbillableTS.approved = True
                     nonbillableTS.managerFeedback = 'System Approved'
@@ -372,12 +373,11 @@ def Timesheet(request):
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
-                if eachtsList['tsId']:
-                    ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
+                ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
                 if 'save' not in request.POST:
                     eachtsList['hold'] = True
                 else:
-                    eachtsList['hold'] = False
+                    eachtsList['hold'] = ts.hold
             tsContent = timesheetList
             atContent = activitiesList
             tsErrorList = []
@@ -444,6 +444,7 @@ def Timesheet(request):
                              this week')
 
         # Constructing status of timesheet
+
         msg = ''
 
         for eachTS in tsFormList:
