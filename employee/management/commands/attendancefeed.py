@@ -8,6 +8,7 @@ from django.utils.timezone import utc
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from employee.models import Attendance, Employee
+from django.db import IntegrityError
 
 # Backup folder and extension settings
 BK_DIR = "backup/Access-Control-Data"
@@ -39,6 +40,7 @@ class Command(BaseCommand):
 
                         os.system('mv {0} {1}'.format(eachFile,
                                                       SUCCESS_DIR))
+                        row += 1
             else:
                 logger.exception("No more files to backup")
         else:
@@ -48,7 +50,11 @@ class Command(BaseCommand):
 
 def feedData(filereader):
 
+    row = 1
+
     for eachRow in filereader:
+
+        print "Processing Record {0}".format(row)
 
         # Converting data to relevant types
         try:
@@ -70,6 +76,7 @@ def feedData(filereader):
             # Insert appropriate data in db
             insertToDb(eachRow[0], attdate, swipe_in, swipe_out)
 
+            print "Processing Record {0}".format(row)
         # To catch any error in values if any
         except ValueError as e:
             logger.exception(e)
@@ -98,3 +105,8 @@ def insertToDb(employee, attdate, swipe_in, swipe_out):
         # To catch any validation errors if any
         except ValidationError as e:
             logger.exception(e)
+
+        # To handle the unique key exception
+        except IntegrityError as e:
+            logger.exception(e)
+            pass
