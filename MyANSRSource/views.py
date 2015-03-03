@@ -372,7 +372,8 @@ def Timesheet(request):
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
-                ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
+                if eachtsList['tsId']:
+                    ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
                 if 'save' not in request.POST:
                     eachtsList['hold'] = True
                 else:
