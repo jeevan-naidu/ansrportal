@@ -879,7 +879,6 @@ class TrackMilestoneWizard(SessionWizardView):
         if self.steps.current == 'My Projects':
             ms = ProjectMilestone.objects.filter(
                 project__projectManager=self.request.user,
-                closed=False,
                 project__closed=False
             ).values('project').annotate(
                 msCount=Count('project')
@@ -893,10 +892,13 @@ class TrackMilestoneWizard(SessionWizardView):
             CloseMilestone = ProjectMilestone.objects.get(
                 id=eachData['id']
             )
-            CloseMilestone.reason = eachData['reason']
-            CloseMilestone.amount = eachData['amount']
-            CloseMilestone.closed = eachData['closed']
-            CloseMilestone.save()
+            if CloseMilestone.closed:
+                pass
+            else:
+                CloseMilestone.reason = eachData['reason']
+                CloseMilestone.amount = eachData['amount']
+                CloseMilestone.closed = eachData['closed']
+                CloseMilestone.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
