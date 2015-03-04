@@ -17,7 +17,7 @@ from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.db.models import Q
 from django.conf import settings
-from pprint import pprint
+from django.utils.timezone import utc
 
 from templated_email import send_templated_mail
 
@@ -343,12 +343,18 @@ def Timesheet(request):
                     nonbillableTS.wkend = changedEndDate
                     nonbillableTS.activity = eachActivity['activity']
                     nonbillableTS.teamMember = request.user
-                    nonbillableTS.approved = True
-                    nonbillableTS.managerFeedback = 'System Approved'
-                    nonbillableTS.hold = True
-                    nonbillableTS.approvedon = datetime.now()
+                    if 'save' not in request.POST:
+                        nonbillableTS.approved = True
+                        nonbillableTS.managerFeedback = 'System Approved'
+                        nonbillableTS.hold = True
+                        nonbillableTS.approvedon = datetime.now().replace(
+                            tzinfo=utc)
+                    else:
+                        nonbillableTS.approved = False
+                        nonbillableTS.hold = False
                     for k, v in eachActivity.iteritems():
-                        setattr(nonbillableTS, k, v)
+                        if k != 'hold' and k != 'approved':
+                            setattr(nonbillableTS, k, v)
                     nonbillableTS.save()
                     eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
@@ -362,22 +368,24 @@ def Timesheet(request):
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.billable = True
-                    billableTS.managerFeedback = 'System Approved'
-                    billableTS.approved = True
-                    billableTS.approvedon = datetime.now()
-                    billableTS.hold = True
+                    if 'save' not in request.POST:
+                        billableTS.approved = True
+                        billableTS.managerFeedback = 'System Approved'
+                        billableTS.hold = True
+                        billableTS.approvedon = datetime.now().replace(
+                            tzinfo=utc)
+                    else:
+                        billableTS.approved = False
+                        billableTS.hold = False
                     for k, v in eachTimesheet.iteritems():
-                        if k != 'hold':
+                        if k != 'hold' and k != 'approved':
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
                 ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
-                if 'save' not in request.POST:
-                    eachtsList['hold'] = True
-                else:
-                    eachtsList['hold'] = ts.hold
+                eachtsList['hold'] = ts.hold
             tsContent = timesheetList
             atContent = activitiesList
             tsErrorList = []
@@ -389,8 +397,12 @@ def Timesheet(request):
                 if eachTS['approved']:
                     msg += '{0} - is approved, '.format(tsObj.project.name)
                 elif eachTS['hold']:
-                    msg += '{0} - is sent for approval \
-                        to your manager'.format(tsObj.project.name)
+                    if tsObj.approved:
+                        msg += '{0} - is auto approved by system'.format(
+                            tsObj.project.name)
+                    else:
+                        msg += '{0} - is sent for approval \
+                            to your manager'.format(tsObj.project.name)
                 elif 'save' in request.POST:
                     msg += '{0} - timesheet is saved'.format(tsObj.project.name)
 
