@@ -17,12 +17,13 @@ from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.db.models import Q
 from django.conf import settings
+from django.utils.timezone import utc
 
 from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType
+    Chapter, projectType, Task
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
@@ -327,7 +328,7 @@ def Timesheet(request):
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
-            elif 'save' not in request.POST:
+            else:
                 # Save Timesheet
                 for eachActivity in activitiesList:
                     # Getting objects for models
@@ -340,14 +341,20 @@ def Timesheet(request):
                     # Common values for Billable and Non-Billable
                     nonbillableTS.wkstart = changedStartDate
                     nonbillableTS.wkend = changedEndDate
-                    nonbillableTS.activity = activity
+                    nonbillableTS.activity = eachActivity['activity']
                     nonbillableTS.teamMember = request.user
-                    nonbillableTS.approved = True
-                    nonbillableTS.managerFeedback = 'System Approved'
-                    nonbillableTS.hold = True
-                    nonbillableTS.approvedon = datetime.now()
+                    if 'save' not in request.POST:
+                        nonbillableTS.approved = True
+                        nonbillableTS.managerFeedback = 'System Approved'
+                        nonbillableTS.hold = True
+                        nonbillableTS.approvedon = datetime.now().replace(
+                            tzinfo=utc)
+                    else:
+                        nonbillableTS.approved = False
+                        nonbillableTS.hold = False
                     for k, v in eachActivity.iteritems():
-                        setattr(nonbillableTS, k, v)
+                        if k != 'hold' and k != 'approved':
+                            setattr(nonbillableTS, k, v)
                     nonbillableTS.save()
                     eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
@@ -361,26 +368,45 @@ def Timesheet(request):
                     billableTS.wkend = changedEndDate
                     billableTS.teamMember = request.user
                     billableTS.billable = True
-                    billableTS.managerFeedback = 'System Approved'
-                    billableTS.approved = True
-                    billableTS.approvedon = datetime.now()
-                    billableTS.hold = True
+                    if 'save' not in request.POST:
+                        billableTS.approved = True
+                        billableTS.managerFeedback = 'System Approved'
+                        billableTS.hold = True
+                        billableTS.approvedon = datetime.now().replace(
+                            tzinfo=utc)
+                    else:
+                        billableTS.approved = False
+                        billableTS.hold = False
                     for k, v in eachTimesheet.iteritems():
-                        if k != 'hold':
+                        if k != 'hold' and k != 'approved':
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
                 ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
-                if 'save' not in request.POST:
-                    eachtsList['hold'] = True
-                else:
-                    eachtsList['hold'] = ts.hold
+                eachtsList['hold'] = ts.hold
             tsContent = timesheetList
             atContent = activitiesList
             tsErrorList = []
             atErrorList = []
+            msg = ''
+
+            for eachTS in tsContent:
+                tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+                if eachTS['approved']:
+                    msg += '{0} - is approved, '.format(tsObj.project.name)
+                elif eachTS['hold']:
+                    if tsObj.approved:
+                        msg += '{0} - is auto approved by system'.format(
+                            tsObj.project.name)
+                    else:
+                        msg += '{0} - is sent for approval \
+                            to your manager'.format(tsObj.project.name)
+                elif 'save' in request.POST:
+                    msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+
+            messages.info(request, msg)
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -397,19 +423,6 @@ def Timesheet(request):
             atContent = [k.cleaned_data for k in activities]
 
         # Constructing status of timesheet
-        msg = ''
-
-        for eachTS in tsContent:
-            tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-            if eachTS['approved']:
-                msg += '{0} - is approved, '.format(tsObj.project.name)
-            elif eachTS['hold']:
-                msg += '{0} - is sent for approval \
-                    to your manager'.format(tsObj.project.name)
-            elif 'save' in request.POST:
-                msg += '{0} - timesheet is saved'.format(tsObj.project.name)
-
-        messages.info(request, msg)
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
@@ -443,6 +456,7 @@ def Timesheet(request):
                              this week')
 
         # Constructing status of timesheet
+
         msg = ''
 
         for eachTS in tsFormList:
@@ -1254,13 +1268,17 @@ class ManageTeamWizard(SessionWizardView):
     def get_form_initial(self, step):
         currentProject = []
         if step == 'Update Member':
-            currentProject = ProjectTeamMember.objects.filter(
-                project__id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values('id', 'member', 'role',
-                                                 'startDate', 'endDate',
-                                                 'plannedEffort', 'rate'
-                                                 )
+            projectId = self.storage.get_step_data(
+                'My Projects')['My Projects-project']
+            if projectId is not None:
+                currentProject = ProjectTeamMember.objects.filter(
+                    project__id=projectId).values('id', 'member', 'role',
+                                                  'startDate', 'endDate',
+                                                  'plannedEffort', 'rate'
+                                                  )
+            else:
+                logging.error("Project Id : {0}, Current User: {1}".format(
+                    projectId, self.request.user))
         return self.initial_dict.get(step, currentProject)
 
     def get_context_data(self, form, **kwargs):
@@ -1289,43 +1307,47 @@ class ManageTeamWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         for eachData in [form.cleaned_data for form in form_list][1]:
-            if eachData['id']:
-                if eachData['DELETE']:
-                    ProjectTeamMember.objects.get(pk=eachData['id']).delete()
-                else:
-                    ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
+            if None in eachData.values():
+                pass
             else:
-                ptm = ProjectTeamMember()
-            ptm.project = [
-                form.cleaned_data for form in form_list][0]['project']
-            del(eachData['id'])
-            for k, v in eachData.iteritems():
-                setattr(ptm, k, v)
-            ptm.save()
-        teamMembers = ProjectTeamMember.objects.filter(
-            project__id=ptm.project.id
-        ).values('member__email', 'member__first_name',
-                 'member__last_name', 'startDate', 'role__name')
-        for eachMember in teamMembers:
-            if eachMember['member__email'] != '':
-                send_templated_mail(
-                    template_name='projectCreatedTeam',
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[
-                        eachMember['member__email'],
-                        ],
-                    context={
-                        'first_name': eachMember['member__first_name'],
-                        'projectId': ptm.project.id,
-                        'projectName': ptm.project.name,
-                        'pmname': '{0} {1}'.format(
-                            ptm.project.projectManager.first_name,
-                            ptm.project.projectManager.last_name),
-                        'startDate': ptm.project.startDate,
-                        'mystartdate': eachMember['startDate'],
-                        'myrole': eachMember['role__name'],
-                        },
-                    )
+                if eachData['id']:
+                    if eachData['DELETE']:
+                        ProjectTeamMember.objects.get(pk=eachData['id']).delete()
+                    else:
+                        ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
+                else:
+                    ptm = ProjectTeamMember()
+
+                ptm.project = [
+                    form.cleaned_data for form in form_list][0]['project']
+                del(eachData['id'])
+                for k, v in eachData.iteritems():
+                    setattr(ptm, k, v)
+                ptm.save()
+            teamMembers = ProjectTeamMember.objects.filter(
+                project__id=ptm.project.id
+            ).values('member__email', 'member__first_name',
+                    'member__last_name', 'startDate', 'role__name')
+            for eachMember in teamMembers:
+                if eachMember['member__email'] != '':
+                    send_templated_mail(
+                        template_name='projectCreatedTeam',
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[
+                            eachMember['member__email'],
+                            ],
+                        context={
+                            'first_name': eachMember['member__first_name'],
+                            'projectId': ptm.project.id,
+                            'projectName': ptm.project.name,
+                            'pmname': '{0} {1}'.format(
+                                ptm.project.projectManager.first_name,
+                                ptm.project.projectManager.last_name),
+                            'startDate': ptm.project.startDate,
+                            'mystartdate': eachMember['startDate'],
+                            'myrole': eachMember['role__name'],
+                            },
+                        )
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1526,6 +1548,14 @@ def GetChapters(request, bookid):
     chapters = Chapter.objects.filter(book__id=bookid)
     json_chapters = serializers.serialize("json", chapters)
     return HttpResponse(json_chapters, content_type="application/javascript")
+
+
+def GetTasks(request, projectid):
+    tasks = Task.objects.filter(
+        projectType=Project.objects.get(pk=projectid).projectType
+    ).values('code', 'name', 'id')
+    data = {'data': list(tasks)}
+    return HttpResponse(json.dumps(data), content_type="application/javascript")
 
 
 def GetHolidays(request, memberid):

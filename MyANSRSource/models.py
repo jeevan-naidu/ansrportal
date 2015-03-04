@@ -338,9 +338,11 @@ class ProjectChangeInfo(models.Model):
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
     revisedEffort = models.IntegerField(default=0,
+                                        validators=[MinValueValidator(0)],
                                         verbose_name="Revised Effort")
     revisedTotal = models.DecimalField(default=0.0,
                                        max_digits=12,
+                                       validators=[MinValueValidator(0)],
                                        decimal_places=2,
                                        verbose_name="Revised amount")
     closed = models.BooleanField(default=False,
