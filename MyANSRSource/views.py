@@ -1278,8 +1278,8 @@ class ManageTeamWizard(SessionWizardView):
                                                   'plannedEffort', 'rate'
                                                   )
             else:
-                logging.error("Project Id : {0}, Current User: {1}".format(
-                    projectId, self.request.user))
+                logging.error("Project Id : {0}, Request: {1},".format(
+                    projectId, self.request))
         return self.initial_dict.get(step, currentProject)
 
     def get_context_data(self, form, **kwargs):
