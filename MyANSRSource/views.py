@@ -1269,13 +1269,17 @@ class ManageTeamWizard(SessionWizardView):
     def get_form_initial(self, step):
         currentProject = []
         if step == 'Update Member':
-            currentProject = ProjectTeamMember.objects.filter(
-                project__id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values('id', 'member', 'role',
-                                                 'startDate', 'endDate',
-                                                 'plannedEffort', 'rate'
-                                                 )
+            projectId = self.storage.get_step_data(
+                'My Projects')['My Projects-project']
+            if projectId is not None:
+                currentProject = ProjectTeamMember.objects.filter(
+                    project__id=projectId).values('id', 'member', 'role',
+                                                  'startDate', 'endDate',
+                                                  'plannedEffort', 'rate'
+                                                  )
+            else:
+                logging.error("Project Id : {0}, Current User: {1}".format(
+                    projectId, self.request.user))
         return self.initial_dict.get(step, currentProject)
 
     def get_context_data(self, form, **kwargs):
