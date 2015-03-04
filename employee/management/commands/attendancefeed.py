@@ -40,7 +40,6 @@ class Command(BaseCommand):
 
                         os.system('mv {0} {1}'.format(eachFile,
                                                       SUCCESS_DIR))
-                        row += 1
             else:
                 logger.exception("No more files to backup")
         else:
@@ -50,9 +49,11 @@ class Command(BaseCommand):
 
 def feedData(filereader):
 
-    row = 1
+    row = 0
 
     for eachRow in filereader:
+
+        row += 1
 
         print "Processing Record {0}".format(row)
 
@@ -76,10 +77,14 @@ def feedData(filereader):
             # Insert appropriate data in db
             insertToDb(eachRow[0], attdate, swipe_in, swipe_out)
 
-            print "Processing Record {0}".format(row)
         # To catch any error in values if any
         except ValueError as e:
             logger.exception(e)
+
+        # To handle the unique key exception
+        except IntegrityError as e:
+            logger.exception(e)
+            pass
 
 
 def insertToDb(employee, attdate, swipe_in, swipe_out):
@@ -105,8 +110,3 @@ def insertToDb(employee, attdate, swipe_in, swipe_out):
         # To catch any validation errors if any
         except ValidationError as e:
             logger.exception(e)
-
-        # To handle the unique key exception
-        except IntegrityError as e:
-            logger.exception(e)
-            pass
