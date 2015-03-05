@@ -162,7 +162,6 @@ class Project(models.Model):
                              default=None,
                              null=False
                              )
-    chapters = models.ManyToManyField(Chapter, verbose_name="Chapter/Subtitle")
     totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,

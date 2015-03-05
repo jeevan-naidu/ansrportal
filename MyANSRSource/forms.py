@@ -110,16 +110,12 @@ def TimesheetFormset(currentUser):
         )
         location = forms.ModelChoiceField(
             queryset=None,
-            label="Location",
             required=True
         )
-        chapter = ChainedModelChoiceField(
-            'MyANSRSource',
-            'Chapter',
-            chain_field='project',
-            model_field='project',
-            show_all=False,
-            auto_choose=True
+        chapter = forms.ModelChoiceField(
+            queryset=Chapter.objects.all(),
+            label="Location",
+            required=True
         )
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
@@ -325,7 +321,6 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
             'customer',
             'name',
             'book',
-            'chapters',
             'projectManager',
             'signed',
             'internal',
@@ -359,16 +354,12 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
             "form-control"
         self.fields['book'].widget.attrs['id'] = \
             "id_Define_Project-book"
-        self.fields['chapters'].widget.attrs['class'] = \
-            "form-control"
         self.fields['currentProject'].widget.attrs['class'] = \
             "form-control"
         self.fields['signed'].widget.attrs['class'] = \
             "form-control"
         self.fields['internal'].widget.attrs['class'] = \
             "form-control"
-        self.fields['chapters'].widget.attrs['id'] = \
-            "id_Define_Project-chapters"
 
 
 # Change Project Basic Form

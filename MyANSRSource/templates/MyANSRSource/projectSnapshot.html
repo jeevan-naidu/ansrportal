@@ -47,7 +47,6 @@
 				<th>Name</th>
 				<th>Customer</th>
 				<th>Book</th>
-				<th>Chapters</th>
 				<th>Project Leader</th>
 				<th>Is it an internal Project?</th>
 				<th>Is this a new project?</th>
@@ -60,15 +59,6 @@
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer }}</td>
 			<td>{{ basicInfo.book }}</td>
-			<td>
-				{% for eachChapter in basicInfo.chapters %}
-					{% if forloop.last %}
-						{{ eachChapter }}
-					{% else %}
-						{{ eachChapter }},
-					{% endif %}
-				{% endfor %}
-			</td>
 			<td>
 				{% for eachManager in basicInfo.projectManager %}
 					{% if forloop.last %}
@@ -103,7 +93,6 @@
                     <input type="hidden" name="{{ rec }}" value="{{ value }}">
                 {% endfor %}
 				<input type="hidden" name="pm" value="{{ pm }}">
-				<input type="hidden" name="chapters" value="{{ chapterId }}">
 				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
 				<input type="hidden" name="bu" value="{{ basicInfo.bu.id }}">
 				<input type="hidden" name="customer" value="{{ basicInfo.customer.id }}">

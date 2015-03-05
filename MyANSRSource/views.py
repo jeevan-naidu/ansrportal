@@ -1188,24 +1188,6 @@ class CreateProjectWizard(SessionWizardView):
             ]
             data = {'pt': projectType.objects.get(id=int(ptId)).description}
             context.update(data)
-        if self.steps.current == 'Define Project':
-            if form.is_valid():
-                bookId = form.cleaned_data['book']
-                chapters = form.cleaned_data['chapters']
-                projectManager = form.cleaned_data['projectManager']
-                pm = [int(pm.id) for pm in projectManager]
-                chapterId = [int(eachChapter.id) for eachChapter in chapters]
-                data = {'bookId': bookId.id, 'chapterId': chapterId, 'pm': pm}
-                context.update(data)
-            if self.request.method == 'POST':
-                if not form.is_valid():
-                    if 'chapters' in form.cleaned_data:
-                        chapters = form.cleaned_data['chapters']
-                        chapterId = [int(eachChapter.id)
-                                     for eachChapter in chapters]
-                        bookId = form.cleaned_data['book']
-                        data = {'bookId': bookId.id, 'chapterId': chapterId}
-                        context.update(data)
 
         if self.steps.current == 'Financial Milestones':
             projectTotal = self.storage.get_step_data('Basic Information')[
@@ -1221,7 +1203,6 @@ class CreateProjectWizard(SessionWizardView):
         cleanedMilestoneData = []
 
         basicInfo = [form.cleaned_data for form in form_list][0]
-        chapterIdList = [eachRec.id for eachRec in basicInfo['chapters']]
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
@@ -1256,7 +1237,6 @@ class CreateProjectWizard(SessionWizardView):
             revenueRec = 0
         data = {
             'basicInfo': basicInfo,
-            'chapterId': chapterIdList,
             'pm': pm,
             'flagData': flagData,
             'effortTotal': effortTotal,
@@ -1421,8 +1401,6 @@ def saveProject(request):
                 pm.user = User.objects.get(pk=eachId)
                 pm.project = pr
                 pm.save()
-            for eachId in eval(request.POST.get('chapters')):
-                pr.chapters.add(eachId)
         except ValueError as e:
             logger.exception(e)
             return render(
@@ -1531,7 +1509,6 @@ def ViewProject(request):
             'member__username', 'role', 'startDate', 'endDate',
             'plannedEffort', 'rate'
             )
-        chapters = projectObj.values('chapters__name')
         if basicInfo['internal']:
             cleanedMilestoneData = []
         else:
@@ -1540,7 +1517,6 @@ def ViewProject(request):
                                            'amount')
         data = {
             'basicInfo': basicInfo,
-            'chapters': chapters,
             'flagData': flagData,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData
