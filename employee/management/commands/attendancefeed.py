@@ -8,6 +8,7 @@ from django.utils.timezone import utc
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from employee.models import Attendance, Employee
+from django.db import IntegrityError
 
 # Backup folder and extension settings
 BK_DIR = "backup/Access-Control-Data"
@@ -48,7 +49,13 @@ class Command(BaseCommand):
 
 def feedData(filereader):
 
+    row = 0
+
     for eachRow in filereader:
+
+        row += 1
+
+        print "Processing Record {0}".format(row)
 
         # Converting data to relevant types
         try:
@@ -73,6 +80,11 @@ def feedData(filereader):
         # To catch any error in values if any
         except ValueError as e:
             logger.exception(e)
+
+        # To handle the unique key exception
+        except IntegrityError as e:
+            logger.exception(e)
+            pass
 
 
 def insertToDb(employee, attdate, swipe_in, swipe_out):
