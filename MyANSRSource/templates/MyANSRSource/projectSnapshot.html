@@ -69,7 +69,15 @@
 					{% endif %}
 				{% endfor %}
 			</td>
-			<td>{{ basicInfo.projectManager }}</td>
+			<td>
+				{% for eachManager in basicInfo.projectManager %}
+					{% if forloop.last %}
+						{{ eachManager }}
+					{% else %}
+						{{ eachManager }},
+					{% endif %}
+				{% endfor %}
+			</td>
 			<td>
 				{% if basicInfo.internal == True  %}
 					Yes
@@ -91,13 +99,10 @@
 					No
 				{% endif %}
 			</td>
-			{% for rec, value in basicInfo.iteritems %}
-				{% if rec == 'projectManager' %}
-					<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
-				{% else %}
-					<input type="hidden" name="{{ rec }}" value="{{ value }}">
-				{% endif %}
-			{% endfor %}
+                {% for rec, value in basicInfo.iteritems %}
+                    <input type="hidden" name="{{ rec }}" value="{{ value }}">
+                {% endfor %}
+				<input type="hidden" name="pm" value="{{ pm }}">
 				<input type="hidden" name="chapters" value="{{ chapterId }}">
 				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
 				<input type="hidden" name="bu" value="{{ basicInfo.bu.id }}">

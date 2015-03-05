@@ -153,7 +153,9 @@ class Project(models.Model):
     contingencyEffort = models.IntegerField(default=0,
                                             verbose_name="Contigency Effort",
                                             validators=[MinValueValidator(0)])
-    projectManager = models.ForeignKey(User, verbose_name="Project Leader")
+    projectManager = models.ManyToManyField(User,
+                                            through='ProjectManager',
+                                            verbose_name="Project Leader")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book/Title",
@@ -187,6 +189,12 @@ class Project(models.Model):
             ("approve_timesheet", "Approve timesheets"),
             ("manage_milestones", "Manage Project Milestones"),
             )
+
+
+class ProjectManager(models.Model):
+    # Creating Explicit M2M, to copy existing FK to M2M
+    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
 
 
 class TimeSheetEntry(models.Model):

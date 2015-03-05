@@ -23,7 +23,7 @@ from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType, Task
+    Chapter, projectType, Task, ProjectManager
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ProjectMilestoneForm, \
@@ -1192,8 +1192,10 @@ class CreateProjectWizard(SessionWizardView):
             if form.is_valid():
                 bookId = form.cleaned_data['book']
                 chapters = form.cleaned_data['chapters']
+                projectManager = form.cleaned_data['projectManager']
+                pm = [int(pm.id) for pm in projectManager]
                 chapterId = [int(eachChapter.id) for eachChapter in chapters]
-                data = {'bookId': bookId.id, 'chapterId': chapterId}
+                data = {'bookId': bookId.id, 'chapterId': chapterId, 'pm': pm}
                 context.update(data)
             if self.request.method == 'POST':
                 if not form.is_valid():
@@ -1220,6 +1222,7 @@ class CreateProjectWizard(SessionWizardView):
 
         basicInfo = [form.cleaned_data for form in form_list][0]
         chapterIdList = [eachRec.id for eachRec in basicInfo['chapters']]
+        pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
             if k == 'startDate':
@@ -1254,6 +1257,7 @@ class CreateProjectWizard(SessionWizardView):
         data = {
             'basicInfo': basicInfo,
             'chapterId': chapterIdList,
+            'pm': pm,
             'flagData': flagData,
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
@@ -1391,10 +1395,6 @@ def saveProject(request):
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
             pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
-            manager = User.objects.get(
-                pk=int(
-                    request.POST.get('projectManager')))
-            pr.projectManager = manager
             pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                 pk=int(request.POST.get('bu'))
             )
@@ -1415,6 +1415,12 @@ def saveProject(request):
             pr.save()
             pr.customer.seqNumber = pr.customer.seqNumber + 1
             pr.customer.save()
+
+            for eachId in eval(request.POST.get('pm')):
+                pm = ProjectManager()
+                pm.user = User.objects.get(pk=eachId)
+                pm.project = pr
+                pm.save()
             for eachId in eval(request.POST.get('chapters')):
                 pr.chapters.add(eachId)
         except ValueError as e:
