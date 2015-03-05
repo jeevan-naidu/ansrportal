@@ -1060,6 +1060,10 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         prc = newInfo[0]['project']
+        oldCost = prc.totalValue
+        oldEffort = prc.plannedEffort
+        prc.plannedEffort = newInfo[1]['revisedEffort']
+        prc.totalValue = newInfo[1]['revisedTotal']
         prc.closed = newInfo[1]['closed']
         prc.signed = newInfo[1]['signed']
         prc.save()
@@ -1068,8 +1072,8 @@ def UpdateProjectInfo(request, newInfo):
         pci.project = prc
         pci.reason = newInfo[1]['reason']
         pci.endDate = newInfo[1]['endDate']
-        pci.revisedEffort = newInfo[1]['revisedEffort']
-        pci.revisedTotal = newInfo[1]['revisedTotal']
+        pci.revisedEffort = oldEffort
+        pci.revisedTotal = oldCost
         pci.closed = newInfo[1]['closed']
         if pci.closed is True:
             pci.closedOn = datetime.now()
