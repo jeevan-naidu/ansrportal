@@ -14,15 +14,19 @@
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger">
+        <ul>
 		{% for k, v in form.errors.items %}
-			{{ v|striptags }}
+        <li>{{ v|striptags }}</li>
 		{% endfor %}
+        </ul>
 		<button type="button" class="close" data-dismiss="alert">×</button>
+        <ul>
 		{% for field in form %} 
 		{% if field.errors %}									
 			<li>{{ field.label }}: {{ field.errors|striptags }}</li>		  
 		{% endif %}
-		{% endfor %}								
+		{% endfor %}
+        </ul>        
 	</div>
 {% endif %}
 	{% if forloop.first %}

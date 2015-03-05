@@ -5,10 +5,12 @@
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
-		{% for field in form %} 
-		{% if field.errors %}
-			{{ field.label }}: {{ field.errors|striptags }}
-		{% endif %}
+        <ul>
+            {% for field in form %} 
+                {% if field.errors %}
+                    <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                {% endif %}
+        </ul>
 		{% endfor %}								
 	</div>
 {% endif %}
