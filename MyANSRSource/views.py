@@ -1151,6 +1151,9 @@ class CreateProjectWizard(SessionWizardView):
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
                 ] = 'True'
+                eachForm.fields['DELETE'].widget.attrs[
+                    'class'
+                ] = 'form-control'
             if internalStatus == 'True':
                 for eachForm in form:
                     eachForm.fields['financial'].widget.attrs[
@@ -1288,6 +1291,10 @@ class ManageTeamWizard(SessionWizardView):
                 closed=False
             )
         if self.steps.current == 'Update Member':
+            for eachForm in form:
+                eachForm.fields['DELETE'].widget.attrs[
+                    'class'
+                ] = 'form-control'
             if hasattr(self.request.user, 'employee'):
                 locationId = self.request.user.employee.location
                 holidays = Holiday.objects.filter(
@@ -1326,6 +1333,17 @@ class ManageTeamWizard(SessionWizardView):
                 project__id=ptm.project.id
             ).values('member__email', 'member__first_name',
                     'member__last_name', 'startDate', 'role__name')
+            pm = ProjectManager.objects.filter(
+                project__id=ptm.project.id
+            ).values('user__first_name', 'user__last_name')
+            l = []
+            for eachManager in pm:
+                name = eachManager['user__first_name'] + "  " + eachManager['user__last_name']
+                l.append(name)
+            if len(l) > 1:
+                manager = ",".join(l)
+            else:
+                manager = "  ".join(l)
             for eachMember in teamMembers:
                 if eachMember['member__email'] != '':
                     send_templated_mail(
@@ -1338,9 +1356,7 @@ class ManageTeamWizard(SessionWizardView):
                             'first_name': eachMember['member__first_name'],
                             'projectId': ptm.project.id,
                             'projectName': ptm.project.name,
-                            'pmname': '{0} {1}'.format(
-                                ptm.project.projectManager.first_name,
-                                ptm.project.projectManager.last_name),
+                            'pmname': manager,
                             'startDate': ptm.project.startDate,
                             'mystartdate': eachMember['startDate'],
                             'myrole': eachMember['role__name'],
@@ -1467,6 +1483,17 @@ def notify(request):
     projectDetails = Project.objects.get(
         pk=projectId,
     )
+    pm = ProjectManager.objects.filter(
+        project__id=projectId
+    ).values('user__first_name', 'user__last_name')
+    l = []
+    for eachManager in pm:
+        name = eachManager['user__first_name'] + "  " + eachManager['user__last_name']
+        l.append(name)
+    if len(l) > 1:
+        manager = ",".join(l)
+    else:
+        manager = "  ".join(l)
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=int(request.POST.get('customer')),
     ).values('relatedMember__email',
@@ -1484,9 +1511,7 @@ def notify(request):
                     'first_name': eachHead['relatedMember__first_name'],
                     'projectId': projectDetails.projectId,
                     'projectName': projectName,
-                    'pmname': '{0} {1}'.format(
-                        projectDetails.projectManager.first_name,
-                        projectDetails.projectManager.last_name),
+                    'pmname': manager,
                     'startDate': projectDetails.startDate},
                 )
     data = {'projectCode': request.POST.get('projectCode'),
