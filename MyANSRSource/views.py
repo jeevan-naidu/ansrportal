@@ -690,6 +690,13 @@ def Dashboard(request):
         closed=False
     ).count() if request.user.has_perm('MyANSRSource.manage_project') else 0
 
+    totalCurrentProjects = ProjectTeamMember.objects.filter(
+        member=request.user,
+        project__closed=False
+    ).count()
+
+    cp = totalActiveProjects + totalCurrentProjects
+
     unApprovedTimeSheet = TimeSheetEntry.objects.filter(
         project__projectManager=request.user,
         approved=False, hold=True
@@ -777,6 +784,7 @@ def Dashboard(request):
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
+        'cp': cp,
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
