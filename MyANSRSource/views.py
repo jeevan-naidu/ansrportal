@@ -1329,39 +1329,39 @@ class ManageTeamWizard(SessionWizardView):
                 for k, v in eachData.iteritems():
                     setattr(ptm, k, v)
                 ptm.save()
-            teamMembers = ProjectTeamMember.objects.filter(
-                project__id=ptm.project.id
-            ).values('member__email', 'member__first_name',
-                    'member__last_name', 'startDate', 'role__name')
-            pm = ProjectManager.objects.filter(
-                project__id=ptm.project.id
-            ).values('user__first_name', 'user__last_name')
-            l = []
-            for eachManager in pm:
-                name = eachManager['user__first_name'] + "  " + eachManager['user__last_name']
-                l.append(name)
-            if len(l) > 1:
-                manager = ",".join(l)
-            else:
-                manager = "  ".join(l)
-            for eachMember in teamMembers:
-                if eachMember['member__email'] != '':
-                    send_templated_mail(
-                        template_name='projectCreatedTeam',
-                        from_email=settings.EMAIL_HOST_USER,
-                        recipient_list=[
-                            eachMember['member__email'],
-                            ],
-                        context={
-                            'first_name': eachMember['member__first_name'],
-                            'projectId': ptm.project.id,
-                            'projectName': ptm.project.name,
-                            'pmname': manager,
-                            'startDate': ptm.project.startDate,
-                            'mystartdate': eachMember['startDate'],
-                            'myrole': eachMember['role__name'],
-                            },
-                        )
+                teamMembers = ProjectTeamMember.objects.filter(
+                    project__id=ptm.project.id
+                ).values('member__email', 'member__first_name',
+                        'member__last_name', 'startDate', 'role__name')
+                pm = ProjectManager.objects.filter(
+                    project__id=ptm.project.id
+                ).values('user__first_name', 'user__last_name')
+                l = []
+                for eachManager in pm:
+                    name = eachManager['user__first_name'] + "  " + eachManager['user__last_name']
+                    l.append(name)
+                if len(l) > 1:
+                    manager = ",".join(l)
+                else:
+                    manager = "  ".join(l)
+                for eachMember in teamMembers:
+                    if eachMember['member__email'] != '':
+                        send_templated_mail(
+                            template_name='projectCreatedTeam',
+                            from_email=settings.EMAIL_HOST_USER,
+                            recipient_list=[
+                                eachMember['member__email'],
+                                ],
+                            context={
+                                'first_name': eachMember['member__first_name'],
+                                'projectId': ptm.project.id,
+                                'projectName': ptm.project.name,
+                                'pmname': manager,
+                                'startDate': ptm.project.startDate,
+                                'mystartdate': eachMember['startDate'],
+                                'myrole': eachMember['role__name'],
+                                },
+                            )
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 

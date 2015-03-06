@@ -67,17 +67,12 @@
 			{% if forloop.first %}
 			   	<tr>
 			{% endif %}
-			    {% if t.label != 'teamRecId' %}
 					<td>{{ t }}</td>
-                {% endif %}
 			{% if forloop.last %}
 				</tr>
 			{% endif %}
 	      {% endfor %}
 	{% if forloop.last %}
-        {% for h in form.hidden_fields %}
-                {{ h  }}
-        {% endfor %}
 		</table>
         </div>
 	{% endif %}
