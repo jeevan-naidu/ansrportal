@@ -299,3 +299,8 @@ body {
 input[type='radio'] {
 	width: auto;
 }
+
+.remove {
+    margin-right: 5px;
+    line-height: 1;
+}
