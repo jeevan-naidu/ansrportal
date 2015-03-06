@@ -1,4 +1,4 @@
-{% extends 'closeMilestoneMaster.inc' %}
+{% extends 'manageMilestoneMaster.inc' %}
 
 {% block createProjectActive %}class="active"{% endblock %}
 {% block MPactiveClass %}active{% endblock %}
@@ -17,7 +17,6 @@
 		<thead>
 			<th class="text-center">Choose</th>
 			<th class="text-center">Project Name</th>
-			<th class="text-center">Milestones</th>
 		</thead>
 		{% for field in form.project %}
 			<tr>
@@ -27,15 +26,6 @@
 				<td class="col-lg-5">
 					{{ field.choice_label }}
 				</td>
-				{% with superId=forloop.counter %}
-				<td class="col-lg-1 text-center">
-					{% for t in msCount %}
-						{% if forloop.counter == superId %}
-                            {{ t.msCount }}
-						{% endif %}
-					{% endfor %}
-				</td>
-				{% endwith %}
 			</tr>
 		{% endfor %}
 	</table>

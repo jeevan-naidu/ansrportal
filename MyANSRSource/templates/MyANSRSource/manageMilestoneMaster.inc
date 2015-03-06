@@ -45,7 +45,7 @@
     <li class="form-step one-half {% block CMSactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
-        <label class="form-step-label">Close Milestone</label>
+        <label class="form-step-label">Create / Update Milestone(s)</label>
     </li>
 </ul>
 <div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
@@ -79,9 +79,9 @@
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
                     <span class="glyphicon glyphicon-check"></span>
-		    <b>Close Milestone(s)</b>
+		    <b>Create / Update Milestone(s)</b>
                 {% else %}
-		    <b>Choose Milestone(s)</b>
+		    <b>View Milestone(s)</b>
                     <span class="glyphicon glyphicon-chevron-right"></span>
                 {% endif %}
             </button>

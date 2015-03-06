@@ -78,6 +78,7 @@
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
+                <span class="glyphicon glyphicon-check"></span>
 		    <b>Create / Update Team</b>
                 {% else %}
 		    <b>View Team</b>

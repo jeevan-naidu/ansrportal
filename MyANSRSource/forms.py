@@ -440,34 +440,6 @@ class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
             'class'] = "form-control w-100 pro-planned-effort"
 
 
-class ChangeProjectMilestoneForm(forms.ModelForm):
-
-    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
-
-    class Meta:
-        model = ProjectMilestone
-        fields = (
-            'milestoneDate', 'description',
-            'amount', 'financial'
-        )
-        widgets = {
-            'milestoneDate': DateTimePicker(options=dateTimeOption),
-            'project': forms.HiddenInput(),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(ChangeProjectMilestoneForm, self).__init__(*args, **kwargs)
-        self.fields['id'].widget.attrs['value'] = 0
-        self.fields['milestoneDate'].widget.attrs[
-            'class'] = "form-control min-100"
-        self.fields['description'].widget.attrs[
-            'class'] = "form-control min-200"
-        self.fields['financial'].widget.attrs[
-            'class'] = "form-control min-100"
-        self.fields['amount'].widget.attrs[
-            'class'] = "form-control w-100 milestone-item-amount"
-
-
 class CloseProjectMilestoneForm(forms.ModelForm):
 
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
@@ -476,22 +448,19 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         model = ProjectMilestone
         fields = (
             'milestoneDate', 'description',
-            'amount', 'reason', 'closed'
+            'amount', 'closed'
         )
         widgets = {
             'project': forms.HiddenInput(),
+            'milestoneDate': DateTimePicker(options=dateTimeOption),
         }
 
     def __init__(self, *args, **kwargs):
         super(CloseProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
-        self.fields['milestoneDate'].widget.attrs['readonly'] = 'True'
         self.fields['description'].widget.attrs['class'] = "form-control"
-        self.fields['description'].widget.attrs['readonly'] = 'True'
         self.fields['amount'].widget.attrs['class'] = "form-control"
-        self.fields['amount'].widget.attrs['readonly'] = 'True'
-        self.fields['reason'].widget.attrs['class'] = "form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
 
 
@@ -565,33 +534,6 @@ class ProjectFlagForm(forms.ModelForm):
             "start-date-input form-control"
         self.fields['endDate'].widget.attrs['class'] = \
             "end-date-input form-control"
-
-
-# Form Class to create milestones for project
-class ProjectMilestoneForm(forms.ModelForm):
-
-    class Meta:
-        model = ProjectMilestone
-        fields = (
-            'milestoneDate',
-            'description',
-            'amount',
-            'financial'
-        )
-        widgets = {
-            'milestoneDate': DateTimePicker(options=dateTimeOption),
-            'project': forms.HiddenInput(), }
-
-    def __init__(self, *args, **kwargs):
-        super(ProjectMilestoneForm, self).__init__(*args, **kwargs)
-        self.fields['milestoneDate'].widget.attrs['class'] = \
-            "date-picker d-item form-control"
-        self.fields['amount'].widget.attrs['class'] = \
-            "milestone-item-amount d-item input-item form-control"
-        self.fields['description'].widget.attrs['class'] = \
-            "d-item input-item form-control"
-        self.fields['financial'].widget.attrs['class'] = \
-            "d-item input-item form-control"
 
 
 # Form Class to create front-End Login

@@ -1,5 +1,17 @@
-{% extends 'closeMilestoneMaster.inc' %}
+{% extends 'manageMilestoneMaster.inc' %}
 
+{% block addForm %}
+<span class="pull-right">
+    <a class="btn btn-success btn-xs" id="add-milestone-btn">
+        <span class="glyphicon glyphicon-plus"></span>
+        Add Milestone
+    </a>
+    <a class="btn btn-danger btn-xs" id="del-milestone-btn">
+        <span class="glyphicon glyphicon-minus"></span>
+        Delete Milestone
+    </a>
+</span>
+{% endblock %}
 
 {% block CMSactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
