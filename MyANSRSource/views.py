@@ -1552,11 +1552,17 @@ def ViewProject(request):
             cleanedMilestoneData = ProjectMilestone.objects.filter(
                 project=projectObj).values('milestoneDate', 'description',
                                            'amount')
+
+        changeTracker = ProjectChangeInfo.objects.filter(project=projectObj).values(
+            'reason', 'endDate', 'revisedEffort', 'revisedTotal',
+            'closed', 'closedOn', 'signed'
+        )
         data = {
             'basicInfo': basicInfo,
             'flagData': flagData,
             'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData
+            'milestone': cleanedMilestoneData,
+            'changes': changeTracker
         }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(

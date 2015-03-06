@@ -147,6 +147,43 @@
 	</table>
 </div>
 </div>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Change History</span></b></div>
+<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+			<th>End Date</th>
+			<th>Reason</th>
+			<th>Revised Total</th>
+			<th>Revised Effort</th>
+			<th>Signed</th>
+			<th>Closed</th>
+		</thead>
+		{% for eachChange in changes %}
+		<tr>
+			<td>
+				{{ eachChange.endDate }}
+			</td>
+			<td>
+				{{ eachChange.reason }}
+			</td>
+			<td>
+				{{ eachChange.revisedTotal }}
+			</td>
+			<td>
+				{{ eachChange.revisedEffort }}
+			</td>
+			<td>
+				{{ eachChange.signed }}
+			</td>
+			<td>
+				{{ eachChange.closed }}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+</div>
 <a href="view-project" class="btn btn-primary pull-right">
         <span class="glyphicon glyphicon-ok"></span>
 	<b>Choose another project</b>
