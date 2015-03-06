@@ -870,18 +870,24 @@ class TrackMilestoneWizard(SessionWizardView):
         return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][1]
-        for eachData in updatedData:
-            CloseMilestone = ProjectMilestone.objects.get(
-                id=eachData['id']
-            )
-            if CloseMilestone.closed:
+        milestoneData = [form.cleaned_data for form in form_list][1]
+        print [form.cleaned_data for form in form_list][0]
+
+        for eachData in milestoneData:
+            if eachData['id']:
+                pm = ProjectMilestone.objects.get(id=eachData['id'])
+                if eachData['DELETE']:
+                    pm.delete()
+            else:
+                pm = ProjectMilestone()
+            if pm.closed:
                 pass
             else:
-                CloseMilestone.reason = eachData['reason']
-                CloseMilestone.amount = eachData['amount']
-                CloseMilestone.closed = eachData['closed']
-                CloseMilestone.save()
+                pm.description = eachData['description']
+                pm.milestoneDate = eachData['milestoneDate']
+                pm.amount = eachData['amount']
+                pm.closed = eachData['closed']
+                pm.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
