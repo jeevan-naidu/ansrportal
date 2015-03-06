@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator, RegexValidator
 
 TASKTYPEFLAG = (
     ('B', 'Billable'),
-    ('I', 'Idle'),
+    ('I', 'Non Billable'),
 )
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$',
