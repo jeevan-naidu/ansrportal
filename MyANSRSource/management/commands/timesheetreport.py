@@ -1,6 +1,7 @@
 from templated_email import send_templated_mail
 from django.core.management.base import BaseCommand
-from MyANSRSource.models import TimeSheetEntry, Project, ProjectTeamMember
+from MyANSRSource.models import TimeSheetEntry, Project, ProjectTeamMember, \
+    ProjectManager
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -14,6 +15,7 @@ class Command(BaseCommand):
         start = today - timedelta(days=today.weekday())
         end = start + timedelta(days=6)
         data = getTSStatus(start, end)
+        print data
         sendEmail(self, data, start, end)
 
 
@@ -86,11 +88,12 @@ def getTSStatus(start, end):
     memberTotals = []
     for eachNon in tsMemberTotals:
         d = {}
-        d['project'] = Project.objects.get(id=eachNon['project']).name
-        d['manager'] = Project.objects.get(id=eachNon['project']).projectManager
+        d['project'] = Project.objects.get(pk=eachNon['project']).name
+        managers = ProjectManager.objects.get(pk=eachNon['project']).user
+        d['manager'] = managers
         d['billableHours'] = eachNon['billableHours']
         d['status'] = eachNon['status']
-        d['teamMember'] = User.objects.get(id=eachNon['teamMember']).username
+        d['teamMember'] = User.objects.get(pk=eachNon['teamMember']).username
         nonBillableHours = TimeSheetEntry.objects.filter(
             teamMember__id=eachNon['teamMember'],
             wkstart=start, wkend=end, project=None

@@ -34,7 +34,7 @@ def sendEmail(self, details, date, label):
     if len(details) > 0:
         for eachDetail in details:
             send_templated_mail(
-                template_name='ProjectMilestoneEmailNotification',
+                template_name='projectMilestoneEmailNotification',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachDetail['project__projectManager__email'], ],
                 context={
