@@ -57,7 +57,7 @@ CTEMPLATES = {
 
 TMFORMS = [
     ("My Projects", ChangeProjectForm),
-    ("Manage Milestone", formset_factory(
+    ("Manage Milestone(s)", formset_factory(
         CloseProjectMilestoneForm,
         extra=1,
         max_num=1,
@@ -66,12 +66,12 @@ TMFORMS = [
 ]
 TMTEMPLATES = {
     "My Projects": "MyANSRSource/manageMilestone.html",
-    "Manage Milestone": "MyANSRSource/manageProjectMilestone.html",
+    "Manage Milestone(s)": "MyANSRSource/manageProjectMilestone.html",
 }
 
 MEMBERFORMS = [
     ("My Projects", ChangeProjectForm),
-    ("Update Member", formset_factory(
+    ("Manage Team", formset_factory(
         ChangeProjectTeamMemberForm,
         extra=1,
         max_num=1,
@@ -80,7 +80,7 @@ MEMBERFORMS = [
 ]
 MEMBERTEMPLATES = {
     "My Projects": "MyANSRSource/manageProjectTeam.html",
-    "Update Member": "MyANSRSource/manageProjectMember.html",
+    "Manage Team": "MyANSRSource/manageProjectMember.html",
 }
 
 
@@ -845,7 +845,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 closed=False,
                 projectManager=self.request.user
             )
-        if step == 'Manage Milestone':
+        if step == 'Manage Milestone(s)':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'class'
@@ -1100,7 +1100,7 @@ class ManageTeamWizard(SessionWizardView):
 
     def get_form_initial(self, step):
         currentProject = []
-        if step == 'Update Member':
+        if step == 'Manage Team':
             projectId = self.storage.get_step_data(
                 'My Projects')['My Projects-project']
             if projectId is not None:
@@ -1122,7 +1122,7 @@ class ManageTeamWizard(SessionWizardView):
                 projectManager=self.request.user,
                 closed=False
             )
-        if self.steps.current == 'Update Member':
+        if self.steps.current == 'Manage Team':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'class'
@@ -1335,7 +1335,6 @@ def notify(request):
 def deleteProject(request):
     ProjectBasicInfoForm()
     ProjectTeamForm()
-    ProjectMilestoneForm()
     return HttpResponseRedirect('add')
 
 
