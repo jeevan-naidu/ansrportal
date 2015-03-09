@@ -17,7 +17,7 @@
 		<thead>
 			<th class="text-center">Choose</th>
 			<th class="text-center">Project Name</th>
-			<th>Open Milestones</th>
+			<th class="text-center">Milestones</th>
 		</thead>
 		{% for field in form.project %}
 			<tr>
@@ -31,7 +31,7 @@
 				<td class="col-lg-1 text-center">
 					{% for t in msCount %}
 						{% if forloop.counter == superId %}
-							{{ t.msCount }}
+                            {{ t.msCount }}
 						{% endif %}
 					{% endfor %}
 				</td>

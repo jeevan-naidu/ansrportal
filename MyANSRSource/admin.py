@@ -63,7 +63,6 @@ class ProjectAdmin(admin.ModelAdmin):
         'endDate',
         'plannedEffort',
         'contingencyEffort',
-        'projectManager',
         'projectId',
         'totalValue')
     search_fields = (

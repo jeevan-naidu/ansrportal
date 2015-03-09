@@ -28,7 +28,7 @@
 		{% if eachError.items|length > 0 %}
 			<div class="alert alert-danger" role="alert">
 				{% for k, v in eachError.items %}
-					{{ k }} : {{ v|striptags }}
+                <li>{{ k }} : {{ v|striptags }}</li>
 				{% endfor %}
 			</div>
 		{% endif %}
@@ -263,7 +263,7 @@
 		{% if eachError.items|length > 0 %}
 			<div class="alert alert-danger" role="alert">
 				{% for k, v in eachError.items %}
-					{{ k }} : {{ v|striptags }}
+                <li>{{ k }} : {{ v|striptags }}</li>
 				{% endfor %}
 			</div>
 		{% endif %}

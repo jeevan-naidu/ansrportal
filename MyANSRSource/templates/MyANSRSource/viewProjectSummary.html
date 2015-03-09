@@ -17,7 +17,6 @@
 				<th>Name</th>
 				<th>Customer</th>
 				<th>Book</th>
-				<th>Chapters</th>
 				<th>Is it an internal Project?</th>
 				<th>Is this a new project?</th>
 				<th>Is this contract signed?</th>
@@ -29,15 +28,6 @@
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer__name }}</td>
 			<td>{{ basicInfo.book__name }}</td>
-			<td>
-				{% for eachChapter in chapters %}
-					{% if forloop.last %}
-						{{ eachChapter.chapters__name }}
-					{% else %}
-						{{ eachChapter.chapters__name }},
-					{% endif %}
-				{% endfor %}
-			</td>
 			<td>
 				{% if basicInfo.internal == True  %}
 					Yes
@@ -144,13 +134,50 @@
 		{% for milestoneData in milestone %}
 		<tr>
 			<td>
-				{{ milestoneData.Description }}
+				{{ milestoneData.description }}
 			</td>
 			<td>
 				{{ milestoneData.milestoneDate }}
 			</td>
 			<td>
 				{{ milestoneData.amount }}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Change History</span></b></div>
+<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+			<th>End Date</th>
+			<th>Reason</th>
+			<th>Revised Total</th>
+			<th>Revised Effort</th>
+			<th>Signed</th>
+			<th>Closed</th>
+		</thead>
+		{% for eachChange in changes %}
+		<tr>
+			<td>
+				{{ eachChange.endDate }}
+			</td>
+			<td>
+				{{ eachChange.reason }}
+			</td>
+			<td>
+				{{ eachChange.revisedTotal }}
+			</td>
+			<td>
+				{{ eachChange.revisedEffort }}
+			</td>
+			<td>
+				{{ eachChange.signed }}
+			</td>
+			<td>
+				{{ eachChange.closed }}
 			</td>
 		</tr>
 		{% endfor %}
