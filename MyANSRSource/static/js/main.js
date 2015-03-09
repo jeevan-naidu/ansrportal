@@ -146,7 +146,7 @@ app.getById = function(arr, propName, id) {
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
                     setZeroList: [8],
-                    setEmptyList: null
+                    setEmptyList: [5, 6]
                 },
                 setEnableList: [7, 9]
             });
@@ -537,6 +537,7 @@ app.getIdNo = function(str) {
                         $element.text('0');
                     }
                 }
+            console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });
 
