@@ -1094,15 +1094,27 @@ def UpdateProjectInfo(request, newInfo):
 
         for eachMilestone in newInfo[2]:
             if eachMilestone['id'] == 0:
-                pmc = ProjectMilestone()
+                if eachMilestone['DELETE']:
+                    pass
+                else:
+                    pmc = ProjectMilestone()
+                    pmc.project = prc
+                    pmc.milestoneDate = eachMilestone['milestoneDate']
+                    pmc.description = eachMilestone['description']
+                    pmc.amount = eachMilestone['amount']
+                    pmc.financial = eachMilestone['financial']
+                    pmc.save()
             else:
                 pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
-            pmc.project = prc
-            pmc.milestoneDate = eachMilestone['milestoneDate']
-            pmc.description = eachMilestone['description']
-            pmc.amount = eachMilestone['amount']
-            pmc.financial = eachMilestone['financial']
-            pmc.save()
+                if eachMilestone['DELETE']:
+                    pmc.delete()
+                else:
+                    pmc.project = prc
+                    pmc.milestoneDate = eachMilestone['milestoneDate']
+                    pmc.description = eachMilestone['description']
+                    pmc.amount = eachMilestone['amount']
+                    pmc.financial = eachMilestone['financial']
+                    pmc.save()
 
         return {'crId': pci.crId}
     except (ProjectTeamMember.DoesNotExist,
