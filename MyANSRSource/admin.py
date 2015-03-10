@@ -57,6 +57,14 @@ class ProjectMilestoneInline(admin.TabularInline):
 
 
 class ProjectAdmin(admin.ModelAdmin):
+
+    def get_queryset(self, request):
+        qs = super(ProjectAdmin, self).queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(closed=False, projectManager=request.user)
+
     list_display = (
         'name',
         'startDate',
