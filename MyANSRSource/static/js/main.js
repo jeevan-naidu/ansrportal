@@ -133,11 +133,11 @@ app.getById = function(arr, propName, id) {
             });
         }
 
-        var $changeMilestone = $('#change-milestones');
-        if($changeMilestone.length > 0) {
-            app.spaceToUnderscore($changeMilestone);
+        var $manageMilestone = $('#manage-milestones');
+        if($manageMilestone.length > 0) {
+            app.spaceToUnderscore($manageMilestone);
 
-            $changeMilestone.dynamicForm({
+            $manageMilestone.dynamicForm({
                 add: '#add-milestone-btn',
                 del: '#delete-member',
                 calendar: true,
@@ -148,7 +148,7 @@ app.getById = function(arr, propName, id) {
                     setZeroList: [6, 9],
                     setEmptyList: [5]
                 },
-                setEnableList: [7, 9]
+                setEnableList: [0, 1, 4, 5, 6, 7, 8, 10]
             });
         }
 

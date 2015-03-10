@@ -97,6 +97,7 @@
 			<th>Planned Effort</th>
 			<th>%</th>
 		</thead>
+        {% if teamMember %}
 		{% for teamData in teamMember %}
 		<tr>
 			<td>
@@ -119,6 +120,9 @@
 			</td>
 		</tr>
 		{% endfor %}
+        {% else %}
+        <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
+        {% endif %}
 	</table>
 </div>
 </div>
@@ -131,6 +135,7 @@
 			<th>Deadline</th>
 			<th>Amount</th>
 		</thead>
+        {% if milestone %}
 		{% for milestoneData in milestone %}
 		<tr>
 			<td>
@@ -144,7 +149,10 @@
 			</td>
 		</tr>
 		{% endfor %}
-	</table>
+        {% else %}
+        <td colspan="3" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
+        {% endif %}
+		</table>
 </div>
 </div>
 <div class="panel panel-default">
@@ -159,6 +167,7 @@
 			<th>Signed</th>
 			<th>Closed</th>
 		</thead>
+        {% if changes %}
 		{% for eachChange in changes %}
 		<tr>
 			<td>
@@ -181,6 +190,9 @@
 			</td>
 		</tr>
 		{% endfor %}
+        {% else %}
+        <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
+        {% endif %}
 	</table>
 </div>
 </div>
