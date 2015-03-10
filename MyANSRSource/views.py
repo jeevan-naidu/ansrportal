@@ -3,6 +3,7 @@ logger = logging.getLogger('MyANSRSource')
 import json
 from collections import OrderedDict
 
+from django.forms.util import ErrorList
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
@@ -837,6 +838,19 @@ class TrackMilestoneWizard(SessionWizardView):
     def get_template_names(self):
         return [TMTEMPLATES[self.steps.current]]
 
+    def get_context_data(self, form, **kwargs):
+        context = super(TrackMilestoneWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Manage Milestones':
+            selectedProjectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            projectObj = Project.objects.get(pk=selectedProjectId)
+            totalValue = projectObj.totalValue
+            projectType = projectObj.internal
+            context.update({'totalValue': totalValue, 'type': projectType})
+        return context
+
     def get_form(self, step=None, data=None, files=None):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step or self.steps.current
@@ -851,6 +865,34 @@ class TrackMilestoneWizard(SessionWizardView):
                     'class'
                 ] = 'form-control'
 
+                if form.is_valid():
+                    selectedProjectId = self.storage.get_step_data(
+                        'My Projects'
+                    )['My Projects-project']
+                    projectObj = Project.objects.get(pk=selectedProjectId)
+                    projectTotal = projectObj.totalValue
+                    totalRate = 0
+                    for eachForm in form:
+                        if eachForm.is_valid():
+                            totalRate += eachForm.cleaned_data['amount']
+                            if eachForm.cleaned_data['financial'] is False:
+                                if eachForm.cleaned_data['amount'] > 0:
+                                    amount = eachForm.cleaned_data['amount']
+                                    errors = eachForm._errors.setdefault(
+                                        amount, ErrorList())
+                                    errors.append(u'Please select milestone as \
+                                                  financial')
+                            elif eachForm.cleaned_data['amount'] == 0:
+                                amount = eachForm.cleaned_data['amount']
+                                errors = eachForm._errors.setdefault(
+                                    amount, ErrorList())
+                                errors.append(u'Financial Milestone amount \
+                                            cannot be 0')
+                    if float(projectTotal) != float(totalRate):
+                        errors = eachForm._errors.setdefault(
+                            totalRate, ErrorList())
+                        errors.append(u'Total amount must be \
+                                    equal to project value')
         return form
 
     def get_form_initial(self, step):

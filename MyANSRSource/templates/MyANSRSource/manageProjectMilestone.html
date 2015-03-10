@@ -6,26 +6,27 @@
         <span class="glyphicon glyphicon-plus"></span>
         Add Milestone
     </a>
-    <a class="btn btn-danger btn-xs" id="del-milestone-btn">
-        <span class="glyphicon glyphicon-minus"></span>
-        Delete Milestone
-    </a>
 </span>
 {% endblock %}
 
 {% block CMSactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
-	<div class="alert alert-danger">
-		<button type="button" class="close" data-dismiss="alert">×</button>
-		{% for field in form %} 
-		{% if field.errors %}									
-			<li>{{ field.label }}: {{ field.errors|striptags }}</li>		  
-		{% endif %}
-		{% endfor %}								
-	</div>
+<div class="alert alert-danger">
+    {% for k, v in form.errors.items %}
+        {{ v }}
+    {% endfor %}
+</div>
 {% endif %}
 	{% if forloop.first %}
+        <span class="label label-default holiday">{{ totalValue }}</span>
+        <span class="label label-default training pull-right">
+            {% if type == False %}
+                External
+            {% else %}
+                Internal
+            {% endif %}
+        </span>
 		<table class="table table-condensed table-responsive bottom" id="financial-milestones">
 	{% endif %}
 		{% for t in form %}
@@ -60,5 +61,18 @@
 	      {% endfor %}
 	{% if forloop.last %}
 		</table>
+        <div class="row col-lg-12">
+            <div class="col-lg-6 center-block"> 
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td><strong>Amount</strong></td>
+                        <td><span class="milestone-total-amount">0</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <input type="hidden" value="{{ totalValue }}" class="project-total-value-hidden" />
 	{% endif %}
 {% endblock %}{% endblock %}

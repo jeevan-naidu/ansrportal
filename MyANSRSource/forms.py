@@ -446,10 +446,14 @@ class CloseProjectMilestoneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CloseProjectMilestoneForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
-        self.fields['description'].widget.attrs['class'] = "form-control"
-        self.fields['financial'].widget.attrs['class'] = "form-control"
-        self.fields['amount'].widget.attrs['class'] = "form-control"
+        self.fields['milestoneDate'].widget.attrs['class'] = \
+            "date-picker d-item form-control"
+        self.fields['description'].widget.attrs['class'] = \
+            "d-item input-item form-control"
+        self.fields['financial'].widget.attrs['class'] = \
+            "d-item input-item form-control"
+        self.fields['amount'].widget.attrs['class'] = \
+            "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
 
 
