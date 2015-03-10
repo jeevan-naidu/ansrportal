@@ -53,15 +53,7 @@
 					{% for hField in t.hidden_fields %}
 						<td>{{ hField }}</td>
 					{% endfor %}
-                    {% if t.label == 'Completed' %}
-                        {% if t.value %}
-                            <td><h5><span class="label label-default holiday">Yes</span></h5></td>
-                        {% else %}
-                            <td>{{ t }}</td>
-                        {% endif %}
-                    {% else %}
                         <td>{{ t }}</td>
-                    {% endif %}
 			{% if forloop.last %}
 				</tr>
 			{% endif %}

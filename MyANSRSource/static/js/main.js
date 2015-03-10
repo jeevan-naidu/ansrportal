@@ -145,7 +145,7 @@ app.getById = function(arr, propName, id) {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [8, 6],
+                    setZeroList: [6, 9],
                     setEmptyList: [5]
                 },
                 setEnableList: [7, 9]
@@ -240,6 +240,7 @@ app.getById = function(arr, propName, id) {
 
         var financialMilestones = $('#financial-milestones');
         if(financialMilestones.length > 0) {
+            app.spaceToUnderscore(financialMilestones);
             financialMilestones.dynamicForm({
                 add: '#add-milestone-btn',
                 del: '#del-milestone-btn',
@@ -248,10 +249,10 @@ app.getById = function(arr, propName, id) {
                 isAmountTotal: true,
                 isFinancialMilestone: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: null,
-                    setEmptyList: null
+                    setZeroList: [6, 9],
+                    setEmptyList: [5]
                 },
-                setEnableList: [8]
+                setEnableList: [0, 1, 4, 5, 6, 7, 8, 10]
             });
         }
 

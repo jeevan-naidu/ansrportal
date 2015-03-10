@@ -57,7 +57,7 @@ CTEMPLATES = {
 
 TMFORMS = [
     ("My Projects", ChangeProjectForm),
-    ("Manage Milestone(s)", formset_factory(
+    ("Manage Milestones", formset_factory(
         CloseProjectMilestoneForm,
         extra=1,
         max_num=1,
@@ -66,7 +66,7 @@ TMFORMS = [
 ]
 TMTEMPLATES = {
     "My Projects": "MyANSRSource/manageMilestone.html",
-    "Manage Milestone(s)": "MyANSRSource/manageProjectMilestone.html",
+    "Manage Milestones": "MyANSRSource/manageProjectMilestone.html",
 }
 
 MEMBERFORMS = [
@@ -845,16 +845,17 @@ class TrackMilestoneWizard(SessionWizardView):
                 closed=False,
                 projectManager=self.request.user
             )
-        if step == 'Manage Milestone(s)':
+        if step == 'Manage Milestones':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'class'
                 ] = 'form-control'
+
         return form
 
     def get_form_initial(self, step):
         projectMS = {}
-        if step == 'Close Milestone':
+        if step == 'Manage Milestones':
             selectedProjectId = self.storage.get_step_data(
                 'My Projects'
             )['My Projects-project']
@@ -862,6 +863,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 project__id=selectedProjectId,
             ).values(
                 'id',
+                'financial',
                 'milestoneDate',
                 'description',
                 'amount',
@@ -896,15 +898,13 @@ def saveData(self, pm, eachData, projectObj):
     if pm.closed:
         pass
     else:
-        try:
-            pm.project = projectObj
-            pm.description = eachData['description']
-            pm.financial = eachData['financial']
-            pm.milestoneDate = eachData['milestoneDate']
-            pm.amount = eachData['amount']
-            pm.closed = eachData['closed']
-            pm.save()
-        except
+        pm.project = projectObj
+        pm.description = eachData['description']
+        pm.financial = eachData['financial']
+        pm.milestoneDate = eachData['milestoneDate']
+        pm.amount = eachData['amount']
+        pm.closed = eachData['closed']
+        pm.save()
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 
