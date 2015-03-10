@@ -41,10 +41,10 @@ class Command(BaseCommand):
                         os.system('mv {0} {1}'.format(eachFile,
                                                       SUCCESS_DIR))
             else:
-                logger.exception("No more files to backup")
+                logger.info("No more files to backup")
         else:
             # No Such backup folder found
-            logger.exception("No Backup folder found")
+            logger.info("No Backup folder found")
 
 
 def feedData(filereader):
@@ -78,12 +78,14 @@ def feedData(filereader):
             insertToDb(eachRow[0], attdate, swipe_in, swipe_out)
 
         # To catch any error in values if any
-        except ValueError as e:
-            logger.exception(e)
+        except ValueError:
+            logger.error("Value Error at Line {0} in {1} csv file".format(
+                row, attdate))
 
         # To handle the unique key exception
-        except IntegrityError as e:
-            logger.exception(e)
+        except IntegrityError:
+            logger.exception("Duplicate record found, \
+                             skipping record {0}".format(row))
             pass
 
 
@@ -108,5 +110,7 @@ def insertToDb(employee, attdate, swipe_in, swipe_out):
             att.save()
 
         # To catch any validation errors if any
-        except ValidationError as e:
-            logger.exception(e)
+        except ValidationError:
+            logger.error("Validation Error for \
+                         employee {0} in {1} csv file".format(employee, attdate)
+                         )

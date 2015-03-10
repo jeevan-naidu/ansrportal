@@ -122,7 +122,7 @@ class Project(models.Model):
         blank=False,
         default=True,
         null=False,
-        verbose_name="Project Stage"
+        verbose_name="New Development"
     )
     signed = models.BooleanField(
         blank=False,
