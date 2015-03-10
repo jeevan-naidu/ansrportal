@@ -871,24 +871,40 @@ class TrackMilestoneWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         milestoneData = [form.cleaned_data for form in form_list][1]
-        print [form.cleaned_data for form in form_list][0]
+        projectObj = [form.cleaned_data for form in form_list][0]['project']
 
-        for eachData in milestoneData:
-            if eachData['id']:
-                pm = ProjectMilestone.objects.get(id=eachData['id'])
-                if eachData['DELETE']:
-                    pm.delete()
-            else:
-                pm = ProjectMilestone()
-            if pm.closed:
-                pass
-            else:
-                pm.description = eachData['description']
-                pm.milestoneDate = eachData['milestoneDate']
-                pm.amount = eachData['amount']
-                pm.closed = eachData['closed']
-                pm.save()
+        if projectObj:
+            for eachData in milestoneData:
+                if eachData['id']:
+                    pm = ProjectMilestone.objects.get(id=eachData['id'])
+                    if eachData['DELETE']:
+                        pm.delete()
+                    else:
+                        saveData(self, pm, eachData, projectObj)
+                else:
+                    pm = ProjectMilestone()
+                    if eachData['DELETE']:
+                        pass
+                    else:
+                        saveData(self, pm, eachData, projectObj)
+        else:
+            logging.error("Request: " + self.request)
         return HttpResponseRedirect('/myansrsource/dashboard')
+
+
+def saveData(self, pm, eachData, projectObj):
+    if pm.closed:
+        pass
+    else:
+        try:
+            pm.project = projectObj
+            pm.description = eachData['description']
+            pm.financial = eachData['financial']
+            pm.milestoneDate = eachData['milestoneDate']
+            pm.amount = eachData['amount']
+            pm.closed = eachData['closed']
+            pm.save()
+        except
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 
@@ -937,13 +953,6 @@ class ChangeProjectWizard(SessionWizardView):
                     self.request.session['changed'] = True
                 else:
                     self.request.session['changed'] = False
-
-            if self.request.session['changed'] is False:
-                if form.is_valid():
-                    if form.has_changed():
-                        self.request.session['changed'] = True
-                    else:
-                        self.request.session['changed'] = False
         return form
 
     def get_form_initial(self, step):
@@ -1011,29 +1020,6 @@ def UpdateProjectInfo(request, newInfo):
         pci.crId = "CR-{0}".format(pci.id)
         pci.save()
 
-        for eachMilestone in newInfo[2]:
-            if eachMilestone['id'] == 0:
-                if eachMilestone['DELETE']:
-                    pass
-                else:
-                    pmc = ProjectMilestone()
-                    pmc.project = prc
-                    pmc.milestoneDate = eachMilestone['milestoneDate']
-                    pmc.description = eachMilestone['description']
-                    pmc.amount = eachMilestone['amount']
-                    pmc.financial = eachMilestone['financial']
-                    pmc.save()
-            else:
-                pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
-                if eachMilestone['DELETE']:
-                    pmc.delete()
-                else:
-                    pmc.project = prc
-                    pmc.milestoneDate = eachMilestone['milestoneDate']
-                    pmc.description = eachMilestone['description']
-                    pmc.amount = eachMilestone['amount']
-                    pmc.financial = eachMilestone['financial']
-                    pmc.save()
         return {'crId': pci.crId}
     except (ProjectTeamMember.DoesNotExist,
             ProjectMilestone.DoesNotExist) as e:
@@ -1191,52 +1177,18 @@ class ManageTeamWizard(SessionWizardView):
                 for k, v in eachData.iteritems():
                     setattr(ptm, k, v)
                 ptm.save()
-<<<<<<< HEAD
-            teamMembers = ProjectTeamMember.objects.filter(
-                project__id=ptm.project.id
-            ).values('member__email', 'member__first_name',
-                     'member__last_name', 'startDate', 'role__name')
-            pm = ProjectManager.objects.filter(
-                project__id=ptm.project.id
-            ).values('user__first_name', 'user__last_name')
-            l = []
-            for eachManager in pm:
-                name = eachManager[
-                    'user__first_name'] + "  " + eachManager['user__last_name']
-                l.append(name)
-            if len(l) > 1:
-                manager = ",".join(l)
-            else:
-                manager = "  ".join(l)
-            for eachMember in teamMembers:
-                if eachMember['member__email'] != '':
-                    send_templated_mail(
-                        template_name='projectCreatedTeam',
-                        from_email=settings.EMAIL_HOST_USER,
-                        recipient_list=[
-                            eachMember['member__email'],
-                            ],
-                        context={
-                            'first_name': eachMember['member__first_name'],
-                            'projectId': ptm.project.id,
-                            'projectName': ptm.project.name,
-                            'pmname': manager,
-                            'startDate': ptm.project.startDate,
-                            'mystartdate': eachMember['startDate'],
-                            'myrole': eachMember['role__name'],
-                            },
-                        )
-=======
                 teamMembers = ProjectTeamMember.objects.filter(
                     project__id=ptm.project.id
                 ).values('member__email', 'member__first_name',
-                        'member__last_name', 'startDate', 'role__name')
+                         'member__last_name', 'startDate', 'role__name')
                 pm = ProjectManager.objects.filter(
                     project__id=ptm.project.id
                 ).values('user__first_name', 'user__last_name')
                 l = []
                 for eachManager in pm:
-                    name = eachManager['user__first_name'] + "  " + eachManager['user__last_name']
+                    name = eachManager[
+                        'user__first_name'] + "  " + eachManager[
+                            'user__last_name']
                     l.append(name)
                 if len(l) > 1:
                     manager = ",".join(l)
@@ -1260,7 +1212,6 @@ class ManageTeamWizard(SessionWizardView):
                                 'myrole': eachMember['role__name'],
                                 },
                             )
->>>>>>> BUILD-20150313
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1428,7 +1379,8 @@ def ViewProject(request):
                 project=projectObj).values('milestoneDate', 'description',
                                            'amount')
 
-        changeTracker = ProjectChangeInfo.objects.filter(project=projectObj).values(
+        changeTracker = ProjectChangeInfo.objects.filter(
+            project=projectObj).values(
             'reason', 'endDate', 'revisedEffort', 'revisedTotal',
             'closed', 'closedOn', 'signed'
         )

@@ -5,7 +5,6 @@ from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
 from bootstrap3_datetime.widgets import DateTimePicker
-from smart_selects.form_fields import ChainedModelChoiceField
 from CompanyMaster.models import OfficeLocation
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -437,7 +436,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         model = ProjectMilestone
         fields = (
             'milestoneDate', 'description',
-            'amount', 'closed'
+            'amount', 'closed', 'financial'
         )
         widgets = {
             'project': forms.HiddenInput(),
@@ -449,6 +448,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = "form-control"
         self.fields['description'].widget.attrs['class'] = "form-control"
+        self.fields['financial'].widget.attrs['class'] = "form-control"
         self.fields['amount'].widget.attrs['class'] = "form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
 
