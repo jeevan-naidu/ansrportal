@@ -631,11 +631,12 @@ app.getIdNo = function(str) {
                             tempTotalNonBillable +=  curTotalNonBillable;
                         }
 
-                        totalNonBillable = tempTotalNonBillable;
+                        totalNonBillable = tempTotalNonBillable.toFixed(2);
 
                         $totalNonBillableHours.text(totalNonBillable);
                     };
 
+                    temp = temp.toFixed(2)
                     $curTotal.val(temp);
 
                     nonBillableTotalFun();

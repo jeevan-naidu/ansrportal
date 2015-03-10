@@ -14,11 +14,11 @@
 		</thead>
 		{% for eachProject in projects %}
 			<tr>
-				<td class="col-lg-2 text-center">
+				<td class="col-lg-2 text-center v-middle">
 					{% if forloop.first %}
-					<input type="radio" class="form-control" style="width: 100%" name="project" value="{{ eachProject.id }}" checked>
+					<input type="radio" class="center" name="project" value="{{ eachProject.id }}" checked>
 					{% else %}
-					<input type="radio" class="form-control" style="width: 100%" name="project" value="{{ eachProject.id }}">
+					<input type="radio" class="center" name="project" value="{{ eachProject.id }}">
 					{% endif %}
 				</td>
 				<td style="padding-top: 18px">
