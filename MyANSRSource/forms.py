@@ -114,8 +114,7 @@ def TimesheetFormset(currentUser):
         )
         chapter = forms.ModelChoiceField(
             queryset=Chapter.objects.all(),
-            label="Location",
-            required=True
+            required=False
         )
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
@@ -218,16 +217,6 @@ def TimesheetFormset(currentUser):
             )
             self.fields['location'].queryset = OfficeLocation.objects.all()
             self.initial['location'] = currentUser.employee.location
-            if currentUser.has_perm('MyANSRSource.manage_project'):
-                self.fields['chapter'] = ChainedModelChoiceField(
-                    'MyANSRSource',
-                    'Chapter',
-                    chain_field='project',
-                    model_field='project',
-                    show_all=False,
-                    auto_choose=False,
-                    required=False
-                )
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item billable-select-project"
             self.fields['location'].widget.attrs['class'] = \

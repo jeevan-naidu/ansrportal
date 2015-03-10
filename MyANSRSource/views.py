@@ -1011,6 +1011,29 @@ def UpdateProjectInfo(request, newInfo):
         pci.crId = "CR-{0}".format(pci.id)
         pci.save()
 
+        for eachMilestone in newInfo[2]:
+            if eachMilestone['id'] == 0:
+                if eachMilestone['DELETE']:
+                    pass
+                else:
+                    pmc = ProjectMilestone()
+                    pmc.project = prc
+                    pmc.milestoneDate = eachMilestone['milestoneDate']
+                    pmc.description = eachMilestone['description']
+                    pmc.amount = eachMilestone['amount']
+                    pmc.financial = eachMilestone['financial']
+                    pmc.save()
+            else:
+                pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
+                if eachMilestone['DELETE']:
+                    pmc.delete()
+                else:
+                    pmc.project = prc
+                    pmc.milestoneDate = eachMilestone['milestoneDate']
+                    pmc.description = eachMilestone['description']
+                    pmc.amount = eachMilestone['amount']
+                    pmc.financial = eachMilestone['financial']
+                    pmc.save()
         return {'crId': pci.crId}
     except (ProjectTeamMember.DoesNotExist,
             ProjectMilestone.DoesNotExist) as e:
@@ -1116,8 +1139,8 @@ class ManageTeamWizard(SessionWizardView):
                                                   'plannedEffort', 'rate'
                                                   )
             else:
-                logging.error("Project Id : {0}, Current User: {1}".format(
-                    projectId, self.request.user))
+                logging.error("Project Id : {0}, Request: {1},".format(
+                    projectId, self.request))
         return self.initial_dict.get(step, currentProject)
 
     def get_context_data(self, form, **kwargs):
@@ -1168,6 +1191,7 @@ class ManageTeamWizard(SessionWizardView):
                 for k, v in eachData.iteritems():
                     setattr(ptm, k, v)
                 ptm.save()
+<<<<<<< HEAD
             teamMembers = ProjectTeamMember.objects.filter(
                 project__id=ptm.project.id
             ).values('member__email', 'member__first_name',
@@ -1202,6 +1226,41 @@ class ManageTeamWizard(SessionWizardView):
                             'myrole': eachMember['role__name'],
                             },
                         )
+=======
+                teamMembers = ProjectTeamMember.objects.filter(
+                    project__id=ptm.project.id
+                ).values('member__email', 'member__first_name',
+                        'member__last_name', 'startDate', 'role__name')
+                pm = ProjectManager.objects.filter(
+                    project__id=ptm.project.id
+                ).values('user__first_name', 'user__last_name')
+                l = []
+                for eachManager in pm:
+                    name = eachManager['user__first_name'] + "  " + eachManager['user__last_name']
+                    l.append(name)
+                if len(l) > 1:
+                    manager = ",".join(l)
+                else:
+                    manager = "  ".join(l)
+                for eachMember in teamMembers:
+                    if eachMember['member__email'] != '':
+                        send_templated_mail(
+                            template_name='projectCreatedTeam',
+                            from_email=settings.EMAIL_HOST_USER,
+                            recipient_list=[
+                                eachMember['member__email'],
+                                ],
+                            context={
+                                'first_name': eachMember['member__first_name'],
+                                'projectId': ptm.project.id,
+                                'projectName': ptm.project.name,
+                                'pmname': manager,
+                                'startDate': ptm.project.startDate,
+                                'mystartdate': eachMember['startDate'],
+                                'myrole': eachMember['role__name'],
+                                },
+                            )
+>>>>>>> BUILD-20150313
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1368,11 +1427,17 @@ def ViewProject(request):
             cleanedMilestoneData = ProjectMilestone.objects.filter(
                 project=projectObj).values('milestoneDate', 'description',
                                            'amount')
+
+        changeTracker = ProjectChangeInfo.objects.filter(project=projectObj).values(
+            'reason', 'endDate', 'revisedEffort', 'revisedTotal',
+            'closed', 'closedOn', 'signed'
+        )
         data = {
             'basicInfo': basicInfo,
             'flagData': flagData,
             'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData
+            'milestone': cleanedMilestoneData,
+            'changes': changeTracker
         }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(

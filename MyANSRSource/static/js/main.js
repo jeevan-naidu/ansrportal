@@ -145,8 +145,8 @@ app.getById = function(arr, propName, id) {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: {  // When add row, set the elements default values
-                    setZeroList: [8],
-                    setEmptyList: null
+                    setZeroList: [8, 6],
+                    setEmptyList: [5]
                 },
                 setEnableList: [7, 9]
             });
@@ -537,6 +537,7 @@ app.getIdNo = function(str) {
                         $element.text('0');
                     }
                 }
+            console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });
 
