@@ -4,7 +4,7 @@
 
   You are now registered on myansrsource.  
       username: {{username}}
-      join date: {{signup_date}}
+      join on: {{signup_date}}
 
   Thanks,
   myansrsource team
@@ -17,7 +17,7 @@
   <p>Thanks for registering on myansrsource portal.
       <dl>
         <dt>username</dt><dd>{{username}}</dd>
-        <dt>join date</dt><dd>{{signup_date}}</dd>
+        <dt>joined on :</dt><dd>{{signup_date}}</dd>
       </dl>
   </p>
 
