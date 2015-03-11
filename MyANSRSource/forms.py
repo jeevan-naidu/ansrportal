@@ -118,7 +118,7 @@ def TimesheetFormset(currentUser):
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
         task = forms.ModelChoiceField(
-            queryset=Task.objects.filter(pk=0),
+            queryset=Task.objects.all(),
             label="Task",
             required=True,
         )
@@ -205,9 +205,6 @@ def TimesheetFormset(currentUser):
         hold = forms.BooleanField(label="hold",
                                   required=False)
 
-        def validate(self, value):
-            print value
-
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
@@ -224,7 +221,7 @@ def TimesheetFormset(currentUser):
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item"
             self.fields['chapter'].widget.attrs[
-                'class'] = "form-control d-item"
+                'class'] = "form-control d-item b-chapter"
             self.fields['task'].widget.attrs[
                 'class'
             ] = "form-control d-item b-task"

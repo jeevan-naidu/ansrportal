@@ -82,6 +82,23 @@ app.changeProject = function() {
                     console.log('Error: ' + data);
                 }
             });
+            $.ajax({
+                url: '/myansrsource/getchapters/' + selectedValue + '/',
+                dataType: 'json',
+                success: function(data) {
+                    var data = data.data,
+                        dataLen = data.length,
+                        options = '',
+                        i;
+                    for (i = 0; i < dataLen; i++) {
+                        options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+                    }
+                    $rows.find(".b-chapter").html(options);
+                },
+                error: function(data) {
+                    console.log('Error: ' + data);
+                }
+            });
 
 
         // get current project by id
