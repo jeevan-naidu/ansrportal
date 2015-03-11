@@ -71,7 +71,7 @@ app.changeProject = function() {
                 success: function(data) {
                     var data = data.data,
                         dataLen = data.length,
-                        options,
+                        options = '',
                         i;
                     for (i = 0; i < dataLen; i++) {
                         options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
