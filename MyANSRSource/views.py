@@ -82,6 +82,18 @@ TMTEMPLATES = {
     "Close Milestone": "MyANSRSource/closeProjectMilestone.html",
 }
 
+TLFORMS = [
+    ("My Projects", ChangeProjectForm),
+    ("Manage Project Leader", formset_factory(
+        changeProjectLeaderForm,
+        extra=0,
+    )),
+]
+TLTEMPLATES = {
+    "My Projects": "MyANSRSource/changeLeader.html",
+    "Manage Project Leader": "MyANSRSource/changeProjectLeader.html",
+}
+
 MEMBERFORMS = [
     ("My Projects", ChangeProjectForm),
     ("Update Member", formset_factory(
