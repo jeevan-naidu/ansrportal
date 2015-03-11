@@ -21,15 +21,19 @@
                         {% for field in form %}
                             <tr>
                                 <td class="col-lg-6">
-                                        {{ field.label }}
+                                        {% if field.label == 'New Development' %}
+                                             Project Stage
+                                        {% else %}
+                                            {{ field.label }}
+                                        {% endif %}
                                         {% if field.field.required %}
                                             <span class="required">*</span>
                                         {% endif %}
                                 </td>
-					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'Project Stage' %}
+					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'New Development' %}
                                 <td class="col-lg-6">
 						{% for radio in field %}
-							{% if field.label == 'Project Stage' %}
+							{% if field.label == 'New Development' %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
 								<span class="col-lg-4" style="padding-top: 10px"><small><b>{{ radio.choice_label }}</b></small></span>
 							{% else %}
