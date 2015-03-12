@@ -1157,7 +1157,7 @@ class CreateProjectWizard(SessionWizardView):
                         'endDate'
                     ].strftime('%Y-%m-%d')
             else:
-                logger.error("Basic Information step data is None" + form._errors)
+                logger.error("Basic Information step data is None" + str(form._errors))
 
         if step == 'Financial Milestones':
             defineProject = self.get_cleaned_data_for_step('Define Project')
@@ -1181,54 +1181,59 @@ class CreateProjectWizard(SessionWizardView):
                             ] = 'True'
                     else:
                         if form.is_valid():
-                            projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
-                            totalRate = 0
-                            for eachForm in form:
-                                if eachForm.is_valid():
-                                    totalRate += eachForm.cleaned_data['amount']
-                                    if eachForm.cleaned_data['financial'] is False:
-                                        if eachForm.cleaned_data['amount'] > 0:
+                            if self.get_cleaned_data_for_step('Basic Information') is not None:
+                                projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
+                                totalRate = 0
+                                for eachForm in form:
+                                    if eachForm.is_valid():
+                                        totalRate += eachForm.cleaned_data['amount']
+                                        if eachForm.cleaned_data['financial'] is False:
+                                            if eachForm.cleaned_data['amount'] > 0:
+                                                amount = eachForm.cleaned_data['amount']
+                                                errors = eachForm._errors.setdefault(
+                                                    amount,
+                                                    ErrorList())
+                                                errors.append(u'Please select milestone as \
+                                                            financial')
+                                        elif eachForm.cleaned_data['amount'] == 0:
                                             amount = eachForm.cleaned_data['amount']
                                             errors = eachForm._errors.setdefault(
                                                 amount,
                                                 ErrorList())
-                                            errors.append(u'Please select milestone as \
-                                                        financial')
-                                    elif eachForm.cleaned_data['amount'] == 0:
-                                        amount = eachForm.cleaned_data['amount']
-                                        errors = eachForm._errors.setdefault(
-                                            amount,
-                                            ErrorList())
-                                        errors.append(u'Financial Milestone amount \
-                                                    cannot be 0')
-                            if float(projectTotal) != float(totalRate):
-                                errors = eachForm._errors.setdefault(
-                                    totalRate,
-                                    ErrorList())
-                                errors.append(u'Total amount must be \
-                                                equal to project value')
+                                            errors.append(u'Financial Milestone amount \
+                                                        cannot be 0')
+                                if float(projectTotal) != float(totalRate):
+                                    errors = eachForm._errors.setdefault(
+                                        totalRate,
+                                        ErrorList())
+                                    errors.append(u'Total amount must be \
+                                                    equal to project value')
+                            else:
+                                logger.error("Financial Milestone step has totalValue as none" + str(form._errors))
                 else:
-                    logger.error("Financial Milestone step has internal as none" + form._errors)
+                    logger.error("Financial Milestone step has internal as none" + str(form._errors))
             else:
-                logger.error("Financial Milestone step has step data as none" + form._errors)
+                logger.error("Financial Milestone step has step data as none" + str(form._errors))
         return form
 
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Basic Information':
-            pt = self.get_cleaned_data_for_step('Define Project')['projectType']
-            """ptId = self.storage.get_step_data('Define Project')[
-                'Define Project-projectType'
-            ]"""
-            data = {'pt': projectType.objects.get(id=pt.id).description}
+            if self.get_cleaned_data_for_step('Define Project') is not None:
+                pt = self.get_cleaned_data_for_step('Define Project')['projectType']
+                data = {'pt': projectType.objects.get(id=pt.id).description}
+            else:
+                logger.error("Basic Information step has project as none" + str(form._errors))
+                data= {}
             context.update(data)
 
         if self.steps.current == 'Financial Milestones':
-            projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
-            """projectTotal = self.storage.get_step_data('Basic Information')[
-                'Basic Information-totalValue'
-            ]"""
+            if self.get_cleaned_data_for_step('Basic Information') is not None:
+                projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
+            else:
+                logger.error("Financial step has project as none" + str(form._errors))
+                data = {}
             context.update({'totalValue': projectTotal})
 
         return context
