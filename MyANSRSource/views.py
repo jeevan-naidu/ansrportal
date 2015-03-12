@@ -90,8 +90,8 @@ TLFORMS = [
     )),
 ]
 TLTEMPLATES = {
-    "My Projects": "MyANSRSource/changeLeader.html",
-    "Manage Project Leader": "MyANSRSource/changeProjectLeader.html",
+    "My Projects": "MyANSRSource/manageProjectLead.html",
+    "Manage Project Leader": "MyANSRSource/manageProjectTeamLead.html",
 }
 
 MEMBERFORMS = [
@@ -857,26 +857,16 @@ def checkUser(userName, password, request, form):
         return loginResponse(request, form, 'MyANSRSource/index.html')
 
 
-class TrackMilestoneWizard(SessionWizardView):
+class ManageTeamLeaderWizard(SessionWizardView):
 
     def get_template_names(self):
-        return [TMTEMPLATES[self.steps.current]]
+        return [TLTEMPLATES[self.steps.current]]
 
     def get_form_initial(self, step):
         projectMS = {}
-        if step == 'Close Milestone':
-            selectedProjectId = self.storage.get_step_data(
-                'My Projects'
-            )['My Projects-project']
-            projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId,
-            ).values(
-                'id',
-                'milestoneDate',
-                'description',
-                'amount',
-                'closed'
-            )
+        if step == 'Manage Project Leader':
+            myProject = self.get_cleaned_data_for_step('My Projects')['project']
+            print ProjectManager.objects.get(project=myProject)
         return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
@@ -894,12 +884,12 @@ class TrackMilestoneWizard(SessionWizardView):
                 CloseMilestone.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
 
-TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
+manageTeamLeader = ManageTeamLeaderWizard.as_view(TLFORMS)
 
 
 @login_required
-def WrappedTrackMilestoneView(request):
-    return TrackMilestone(request)
+def WrappedManageTeamLeaderView(request):
+    return manageTeamLeader(request)
 
 
 class TrackMilestoneWizard(SessionWizardView):
