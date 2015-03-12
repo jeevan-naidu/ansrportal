@@ -1,8 +1,9 @@
-# /usr/bin/env python
+#/usr/bin/env python -x
+import sys
 
 summarydata = {}
 
-with open('supervisord.log', 'r') as f:
+with open( sys.argv[1], 'r') as f:
     for line in f:
         if 'generated' in line:
             mydata = line.split(']')
@@ -25,5 +26,9 @@ with open('supervisord.log', 'r') as f:
                     'count': 1}
 
 summarydata =  sorted(summarydata.items(), key=lambda item: item[1]['max'], reverse=True)
-for item in summarydata:
-    print item
+for i in range(0,10):
+    url, data = summarydata[i]
+    print url
+    print '------------------------------------------------'
+    print 'max : ' + str(data['max']) + '\tavg: ' + str(data['total'] / data['count']) + '\tmin: ' + str(data['min']) + '\tHits: ' + str(data['count'])
+    print '------------------------------------------------'
