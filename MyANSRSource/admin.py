@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib import admin
 
-from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter, \
-    ProjectChangeInfo, projectType, Task, Activity
+from MyANSRSource.models import Project, ProjectManager, \
+    ProjectMilestone, Book, Chapter, \
+    projectType, Task, Activity
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -23,16 +23,7 @@ class ChapterInline(admin.TabularInline):
     model = Chapter
     extra = 2
     exclude = []
-    #formset = ChapterInlineFormSet
     form = ChapterInlineFormSet
-    # class Meta:
-    #    widgets = { 'name' :  forms.TextInput(attrs = {'style' : 'width : 1024px'}),}
-    # fieldsets = (
-    #    ('Chapters', {
-    #        'classes': ('wide', 'extrapretty',),
-    #        'fields': ('name',)
-    #        }),
-    #    )
 
 
 # Admin Models for ansr
@@ -56,10 +47,15 @@ class ProjectMilestoneInline(admin.TabularInline):
     extra = 1
 
 
+class ProjectManagerM2MInline(admin.TabularInline):
+    model = ProjectManager
+    extra = 1
+
+
 class ProjectAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
-        qs = super(ProjectAdmin, self).queryset(request)
+        qs = super(ProjectAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
         else:
@@ -78,9 +74,46 @@ class ProjectAdmin(admin.ModelAdmin):
         'projectManager',
         'startDate',
         'endDate',
-        'customer')
+        'customer', )
+
     filter_fields = ('startDate', 'endDate', 'projectManager')
-    inlines = [ProjectMilestoneInline, ]
+    inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return []
+        else:
+            return [
+                'internal', 'po', 'currentProject',
+                'startDate',
+                'endDate',
+                'plannedEffort',
+                'contingencyEffort',
+                'totalValue',
+                'projectId',
+                ]
+
+    fieldsets = [
+        ('Basic Information',
+         {'fields': ['bu', 'projectType', 'customer', 'name', ], },),
+        ('Status',
+         {'fields': ['currentProject',
+                     'signed',
+                     'internal',
+                     'projectId',
+                     'po',
+                     ],
+          },
+         ),
+        ('Time and Money',
+         {'fields': ['startDate',
+                     'endDate',
+                     'plannedEffort',
+                     'contingencyEffort',
+                     ],
+          },
+         ),
+    ]
 
 
 class projectTypeAdmin(admin.ModelAdmin):

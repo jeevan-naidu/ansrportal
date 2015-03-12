@@ -33,7 +33,6 @@ def getContent(deadlineDate):
 def sendEmail(self, details, date, label):
     if len(details) > 0:
         for eachDetail in details:
-            print eachDetail
             send_templated_mail(
                 template_name='projectMilestoneEmailNotification',
                 from_email=settings.EMAIL_HOST_USER,

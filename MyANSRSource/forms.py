@@ -5,7 +5,6 @@ from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
 from bootstrap3_datetime.widgets import DateTimePicker
-from smart_selects.form_fields import ChainedModelChoiceField
 from CompanyMaster.models import OfficeLocation
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -114,7 +113,7 @@ def TimesheetFormset(currentUser):
         )
         chapter = forms.ModelChoiceField(
             queryset=Chapter.objects.all(),
-            required=False
+            required=False,
         )
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
@@ -216,13 +215,14 @@ def TimesheetFormset(currentUser):
                 ).values('project_id')
             )
             self.fields['location'].queryset = OfficeLocation.objects.all()
-            self.initial['location'] = currentUser.employee.location
+            if hasattr(currentUser, 'employee'):
+                self.initial['location'] = currentUser.employee.location
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item billable-select-project"
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item"
             self.fields['chapter'].widget.attrs[
-                'class'] = "form-control d-item"
+                'class'] = "form-control d-item b-chapter"
             self.fields['task'].widget.attrs[
                 'class'
             ] = "form-control d-item b-task"
