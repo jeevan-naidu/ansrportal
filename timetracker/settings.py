@@ -154,8 +154,8 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 
 )
 
-# Session Configuration
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+# Session Configuration - enable this only after we get caching working right
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 60*60
