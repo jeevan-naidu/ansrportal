@@ -1149,6 +1149,9 @@ class CreateProjectWizard(SessionWizardView):
                     form.fields['po'].widget.attrs[
                         'readonly'
                     ] = 'True'
+            else:
+                logger.error("Basic Information step : \
+                             Signed value is null in Define project step")
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
                     'startDate'
@@ -1210,6 +1213,9 @@ class CreateProjectWizard(SessionWizardView):
                                 ErrorList())
                             errors.append(u'Total amount must be \
                                             equal to project value')
+            else:
+                logger.error("Financial Milestone step : \
+                             internal value is null in Define project step")
         return form
 
     def get_context_data(self, form, **kwargs):
@@ -1298,7 +1304,7 @@ class ManageTeamWizard(SessionWizardView):
                                                   'plannedEffort', 'rate'
                                                   )
             else:
-                logging.error("Project Id : {0}, Request: {1},".format(
+                logger.error("Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
         return self.initial_dict.get(step, currentProject)
 
