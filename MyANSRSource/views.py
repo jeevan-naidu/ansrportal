@@ -1157,7 +1157,7 @@ class CreateProjectWizard(SessionWizardView):
                         'endDate'
                     ].strftime('%Y-%m-%d')
             else:
-                logger.error("Basic Information step data is None")
+                logger.error("Basic Information step data is None" + form._errors)
 
         if step == 'Financial Milestones':
             defineProject = self.get_cleaned_data_for_step('Define Project')
@@ -1208,9 +1208,9 @@ class CreateProjectWizard(SessionWizardView):
                                 errors.append(u'Total amount must be \
                                                 equal to project value')
                 else:
-                    logger.error("Financial Milestone step has internal as none")
+                    logger.error("Financial Milestone step has internal as none" + form._errors)
             else:
-                logger.error("Financial Milestone step has step data as none")
+                logger.error("Financial Milestone step has step data as none" + form._errors)
         return form
 
     def get_context_data(self, form, **kwargs):
