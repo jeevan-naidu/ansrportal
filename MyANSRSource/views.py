@@ -1149,6 +1149,9 @@ class CreateProjectWizard(SessionWizardView):
                     form.fields['po'].widget.attrs[
                         'readonly'
                     ] = 'True'
+            else:
+                logger.error("Basic Information step : \
+                             Signed value is null in Define project step")
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
                     'startDate'
@@ -1210,6 +1213,9 @@ class CreateProjectWizard(SessionWizardView):
                                 ErrorList())
                             errors.append(u'Total amount must be \
                                             equal to project value')
+            else:
+                logger.error("Financial Milestone step : \
+                             internal value is null in Define project step")
         return form
 
     def get_context_data(self, form, **kwargs):
@@ -1298,7 +1304,7 @@ class ManageTeamWizard(SessionWizardView):
                                                   'plannedEffort', 'rate'
                                                   )
             else:
-                logging.error("Project Id : {0}, Request: {1},".format(
+                logger.error("Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
         return self.initial_dict.get(step, currentProject)
 
@@ -1366,22 +1372,18 @@ class ManageTeamWizard(SessionWizardView):
                     manager = "  ".join(l)
                 for eachMember in teamMembers:
                     if eachMember['member__email'] != '':
-                        send_templated_mail(
-                            template_name='projectCreatedTeam',
-                            from_email=settings.EMAIL_HOST_USER,
-                            recipient_list=[
-                                eachMember['member__email'],
-                                ],
-                            context={
-                                'first_name': eachMember['member__first_name'],
-                                'projectId': ptm.project.id,
-                                'projectName': ptm.project.name,
-                                'pmname': manager,
-                                'startDate': ptm.project.startDate,
-                                'mystartdate': eachMember['startDate'],
-                                'myrole': eachMember['role__name'],
-                                },
-                            )
+                        context={
+                            'first_name': eachMember['member__first_name'],
+                            'projectId': ptm.project.id,
+                            'projectName': ptm.project.name,
+                            'pmname': manager,
+                            'startDate': ptm.project.startDate,
+                            'mystartdate': eachMember['startDate'],
+                            'myrole': eachMember['role__name'],
+                        },
+                        """SendEmail(context,
+                                  eachMember['member__email'],
+                                  'projectCreatedTeam')"""
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1391,6 +1393,15 @@ manageTeam = ManageTeamWizard.as_view(MEMBERFORMS)
 @login_required
 def WrappedManageTeamView(request):
     return manageTeam(request)
+
+
+def SendEmail(data, toAddr, templateName):
+    send_templated_mail(
+        template_name=templateName,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[toAddr, ],
+        context=data,
+        )
 
 
 @login_required
@@ -1521,19 +1532,17 @@ def notify(request):
              'relatedMember__last_name')
     for eachHead in projectHead:
         if eachHead['relatedMember__email'] != '':
-            send_templated_mail(
-                template_name='projectCreatedMgmt',
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[
-                    eachHead['relatedMember__email'],
-                    ],
-                context={
-                    'first_name': eachHead['relatedMember__first_name'],
-                    'projectId': projectDetails.projectId,
-                    'projectName': projectName,
-                    'pmname': manager,
-                    'startDate': projectDetails.startDate},
-                )
+            context={
+                'first_name': eachHead['relatedMember__first_name'],
+                'projectId': projectDetails.projectId,
+                'projectName': projectName,
+                'pmname': manager,
+                'startDate': projectDetails.startDate
+            }
+            """SendEmail(context,
+                      eachHead['relatedMember_email'],
+                      'projectCreatedMgmt'
+                      )"""
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
