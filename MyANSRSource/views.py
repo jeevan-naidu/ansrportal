@@ -852,7 +852,7 @@ class TrackMilestoneWizard(SessionWizardView):
 
     def get_form(self, step=None, data=None, files=None):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
-        step = step or self.steps.current
+        step = step if step else self.steps.current
         if step == 'My Projects':
             projects = ProjectMilestone.objects.filter(
                 project__projectManager=self.request.user,
@@ -941,7 +941,7 @@ class ChangeProjectWizard(SessionWizardView):
 
     def get_form(self, step=None, data=None, files=None):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
-        step = step or self.steps.current
+        step = step if step else self.steps.current
         if step == 'My Projects':
             form.fields['project'].queryset = Project.objects.filter(
                 projectManager=self.request.user,
@@ -1138,7 +1138,7 @@ class CreateProjectWizard(SessionWizardView):
 
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
-        step = step or self.steps.current
+        step = step if step else self.steps.current
         if step == 'Basic Information':
             if self.get_cleaned_data_for_step('Define Project') is not None:
                 signed = self.get_cleaned_data_for_step('Define Project')['signed']
