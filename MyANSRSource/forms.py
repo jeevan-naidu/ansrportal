@@ -215,7 +215,8 @@ def TimesheetFormset(currentUser):
                 ).values('project_id')
             )
             self.fields['location'].queryset = OfficeLocation.objects.all()
-            self.initial['location'] = currentUser.employee.location
+            if hasattr(currentUser, 'employee'):
+                self.initial['location'] = currentUser.employee.location
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item billable-select-project"
             self.fields['location'].widget.attrs['class'] = \
