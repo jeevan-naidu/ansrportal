@@ -1583,10 +1583,12 @@ def ViewProject(request):
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
 
-def GetChapters(request, bookid):
-    chapters = Chapter.objects.filter(book__id=bookid)
-    json_chapters = serializers.serialize("json", chapters)
-    return HttpResponse(json_chapters, content_type="application/javascript")
+def GetChapters(request, projectid):
+    projectObj = Project.objects.get(pk=projectid)
+    chapters = Chapter.objects.filter(book=projectObj.book).values('id', 'name')
+    json_chapters = {'data': list(chapters)}
+    return HttpResponse(json.dumps(json_chapters),
+                        content_type="application/javascript")
 
 
 def GetTasks(request, projectid):
