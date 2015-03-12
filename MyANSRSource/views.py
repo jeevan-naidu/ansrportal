@@ -862,6 +862,51 @@ class TrackMilestoneWizard(SessionWizardView):
     def get_template_names(self):
         return [TMTEMPLATES[self.steps.current]]
 
+    def get_form_initial(self, step):
+        projectMS = {}
+        if step == 'Close Milestone':
+            selectedProjectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            projectMS = ProjectMilestone.objects.filter(
+                project__id=selectedProjectId,
+            ).values(
+                'id',
+                'milestoneDate',
+                'description',
+                'amount',
+                'closed'
+            )
+        return self.initial_dict.get(step, projectMS)
+
+    def done(self, form_list, **kwargs):
+        updatedData = [form.cleaned_data for form in form_list][1]
+        for eachData in updatedData:
+            CloseMilestone = ProjectMilestone.objects.get(
+                id=eachData['id']
+            )
+            if CloseMilestone.closed:
+                pass
+            else:
+                CloseMilestone.reason = eachData['reason']
+                CloseMilestone.amount = eachData['amount']
+                CloseMilestone.closed = eachData['closed']
+                CloseMilestone.save()
+        return HttpResponseRedirect('/myansrsource/dashboard')
+
+TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
+
+
+@login_required
+def WrappedTrackMilestoneView(request):
+    return TrackMilestone(request)
+
+
+class TrackMilestoneWizard(SessionWizardView):
+
+    def get_template_names(self):
+        return [TMTEMPLATES[self.steps.current]]
+
     def get_form(self, step=None, data=None, files=None):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step or self.steps.current
@@ -950,6 +995,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 'closed'
             )
         return self.initial_dict.get(step, projectMS)
+
 
 class ChangeProjectWizard(SessionWizardView):
 
