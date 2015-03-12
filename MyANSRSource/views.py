@@ -1140,13 +1140,15 @@ class CreateProjectWizard(SessionWizardView):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step or self.steps.current
         if step == 'Basic Information':
-            signed = self.storage.get_step_data('Define Project')[
+            signed = self.get_cleaned_data_for_step('Define Project')['signed']
+            """signed = self.storage.get_step_data('Define Project')[
                 'Define Project-signed'
-            ]
-            if signed == 'False':
-                form.fields['po'].widget.attrs[
-                    'readonly'
-                ] = 'True'
+            ]"""
+            if signed is not None:
+                if signed == 'False':
+                    form.fields['po'].widget.attrs[
+                        'readonly'
+                    ] = 'True'
             if form.is_valid():
                 self.request.session['PStartDate'] = form.cleaned_data[
                     'startDate'
@@ -1156,9 +1158,11 @@ class CreateProjectWizard(SessionWizardView):
                 ].strftime('%Y-%m-%d')
 
         if step == 'Financial Milestones':
-            internalStatus = self.storage.get_step_data('Define Project')[
+            defineProject = self.get_cleaned_data_for_step('Define Project')
+            internalStatus = defineProject['internal']
+            """internalStatus = self.storage.get_step_data('Define Project')[
                 'Define Project-internal'
-            ]
+            ]"""
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'disabled'
@@ -1166,60 +1170,64 @@ class CreateProjectWizard(SessionWizardView):
                 eachForm.fields['DELETE'].widget.attrs[
                     'class'
                 ] = 'form-control'
-            if internalStatus == 'True':
-                for eachForm in form:
-                    eachForm.fields['financial'].widget.attrs[
-                        'disabled'
-                    ] = 'True'
-                    eachForm.fields['amount'].widget.attrs[
-                        'readonly'
-                    ] = 'True'
-            else:
-                if form.is_valid():
-                    projectTotal = self.storage.get_step_data('Basic Information')[
-                        'Basic Information-totalValue'
-                    ]
-                    totalRate = 0
+            if internalStatus is not None:
+                if internalStatus == 'True':
                     for eachForm in form:
-                        if eachForm.is_valid():
-                            totalRate += eachForm.cleaned_data['amount']
-                            if eachForm.cleaned_data['financial'] is False:
-                                if eachForm.cleaned_data['amount'] > 0:
+                        eachForm.fields['financial'].widget.attrs[
+                            'disabled'
+                        ] = 'True'
+                        eachForm.fields['amount'].widget.attrs[
+                            'readonly'
+                        ] = 'True'
+                else:
+                    if form.is_valid():
+                        projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
+                        """projectTotal = self.storage.get_step_data('Basic Information')[
+                            'Basic Information-totalValue'
+                        ]"""
+                        totalRate = 0
+                        for eachForm in form:
+                            if eachForm.is_valid():
+                                totalRate += eachForm.cleaned_data['amount']
+                                if eachForm.cleaned_data['financial'] is False:
+                                    if eachForm.cleaned_data['amount'] > 0:
+                                        amount = eachForm.cleaned_data['amount']
+                                        errors = eachForm._errors.setdefault(
+                                            amount,
+                                            ErrorList())
+                                        errors.append(u'Please select milestone as \
+                                                    financial')
+                                elif eachForm.cleaned_data['amount'] == 0:
                                     amount = eachForm.cleaned_data['amount']
                                     errors = eachForm._errors.setdefault(
                                         amount,
                                         ErrorList())
-                                    errors.append(u'Please select milestone as \
-                                                  financial')
-                            elif eachForm.cleaned_data['amount'] == 0:
-                                amount = eachForm.cleaned_data['amount']
-                                errors = eachForm._errors.setdefault(
-                                    amount,
-                                    ErrorList())
-                                errors.append(u'Financial Milestone amount \
-                                            cannot be 0')
-                    if float(projectTotal) != float(totalRate):
-                        errors = eachForm._errors.setdefault(
-                            totalRate,
-                            ErrorList())
-                        errors.append(u'Total amount must be \
-                                        equal to project value')
+                                    errors.append(u'Financial Milestone amount \
+                                                cannot be 0')
+                        if float(projectTotal) != float(totalRate):
+                            errors = eachForm._errors.setdefault(
+                                totalRate,
+                                ErrorList())
+                            errors.append(u'Total amount must be \
+                                            equal to project value')
         return form
 
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Basic Information':
-            ptId = self.storage.get_step_data('Define Project')[
+            pt = self.get_cleaned_data_for_step('Define Project')['projectType']
+            """ptId = self.storage.get_step_data('Define Project')[
                 'Define Project-projectType'
-            ]
-            data = {'pt': projectType.objects.get(id=int(ptId)).description}
+            ]"""
+            data = {'pt': projectType.objects.get(id=pt.id).description}
             context.update(data)
 
         if self.steps.current == 'Financial Milestones':
-            projectTotal = self.storage.get_step_data('Basic Information')[
+            projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
+            """projectTotal = self.storage.get_step_data('Basic Information')[
                 'Basic Information-totalValue'
-            ]
+            ]"""
             context.update({'totalValue': projectTotal})
 
         return context
