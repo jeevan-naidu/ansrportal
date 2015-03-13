@@ -584,7 +584,7 @@ class ProjectMilestoneForm(forms.ModelForm):
 
 
 # Form Class to create milestones for project
-class changeProjectLeaderForm(forms.ModelForm):
+class changeProjectLeaderForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = Project

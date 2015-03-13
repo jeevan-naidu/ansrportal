@@ -4,7 +4,6 @@ import json
 from collections import OrderedDict
 
 from django.forms.util import ErrorList
-from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
@@ -84,10 +83,7 @@ TMTEMPLATES = {
 
 TLFORMS = [
     ("My Projects", ChangeProjectForm),
-    ("Manage Project Leader", formset_factory(
-        changeProjectLeaderForm,
-        extra=0,
-    )),
+    ("Manage Project Leader", changeProjectLeaderForm),
 ]
 TLTEMPLATES = {
     "My Projects": "MyANSRSource/manageProjectLead.html",
@@ -862,26 +858,60 @@ class ManageTeamLeaderWizard(SessionWizardView):
     def get_template_names(self):
         return [TLTEMPLATES[self.steps.current]]
 
+    def get_form(self, step=None, data=None, files=None):
+        form = super(ManageTeamLeaderWizard, self).get_form(step, data, files)
+        step = step if step else self.steps.current
+        if step == 'My Projects':
+            projects = Project.objects.filter(projectManager=self.request.user,
+                                              closed=False)
+            form.fields['project'].queryset = projects
+        return form
+
     def get_form_initial(self, step):
         projectMS = {}
         if step == 'Manage Project Leader':
             myProject = self.get_cleaned_data_for_step('My Projects')['project']
-            print ProjectManager.objects.get(project=myProject)
-        return self.initial_dict.get(step, projectMS)
+            pm = Project.objects.filter(id=myProject.id).values(
+                'projectManager',
+                'id'
+            )
+            l = []
+            for eachData in pm:
+                l.append(eachData['projectManager'])
+                l.append(eachData['id'])
+            projectMS = {'projectManager': l}
+            return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][1]
+        updatedData = [form.cleaned_data for form in form_list][1]['projectManager']
+        myProject = self.get_cleaned_data_for_step('My Projects')['project']
+        myProject = Project.objects.get(id=myProject.id)
+        pm = ProjectManager()
         for eachData in updatedData:
-            CloseMilestone = ProjectMilestone.objects.get(
-                id=eachData['id']
-            )
-            if CloseMilestone.closed:
-                pass
+            l = []
+            allData = ProjectManager.objects.filter(
+                project=myProject).values('id')
+            recivedData = ProjectManager.objects.filter(
+                project=myProject, user=eachData).values('id')
+            if len(recivedData):
+                a = [int(eachData['id']) for eachData in allData]
+                r = [int(eachData['id']) for eachData in recivedData]
+                for eachA in a:
+                    # Manager already assigned so it is left untouched
+                    if eachA in r:
+                        pass
+                    else:
+                        l.append(eachA)
+                # To delete an existing manager
+                for eachId in l:
+                    manager = ProjectManager.objects.get(pk=eachId)
+                    manager.delete()
+            # To add a new manager
             else:
-                CloseMilestone.reason = eachData['reason']
-                CloseMilestone.amount = eachData['amount']
-                CloseMilestone.closed = eachData['closed']
-                CloseMilestone.save()
+                pm.project = myProject
+                pm.user = eachData
+                pm.save()
+
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 manageTeamLeader = ManageTeamLeaderWizard.as_view(TLFORMS)

@@ -1,6 +1,5 @@
 {% extends 'manageProjectTeamLeaderMaster.inc' %}
 
-
 {% block TMactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
@@ -21,41 +20,14 @@
 {% endif %}
 	{% if forloop.first %}
         <div class="table-responsive">
-		<table class="table" id="add-team-members">
+            <table class="table"> 
 	{% endif %}
-		{% for t in form %}
-			{% if forloop.first %}
-				{% if '-0' in t.id_for_label %}
-					<thead>
-                    				<tr>
-						{% for field in form %}
-			    {% if field.label != 'teamRecId' %}
-                            {% if field.label == 'Start date on project' or field.label == 'End date on project' %}
-                                <th class="w-170">
-                            {% elif field.label == 'Planned Effort' or field.label == '%' %}
-                                <th class="w-100">
-                            {% elif field.label == 'Member' %}
-                                <th class="min-200">
-                            {% else %}
-							    <th>
-                            {% endif %}
-								<small>{{ field.label }}</small>
-								{% if field.field.required %}
-									<span class="required">*</span>
-								{% endif %}
-							</th>
-								{% endif %}
-						{% endfor %}
-                    		       </tr>
-					</thead>
-				{% endif %}
-			{% endif %}
-	      {% endfor %}
           {% for t in form %}
 			{% if forloop.first %}
 			   	<tr>
 			{% endif %}
-					<td>{{ t }}</td>
+                    <td class="col-lg-4">Choose Project Leader(s) </td>
+					<td class="col-lg-8">{{ t }}</td>
 			{% if forloop.last %}
 				</tr>
 			{% endif %}
@@ -65,9 +37,6 @@
         </div>
 	{% endif %}
 {% autoescape off %}
-<script type="text/javascript">
-    window.holidays = {{ holidayList }};
-</script>
 {% endautoescape %}
 
 {% endblock %}{% endblock %}
