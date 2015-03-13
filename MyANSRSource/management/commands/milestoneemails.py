@@ -42,7 +42,7 @@ def sendEmail(self, details, date, label):
                         'project__projectManager__first_name'
                     ],
                     'projectId': eachDetail[
-                        'project__id'
+                        'project__projectId'
                     ],
                     'projectname': eachDetail[
                         'project__name'

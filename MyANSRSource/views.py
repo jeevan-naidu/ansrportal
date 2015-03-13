@@ -1374,7 +1374,7 @@ class ManageTeamWizard(SessionWizardView):
                     if eachMember['member__email'] != '':
                         context={
                             'first_name': eachMember['member__first_name'],
-                            'projectId': ptm.project.id,
+                            'projectId': ptm.project.projectId,
                             'projectName': ptm.project.name,
                             'pmname': manager,
                             'startDate': ptm.project.startDate,
