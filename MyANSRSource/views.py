@@ -1321,6 +1321,10 @@ def saveProject(request):
                 pm.user = User.objects.get(pk=eachId)
                 pm.project = pr
                 pm.save()
+            pm = ProjectManager()
+            pm.user = request.user
+            pm.project = pr
+            pm.save()
         except ValueError as e:
             logger.exception(e)
             return render(
