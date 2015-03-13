@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from MyANSRSource import views
 
 urlpatterns = patterns(u'',
-                       url(r'^getchapters/(?P<bookid>[0-9]+)/$',
+                       url(r'^getchapters/(?P<projectid>[0-9]+)/$',
                            views.GetChapters,
                            name=u'getchapters'),
                        url(r'^gettask/(?P<projectid>[0-9]+)/$',
