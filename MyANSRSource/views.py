@@ -899,7 +899,7 @@ class TrackMilestoneWizard(SessionWizardView):
 
     def get_form(self, step=None, data=None, files=None):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
-        step = step or self.steps.current
+        step = step if step else self.steps.current
         if step == 'My Projects':
             projects = ProjectMilestone.objects.filter(
                 project__projectManager=self.request.user,
@@ -1011,7 +1011,7 @@ class ChangeProjectWizard(SessionWizardView):
 
     def get_form(self, step=None, data=None, files=None):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
-        step = step or self.steps.current
+        step = step if step else self.steps.current
         if step == 'My Projects':
             form.fields['project'].queryset = Project.objects.filter(
                 projectManager=self.request.user,
@@ -1208,88 +1208,102 @@ class CreateProjectWizard(SessionWizardView):
 
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
-        step = step or self.steps.current
+        step = step if step else self.steps.current
         if step == 'Basic Information':
-            signed = self.storage.get_step_data('Define Project')[
-                'Define Project-signed'
-            ]
-            if signed == 'False':
-                form.fields['po'].widget.attrs[
-                    'readonly'
-                ] = 'True'
-            if form.is_valid():
-                self.request.session['PStartDate'] = form.cleaned_data[
-                    'startDate'
-                ].strftime('%Y-%m-%d')
-                self.request.session['PEndDate'] = form.cleaned_data[
-                    'endDate'
-                ].strftime('%Y-%m-%d')
+            if self.get_cleaned_data_for_step('Define Project') is not None:
+                signed = self.get_cleaned_data_for_step('Define Project')['signed']
+                if signed is not None:
+                    if signed == 'False':
+                        form.fields['po'].widget.attrs[
+                            'readonly'
+                        ] = 'True'
+                else:
+                    logger.error("Basic Information step has signed as none")
+                if form.is_valid():
+                    self.request.session['PStartDate'] = form.cleaned_data[
+                        'startDate'
+                    ].strftime('%Y-%m-%d')
+                    self.request.session['PEndDate'] = form.cleaned_data[
+                        'endDate'
+                    ].strftime('%Y-%m-%d')
+            else:
+                logger.error("Basic Information step data is None" + str(form._errors))
 
         if step == 'Financial Milestones':
-            internalStatus = self.storage.get_step_data('Define Project')[
-                'Define Project-internal'
-            ]
-            for eachForm in form:
-                eachForm.fields['DELETE'].widget.attrs[
-                    'disabled'
-                ] = 'True'
-                eachForm.fields['DELETE'].widget.attrs[
-                    'class'
-                ] = 'form-control'
-            if internalStatus == 'True':
+            defineProject = self.get_cleaned_data_for_step('Define Project')
+            if defineProject is not None:
+                internalStatus = defineProject['internal']
                 for eachForm in form:
-                    eachForm.fields['financial'].widget.attrs[
+                    eachForm.fields['DELETE'].widget.attrs[
                         'disabled'
                     ] = 'True'
-                    eachForm.fields['amount'].widget.attrs[
-                        'readonly'
-                    ] = 'True'
-            else:
-                if form.is_valid():
-                    projectTotal = self.storage.get_step_data('Basic Information')[
-                        'Basic Information-totalValue'
-                    ]
-                    totalRate = 0
-                    for eachForm in form:
-                        if eachForm.is_valid():
-                            totalRate += eachForm.cleaned_data['amount']
-                            if eachForm.cleaned_data['financial'] is False:
-                                if eachForm.cleaned_data['amount'] > 0:
-                                    amount = eachForm.cleaned_data['amount']
+                    eachForm.fields['DELETE'].widget.attrs[
+                        'class'
+                    ] = 'form-control'
+                if internalStatus is not None:
+                    if internalStatus == 'True':
+                        for eachForm in form:
+                            eachForm.fields['financial'].widget.attrs[
+                                'disabled'
+                            ] = 'True'
+                            eachForm.fields['amount'].widget.attrs[
+                                'readonly'
+                            ] = 'True'
+                    else:
+                        if form.is_valid():
+                            if self.get_cleaned_data_for_step('Basic Information') is not None:
+                                projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
+                                totalRate = 0
+                                for eachForm in form:
+                                    if eachForm.is_valid():
+                                        totalRate += eachForm.cleaned_data['amount']
+                                        if eachForm.cleaned_data['financial'] is False:
+                                            if eachForm.cleaned_data['amount'] > 0:
+                                                amount = eachForm.cleaned_data['amount']
+                                                errors = eachForm._errors.setdefault(
+                                                    amount,
+                                                    ErrorList())
+                                                errors.append(u'Please select milestone as \
+                                                            financial')
+                                        elif eachForm.cleaned_data['amount'] == 0:
+                                            amount = eachForm.cleaned_data['amount']
+                                            errors = eachForm._errors.setdefault(
+                                                amount,
+                                                ErrorList())
+                                            errors.append(u'Financial Milestone amount \
+                                                        cannot be 0')
+                                if float(projectTotal) != float(totalRate):
                                     errors = eachForm._errors.setdefault(
-                                        amount,
+                                        totalRate,
                                         ErrorList())
-                                    errors.append(u'Please select milestone as \
-                                                  financial')
-                            elif eachForm.cleaned_data['amount'] == 0:
-                                amount = eachForm.cleaned_data['amount']
-                                errors = eachForm._errors.setdefault(
-                                    amount,
-                                    ErrorList())
-                                errors.append(u'Financial Milestone amount \
-                                            cannot be 0')
-                    if float(projectTotal) != float(totalRate):
-                        errors = eachForm._errors.setdefault(
-                            totalRate,
-                            ErrorList())
-                        errors.append(u'Total amount must be \
-                                        equal to project value')
+                                    errors.append(u'Total amount must be \
+                                                    equal to project value')
+                            else:
+                                logger.error("Financial Milestone step has totalValue as none" + str(form._errors))
+                else:
+                    logger.error("Financial Milestone step has internal as none" + str(form._errors))
+            else:
+                logger.error("Financial Milestone step has step data as none" + str(form._errors))
         return form
 
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Basic Information':
-            ptId = self.storage.get_step_data('Define Project')[
-                'Define Project-projectType'
-            ]
-            data = {'pt': projectType.objects.get(id=int(ptId)).description}
+            if self.get_cleaned_data_for_step('Define Project') is not None:
+                pt = self.get_cleaned_data_for_step('Define Project')['projectType']
+                data = {'pt': projectType.objects.get(id=pt.id).description}
+            else:
+                logger.error("Basic Information step has project as none" + str(form._errors))
+                data= {}
             context.update(data)
 
         if self.steps.current == 'Financial Milestones':
-            projectTotal = self.storage.get_step_data('Basic Information')[
-                'Basic Information-totalValue'
-            ]
+            if self.get_cleaned_data_for_step('Basic Information') is not None:
+                projectTotal = self.get_cleaned_data_for_step('Basic Information')['totalValue']
+            else:
+                logger.error("Financial step has project as none" + str(form._errors))
+                data = {}
             context.update({'totalValue': projectTotal})
 
         return context
@@ -1360,7 +1374,7 @@ class ManageTeamWizard(SessionWizardView):
                                                   'plannedEffort', 'rate'
                                                   )
             else:
-                logging.error("Project Id : {0}, Request: {1},".format(
+                logger.error("Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
         return self.initial_dict.get(step, currentProject)
 
@@ -1428,22 +1442,18 @@ class ManageTeamWizard(SessionWizardView):
                     manager = "  ".join(l)
                 for eachMember in teamMembers:
                     if eachMember['member__email'] != '':
-                        send_templated_mail(
-                            template_name='projectCreatedTeam',
-                            from_email=settings.EMAIL_HOST_USER,
-                            recipient_list=[
-                                eachMember['member__email'],
-                                ],
-                            context={
-                                'first_name': eachMember['member__first_name'],
-                                'projectId': ptm.project.id,
-                                'projectName': ptm.project.name,
-                                'pmname': manager,
-                                'startDate': ptm.project.startDate,
-                                'mystartdate': eachMember['startDate'],
-                                'myrole': eachMember['role__name'],
-                                },
-                            )
+                        context={
+                            'first_name': eachMember['member__first_name'],
+                            'projectId': ptm.project.projectId,
+                            'projectName': ptm.project.name,
+                            'pmname': manager,
+                            'startDate': ptm.project.startDate,
+                            'mystartdate': eachMember['startDate'],
+                            'myrole': eachMember['role__name'],
+                        },
+                        """SendEmail(context,
+                                  eachMember['member__email'],
+                                  'projectCreatedTeam')"""
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1453,6 +1463,15 @@ manageTeam = ManageTeamWizard.as_view(MEMBERFORMS)
 @login_required
 def WrappedManageTeamView(request):
     return manageTeam(request)
+
+
+def SendEmail(data, toAddr, templateName):
+    send_templated_mail(
+        template_name=templateName,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[toAddr, ],
+        context=data,
+        )
 
 
 @login_required
@@ -1583,19 +1602,17 @@ def notify(request):
              'relatedMember__last_name')
     for eachHead in projectHead:
         if eachHead['relatedMember__email'] != '':
-            send_templated_mail(
-                template_name='projectCreatedMgmt',
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[
-                    eachHead['relatedMember__email'],
-                    ],
-                context={
-                    'first_name': eachHead['relatedMember__first_name'],
-                    'projectId': projectDetails.projectId,
-                    'projectName': projectName,
-                    'pmname': manager,
-                    'startDate': projectDetails.startDate},
-                )
+            context={
+                'first_name': eachHead['relatedMember__first_name'],
+                'projectId': projectDetails.projectId,
+                'projectName': projectName,
+                'pmname': manager,
+                'startDate': projectDetails.startDate
+            }
+            """SendEmail(context,
+                      eachHead['relatedMember_email'],
+                      'projectCreatedMgmt'
+                      )"""
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
@@ -1653,10 +1670,12 @@ def ViewProject(request):
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
 
-def GetChapters(request, bookid):
-    chapters = Chapter.objects.filter(book__id=bookid)
-    json_chapters = serializers.serialize("json", chapters)
-    return HttpResponse(json_chapters, content_type="application/javascript")
+def GetChapters(request, projectid):
+    projectObj = Project.objects.get(pk=projectid)
+    chapters = Chapter.objects.filter(book=projectObj.book).values('id', 'name')
+    json_chapters = {'data': list(chapters)}
+    return HttpResponse(json.dumps(json_chapters),
+                        content_type="application/javascript")
 
 
 def GetTasks(request, projectid):
