@@ -27,8 +27,7 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
-    ChangeProjectMilestoneForm, ChangeProjectForm, \
-    CloseProjectMilestoneForm, changeProjectLeaderForm
+    ChangeProjectForm, CloseProjectMilestoneForm, changeProjectLeaderForm
 
 import CompanyMaster
 import employee
