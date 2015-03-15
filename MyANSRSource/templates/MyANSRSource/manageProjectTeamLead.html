@@ -1,0 +1,44 @@
+{% extends 'manageProjectTeamLeaderMaster.inc' %}
+
+{% block TMactiveClass %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for k, v in form.errors.items %}
+        <li>{{ v|striptags }}</li>
+		{% endfor %}
+        </ul>
+        <ul>
+		{% for field in form %} 
+		{% if field.errors %}
+        <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+		{% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
+	{% if forloop.first %}
+        <div class="table-responsive">
+            <table class="table"> 
+	{% endif %}
+          {% for t in form %}
+			{% if forloop.first %}
+			   	<tr>
+			{% endif %}
+                    <td class="col-lg-4">Choose Project Leader(s) </td>
+					<td class="col-lg-8">{{ t }}</td>
+			{% if forloop.last %}
+				</tr>
+			{% endif %}
+	      {% endfor %}
+	{% if forloop.last %}
+		</table>
+        </div>
+	{% endif %}
+{% autoescape off %}
+{% endautoescape %}
+
+{% endblock %}{% endblock %}
+
+
