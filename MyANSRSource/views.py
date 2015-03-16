@@ -861,12 +861,10 @@ class ManageTeamLeaderWizard(SessionWizardView):
             myProject = self.get_cleaned_data_for_step('My Projects')['project']
             pm = Project.objects.filter(id=myProject.id).values(
                 'projectManager',
-                'id'
             )
             l = []
             for eachData in pm:
                 l.append(eachData['projectManager'])
-                l.append(eachData['id'])
             projectMS = {'projectManager': l}
             return self.initial_dict.get(step, projectMS)
 
@@ -1477,10 +1475,11 @@ def saveProject(request):
                 pm.user = User.objects.get(pk=eachId)
                 pm.project = pr
                 pm.save()
-            pm = ProjectManager()
-            pm.user = request.user
-            pm.project = pr
-            pm.save()
+            if pm.user != request.user:
+                pm = ProjectManager()
+                pm.user = request.user
+                pm.project = pr
+                pm.save()
         except ValueError as e:
             logger.exception(e)
             return render(
