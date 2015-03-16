@@ -368,9 +368,9 @@ class ProjectChangeInfo(models.Model):
 
 
 class SendEmail(models.Model):
-    to_addr = models.ManyToManyField(User, null=False)
-    template_name = models.CharField(null=False, max_length=100)
-    content = models.CharField(null=False, max_length=1000)
+    toAddr = models.CharField(default=None, null=False, max_length=1000)
+    template_name = models.CharField(default=None, null=False, max_length=100)
+    content = models.CharField(default=None, null=False, max_length=1000)
     sent = models.BooleanField(default=False)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

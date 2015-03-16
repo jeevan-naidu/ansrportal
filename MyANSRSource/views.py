@@ -1398,9 +1398,9 @@ class ManageTeamWizard(SessionWizardView):
                     'startDate': ptm.project.startDate,
                     'mystartdate': eachMember['startDate'],
                     'myrole': eachMember['role__name'],
-                },
-                """SendEmail(context, eachMember['member__email'],
-                'projectCreatedTeam')"""
+                }
+                SendMail(context, eachMember['member__email'],
+                         'projectCreatedTeam')
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1412,11 +1412,13 @@ def WrappedManageTeamView(request):
     return manageTeam(request)
 
 
-def SendEmail(data, toAddr, templateName):
+def SendMail(data, toAddr, templateName):
     sm = SendEmail()
+    data['startDate'] = int(data['startDate'].strftime("%s")) * 1000
+    data['mystartdate'] = int(data['mystartdate'].strftime("%s")) * 1000
     sm.content = json.dumps(data)
     sm.template_name = templateName
-    sm.to_addr = json.dumps(toAddr)
+    sm.toAddr = json.dumps(toAddr)
     sm.save()
 
 @login_required
@@ -1535,10 +1537,8 @@ def notify(request):
                 'pmname': manager,
                 'startDate': projectDetails.startDate
             }
-            """SendEmail(context,
-                      eachHead['relatedMember_email'],
-                      'projectCreatedMgmt'
-                      )"""
+            SendMail(context, eachHead['relatedMember_email'],
+                      'projectCreatedMgmt')
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
