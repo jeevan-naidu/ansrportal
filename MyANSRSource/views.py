@@ -1032,7 +1032,6 @@ TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
 
-
 class ChangeProjectWizard(SessionWizardView):
 
     def get_template_names(self):
@@ -1355,6 +1354,7 @@ class ManageTeamWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
+        project = [form.cleaned_data for form in form_list][0]['project']
         for eachData in [form.cleaned_data for form in form_list][1]:
             if None in eachData.values():
                 pass
@@ -1367,43 +1367,40 @@ class ManageTeamWizard(SessionWizardView):
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                 else:
                     ptm = ProjectTeamMember()
-
-                ptm.project = [
-                    form.cleaned_data for form in form_list][0]['project']
-                del(eachData['id'])
-                for k, v in eachData.iteritems():
-                    setattr(ptm, k, v)
-                ptm.save()
-                teamMembers = ProjectTeamMember.objects.filter(
-                    project__id=ptm.project.id
-                ).values('member__email', 'member__first_name',
-                         'member__last_name', 'startDate', 'role__name')
-                pm = ProjectManager.objects.filter(
-                    project__id=ptm.project.id
-                ).values('user__first_name', 'user__last_name')
-                l = []
-                for eachManager in pm:
-                    name = eachManager['user__first_name'] + \
-                        "  " + eachManager['user__last_name']
-                    l.append(name)
-                if len(l) > 1:
-                    manager = ",".join(l)
-                else:
-                    manager = "  ".join(l)
-                for eachMember in teamMembers:
-                    if eachMember['member__email'] != '':
-                        context = {
-                            'first_name': eachMember['member__first_name'],
-                            'projectId': ptm.project.projectId,
-                            'projectName': ptm.project.name,
-                            'pmname': manager,
-                            'startDate': ptm.project.startDate,
-                            'mystartdate': eachMember['startDate'],
-                            'myrole': eachMember['role__name'],
-                        },
-                        """SendEmail(context,
-                                  eachMember['member__email'],
-                                  'projectCreatedTeam')"""
+                    ptm.project = project
+                    del(eachData['id'])
+                    for k, v in eachData.iteritems():
+                        setattr(ptm, k, v)
+                    ptm.save()
+        teamMembers = ProjectTeamMember.objects.filter(
+            project__id=project.id
+        ).values('member__email', 'member__first_name',
+                 'member__last_name', 'startDate', 'role__name')
+        pm = ProjectManager.objects.filter(
+            project__id=project.id
+        ).values('user__first_name', 'user__last_name')
+        l = []
+        for eachManager in pm:
+            name = eachManager['user__first_name'] + \
+                "  " + eachManager['user__last_name']
+            l.append(name)
+        if len(l) > 1:
+            manager = ",".join(l)
+        else:
+            manager = "  ".join(l)
+        for eachMember in teamMembers:
+            if eachMember['member__email'] != '':
+                context = {
+                    'first_name': eachMember['member__first_name'],
+                    'projectId': ptm.project.projectId,
+                    'projectName': ptm.project.name,
+                    'pmname': manager,
+                    'startDate': ptm.project.startDate,
+                    'mystartdate': eachMember['startDate'],
+                    'myrole': eachMember['role__name'],
+                },
+                """SendEmail(context, eachMember['member__email'],
+                'projectCreatedTeam')"""
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
