@@ -583,6 +583,18 @@ class ProjectMilestoneForm(forms.ModelForm):
             "d-item input-item form-control"
 
 
+# Form Class to create milestones for project
+class changeProjectLeaderForm(autocomplete_light.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ('projectManager',)
+
+    def __init__(self, *args, **kwargs):
+        super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
+        self.fields['projectManager'].widget.attrs['class'] = "form-control"
+
+
 # Form Class to create front-End Login
 class LoginForm(forms.Form):
     userid = forms.CharField(max_length=30)
