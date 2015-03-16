@@ -1032,30 +1032,6 @@ TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
 
-
-class TrackMilestoneWizard(SessionWizardView):
-
-    def get_template_names(self):
-        return [TMTEMPLATES[self.steps.current]]
-
-    def get_form_initial(self, step):
-        projectMS = {}
-        if step == 'Close Milestone':
-            selectedProjectId = self.storage.get_step_data(
-                'My Projects'
-            )['My Projects-project']
-            projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId,
-            ).values(
-                'id',
-                'milestoneDate',
-                'description',
-                'amount',
-                'closed'
-            )
-        return self.initial_dict.get(step, projectMS)
-
-
 class ChangeProjectWizard(SessionWizardView):
 
     def get_template_names(self):
