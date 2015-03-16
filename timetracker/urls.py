@@ -18,7 +18,6 @@ urlpatterns = patterns('',
                        url(r'^grappelli/', include('grappelli.urls')),
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^myansrsource/', include('MyANSRSource.urls')),
-                       url(r'^chaining/', include('smart_selects.urls')),
                        url(r'session_security/',
                            include('session_security.urls')
                            ),
