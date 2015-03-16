@@ -365,3 +365,14 @@ class ProjectChangeInfo(models.Model):
 
     def __unicode__(self):
         return self.crId
+
+
+class SendEmail(models.Model):
+    to_addr = models.ManyToManyField(User, null=False)
+    template_name = models.CharField(null=False, max_length=100)
+    content = models.CharField(null=False, max_length=1000)
+    sent = models.BooleanField(default=False)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)

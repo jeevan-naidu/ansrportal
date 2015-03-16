@@ -22,7 +22,7 @@ from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType, Task, ProjectManager
+    Chapter, projectType, Task, ProjectManager, SendEmail
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ProjectTeamForm, ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -1033,29 +1033,6 @@ def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
 
 
-class TrackMilestoneWizard(SessionWizardView):
-
-    def get_template_names(self):
-        return [TMTEMPLATES[self.steps.current]]
-
-    def get_form_initial(self, step):
-        projectMS = {}
-        if step == 'Close Milestone':
-            selectedProjectId = self.storage.get_step_data(
-                'My Projects'
-            )['My Projects-project']
-            projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId,
-            ).values(
-                'id',
-                'milestoneDate',
-                'description',
-                'amount',
-                'closed'
-            )
-        return self.initial_dict.get(step, projectMS)
-
-
 class ChangeProjectWizard(SessionWizardView):
 
     def get_template_names(self):
@@ -1439,13 +1416,11 @@ def WrappedManageTeamView(request):
 
 
 def SendEmail(data, toAddr, templateName):
-    send_templated_mail(
-        template_name=templateName,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[toAddr, ],
-        context=data,
-        )
-
+    sm = SendEmail()
+    sm.content = json.dumps(data)
+    sm.template_name = templateName
+    sm.to_addr = json.dumps(toAddr)
+    sm.save()
 
 @login_required
 def saveProject(request):
