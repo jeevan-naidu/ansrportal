@@ -1361,10 +1361,26 @@ class ManageTeamWizard(SessionWizardView):
             else:
                 if eachData['id']:
                     if eachData['DELETE']:
-                        ProjectTeamMember.objects.get(
-                            pk=eachData['id']).delete()
+                        ptm = ProjectTeamMember.objects.get(
+                            pk=eachData['id'])
+                        NotifyMember(ptm.id, True)
+                        ptm.delete()
                     else:
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
+                        if (eachData['startDate'] == ptm.startDate) and \
+                           (eachData['endDate'] == ptm.endDate) and \
+                           (eachData['plannedEffort'] == ptm.plannedEffort) and \
+                           (eachData['member'] == ptm.member) and \
+                           (eachData['rate'] == ptm.rate) and \
+                           (eachData['role'] == ptm.role):
+                               pass
+                        else:
+                            ptm.project = project
+                            del(eachData['id'])
+                            for k, v in eachData.iteritems():
+                                setattr(ptm, k, v)
+                            ptm.save()
+                            NotifyMember(ptm.id, False)
                 else:
                     ptm = ProjectTeamMember()
                     ptm.project = project
@@ -1372,12 +1388,33 @@ class ManageTeamWizard(SessionWizardView):
                     for k, v in eachData.iteritems():
                         setattr(ptm, k, v)
                     ptm.save()
-        teamMembers = ProjectTeamMember.objects.filter(
-            project__id=project.id
-        ).values('member__email', 'member__first_name',
-                 'member__last_name', 'startDate', 'role__name')
+                    NotifyMember(ptm.id, False)
+        return HttpResponseRedirect('/myansrsource/dashboard')
+
+
+manageTeam = ManageTeamWizard.as_view(MEMBERFORMS)
+
+
+@login_required
+def WrappedManageTeamView(request):
+    return manageTeam(request)
+
+
+def NotifyMember(ptmid, delete):
+    teamMember = ProjectTeamMember.objects.get(pk=ptmid)
+    email = teamMember.member.email
+    if delete:
+        if email != '':
+            context = {
+                'first_name': teamMember.member.first_name,
+                'projectId': teamMember.project.projectId,
+                'projectName': teamMember.project.name,
+                'myrole': teamMember.role.name,
+            }
+            SendMail(context, email, 'projectRemovedTeam')
+    else:
         pm = ProjectManager.objects.filter(
-            project__id=project.id
+            project=teamMember.project
         ).values('user__first_name', 'user__last_name')
         l = []
         for eachManager in pm:
@@ -1388,28 +1425,18 @@ class ManageTeamWizard(SessionWizardView):
             manager = ",".join(l)
         else:
             manager = "  ".join(l)
-        for eachMember in teamMembers:
-            if eachMember['member__email'] != '':
-                context = {
-                    'first_name': eachMember['member__first_name'],
-                    'projectId': ptm.project.projectId,
-                    'projectName': ptm.project.name,
-                    'pmname': manager,
-                    'startDate': ptm.project.startDate,
-                    'mystartdate': eachMember['startDate'],
-                    'myrole': eachMember['role__name'],
-                }
-                SendMail(context, eachMember['member__email'],
-                         'projectCreatedTeam')
-        return HttpResponseRedirect('/myansrsource/dashboard')
-
-
-manageTeam = ManageTeamWizard.as_view(MEMBERFORMS)
-
-
-@login_required
-def WrappedManageTeamView(request):
-    return manageTeam(request)
+        if email != '':
+            context = {
+                'first_name': teamMember.member.first_name,
+                'projectId': teamMember.project.projectId,
+                'projectName': teamMember.project.name,
+                'pmname': manager,
+                'startDate': teamMember.project.startDate,
+                'mystartdate': teamMember.startDate,
+                'plannedEffort': teamMember.plannedEffort,
+                'myrole': teamMember.role.name,
+            }
+            SendMail(context, email, 'projectCreatedTeam')
 
 
 def SendMail(data, toAddr, templateName):
@@ -1538,7 +1565,7 @@ def notify(request):
                 'startDate': projectDetails.startDate
             }
             SendMail(context, eachHead['relatedMember_email'],
-                      'projectCreatedMgmt')
+                     'projectCreatedMgmt')
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
