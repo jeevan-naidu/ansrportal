@@ -101,23 +101,23 @@
                         {% if activeProjects > 0 %}
                             <a href="project/modify" class="list-group-item">
                                 <span class="badge">{{ activeProjects }}</span>
-                                Manage Projects
+                                Manage Project
                             </a>
                         {% else %}
                             <a href="#" class="list-group-item">
                                 <span class="badge">0</span>
-                                Manage Projects
+                                Manage Project
                             </a>
                         {% endif %}
                         {% if activeProjects > 0 %}
-                            <a href="project/manage-team" class="list-group-item">
+                            <a href="project/view-project" class="list-group-item">
                                 <span class="badge">{{ activeProjects }}</span>
-                                Manage Team
+                                View Project
                             </a>
                         {% else %}
                             <a href="#" class="list-group-item">
                                 <span class="badge">0</span>
-                                Manage Team
+                                View Project
                             </a>
                         {% endif %}
                         {% if activeProjects > 0 %}
@@ -132,27 +132,27 @@
                             </a>
                         {% endif %}
                         {% if activeProjects > 0 %}
-                            <a href="project/view-project" class="list-group-item">
+                            <a href="project/manage-team" class="list-group-item">
                                 <span class="badge">{{ activeProjects }}</span>
-                                View Projects
+                                Manage Team
                             </a>
                         {% else %}
                             <a href="#" class="list-group-item">
                                 <span class="badge">0</span>
-                                View Projects
+                                Manage Team
                             </a>
                         {% endif %}
                     {% endif %}
             {% if user|manage_milestones %}
-			{% if activeMilestones > 0 %}
+			{% if activeProjects > 0 %}
 				<a href="project/trackmilestone" class="list-group-item">
-					<span class="badge">{{ activeMilestones }}</span>
-					Track Milestones
+					<span class="badge">{{ activeProjects }}</span>
+					Manage Milestone(s)
 				</a>
 			{% else %}
 				<a href="#" class="list-group-item">
 					<span class="badge">0</span>
-					Track Milestones
+					Manage Milestone(s)
 				</a>
 			{% endif %}
             {% endif %}

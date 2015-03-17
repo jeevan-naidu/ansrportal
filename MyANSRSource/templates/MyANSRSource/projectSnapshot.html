@@ -2,29 +2,24 @@
 
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
         <label class="form-step-label">Define Project</label>
     </li>
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
         <label class="form-step-label">Basic Information</label>
     </li>
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth active">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
-        <label class="form-step-label">Financial Milestones</label>
-    </li>
-    <li class="form-step one-fifth active">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
         <label class="form-step-label">Validate</label>
     </li>
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth">
         <span class="form-step-bor"></span>
-        <span class="form-step-no">5</span>
+        <span class="form-step-no">4</span>
         <label class="form-step-label">Complete!</label>
     </li>
 </ul>
@@ -131,65 +126,6 @@
 		</tbody>
 	</table>
 	</div>
-</div>
-<div class="panel panel-default">
-	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
-<div class="panel-body">
-	<table class="table table-condensed">
-		<thead>
-			<th>Description</th>
-			<th>Deadline</th>
-			<th>Amount</th>
-			<th>Financial?</th>
-		</thead>
-				<input type="hidden" name="milestoneTotal" value="{{ milestone|length }}">
-		{% for milestoneData in milestone %}
-		<tr>
-			{% with counter=forloop.counter|stringformat:"s" %}
-			<td>
-				{% with descriptionId="description-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if descriptionId == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			<td>
-				{% with deadlineId="displayMilestoneDate-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if deadlineId == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			<td>
-				{% with amountid="amount-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if amountid == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			<td>
-				{% with financialid="financial-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if financialid == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			{% endwith %}
-			{% for rec, value in milestoneData.iteritems %}
-				<input type="hidden" name="{{ rec }}" value="{{ value }}">
-			{% endfor %}
-		</tr>
-		{% endfor %}
-	</table>
-</div>
 </div>
 <a href="cancel" class="btn btn-danger">
         <span class="glyphicon glyphicon-remove"></span>

@@ -157,6 +157,9 @@ body {
 .one-fourth {
 	width: 25%;
 }
+.one-third {
+	width: 33%;
+}
 .one-sixth {
 	width: 16%;
 }
@@ -296,8 +299,20 @@ body {
 	text-overflow: ellipsis;
 }
 
-input[type='radio'] {
+input[type='radio'], 
+input[type='checkbox'] {
 	width: auto;
+    height: auto;
+}
+
+.v-middle,
+.table>tbody>tr>td.v-middle {
+    vertical-align: middle;
+}
+
+.center {
+    margin-left: auto;
+    margin-left: auto;
 }
 
 .remove {

@@ -25,11 +25,9 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
     Chapter, projectType, Task, ProjectManager
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
-    ProjectTeamForm, ProjectMilestoneForm, \
-    ActivityForm, TimesheetFormset, ProjectFlagForm, \
+    ProjectTeamForm, ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
-    ChangeProjectMilestoneForm, ChangeProjectForm, \
-    CloseProjectMilestoneForm, changeProjectLeaderForm
+    ChangeProjectForm, CloseProjectMilestoneForm, changeProjectLeaderForm
 
 import CompanyMaster
 import employee
@@ -42,43 +40,33 @@ from ldap import LDAPError
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
-    ("Financial Milestones", formset_factory(
-        ProjectMilestoneForm,
-        extra=1,
-        can_delete=True
-    )),
 ]
 TEMPLATES = {
     "Define Project": "MyANSRSource/projectDefinition.html",
     "Basic Information": "MyANSRSource/projectBasicInfo.html",
-    "Financial Milestones": "MyANSRSource/projectMilestone.html",
 }
 
 CFORMS = [
     ("My Projects", ChangeProjectForm),
     ("Change Basic Information", ChangeProjectBasicInfoForm),
-    ("Change Milestones", formset_factory(
-        ChangeProjectMilestoneForm,
-        extra=0,
-        can_delete=True
-    )),
 ]
 CTEMPLATES = {
     "My Projects": "MyANSRSource/changeProject.html",
     "Change Basic Information": "MyANSRSource/changeProjectBasicInfo.html",
-    "Change Milestones": "MyANSRSource/changeProjectMilestone.html",
 }
 
 TMFORMS = [
     ("My Projects", ChangeProjectForm),
-    ("Close Milestone", formset_factory(
+    ("Manage Milestones", formset_factory(
         CloseProjectMilestoneForm,
-        extra=0,
+        extra=1,
+        max_num=1,
+        can_delete=True
     )),
 ]
 TMTEMPLATES = {
-    "My Projects": "MyANSRSource/closeProject.html",
-    "Close Milestone": "MyANSRSource/closeProjectMilestone.html",
+    "My Projects": "MyANSRSource/manageMilestone.html",
+    "Manage Milestones": "MyANSRSource/manageProjectMilestone.html",
 }
 
 TLFORMS = [
@@ -92,7 +80,7 @@ TLTEMPLATES = {
 
 MEMBERFORMS = [
     ("My Projects", ChangeProjectForm),
-    ("Update Member", formset_factory(
+    ("Manage Team", formset_factory(
         ChangeProjectTeamMemberForm,
         extra=1,
         max_num=1,
@@ -101,7 +89,7 @@ MEMBERFORMS = [
 ]
 MEMBERTEMPLATES = {
     "My Projects": "MyANSRSource/manageProjectTeam.html",
-    "Update Member": "MyANSRSource/manageProjectMember.html",
+    "Manage Team": "MyANSRSource/manageProjectMember.html",
 }
 
 
@@ -927,23 +915,66 @@ class TrackMilestoneWizard(SessionWizardView):
     def get_template_names(self):
         return [TMTEMPLATES[self.steps.current]]
 
+    def get_context_data(self, form, **kwargs):
+        context = super(TrackMilestoneWizard, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Manage Milestones':
+            selectedProjectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            projectObj = Project.objects.get(pk=selectedProjectId)
+            totalValue = projectObj.totalValue
+            projectType = projectObj.internal
+            context.update({'totalValue': totalValue, 'type': projectType})
+        return context
+
     def get_form(self, step=None, data=None, files=None):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            projects = ProjectMilestone.objects.filter(
-                project__projectManager=self.request.user,
-                project__closed=False,
-            ).values('project__id')
-            projectsList = list(set([key['project__id'] for key in projects]))
             form.fields['project'].queryset = Project.objects.filter(
-                id__in=projectsList
+                closed=False,
+                projectManager=self.request.user
             )
+        if step == 'Manage Milestones':
+            for eachForm in form:
+                eachForm.fields['DELETE'].widget.attrs[
+                    'class'
+                ] = 'form-control'
+
+                if form.is_valid():
+                    selectedProjectId = self.storage.get_step_data(
+                        'My Projects'
+                    )['My Projects-project']
+                    projectObj = Project.objects.get(pk=selectedProjectId)
+                    projectTotal = projectObj.totalValue
+                    totalRate = 0
+                    for eachForm in form:
+                        if eachForm.is_valid():
+                            totalRate += eachForm.cleaned_data['amount']
+                            if eachForm.cleaned_data['financial'] is False:
+                                if eachForm.cleaned_data['amount'] > 0:
+                                    amount = eachForm.cleaned_data['amount']
+                                    errors = eachForm._errors.setdefault(
+                                        amount, ErrorList())
+                                    errors.append(u'Please select milestone as \
+                                                  financial')
+                            elif eachForm.cleaned_data['amount'] == 0:
+                                amount = eachForm.cleaned_data['amount']
+                                errors = eachForm._errors.setdefault(
+                                    amount, ErrorList())
+                                errors.append(u'Financial Milestone amount \
+                                            cannot be 0')
+                    if float(projectTotal) != float(totalRate):
+                        errors = eachForm._errors.setdefault(
+                            totalRate, ErrorList())
+                        errors.append(u'Total amount must be \
+                                    equal to project value')
         return form
 
     def get_form_initial(self, step):
         projectMS = {}
-        if step == 'Close Milestone':
+        if step == 'Manage Milestones':
             selectedProjectId = self.storage.get_step_data(
                 'My Projects'
             )['My Projects-project']
@@ -951,6 +982,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 project__id=selectedProjectId,
             ).values(
                 'id',
+                'financial',
                 'milestoneDate',
                 'description',
                 'amount',
@@ -958,33 +990,40 @@ class TrackMilestoneWizard(SessionWizardView):
             )
         return self.initial_dict.get(step, projectMS)
 
-    def get_context_data(self, form, **kwargs):
-        context = super(TrackMilestoneWizard, self).get_context_data(
-            form=form, **kwargs)
-        if self.steps.current == 'My Projects':
-            ms = ProjectMilestone.objects.filter(
-                project__projectManager=self.request.user,
-                project__closed=False
-            ).values('project').annotate(
-                msCount=Count('project')
-            ).values('msCount')
-            context.update({'msCount': ms})
-        return context
-
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][1]
-        for eachData in updatedData:
-            CloseMilestone = ProjectMilestone.objects.get(
-                id=eachData['id']
-            )
-            if CloseMilestone.closed:
-                pass
-            else:
-                CloseMilestone.reason = eachData['reason']
-                CloseMilestone.amount = eachData['amount']
-                CloseMilestone.closed = eachData['closed']
-                CloseMilestone.save()
+        milestoneData = [form.cleaned_data for form in form_list][1]
+        projectObj = [form.cleaned_data for form in form_list][0]['project']
+
+        if projectObj:
+            for eachData in milestoneData:
+                if eachData['id']:
+                    pm = ProjectMilestone.objects.get(id=eachData['id'])
+                    if eachData['DELETE']:
+                        pm.delete()
+                    else:
+                        saveData(self, pm, eachData, projectObj)
+                else:
+                    pm = ProjectMilestone()
+                    if eachData['DELETE']:
+                        pass
+                    else:
+                        saveData(self, pm, eachData, projectObj)
+        else:
+            logging.error("Request: " + self.request)
         return HttpResponseRedirect('/myansrsource/dashboard')
+
+
+def saveData(self, pm, eachData, projectObj):
+    if pm.closed:
+        pass
+    else:
+        pm.project = projectObj
+        pm.description = eachData['description']
+        pm.financial = eachData['financial']
+        pm.milestoneDate = eachData['milestoneDate']
+        pm.amount = eachData['amount']
+        pm.closed = eachData['closed']
+        pm.save()
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 
@@ -1032,11 +1071,6 @@ class ChangeProjectWizard(SessionWizardView):
                 )['My Projects-project'])
             totalEffort = currentProject.plannedEffort
             context.update({'totalEffort': totalEffort})
-        if self.steps.current == 'Change Milestones':
-            projectTotal = self.storage.get_step_data(
-                'Change Basic Information'
-            )['Change Basic Information-revisedTotal']
-            context.update({'totalValue': projectTotal})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -1061,57 +1095,6 @@ class ChangeProjectWizard(SessionWizardView):
                     self.request.session['changed'] = True
                 else:
                     self.request.session['changed'] = False
-
-        if step == 'Change Milestones':
-            currentProject = ProjectMilestone.objects.filter(
-                project__id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values('milestoneDate')
-            for eachData in currentProject:
-                delta = eachData['milestoneDate'] - datetime.now().date()
-                if delta.days <= 0:
-                    for eachForm in form:
-                        eachForm.fields['milestoneDate'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['description'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['amount'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['financial'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['DELETE'].widget.attrs[
-                            'readonly'
-                        ] = 'True'
-                        eachForm.fields['DELETE'].widget.attrs[
-                            'class'
-                        ] = 'form-control'
-                for eachForm in form:
-                    if eachForm.is_valid():
-                        if eachForm.cleaned_data['financial'] is False:
-                            if eachForm.cleaned_data['amount'] > 0:
-                                amount = form.cleaned_data[0]['amount']
-                                errors = eachForm._errors.setdefault(
-                                    amount,
-                                    ErrorList())
-                                errors.append(u'Please select milestone as \
-                                                financial')
-                        elif eachForm.cleaned_data['amount'] == 0:
-                            amount = form.cleaned_data[0]['amount']
-                            errors = eachForm._errors.setdefault(
-                                amount,
-                                ErrorList())
-                            errors.append(u'Financial Milestone amount \
-                                        cannot be 0')
-            if self.request.session['changed'] is False:
-                if form.is_valid():
-                    if form.has_changed():
-                        self.request.session['changed'] = True
-                    else:
-                        self.request.session['changed'] = False
         return form
 
     def get_form_initial(self, step):
@@ -1129,18 +1112,6 @@ class ChangeProjectWizard(SessionWizardView):
                 )[0]
             currentProject['revisedTotal'] = currentProject['totalValue']
             currentProject['revisedEffort'] = currentProject['plannedEffort']
-
-        if step == 'Change Milestones':
-            currentProject = ProjectMilestone.objects.filter(
-                project__id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values(
-                'id',
-                'milestoneDate',
-                'description',
-                'amount',
-                'financial'
-                )
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -1164,7 +1135,6 @@ def UpdateProjectInfo(request, newInfo):
         newInfo[0] ==> Selected Project Object
         newInfo[1] ==> 'reason' , 'endDate', 'revisedEffort', 'revisedTotal',
                        'closed', 'signed'
-        newInfo[2] ==> Milesonte Object(old Data + Newly add milestones if any)
     """
     try:
         prc = newInfo[0]['project']
@@ -1191,30 +1161,6 @@ def UpdateProjectInfo(request, newInfo):
         # We need the Primary key to create the CRId
         pci.crId = "CR-{0}".format(pci.id)
         pci.save()
-
-        for eachMilestone in newInfo[2]:
-            if eachMilestone['id'] == 0:
-                if eachMilestone['DELETE']:
-                    pass
-                else:
-                    pmc = ProjectMilestone()
-                    pmc.project = prc
-                    pmc.milestoneDate = eachMilestone['milestoneDate']
-                    pmc.description = eachMilestone['description']
-                    pmc.amount = eachMilestone['amount']
-                    pmc.financial = eachMilestone['financial']
-                    pmc.save()
-            else:
-                pmc = ProjectMilestone.objects.get(id=eachMilestone['id'])
-                if eachMilestone['DELETE']:
-                    pmc.delete()
-                else:
-                    pmc.project = prc
-                    pmc.milestoneDate = eachMilestone['milestoneDate']
-                    pmc.description = eachMilestone['description']
-                    pmc.amount = eachMilestone['amount']
-                    pmc.financial = eachMilestone['financial']
-                    pmc.save()
 
         return {'crId': pci.crId}
     except (ProjectTeamMember.DoesNotExist,
@@ -1354,10 +1300,6 @@ class CreateProjectWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
-        milestoneDataCounter = 0
-        changedMilestoneData = {}
-        cleanedMilestoneData = []
-
         basicInfo = [form.cleaned_data for form in form_list][0]
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
@@ -1372,21 +1314,6 @@ class CreateProjectWizard(SessionWizardView):
                 flagData[k] = v
         effortTotal = 0
 
-        for milestoneData in [form.cleaned_data for form in form_list][2]:
-            milestoneDataCounter += 1
-            for k, v in milestoneData.iteritems():
-                k = "{0}-{1}".format(k, milestoneDataCounter)
-                changedMilestoneData[k] = v
-            milestoneDate = 'milestoneDate-{0}'.format(
-                milestoneDataCounter)
-            changedMilestoneData[milestoneDate] = changedMilestoneData.get(
-                milestoneDate
-            ).strftime('%Y-%m-%d')
-            DELETE = 'DELETE-{0}'.format(milestoneDataCounter)
-            del changedMilestoneData[DELETE]
-            cleanedMilestoneData.append(changedMilestoneData.copy())
-            changedMilestoneData.clear()
-
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -1397,7 +1324,6 @@ class CreateProjectWizard(SessionWizardView):
             'flagData': flagData,
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
-            'milestone': cleanedMilestoneData
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -1409,7 +1335,7 @@ class ManageTeamWizard(SessionWizardView):
 
     def get_form_initial(self, step):
         currentProject = []
-        if step == 'Update Member':
+        if step == 'Manage Team':
             projectId = self.storage.get_step_data(
                 'My Projects')['My Projects-project']
             if projectId is not None:
@@ -1431,7 +1357,7 @@ class ManageTeamWizard(SessionWizardView):
                 projectManager=self.request.user,
                 closed=False
             )
-        if self.steps.current == 'Update Member':
+        if self.steps.current == 'Manage Team':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'class'
@@ -1577,36 +1503,16 @@ def saveProject(request):
                 pm.user = User.objects.get(pk=eachId)
                 pm.project = pr
                 pm.save()
+            pm = ProjectManager()
+            pm.user = request.user
+            pm.project = pr
+            pm.save()
         except ValueError as e:
             logger.exception(e)
             return render(
                 request,
                 'MyANSRSource/projectCreationFailure.html',
                 {})
-
-        milestoneTotal = int(request.POST.get('milestoneTotal')) + 1
-        for milestoneCount in range(1, milestoneTotal):
-            try:
-                pms = ProjectMilestone()
-                pms.project = pr
-                milestoneDate = 'milestoneDate-{0}'.format(milestoneCount)
-                description = 'description-{0}'.format(milestoneCount)
-                amount = 'amount-{0}'.format(milestoneCount)
-                financial = 'financial-{0}'.format(milestoneCount)
-                date = datetime.strptime(request.POST.get(milestoneDate),
-                                         '%Y-%m-%d')
-                pms.milestoneDate = date
-                pms.description = request.POST.get(description)
-                pms.financial = (request.POST.get(financial) == 'True')
-                pms.amount = float(request.POST.get(amount))
-                pms.save()
-            # Assuming any of the data conversions fail
-            except ValueError as e:
-                logger.exception(e)
-                return render(
-                    request,
-                    'MyANSRSource/projectCreationFailure.html',
-                    {})
 
         data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
@@ -1671,7 +1577,6 @@ def notify(request):
 def deleteProject(request):
     ProjectBasicInfoForm()
     ProjectTeamForm()
-    ProjectMilestoneForm()
     return HttpResponseRedirect('add')
 
 
@@ -1702,20 +1607,16 @@ def ViewProject(request):
 
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(
-            'reason',
-            'endDate',
-            'revisedEffort',
-            'revisedTotal',
-            'closed',
-            'closedOn',
-            'signed')
+            'reason', 'endDate', 'revisedEffort', 'revisedTotal',
+            'closed', 'closedOn', 'signed'
+        )
         data = {
-            'basicInfo': basicInfo,
-            'flagData': flagData,
-            'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData,
-            'changes': changeTracker
-        }
+                'basicInfo': basicInfo,
+                'flagData': flagData,
+                'teamMember': cleanedTeamData,
+                'milestone': cleanedMilestoneData,
+                'changes': changeTracker
+            }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
         'name', 'id', 'closed'
