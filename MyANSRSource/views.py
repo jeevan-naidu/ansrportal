@@ -208,33 +208,34 @@ def Timesheet(request):
                     timesheetList.append(timesheetDict.copy())
                     timesheetDict.clear()
             for activity in activities:
-                if activity.cleaned_data['DELETE'] is True:
-                    TimeSheetEntry.objects.filter(
-                        id=activity.cleaned_data['atId']
-                    ).delete()
-                else:
-                    del(activity.cleaned_data['DELETE'])
-                    for k, v in activity.cleaned_data.iteritems():
-                        if k == 'activity_monday':
-                            mondayTotal += float(v)
-                        elif k == 'activity_tuesday':
-                            tuesdayTotal += float(v)
-                        elif k == 'activity_wednesday':
-                            wednesdayTotal += float(v)
-                        elif k == 'activity_thursday':
-                            thursdayTotal += float(v)
-                        elif k == 'activity_friday':
-                            fridayTotal += float(v)
-                        elif k == 'activity_saturday':
-                            saturdayTotal += float(v)
-                        elif k == 'activity_sunday':
-                            sundayTotal += float(v)
-                        elif k == 'total':
-                            nonbillableTotal += float(v)
-                            weekTotal += float(v)
-                        activityDict[k] = v
-                    activitiesList.append(activityDict.copy())
-                    activityDict.clear()
+                if activity.cleaned_data['activity'] is not None:
+                    if activity.cleaned_data['DELETE'] is True:
+                        TimeSheetEntry.objects.filter(
+                            id=activity.cleaned_data['atId']
+                        ).delete()
+                    else:
+                        del(activity.cleaned_data['DELETE'])
+                        for k, v in activity.cleaned_data.iteritems():
+                            if k == 'activity_monday':
+                                mondayTotal += float(v)
+                            elif k == 'activity_tuesday':
+                                tuesdayTotal += float(v)
+                            elif k == 'activity_wednesday':
+                                wednesdayTotal += float(v)
+                            elif k == 'activity_thursday':
+                                thursdayTotal += float(v)
+                            elif k == 'activity_friday':
+                                fridayTotal += float(v)
+                            elif k == 'activity_saturday':
+                                saturdayTotal += float(v)
+                            elif k == 'activity_sunday':
+                                sundayTotal += float(v)
+                            elif k == 'total':
+                                nonbillableTotal += float(v)
+                                weekTotal += float(v)
+                            activityDict[k] = v
+                        activitiesList.append(activityDict.copy())
+                        activityDict.clear()
             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
@@ -243,55 +244,56 @@ def Timesheet(request):
             elif (weekTotal < 36) | (weekTotal > 44) | \
                  (billableTotal > 44) | (nonbillableTotal > 40) | \
                  (leaveDayWork is True):
-                for eachActivity in activitiesList:
-                    # Getting objects for models
-                    if eachActivity['atId'] > 0:
-                        nonbillableTS = TimeSheetEntry.objects.get(
-                            pk=eachActivity['atId']
-                        )
-                        update = 1
-                    else:
-                        nonbillableTS = TimeSheetEntry()
-                        update = 0
-                    # Common values for Billable and Non-Billable
-                    nonbillableTS.wkstart = changedStartDate
-                    nonbillableTS.wkend = changedEndDate
-                    nonbillableTS.teamMember = request.user
-                    if update:
-                        if 'save' not in request.POST:
-                            nonbillableTS.hold = True
-                    else:
-                        if 'save' not in request.POST:
-                            nonbillableTS.hold = True
-                    if (weekTotal < 36) | (weekTotal > 44):
-                        nonbillableTS.exception = \
-                            '10% deviation in totalhours for this week'
-                    elif nonbillableTotal > 40:
-                        nonbillableTS.exception = \
-                            'NonBillable activity more than 40 Hours'
-                    for k, v in eachActivity.iteritems():
-                        if k == 'activity_monday':
-                            nonbillableTS.mondayH = v
-                        elif k == 'activity_tuesday':
-                            nonbillableTS.tuesdayH = v
-                        elif k == 'activity_wednesday':
-                            nonbillableTS.wednesdayH = v
-                        elif k == 'activity_thursday':
-                            nonbillableTS.thursdayH = v
-                        elif k == 'activity_friday':
-                            nonbillableTS.fridayH = v
-                        elif k == 'activity_saturday':
-                            nonbillableTS.saturdayH = v
-                        elif k == 'activity_sunday':
-                            nonbillableTS.sundayH = v
-                        elif k == 'activity_total':
-                            nonbillableTS.totalH = v
-                        elif k == 'activity_feedback':
-                            nonbillableTS.feedback = v
-                        elif k == 'activity':
-                            nonbillableTS.activity = v
-                    nonbillableTS.save()
-                    eachActivity['atId'] = nonbillableTS.id
+                if len(activitiesList):
+                    for eachActivity in activitiesList:
+                        # Getting objects for models
+                        if eachActivity['atId'] > 0:
+                            nonbillableTS = TimeSheetEntry.objects.get(
+                                pk=eachActivity['atId']
+                            )
+                            update = 1
+                        else:
+                            nonbillableTS = TimeSheetEntry()
+                            update = 0
+                        # Common values for Billable and Non-Billable
+                        nonbillableTS.wkstart = changedStartDate
+                        nonbillableTS.wkend = changedEndDate
+                        nonbillableTS.teamMember = request.user
+                        if update:
+                            if 'save' not in request.POST:
+                                nonbillableTS.hold = True
+                        else:
+                            if 'save' not in request.POST:
+                                nonbillableTS.hold = True
+                        if (weekTotal < 36) | (weekTotal > 44):
+                            nonbillableTS.exception = \
+                                '10% deviation in totalhours for this week'
+                        elif nonbillableTotal > 40:
+                            nonbillableTS.exception = \
+                                'NonBillable activity more than 40 Hours'
+                        for k, v in eachActivity.iteritems():
+                            if k == 'activity_monday':
+                                nonbillableTS.mondayH = v
+                            elif k == 'activity_tuesday':
+                                nonbillableTS.tuesdayH = v
+                            elif k == 'activity_wednesday':
+                                nonbillableTS.wednesdayH = v
+                            elif k == 'activity_thursday':
+                                nonbillableTS.thursdayH = v
+                            elif k == 'activity_friday':
+                                nonbillableTS.fridayH = v
+                            elif k == 'activity_saturday':
+                                nonbillableTS.saturdayH = v
+                            elif k == 'activity_sunday':
+                                nonbillableTS.sundayH = v
+                            elif k == 'activity_total':
+                                nonbillableTS.totalH = v
+                            elif k == 'activity_feedback':
+                                nonbillableTS.feedback = v
+                            elif k == 'activity':
+                                nonbillableTS.activity = v
+                        nonbillableTS.save()
+                        eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
@@ -326,33 +328,34 @@ def Timesheet(request):
                     eachTimesheet['tsId'] = billableTS.id
             else:
                 # Save Timesheet
-                for eachActivity in activitiesList:
-                    # Getting objects for models
-                    if eachActivity['atId'] > 0:
-                        nonbillableTS = TimeSheetEntry.objects.filter(
-                            id=eachActivity['atId']
-                        )[0]
-                    else:
-                        nonbillableTS = TimeSheetEntry()
-                    # Common values for Billable and Non-Billable
-                    nonbillableTS.wkstart = changedStartDate
-                    nonbillableTS.wkend = changedEndDate
-                    nonbillableTS.activity = eachActivity['activity']
-                    nonbillableTS.teamMember = request.user
-                    if 'save' not in request.POST:
-                        nonbillableTS.approved = True
-                        nonbillableTS.managerFeedback = 'System Approved'
-                        nonbillableTS.hold = True
-                        nonbillableTS.approvedon = datetime.now().replace(
-                            tzinfo=utc)
-                    else:
-                        nonbillableTS.approved = False
-                        nonbillableTS.hold = False
-                    for k, v in eachActivity.iteritems():
-                        if k != 'hold' and k != 'approved':
-                            setattr(nonbillableTS, k, v)
-                    nonbillableTS.save()
-                    eachActivity['atId'] = nonbillableTS.id
+                if len(activitiesList):
+                    for eachActivity in activitiesList:
+                        # Getting objects for models
+                        if eachActivity['atId'] > 0:
+                            nonbillableTS = TimeSheetEntry.objects.filter(
+                                id=eachActivity['atId']
+                            )[0]
+                        else:
+                            nonbillableTS = TimeSheetEntry()
+                        # Common values for Billable and Non-Billable
+                        nonbillableTS.wkstart = changedStartDate
+                        nonbillableTS.wkend = changedEndDate
+                        nonbillableTS.activity = eachActivity['activity']
+                        nonbillableTS.teamMember = request.user
+                        if 'save' not in request.POST:
+                            nonbillableTS.approved = True
+                            nonbillableTS.managerFeedback = 'System Approved'
+                            nonbillableTS.hold = True
+                            nonbillableTS.approvedon = datetime.now().replace(
+                                tzinfo=utc)
+                        else:
+                            nonbillableTS.approved = False
+                            nonbillableTS.hold = False
+                        for k, v in eachActivity.iteritems():
+                            if k != 'hold' and k != 'approved':
+                                setattr(nonbillableTS, k, v)
+                        nonbillableTS.save()
+                        eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
                     if eachTimesheet['tsId'] > 0:
                         billableTS = TimeSheetEntry.objects.filter(
@@ -599,12 +602,22 @@ def renderTimesheet(request, data):
     for others in othersHours:
         othersTotal += others['totalH']
     tsform = TimesheetFormset(request.user)
-    tsFormset = formset_factory(tsform,
-                                extra=data['extra'],
-                                can_delete=True)
-    atFormset = formset_factory(ActivityForm,
-                                extra=data['extra'],
-                                can_delete=True)
+    if len(data['tsFormList']):
+        tsFormset = formset_factory(tsform,
+                                    extra=data['extra'],
+                                    can_delete=True)
+    else:
+        tsFormset = formset_factory(tsform,
+                                    extra=1,
+                                    can_delete=True)
+    if len(data['atFormList']):
+        atFormset = formset_factory(ActivityForm,
+                                    extra=data['extra'],
+                                    can_delete=True)
+    else:
+        atFormset = formset_factory(ActivityForm,
+                                    extra=1,
+                                    can_delete=True)
     if len(data['tsFormList']):
         atFormset = atFormset(initial=data['atFormList'], prefix='at')
         tsFormset = tsFormset(initial=data['tsFormList'])
@@ -861,12 +874,10 @@ class ManageTeamLeaderWizard(SessionWizardView):
             myProject = self.get_cleaned_data_for_step('My Projects')['project']
             pm = Project.objects.filter(id=myProject.id).values(
                 'projectManager',
-                'id'
             )
             l = []
             for eachData in pm:
                 l.append(eachData['projectManager'])
-                l.append(eachData['id'])
             projectMS = {'projectManager': l}
             return self.initial_dict.get(step, projectMS)
 
@@ -1031,30 +1042,6 @@ TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 @login_required
 def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
-
-
-class TrackMilestoneWizard(SessionWizardView):
-
-    def get_template_names(self):
-        return [TMTEMPLATES[self.steps.current]]
-
-    def get_form_initial(self, step):
-        projectMS = {}
-        if step == 'Close Milestone':
-            selectedProjectId = self.storage.get_step_data(
-                'My Projects'
-            )['My Projects-project']
-            projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId,
-            ).values(
-                'id',
-                'milestoneDate',
-                'description',
-                'amount',
-                'closed'
-            )
-        return self.initial_dict.get(step, projectMS)
-
 
 class ChangeProjectWizard(SessionWizardView):
 
@@ -1378,6 +1365,7 @@ class ManageTeamWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
+        project = [form.cleaned_data for form in form_list][0]['project']
         for eachData in [form.cleaned_data for form in form_list][1]:
             if None in eachData.values():
                 pass
@@ -1390,43 +1378,40 @@ class ManageTeamWizard(SessionWizardView):
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                 else:
                     ptm = ProjectTeamMember()
-
-                ptm.project = [
-                    form.cleaned_data for form in form_list][0]['project']
-                del(eachData['id'])
-                for k, v in eachData.iteritems():
-                    setattr(ptm, k, v)
-                ptm.save()
-                teamMembers = ProjectTeamMember.objects.filter(
-                    project__id=ptm.project.id
-                ).values('member__email', 'member__first_name',
-                         'member__last_name', 'startDate', 'role__name')
-                pm = ProjectManager.objects.filter(
-                    project__id=ptm.project.id
-                ).values('user__first_name', 'user__last_name')
-                l = []
-                for eachManager in pm:
-                    name = eachManager['user__first_name'] + \
-                        "  " + eachManager['user__last_name']
-                    l.append(name)
-                if len(l) > 1:
-                    manager = ",".join(l)
-                else:
-                    manager = "  ".join(l)
-                for eachMember in teamMembers:
-                    if eachMember['member__email'] != '':
-                        context = {
-                            'first_name': eachMember['member__first_name'],
-                            'projectId': ptm.project.projectId,
-                            'projectName': ptm.project.name,
-                            'pmname': manager,
-                            'startDate': ptm.project.startDate,
-                            'mystartdate': eachMember['startDate'],
-                            'myrole': eachMember['role__name'],
-                        },
-                        """SendEmail(context,
-                                  eachMember['member__email'],
-                                  'projectCreatedTeam')"""
+                    ptm.project = project
+                    del(eachData['id'])
+                    for k, v in eachData.iteritems():
+                        setattr(ptm, k, v)
+                    ptm.save()
+        teamMembers = ProjectTeamMember.objects.filter(
+            project__id=project.id
+        ).values('member__email', 'member__first_name',
+                 'member__last_name', 'startDate', 'role__name')
+        pm = ProjectManager.objects.filter(
+            project__id=project.id
+        ).values('user__first_name', 'user__last_name')
+        l = []
+        for eachManager in pm:
+            name = eachManager['user__first_name'] + \
+                "  " + eachManager['user__last_name']
+            l.append(name)
+        if len(l) > 1:
+            manager = ",".join(l)
+        else:
+            manager = "  ".join(l)
+        for eachMember in teamMembers:
+            if eachMember['member__email'] != '':
+                context = {
+                    'first_name': eachMember['member__first_name'],
+                    'projectId': ptm.project.projectId,
+                    'projectName': ptm.project.name,
+                    'pmname': manager,
+                    'startDate': ptm.project.startDate,
+                    'mystartdate': eachMember['startDate'],
+                    'myrole': eachMember['role__name'],
+                },
+                """SendEmail(context, eachMember['member__email'],
+                'projectCreatedTeam')"""
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1503,10 +1488,11 @@ def saveProject(request):
                 pm.user = User.objects.get(pk=eachId)
                 pm.project = pr
                 pm.save()
-            pm = ProjectManager()
-            pm.user = request.user
-            pm.project = pr
-            pm.save()
+            if pm.user != request.user:
+                pm = ProjectManager()
+                pm.user = request.user
+                pm.project = pr
+                pm.save()
         except ValueError as e:
             logger.exception(e)
             return render(
