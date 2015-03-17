@@ -886,7 +886,23 @@ class ManageTeamLeaderWizard(SessionWizardView):
         myProject = self.get_cleaned_data_for_step('My Projects')['project']
         myProject = Project.objects.get(id=myProject.id)
         pm = ProjectManager()
+        allData = ProjectManager.objects.filter(
+            project=myProject).values('id', 'user')
+        updateDataId = [eachData.id for eachData in updatedData]
+        for eachData in allData:
+            if eachData['user'] not in updateDataId:
+                ProjectManager.objects.get(pk=eachData['id']).delete()
         for eachData in updatedData:
+            oldData = ProjectManager.objects.filter(
+                project=myProject, user=eachData).values('id')
+            if len(oldData):
+                pass
+            else:
+                pm.project = myProject
+                pm.user = eachData
+                pm.save()
+
+        """for eachData in updatedData:
             l = []
             allData = ProjectManager.objects.filter(
                 project=myProject).values('id')
@@ -909,7 +925,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
             else:
                 pm.project = myProject
                 pm.user = eachData
-                pm.save()
+                pm.save()"""
 
         return HttpResponseRedirect('/myansrsource/dashboard')
 
