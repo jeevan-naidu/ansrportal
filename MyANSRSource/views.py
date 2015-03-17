@@ -602,9 +602,14 @@ def renderTimesheet(request, data):
     for others in othersHours:
         othersTotal += others['totalH']
     tsform = TimesheetFormset(request.user)
-    tsFormset = formset_factory(tsform,
-                                extra=data['extra'],
-                                can_delete=True)
+    if len(data['tsFormList']):
+        tsFormset = formset_factory(tsform,
+                                    extra=data['extra'],
+                                    can_delete=True)
+    else:
+        tsFormset = formset_factory(tsform,
+                                    extra=1,
+                                    can_delete=True)
     if len(data['atFormList']):
         atFormset = formset_factory(ActivityForm,
                                     extra=data['extra'],
