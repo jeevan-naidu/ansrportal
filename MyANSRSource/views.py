@@ -885,7 +885,6 @@ class ManageTeamLeaderWizard(SessionWizardView):
         updatedData = [form.cleaned_data for form in form_list][1]['projectManager']
         myProject = self.get_cleaned_data_for_step('My Projects')['project']
         myProject = Project.objects.get(id=myProject.id)
-        pm = ProjectManager()
         allData = ProjectManager.objects.filter(
             project=myProject).values('id', 'user')
         updateDataId = [eachData.id for eachData in updatedData]
@@ -893,6 +892,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
             if eachData['user'] not in updateDataId:
                 ProjectManager.objects.get(pk=eachData['id']).delete()
         for eachData in updatedData:
+            pm = ProjectManager()
             oldData = ProjectManager.objects.filter(
                 project=myProject, user=eachData).values('id')
             if len(oldData):
@@ -901,32 +901,6 @@ class ManageTeamLeaderWizard(SessionWizardView):
                 pm.project = myProject
                 pm.user = eachData
                 pm.save()
-
-        """for eachData in updatedData:
-            l = []
-            allData = ProjectManager.objects.filter(
-                project=myProject).values('id')
-            recivedData = ProjectManager.objects.filter(
-                project=myProject, user=eachData).values('id')
-            if len(recivedData):
-                a = [int(eachData['id']) for eachData in allData]
-                r = [int(eachData['id']) for eachData in recivedData]
-                for eachA in a:
-                    # Manager already assigned so it is left untouched
-                    if eachA in r:
-                        pass
-                    else:
-                        l.append(eachA)
-                # To delete an existing manager
-                for eachId in l:
-                    manager = ProjectManager.objects.get(pk=eachId)
-                    manager.delete()
-            # To add a new manager
-            else:
-                pm.project = myProject
-                pm.user = eachData
-                pm.save()"""
-
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 manageTeamLeader = ManageTeamLeaderWizard.as_view(TLFORMS)
