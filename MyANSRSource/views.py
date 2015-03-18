@@ -1442,11 +1442,11 @@ def NotifyMember(ptmid, delete):
 
 def SendMail(data, toAddr, templateName):
     sm = SendEmail()
-    data['startDate'] = int(data['startDate'].strftime("%s")) * 1000
-    data['mystartdate'] = int(data['mystartdate'].strftime("%s")) * 1000
+    data['startDate'] = data['startDate'].strftime("%d-%m-%Y")
+    data['mystartdate'] = data['mystartdate'].strftime("%d-%m-%Y")
     sm.content = json.dumps(data)
     sm.template_name = templateName
-    sm.toAddr = json.dumps(toAddr)
+    sm.toAddr = json.dumps([toAddr])
     sm.save()
 
 @login_required
