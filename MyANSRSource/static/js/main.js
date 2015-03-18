@@ -1203,8 +1203,6 @@ app.autoFillInit = function($currentElement, $currentChapter) {
         win.close();
     }
 
-    app.autoFillField($currentElement, $currentChapter);
-
     if (typeof(dismissAddAnotherPopup) !== 'undefined') {
         var oldDismissAddAnotherPopup = dismissAddAnotherPopup;
         dismissAddAnotherPopup = function(win, newId, newRepr) {
@@ -1215,55 +1213,6 @@ app.autoFillInit = function($currentElement, $currentChapter) {
         }
     }
 };
-
-
-app.autoFillField = function($curElement, $chapter){
-    function fill_field(val, init_value){
-        /*if (!val || val==''){
-            options = '<option value="">---------<'+'/option>';
-            $curElement.html(options);
-            $($curElement[0].options[0]).attr('selected', 'selected');
-            $curElement.trigger('change');
-            return;
-        }*/
-
-        //var $chapter = $('#id_form-2-chapter');
-
-        $.getJSON("/chaining/filter/MyANSRSource/Chapter/project/"+val+"/", function(j){
-            var options = '<option value="">---------<'+'/option>';
-            for (var i = 0; i < j.length; i++) {
-                options += '<option value="' + j[i].value + '">' + j[i].display + '<'+'/option>';
-            }
-            var width = $chapter.outerWidth();
-            $($chapter[0]).html(options);
-            if (navigator.appVersion.indexOf("MSIE") != -1)
-                $curElement.width(width + 'px');
-            //$($chapter[0].options[0]).attr('selected', 'selected');
-
-            var auto_choose = true;
-            if(val){
-                $($chapter[0].options[1]).attr('selected', 'selected');
-            }
-            /*if(auto_choose && j.length == 1){
-                $($chapter[0].options[value="'+ j[0].value +'"]).attr('selected', 'selected');
-            }*/
-            //$chapter.trigger('change');
-        })
-    }
-
-    if(!$curElement.hasClass("chained")){
-        var val = $curElement.val();
-        fill_field(val, "None");
-    }
-
-    $curElement.change(function(){
-        var start_value = $chapter.val();
-        var val = $(this).val();
-        fill_field(val, start_value);
-    });
-
-};
-
 
 // Get holiday list when change member
 $.fn.getMemberHolidayList = function(options) {
