@@ -222,10 +222,10 @@ def TimesheetFormset(currentUser):
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item"
             self.fields['chapter'].widget.attrs[
-                'class'] = "form-control d-item b-chapter"
+                'class'] = "form-control d-item b-chapter remove-sel-options"
             self.fields['task'].widget.attrs[
                 'class'
-            ] = "form-control d-item b-task"
+            ] = "form-control d-item b-task remove-sel-options"
             self.fields['mondayQ'].widget.attrs[
                 'class'
             ] = "b-questions-hidden d-item"

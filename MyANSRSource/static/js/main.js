@@ -62,47 +62,66 @@ app.calcCurRowChangeDate = function($tableEle) {
 };
 
 
+
+app.getTaskChapter = function(selValue, currRow) {
+    if(selValue) {
+        $.ajax({
+            url: '/myansrsource/gettask/' + selValue + '/',
+            dataType: 'json',
+            success: function(data) {
+                var data = data.data,
+                    dataLen = data.length,
+                    options = '',
+                    i;
+
+                for (i = 0; i < dataLen; i++) {
+                    options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+                }
+
+                currRow.find(".b-task").html(options);
+            },
+            error: function(data) {
+                console.log('Error: ' + data);
+            }
+        });
+
+        $.ajax({
+            url: '/myansrsource/getchapters/' + selValue + '/',
+            dataType: 'json',
+            success: function(data) {
+                var data = data.data,
+                    dataLen = data.length,
+                    options = '',
+                    i;
+                for (i = 0; i < dataLen; i++) {
+                    options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+                }
+                currRow.find(".b-chapter").html(options);
+            },
+            error: function(data) {
+                console.log('Error: ' + data);
+            }
+        });
+    } else {
+        var options = '<option value>' + '-------' + '</option>';
+        
+        currRow.find(".b-task").html(options);
+        currRow.find(".b-chapter").html(options);
+    }
+}; 
+
 app.changeProject = function() {
+    
     app.billableSelectProject.on('change', function() {
         var $this = $(this),
-            $rows = $this.closest('tr'),
-            $projectUnitsElement = $rows.find('.project-unit'),
+            $row = $this.closest('tr'),
+            $projectUnitsElement = $row.find('.project-unit'),
             selectedValue = Number($this.val()),
             selectedProject;
-            $.ajax({
-                url: '/myansrsource/gettask/' + selectedValue + '/',
-                dataType: 'json',
-                success: function(data) {
-                    var data = data.data,
-                        dataLen = data.length,
-                        options = '',
-                        i;
-                    for (i = 0; i < dataLen; i++) {
-                        options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
-                    }
-                    $rows.find(".b-task").html(options);
-                },
-                error: function(data) {
-                    console.log('Error: ' + data);
-                }
-            });
-            $.ajax({
-                url: '/myansrsource/getchapters/' + selectedValue + '/',
-                dataType: 'json',
-                success: function(data) {
-                    var data = data.data,
-                        dataLen = data.length,
-                        options = '',
-                        i;
-                    for (i = 0; i < dataLen; i++) {
-                        options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
-                    }
-                    $rows.find(".b-chapter").html(options);
-                },
-                error: function(data) {
-                    console.log('Error: ' + data);
-                }
-            });
+        
+            
+            
+            app.getTaskChapter(selectedValue, $row);
 
 
         // get current project by id
@@ -129,9 +148,33 @@ app.getById = function(arr, propName, id) {
     }
 };
 
-// Main
+// Main: IIEF for local scope 
 (function() {
+    function getTastChaptersEachProject() {
+        var billableSelectProject = $('.billable-select-project'),
+            billableSelectProjectLen = billableSelectProject.length,
+            $item,
+            selValue,
+            $task,
+            $chapter,
+            $row,
+            i;
+        
+        for(i = 0; i < billableSelectProjectLen; i += 1) {
+            $item = $(billableSelectProject[0]);
+            selValue = $item.val();
+            $row = $item.closest('tr');
+            
+            app.getTaskChapter(selValue, $row);
+        }
+    }
+    
+    app.init = function() {
+        getTastChaptersEachProject();
+    }
+    
     $(document).ready(function() {
+        app.init();
         var $popover = $('.popover');
         app.norms = '0.0 / Day';
         // Manage project
@@ -385,28 +428,7 @@ app.getIdNo = function(str) {
 	    newRow = lastRow.clone();
         newRowId = lastRowId + 1;
 
-        /*screenName = newRow.find('td:first').children(':first').attr('id');
-	    if (screenName.search("Milestones") >= 0) {
-		    if (newRow.find('td:first').children(':first').children(':first').attr('readonly')) {
-			newRow.find('td:nth-child(1)').children(':first').children(':first').attr('readonly',false)
-			newRow.find('td:nth-child(2)').children(':first').attr('readonly',false)
-			newRow.find('td:nth-child(3)').children(':first').attr('readonly',false)
-			newRow.find('td:nth-child(4)').children(':first').attr('readonly',false)
-		    }
-	    }
-	    else {
-		    if (newRow.find('td:first').children(':first').attr('readonly')) {
-			newRow.find('td:nth-child(1)').children(':first').attr('readonly',false)
-			newRow.find('td:nth-child(2)').children(':first').attr('readonly',false)
-			newRow.find('td:nth-child(3)').children(':first').children(':first').attr('readonly', false)
-			newRow.find('td:nth-child(4)').children(':first').children(':first').attr('readonly', false)
-			newRow.find('td:nth-child(5)').children(':first').attr('readonly',false)
-		    }
-	    }*/
-
-	    //newRow.find('input[type="hidden"]:last').val(0)
-            
-	    lastRow.after(newRow);
+        lastRow.after(newRow);
 
             $formFields = newRow.find('select, input, div, span');
             formFieldsLen = $formFields.length;
@@ -559,6 +581,19 @@ app.getIdNo = function(str) {
                         $element.text('0');
                     }
                 }
+                
+                if($element.hasClass('remove-sel-options')) {
+                    var elementType3 = $element.prop('tagName');
+                    if(elementType3 === 'SELECT') {
+                        $element.find('option')
+                                .remove()
+                                .end()
+                                .append('<option value>-----</option>');
+                        console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                    } 
+                }
+                
+                
             console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });

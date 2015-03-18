@@ -22,7 +22,7 @@ def getContent(deadlineDate):
     return ProjectMilestone.objects.filter(
         milestoneDate=deadlineDate
     ).values('project__name',
-             'project__id',
+             'project__projectId',
              'description',
              'milestoneDate',
              'project__projectManager__first_name',

@@ -15,7 +15,6 @@ class Command(BaseCommand):
         start = today - timedelta(days=today.weekday())
         end = start + timedelta(days=6)
         data = getTSStatus(start, end)
-        print data
         sendEmail(self, data, start, end)
 
 
@@ -24,7 +23,7 @@ def sendEmail(self, data, start, end):
         send_templated_mail(
             template_name='timesheetStatus',
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[eachDetail['manager'].email, ],
+            recipient_list=eachDetail['managers_email'],
             context={
                 'project': eachDetail['project'],
                 'billableHours': eachDetail['billableHours'],
@@ -89,8 +88,10 @@ def getTSStatus(start, end):
     for eachNon in tsMemberTotals:
         d = {}
         d['project'] = Project.objects.get(pk=eachNon['project']).name
-        managers = ProjectManager.objects.get(pk=eachNon['project']).user
-        d['manager'] = managers
+        managers_email = ProjectManager.objects.filter(
+            project__id=eachNon['project']).values('user__email')
+        d['managers_email'] = [eachEmail[
+            'user__email'] for eachEmail in managers_email]
         d['billableHours'] = eachNon['billableHours']
         d['status'] = eachNon['status']
         d['teamMember'] = User.objects.get(pk=eachNon['teamMember']).username
