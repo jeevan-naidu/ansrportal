@@ -14,7 +14,7 @@ class ActivityForm(forms.Form):
     activity = forms.ModelChoiceField(
         queryset=Activity.objects.all(),
         label="Activity",
-        required=True,
+        required=False,
     )
     activity_monday = forms.DecimalField(label="Mon",
                                          max_digits=12,

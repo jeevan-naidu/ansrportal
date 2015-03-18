@@ -34,7 +34,7 @@
 				{% if '-0' in t.id_for_label %}
 					<thead>
 						{% for field in form %}
-							<th>
+							<th class="col-lg-4">
 								{% if field.label != 'msRecId' %}
 									<small>{{ field.label }}</small>
 									{% if field.field.required %}
