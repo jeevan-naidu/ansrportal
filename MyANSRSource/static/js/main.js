@@ -161,7 +161,7 @@ app.getById = function(arr, propName, id) {
             i;
         
         for(i = 0; i < billableSelectProjectLen; i += 1) {
-            $item = $(billableSelectProject[0]);
+            $item = $(billableSelectProject[i]);
             selValue = $item.val();
             $row = $item.closest('tr');
             
