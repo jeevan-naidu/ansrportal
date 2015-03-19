@@ -1594,7 +1594,7 @@ def ViewProject(request):
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
-            'member__username', 'role', 'startDate', 'endDate',
+            'member__username', 'startDate', 'endDate',
             'plannedEffort', 'rate'
             )
         if basicInfo['internal']:
