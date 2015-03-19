@@ -241,6 +241,10 @@ def Timesheet(request):
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
+            elif ('save' not in request.POST) and (weekTotal < 40):
+                messages.error(request,
+                               'Your total timesheet activity for \
+                               this week is below 40 hours')
             elif (weekTotal < 36) | (weekTotal > 44) | \
                  (billableTotal > 44) | (nonbillableTotal > 40) | \
                  (leaveDayWork is True):
