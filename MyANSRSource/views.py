@@ -25,7 +25,7 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
     Chapter, projectType, Task, ProjectManager, SendEmail
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
-    ProjectTeamForm, ActivityForm, TimesheetFormset, ProjectFlagForm, \
+    ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     ChangeProjectForm, CloseProjectMilestoneForm, changeProjectLeaderForm
 
@@ -1317,7 +1317,7 @@ class ManageTeamWizard(SessionWizardView):
                 'My Projects')['My Projects-project']
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
-                    project__id=projectId).values('id', 'member', 'role',
+                    project__id=projectId).values('id', 'member',
                                                   'startDate', 'endDate',
                                                   'plannedEffort', 'rate'
                                                   )
@@ -1372,8 +1372,7 @@ class ManageTeamWizard(SessionWizardView):
                            (eachData['endDate'] == ptm.endDate) and \
                            (eachData['plannedEffort'] == ptm.plannedEffort) and \
                            (eachData['member'] == ptm.member) and \
-                           (eachData['rate'] == ptm.rate) and \
-                           (eachData['role'] == ptm.role):
+                                (eachData['rate'] == ptm.rate):
                                pass
                         else:
                             ptm.project = project
@@ -1410,7 +1409,8 @@ def NotifyMember(ptmid, delete):
                 'first_name': teamMember.member.first_name,
                 'projectId': teamMember.project.projectId,
                 'projectName': teamMember.project.name,
-                'myrole': teamMember.role.name,
+                'startDate': teamMember.project.startDate,
+                'mystartdate': teamMember.startDate,
             }
             SendMail(context, email, 'projectRemovedTeam')
     else:
@@ -1435,7 +1435,6 @@ def NotifyMember(ptmid, delete):
                 'startDate': teamMember.project.startDate,
                 'mystartdate': teamMember.startDate,
                 'plannedEffort': teamMember.plannedEffort,
-                'myrole': teamMember.role.name,
             }
             SendMail(context, email, 'projectCreatedTeam')
 
@@ -1577,7 +1576,6 @@ def notify(request):
 @login_required
 def deleteProject(request):
     ProjectBasicInfoForm()
-    ProjectTeamForm()
     return HttpResponseRedirect('add')
 
 

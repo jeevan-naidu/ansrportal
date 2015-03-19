@@ -308,13 +308,6 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
     member = models.ForeignKey(User, blank=True, null=True)
-    role = models.ForeignKey(
-        employee.models.Designation,
-        verbose_name="Role",
-        blank=True,
-        default=None,
-        null=True,
-    )
     startDate = models.DateField(verbose_name='Start date on project',
                                  blank=True,
                                  default=timezone.now)
