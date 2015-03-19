@@ -1047,7 +1047,9 @@ class ChangeProjectWizard(SessionWizardView):
                     'My Projects'
                 )['My Projects-project'])
             totalEffort = currentProject.plannedEffort
-            context.update({'totalEffort': totalEffort})
+            projectName = "{0}: {1}".format(currentProject.name,
+                                            currentProject.projectId)
+            context.update({'totalEffort': totalEffort, 'projectName': projectName})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -1586,7 +1588,8 @@ def ViewProject(request):
         projectObj = Project.objects.filter(id=projectId)
         basicInfo = projectObj.values(
             'projectType__description', 'bu__name', 'customer__name',
-            'name', 'book__name', 'signed', 'internal', 'currentProject'
+            'name', 'book__name', 'signed', 'internal', 'currentProject',
+            'projectId'
         )[0]
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',

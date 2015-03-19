@@ -2,7 +2,9 @@
 
 {% block PSactiveClass %}active{% endblock %}
 {% block viewProjectContent %}
-<legend><b>Summary</b></legend>
+<legend><b>Summary</b>
+    <span class="float-right"><h3><small><b>{{ basicInfo.name }} :  {{ basicInfo.projectId }}</b></small></h3></span>
+</legend>
 <div class="panel panel-default">
 	<div class="panel-heading overflowHidden">
 		<b>
@@ -14,7 +16,6 @@
 		<thead>
 				<th>Type</th>
 				<th>Business Unit</th>
-				<th>Name</th>
 				<th>Customer</th>
 				<th>Book</th>
 				<th>Is it an internal Project?</th>
@@ -25,7 +26,6 @@
 		<tr>
 			<td>{{ basicInfo.projectType__description }}</td>
 			<td>{{ basicInfo.bu__name }}</td>
-			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer__name }}</td>
 			<td>{{ basicInfo.book__name }}</td>
 			<td>
