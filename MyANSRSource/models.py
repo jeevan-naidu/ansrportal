@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
-import employee
 from django.core.validators import MinValueValidator, RegexValidator
 
 TASKTYPEFLAG = (
@@ -179,7 +178,7 @@ class Project(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return self.projectId + ' : '  + self.name
 
     class Meta:
         permissions = (

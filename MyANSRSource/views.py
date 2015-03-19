@@ -1047,7 +1047,7 @@ class ChangeProjectWizard(SessionWizardView):
                     'My Projects'
                 )['My Projects-project'])
             totalEffort = currentProject.plannedEffort
-            projectName = "{0}: {1}".format(currentProject.name,
+            projectName = "{1} : {0}".format(currentProject.name,
                                             currentProject.projectId)
             context.update({'totalEffort': totalEffort, 'projectName': projectName})
         return context
@@ -1348,7 +1348,7 @@ class ManageTeamWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                    holiday['date'] = int(
+                     holiday['date'] = int(
                         holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
@@ -1621,7 +1621,7 @@ def ViewProject(request):
             }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
-        'name', 'id', 'closed'
+        'name', 'id', 'closed', 'projectId'
     )
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
