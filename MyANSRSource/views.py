@@ -632,7 +632,7 @@ def renderTimesheet(request, data):
         atFormset = atFormset(prefix='at')
 
     attendanceObj = employee.models.Attendance.objects.filter(
-        employee__employee_assigned_id=request.user.id,
+        employee = request.user.employee,
         attdate__range=[data['weekstartDate'], data['weekendDate']]
     )
     attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
