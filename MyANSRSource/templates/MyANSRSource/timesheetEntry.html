@@ -44,6 +44,16 @@
 				<td class="text-center"><b>{{ v }}</b></td>
 			{% endfor %}
 		</tr>
+		<tr>
+			<td colspan="4" class="text-right"><h5></small><b>Timesheet hours</b></small></h5></td>
+			<td class="text-center total-mon-hours">0</td>
+			<td class="text-center total-tue-hours">0</td>
+			<td class="text-center total-wed-hours">0</td>
+			<td class="text-center total-thu-hours">0</td>
+			<td class="text-center total-fri-hours">0</td>
+			<td class="text-center total-sat-hours">0</td>
+			<td class="text-center total-sun-hours">0</td>
+		</tr>
             	<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}

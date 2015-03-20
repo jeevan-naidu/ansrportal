@@ -171,7 +171,7 @@ app.getById = function(arr, propName, id) {
     
     app.init = function() {
         getTastChaptersEachProject();
-    }
+    };
     
     $(document).ready(function() {
         app.init();
@@ -381,8 +381,25 @@ app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
 };
 
+// For elements sum of values to output (jQuery based)
+app.getSum = function($elements, $outputElement) {
+    var elementsLen = $elements.length,
+        $item,
+        itemVal,
+        total = 0,
+        i;
+
+    for(i = 0; i < elementsLen; i += 1) {
+        $item = $($elements[i]);
+        itemVal = $item.val();
+        total += itemVal;
+    }
+
+    $outputElement.text(total);
+};
+
 // Form control plugin
-(function() {
+;(function() {
     $.fn.dynamicForm = function(options) {
         var $table = $(this),
             $addBtn = $(options.add),
@@ -732,7 +749,7 @@ app.getIdNo = function(str) {
                    e.preventDefault();
                    e.stopPropagation();
 
-                    var $curDayBtn              = $(this),
+                   var $curDayBtn              = $(this),
                         $curRow                 = $curDayBtn.closest('tr'),
                         $curRowQuestions        = $curRow.find('.b-questions'),
                         $curRowHours            = $curRow.find('.b-hours'),
@@ -865,6 +882,8 @@ app.getIdNo = function(str) {
                         };
 
                         totalIdleAndBillableHours();
+
+                        console.log('calculate');
                     };
 
                     calculateTotal();
