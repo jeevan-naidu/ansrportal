@@ -69,9 +69,10 @@ app.getTaskChapter = function(selValue, currRow) {
             url: '/myansrsource/gettask/' + selValue + '/',
             dataType: 'json',
             success: function(data) {
-                var data = data.data,
-                    dataLen = data.length,
+                data = data.data;
+                var dataLen = data.length,
                     options = '',
+                    $tasks = $('.b-task'),
                     i;
 
                 for (i = 0; i < dataLen; i++) {
@@ -79,6 +80,8 @@ app.getTaskChapter = function(selValue, currRow) {
                 }
 
                 currRow.find(".b-task").html(options);
+
+                app.setActive($tasks, app.timesheet.actTaskList);
             },
             error: function(data) {
                 console.log('Error: ' + data);
@@ -89,14 +92,17 @@ app.getTaskChapter = function(selValue, currRow) {
             url: '/myansrsource/getchapters/' + selValue + '/',
             dataType: 'json',
             success: function(data) {
-                var data = data.data,
-                    dataLen = data.length,
+                data = data.data;
+                var dataLen = data.length,
                     options = '',
+                    $chapters = $('.b-chapter'),
                     i;
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
                 }
                 currRow.find(".b-chapter").html(options);
+
+                app.setActive($chapters, app.timesheet.actChaptersList);
             },
             error: function(data) {
                 console.log('Error: ' + data);
@@ -108,7 +114,47 @@ app.getTaskChapter = function(selValue, currRow) {
         currRow.find(".b-task").html(options);
         currRow.find(".b-chapter").html(options);
     }
-}; 
+};
+
+app.getActiveTaskChapter = function() {
+    app.timesheet = {};
+    var $tasks = $('.b-task'),
+        $chapters = $('.b-chapter'),
+        tasksLen = $tasks.length,
+        task,
+        chapter,
+        taskVal,
+        chapterVal,
+        i;
+
+    app.timesheet.actTaskList = [];
+    app.timesheet.actChaptersList = [];
+
+    for(i = 0; i < tasksLen; i += 1) {
+        task = $($tasks[i]);
+        chapter = $($chapters[i]);
+
+        taskVal = task.val();
+        chapterVal = chapter.val();
+
+        app.timesheet.actTaskList.push(taskVal);
+        app.timesheet.actChaptersList.push(chapterVal);
+    }
+
+    return false;
+};
+
+app.setActive = function($elements, arr) {
+    var $elementsLen = $elements.length,
+        $element,
+        i;
+
+    for(i = 0; i < $elementsLen; i += 1) {
+        $element = $($elements[i]);
+
+        $element.find('option[value=' + arr[i] +']').attr('selected', 'selected');
+    }
+};
 
 app.changeProject = function() {
     
@@ -119,8 +165,6 @@ app.changeProject = function() {
             selectedValue = Number($this.val()),
             selectedProject;
         
-            
-            
             app.getTaskChapter(selectedValue, $row);
 
 
@@ -183,6 +227,7 @@ app.getById = function(arr, propName, id) {
     };
     
     app.init = function() {
+        app.getActiveTaskChapter();
         getTastChaptersEachProject();
     };
     
