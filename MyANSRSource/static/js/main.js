@@ -149,7 +149,7 @@ app.getById = function(arr, propName, id) {
 };
 
 // Main: IIEF for local scope 
-(function() {
+(function($) {
     function getTastChaptersEachProject() {
         var billableSelectProject = $('.billable-select-project'),
             billableSelectProjectLen = billableSelectProject.length,
@@ -167,11 +167,24 @@ app.getById = function(arr, propName, id) {
             
             app.getTaskChapter(selValue, $row);
         }
-    }
+    };
+
+
+    app.timeSheetGrandTotal = function() {
+        var billableTotal = Number($('.total-billable-hours').text()),
+            idleTotal = Number($('.total-idle-hours').text()),
+            notBillableTotal = Number($('.total-non-billable-hours').text()),
+            $total = $('.timesheet-grand-total'),
+            total = billableTotal + idleTotal + notBillableTotal;
+
+        $total.text(total);
+
+        return total;
+    };
     
     app.init = function() {
         getTastChaptersEachProject();
-    }
+    };
     
     $(document).ready(function() {
         app.init();
@@ -373,7 +386,7 @@ app.getById = function(arr, propName, id) {
             localStorage.contigencyEffort = $(this).val();
         });
     });
-}());
+})(jQuery);
 
 
 
@@ -381,8 +394,25 @@ app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
 };
 
+// For elements sum of values to output (jQuery based)
+app.getSum = function($elements, $outputElement) {
+    var elementsLen = $elements.length,
+        $item,
+        itemVal,
+        total = 0,
+        i;
+
+    for(i = 0; i < elementsLen; i += 1) {
+        $item = $($elements[i]);
+        itemVal = $item.val();
+        total += itemVal;
+    }
+
+    $outputElement.text(total);
+};
+
 // Form control plugin
-(function() {
+;(function() {
     $.fn.dynamicForm = function(options) {
         var $table = $(this),
             $addBtn = $(options.add),
@@ -697,6 +727,7 @@ app.getIdNo = function(str) {
                     $curTotal.val(temp);
 
                     nonBillableTotalFun();
+                    app.timeSheetGrandTotal();
                 };
 
                 $days.on({
@@ -732,7 +763,7 @@ app.getIdNo = function(str) {
                    e.preventDefault();
                    e.stopPropagation();
 
-                    var $curDayBtn              = $(this),
+                   var $curDayBtn              = $(this),
                         $curRow                 = $curDayBtn.closest('tr'),
                         $curRowQuestions        = $curRow.find('.b-questions'),
                         $curRowHours            = $curRow.find('.b-hours'),
@@ -819,7 +850,7 @@ app.getIdNo = function(str) {
                         }
 
 			questionsTemp = questionsTemp.toFixed(2);
-			hoursTemp = hoursTemp.toFixed(2)
+			hoursTemp = hoursTemp.toFixed(2);
                         $totalQuestions.text(questionsTemp);
                         $totalHours.text(hoursTemp);
 
@@ -862,9 +893,12 @@ app.getIdNo = function(str) {
                             // To Dom
                             $totalBillableHours.text(billableTotalHours);
                             $totalIdleHours.text(idleTotalHours);
+
+                            app.timeSheetGrandTotal();
                         };
 
                         totalIdleAndBillableHours();
+
                     };
 
                     calculateTotal();
