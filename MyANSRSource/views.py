@@ -387,8 +387,9 @@ def Timesheet(request):
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
-                ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
-                eachtsList['hold'] = ts.hold
+                if eachtsList['tsId']:
+                    ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
+                    eachtsList['hold'] = ts.hold
             tsContent = timesheetList
             atContent = activitiesList
             tsErrorList = []
@@ -396,18 +397,19 @@ def Timesheet(request):
             msg = ''
 
             for eachTS in tsContent:
-                tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-                if eachTS['approved']:
-                    msg += '{0} - is approved, '.format(tsObj.project.name)
-                elif eachTS['hold']:
-                    if tsObj.approved:
-                        msg += '{0} - is auto approved by system'.format(
-                            tsObj.project.name)
-                    else:
-                        msg += '{0} - is sent for approval \
-                            to your manager'.format(tsObj.project.name)
-                elif 'save' in request.POST:
-                    msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+                if eachtsList['tsId']:
+                    tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+                    if eachTS['approved']:
+                        msg += '{0} - is approved, '.format(tsObj.project.name)
+                    elif eachTS['hold']:
+                        if tsObj.approved:
+                            msg += '{0} - is auto approved by system'.format(
+                                tsObj.project.name)
+                        else:
+                            msg += '{0} - is sent for approval \
+                                to your manager'.format(tsObj.project.name)
+                    elif 'save' in request.POST:
+                        msg += '{0} - timesheet is saved'.format(tsObj.project.name)
 
             messages.info(request, msg)
         else:
