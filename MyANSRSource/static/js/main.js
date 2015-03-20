@@ -149,7 +149,7 @@ app.getById = function(arr, propName, id) {
 };
 
 // Main: IIEF for local scope 
-(function() {
+(function($) {
     function getTastChaptersEachProject() {
         var billableSelectProject = $('.billable-select-project'),
             billableSelectProjectLen = billableSelectProject.length,
@@ -167,7 +167,20 @@ app.getById = function(arr, propName, id) {
             
             app.getTaskChapter(selValue, $row);
         }
-    }
+    };
+
+
+    app.timeSheetGrandTotal = function() {
+        var billableTotal = Number($('.total-billable-hours').text()),
+            idleTotal = Number($('.total-idle-hours').text()),
+            notBillableTotal = Number($('.total-non-billable-hours').text()),
+            $total = $('.timesheet-grand-total'),
+            total = billableTotal + idleTotal + notBillableTotal;
+
+        $total.text(total);
+
+        return total;
+    };
     
     app.init = function() {
         getTastChaptersEachProject();
@@ -373,7 +386,7 @@ app.getById = function(arr, propName, id) {
             localStorage.contigencyEffort = $(this).val();
         });
     });
-}());
+})(jQuery);
 
 
 
@@ -714,6 +727,7 @@ app.getSum = function($elements, $outputElement) {
                     $curTotal.val(temp);
 
                     nonBillableTotalFun();
+                    app.timeSheetGrandTotal();
                 };
 
                 $days.on({
@@ -836,7 +850,7 @@ app.getSum = function($elements, $outputElement) {
                         }
 
 			questionsTemp = questionsTemp.toFixed(2);
-			hoursTemp = hoursTemp.toFixed(2)
+			hoursTemp = hoursTemp.toFixed(2);
                         $totalQuestions.text(questionsTemp);
                         $totalHours.text(hoursTemp);
 
@@ -879,11 +893,12 @@ app.getSum = function($elements, $outputElement) {
                             // To Dom
                             $totalBillableHours.text(billableTotalHours);
                             $totalIdleHours.text(idleTotalHours);
+
+                            app.timeSheetGrandTotal();
                         };
 
                         totalIdleAndBillableHours();
 
-                        console.log('calculate');
                     };
 
                     calculateTotal();
