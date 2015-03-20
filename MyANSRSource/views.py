@@ -603,6 +603,7 @@ def renderTimesheet(request, data):
     for idle in idleHours:
         idleTotal += idle['totalH']
     othersTotal = 0
+    total = bTotal + idleTotal + othersTotal
     for others in othersHours:
         othersTotal += others['totalH']
     tsform = TimesheetFormset(request.user)
@@ -653,6 +654,7 @@ def renderTimesheet(request, data):
                  'idleTotal': idleTotal,
                  'attendance': attendance,
                  'othersTotal': othersTotal,
+                 'total': total,
                  'tsFormset': tsFormset,
                  'atFormset': atFormset}
     if 'tsErrorList' in data:
