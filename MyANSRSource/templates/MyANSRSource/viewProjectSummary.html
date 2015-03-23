@@ -156,8 +156,8 @@
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-			<th>End Date</th>
-			<th>Reason</th>
+			<th>CR Date</th>
+			<th>CR Reason</th>
 			<th>Revised Total</th>
 			<th>Revised Effort</th>
 			<th>Signed</th>
@@ -179,10 +179,18 @@
 				{{ eachChange.revisedEffort }}
 			</td>
 			<td>
-				{{ eachChange.signed }}
+                {% if eachChange.signed %}
+                       Yes 
+                {% else %}
+                       No
+                {% endif %}
 			</td>
 			<td>
-				{{ eachChange.closed }}
+                {% if eachChange.closed %}
+                       Yes 
+                {% else %}
+                       No
+                {% endif %}
 			</td>
 		</tr>
 		{% endfor %}
