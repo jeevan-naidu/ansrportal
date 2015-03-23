@@ -1,10 +1,9 @@
 from templated_email import send_templated_mail
 from django.core.management.base import BaseCommand
-from MyANSRSource.models import TimeSheetEntry, Project, ProjectTeamMember, \
-    ProjectManager
-from django.contrib.auth.models import User
+from MyANSRSource.models import TimeSheetEntry, ProjectManager
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.db.models import Sum
 
 
 class Command(BaseCommand):
@@ -23,13 +22,9 @@ def sendEmail(self, data, start, end):
         send_templated_mail(
             template_name='timesheetStatus',
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=eachDetail['managers_email'],
+            recipient_list=[eachDetail['email'], ],
             context={
-                'project': eachDetail['project'],
-                'billableHours': eachDetail['billableHours'],
-                'nonBillableHours': eachDetail['nonBillableHours'],
-                'status': eachDetail['status'],
-                'teamMember': eachDetail['teamMember'],
+                'tsDetails': eachDetail['ts'],
                 'startDate': start,
                 'endDate': end
                 },
@@ -38,74 +33,36 @@ def sendEmail(self, data, start, end):
 
 
 def getTSStatus(start, end):
+    managers = ProjectManager.objects.filter(
+        project__closed=False).values('user', 'user__email')
 
-    openProjects = Project.objects.filter(closed=False).values_list(
-        'id', flat=True)
-
-    teamMembers = []
-    for eachProject in openProjects:
+    weekData = []
+    for eachManager in managers:
         d = {}
-        d['project'] = eachProject
-        members = ProjectTeamMember.objects.filter(
-            project__id=eachProject).values('member')
-        d['teamMember'] = members
-        teamMembers.append(d)
-
-    tsEntry = teamMembers[:]
-
-    tsMemberEntry = []
-    for eachTS in tsEntry:
-        d = {}
-        d['project'] = eachTS['project']
-        d['timesheet'] = TimeSheetEntry.objects.filter(
-            project__id=eachTS['project'],
+        d['email'] = eachManager['user__email']
+        d['ts'] = TimeSheetEntry.objects.filter(
+            project__projectManager=eachManager['user'],
             wkstart=start,
             wkend=end
-        ).values('teamMember__id', 'mondayH', 'tuesdayH', 'wednesdayH',
-                 'thursdayH', 'fridayH', 'saturdayH', 'sundayH',
-                 'approved', 'hold')
-        if len(d['timesheet']):
-            tsMemberEntry.append(d)
+        ).values('teamMember__username', 'project__name',
+                 'approved', 'hold').annotate(
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
+        )
+        weekData.append(d)
 
-    tsMemberTotals = []
-    for eachEntry in tsMemberEntry:
-        d = {}
-        d['project'] = eachEntry['project']
-        for eachTS in eachEntry['timesheet']:
-            d['teamMember'] = eachTS['teamMember__id']
-            d['billableHours'] = eachTS['mondayH'] + eachTS['tuesdayH'] + \
-                eachTS['wednesdayH'] + eachTS['thursdayH'] + \
-                eachTS['fridayH'] + eachTS['saturdayH'] + eachTS['sundayH']
-            if eachTS['approved']:
-                d['status'] = 'Approved'
-            elif eachTS['hold']:
-                d['status'] = 'Submitted'
-            else:
-                d['status'] = 'Not Submitted'
-            tsMemberTotals.append(d)
-
-    memberTotals = []
-    for eachNon in tsMemberTotals:
-        d = {}
-        d['project'] = Project.objects.get(pk=eachNon['project']).name
-        managers_email = ProjectManager.objects.filter(
-            project__id=eachNon['project']).values('user__email')
-        d['managers_email'] = [eachEmail[
-            'user__email'] for eachEmail in managers_email]
-        d['billableHours'] = eachNon['billableHours']
-        d['status'] = eachNon['status']
-        d['teamMember'] = User.objects.get(pk=eachNon['teamMember']).username
-        nonBillableHours = TimeSheetEntry.objects.filter(
-            teamMember__id=eachNon['teamMember'],
-            wkstart=start, wkend=end, project=None
-        ).values('mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH',
-                 'fridayH', 'saturdayH', 'sundayH'
-                 )
-        for eachnbHours in nonBillableHours:
-            d['nonBillableHours'] = eachnbHours['mondayH'] + \
-                eachnbHours['tuesdayH'] + eachnbHours['wednesdayH'] + \
-                eachnbHours['thursdayH'] + eachnbHours['fridayH'] + \
-                eachnbHours['saturdayH'] + eachnbHours['sundayH']
-            memberTotals.append(d)
-
-    return memberTotals
+    for eachData in weekData:
+        for eachTsData in eachData['ts']:
+            eachTsData['total'] = eachTsData['monday'] + \
+                eachTsData['tuesday'] + \
+                eachTsData['wednesday'] + \
+                eachTsData['thursday'] + \
+                eachTsData['friday'] + \
+                eachTsData['saturday'] + \
+                eachTsData['sunday']
+    return weekData
