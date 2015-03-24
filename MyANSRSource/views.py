@@ -1613,7 +1613,7 @@ def ViewProject(request):
         else:
             cleanedMilestoneData = ProjectMilestone.objects.filter(
                 project=projectObj).values('milestoneDate', 'description',
-                                           'amount')
+                                           'amount', 'financial')
 
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(
