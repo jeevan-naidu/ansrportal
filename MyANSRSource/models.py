@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
-import employee
 from django.core.validators import MinValueValidator, RegexValidator
 
 TASKTYPEFLAG = (
@@ -179,7 +178,7 @@ class Project(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return self.projectId + ' : '  + self.name
 
     class Meta:
         permissions = (
@@ -308,13 +307,6 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
     member = models.ForeignKey(User, blank=True, null=True)
-    role = models.ForeignKey(
-        employee.models.Designation,
-        verbose_name="Role",
-        blank=True,
-        default=None,
-        null=True,
-    )
     startDate = models.DateField(verbose_name='Start date on project',
                                  blank=True,
                                  default=timezone.now)
@@ -365,3 +357,14 @@ class ProjectChangeInfo(models.Model):
 
     def __unicode__(self):
         return self.crId
+
+
+class SendEmail(models.Model):
+    toAddr = models.CharField(default=None, null=False, max_length=1000)
+    template_name = models.CharField(default=None, null=False, max_length=100)
+    content = models.CharField(default=None, null=False, max_length=1000)
+    sent = models.BooleanField(default=False)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)

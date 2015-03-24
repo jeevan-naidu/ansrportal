@@ -9,7 +9,7 @@
 	<table class="table table-bordered">
 		<thead>
 			<th class="text-center">Choose</th>
-			<th class="text-center">Project Name</th>
+			<th class="text-center">Project</th>
 			<th class="text-center">Project Status</th>
 		</thead>
 		{% for eachProject in projects %}
@@ -22,7 +22,7 @@
 					{% endif %}
 				</td>
 				<td style="padding-top: 18px">
-					{{ eachProject.name }}
+                    {{ eachProject.projectId }} : {{ eachProject.name }}
 				</td>
 				<td class="text-center">
 				        {% if eachProject.closed %}	

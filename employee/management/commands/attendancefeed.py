@@ -31,8 +31,12 @@ class Command(BaseCommand):
                     with open(eachFile, 'r') as csvfile:
                         filereader = csv.reader(csvfile, delimiter=DELIMITER)
 
+                        print "Processing backup file {0}".format(eachFile)
+
                         # Validate data and insert to db
-                        feedData(filereader)
+                        feedData(filereader, eachFile)
+
+                        print "Processed backup file {0}".format(eachFile)
 
                         # Move backed up feed to a new folder
                         if os.path.exists(SUCCESS_DIR) is False:
@@ -41,13 +45,14 @@ class Command(BaseCommand):
                         os.system('mv {0} {1}'.format(eachFile,
                                                       SUCCESS_DIR))
             else:
-                logger.info("No more files to backup")
+                print "No more files to backup"
         else:
             # No Such backup folder found
-            logger.info("No Backup folder found")
+            print "No Backup folder found"
+            logger.info("No Backup folder named {0} found").format(BK_DIR)
 
 
-def feedData(filereader):
+def feedData(filereader, filename):
 
     row = 0
 
@@ -55,41 +60,49 @@ def feedData(filereader):
 
         row += 1
 
-        print "Processing Record {0}".format(row)
+        if row % 10 == 0:
+            print "Processed {0} records".format(row)
 
         # Converting data to relevant types
         try:
             attdate = datetime.strptime(eachRow[1],
                                         '%d-%m-%Y').date()
+        except ValueError:
+            logger.error("Date field failed for Emp.ID: {0}\
+                         in {1} file ".format(eachRow[0]), filename)
 
+        try:
             # Converting string to datetime object if time is given
             if eachRow[2]:
                 intime = datetime.strptime(eachRow[2],
                                            '%H:%M:%S').time()
                 swipe_in = datetime.combine(attdate, intime)
+        except ValueError:
+            logger.error("Intime field failed for Emp.ID: {0}\
+                         in {1} file ".format(eachRow[0]), filename)
 
+        try:
             if eachRow[3]:
                 outtime = datetime.strptime(eachRow[3],
                                             '%H:%M:%S').time()
 
                 swipe_out = datetime.combine(attdate, outtime)
-
-            # Insert appropriate data in db
-            insertToDb(eachRow[0], attdate, swipe_in, swipe_out)
-
-        # To catch any error in values if any
         except ValueError:
-            logger.error("Value Error at Line {0} in {1} csv file".format(
-                row, attdate))
+            logger.error("Outtime field failed for Emp.ID: {0}\
+                         in {1} file ".format(eachRow[0]), filename)
+
+        try:
+            # Insert appropriate data in db
+            insertToDb(eachRow[0], attdate, swipe_in, swipe_out, filename)
 
         # To handle the unique key exception
         except IntegrityError:
-            logger.exception("Duplicate record found, \
-                             skipping record {0}".format(row))
+            logger.exception("Duplicate record for Emp.ID: {0}\
+                             in {1} file ".format(eachRow[0]), filename)
             pass
 
 
-def insertToDb(employee, attdate, swipe_in, swipe_out):
+def insertToDb(employee, attdate, swipe_in, swipe_out, filename):
 
         # Getting employee object
         try:
@@ -99,6 +112,8 @@ def insertToDb(employee, attdate, swipe_in, swipe_out):
         # Handler for null values in employee id
         except Employee.DoesNotExist:
             employee = None
+            logger.exception("Emp.ID: {0} in {1} file does not exist".format(
+                employee, filename))
 
         # Inserting attendance record to db
         try:
@@ -112,5 +127,5 @@ def insertToDb(employee, attdate, swipe_in, swipe_out):
         # To catch any validation errors if any
         except ValidationError:
             logger.error("Validation Error for \
-                         employee {0} in {1} csv file".format(employee, attdate)
+                         employee {0} in {1} file".format(employee, filename)
                          )

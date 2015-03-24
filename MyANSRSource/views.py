@@ -22,10 +22,10 @@ from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType, Task, ProjectManager
+    Chapter, projectType, Task, ProjectManager, SendEmail
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
-    ProjectTeamForm, ActivityForm, TimesheetFormset, ProjectFlagForm, \
+    ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     ChangeProjectForm, CloseProjectMilestoneForm, changeProjectLeaderForm
 
@@ -241,6 +241,10 @@ def Timesheet(request):
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
+            elif ('save' not in request.POST) and (weekTotal < 40):
+                messages.error(request,
+                               'Your total timesheet activity for \
+                               this week is below 40 hours')
             elif (weekTotal < 36) | (weekTotal > 44) | \
                  (billableTotal > 44) | (nonbillableTotal > 40) | \
                  (leaveDayWork is True):
@@ -383,8 +387,9 @@ def Timesheet(request):
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
-                ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
-                eachtsList['hold'] = ts.hold
+                if eachtsList['tsId']:
+                    ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
+                    eachtsList['hold'] = ts.hold
             tsContent = timesheetList
             atContent = activitiesList
             tsErrorList = []
@@ -392,18 +397,19 @@ def Timesheet(request):
             msg = ''
 
             for eachTS in tsContent:
-                tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-                if eachTS['approved']:
-                    msg += '{0} - is approved, '.format(tsObj.project.name)
-                elif eachTS['hold']:
-                    if tsObj.approved:
-                        msg += '{0} - is auto approved by system'.format(
-                            tsObj.project.name)
-                    else:
-                        msg += '{0} - is sent for approval \
-                            to your manager'.format(tsObj.project.name)
-                elif 'save' in request.POST:
-                    msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+                if eachtsList['tsId']:
+                    tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+                    if eachTS['approved']:
+                        msg += '{0} - is approved, '.format(tsObj.project.name)
+                    elif eachTS['hold']:
+                        if tsObj.approved:
+                            msg += '{0} - is auto approved by system'.format(
+                                tsObj.project.name)
+                        else:
+                            msg += '{0} - is sent for approval \
+                                to your manager'.format(tsObj.project.name)
+                    elif 'save' in request.POST:
+                        msg += '{0} - timesheet is saved'.format(tsObj.project.name)
 
             messages.info(request, msg)
         else:
@@ -599,6 +605,7 @@ def renderTimesheet(request, data):
     for idle in idleHours:
         idleTotal += idle['totalH']
     othersTotal = 0
+    total = bTotal + idleTotal + othersTotal
     for others in othersHours:
         othersTotal += others['totalH']
     tsform = TimesheetFormset(request.user)
@@ -625,7 +632,7 @@ def renderTimesheet(request, data):
         atFormset = atFormset(prefix='at')
 
     attendanceObj = employee.models.Attendance.objects.filter(
-        employee__employee_assigned_id=request.user.id,
+        employee = request.user.employee,
         attdate__range=[data['weekstartDate'], data['weekendDate']]
     )
     attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
@@ -649,6 +656,7 @@ def renderTimesheet(request, data):
                  'idleTotal': idleTotal,
                  'attendance': attendance,
                  'othersTotal': othersTotal,
+                 'total': total,
                  'tsFormset': tsFormset,
                  'atFormset': atFormset}
     if 'tsErrorList' in data:
@@ -1047,7 +1055,9 @@ class ChangeProjectWizard(SessionWizardView):
                     'My Projects'
                 )['My Projects-project'])
             totalEffort = currentProject.plannedEffort
-            context.update({'totalEffort': totalEffort})
+            projectName = "{1} : {0}".format(currentProject.name,
+                                            currentProject.projectId)
+            context.update({'totalEffort': totalEffort, 'projectName': projectName})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -1317,7 +1327,7 @@ class ManageTeamWizard(SessionWizardView):
                 'My Projects')['My Projects-project']
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
-                    project__id=projectId).values('id', 'member', 'role',
+                    project__id=projectId).values('id', 'member',
                                                   'startDate', 'endDate',
                                                   'plannedEffort', 'rate'
                                                   )
@@ -1346,7 +1356,7 @@ class ManageTeamWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                    holiday['date'] = int(
+                     holiday['date'] = int(
                         holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
@@ -1362,10 +1372,25 @@ class ManageTeamWizard(SessionWizardView):
             else:
                 if eachData['id']:
                     if eachData['DELETE']:
-                        ProjectTeamMember.objects.get(
-                            pk=eachData['id']).delete()
+                        ptm = ProjectTeamMember.objects.get(
+                            pk=eachData['id'])
+                        NotifyMember(ptm.id, True)
+                        ptm.delete()
                     else:
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
+                        if (eachData['startDate'] == ptm.startDate) and \
+                           (eachData['endDate'] == ptm.endDate) and \
+                           (eachData['plannedEffort'] == ptm.plannedEffort) and \
+                           (eachData['member'] == ptm.member) and \
+                                (eachData['rate'] == ptm.rate):
+                               pass
+                        else:
+                            ptm.project = project
+                            del(eachData['id'])
+                            for k, v in eachData.iteritems():
+                                setattr(ptm, k, v)
+                            ptm.save()
+                            NotifyMember(ptm.id, False)
                 else:
                     ptm = ProjectTeamMember()
                     ptm.project = project
@@ -1373,35 +1398,7 @@ class ManageTeamWizard(SessionWizardView):
                     for k, v in eachData.iteritems():
                         setattr(ptm, k, v)
                     ptm.save()
-        teamMembers = ProjectTeamMember.objects.filter(
-            project__id=project.id
-        ).values('member__email', 'member__first_name',
-                 'member__last_name', 'startDate', 'role__name')
-        pm = ProjectManager.objects.filter(
-            project__id=project.id
-        ).values('user__first_name', 'user__last_name')
-        l = []
-        for eachManager in pm:
-            name = eachManager['user__first_name'] + \
-                "  " + eachManager['user__last_name']
-            l.append(name)
-        if len(l) > 1:
-            manager = ",".join(l)
-        else:
-            manager = "  ".join(l)
-        for eachMember in teamMembers:
-            if eachMember['member__email'] != '':
-                context = {
-                    'first_name': eachMember['member__first_name'],
-                    'projectId': ptm.project.projectId,
-                    'projectName': ptm.project.name,
-                    'pmname': manager,
-                    'startDate': ptm.project.startDate,
-                    'mystartdate': eachMember['startDate'],
-                    'myrole': eachMember['role__name'],
-                },
-                """SendEmail(context, eachMember['member__email'],
-                'projectCreatedTeam')"""
+                    NotifyMember(ptm.id, False)
         return HttpResponseRedirect('/myansrsource/dashboard')
 
 
@@ -1413,14 +1410,53 @@ def WrappedManageTeamView(request):
     return manageTeam(request)
 
 
-def SendEmail(data, toAddr, templateName):
-    send_templated_mail(
-        template_name=templateName,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[toAddr, ],
-        context=data,
-        )
+def NotifyMember(ptmid, delete):
+    teamMember = ProjectTeamMember.objects.get(pk=ptmid)
+    email = teamMember.member.email
+    if delete:
+        if email != '':
+            context = {
+                'first_name': teamMember.member.first_name,
+                'projectId': teamMember.project.projectId,
+                'projectName': teamMember.project.name,
+                'startDate': teamMember.project.startDate,
+                'mystartdate': teamMember.startDate,
+            }
+            SendMail(context, email, 'projectRemovedTeam')
+    else:
+        pm = ProjectManager.objects.filter(
+            project=teamMember.project
+        ).values('user__first_name', 'user__last_name')
+        l = []
+        for eachManager in pm:
+            name = eachManager['user__first_name'] + \
+                "  " + eachManager['user__last_name']
+            l.append(name)
+        if len(l) > 1:
+            manager = ",".join(l)
+        else:
+            manager = "  ".join(l)
+        if email != '':
+            context = {
+                'first_name': teamMember.member.first_name,
+                'projectId': teamMember.project.projectId,
+                'projectName': teamMember.project.name,
+                'pmname': manager,
+                'startDate': teamMember.project.startDate,
+                'mystartdate': teamMember.startDate,
+                'plannedEffort': teamMember.plannedEffort,
+            }
+            SendMail(context, email, 'projectCreatedTeam')
 
+
+def SendMail(data, toAddr, templateName):
+    sm = SendEmail()
+    data['startDate'] = data['startDate'].strftime("%d-%m-%Y")
+    data['mystartdate'] = data['mystartdate'].strftime("%d-%m-%Y")
+    sm.content = json.dumps(data)
+    sm.template_name = templateName
+    sm.toAddr = json.dumps([toAddr])
+    sm.save()
 
 @login_required
 def saveProject(request):
@@ -1539,10 +1575,8 @@ def notify(request):
                 'pmname': manager,
                 'startDate': projectDetails.startDate
             }
-            """SendEmail(context,
-                      eachHead['relatedMember_email'],
-                      'projectCreatedMgmt'
-                      )"""
+            SendMail(context, eachHead['relatedMember_email'],
+                     'projectCreatedMgmt')
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
             'notify': 'F'}
@@ -1552,7 +1586,6 @@ def notify(request):
 @login_required
 def deleteProject(request):
     ProjectBasicInfoForm()
-    ProjectTeamForm()
     return HttpResponseRedirect('add')
 
 
@@ -1563,7 +1596,8 @@ def ViewProject(request):
         projectObj = Project.objects.filter(id=projectId)
         basicInfo = projectObj.values(
             'projectType__description', 'bu__name', 'customer__name',
-            'name', 'book__name', 'signed', 'internal', 'currentProject'
+            'name', 'book__name', 'signed', 'internal', 'currentProject',
+            'projectId'
         )[0]
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
@@ -1571,7 +1605,7 @@ def ViewProject(request):
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
-            'member__username', 'role', 'startDate', 'endDate',
+            'member__username', 'startDate', 'endDate',
             'plannedEffort', 'rate'
             )
         if basicInfo['internal']:
@@ -1595,7 +1629,7 @@ def ViewProject(request):
             }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
-        'name', 'id', 'closed'
+        'name', 'id', 'closed', 'projectId'
     )
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 

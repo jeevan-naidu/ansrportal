@@ -69,9 +69,10 @@ app.getTaskChapter = function(selValue, currRow) {
             url: '/myansrsource/gettask/' + selValue + '/',
             dataType: 'json',
             success: function(data) {
-                var data = data.data,
-                    dataLen = data.length,
+                data = data.data;
+                var dataLen = data.length,
                     options = '',
+                    $tasks = $('.b-task'),
                     i;
 
                 for (i = 0; i < dataLen; i++) {
@@ -79,6 +80,8 @@ app.getTaskChapter = function(selValue, currRow) {
                 }
 
                 currRow.find(".b-task").html(options);
+
+                app.setActive($tasks, app.timesheet.actTaskList);
             },
             error: function(data) {
                 console.log('Error: ' + data);
@@ -89,14 +92,17 @@ app.getTaskChapter = function(selValue, currRow) {
             url: '/myansrsource/getchapters/' + selValue + '/',
             dataType: 'json',
             success: function(data) {
-                var data = data.data,
-                    dataLen = data.length,
+                data = data.data;
+                var dataLen = data.length,
                     options = '',
+                    $chapters = $('.b-chapter'),
                     i;
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
                 }
                 currRow.find(".b-chapter").html(options);
+
+                app.setActive($chapters, app.timesheet.actChaptersList);
             },
             error: function(data) {
                 console.log('Error: ' + data);
@@ -108,7 +114,47 @@ app.getTaskChapter = function(selValue, currRow) {
         currRow.find(".b-task").html(options);
         currRow.find(".b-chapter").html(options);
     }
-}; 
+};
+
+app.getActiveTaskChapter = function() {
+    app.timesheet = {};
+    var $tasks = $('.b-task'),
+        $chapters = $('.b-chapter'),
+        tasksLen = $tasks.length,
+        task,
+        chapter,
+        taskVal,
+        chapterVal,
+        i;
+
+    app.timesheet.actTaskList = [];
+    app.timesheet.actChaptersList = [];
+
+    for(i = 0; i < tasksLen; i += 1) {
+        task = $($tasks[i]);
+        chapter = $($chapters[i]);
+
+        taskVal = task.val();
+        chapterVal = chapter.val();
+
+        app.timesheet.actTaskList.push(taskVal);
+        app.timesheet.actChaptersList.push(chapterVal);
+    }
+
+    return false;
+};
+
+app.setActive = function($elements, arr) {
+    var $elementsLen = $elements.length,
+        $element,
+        i;
+
+    for(i = 0; i < $elementsLen; i += 1) {
+        $element = $($elements[i]);
+
+        $element.find('option[value=' + arr[i] +']').attr('selected', 'selected');
+    }
+};
 
 app.changeProject = function() {
     
@@ -119,8 +165,6 @@ app.changeProject = function() {
             selectedValue = Number($this.val()),
             selectedProject;
         
-            
-            
             app.getTaskChapter(selectedValue, $row);
 
 
@@ -149,7 +193,7 @@ app.getById = function(arr, propName, id) {
 };
 
 // Main: IIEF for local scope 
-(function() {
+(function($) {
     function getTastChaptersEachProject() {
         var billableSelectProject = $('.billable-select-project'),
             billableSelectProjectLen = billableSelectProject.length,
@@ -161,17 +205,31 @@ app.getById = function(arr, propName, id) {
             i;
         
         for(i = 0; i < billableSelectProjectLen; i += 1) {
-            $item = $(billableSelectProject[0]);
+            $item = $(billableSelectProject[i]);
             selValue = $item.val();
             $row = $item.closest('tr');
             
             app.getTaskChapter(selValue, $row);
         }
-    }
+    };
+
+
+    app.timeSheetGrandTotal = function() {
+        var billableTotal = Number($('.total-billable-hours').text()),
+            idleTotal = Number($('.total-idle-hours').text()),
+            notBillableTotal = Number($('.total-non-billable-hours').text()),
+            $total = $('.timesheet-grand-total'),
+            total = billableTotal + idleTotal + notBillableTotal;
+
+        $total.text(total);
+
+        return total;
+    };
     
     app.init = function() {
+        app.getActiveTaskChapter();
         getTastChaptersEachProject();
-    }
+    };
     
     $(document).ready(function() {
         app.init();
@@ -373,7 +431,7 @@ app.getById = function(arr, propName, id) {
             localStorage.contigencyEffort = $(this).val();
         });
     });
-}());
+})(jQuery);
 
 
 
@@ -381,8 +439,25 @@ app.getIdNo = function(str) {
     return str.match(/\d+/)[0];
 };
 
+// For elements sum of values to output (jQuery based)
+app.getSum = function($elements, $outputElement) {
+    var elementsLen = $elements.length,
+        $item,
+        itemVal,
+        total = 0,
+        i;
+
+    for(i = 0; i < elementsLen; i += 1) {
+        $item = $($elements[i]);
+        itemVal = $item.val();
+        total += itemVal;
+    }
+
+    $outputElement.text(total);
+};
+
 // Form control plugin
-(function() {
+;(function() {
     $.fn.dynamicForm = function(options) {
         var $table = $(this),
             $addBtn = $(options.add),
@@ -697,6 +772,7 @@ app.getIdNo = function(str) {
                     $curTotal.val(temp);
 
                     nonBillableTotalFun();
+                    app.timeSheetGrandTotal();
                 };
 
                 $days.on({
@@ -732,7 +808,7 @@ app.getIdNo = function(str) {
                    e.preventDefault();
                    e.stopPropagation();
 
-                    var $curDayBtn              = $(this),
+                   var $curDayBtn              = $(this),
                         $curRow                 = $curDayBtn.closest('tr'),
                         $curRowQuestions        = $curRow.find('.b-questions'),
                         $curRowHours            = $curRow.find('.b-hours'),
@@ -819,7 +895,7 @@ app.getIdNo = function(str) {
                         }
 
 			questionsTemp = questionsTemp.toFixed(2);
-			hoursTemp = hoursTemp.toFixed(2)
+			hoursTemp = hoursTemp.toFixed(2);
                         $totalQuestions.text(questionsTemp);
                         $totalHours.text(hoursTemp);
 
@@ -862,9 +938,12 @@ app.getIdNo = function(str) {
                             // To Dom
                             $totalBillableHours.text(billableTotalHours);
                             $totalIdleHours.text(idleTotalHours);
+
+                            app.timeSheetGrandTotal();
                         };
 
                         totalIdleAndBillableHours();
+
                     };
 
                     calculateTotal();

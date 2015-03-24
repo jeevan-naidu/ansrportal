@@ -65,19 +65,19 @@ class ActivityForm(forms.Form):
         self.fields['activity_total'].widget.attrs['readonly'] = 'True'
         self.fields['activity'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['class'] = "form-control \
-        days input-field"
+        days input-field mon-item"
         self.fields['activity_tuesday'].widget.attrs['class'] = "form-control \
-        days input-field"
+        days input-field tue-item"
         self.fields['activity_wednesday'].widget.attrs['class'] = "form-control \
-        days input-field"
+        days input-field wed-item"
         self.fields['activity_thursday'].widget.attrs['class'] = "form-control \
-        days input-field"
+        days input-field thu-item"
         self.fields['activity_friday'].widget.attrs['class'] = "form-control \
-        days input-field"
+        days input-field fri-item"
         self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
-        days input-field"
+        days input-field sat-item"
         self.fields['activity_sunday'].widget.attrs['class'] = "form-control \
-        days input-field"
+        days input-field sun-item"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
         self.fields['activity_feedback'].widget.attrs['class'] = "form-control"
@@ -400,7 +400,6 @@ class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
         model = ProjectTeamMember
         fields = (
             'member',
-            'role',
             'startDate',
             'endDate',
             'rate',
@@ -417,8 +416,6 @@ class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['id'].widget.attrs['class'] = "set-zero"
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
-        self.fields['role'].widget.attrs[
-            'class'] = "form-control min-180 max-200 set-empty"
         self.fields['startDate'].widget.attrs[
             'class'] = "form-control min-100 pro-start-date"
         self.fields['endDate'].widget.attrs[
@@ -456,41 +453,6 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
-
-
-# Form Class to create team for project
-class ProjectTeamForm(autocomplete_light.ModelForm):
-
-    class Meta:
-        model = ProjectTeamMember
-        fields = (
-            'member',
-            'role',
-            'startDate',
-            'endDate',
-            'rate',
-            'plannedEffort',
-        )
-        widgets = {
-            'startDate': DateTimePicker(options=dateTimeOption),
-            'endDate': DateTimePicker(options=dateTimeOption),
-            'project': forms.HiddenInput(), }
-
-    def __init__(self, *args, **kwargs):
-        super(ProjectTeamForm, self).__init__(*args, **kwargs)
-        self.fields['member'].widget.attrs['class'] = "form-control min-200"
-        self.fields['startDate'].widget.attrs['class'] = \
-            "form-control pro-start-date min-100"
-        self.fields['endDate'].widget.attrs['class'] = \
-            "form-control pro-end-date min-100"
-        self.fields['role'].widget.attrs['class'] = "form-control min-180 \
-            max-200"
-        self.fields['plannedEffort'].widget.attrs['class'] = \
-            "w-100 form-control pro-planned-effort"
-        self.fields['rate'].widget.attrs['class'] = \
-            "w-100 form-control pro-planned-effort-percent"
-        self.fields['role'].queryset = self.fields[
-            'role'].queryset.order_by('name')
 
 
 # Project Flag Form
