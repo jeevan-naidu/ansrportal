@@ -1644,16 +1644,18 @@ def GetChapters(request, projectid):
         json_chapters = {'data': list(chapters)}
     except Project.DoesNotExist:
         json_chapters = {'data': list()}
-
     return HttpResponse(json.dumps(json_chapters),
                         content_type="application/javascript")
 
 
 def GetTasks(request, projectid):
-    tasks = Task.objects.filter(
-        projectType=Project.objects.get(pk=projectid).projectType
-    ).values('code', 'name', 'id')
-    data = {'data': list(tasks)}
+    try:
+        tasks = Task.objects.filter(
+            projectType=Project.objects.get(pk=projectid).projectType
+        ).values('code', 'name', 'id')
+        data = {'data': list(tasks)}
+    except Task.DoesNotExist:
+        data = {'data': list()}
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -1674,19 +1676,20 @@ def GetHolidays(request, memberid):
 
 
 def GetProjectType(request):
-    # NIRANJ: Why is this being filtered from Project Team member and not
-    # project directly?  this will result in duplicate records.
-    typeData = ProjectTeamMember.objects.values(
-        'project__id',
-        'project__name',
-        'project__projectType__code',
-        'project__maxProductivityUnits',
-        'project__projectType__description'
-    ).filter(project__closed=False)
-    for eachData in typeData:
-        eachData['project__maxProductivityUnits'] = float(
-            eachData['project__maxProductivityUnits'])
-    data = {'data': list(typeData)}
+    try:
+        typeData = ProjectTeamMember.objects.values(
+            'project__id',
+            'project__name',
+            'project__projectType__code',
+            'project__maxProductivityUnits',
+            'project__projectType__description'
+        ).filter(project__closed=False)
+        for eachData in typeData:
+            eachData['project__maxProductivityUnits'] = float(
+                eachData['project__maxProductivityUnits'])
+        data = {'data': list(typeData)}
+    except ProjectTeamMember.DoesNotExist:
+        data = {'data': list()}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
 
