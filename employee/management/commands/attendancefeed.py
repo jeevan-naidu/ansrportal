@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
                         # Validate data and insert to db
                         if len(args) and args[0]:
-                            everyRec = args[0]
+                            everyRec = int(args[0])
                         else:
                             everyRec = 10
 
@@ -45,7 +45,7 @@ class Command(BaseCommand):
                                 settings.SUCCESS_DIR))
 
                         os.system('mv {0} {1}'.format(eachFile,
-                                                        settings.SUCCESS_DIR))
+                                                      settings.SUCCESS_DIR))
             else:
                 print "No more files to backup"
         else:
@@ -71,7 +71,7 @@ def feedData(filereader, filename, everyRec):
 
         if checkRow(eachRow):
 
-            if row == everyRec:
+            if row % everyRec == 0:
                 print "Processed {0} records".format(row)
 
             # Converting data to relevant types
@@ -81,18 +81,18 @@ def feedData(filereader, filename, everyRec):
             except ValueError:
                 logger.error("Date field failed for Emp.ID: {0}\
                             in {1} ".format(eachRow[0], filename)
-                            )
+                             )
 
             try:
                 # Converting string to datetime object if time is given
                 if eachRow[2]:
                     intime = datetime.strptime(eachRow[2],
-                                            '%H:%M:%S').time()
+                                               '%H:%M:%S').time()
                     swipe_in = datetime.combine(attdate, intime)
             except ValueError:
                 logger.error("Intime field failed for Emp.ID: {0}\
                             in {1} ".format(eachRow[0], filename)
-                            )
+                             )
 
             try:
                 if eachRow[3]:
@@ -103,7 +103,7 @@ def feedData(filereader, filename, everyRec):
             except ValueError:
                 logger.error("Outtime field failed for Emp.ID: {0}\
                             in {1} ".format(eachRow[0], filename)
-                            )
+                             )
 
             try:
                 # Insert appropriate data in db
@@ -113,7 +113,7 @@ def feedData(filereader, filename, everyRec):
             except IntegrityError:
                 logger.error("Duplicate record for Emp.ID: {0}\
                                 in {1}".format(eachRow[0], filename)
-                            )
+                             )
                 pass
         else:
             print "{0} is corrupted".format(filename)
