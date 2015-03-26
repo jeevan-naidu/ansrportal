@@ -605,9 +605,9 @@ def renderTimesheet(request, data):
     for idle in idleHours:
         idleTotal += idle['totalH']
     othersTotal = 0
-    total = bTotal + idleTotal + othersTotal
     for others in othersHours:
         othersTotal += others['totalH']
+    total = bTotal + idleTotal + othersTotal
     tsform = TimesheetFormset(request.user)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
