@@ -10,17 +10,21 @@ class Command(BaseCommand):
         in the project on regular basis'
 
     def handle(self, *args, **options):
-        lastOneWeek = datetime.now().date() - timedelta(weeks=1)
+        lastOneWeek = datetime.now().date() + timedelta(weeks=1)
         lastDay = datetime.now().date() - timedelta(days=1)
-        expired = datetime.now().date() + timedelta(days=1)
-        sendEmail(self, getContent(lastOneWeek), lastOneWeek, 'week')
-        sendEmail(self, getContent(lastDay), lastDay, 'lastDay')
-        sendEmail(self, getContent(expired), expired, 'expired')
+        expired = datetime.now().date() + timedelta(days=2)
+        sendEmail(self, getContent(lastOneWeek),
+                  lastOneWeek, 'week')
+        sendEmail(self, getContent(lastDay),
+                  lastDay, 'lastDay')
+        sendEmail(self, getContent(expired),
+                  expired, 'expired')
 
 
 def getContent(deadlineDate):
     return ProjectMilestone.objects.filter(
-        milestoneDate=deadlineDate
+        milestoneDate=deadlineDate,
+        closed=False
     ).values('project__name',
              'project__projectId',
              'description',
@@ -38,6 +42,7 @@ def sendEmail(self, details, date, label):
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachDetail['project__projectManager__email'], ],
                 context={
+                    'label': label,
                     'first_name': eachDetail[
                         'project__projectManager__first_name'
                     ],
