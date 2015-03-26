@@ -1,10 +1,16 @@
-{% block subject %}Milestones status update for Project: {{ projectId }} {% endblock %}
+{% block subject %}Milestone status update for Project: {{ projectId }} {% endblock %}
 {% block plain %}
   Hi {{first_name}}, 
 
   The milestone {{ milestonename }} for the project 
-{{ projectname }} falls on {{ milestonedate }}.  
-
+{{ projectname }} falls on {{ milestonedate }}. 
+{% if label == 'week' %}
+    You got only one week for this milestone.
+{% elif label == 'lastDay' %}
+   Today is the last day for this milestone.
+{% else %} 
+   This milestone is expired a day ago.
+{% endif %}
   Thanks,
   myansrsource team
 
@@ -17,6 +23,13 @@
       <dl>
         <dt>Milestone status update for Project : {{ projectId }}</dt>
   <dd>The milestone {{ milestonename }} for project {{ projectname }} falls on {{ milestonedate }}. </dd>
+    {% if label == 'week' %}
+        <dd>You got only one week for this milestone.</dd>
+    {% elif label == 'lastDay' %}
+        <dd>Today is the last day for this milestone.</dd>
+    {% else %} 
+        <dd>This milestone is expired a day ago.</dd>
+    {% endif %}
       </dl>
   </p>
 
