@@ -76,7 +76,7 @@ app.getTaskChapter = function(selValue, currRow) {
                     i;
 
                 for (i = 0; i < dataLen; i++) {
-                    options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+                    options += '<option value="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
 
                 currRow.find(".b-task").html(options);
