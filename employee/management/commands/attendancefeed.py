@@ -51,8 +51,8 @@ class Command(BaseCommand):
         else:
             # No Such backup folder found
             print "No Backup folder found"
-            logger.info("No Backup folder named {0} found").format(
-                settings.BK_DIR)
+            logger.info("No Backup folder named {0} found".format(
+                settings.BK_DIR))
 
 
 def checkRow(firstRow):
