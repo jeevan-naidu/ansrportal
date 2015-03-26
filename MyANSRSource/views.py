@@ -1652,7 +1652,7 @@ def GetTasks(request, projectid):
     try:
         tasks = Task.objects.filter(
             projectType=Project.objects.get(pk=projectid).projectType
-        ).values('code', 'name', 'id')
+        ).values('code', 'name', 'id', 'taskType')
         data = {'data': list(tasks)}
     except Task.DoesNotExist:
         data = {'data': list()}
