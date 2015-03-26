@@ -71,12 +71,10 @@ class ProjectAdmin(admin.ModelAdmin):
         'totalValue')
     search_fields = (
         'name',
-        'projectManager',
-        'startDate',
-        'endDate',
-        'customer', )
+        'customer__name',
+        'projectManager__username',)
 
-    filter_fields = ('startDate', 'endDate', 'projectManager')
+    filter_fields = ('startDate', 'endDate', )
     inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
 
     def get_readonly_fields(self, request, obj=None):
@@ -91,6 +89,7 @@ class ProjectAdmin(admin.ModelAdmin):
                 'contingencyEffort',
                 'totalValue',
                 'projectId',
+                'closed',
                 ]
 
     fieldsets = [
@@ -102,6 +101,7 @@ class ProjectAdmin(admin.ModelAdmin):
                      'internal',
                      'projectId',
                      'po',
+                     'closed',
                      ],
           },
          ),
