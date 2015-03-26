@@ -369,6 +369,7 @@ class Attendance(models.Model):
     attdate = models.DateField(null=True, blank=True)
     swipe_in = models.DateTimeField(null=True, blank=True)
     swipe_out = models.DateTimeField(null=True, blank=True)
+    incoming_employee_id = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         unique_together = ('employee', 'attdate',)

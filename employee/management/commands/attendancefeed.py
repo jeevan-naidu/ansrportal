@@ -1,33 +1,35 @@
 import logging
-logger = logging.getLogger('employee')
 import os
 import glob
 import csv
 from datetime import datetime
-from django.utils.timezone import utc
+from django.utils.timezone import get_default_timezone
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from employee.models import Attendance, Employee
-from django.db import IntegrityError
+from django.db import IntegrityError, Transaction
 from django.conf import settings
+
+logger = logging.getLogger('employee')
 
 
 class Command(BaseCommand):
-    help = 'Pull Attendance to DB'
+    help = 'Upload daily attendance data into the system.'
 
     def handle(self, *args, **options):
-        if os.path.exists(settings.BK_DIR):
+        if os.path.exists(settings.FEED_DIR):
             file_pattern = "/*.{0}".format(settings.EXT)
 
-            if glob.glob(settings.BK_DIR + file_pattern):
+            if glob.glob(settings.FEED_DIR + file_pattern):
 
                 # Reading each file and pushing record to db
-                for eachFile in glob.glob(settings.BK_DIR + file_pattern):
+                for eachFile in glob.glob(settings.FEED_DIR + file_pattern):
                     with open(eachFile, 'r') as csvfile:
                         filereader = csv.reader(csvfile,
                                                 delimiter=settings.DELIMITER)
 
-                        print "Processing backup file {0}".format(eachFile)
+                        logger.info(
+                            "Processing file {0}".format(eachFile))
 
                         # Validate data and insert to db
                         if len(args) and args[0]:
@@ -37,7 +39,7 @@ class Command(BaseCommand):
 
                         feedData(filereader, eachFile, everyRec)
 
-                        print "Processed backup file {0}".format(eachFile)
+                        logger.info("Processed file {0}".format(eachFile))
 
                         # Move backed up feed to a new folder
                         if os.path.exists(settings.SUCCESS_DIR) is False:
@@ -46,17 +48,19 @@ class Command(BaseCommand):
 
                         os.system('mv {0} {1}'.format(eachFile,
                                                       settings.SUCCESS_DIR))
+                        logger.info(
+                            "Moved file {0} to processed directory".
+                            format(eachFile))
             else:
-                print "No more files to backup"
+                logger.info("No more files to process.")
         else:
             # No Such backup folder found
-            print "No Backup folder found"
-            logger.info("No Backup folder named {0} found".format(
-                settings.BK_DIR))
+            logger.error("Directory {0} missing.".format(
+                settings.FEED_DIR))
 
 
 def checkRow(firstRow):
-    if len(firstRow) > 4:
+    if len(firstRow) > 4 or len(firstRow) == 0:
         return False
     else:
         return True
@@ -79,8 +83,8 @@ def feedData(filereader, filename, everyRec):
                 attdate = datetime.strptime(eachRow[1],
                                             '%d-%m-%Y').date()
             except ValueError:
-                logger.error("Date field failed for Emp.ID: {0}\
-                            in {1} ".format(eachRow[0], filename)
+                logger.error("Attendance Date field data error: {0} |\
+                             File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
 
             try:
@@ -90,8 +94,8 @@ def feedData(filereader, filename, everyRec):
                                                '%H:%M:%S').time()
                     swipe_in = datetime.combine(attdate, intime)
             except ValueError:
-                logger.error("Intime field failed for Emp.ID: {0}\
-                            in {1} ".format(eachRow[0], filename)
+                logger.error("In-time field data error: {0} |\
+                             File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
 
             try:
@@ -101,27 +105,32 @@ def feedData(filereader, filename, everyRec):
 
                     swipe_out = datetime.combine(attdate, outtime)
             except ValueError:
-                logger.error("Outtime field failed for Emp.ID: {0}\
-                            in {1} ".format(eachRow[0], filename)
+                logger.error("Out-time field data error: {0} |\
+                             File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
 
             try:
                 # Insert appropriate data in db
-                insertToDb(eachRow[0], attdate, swipe_in, swipe_out, filename)
+                insertToDb(
+                    eachRow[0],
+                    attdate,
+                    swipe_in,
+                    swipe_out,
+                    filename,
+                    row)
 
             # To handle the unique key exception
             except IntegrityError:
-                logger.error("Duplicate record for Emp.ID: {0}\
-                                in {1}".format(eachRow[0], filename)
+                logger.error("Intime field error in data : {0} |\
+                             File: {1}  | Line # : {2}".
+                             format(eachRow, filename, row)
                              )
-                pass
         else:
-            print "{0} is corrupted".format(filename)
-            logger.error("{0} is corrupted".format(filename))
+            logger.error("{0} is corrupted on line {1}".format(filename, row))
             break
 
 
-def insertToDb(employee, attdate, swipe_in, swipe_out, filename):
+def insertToDb(employee, attdate, swipe_in, swipe_out, filename, row):
 
         # Getting employee object
     try:
@@ -130,21 +139,26 @@ def insertToDb(employee, attdate, swipe_in, swipe_out, filename):
     # Handler for null values in employee id
     except Employee.DoesNotExist:
         emp = None
-        logger.error("Emp.ID: {0} in {1} does not exist".format(
-            employee, filename))
-        pass
+        logger.error(
+            "Emp.ID: {0} Not in myansrsource system. \
+            Found in file : {1} | line {2}".format(
+            employee,
+            filename,
+            row))
 
     # Inserting attendance record to db
     try:
         att = Attendance()
+        att.incoming_employee_id = employee
         att.employee = emp
         att.attdate = attdate
-        att.swipe_in = swipe_in.replace(tzinfo=utc)
-        att.swipe_out = swipe_out.replace(tzinfo=utc)
+        att.swipe_in = swipe_in.replace(tzinfo=get_default_timezone())
+        att.swipe_out = swipe_out.replace(tzinfo=get_default_timezone())
         att.save()
 
     # To catch any validation errors if any
-    except ValidationError:
-        logger.error("Validation Error for \
-                         employee {0} in {1} ".format(employee, filename)
+    except ValidationError as e:
+        logger.error("Validation Error {2} processing \
+                     employee {0} in {1}  | Line #: {3}".
+                     format(employee, filename, e, row)
                      )
