@@ -118,11 +118,13 @@
 							-
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-									{% if tdata.value > 0 %}
-										<span class="b-hours">{{ tdata.value }}</span>H
-									{% else %}
-										<span class="b-hours">0</span>H
-									{% endif %}
+                                    {% with dayclass=data.label|add:"-t" %}
+                                        {% if tdata.value > 0 %}
+                                            <span class="b-hours {{ dayclass }}">{{ tdata.value }}</span>H
+                                        {% else %}
+                                            <span class="b-hours {{ dayclass }}">0</span>H
+                                        {% endif %}
+                                    {% endwith %}
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
