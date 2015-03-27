@@ -404,14 +404,16 @@ def Timesheet(request):
                     elif eachTS['hold']:
                         if tsObj.approved:
                             msg += '{0} - is auto approved by system'.format(
-                                tsObj.project.name)
+                                tsObj.project.projectId)
                         else:
                             msg += '{0} - is sent for approval \
-                                to your manager'.format(tsObj.project.name)
+                                to your manager'.format(tsObj.project.projectId)
                     elif 'save' in request.POST:
-                        msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+                        msg += '{0} - timesheet is saved'.format(
+                            tsObj.project.projectId)
 
-            messages.info(request, msg)
+                    if len(msg) > 0:
+                        messages.info(request, msg)
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -467,17 +469,18 @@ def Timesheet(request):
         for eachTS in tsFormList:
             tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
             if eachTS['approved']:
-                msg += '{0} - is approved, '.format(tsObj.project.name)
+                msg += '{0} - is approved, '.format(tsObj.project.projectId)
             elif eachTS['hold']:
                 msg += '{0} - is sent for approval \
-                    to your manager'.format(tsObj.project.name)
+                    to your manager'.format(tsObj.project.projectId)
             elif 'save' in request.POST:
-                msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+                msg += '{0} - timesheet is saved'.format(
+                    tsObj.project.projectId)
             else:
                 msg += '{0} - Rework on your timesheet'.format(
-                    tsObj.project.name)
+                    tsObj.project.projectId)
 
-        messages.info(request, msg)
+            messages.info(request, msg)
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
@@ -632,7 +635,7 @@ def renderTimesheet(request, data):
         atFormset = atFormset(prefix='at')
 
     attendanceObj = employee.models.Attendance.objects.filter(
-        employee = request.user.employee,
+        employee=request.user.employee,
         attdate__range=[data['weekstartDate'], data['weekendDate']]
     )
     attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
@@ -890,7 +893,8 @@ class ManageTeamLeaderWizard(SessionWizardView):
             return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][1]['projectManager']
+        updatedData = [form.cleaned_data for form in form_list][
+            1]['projectManager']
         myProject = self.get_cleaned_data_for_step('My Projects')['project']
         myProject = Project.objects.get(id=myProject.id)
         allData = ProjectManager.objects.filter(
@@ -1040,6 +1044,7 @@ TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 @login_required
 def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
+
 
 class ChangeProjectWizard(SessionWizardView):
 
@@ -1363,7 +1368,7 @@ class ManageTeamWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                     holiday['date'] = int(
+                    holiday['date'] = int(
                         holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
@@ -1390,7 +1395,7 @@ class ManageTeamWizard(SessionWizardView):
                            (eachData['plannedEffort'] == ptm.plannedEffort) and \
                            (eachData['member'] == ptm.member) and \
                                 (eachData['rate'] == ptm.rate):
-                               pass
+                            pass
                         else:
                             ptm.project = project
                             del(eachData['id'])
@@ -1464,6 +1469,7 @@ def SendMail(data, toAddr, templateName):
     sm.template_name = templateName
     sm.toAddr = json.dumps([toAddr])
     sm.save()
+
 
 @login_required
 def saveProject(request):
@@ -1628,11 +1634,11 @@ def ViewProject(request):
             'closed', 'closedOn', 'signed'
         )
         data = {
-                'basicInfo': basicInfo,
-                'flagData': flagData,
-                'teamMember': cleanedTeamData,
-                'milestone': cleanedMilestoneData,
-                'changes': changeTracker
+            'basicInfo': basicInfo,
+            'flagData': flagData,
+            'teamMember': cleanedTeamData,
+            'milestone': cleanedMilestoneData,
+            'changes': changeTracker
             }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
