@@ -1050,14 +1050,19 @@ class ChangeProjectWizard(SessionWizardView):
         context = super(ChangeProjectWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Change Basic Information':
-            currentProject = Project.objects.get(
+            currentProject = Project.objects.filter(
                 pk=self.storage.get_step_data(
                     'My Projects'
-                )['My Projects-project'])
-            totalEffort = currentProject.plannedEffort
-            projectName = "{1} : {0}".format(currentProject.name,
-                                            currentProject.projectId)
-            context.update({'totalEffort': totalEffort, 'projectName': projectName})
+                )['My Projects-project']).values(
+                    'plannedEffort',
+                    'name',
+                    'projectId'
+                )[0]
+            totalEffort = currentProject['plannedEffort']
+            projectName = "{1} : {0}".format(currentProject['name'],
+                                             currentProject['projectId'])
+            context.update({'totalEffort': totalEffort,
+                            'projectName': projectName})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -1087,18 +1092,20 @@ class ChangeProjectWizard(SessionWizardView):
     def get_form_initial(self, step):
         currentProject = []
         if step == 'Change Basic Information':
-            currentProject = Project.objects.filter(
-                id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values(
-                'id',
-                'signed',
-                'endDate',
-                'plannedEffort',
-                'totalValue'
-                )[0]
-            currentProject['revisedTotal'] = currentProject['totalValue']
-            currentProject['revisedEffort'] = currentProject['plannedEffort']
+            projectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            if projectId is not None:
+                currentProject = Project.objects.filter(
+                    pk=projectId).values(
+                    'id',
+                    'signed',
+                    'endDate',
+                    'plannedEffort',
+                    'totalValue'
+                    )[0]
+                currentProject['revisedTotal'] = currentProject['totalValue']
+                currentProject['revisedEffort'] = currentProject['plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
