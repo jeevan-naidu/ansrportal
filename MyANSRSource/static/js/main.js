@@ -839,8 +839,6 @@ app.getSum = function($elements, $outputElement) {
                     };
 
                     var projectUnitViewToPopUp = function() {
-                        $curProjectPopupUnit.text(app.curProjectUnit);
-
                         // get current project by id
                         if(selectedValue != 0) {
                             selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
@@ -849,6 +847,8 @@ app.getSum = function($elements, $outputElement) {
                             app.curProjectUnitShort = selectedProject.project__projectType__code;
                             app.curProjectUnit      = selectedProject.project__projectType__description;
                             app.norms               = selectedProject.project__maxProductivityUnits;
+
+                            $curProjectPopupUnit.text(app.curProjectUnit);
                         } else {
                             app.norms = 0.0;
                         }
