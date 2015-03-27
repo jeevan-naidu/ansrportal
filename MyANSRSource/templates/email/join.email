@@ -14,7 +14,10 @@
 {% block html %}
   <p>Hi {{first_name}},</p>
 
-  <p>Thanks for registering on myansrsource portal.
+  <p>Thanks for registering on myansrsource portal.  Please contact the HR team
+to get your employee information completed on myansrsource.  This will
+help you use the portal more effectively.
+
       <dl>
         <dt>username</dt><dd>{{username}}</dd>
         <dt>join date</dt><dd>{{signup_date}}</dd>
