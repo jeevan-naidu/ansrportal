@@ -12,6 +12,36 @@ helper.range = function(start, end) {
     return result;
 };
 
+helper.forEach = function(arr, action) {
+    var arrLen = arr.length,
+        i;
+
+    for(i = 0; i < arrLen; i += 1) {
+        action(arr[i]);
+    }
+};
+
+helper.sumOfArr = function(arr) {
+    var sum = 0;
+
+    helper.forEach(arr, function(item) {
+        sum += item;
+    });
+
+    return sum;
+};
+
+// argument element must be jQuery element
+helper.getValOrText = function($ele) {
+    var eleVal;
+    if($ele.prop('tagName') === 'SELECT' || $ele.prop('tagName') === 'INPUT') {
+        eleVal = $ele.val();
+    } else {
+        eleVal = $ele.text();
+    }
+    return eleVal;
+};
+
 app.billableSetZeroList = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
                            16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 
                            28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 
@@ -225,7 +255,55 @@ app.getById = function(arr, propName, id) {
 
         return total;
     };
-    
+
+
+
+    app.timeSheetDayTotalHours = function() {
+        var $mon = $('.Mon-t'),
+            $tue = $('.Tue-t'),
+            $wed = $('.Wed-t'),
+            $thu = $('.Thu-t'),
+            $fri = $('.Fri-t'),
+            $sat = $('.Sat-t'),
+            $sun = $('.Sun-t'),
+            $monTotal = $('.ts-mon-total-hr'),
+            $tueTotal = $('.ts-tue-total-hr'),
+            $wedTotal = $('.ts-wed-total-hr'),
+            $thuTotal = $('.ts-thu-total-hr'),
+            $friTotal = $('.ts-fri-total-hr'),
+            $satTotal = $('.ts-sat-total-hr'),
+            $sunTotal = $('.ts-sun-total-hr');
+
+        var mondays = [];
+
+        function total($arr, $output) {
+            var tempArr = [],
+                tempTotal = 0;
+
+            helper.forEach($arr, function(item) {
+                var curVal = helper.getValOrText($(item));
+                tempArr.push(Number(curVal));
+            });
+
+            tempTotal = helper.sumOfArr(tempArr);
+
+            $output.text(tempTotal);
+        }
+
+        total($mon, $monTotal);
+        total($tue, $tueTotal);
+        total($wed, $wedTotal);
+        total($thu, $thuTotal);
+        total($fri, $friTotal);
+        total($sat, $satTotal);
+        total($sun, $sunTotal);
+    };
+
+
+
+
+
+
     app.init = function() {
         app.getActiveTaskChapter();
         getTastChaptersEachProject();
@@ -768,11 +846,12 @@ app.getSum = function($elements, $outputElement) {
                         $totalNonBillableHours.text(totalNonBillable);
                     };
 
-                    temp = temp.toFixed(2)
+                    temp = temp.toFixed(2);
                     $curTotal.val(temp);
 
                     nonBillableTotalFun();
                     app.timeSheetGrandTotal();
+                    app.timeSheetDayTotalHours();
                 };
 
                 $days.on({
@@ -940,6 +1019,7 @@ app.getSum = function($elements, $outputElement) {
                             $totalIdleHours.text(idleTotalHours);
 
                             app.timeSheetGrandTotal();
+                            app.timeSheetDayTotalHours();
                         };
 
                         totalIdleAndBillableHours();
