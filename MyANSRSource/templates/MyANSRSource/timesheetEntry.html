@@ -338,7 +338,7 @@
 					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label %}
-							{% if holdData.value %}
+							{% if holdData.value or prevWeekBlock %}
 								<td class="ansr-disabled">{{ data }}</td>
 							{% else %}		
 								<td>{{ data }}</td>
@@ -348,7 +348,7 @@
 					{% endif %}
 				{% elif 'Feedback' in data.label %}
 			       		<td>
-						{% if  data.value == None or data.value == '' %}	
+						{% if  data.value == None or data.value == '' or prevWeekBlock == True %}	
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#actModal-"|add:data.id_for_label %}

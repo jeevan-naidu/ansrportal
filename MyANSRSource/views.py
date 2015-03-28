@@ -230,7 +230,7 @@ def Timesheet(request):
                                 saturdayTotal += float(v)
                             elif k == 'activity_sunday':
                                 sundayTotal += float(v)
-                            elif k == 'total':
+                            elif k == 'activity_total':
                                 nonbillableTotal += float(v)
                                 weekTotal += float(v)
                             activityDict[k] = v
@@ -665,6 +665,12 @@ def renderTimesheet(request, data):
 
     attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
 
+    ocWeek = datetime.now().date() - data['weekstartDate']
+    if ocWeek.days > 6:
+        prevWeekBlock = True
+    else:
+        prevWeekBlock = False
+
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
@@ -677,6 +683,7 @@ def renderTimesheet(request, data):
                  'attendance': attendance,
                  'othersTotal': othersTotal,
                  'tsTotal': d,
+                 'prevWeekBlock': prevWeekBlock,
                  'total': total,
                  'tsFormset': tsFormset,
                  'atFormset': atFormset}
