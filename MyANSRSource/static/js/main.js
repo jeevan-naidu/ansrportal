@@ -274,8 +274,6 @@ app.getById = function(arr, propName, id) {
             $satTotal = $('.ts-sat-total-hr'),
             $sunTotal = $('.ts-sun-total-hr');
 
-        var mondays = [];
-
         function total($arr, $output) {
             var tempArr = [],
                 tempTotal = 0;
@@ -298,10 +296,6 @@ app.getById = function(arr, propName, id) {
         total($sat, $satTotal);
         total($sun, $sunTotal);
     };
-
-
-
-
 
 
     app.init = function() {
