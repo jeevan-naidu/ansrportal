@@ -106,7 +106,7 @@ app.getTaskChapter = function(selValue, currRow) {
                     i;
 
                 for (i = 0; i < dataLen; i++) {
-                    options += '<option value="' + data[i].taskType + '">' + data[i].name + '</option>';
+                    options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
 
                 currRow.find(".b-task").html(options);
@@ -940,14 +940,15 @@ app.getSum = function($elements, $outputElement) {
                             curQuestions,
                             curHours,
                             i,
-                            curTaskVal = $curRow.find('.b-task option:selected').val(),
+                            curTaskType = $curRow.find('.b-task option:selected').data('task-type'),
                             curTotalIdleHours          = 0,
                             curTotalBillableHours      = 0,
                             $curTotalIdleHoursHidden    = $curRow.find('.r-total-idle-hours'),
                             $curTotalBillableHoursHidden    = $curRow.find('.r-total-billable-hours');
 
+                        console.log('curTaskType: ' + curTaskType);
 
-                        if(curTaskVal === 'I') {
+                        if(curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
                         } else {
                             $curRow.removeClass('idle-row').addClass('billable-row');
@@ -960,7 +961,7 @@ app.getSum = function($elements, $outputElement) {
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
 
-                            if(curTaskVal === 'I') {
+                            if(curTaskType === 'I') {
                                 curTotalIdleHours += curHours;
                             } else {
                                 curTotalBillableHours += curHours;
@@ -1120,7 +1121,7 @@ app.getSum = function($elements, $outputElement) {
                         $curItem = Number($($amounts[i]).val());
                         temp += $curItem;
                     }
-		    temp = temp.toFixed(2)
+		            temp = temp.toFixed(2);
                     $amountTotal.text(temp);
 
                     amountValidatoinFun();
