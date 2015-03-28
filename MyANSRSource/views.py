@@ -613,6 +613,21 @@ def renderTimesheet(request, data):
     for others in othersHours:
         othersTotal += others['totalH']
     total = bTotal + idleTotal + othersTotal
+    days = ['monday', 'tuesday', 'wednesday', 'thursday',
+            'friday', 'saturday', 'sunday']
+    d = {}
+    for eachDay in days:
+        newK = '{0}Total'.format(eachDay)
+        d[newK] = 0
+        if len(data['atFormList']):
+            for eachData in data['atFormList']:
+                k = 'activity_{0}'.format(eachDay)
+                d[newK] += eachData[k]
+        if len(data['tsFormList']):
+            for eachData in data['tsFormList']:
+                k = '{0}H'.format(eachDay)
+                newK = '{0}Total'.format(eachDay)
+                d[newK] += eachData[k]
     tsform = TimesheetFormset(request.user)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
@@ -661,6 +676,7 @@ def renderTimesheet(request, data):
                  'idleTotal': idleTotal,
                  'attendance': attendance,
                  'othersTotal': othersTotal,
+                 'tsTotal': d,
                  'total': total,
                  'tsFormset': tsFormset,
                  'atFormset': atFormset}
