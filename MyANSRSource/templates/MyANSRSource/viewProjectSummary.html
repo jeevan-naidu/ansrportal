@@ -17,10 +17,11 @@
 				<th>Type</th>
 				<th>Business Unit</th>
 				<th>Customer</th>
-				<th>Book</th>
+				<th>Book / Tile</th>
 				<th>Is it an internal Project?</th>
 				<th>Is this a new project?</th>
 				<th>Is this contract signed?</th>
+				<th>P.O.</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -49,6 +50,7 @@
 					No
 				{% endif %}
 			</td>
+			<td>{{ flagData.po }}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -65,7 +67,6 @@
 				<th>Start Date</th>
 				<th>End Date</th>
 				<th>Total Value</th>
-				<th>P.O.</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -75,7 +76,6 @@
 			<td>{{ flagData.startDate }}</td>
 			<td>{{ flagData.endDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
-			<td>{{ flagData.po }}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -130,6 +130,7 @@
 			<th>Description</th>
 			<th>Deadline</th>
 			<th>Amount</th>
+			<th>Type</th>
 		</thead>
         {% if milestone %}
 		{% for milestoneData in milestone %}
@@ -142,6 +143,13 @@
 			</td>
 			<td>
 				{{ milestoneData.amount }}
+			</td>
+			<td>
+				{% if milestoneData.financial %}
+                    Financial 
+                {% else %}
+                    Non-Financial
+                {% endif %}
 			</td>
 		</tr>
 		{% endfor %}
@@ -156,8 +164,8 @@
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-			<th>End Date</th>
-			<th>Reason</th>
+			<th>CR Date</th>
+			<th>CR Reason</th>
 			<th>Revised Total</th>
 			<th>Revised Effort</th>
 			<th>Signed</th>
@@ -179,10 +187,18 @@
 				{{ eachChange.revisedEffort }}
 			</td>
 			<td>
-				{{ eachChange.signed }}
+                {% if eachChange.signed %}
+                       Yes 
+                {% else %}
+                       No
+                {% endif %}
 			</td>
 			<td>
-				{{ eachChange.closed }}
+                {% if eachChange.closed %}
+                       Yes 
+                {% else %}
+                       No
+                {% endif %}
 			</td>
 		</tr>
 		{% endfor %}

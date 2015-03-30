@@ -65,19 +65,19 @@ class ActivityForm(forms.Form):
         self.fields['activity_total'].widget.attrs['readonly'] = 'True'
         self.fields['activity'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['class'] = "form-control \
-        days input-field mon-item"
+        days input-field Mon-t"
         self.fields['activity_tuesday'].widget.attrs['class'] = "form-control \
-        days input-field tue-item"
+        days input-field Tue-t"
         self.fields['activity_wednesday'].widget.attrs['class'] = "form-control \
-        days input-field wed-item"
+        days input-field Wed-t"
         self.fields['activity_thursday'].widget.attrs['class'] = "form-control \
-        days input-field thu-item"
+        days input-field Thu-t"
         self.fields['activity_friday'].widget.attrs['class'] = "form-control \
-        days input-field fri-item"
+        days input-field Fri-t"
         self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
-        days input-field sat-item"
+        days input-field Sat-t"
         self.fields['activity_sunday'].widget.attrs['class'] = "form-control \
-        days input-field sun-item"
+        days input-field Sun-t"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
         self.fields['activity_feedback'].widget.attrs['class'] = "form-control"

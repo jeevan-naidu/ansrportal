@@ -15,10 +15,8 @@ from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.db.models import Q
-from django.conf import settings
 from django.utils.timezone import utc
 
-from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
@@ -111,6 +109,10 @@ def index(request):
 def loginResponse(request, form, template):
     data = {'form': form if form else LoginForm(request.POST), }
     return render(request, template, data)
+
+
+def append_tsstatus_msg(request, tsSet, msg):
+    messages.info(request, msg + str(tsSet))
 
 
 @login_required
@@ -230,7 +232,7 @@ def Timesheet(request):
                                 saturdayTotal += float(v)
                             elif k == 'activity_sunday':
                                 sundayTotal += float(v)
-                            elif k == 'total':
+                            elif k == 'activity_total':
                                 nonbillableTotal += float(v)
                                 weekTotal += float(v)
                             activityDict[k] = v
@@ -394,24 +396,39 @@ def Timesheet(request):
             atContent = activitiesList
             tsErrorList = []
             atErrorList = []
-            msg = ''
 
+            approvedSet = set()
+            autoApprovedSet = set()
+            holdSet = set()
+            saveSet = set()
             for eachTS in tsContent:
                 if eachtsList['tsId']:
                     tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
                     if eachTS['approved']:
-                        msg += '{0} - is approved, '.format(tsObj.project.name)
+                        approvedSet.add(tsObj.project.projectId)
                     elif eachTS['hold']:
                         if tsObj.approved:
-                            msg += '{0} - is auto approved by system'.format(
-                                tsObj.project.name)
+                            autoApprovedSet.add(tsObj.project.projectId)
                         else:
-                            msg += '{0} - is sent for approval \
-                                to your manager'.format(tsObj.project.name)
+                            holdSet.add(tsObj.project.projectId)
                     elif 'save' in request.POST:
-                        msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+                        saveSet.add(tsObj.project.projectId)
 
-            messages.info(request, msg)
+            if len(approvedSet) > 0:
+                messages.success(
+                    request, 'Timesheet approved :' + str(list(approvedSet)))
+            if len(autoApprovedSet) > 0:
+                messages.success(
+                    request, 'Timesheet auto-approved by the system :' +
+                    str(list(autoApprovedSet)))
+            if len(holdSet) > 0:
+                messages.info(
+                    request, 'Timesheet sent to your manager :' +
+                    str(list(holdSet)))
+            if len(saveSet) > 0:
+                messages.info(
+                    request, 'Timesheet has been saved:' +
+                    str(list(saveSet)))
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -462,22 +479,36 @@ def Timesheet(request):
 
         # Constructing status of timesheet
 
-        msg = ''
-
+        approvedSet = set()
+        holdSet = set()
+        saveSet = set()
+        sentBackSet = set()
         for eachTS in tsFormList:
             tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
             if eachTS['approved']:
-                msg += '{0} - is approved, '.format(tsObj.project.name)
+                approvedSet.add(tsObj.project.projectId)
             elif eachTS['hold']:
-                msg += '{0} - is sent for approval \
-                    to your manager'.format(tsObj.project.name)
+                holdSet.add(tsObj.project.projectId)
             elif 'save' in request.POST:
-                msg += '{0} - timesheet is saved'.format(tsObj.project.name)
+                saveSet.add(tsObj.project.projectId)
             else:
-                msg += '{0} - Rework on your timesheet'.format(
-                    tsObj.project.name)
+                sentBackSet.add(tsObj.project.projectId)
 
-        messages.info(request, msg)
+        if len(approvedSet) > 0:
+            messages.success(
+                request, 'Timesheet approved :' + str(list(approvedSet)))
+        if len(holdSet) > 0:
+            messages.info(
+                request, 'Timesheet pending manager approval :' +
+                str(list(holdSet)))
+        if len(saveSet) > 0:
+            messages.error(
+                request, 'Timesheet saved - not yet submitted:' +
+                str(list(saveSet)))
+        if len(sentBackSet) > 0:
+            messages.error(
+                request, 'Timesheet you have to resubmit:' +
+                str(list(sentBackSet)))
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
@@ -605,9 +636,24 @@ def renderTimesheet(request, data):
     for idle in idleHours:
         idleTotal += idle['totalH']
     othersTotal = 0
-    total = bTotal + idleTotal + othersTotal
     for others in othersHours:
         othersTotal += others['totalH']
+    total = bTotal + idleTotal + othersTotal
+    days = ['monday', 'tuesday', 'wednesday', 'thursday',
+            'friday', 'saturday', 'sunday']
+    d = {}
+    for eachDay in days:
+        newK = '{0}Total'.format(eachDay)
+        d[newK] = 0
+        if len(data['atFormList']):
+            for eachData in data['atFormList']:
+                k = 'activity_{0}'.format(eachDay)
+                d[newK] += eachData[k]
+        if len(data['tsFormList']):
+            for eachData in data['tsFormList']:
+                k = '{0}H'.format(eachDay)
+                newK = '{0}Total'.format(eachDay)
+                d[newK] += eachData[k]
     tsform = TimesheetFormset(request.user)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
@@ -632,7 +678,7 @@ def renderTimesheet(request, data):
         atFormset = atFormset(prefix='at')
 
     attendanceObj = employee.models.Attendance.objects.filter(
-        employee = request.user.employee,
+        employee=request.user.employee,
         attdate__range=[data['weekstartDate'], data['weekendDate']]
     )
     attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
@@ -645,6 +691,12 @@ def renderTimesheet(request, data):
 
     attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
 
+    ocWeek = datetime.now().date() - data['weekstartDate']
+    if ocWeek.days > 6:
+        prevWeekBlock = True
+    else:
+        prevWeekBlock = False
+
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
@@ -656,6 +708,8 @@ def renderTimesheet(request, data):
                  'idleTotal': idleTotal,
                  'attendance': attendance,
                  'othersTotal': othersTotal,
+                 'tsTotal': d,
+                 'prevWeekBlock': prevWeekBlock,
                  'total': total,
                  'tsFormset': tsFormset,
                  'atFormset': atFormset}
@@ -890,7 +944,8 @@ class ManageTeamLeaderWizard(SessionWizardView):
             return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][1]['projectManager']
+        updatedData = [form.cleaned_data for form in form_list][
+            1]['projectManager']
         myProject = self.get_cleaned_data_for_step('My Projects')['project']
         myProject = Project.objects.get(id=myProject.id)
         allData = ProjectManager.objects.filter(
@@ -1041,6 +1096,7 @@ TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
 
+
 class ChangeProjectWizard(SessionWizardView):
 
     def get_template_names(self):
@@ -1050,14 +1106,19 @@ class ChangeProjectWizard(SessionWizardView):
         context = super(ChangeProjectWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Change Basic Information':
-            currentProject = Project.objects.get(
+            currentProject = Project.objects.filter(
                 pk=self.storage.get_step_data(
                     'My Projects'
-                )['My Projects-project'])
-            totalEffort = currentProject.plannedEffort
-            projectName = "{1} : {0}".format(currentProject.name,
-                                            currentProject.projectId)
-            context.update({'totalEffort': totalEffort, 'projectName': projectName})
+                )['My Projects-project']).values(
+                'plannedEffort',
+                'name',
+                'projectId'
+                )[0]
+            totalEffort = currentProject['plannedEffort']
+            projectName = "{1} : {0}".format(currentProject['name'],
+                                             currentProject['projectId'])
+            context.update({'totalEffort': totalEffort,
+                            'projectName': projectName})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -1087,18 +1148,21 @@ class ChangeProjectWizard(SessionWizardView):
     def get_form_initial(self, step):
         currentProject = []
         if step == 'Change Basic Information':
-            currentProject = Project.objects.filter(
-                id=self.storage.get_step_data(
-                    'My Projects'
-                )['My Projects-project']).values(
-                'id',
-                'signed',
-                'endDate',
-                'plannedEffort',
-                'totalValue'
-                )[0]
-            currentProject['revisedTotal'] = currentProject['totalValue']
-            currentProject['revisedEffort'] = currentProject['plannedEffort']
+            projectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            if projectId is not None:
+                currentProject = Project.objects.filter(
+                    pk=projectId).values(
+                    'id',
+                    'signed',
+                    'endDate',
+                    'plannedEffort',
+                    'totalValue'
+                    )[0]
+                currentProject['revisedTotal'] = currentProject['totalValue']
+                currentProject['revisedEffort'] = currentProject[
+                    'plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -1356,7 +1420,7 @@ class ManageTeamWizard(SessionWizardView):
                 ).values('name', 'date')
                 holidays = Holiday.objects.all().values('name', 'date')
                 for holiday in holidays:
-                     holiday['date'] = int(
+                    holiday['date'] = int(
                         holiday['date'].strftime("%s")) * 1000
                 data = {'data': list(holidays)}
             else:
@@ -1383,7 +1447,7 @@ class ManageTeamWizard(SessionWizardView):
                            (eachData['plannedEffort'] == ptm.plannedEffort) and \
                            (eachData['member'] == ptm.member) and \
                                 (eachData['rate'] == ptm.rate):
-                               pass
+                            pass
                         else:
                             ptm.project = project
                             del(eachData['id'])
@@ -1457,6 +1521,7 @@ def SendMail(data, toAddr, templateName):
     sm.template_name = templateName
     sm.toAddr = json.dumps([toAddr])
     sm.save()
+
 
 @login_required
 def saveProject(request):
@@ -1613,7 +1678,7 @@ def ViewProject(request):
         else:
             cleanedMilestoneData = ProjectMilestone.objects.filter(
                 project=projectObj).values('milestoneDate', 'description',
-                                           'amount')
+                                           'amount', 'financial')
 
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(
@@ -1621,11 +1686,11 @@ def ViewProject(request):
             'closed', 'closedOn', 'signed'
         )
         data = {
-                'basicInfo': basicInfo,
-                'flagData': flagData,
-                'teamMember': cleanedTeamData,
-                'milestone': cleanedMilestoneData,
-                'changes': changeTracker
+            'basicInfo': basicInfo,
+            'flagData': flagData,
+            'teamMember': cleanedTeamData,
+            'milestone': cleanedMilestoneData,
+            'changes': changeTracker
             }
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
@@ -1644,16 +1709,18 @@ def GetChapters(request, projectid):
         json_chapters = {'data': list(chapters)}
     except Project.DoesNotExist:
         json_chapters = {'data': list()}
-
     return HttpResponse(json.dumps(json_chapters),
                         content_type="application/javascript")
 
 
 def GetTasks(request, projectid):
-    tasks = Task.objects.filter(
-        projectType=Project.objects.get(pk=projectid).projectType
-    ).values('code', 'name', 'id')
-    data = {'data': list(tasks)}
+    try:
+        tasks = Task.objects.filter(
+            projectType=Project.objects.get(pk=projectid).projectType
+        ).values('code', 'name', 'id', 'taskType')
+        data = {'data': list(tasks)}
+    except Task.DoesNotExist:
+        data = {'data': list()}
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -1674,19 +1741,20 @@ def GetHolidays(request, memberid):
 
 
 def GetProjectType(request):
-    # NIRANJ: Why is this being filtered from Project Team member and not
-    # project directly?  this will result in duplicate records.
-    typeData = ProjectTeamMember.objects.values(
-        'project__id',
-        'project__name',
-        'project__projectType__code',
-        'project__maxProductivityUnits',
-        'project__projectType__description'
-    ).filter(project__closed=False)
-    for eachData in typeData:
-        eachData['project__maxProductivityUnits'] = float(
-            eachData['project__maxProductivityUnits'])
-    data = {'data': list(typeData)}
+    try:
+        typeData = ProjectTeamMember.objects.values(
+            'project__id',
+            'project__name',
+            'project__projectType__code',
+            'project__maxProductivityUnits',
+            'project__projectType__description'
+        ).filter(project__closed=False)
+        for eachData in typeData:
+            eachData['project__maxProductivityUnits'] = float(
+                eachData['project__maxProductivityUnits'])
+        data = {'data': list(typeData)}
+    except ProjectTeamMember.DoesNotExist:
+        data = {'data': list()}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
 

@@ -15,7 +15,7 @@
                 {% if eachTsDetail.approved %}
                     Approved
                 {% elif eachTsDetail.hold %}
-                    Submitted
+                    Submitted - Pending Approval
                 {% else %}
                     Not Submitted
                 {% endif %}
@@ -44,7 +44,7 @@
                 {% if eachTsDetail.approved %}
                     Approved
                 {% elif eachTsDetail.hold %}
-                    Submitted
+                    Submitted - Pending approval
                 {% else %}
                     Not Submitted
                 {% endif %}

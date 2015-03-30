@@ -272,6 +272,13 @@ LOGGING = {
 
 }
 
+# Attendance Feed Settings
+FEED_DIR = "backup/Access-Control-Data"
+EXT = "csv"
+SUCCESS_DIR = FEED_DIR + "/completed"
+ERROR_DIR = FEED_DIR + "/error"
+DELIMITER = ","
+
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 

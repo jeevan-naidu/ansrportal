@@ -12,11 +12,41 @@ helper.range = function(start, end) {
     return result;
 };
 
+helper.forEach = function(arr, action) {
+    var arrLen = arr.length,
+        i;
+
+    for(i = 0; i < arrLen; i += 1) {
+        action(arr[i]);
+    }
+};
+
+helper.sumOfArr = function(arr) {
+    var sum = 0;
+
+    helper.forEach(arr, function(item) {
+        sum += item;
+    });
+
+    return sum;
+};
+
+// argument element must be jQuery element
+helper.getValOrText = function($ele) {
+    var eleVal;
+    if($ele.prop('tagName') === 'SELECT' || $ele.prop('tagName') === 'INPUT') {
+        eleVal = $ele.val();
+    } else {
+        eleVal = $ele.text();
+    }
+    return eleVal;
+};
+
 app.billableSetZeroList = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
                            16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 
                            28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 
                            40, 41, 42, 43, 44, 45, 46, 47, 48, 50, 51, 52, 
-                           53, 54];
+                           53, 54, 55];
 
 app.spaceToUnderscore = function($containerEle) {
     var items = $containerEle.find('td *'),
@@ -76,7 +106,7 @@ app.getTaskChapter = function(selValue, currRow) {
                     i;
 
                 for (i = 0; i < dataLen; i++) {
-                    options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+                    options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
 
                 currRow.find(".b-task").html(options);
@@ -225,7 +255,49 @@ app.getById = function(arr, propName, id) {
 
         return total;
     };
-    
+
+
+
+    app.timeSheetDayTotalHours = function() {
+        var $mon = $('.Mon-t'),
+            $tue = $('.Tue-t'),
+            $wed = $('.Wed-t'),
+            $thu = $('.Thu-t'),
+            $fri = $('.Fri-t'),
+            $sat = $('.Sat-t'),
+            $sun = $('.Sun-t'),
+            $monTotal = $('.ts-mon-total-hr'),
+            $tueTotal = $('.ts-tue-total-hr'),
+            $wedTotal = $('.ts-wed-total-hr'),
+            $thuTotal = $('.ts-thu-total-hr'),
+            $friTotal = $('.ts-fri-total-hr'),
+            $satTotal = $('.ts-sat-total-hr'),
+            $sunTotal = $('.ts-sun-total-hr');
+
+        function total($arr, $output) {
+            var tempArr = [],
+                tempTotal = 0;
+
+            helper.forEach($arr, function(item) {
+                var curVal = helper.getValOrText($(item));
+                tempArr.push(Number(curVal));
+            });
+
+            tempTotal = helper.sumOfArr(tempArr);
+
+            $output.text(tempTotal);
+        }
+
+        total($mon, $monTotal);
+        total($tue, $tueTotal);
+        total($wed, $wedTotal);
+        total($thu, $thuTotal);
+        total($fri, $friTotal);
+        total($sat, $satTotal);
+        total($sun, $sunTotal);
+    };
+
+
     app.init = function() {
         app.getActiveTaskChapter();
         getTastChaptersEachProject();
@@ -768,11 +840,12 @@ app.getSum = function($elements, $outputElement) {
                         $totalNonBillableHours.text(totalNonBillable);
                     };
 
-                    temp = temp.toFixed(2)
+                    temp = temp.toFixed(2);
                     $curTotal.val(temp);
 
                     nonBillableTotalFun();
                     app.timeSheetGrandTotal();
+                    app.timeSheetDayTotalHours();
                 };
 
                 $days.on({
@@ -792,8 +865,8 @@ app.getSum = function($elements, $outputElement) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24"></div>';
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" step="any"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24" step="any"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0 / DAY</label></div>';
 
                 $dayPopoverBtn.popover({
@@ -839,8 +912,6 @@ app.getSum = function($elements, $outputElement) {
                     };
 
                     var projectUnitViewToPopUp = function() {
-                        $curProjectPopupUnit.text(app.curProjectUnit);
-
                         // get current project by id
                         if(selectedValue != 0) {
                             selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
@@ -849,6 +920,8 @@ app.getSum = function($elements, $outputElement) {
                             app.curProjectUnitShort = selectedProject.project__projectType__code;
                             app.curProjectUnit      = selectedProject.project__projectType__description;
                             app.norms               = selectedProject.project__maxProductivityUnits;
+
+                            $curProjectPopupUnit.text(app.curProjectUnit);
                         } else {
                             app.norms = 0.0;
                         }
@@ -867,14 +940,15 @@ app.getSum = function($elements, $outputElement) {
                             curQuestions,
                             curHours,
                             i,
-                            curTaskVal = $curRow.find('.b-task option:selected').val(),
+                            curTaskType = $curRow.find('.b-task option:selected').data('task-type'),
                             curTotalIdleHours          = 0,
                             curTotalBillableHours      = 0,
                             $curTotalIdleHoursHidden    = $curRow.find('.r-total-idle-hours'),
                             $curTotalBillableHoursHidden    = $curRow.find('.r-total-billable-hours');
 
+                        console.log('curTaskType: ' + curTaskType);
 
-                        if(curTaskVal === 'I') {
+                        if(curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
                         } else {
                             $curRow.removeClass('idle-row').addClass('billable-row');
@@ -887,7 +961,7 @@ app.getSum = function($elements, $outputElement) {
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
 
-                            if(curTaskVal === 'I') {
+                            if(curTaskType === 'I') {
                                 curTotalIdleHours += curHours;
                             } else {
                                 curTotalBillableHours += curHours;
@@ -940,6 +1014,7 @@ app.getSum = function($elements, $outputElement) {
                             $totalIdleHours.text(idleTotalHours);
 
                             app.timeSheetGrandTotal();
+                            app.timeSheetDayTotalHours();
                         };
 
                         totalIdleAndBillableHours();
@@ -1046,7 +1121,7 @@ app.getSum = function($elements, $outputElement) {
                         $curItem = Number($($amounts[i]).val());
                         temp += $curItem;
                     }
-		    temp = temp.toFixed(2)
+		            temp = temp.toFixed(2);
                     $amountTotal.text(temp);
 
                     amountValidatoinFun();

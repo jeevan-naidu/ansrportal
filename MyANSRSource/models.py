@@ -9,7 +9,7 @@ TASKTYPEFLAG = (
     ('I', 'Idle'),
 )
 
-alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$',
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z-]*$',
                               'Only alphanumeric characters are allowed.')
 
 
@@ -178,7 +178,7 @@ class Project(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.projectId + ' : '  + self.name
+        return self.projectId+' : '+self.name
 
     class Meta:
         permissions = (
@@ -332,7 +332,8 @@ class ProjectChangeInfo(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     crId = models.CharField(default=None, blank=True, null=True,
                             max_length=100, verbose_name="Change Request ID")
-    reason = models.CharField(max_length=100, default=None, blank=True,
+    reason = models.CharField(max_length=100, default=None, blank=False,
+                              null=False,
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)

@@ -1,26 +1,40 @@
+import logging
 from templated_email import send_templated_mail
 from django.core.management.base import BaseCommand
 from MyANSRSource.models import ProjectMilestone
 from datetime import datetime, timedelta
 from django.conf import settings
 
+logger = logging.Logger('milestone-emails')
+
 
 class Command(BaseCommand):
-    help = 'Sends Emails to remind concerned persons \
-        in the project on regular basis'
+    help = 'Sends Emails reminders about milestones both approaching \
+        and expired ones on a daily basis'
 
     def handle(self, *args, **options):
-        lastOneWeek = datetime.now().date() - timedelta(weeks=1)
-        lastDay = datetime.now().date() - timedelta(days=1)
-        expired = datetime.now().date() + timedelta(days=1)
-        sendEmail(self, getContent(lastOneWeek), lastOneWeek, 'week')
-        sendEmail(self, getContent(lastDay), lastDay, 'lastDay')
-        sendEmail(self, getContent(expired), expired, 'expired')
+        logger.info(
+            'Starting Milestone Update email batch for date {0}'.format(
+                datetime.now().date()))
+        nextWeek = datetime.now().date() + timedelta(weeks=1)
+        nextDay = datetime.now().date() + timedelta(days=1)
+        expired = datetime.now().date() - timedelta(days=1)
+
+        logger.info('Running milestone batch job for Today + 1 week :{0}, \
+                    Today + 1 day {1}, Today - 1 day {2}'.
+                    format(nextWeek, nextDay, expired))
+        sendEmail(self, getContent(nextWeek),
+                  nextWeek, 'week')
+        sendEmail(self, getContent(nextDay),
+                  nextDay, 'nextDay')
+        sendEmail(self, getContent(expired),
+                  expired, 'expired')
 
 
 def getContent(deadlineDate):
     return ProjectMilestone.objects.filter(
-        milestoneDate=deadlineDate
+        milestoneDate=deadlineDate,
+        closed=False
     ).values('project__name',
              'project__projectId',
              'description',
@@ -38,6 +52,7 @@ def sendEmail(self, details, date, label):
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachDetail['project__projectManager__email'], ],
                 context={
+                    'label': label,
                     'first_name': eachDetail[
                         'project__projectManager__first_name'
                     ],
@@ -55,4 +70,9 @@ def sendEmail(self, details, date, label):
                     ],
                     },
             )
-            self.stdout.write('Successfully sent mail to team manager')
+            logger.info('Sent email to {0} about project {1} milestone date {2}.  \
+                         This is type {3} reminder'.
+                        format(eachDetail['project__projectManager__email'],
+                               eachDetail['project__projectId'],
+                               eachDetail['milestoneDate'],
+                               label))

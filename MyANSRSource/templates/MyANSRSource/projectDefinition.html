@@ -35,10 +35,10 @@
 						{% for radio in field %}
 							{% if field.label == 'New Development' %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
-								<span class="col-lg-4" style="padding-top: 10px"><small><b>{{ radio.choice_label }}</b></small></span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
 							{% else %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
-								<span class="col-lg-4" style="padding-top: 4px"><h5><b>{{ radio.choice_label }}</b></h5></span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
 							{% endif %}
 						{% endfor %}
 					{% else %}

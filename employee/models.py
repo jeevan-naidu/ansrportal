@@ -258,7 +258,7 @@ class Employee(models.Model):
         blank=True)
 
     def __unicode__(self):
-        return '{0},{1},{2}'.format(
+        return '{0}|{1},{2}'.format(
             self.employee_assigned_id,
             self.user.first_name,
             self.user.last_name)
@@ -366,9 +366,15 @@ class PreviousEmployment(models.Model):
 
 class Attendance(models.Model):
     employee = models.ForeignKey(Employee, null=True)
-    attdate = models.DateField(null=True, blank=True)
+    attdate = models.DateField(null=True, blank=True, verbose_name='Swipe Date')
     swipe_in = models.DateTimeField(null=True, blank=True)
     swipe_out = models.DateTimeField(null=True, blank=True)
+    incoming_employee_id = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True)
 
     class Meta:
         unique_together = ('employee', 'attdate',)
+        verbose_name_plural = 'Attendance'
+        verbose_name = 'Attendance'
