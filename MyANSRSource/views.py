@@ -489,8 +489,6 @@ def Timesheet(request):
                 approvedSet.add(tsObj.project.projectId)
             elif eachTS['hold']:
                 holdSet.add(tsObj.project.projectId)
-            elif 'save' in request.POST:
-                saveSet.add(tsObj.project.projectId)
             else:
                 sentBackSet.add(tsObj.project.projectId)
 
@@ -501,13 +499,9 @@ def Timesheet(request):
             messages.info(
                 request, 'Timesheet pending manager approval :' +
                 str(list(holdSet)))
-        if len(saveSet) > 0:
-            messages.error(
-                request, 'Timesheet saved - not yet submitted:' +
-                str(list(saveSet)))
         if len(sentBackSet) > 0:
-            messages.error(
-                request, 'Timesheet you have to resubmit:' +
+            messages.info(
+                request, 'Timesheet you have to submit:' +
                 str(list(sentBackSet)))
 
         data = {'weekstartDate': dates['start'],
