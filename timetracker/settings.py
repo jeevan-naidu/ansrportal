@@ -273,11 +273,11 @@ LOGGING = {
 }
 
 # Attendance Feed Settings
-FEED_DIR = "backup/Access-Control-Data"
-EXT = "csv"
-SUCCESS_DIR = FEED_DIR + "/completed"
-ERROR_DIR = FEED_DIR + "/error"
-DELIMITER = ","
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data"
+FEED_EXT = "csv"
+FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
+FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
+FEED_DELIMITER = ","
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
