@@ -7,7 +7,7 @@ from django.utils.timezone import get_default_timezone
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from employee.models import Attendance, Employee
-from django.db import IntegrityError, Transaction
+from django.db import IntegrityError
 from django.conf import settings
 
 logger = logging.getLogger('employee')
@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if os.path.exists(settings.FEED_DIR):
-            file_pattern = "/*.{0}".format(settings.EXT)
+            file_pattern = "/*.{0}".format(settings.FEED_EXT)
 
             if glob.glob(settings.FEED_DIR + file_pattern):
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 for eachFile in glob.glob(settings.FEED_DIR + file_pattern):
                     with open(eachFile, 'r') as csvfile:
                         filereader = csv.reader(csvfile,
-                                                delimiter=settings.DELIMITER)
+                                                delimiter=settings.FEED_DELIMITER)
 
                         logger.info(
                             "Processing file {0}".format(eachFile))
@@ -42,12 +42,12 @@ class Command(BaseCommand):
                         logger.info("Processed file {0}".format(eachFile))
 
                         # Move backed up feed to a new folder
-                        if os.path.exists(settings.SUCCESS_DIR) is False:
+                        if os.path.exists(settings.FEED_SUCCESS_DIR) is False:
                             os.system('mkdir {0}'.format(
-                                settings.SUCCESS_DIR))
+                                settings.FEED_SUCCESS_DIR))
 
                         os.system('mv {0} {1}'.format(eachFile,
-                                                      settings.SUCCESS_DIR))
+                                                      settings.FEED_SUCCESS_DIR))
                         logger.info(
                             "Moved file {0} to processed directory".
                             format(eachFile))
