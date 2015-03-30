@@ -15,10 +15,8 @@ from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.db.models import Q
-from django.conf import settings
 from django.utils.timezone import utc
 
-from templated_email import send_templated_mail
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
@@ -111,6 +109,10 @@ def index(request):
 def loginResponse(request, form, template):
     data = {'form': form if form else LoginForm(request.POST), }
     return render(request, template, data)
+
+
+def append_tsstatus_msg(request, tsSet, msg):
+    messages.info(request, msg + str(tsSet))
 
 
 @login_required
@@ -395,26 +397,38 @@ def Timesheet(request):
             tsErrorList = []
             atErrorList = []
 
-            msgL = []
+            approvedSet = set()
+            autoApprovedSet = set()
+            holdSet = set()
+            saveSet = set()
             for eachTS in tsContent:
                 if eachtsList['tsId']:
                     tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
                     if eachTS['approved']:
-                        msgL.append('{0} - is approved, '.format(tsObj.project.name))
+                        approvedSet.add(tsObj.project.projectId)
                     elif eachTS['hold']:
                         if tsObj.approved:
-                            msgL.append('{0} - is auto approved by system'.format(
-                                tsObj.project.projectId))
+                            autoApprovedSet.add(tsObj.project.projectId)
                         else:
-                            msgL.append('{0} - is sent for approval \
-                                to your manager'.format(tsObj.project.projectId))
+                            holdSet.add(tsObj.project.projectId)
                     elif 'save' in request.POST:
-                        msgL.append('{0} - timesheet is saved'.format(
-                            tsObj.project.projectId))
+                        saveSet.add(tsObj.project.projectId)
 
-            if len(msgL) > 0:
-                for eachMsg in list(set(msgL)):
-                    messages.info(request, eachMsg)
+            if len(approvedSet) > 0:
+                messages.success(
+                    request, 'Timesheet approved :' + str(list(approvedSet)))
+            if len(autoApprovedSet) > 0:
+                messages.success(
+                    request, 'Timesheet auto-approved by the system :' +
+                    str(list(autoApprovedSet)))
+            if len(holdSet) > 0:
+                messages.info(
+                    request, 'Timesheet sent to your manager :' +
+                    str(list(holdSet)))
+            if len(saveSet) > 0:
+                messages.info(
+                    request, 'Timesheet has been saved:' +
+                    str(list(saveSet)))
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -465,24 +479,36 @@ def Timesheet(request):
 
         # Constructing status of timesheet
 
-        msgL = []
+        approvedSet = set()
+        holdSet = set()
+        saveSet = set()
+        sentBackSet = set()
         for eachTS in tsFormList:
             tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
             if eachTS['approved']:
-                msgL.append('{0} - is approved, '.format(
-                    tsObj.project.projectId))
+                approvedSet.add(tsObj.project.projectId)
             elif eachTS['hold']:
-                msgL.append('{0} - is sent for approval \
-                    to your manager'.format(tsObj.project.projectId))
+                holdSet.add(tsObj.project.projectId)
             elif 'save' in request.POST:
-                msgL.append('{0} - timesheet is saved'.format(
-                    tsObj.project.projectId))
+                saveSet.add(tsObj.project.projectId)
             else:
-                msgL.append('{0} - Rework on your timesheet'.format(
-                    tsObj.project.projectId))
+                sentBackSet.add(tsObj.project.projectId)
 
-        for eachMsg in list(set(msgL)):
-            messages.info(request, eachMsg)
+        if len(approvedSet) > 0:
+            messages.success(
+                request, 'Timesheet approved :' + str(list(approvedSet)))
+        if len(holdSet) > 0:
+            messages.info(
+                request, 'Timesheet pending manager approval :' +
+                str(list(holdSet)))
+        if len(saveSet) > 0:
+            messages.error(
+                request, 'Timesheet saved - not yet submitted:' +
+                str(list(saveSet)))
+        if len(sentBackSet) > 0:
+            messages.error(
+                request, 'Timesheet you have to resubmit:' +
+                str(list(sentBackSet)))
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
@@ -1084,9 +1110,9 @@ class ChangeProjectWizard(SessionWizardView):
                 pk=self.storage.get_step_data(
                     'My Projects'
                 )['My Projects-project']).values(
-                    'plannedEffort',
-                    'name',
-                    'projectId'
+                'plannedEffort',
+                'name',
+                'projectId'
                 )[0]
             totalEffort = currentProject['plannedEffort']
             projectName = "{1} : {0}".format(currentProject['name'],
@@ -1135,7 +1161,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'totalValue'
                     )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
-                currentProject['revisedEffort'] = currentProject['plannedEffort']
+                currentProject['revisedEffort'] = currentProject[
+                    'plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):

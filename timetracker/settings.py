@@ -176,7 +176,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "mysqlroot",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -273,10 +273,10 @@ LOGGING = {
 }
 
 # Attendance Feed Settings
-BK_DIR = "backup/Access-Control-Data"
+FEED_DIR = "backup/Access-Control-Data"
 EXT = "csv"
-SUCCESS_DIR = BK_DIR + "/completed"
-ERROR_DIR = BK_DIR + "/error"
+SUCCESS_DIR = FEED_DIR + "/completed"
+ERROR_DIR = FEED_DIR + "/error"
 DELIMITER = ","
 
 # Grappelli Customizations
