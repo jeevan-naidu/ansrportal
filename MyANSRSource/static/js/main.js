@@ -28,7 +28,7 @@ helper.sumOfArr = function(arr) {
         sum += item;
     });
 
-    return sum;
+    return sum.toFixed(2);
 };
 
 // argument element must be jQuery element
@@ -250,12 +250,12 @@ app.getById = function(arr, propName, id) {
             notBillableTotal = Number($('.total-non-billable-hours').text()),
             $total = $('.timesheet-grand-total'),
             total = billableTotal + idleTotal + notBillableTotal;
+            total = total.toFixed(2);
 
         $total.text(total);
 
         return total;
     };
-
 
 
     app.timeSheetDayTotalHours = function() {
@@ -295,6 +295,32 @@ app.getById = function(arr, propName, id) {
         total($fri, $friTotal);
         total($sat, $satTotal);
         total($sun, $sunTotal);
+    };
+
+    app.tsInputIsValid = function($elem, str) {
+        if(!str) {
+            console.log('Please enter the valid number');
+            $elem.addClass('alert-danger');
+            return false;
+        } else {
+            // check for decimal
+            str = Number(str);
+            if(str < 0) {
+                console.log('Please enter the positive number');
+                $elem.addClass('alert-danger');
+                return false;
+            }
+            if(/\./.test(str)) {
+                if(!(/\b\.\d\d?\b/.test(str))) {
+                    console.log('Only two decimal is allowed');
+                    $elem.addClass('alert-danger');
+                    return false;
+                }
+            }
+
+            $elem.removeClass('alert-danger');
+            return true;
+        }
     };
 
 
@@ -1006,8 +1032,8 @@ app.getSum = function($elements, $outputElement) {
                                 tempBillableTotal += curBillableTotal;
                             }
 
-                            idleTotalHours = tempIdleTotal;
-                            billableTotalHours = tempBillableTotal;
+                            idleTotalHours = tempIdleTotal.toFixed(2);
+                            billableTotalHours = tempBillableTotal.toFixed(2);
 
                             // To Dom
                             $totalBillableHours.text(billableTotalHours);
@@ -1024,13 +1050,18 @@ app.getSum = function($elements, $outputElement) {
                     calculateTotal();
 
                     var inputToView = function() {
-                        $curQuestionsView.text($curQuestionsInput.val());
-                        $curHoursView.text($curHoursInput.val());
+                        var curInput = $curHoursInput.val();
+                        console.log(curInput);
+                        var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
+                        if(tsInput) {
+                            $curQuestionsView.text($curQuestionsInput.val());
+                            $curHoursView.text($curHoursInput.val());
 
-                        $curQuestionsHidden.val($curQuestionsInput.val());
-                        $curHoursHidden.val($curHoursInput.val());
+                            $curQuestionsHidden.val($curQuestionsInput.val());
+                            $curHoursHidden.val($curHoursInput.val());
 
-                        calculateTotal();
+                            calculateTotal();
+                        }
                     };
 
                    $curQuestionsInput.on({
