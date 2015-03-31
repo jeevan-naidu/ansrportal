@@ -15,7 +15,9 @@ class Customer(models.Model):
         max_length=3,
         default=None
     )
-    seqNumber = models.PositiveIntegerField(null=False, default=1, verbose_name='Project ID Sequence' )
+    seqNumber = models.PositiveIntegerField(null=False,
+                                            default=1,
+                                            verbose_name='Project ID Sequence')
     relatedMember = models.ManyToManyField(
         User,
         verbose_name="Select Account Relationship team",
@@ -132,6 +134,8 @@ class BusinessUnit(models.Model):
         verbose_name="Business Unit Name",
         max_length=40,
         blank=False)
+    bu_head = models.OneToOneField(User, default=None,
+                                   verbose_name="Business Unit Head")
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
