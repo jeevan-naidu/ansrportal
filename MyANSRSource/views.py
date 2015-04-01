@@ -610,7 +610,6 @@ def renderTimesheet(request, data):
         wkstart=data['weekstartDate'],
         wkend=data['weekendDate'],
         teamMember=request.user,
-        approved=False
     )
     billableHours = tsObj.filter(
         activity__isnull=True,
