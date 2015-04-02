@@ -882,18 +882,12 @@ def checkUser(userName, password, request, form):
                     return HttpResponseRedirect('/myansrsource/dashboard')
                 else:
                     # We have an unknow group
-                    messages.error(
-                        request,
-                        'This user does not have access to timesheets.')
                     logger.error(
                         'User {0} permission details {1} group perms'.format(
                             user.username,
                             user.get_all_permissions(),
                             user.get_group_permissions()))
-                    return loginResponse(
-                        request,
-                        form,
-                        'MyANSRSource/index.html')
+                    return render(request, 'MyANSRSource/welcome.html', {})
             else:
                 messages.error(request, 'Sorry this user is not active.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
