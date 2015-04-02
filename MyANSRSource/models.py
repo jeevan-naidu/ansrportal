@@ -148,6 +148,10 @@ class Project(models.Model):
                                  default=timezone.now)
     endDate = models.DateField(verbose_name="Project End Date",
                                default=timezone.now)
+    salesForceNumber = models.IntegerField(default=0,
+                                           verbose_name="Sales Force \
+                                           Oppurtunity Number",
+                                           validators=[MinValueValidator(0)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
                                         validators=[MinValueValidator(0)])
@@ -350,6 +354,10 @@ class ProjectChangeInfo(models.Model):
                                        validators=[MinValueValidator(0)],
                                        decimal_places=2,
                                        verbose_name="Revised amount")
+    salesForceNumber = models.IntegerField(default=0,
+                                           verbose_name="Sales Force \
+                                           Oppurtunity Number",
+                                           validators=[MinValueValidator(0)])
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
     closedOn = models.DateTimeField(default=None, blank=True, null=True)

@@ -1159,7 +1159,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'signed',
                     'endDate',
                     'plannedEffort',
-                    'totalValue'
+                    'totalValue',
+                    'salesForceNumber'
                     )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject[
@@ -1192,8 +1193,10 @@ def UpdateProjectInfo(request, newInfo):
         prc = newInfo[0]['project']
         oldCost = prc.totalValue
         oldEffort = prc.plannedEffort
+        oldsalesForceNumber = prc.salesForceNumber
         prc.plannedEffort = newInfo[1]['revisedEffort']
         prc.totalValue = newInfo[1]['revisedTotal']
+        prc.salesForceNumber = newInfo[1]['salesForceNumber']
         prc.closed = newInfo[1]['closed']
         prc.signed = newInfo[1]['signed']
         prc.save()
@@ -1202,6 +1205,7 @@ def UpdateProjectInfo(request, newInfo):
         pci.project = prc
         pci.reason = newInfo[1]['reason']
         pci.endDate = newInfo[1]['endDate']
+        pci.salesForceNumber = oldsalesForceNumber
         pci.revisedEffort = oldEffort
         pci.revisedTotal = oldCost
         pci.closed = newInfo[1]['closed']
@@ -1550,6 +1554,7 @@ def saveProject(request):
             pr.po = request.POST.get('po')
             pr.totalValue = float(request.POST.get('totalValue'))
             pr.plannedEffort = int(request.POST.get('plannedEffort'))
+            pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
             pr.currentProject = request.POST.get('currentProject')
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
@@ -1667,7 +1672,7 @@ def ViewProject(request):
         )[0]
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
-            'totalValue', 'maxProductivityUnits', 'po'
+            'totalValue', 'maxProductivityUnits', 'po', 'salesForceNumber'
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
@@ -1684,7 +1689,7 @@ def ViewProject(request):
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(
             'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-            'closed', 'closedOn', 'signed'
+            'closed', 'closedOn', 'signed', 'salesForceNumber'
         )
         data = {
             'basicInfo': basicInfo,

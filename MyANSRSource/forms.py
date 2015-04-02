@@ -375,7 +375,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         model = ProjectChangeInfo
         fields = (
             'reason', 'endDate', 'revisedEffort',
-            'revisedTotal', 'closed', 'signed'
+            'revisedTotal', 'salesForceNumber', 'closed', 'signed'
         )
         widgets = {
             'endDate': DateTimePicker(options=dateTimeOption),
@@ -390,6 +390,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
         self.fields['signed'].widget.attrs['class'] = "form-control"
+        self.fields['salesForceNumber'].widget.attrs['class'] = "form-control"
 
 
 class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
@@ -467,7 +468,8 @@ class ProjectFlagForm(forms.ModelForm):
             'plannedEffort',
             'contingencyEffort',
             'totalValue',
-            'po'
+            'po',
+            'salesForceNumber'
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -479,6 +481,8 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['maxProductivityUnits'].widget.attrs['class'] = \
             "form-control"
         self.fields['po'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['salesForceNumber'].widget.attrs['class'] = \
             "form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "planned-effort-input form-control"

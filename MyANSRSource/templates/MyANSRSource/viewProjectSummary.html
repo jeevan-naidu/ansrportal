@@ -67,6 +67,7 @@
 				<th>Start Date</th>
 				<th>End Date</th>
 				<th>Total Value</th>
+				<th>SalesForce Number</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -76,6 +77,7 @@
 			<td>{{ flagData.startDate }}</td>
 			<td>{{ flagData.endDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
+			<td>{{ flagData.salesForceNumber }}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -170,6 +172,7 @@
 			<th>Revised Effort</th>
 			<th>Signed</th>
 			<th>Closed</th>
+			<th>SalesForce Number</th>
 		</thead>
         {% if changes %}
 		{% for eachChange in changes %}
@@ -199,6 +202,9 @@
                 {% else %}
                        No
                 {% endif %}
+			</td>
+			<td>
+				{{ eachChange.salesForceNumber }}
 			</td>
 		</tr>
 		{% endfor %}
