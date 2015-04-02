@@ -19,7 +19,8 @@ class Book(models.Model):
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
     edition = models.CharField(max_length=30, null=True, blank=True)
-    isbn = models.IntegerField(default=0,
+    isbn = models.IntegerField(default=None,
+                               blank=True, null=True,
                                verbose_name="ISBN")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
