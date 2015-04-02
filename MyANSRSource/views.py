@@ -754,6 +754,10 @@ def Dashboard(request):
         closed=False
     ).count() if request.user.has_perm('MyANSRSource.manage_project') else 0
 
+    myProjects = Project.objects.filter(
+        projectManager=request.user,
+    ).count() if request.user.has_perm('MyANSRSource.manage_project') else 0
+
     totalCurrentProjects = ProjectTeamMember.objects.filter(
         member=request.user,
         project__closed=False
@@ -857,6 +861,7 @@ def Dashboard(request):
         'projectsList': myprojects,
         'trainingList': trainings,
         'billableProjects': billableProjects,
+        'myProjects': myProjects,
         'currentProjects': currentProjects,
         'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
@@ -1201,7 +1206,7 @@ def UpdateProjectInfo(request, newInfo):
         pci.revisedTotal = oldCost
         pci.closed = newInfo[1]['closed']
         if pci.closed is True:
-            pci.closedOn = datetime.now()
+            pci.closedOn = datetime.now().replace(tzinfo=utc)
         pci.signed = newInfo[1]['signed']
         pci.save()
 
@@ -1686,8 +1691,12 @@ def ViewProject(request):
             'flagData': flagData,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData,
-            'changes': changeTracker
+            'changes': changeTracker,
             }
+        if len(changeTracker):
+            closedOn = [eachRec['closedOn'] for eachRec in changeTracker if eachRec['closedOn'] is not None]
+            if len(closedOn):
+                data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
         'name', 'id', 'closed', 'projectId'

@@ -290,6 +290,9 @@ class ProjectMilestone(models.Model):
         blank=False,
         verbose_name="Completed"
     )
+    closedon = models.DateTimeField(default=None, null=True, blank=True,
+                                    verbose_name="Closed On",
+                                    editable=False)
     financial = models.BooleanField(default=False,
                                     verbose_name="Financial",
                                     blank=False,
@@ -347,7 +350,7 @@ class ProjectChangeInfo(models.Model):
                                        verbose_name="Revised amount")
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
-    closedOn = models.DateField(default=None, blank=True, null=True)
+    closedOn = models.DateTimeField(default=None, blank=True, null=True)
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
     # Record Entered / Updated Date

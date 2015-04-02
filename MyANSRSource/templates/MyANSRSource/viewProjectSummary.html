@@ -202,6 +202,11 @@
 			</td>
 		</tr>
 		{% endfor %}
+        {% if closedOn %}
+        <tr>
+            <td colspan="6" class="text-center"><h4><small><b>Project Closed on {{ closedOn }}</b></small></h4></td>
+        </tr>
+        {% endif %}
         {% else %}
         <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
         {% endif %}
