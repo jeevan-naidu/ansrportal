@@ -347,6 +347,9 @@ class ProjectChangeInfo(models.Model):
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
+    po = models.CharField(max_length=60, null=False,
+                          blank=False, default=0,
+                          verbose_name="P.O.", validators=[alphanumeric])
     revisedEffort = models.IntegerField(default=0,
                                         validators=[MinValueValidator(0)],
                                         verbose_name="Revised Effort")

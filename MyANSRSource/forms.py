@@ -375,7 +375,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         model = ProjectChangeInfo
         fields = (
             'reason', 'endDate', 'revisedEffort',
-            'revisedTotal', 'salesForceNumber', 'closed', 'signed'
+            'revisedTotal', 'salesForceNumber', 'po', 'closed', 'signed'
         )
         widgets = {
             'endDate': DateTimePicker(options=dateTimeOption),
@@ -391,6 +391,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['closed'].widget.attrs['class'] = "form-control"
         self.fields['signed'].widget.attrs['class'] = "form-control"
         self.fields['salesForceNumber'].widget.attrs['class'] = "form-control"
+        self.fields['po'].widget.attrs['class'] = "form-control"
 
 
 class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):

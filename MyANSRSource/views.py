@@ -1160,7 +1160,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'endDate',
                     'plannedEffort',
                     'totalValue',
-                    'salesForceNumber'
+                    'salesForceNumber',
+                    'po'
                     )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject[
@@ -1199,6 +1200,7 @@ def UpdateProjectInfo(request, newInfo):
         prc.salesForceNumber = newInfo[1]['salesForceNumber']
         prc.closed = newInfo[1]['closed']
         prc.signed = newInfo[1]['signed']
+        prc.po = newInfo[1]['po']
         prc.save()
 
         pci = ProjectChangeInfo()
