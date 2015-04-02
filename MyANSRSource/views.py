@@ -771,12 +771,21 @@ def Dashboard(request):
     ).count() if request.user.has_perm('MyANSRSource.approve_timesheet') else 0
 
     totalEmployees = User.objects.all().count()
-    activeMilestones = ProjectMilestone.objects.filter(
+    pm = ProjectMilestone.objects.filter(
         project__projectManager=request.user,
         project__closed=False,
         closed=False
-    ).count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
+    )
 
+    activeMilestones = pm.count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
+
+    financialM = pm.filter(financial=True).values('description', 'milestoneDate')
+    nonfinancialM = pm.filter(financial=False).values('description', 'milestoneDate')
+
+    for eachRec in financialM:
+        eachRec['milestoneDate'] = eachRec['milestoneDate'].strftime('%Y-%m-%d')
+    for eachRec in nonfinancialM:
+        eachRec['milestoneDate'] = eachRec['milestoneDate'].strftime('%Y-%m-%d')
 
     tsProjectsCount = Project.objects.filter(
         closed=False,
@@ -860,6 +869,8 @@ def Dashboard(request):
         'holidayList': holidayList,
         'projectsList': myprojects,
         'trainingList': trainings,
+        'financialM': financialM,
+        'nonfinancialM': nonfinancialM,
         'billableProjects': billableProjects,
         'myProjects': myProjects,
         'currentProjects': currentProjects,

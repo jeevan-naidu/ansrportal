@@ -274,10 +274,13 @@ body {
 	background-color : #009452;
 }
 
-.my-project { 
+.financialM { 
 	background-color : #D6412B;
 }
 
+.nonfinancialM { 
+	background-color : #FFBA02;
+}
 .training { 
 	background-color : #176CED;
 }
