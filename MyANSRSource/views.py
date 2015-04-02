@@ -835,7 +835,7 @@ def Dashboard(request):
             'project__endDate'
         ].strftime('%Y-%m-%d')
     trainings = CompanyMaster.models.Training.objects.all().values(
-        'batch', 'exercise', 'trainingDate')
+        'batch', 'exercise', 'trainingDate', 'endDate')
     if len(trainings):
         for eachTraining in trainings:
             eachTraining['trainingDate'] = eachTraining[

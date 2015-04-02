@@ -72,7 +72,8 @@ class Training(models.Model):
         blank=False,
         null=False
     )
-    trainingDate = models.DateField(verbose_name="Training Date")
+    trainingDate = models.DateField(default=None, verbose_name="Start Date")
+    endDate = models.DateField(default=None, verbose_name="End Date")
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
