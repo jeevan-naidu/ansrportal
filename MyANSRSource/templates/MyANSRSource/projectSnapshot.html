@@ -41,6 +41,7 @@
 				<th>Business Unit</th>
 				<th>Name</th>
 				<th>Customer</th>
+				<th>Customer Contact</th>
 				<th>Book</th>
 				<th>Project Leader</th>
 				<th>Internal Project?</th>
@@ -53,6 +54,7 @@
 			<td>{{ basicInfo.bu }}</td>
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer }}</td>
+			<td>{{ basicInfo.customerContact }}</td>
 			<td>{{ basicInfo.book }}</td>
 			<td>
 				{% for eachManager in basicInfo.projectManager %}
@@ -91,6 +93,7 @@
 				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
 				<input type="hidden" name="bu" value="{{ basicInfo.bu.id }}">
 				<input type="hidden" name="customer" value="{{ basicInfo.customer.id }}">
+				<input type="hidden" name="customerContact" value="{{ basicInfo.customerContact.id }}">
 				<input type="hidden" name="projectType" value="{{ basicInfo.projectType.id }}">
 		</tr>
 		</tbody>

@@ -102,6 +102,13 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Type"
     )
+    name = models.CharField(max_length=50, verbose_name="Project Name")
+    customerContact = models.ForeignKey(
+        User,
+        default=None,
+        verbose_name="Customer Contact",
+        related_name="Cusomer Contact"
+    )
     maxProductivityUnits = models.DecimalField(
         default=0.0,
         max_digits=12,
