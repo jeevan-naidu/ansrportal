@@ -1220,22 +1220,43 @@ def UpdateProjectInfo(request, newInfo):
         prc.save()
 
         pci = ProjectChangeInfo()
-        pci.project = prc
-        pci.reason = newInfo[1]['reason']
-        pci.endDate = newInfo[1]['endDate']
+        try:
+            pci.project = prc
+        except ValueError as e:
+            print 1
+        try:
+            pci.reason = newInfo[1]['reason']
+        except ValueError as e:
+            print 2
+        try:
+            pci.endDate = newInfo[1]['endDate']
+        except ValueError as e:
+            print 3
         try:
             pci.salesForceNumber = oldsalesForceNumber
         except ValueError as e:
-            print e
-        pci.revisedEffort = oldEffort
-        pci.revisedTotal = oldCost
-        pci.closed = newInfo[1]['closed']
+            print 4
+        try:
+            pci.revisedEffort = oldEffort
+        except ValueError as e:
+            print 5
+        try:
+            pci.revisedTotal = oldCost
+        except ValueError as e:
+            print 6
+        try:
+            pci.closed = newInfo[1]['closed']
+        except ValueError as e:
+            print 7
         if pci.closed is True:
             try:
                 pci.closedOn = datetime.now().replace(tzinfo=utc)
             except ValueError as e:
                 print e
-        pci.signed = newInfo[1]['signed']
+        try:
+            pci.signed = newInfo[1]['signed']
+        except ValueError as e:
+            print 9
         pci.save()
 
         print pci.id
