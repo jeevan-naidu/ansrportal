@@ -1223,7 +1223,10 @@ def UpdateProjectInfo(request, newInfo):
         pci.project = prc
         pci.reason = newInfo[1]['reason']
         pci.endDate = newInfo[1]['endDate']
-        pci.salesForceNumber = oldsalesForceNumber
+        try:
+            pci.salesForceNumber = oldsalesForceNumber
+        except ValueError as e:
+            print e
         pci.revisedEffort = oldEffort
         pci.revisedTotal = oldCost
         pci.closed = newInfo[1]['closed']
