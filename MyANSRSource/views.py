@@ -643,15 +643,17 @@ def renderTimesheet(request, data):
     for eachDay in days:
         newK = '{0}Total'.format(eachDay)
         d[newK] = 0
-        if len(data['atFormList']):
-            for eachData in data['atFormList']:
-                k = 'activity_{0}'.format(eachDay)
-                d[newK] += eachData[k]
-        if len(data['tsFormList']):
-            for eachData in data['tsFormList']:
-                k = '{0}H'.format(eachDay)
-                newK = '{0}Total'.format(eachDay)
-                d[newK] += eachData[k]
+        if 'tsErrorList' not in data:
+            if len(data['atFormList']):
+                for eachData in data['atFormList']:
+                    k = 'activity_{0}'.format(eachDay)
+                    d[newK] += eachData[k]
+        if 'atErrorList' not in data:
+            if len(data['tsFormList']):
+                for eachData in data['tsFormList']:
+                    k = '{0}H'.format(eachDay)
+                    newK = '{0}Total'.format(eachDay)
+                    d[newK] += eachData[k]
     tsform = TimesheetFormset(request.user)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
