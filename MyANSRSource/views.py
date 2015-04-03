@@ -125,10 +125,10 @@ def Timesheet(request):
         # Getting the forms with submitted values
         tsform = TimesheetFormset(request.user)
         tsFormset = formset_factory(
-            tsform, extra=1, can_delete=True
+            tsform, extra=1, max_num=1, can_delete=True
         )
         atFormset = formset_factory(
-            ActivityForm, extra=1, can_delete=True
+            ActivityForm, extra=1, max_num=1, can_delete=True
         )
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
@@ -658,18 +658,22 @@ def renderTimesheet(request, data):
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
                                     extra=data['extra'],
+                                    max_num=1,
                                     can_delete=True)
     else:
         tsFormset = formset_factory(tsform,
                                     extra=1,
+                                    max_num=1,
                                     can_delete=True)
     if len(data['atFormList']):
         atFormset = formset_factory(ActivityForm,
                                     extra=data['extra'],
+                                    max_num=1,
                                     can_delete=True)
     else:
         atFormset = formset_factory(ActivityForm,
                                     extra=1,
+                                    max_num=1,
                                     can_delete=True)
     if len(data['tsFormList']):
         atFormset = atFormset(initial=data['atFormList'], prefix='at')
