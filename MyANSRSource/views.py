@@ -1228,7 +1228,10 @@ def UpdateProjectInfo(request, newInfo):
         pci.revisedTotal = oldCost
         pci.closed = newInfo[1]['closed']
         if pci.closed is True:
-            pci.closedOn = datetime.now().replace(tzinfo=utc)
+            try:
+                pci.closedOn = datetime.now().replace(tzinfo=utc)
+            except ValueError as e:
+                print e
         pci.signed = newInfo[1]['signed']
         pci.save()
 
@@ -1239,8 +1242,6 @@ def UpdateProjectInfo(request, newInfo):
         pci.save()
 
         return {'crId': pci.crId}
-    except ValueError as e:
-        print e
     except (ProjectTeamMember.DoesNotExist,
             ProjectMilestone.DoesNotExist) as e:
         messages.error(request, 'Could not save change request information')
