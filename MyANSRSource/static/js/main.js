@@ -28,7 +28,7 @@ helper.sumOfArr = function(arr) {
         sum += item;
     });
 
-    return sum;
+    return sum.toFixed(2);
 };
 
 // argument element must be jQuery element
@@ -45,7 +45,7 @@ helper.getValOrText = function($ele) {
 app.billableSetZeroList = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
                            16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 
                            28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 
-                           40, 41, 42, 43, 44, 45, 46, 47, 48, 50, 51, 52, 
+                           40, 41, 42, 43, 44, 45, 46, 47, 50, 51, 52,
                            53, 54, 55];
 
 app.spaceToUnderscore = function($containerEle) {
@@ -390,11 +390,11 @@ app.firstTimeTotal = function() {
             $total = $('.timesheet-grand-total'),
             total = billableTotal + idleTotal + notBillableTotal;
 
-        $total.text(total.toFixed(2));
+
+        $total.text((total).toFixed(2));
 
         return total;
     };
-
 
 
     app.timeSheetDayTotalHours = function() {
@@ -424,7 +424,7 @@ app.firstTimeTotal = function() {
 
             tempTotal = helper.sumOfArr(tempArr);
 
-            $output.text(tempTotal.toFixed(2));
+            $output.text(tempTotal);
         }
 
         total($mon, $monTotal);
@@ -436,6 +436,32 @@ app.firstTimeTotal = function() {
         total($sun, $sunTotal);
 
 
+    };
+
+    app.tsInputIsValid = function($elem, str) {
+        if(!str) {
+            console.log('Please enter the valid number');
+            $elem.addClass('alert-danger');
+            return false;
+        } else {
+            // check for decimal
+            str = Number(str);
+            if(str < 0) {
+                console.log('Please enter the positive number');
+                $elem.addClass('alert-danger');
+                return false;
+            }
+            if(/\./.test(str)) {
+                if(!(/\b\.\d\d?\b/.test(str))) {
+                    console.log('Only two decimal is allowed');
+                    $elem.addClass('alert-danger');
+                    return false;
+                }
+            }
+
+            $elem.removeClass('alert-danger');
+            return true;
+        }
     };
 
 
@@ -1011,8 +1037,8 @@ app.getSum = function($elements, $outputElement) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" step="any"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24" step="any"></div>';
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0 / DAY</label></div>';
 
                 $dayPopoverBtn.popover({
@@ -1154,8 +1180,8 @@ app.getSum = function($elements, $outputElement) {
                             billableTotalHours = tempBillableTotal;
 
                             // To Dom
-                            $totalBillableHours.text(billableTotalHours.toFixed(2));
-                            $totalIdleHours.text(idleTotalHours.toFixed(2));
+                            $totalBillableHours.text((billableTotalHours).toFixed(2));
+                            $totalIdleHours.text((idleTotalHours).toFixed(2));
 
                             app.timeSheetGrandTotal();
                             app.timeSheetDayTotalHours();
@@ -1168,13 +1194,18 @@ app.getSum = function($elements, $outputElement) {
                     calculateTotal();
 
                     var inputToView = function() {
-                        $curQuestionsView.text($curQuestionsInput.val());
-                        $curHoursView.text($curHoursInput.val());
+                        var curInput = $curHoursInput.val();
+                        console.log(curInput);
+                        var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
+                        if(tsInput) {
+                            $curQuestionsView.text($curQuestionsInput.val());
+                            $curHoursView.text($curHoursInput.val());
 
-                        $curQuestionsHidden.val($curQuestionsInput.val());
-                        $curHoursHidden.val($curHoursInput.val());
+                            $curQuestionsHidden.val($curQuestionsInput.val());
+                            $curHoursHidden.val($curHoursInput.val());
 
-                        calculateTotal();
+                            calculateTotal();
+                        }
                     };
 
                    $curQuestionsInput.on({
