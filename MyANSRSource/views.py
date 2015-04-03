@@ -1237,6 +1237,8 @@ def UpdateProjectInfo(request, newInfo):
         pci.save()
 
         return {'crId': pci.crId}
+    except ValueError as e:
+        print e
     except (ProjectTeamMember.DoesNotExist,
             ProjectMilestone.DoesNotExist) as e:
         messages.error(request, 'Could not save change request information')
