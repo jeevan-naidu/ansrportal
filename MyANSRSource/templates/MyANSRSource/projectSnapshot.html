@@ -43,9 +43,9 @@
 				<th>Customer</th>
 				<th>Book</th>
 				<th>Project Leader</th>
-				<th>Is it an internal Project?</th>
-				<th>Is this a new project?</th>
-				<th>Is this contract signed?</th>
+				<th>Internal Project?</th>
+				<th>New project?</th>
+				<th>Contract signed?</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -109,6 +109,7 @@
 				<th>End Date</th>
 				<th>Total Value</th>
 				<th>P.O.</th>
+				<th>SalesForce Number</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -119,6 +120,7 @@
 			<td>{{ flagData.displayEndDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
 			<td>{{ flagData.po }}</td>
+			<td>{{ flagData.salesForceNumber }}</td>
 			{% for rec, value in flagData.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
