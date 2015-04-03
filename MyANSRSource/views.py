@@ -125,10 +125,10 @@ def Timesheet(request):
         # Getting the forms with submitted values
         tsform = TimesheetFormset(request.user)
         tsFormset = formset_factory(
-            tsform, extra=1, can_delete=True
+            tsform, extra=1, max_num=1, can_delete=True
         )
         atFormset = formset_factory(
-            ActivityForm, extra=1, can_delete=True
+            ActivityForm, extra=1, max_num=1, can_delete=True
         )
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
@@ -643,31 +643,37 @@ def renderTimesheet(request, data):
     for eachDay in days:
         newK = '{0}Total'.format(eachDay)
         d[newK] = 0
-        if len(data['atFormList']):
-            for eachData in data['atFormList']:
-                k = 'activity_{0}'.format(eachDay)
-                d[newK] += eachData[k]
-        if len(data['tsFormList']):
-            for eachData in data['tsFormList']:
-                k = '{0}H'.format(eachDay)
-                newK = '{0}Total'.format(eachDay)
-                d[newK] += eachData[k]
+        if 'tsErrorList' not in data:
+            if len(data['atFormList']):
+                for eachData in data['atFormList']:
+                    k = 'activity_{0}'.format(eachDay)
+                    d[newK] += eachData[k]
+        if 'atErrorList' not in data:
+            if len(data['tsFormList']):
+                for eachData in data['tsFormList']:
+                    k = '{0}H'.format(eachDay)
+                    newK = '{0}Total'.format(eachDay)
+                    d[newK] += eachData[k]
     tsform = TimesheetFormset(request.user)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
                                     extra=data['extra'],
+                                    max_num=1,
                                     can_delete=True)
     else:
         tsFormset = formset_factory(tsform,
                                     extra=1,
+                                    max_num=1,
                                     can_delete=True)
     if len(data['atFormList']):
         atFormset = formset_factory(ActivityForm,
                                     extra=data['extra'],
+                                    max_num=1,
                                     can_delete=True)
     else:
         atFormset = formset_factory(ActivityForm,
                                     extra=1,
+                                    max_num=1,
                                     can_delete=True)
     if len(data['tsFormList']):
         atFormset = atFormset(initial=data['atFormList'], prefix='at')
