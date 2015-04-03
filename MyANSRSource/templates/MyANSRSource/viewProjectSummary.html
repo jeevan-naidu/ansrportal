@@ -67,6 +67,7 @@
 				<th>Start Date</th>
 				<th>End Date</th>
 				<th>Total Value</th>
+				<th>SalesForce Number</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -76,6 +77,7 @@
 			<td>{{ flagData.startDate }}</td>
 			<td>{{ flagData.endDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
+			<td>{{ flagData.salesForceNumber }}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -170,6 +172,7 @@
 			<th>Revised Effort</th>
 			<th>Signed</th>
 			<th>Closed</th>
+			<th>SalesForce Number</th>
 		</thead>
         {% if changes %}
 		{% for eachChange in changes %}
@@ -200,8 +203,16 @@
                        No
                 {% endif %}
 			</td>
+			<td>
+				{{ eachChange.salesForceNumber }}
+			</td>
 		</tr>
 		{% endfor %}
+        {% if closedOn %}
+        <tr>
+            <td colspan="6" class="text-center"><h4><small><b>Project Closed on {{ closedOn }}</b></small></h4></td>
+        </tr>
+        {% endif %}
         {% else %}
         <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
         {% endif %}
