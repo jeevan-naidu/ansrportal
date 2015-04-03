@@ -389,9 +389,9 @@ app.firstTimeTotal = function() {
             notBillableTotal = Number($('.total-non-billable-hours').text()),
             $total = $('.timesheet-grand-total'),
             total = billableTotal + idleTotal + notBillableTotal;
-            total = total.toFixed(2);
 
-        $total.text(total.toFixed(2));
+
+        $total.text((total).toFixed(2));
 
         return total;
     };
@@ -424,7 +424,7 @@ app.firstTimeTotal = function() {
 
             tempTotal = helper.sumOfArr(tempArr);
 
-            $output.text(tempTotal.toFixed(2));
+            $output.text(tempTotal);
         }
 
         total($mon, $monTotal);
@@ -1176,12 +1176,12 @@ app.getSum = function($elements, $outputElement) {
                                 tempBillableTotal += curBillableTotal;
                             }
 
-                            idleTotalHours = tempIdleTotal.toFixed(2);
-                            billableTotalHours = tempBillableTotal.toFixed(2);
+                            idleTotalHours = tempIdleTotal;
+                            billableTotalHours = tempBillableTotal;
 
                             // To Dom
-                            $totalBillableHours.text(billableTotalHours.toFixed(2));
-                            $totalIdleHours.text(idleTotalHours.toFixed(2));
+                            $totalBillableHours.text((billableTotalHours).toFixed(2));
+                            $totalIdleHours.text((idleTotalHours).toFixed(2));
 
                             app.timeSheetGrandTotal();
                             app.timeSheetDayTotalHours();
