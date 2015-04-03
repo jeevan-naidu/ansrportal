@@ -1,7 +1,7 @@
 import logging
 from templated_email import send_templated_mail
 from django.core.management.base import BaseCommand
-from MyANSRSource.models import ProjectMilestone
+from MyANSRSource.models import ProjectMilestone, Project
 from datetime import datetime, timedelta
 from django.conf import settings
 
@@ -32,16 +32,19 @@ class Command(BaseCommand):
 
 
 def getContent(deadlineDate):
-    return ProjectMilestone.objects.filter(
-        milestoneDate=deadlineDate,
-        closed=False
-    ).values('project__name',
-             'project__projectId',
-             'description',
-             'milestoneDate',
-             'project__projectManager__first_name',
-             'project__projectManager__email'
-             )
+    projects = Project.objects.filter(
+        closed=False).values('projectId',
+                             'name',
+                             'projectManager__email',
+                             'projectManager__first_name')
+    for eachProject in list(projects):
+        milestones = ProjectMilestone.objects.filter(
+            project__projectId=eachProject['projectId'],
+            closed=False,
+            milestoneDate=deadlineDate,
+        ).values('description', 'milestoneDate')
+        eachProject['milestones'] = list(milestones)
+    return projects
 
 
 def sendEmail(self, details, date, label):
@@ -50,29 +53,25 @@ def sendEmail(self, details, date, label):
             send_templated_mail(
                 template_name='projectMilestoneEmailNotification',
                 from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[eachDetail['project__projectManager__email'], ],
+                recipient_list=[eachDetail['projectManager__email'], ],
                 context={
                     'label': label,
                     'first_name': eachDetail[
-                        'project__projectManager__first_name'
+                        'projectManager__first_name'
                     ],
                     'projectId': eachDetail[
-                        'project__projectId'
+                        'projectId'
                     ],
                     'projectname': eachDetail[
-                        'project__name'
+                        'name'
                     ],
-                    'milestonename': eachDetail[
-                        'description'
-                    ],
-                    'milestonedate': eachDetail[
-                        'milestoneDate'
+                    'milestones': eachDetail[
+                        'milestones'
                     ],
                     },
             )
-            logger.info('Sent email to {0} about project {1} milestone date {2}.  \
-                         This is type {3} reminder'.
-                        format(eachDetail['project__projectManager__email'],
-                               eachDetail['project__projectId'],
-                               eachDetail['milestoneDate'],
+            logger.info('Sent email to {0} about project {1} \
+                         This is type {2} reminder'.
+                        format(eachDetail['projectManager__email'],
+                               eachDetail['projectId'],
                                label))
