@@ -309,6 +309,7 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
             'bu',
             'customer',
             'name',
+            'customerContact',
             'book',
             'projectManager',
             'signed',
@@ -344,6 +345,8 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
         self.fields['book'].widget.attrs['id'] = \
             "id_Define_Project-book"
         self.fields['currentProject'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['customerContact'].widget.attrs['class'] = \
             "form-control"
         self.fields['signed'].widget.attrs['class'] = \
             "form-control"

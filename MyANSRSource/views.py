@@ -1572,6 +1572,9 @@ def saveProject(request):
             pr.customer = CompanyMaster.models.Customer.objects.get(
                 pk=int(request.POST.get('customer'))
             )
+            pr.customerContact = User.objects.get(
+                pk=int(request.POST.get('customerContact'))
+            )
             pr.book = Book.objects.get(
                 pk=int(request.POST.get('book'))
             )
@@ -1675,7 +1678,7 @@ def ViewProject(request):
         basicInfo = projectObj.values(
             'projectType__description', 'bu__name', 'customer__name',
             'name', 'book__name', 'signed', 'internal', 'currentProject',
-            'projectId'
+            'projectId', 'customerContact__username'
         )[0]
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
