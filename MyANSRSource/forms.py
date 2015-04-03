@@ -18,34 +18,50 @@ class ActivityForm(forms.Form):
     )
     activity_monday = forms.DecimalField(label="Mon",
                                          max_digits=12,
+                                         min_value=0.0,
+                                         max_value=24.0,
                                          decimal_places=2,
                                          )
     activity_tuesday = forms.DecimalField(label="Tue",
                                           max_digits=12,
+                                          min_value=0.0,
+                                          max_value=24.0,
                                           decimal_places=2,
                                           )
     activity_wednesday = forms.DecimalField(label="Wed",
                                             max_digits=12,
+                                            min_value=0.0,
+                                            max_value=24.0,
                                             decimal_places=2,
                                             )
     activity_thursday = forms.DecimalField(label="Thu",
                                            max_digits=12,
+                                           min_value=0.0,
+                                           max_value=24.0,
                                            decimal_places=2,
                                            )
     activity_friday = forms.DecimalField(label="Fri",
                                          max_digits=12,
+                                         min_value=0.0,
+                                         max_value=24.0,
                                          decimal_places=2,
                                          )
     activity_saturday = forms.DecimalField(label="Sat",
                                            max_digits=12,
+                                           min_value=0.0,
+                                           max_value=24.0,
                                            decimal_places=2,
                                            )
     activity_sunday = forms.DecimalField(label="Sun",
                                          max_digits=12,
+                                         min_value=0.0,
+                                         max_value=24.0,
                                          decimal_places=2,
                                          )
     activity_total = forms.DecimalField(label="Total",
                                         max_digits=12,
+                                        min_value=0.0,
+                                        max_value=24.0,
                                         decimal_places=2,
                                         )
     activity_feedback = forms.CharField(
