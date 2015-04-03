@@ -1232,6 +1232,8 @@ def UpdateProjectInfo(request, newInfo):
         pci.signed = newInfo[1]['signed']
         pci.save()
 
+        print pci.id
+
         # We need the Primary key to create the CRId
         pci.crId = "CR-{0}".format(pci.id)
         pci.save()
