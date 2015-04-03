@@ -20,15 +20,15 @@ class Command(BaseCommand):
         nextDay = datetime.now().date() + timedelta(days=1)
         expired = datetime.now().date() - timedelta(days=1)
 
+        days = [{'date': nextWeek, 'label': 'nextWeek'},
+                {'date': nextDay, 'label': 'nextDay'},
+                {'date': expired, 'label': 'expired'}]
+
         logger.info('Running milestone batch job for Today + 1 week :{0}, \
                     Today + 1 day {1}, Today - 1 day {2}'.
                     format(nextWeek, nextDay, expired))
-        sendEmail(self, getContent(nextWeek),
-                  nextWeek, 'week')
-        sendEmail(self, getContent(nextDay),
-                  nextDay, 'nextDay')
-        sendEmail(self, getContent(expired),
-                  expired, 'expired')
+
+        sendEmail(getContent(days))
 
 
 def getContent(deadlineDate):
@@ -38,16 +38,23 @@ def getContent(deadlineDate):
                              'projectManager__email',
                              'projectManager__first_name')
     for eachProject in list(projects):
-        milestones = ProjectMilestone.objects.filter(
-            project__projectId=eachProject['projectId'],
-            closed=False,
-            milestoneDate=deadlineDate,
-        ).values('description', 'milestoneDate')
-        eachProject['milestones'] = list(milestones)
+        l = []
+        d = {}
+        for eachDeadline in deadlineDate:
+            milestones = ProjectMilestone.objects.filter(
+                project__projectId=eachProject['projectId'],
+                closed=False,
+                milestoneDate=eachDeadline['date'],
+            ).values('description', 'milestoneDate')
+            if len(milestones):
+                d['milestonesDetails'] = milestones
+                d['label'] = eachDeadline['label']
+                l.append(d)
+        eachProject['milestones'] = list(l)
     return projects
 
 
-def sendEmail(self, details, date, label):
+def sendEmail(self, details):
     if len(details) > 0:
         for eachDetail in details:
             send_templated_mail(
@@ -55,7 +62,6 @@ def sendEmail(self, details, date, label):
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[eachDetail['projectManager__email'], ],
                 context={
-                    'label': label,
                     'first_name': eachDetail[
                         'projectManager__first_name'
                     ],
@@ -70,8 +76,6 @@ def sendEmail(self, details, date, label):
                     ],
                     },
             )
-            logger.info('Sent email to {0} about project {1} \
-                         This is type {2} reminder'.
-                        format(eachDetail['projectManager__email'],
-                               eachDetail['projectId'],
-                               label))
+            logger.info('Sent email to {0} about project {1}'.format(
+                eachDetail['projectManager__email'],
+                eachDetail['projectId']))
