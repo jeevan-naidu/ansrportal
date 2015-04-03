@@ -112,7 +112,10 @@ app.getTaskChapter = function(selValue, currRow) {
                 currRow.find(".b-task").html(options);
 
                 app.setActive($tasks, app.timesheet.actTaskList);
+
+
             },
+
             error: function(data) {
                 console.log('Error: ' + data);
             }
@@ -133,6 +136,7 @@ app.getTaskChapter = function(selValue, currRow) {
                 currRow.find(".b-chapter").html(options);
 
                 app.setActive($chapters, app.timesheet.actChaptersList);
+
             },
             error: function(data) {
                 console.log('Error: ' + data);
@@ -222,7 +226,138 @@ app.getById = function(arr, propName, id) {
     }
 };
 
-// Main: IIEF for local scope 
+app.firstTimeTotal = function() {
+    function billableIdleTotal() {
+        var bTask = $('.b-task'),
+            $cRow,
+            cRowItemsLen,
+            cRowTask,
+            cRowHours,
+            cRowQuestions,
+            $cRowTQuestions,
+            $cRowTHours,
+            $cRowBTQuestionsHidden,
+            $cRowBTHoursHidden,
+            $cRowITQuestionsHidden,
+            $cRowITHoursHidden,
+            cRowHoursArr,
+            cRowQuestionsArr,
+            i,
+            cRowItemHour,
+            cRowItemQuestion,
+            $totalBillableHours = $('.total-billable-hours'),
+            $totalIdleHours = $('.total-idle-hours'),
+
+            cRowHourTotal = 0,
+            cRowQuestionTotal = 0,
+
+            cRowBillableHoursTotal = 0,
+            cRowBillableQuestionTotal = 0,
+            cRowIdleHoursTotal = 0,
+            cRowIdleQuestionTotal = 0,
+
+            billableHoursTotal = 0,
+            billableQuestionTotal = 0,
+
+            idleHoursTotal = 0,
+            idleQuestionTotal = 0;
+
+        var nonBillableTotalItems = $('#timesheet-non-billable .r-total'),
+            cRowNonBillable,
+            $nonBillableItemsHour,
+            nonBillableItemHour,
+            $cRowNonBillableTotal,
+            cRowNonBillableTotal = 0,
+            nonBillableTotal = 0,
+            $nonBillableTotal = $('.total-non-billable-hours'),
+
+            grandTotal = 0,
+            $grandTotal = $('.timesheet-grand-total');
+
+        helper.forEach(bTask, function(item) {
+            cRowHourTotal = 0;
+            cRowQuestionTotal = 0;
+
+            $cRow = $(item).closest('tr');
+            cRowTask = $cRow.find('.b-task option:selected').data('task-type');
+            cRowHours = $cRow.find('.b-hours');
+            cRowQuestions =  $cRow.find('.b-questions');
+            cRowItemsLen = cRowHours.length;
+            $cRowTQuestions = $cRow.find('.t-questions');
+            $cRowTHours = $cRow.find('.t-hours');
+            $cRowBTHoursHidden = $cRow.find('.r-total-billable-hours');
+            $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
+
+
+            for(i = 0; i < cRowItemsLen; i += 1) {
+                cRowItemHour = Number($(cRowHours[i]).text());
+                cRowItemQuestion = Number($(cRowQuestions[i]).text());
+
+                cRowHourTotal += cRowItemHour;
+                cRowQuestionTotal += cRowItemQuestion;
+            }
+
+            // To Dom
+            $cRowTHours.text(cRowHourTotal.toFixed(2));
+            $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
+
+            if(cRowTask === 'I') {
+                idleHoursTotal +=  cRowHourTotal;
+                idleQuestionTotal +=  cRowQuestionTotal;
+
+                $cRowBTHoursHidden.val(0);
+                $cRowITHoursHidden.val(cRowHourTotal);
+
+            } else {
+                billableHoursTotal +=  cRowHourTotal;
+                billableQuestionTotal +=  cRowQuestionTotal;
+
+                $cRowBTHoursHidden.val(cRowHourTotal);
+                $cRowITHoursHidden.val(0);
+            }
+        });
+
+        helper.forEach(nonBillableTotalItems, function(item) {
+            cRowNonBillableTotal = 0;
+            cRowNonBillable = $(item).closest('tr');
+            $nonBillableItemsHour = cRowNonBillable.find('.Mon-t, .Tue-t, .Wed-t, .Thu-t, .Fri-t, .Sat-t, .Sun-t');
+            $cRowNonBillableTotal = cRowNonBillable.find('.r-total');
+
+            helper.forEach($nonBillableItemsHour, function(item) {
+                nonBillableItemHour = Number($(item).val());
+
+                cRowNonBillableTotal += nonBillableItemHour;
+            });
+
+            // To Dom
+            $cRowNonBillableTotal.val(cRowNonBillableTotal.toFixed(2));
+
+            nonBillableTotal += cRowNonBillableTotal;
+        });
+
+        //console.log(nonBillableTotal);
+        grandTotal = billableHoursTotal + idleHoursTotal + nonBillableTotal;
+
+        console.log(grandTotal);
+
+        // To Dom
+        $totalBillableHours.text(billableHoursTotal.toFixed(2));
+        $totalIdleHours.text(idleHoursTotal.toFixed(2));
+        $nonBillableTotal.text(nonBillableTotal.toFixed(2));
+        $grandTotal.text(grandTotal.toFixed(2));
+
+
+
+        console.log('idleHoursTotal: ' + idleHoursTotal);
+        console.log('billableHoursTotal: ' + billableHoursTotal);
+
+        app.timeSheetDayTotalHours();
+    }
+
+    billableIdleTotal();
+};
+
+// Main: IIEF for local scope
 (function($) {
     function getTastChaptersEachProject() {
         var billableSelectProject = $('.billable-select-project'),
@@ -244,6 +379,10 @@ app.getById = function(arr, propName, id) {
     };
 
 
+
+
+
+
     app.timeSheetGrandTotal = function() {
         var billableTotal = Number($('.total-billable-hours').text()),
             idleTotal = Number($('.total-idle-hours').text()),
@@ -251,7 +390,7 @@ app.getById = function(arr, propName, id) {
             $total = $('.timesheet-grand-total'),
             total = billableTotal + idleTotal + notBillableTotal;
 
-        $total.text(total);
+        $total.text(total.toFixed(2));
 
         return total;
     };
@@ -285,7 +424,7 @@ app.getById = function(arr, propName, id) {
 
             tempTotal = helper.sumOfArr(tempArr);
 
-            $output.text(tempTotal);
+            $output.text(tempTotal.toFixed(2));
         }
 
         total($mon, $monTotal);
@@ -295,6 +434,8 @@ app.getById = function(arr, propName, id) {
         total($fri, $friTotal);
         total($sat, $satTotal);
         total($sun, $sunTotal);
+
+
     };
 
 
@@ -302,9 +443,14 @@ app.getById = function(arr, propName, id) {
         app.getActiveTaskChapter();
         getTastChaptersEachProject();
     };
-    
+
+    $(document).ajaxStop(function () {
+        app.firstTimeTotal();
+    });
+
     $(document).ready(function() {
         app.init();
+
         var $popover = $('.popover');
         app.norms = '0.0 / Day';
         // Manage project
@@ -968,17 +1114,15 @@ app.getSum = function($elements, $outputElement) {
                             }
                         }
 
-			questionsTemp = questionsTemp.toFixed(2);
-			hoursTemp = hoursTemp.toFixed(2);
-                        $totalQuestions.text(questionsTemp);
-                        $totalHours.text(hoursTemp);
+                        $totalQuestions.text(questionsTemp.toFixed(2));
+                        $totalHours.text(hoursTemp.toFixed(2));
 
-                        $totalQuestionsHidden.val(questionsTemp);
-                        $totalHoursHidden.val(hoursTemp);
+                        $totalQuestionsHidden.val(questionsTemp.toFixed(2));
+                        $totalHoursHidden.val(hoursTemp.toFixed(2));
 
                         // Idle and billable hours
-                        $curTotalIdleHoursHidden.val(curTotalIdleHours);
-                        $curTotalBillableHoursHidden.val(curTotalBillableHours);
+                        $curTotalIdleHoursHidden.val(curTotalIdleHours.toFixed(2));
+                        $curTotalBillableHoursHidden.val(curTotalBillableHours.toFixed(2));
 
                         var totalIdleAndBillableHours = function() {
                             var $rTotalIdleHoursList = $table.find('.r-total-idle-hours'),
@@ -1010,8 +1154,8 @@ app.getSum = function($elements, $outputElement) {
                             billableTotalHours = tempBillableTotal;
 
                             // To Dom
-                            $totalBillableHours.text(billableTotalHours);
-                            $totalIdleHours.text(idleTotalHours);
+                            $totalBillableHours.text(billableTotalHours.toFixed(2));
+                            $totalIdleHours.text(idleTotalHours.toFixed(2));
 
                             app.timeSheetGrandTotal();
                             app.timeSheetDayTotalHours();
