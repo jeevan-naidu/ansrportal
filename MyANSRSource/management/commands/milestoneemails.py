@@ -28,7 +28,7 @@ class Command(BaseCommand):
                     Today + 1 day {1}, Today - 1 day {2}'.
                     format(nextWeek, nextDay, expired))
 
-        sendEmail(getContent(days))
+        sendEmail(self, getContent(days))
 
 
 def getContent(deadlineDate):

@@ -4,15 +4,17 @@
 Hi {{first_name}}, 
 
   {% for eachMilestone in milestones %}
-    The milestone {{ eachMilestone.description }} for the project 
-    {{ projectname }}  | {{ projectId }} falls on {{ eachMilestone.milestonedate }}. 
-    {% if label == 'week' %}
-        This milestone is due one week from now.
-    {% elif label == 'nextDay' %}
-    Today is the milestone date.  Please make sure you take necessary action and ensure its completion and mark it closed on myansrsource.
-    {% elif label == 'expired' %}
-    This milestone has expired and not marked as complete in myansrsource.
-    {% endif %}
+        {% for eachData in eachMilestone.milestonesDetails %}
+                The milestone {{ eachData.description }} for the project 
+                {{ projectname }}  | {{ projectId }} falls on {{ eachData.milestonedate }}. 
+        {% endfor %} 
+        {% if eachMilestone.label == 'week' %}
+            This milestone is due one week from now.
+        {% elif eachMilestone.label == 'nextDay' %}
+            Today is the milestone date.  Please make sure you take necessary action and ensure its completion and mark it closed on myansrsource.
+        {% elif eachMilestone.label == 'expired' %}
+            This milestone has expired and not marked as complete in myansrsource.
+        {% endif %}
   {% endfor %}
   Thanks,
   myansrsource team
@@ -26,17 +28,19 @@ Hi {{first_name}},
       <dl>
         <dt>Milestone status update for Project : {{ projectname }} | {{ projectId }} </dt>
         {% for eachMilestone in milestones %}
-            <dd>The milestone {{ eachMilestone.description }} falls on {{ eachMilestone.milestonedate }}. </dd> 
-            {% if label == 'week' %}
+            {% for eachData in eachMilestone.milestonesDetails %}
+                <dd>The milestone {{ eachData.description }} falls on {{ eachData.milestoneDate }}. </dd>
+            {% endfor %} 
+            {% if eachMilestone.label == 'week' %}
                     <dd><font color="blue">This milestone is due one week from now.</font></dd>
-            {% elif label == 'nextDay' %}
+            {% elif eachMilestone.label == 'nextDay' %}
                 <dd><font color="green">Today is the milestone date.</font>  Please make sure you take necessary action and ensure its completion and mark it closed on myansrsource.</dd>
-            {% elif label == 'expired' %} 
+            {% elif eachMilestone.label == 'expired' %} 
                 <dd><font color="red">This milestone has expired and not marked as complete in myansrsource. Please do it immediately.</font></dd>
             {% endif %}
         {% endfor %}
       </dl>
-  </p>
+</p>
 
   <p>Thanks, </p>
   <p>myansrsource team</p>
