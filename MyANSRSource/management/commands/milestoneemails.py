@@ -20,7 +20,7 @@ class Command(BaseCommand):
         nextDay = datetime.now().date() + timedelta(days=1)
         expired = datetime.now().date() - timedelta(days=1)
 
-        days = [{'date': nextWeek, 'label': 'nextWeek'},
+        days = [{'date': nextWeek, 'label': 'week'},
                 {'date': nextDay, 'label': 'nextDay'},
                 {'date': expired, 'label': 'expired'}]
 
@@ -39,8 +39,8 @@ def getContent(deadlineDate):
                              'projectManager__first_name')
     for eachProject in list(projects):
         l = []
-        d = {}
         for eachDeadline in deadlineDate:
+            d = {}
             milestones = ProjectMilestone.objects.filter(
                 project__projectId=eachProject['projectId'],
                 closed=False,
@@ -57,25 +57,26 @@ def getContent(deadlineDate):
 def sendEmail(self, details):
     if len(details) > 0:
         for eachDetail in details:
-            send_templated_mail(
-                template_name='projectMilestoneEmailNotification',
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[eachDetail['projectManager__email'], ],
-                context={
-                    'first_name': eachDetail[
-                        'projectManager__first_name'
-                    ],
-                    'projectId': eachDetail[
-                        'projectId'
-                    ],
-                    'projectname': eachDetail[
-                        'name'
-                    ],
-                    'milestones': eachDetail[
-                        'milestones'
-                    ],
-                    },
-            )
-            logger.info('Sent email to {0} about project {1}'.format(
-                eachDetail['projectManager__email'],
-                eachDetail['projectId']))
+            if len(eachDetail['milestones']):
+                send_templated_mail(
+                    template_name='projectMilestoneEmailNotification',
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[eachDetail['projectManager__email'], ],
+                    context={
+                        'first_name': eachDetail[
+                            'projectManager__first_name'
+                        ],
+                        'projectId': eachDetail[
+                            'projectId'
+                        ],
+                        'projectname': eachDetail[
+                            'name'
+                        ],
+                        'milestones': eachDetail[
+                            'milestones'
+                        ],
+                        },
+                )
+                logger.info('Sent email to {0} about project {1}'.format(
+                    eachDetail['projectManager__email'],
+                    eachDetail['projectId']))
