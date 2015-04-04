@@ -19,22 +19,23 @@ class Command(BaseCommand):
 
 def sendEmail(self, data, start, end):
     for eachDetail in data:
-        send_templated_mail(
-            template_name='timesheetStatus',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[eachDetail['email'], ],
-            context={
-                'tsDetails': eachDetail['ts'],
-                'startDate': start,
-                'endDate': end
-                },
-        )
-        self.stdout.write('Successfully sent TS status to team manager')
+        if len(eachDetail['ts']):
+            send_templated_mail(
+                template_name='timesheetStatus',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[eachDetail['email'], ],
+                context={
+                    'tsDetails': eachDetail['ts'],
+                    'startDate': start,
+                    'endDate': end
+                    },
+            )
+            self.stdout.write('Successfully sent TS status to team manager')
 
 
 def getTSStatus(start, end):
     managers = ProjectManager.objects.filter(
-        project__closed=False).values('user', 'user__email')
+        project__closed=False).values('user', 'user__email').distinct()
 
     weekData = []
     for eachManager in managers:
