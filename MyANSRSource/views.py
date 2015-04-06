@@ -1155,11 +1155,6 @@ class ChangeProjectWizard(SessionWizardView):
                 form.fields['signed'].widget.attrs[
                     'readonly'
                 ] = 'True'
-            if form.is_valid():
-                if form.has_changed():
-                    self.request.session['changed'] = True
-                else:
-                    self.request.session['changed'] = False
         return form
 
     def get_form_initial(self, step):
@@ -1185,19 +1180,13 @@ class ChangeProjectWizard(SessionWizardView):
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
-        if self.request.session['changed'] is True:
-            data = UpdateProjectInfo(
-                self.request, [
-                    form.cleaned_data for form in form_list])
-            return render(
-                self.request,
-                'MyANSRSource/changeProjectId.html',
-                data)
-        else:
-            return render(
-                self.request,
-                'MyANSRSource/NochangeProject.html',
-                {})
+        data = UpdateProjectInfo(
+            self.request, [
+                form.cleaned_data for form in form_list])
+        return render(
+            self.request,
+            'MyANSRSource/changeProjectId.html',
+            data)
 
 
 def UpdateProjectInfo(request, newInfo):
@@ -1207,59 +1196,27 @@ def UpdateProjectInfo(request, newInfo):
                        'closed', 'signed'
     """
     try:
-        prc = newInfo[0]['project']
-        oldCost = prc.totalValue
-        oldEffort = prc.plannedEffort
-        oldsalesForceNumber = prc.salesForceNumber
-        prc.plannedEffort = newInfo[1]['revisedEffort']
-        prc.totalValue = newInfo[1]['revisedTotal']
-        prc.salesForceNumber = newInfo[1]['salesForceNumber']
-        prc.closed = newInfo[1]['closed']
-        prc.signed = newInfo[1]['signed']
-        prc.po = newInfo[1]['po']
-        prc.save()
+        pru = newInfo[0]['project']
+        oldCost = pru.totalValue
+        oldEffort = pru.plannedEffort
+        pru.plannedEffort = newInfo[1]['revisedEffort']
+        pru.totalValue = newInfo[1]['revisedTotal']
+        pru.closed = newInfo[1]['closed']
+        pru.signed = newInfo[1]['signed']
+        pru.po = newInfo[1]['po']
 
         pci = ProjectChangeInfo()
-        try:
-            pci.project = prc
-        except ValueError as e:
-            print 1
-        try:
-            pci.reason = newInfo[1]['reason']
-        except ValueError as e:
-            print 2
-        try:
-            pci.endDate = newInfo[1]['endDate']
-        except ValueError as e:
-            print 3
-        try:
-            pci.salesForceNumber = oldsalesForceNumber
-        except ValueError as e:
-            print 4
-        try:
-            pci.revisedEffort = oldEffort
-        except ValueError as e:
-            print 5
-        try:
-            pci.revisedTotal = oldCost
-        except ValueError as e:
-            print 6
-        try:
-            pci.closed = newInfo[1]['closed']
-        except ValueError as e:
-            print 7
+        pci.project = pru
+        pci.reason = newInfo[1]['reason']
+        pci.endDate = newInfo[1]['endDate']
+        pci.salesForceNumber = newInfo[1]['salesForceNumber']
+        pci.revisedEffort = oldEffort
+        pci.revisedTotal = oldCost
+        pci.closed = newInfo[1]['closed']
         if pci.closed is True:
-            try:
-                pci.closedOn = datetime.now().replace(tzinfo=utc)
-            except ValueError as e:
-                print e
-        try:
-            pci.signed = newInfo[1]['signed']
-        except ValueError as e:
-            print 9
+            pci.closedOn = datetime.now().replace(tzinfo=utc)
+        pci.signed = newInfo[1]['signed']
         pci.save()
-
-        print pci.id
 
         # We need the Primary key to create the CRId
         pci.crId = "CR-{0}".format(pci.id)
@@ -1718,8 +1675,13 @@ def ViewProject(request):
         basicInfo = projectObj.values(
             'projectType__description', 'bu__name', 'customer__name',
             'name', 'book__name', 'signed', 'internal', 'currentProject',
-            'projectId', 'customerContact__username'
+            'projectId', 'customerContact'
         )[0]
+        if basicInfo['customerContact']:
+            customerObj = User.objects.get(
+                pk=basicInfo['customerContact']
+            )
+            basicInfo['customerContact__username'] = customerObj.username
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
             'totalValue', 'maxProductivityUnits', 'po', 'salesForceNumber'
