@@ -1604,7 +1604,7 @@ def saveProject(request):
                 pm.user = User.objects.get(pk=eachId)
                 pm.project = pr
                 pm.save()
-            if pm.user != request.user:
+            if request.user.id not in eval(request.POST.get('pm')):
                 pm = ProjectManager()
                 pm.user = request.user
                 pm.project = pr
