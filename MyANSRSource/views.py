@@ -675,9 +675,14 @@ def renderTimesheet(request, data):
                                     extra=1,
                                     max_num=1,
                                     can_delete=True)
-    if len(data['tsFormList']):
+    if len(data['tsFormList']) and len(data['atFormList']):
         atFormset = atFormset(initial=data['atFormList'], prefix='at')
         tsFormset = tsFormset(initial=data['tsFormList'])
+    elif len(data['tsFormList']):
+        tsFormset = tsFormset(initial=data['tsFormList'])
+        atFormset = atFormset(prefix='at')
+    elif len(data['atFormList']):
+        atFormset = atFormset(initial=data['atFormList'], prefix='at')
     else:
         atFormset = atFormset(prefix='at')
 
