@@ -470,14 +470,18 @@ def Timesheet(request):
         # Common values initialization
         extra = 0
 
+        tsFormList, atFormList = [], []
         # Approved TS data
-        if len(tsDataList['tsData']):
+        if len(tsDataList['tsData']) and len(tsDataList['atData']):
             tsFormList = tsDataList['tsData']
+            atFormList = tsDataList['atData']
+        elif len(tsDataList['tsData']):
+            atFormList = tsDataList['tsData']
+        elif len(tsDataList['atData']):
             atFormList = tsDataList['atData']
 
         # Fresh TS data
         else:
-            tsFormList, atFormList = [], []
             extra = 1
             messages.success(request, 'Please enter your timesheet for \
                              this week')
@@ -488,14 +492,15 @@ def Timesheet(request):
         holdSet = set()
         saveSet = set()
         sentBackSet = set()
-        for eachTS in tsFormList:
-            tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-            if eachTS['approved']:
-                approvedSet.add(tsObj.project.projectId)
-            elif eachTS['hold']:
-                holdSet.add(tsObj.project.projectId)
-            else:
-                sentBackSet.add(tsObj.project.projectId)
+        if len(tsFormList):
+            for eachTS in tsFormList:
+                tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+                if eachTS['approved']:
+                    approvedSet.add(tsObj.project.projectId)
+                elif eachTS['hold']:
+                    holdSet.add(tsObj.project.projectId)
+                else:
+                    sentBackSet.add(tsObj.project.projectId)
 
         if len(approvedSet) > 0:
             messages.success(
@@ -675,6 +680,7 @@ def renderTimesheet(request, data):
                                     extra=1,
                                     max_num=1,
                                     can_delete=True)
+
     if len(data['tsFormList']) and len(data['atFormList']):
         atFormset = atFormset(initial=data['atFormList'], prefix='at')
         tsFormset = tsFormset(initial=data['tsFormList'])
