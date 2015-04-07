@@ -31,7 +31,7 @@ class HolidayAdmin(admin.ModelAdmin):
 
 
 class TrainingAdmin(admin.ModelAdmin):
-    list_display = ('batch', 'trainingDate', )
+    list_display = ('batch', 'trainingDate', 'endDate')
 
 
 admin.site.register(Customer, CustomerAdmin)

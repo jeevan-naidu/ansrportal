@@ -15,7 +15,15 @@ class Customer(models.Model):
         max_length=3,
         default=None
     )
-    seqNumber = models.PositiveIntegerField(null=False, default=1, verbose_name='Project ID Sequence' )
+    location = models.CharField(
+        verbose_name="Location",
+        null=False,
+        blank=False,
+        max_length=100,
+        default=None
+    )
+    seqNumber = models.PositiveIntegerField(null=False, default=1,
+                                            verbose_name='Project ID Sequence')
     relatedMember = models.ManyToManyField(
         User,
         verbose_name="Select Account Relationship team",
@@ -72,7 +80,8 @@ class Training(models.Model):
         blank=False,
         null=False
     )
-    trainingDate = models.DateField(verbose_name="Training Date")
+    trainingDate = models.DateField(default=None, verbose_name="Start Date")
+    endDate = models.DateField(default=None, verbose_name="End Date")
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",

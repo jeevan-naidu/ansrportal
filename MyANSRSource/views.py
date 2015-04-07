@@ -125,10 +125,10 @@ def Timesheet(request):
         # Getting the forms with submitted values
         tsform = TimesheetFormset(request.user)
         tsFormset = formset_factory(
-            tsform, extra=1, can_delete=True
+            tsform, extra=1, max_num=1, can_delete=True
         )
         atFormset = formset_factory(
-            ActivityForm, extra=1, can_delete=True
+            ActivityForm, extra=1, max_num=1, can_delete=True
         )
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
@@ -615,7 +615,6 @@ def renderTimesheet(request, data):
         wkstart=data['weekstartDate'],
         wkend=data['weekendDate'],
         teamMember=request.user,
-        approved=False
     )
     billableHours = tsObj.filter(
         activity__isnull=True,
@@ -644,31 +643,37 @@ def renderTimesheet(request, data):
     for eachDay in days:
         newK = '{0}Total'.format(eachDay)
         d[newK] = 0
-        if len(data['atFormList']):
-            for eachData in data['atFormList']:
-                k = 'activity_{0}'.format(eachDay)
-                d[newK] += eachData[k]
-        if len(data['tsFormList']):
-            for eachData in data['tsFormList']:
-                k = '{0}H'.format(eachDay)
-                newK = '{0}Total'.format(eachDay)
-                d[newK] += eachData[k]
+        if 'tsErrorList' not in data:
+            if len(data['atFormList']):
+                for eachData in data['atFormList']:
+                    k = 'activity_{0}'.format(eachDay)
+                    d[newK] += eachData[k]
+        if 'atErrorList' not in data:
+            if len(data['tsFormList']):
+                for eachData in data['tsFormList']:
+                    k = '{0}H'.format(eachDay)
+                    newK = '{0}Total'.format(eachDay)
+                    d[newK] += eachData[k]
     tsform = TimesheetFormset(request.user)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
                                     extra=data['extra'],
+                                    max_num=1,
                                     can_delete=True)
     else:
         tsFormset = formset_factory(tsform,
                                     extra=1,
+                                    max_num=1,
                                     can_delete=True)
     if len(data['atFormList']):
         atFormset = formset_factory(ActivityForm,
                                     extra=data['extra'],
+                                    max_num=1,
                                     can_delete=True)
     else:
         atFormset = formset_factory(ActivityForm,
                                     extra=1,
+                                    max_num=1,
                                     can_delete=True)
     if len(data['tsFormList']):
         atFormset = atFormset(initial=data['atFormList'], prefix='at')
@@ -760,6 +765,10 @@ def Dashboard(request):
         closed=False
     ).count() if request.user.has_perm('MyANSRSource.manage_project') else 0
 
+    myProjects = Project.objects.filter(
+        projectManager=request.user,
+    ).count() if request.user.has_perm('MyANSRSource.manage_project') else 0
+
     totalCurrentProjects = ProjectTeamMember.objects.filter(
         member=request.user,
         project__closed=False
@@ -773,17 +782,29 @@ def Dashboard(request):
     ).count() if request.user.has_perm('MyANSRSource.approve_timesheet') else 0
 
     totalEmployees = User.objects.all().count()
-    activeMilestones = ProjectMilestone.objects.filter(
+    pm = ProjectMilestone.objects.filter(
         project__projectManager=request.user,
         project__closed=False,
         closed=False
-    ).count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
+    )
 
-    tsProjectsCount = ProjectTeamMember.objects.filter(
-        project__closed=False,
-        member=request.user
-    ).values('project__id').annotate(dcount=Count('project__id'))
+    activeMilestones = pm.count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
 
+    financialM = pm.filter(financial=True).values('description', 'milestoneDate')
+    nonfinancialM = pm.filter(financial=False).values('description', 'milestoneDate')
+
+    for eachRec in financialM:
+        eachRec['milestoneDate'] = eachRec['milestoneDate'].strftime('%Y-%m-%d')
+    for eachRec in nonfinancialM:
+        eachRec['milestoneDate'] = eachRec['milestoneDate'].strftime('%Y-%m-%d')
+
+    tsProjectsCount = Project.objects.filter(
+        closed=False,
+        id__in=ProjectTeamMember.objects.filter(
+            Q(member=request.user) |
+            Q(project__projectManager=request.user)
+        ).values('project_id')
+    )
     TSProjectsCount = len(tsProjectsCount)
 
     billableProjects = ProjectTeamMember.objects.filter(
@@ -834,7 +855,7 @@ def Dashboard(request):
             'project__endDate'
         ].strftime('%Y-%m-%d')
     trainings = CompanyMaster.models.Training.objects.all().values(
-        'batch', 'exercise', 'trainingDate')
+        'batch', 'exercise', 'trainingDate', 'endDate')
     if len(trainings):
         for eachTraining in trainings:
             eachTraining['trainingDate'] = eachTraining[
@@ -859,7 +880,10 @@ def Dashboard(request):
         'holidayList': holidayList,
         'projectsList': myprojects,
         'trainingList': trainings,
+        'financialM': financialM,
+        'nonfinancialM': nonfinancialM,
         'billableProjects': billableProjects,
+        'myProjects': myProjects,
         'currentProjects': currentProjects,
         'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
@@ -880,18 +904,12 @@ def checkUser(userName, password, request, form):
                     return HttpResponseRedirect('/myansrsource/dashboard')
                 else:
                     # We have an unknow group
-                    messages.error(
-                        request,
-                        'This user does not have access to timesheets.')
                     logger.error(
                         'User {0} permission details {1} group perms'.format(
                             user.username,
                             user.get_all_permissions(),
                             user.get_group_permissions()))
-                    return loginResponse(
-                        request,
-                        form,
-                        'MyANSRSource/index.html')
+                    return render(request, 'MyANSRSource/welcome.html', {})
             else:
                 messages.error(request, 'Sorry this user is not active.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
@@ -1137,11 +1155,6 @@ class ChangeProjectWizard(SessionWizardView):
                 form.fields['signed'].widget.attrs[
                     'readonly'
                 ] = 'True'
-            if form.is_valid():
-                if form.has_changed():
-                    self.request.session['changed'] = True
-                else:
-                    self.request.session['changed'] = False
         return form
 
     def get_form_initial(self, step):
@@ -1157,7 +1170,9 @@ class ChangeProjectWizard(SessionWizardView):
                     'signed',
                     'endDate',
                     'plannedEffort',
-                    'totalValue'
+                    'totalValue',
+                    'salesForceNumber',
+                    'po'
                     )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject[
@@ -1165,19 +1180,13 @@ class ChangeProjectWizard(SessionWizardView):
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
-        if self.request.session['changed'] is True:
-            data = UpdateProjectInfo(
-                self.request, [
-                    form.cleaned_data for form in form_list])
-            return render(
-                self.request,
-                'MyANSRSource/changeProjectId.html',
-                data)
-        else:
-            return render(
-                self.request,
-                'MyANSRSource/NochangeProject.html',
-                {})
+        data = UpdateProjectInfo(
+            self.request, [
+                form.cleaned_data for form in form_list])
+        return render(
+            self.request,
+            'MyANSRSource/changeProjectId.html',
+            data)
 
 
 def UpdateProjectInfo(request, newInfo):
@@ -1187,24 +1196,25 @@ def UpdateProjectInfo(request, newInfo):
                        'closed', 'signed'
     """
     try:
-        prc = newInfo[0]['project']
-        oldCost = prc.totalValue
-        oldEffort = prc.plannedEffort
-        prc.plannedEffort = newInfo[1]['revisedEffort']
-        prc.totalValue = newInfo[1]['revisedTotal']
-        prc.closed = newInfo[1]['closed']
-        prc.signed = newInfo[1]['signed']
-        prc.save()
+        pru = newInfo[0]['project']
+        oldCost = pru.totalValue
+        oldEffort = pru.plannedEffort
+        pru.plannedEffort = newInfo[1]['revisedEffort']
+        pru.totalValue = newInfo[1]['revisedTotal']
+        pru.closed = newInfo[1]['closed']
+        pru.signed = newInfo[1]['signed']
+        pru.po = newInfo[1]['po']
 
         pci = ProjectChangeInfo()
-        pci.project = prc
+        pci.project = pru
         pci.reason = newInfo[1]['reason']
         pci.endDate = newInfo[1]['endDate']
+        pci.salesForceNumber = newInfo[1]['salesForceNumber']
         pci.revisedEffort = oldEffort
         pci.revisedTotal = oldCost
         pci.closed = newInfo[1]['closed']
         if pci.closed is True:
-            pci.closedOn = datetime.now()
+            pci.closedOn = datetime.now().replace(tzinfo=utc)
         pci.signed = newInfo[1]['signed']
         pci.save()
 
@@ -1548,6 +1558,7 @@ def saveProject(request):
             pr.po = request.POST.get('po')
             pr.totalValue = float(request.POST.get('totalValue'))
             pr.plannedEffort = int(request.POST.get('plannedEffort'))
+            pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
             pr.currentProject = request.POST.get('currentProject')
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
@@ -1557,6 +1568,9 @@ def saveProject(request):
             )
             pr.customer = CompanyMaster.models.Customer.objects.get(
                 pk=int(request.POST.get('customer'))
+            )
+            pr.customerContact = User.objects.get(
+                pk=int(request.POST.get('customerContact'))
             )
             pr.book = Book.objects.get(
                 pk=int(request.POST.get('book'))
@@ -1661,11 +1675,16 @@ def ViewProject(request):
         basicInfo = projectObj.values(
             'projectType__description', 'bu__name', 'customer__name',
             'name', 'book__name', 'signed', 'internal', 'currentProject',
-            'projectId'
+            'projectId', 'customerContact'
         )[0]
+        if basicInfo['customerContact']:
+            customerObj = User.objects.get(
+                pk=basicInfo['customerContact']
+            )
+            basicInfo['customerContact__username'] = customerObj.username
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
-            'totalValue', 'maxProductivityUnits', 'po'
+            'totalValue', 'maxProductivityUnits', 'po', 'salesForceNumber'
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
@@ -1682,15 +1701,19 @@ def ViewProject(request):
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(
             'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-            'closed', 'closedOn', 'signed'
+            'closed', 'closedOn', 'signed', 'salesForceNumber'
         )
         data = {
             'basicInfo': basicInfo,
             'flagData': flagData,
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData,
-            'changes': changeTracker
+            'changes': changeTracker,
             }
+        if len(changeTracker):
+            closedOn = [eachRec['closedOn'] for eachRec in changeTracker if eachRec['closedOn'] is not None]
+            if len(closedOn):
+                data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
     data = Project.objects.filter(projectManager=request.user).values(
         'name', 'id', 'closed', 'projectId'
