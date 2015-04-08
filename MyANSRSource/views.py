@@ -712,10 +712,21 @@ def renderTimesheet(request, data):
     attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
 
     ocWeek = datetime.now().date() - data['weekstartDate']
+    prevWeekBlock = False
     if ocWeek.days > 6:
-        prevWeekBlock = True
-    else:
-        prevWeekBlock = False
+        pwActivityData = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=data['weekstartDate'],
+                wkend=data['weekendDate'],
+                teamMember=request.user,
+                project__isnull=True
+            )
+        ).values('approved', 'hold')
+        if len(pwActivityData):
+            if pwActivityData[0]['approved']:
+                prevWeekBlock = True
+            elif pwActivityData[0]['hold']:
+                prevWeekBlock = True
 
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
@@ -761,6 +772,22 @@ def ApproveTimesheet(request):
                     TimeSheetEntry.objects.filter(
                         id=updateRec
                     ).update(hold=False)
+                    tsAct = TimeSheetEntry.objects.filter(pk=updateRec).values(
+                        'teamMember', 'wkstart', 'wkend'
+                    )[0]
+                    tsActId = TimeSheetEntry.objects.filter(
+                        Q(
+                            wkstart=tsAct['wkstart'],
+                            wkend=tsAct['wkend'],
+                            teamMember=tsAct['teamMember'],
+                            project__isnull=True
+                        )
+                    ).values('id')
+                    for eachId in tsActId:
+                        TimeSheetEntry.objects.filter(
+                            id=eachId['id']
+                        ).update(hold=False)
+
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(
