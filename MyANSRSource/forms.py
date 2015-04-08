@@ -61,7 +61,6 @@ class ActivityForm(forms.Form):
     activity_total = forms.DecimalField(label="Total",
                                         max_digits=12,
                                         min_value=0.0,
-                                        max_value=24.0,
                                         decimal_places=2,
                                         )
     activity_feedback = forms.CharField(

@@ -470,14 +470,18 @@ def Timesheet(request):
         # Common values initialization
         extra = 0
 
+        tsFormList, atFormList = [], []
         # Approved TS data
-        if len(tsDataList['tsData']):
+        if len(tsDataList['tsData']) and len(tsDataList['atData']):
             tsFormList = tsDataList['tsData']
+            atFormList = tsDataList['atData']
+        elif len(tsDataList['tsData']):
+            atFormList = tsDataList['tsData']
+        elif len(tsDataList['atData']):
             atFormList = tsDataList['atData']
 
         # Fresh TS data
         else:
-            tsFormList, atFormList = [], []
             extra = 1
             messages.success(request, 'Please enter your timesheet for \
                              this week')
@@ -488,14 +492,15 @@ def Timesheet(request):
         holdSet = set()
         saveSet = set()
         sentBackSet = set()
-        for eachTS in tsFormList:
-            tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-            if eachTS['approved']:
-                approvedSet.add(tsObj.project.projectId)
-            elif eachTS['hold']:
-                holdSet.add(tsObj.project.projectId)
-            else:
-                sentBackSet.add(tsObj.project.projectId)
+        if len(tsFormList):
+            for eachTS in tsFormList:
+                tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+                if eachTS['approved']:
+                    approvedSet.add(tsObj.project.projectId)
+                elif eachTS['hold']:
+                    holdSet.add(tsObj.project.projectId)
+                else:
+                    sentBackSet.add(tsObj.project.projectId)
 
         if len(approvedSet) > 0:
             messages.success(
@@ -643,17 +648,18 @@ def renderTimesheet(request, data):
     for eachDay in days:
         newK = '{0}Total'.format(eachDay)
         d[newK] = 0
-        if 'tsErrorList' not in data:
+        if 'atErrorList' not in data:
             if len(data['atFormList']):
                 for eachData in data['atFormList']:
                     k = 'activity_{0}'.format(eachDay)
-                    d[newK] += eachData[k]
-        if 'atErrorList' not in data:
+                    if k in eachData:
+                        d[newK] += eachData[k]
+        if 'tsErrorList' not in data:
             if len(data['tsFormList']):
                 for eachData in data['tsFormList']:
                     k = '{0}H'.format(eachDay)
-                    newK = '{0}Total'.format(eachDay)
-                    d[newK] += eachData[k]
+                    if k in eachData:
+                        d[newK] += eachData[k]
     tsform = TimesheetFormset(request.user)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
@@ -675,9 +681,15 @@ def renderTimesheet(request, data):
                                     extra=1,
                                     max_num=1,
                                     can_delete=True)
-    if len(data['tsFormList']):
+
+    if len(data['tsFormList']) and len(data['atFormList']):
         atFormset = atFormset(initial=data['atFormList'], prefix='at')
         tsFormset = tsFormset(initial=data['tsFormList'])
+    elif len(data['tsFormList']):
+        tsFormset = tsFormset(initial=data['tsFormList'])
+        atFormset = atFormset(prefix='at')
+    elif len(data['atFormList']):
+        atFormset = atFormset(initial=data['atFormList'], prefix='at')
     else:
         atFormset = atFormset(prefix='at')
 
@@ -1592,7 +1604,7 @@ def saveProject(request):
                 pm.user = User.objects.get(pk=eachId)
                 pm.project = pr
                 pm.save()
-            if pm.user != request.user:
+            if request.user.id not in eval(request.POST.get('pm')):
                 pm = ProjectManager()
                 pm.user = request.user
                 pm.project = pr
