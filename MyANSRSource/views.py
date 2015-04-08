@@ -754,7 +754,9 @@ def ApproveTimesheet(request):
                 if v == 'approve':
                     TimeSheetEntry.objects.filter(
                         id=updateRec
-                    ).update(approved=True, approvedon=datetime.now())
+                    ).update(approved=True,
+                             approvedon=datetime.now().replace(tzinfo=utc)
+                             )
                 else:
                     TimeSheetEntry.objects.filter(
                         id=updateRec
