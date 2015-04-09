@@ -9,7 +9,6 @@ from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
-from django.db.models import Count
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
@@ -167,6 +166,8 @@ def Timesheet(request):
                         id=timesheet.cleaned_data['tsId']
                     ).delete()
                 else:
+                    weekTotalValidate = 40 - (8 * len(weekHolidays))
+                    weekTotalExtra = weekTotalValidate + 4
                     for holiday in weekHolidays:
                         holidayDay = '{0}H'.format(
                             holiday['date'].strftime('%A').lower()
@@ -243,12 +244,15 @@ def Timesheet(request):
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
-            elif ('save' not in request.POST) and (weekTotal < 40):
+            elif ('save' not in request.POST) and (weekTotal < weekTotalValidate):
                 messages.error(request,
                                'Your total timesheet activity for \
-                               this week is below 40 hours')
-            elif (weekTotal > 44) | (billableTotal > 44) | \
-                 (nonbillableTotal > 40) | (leaveDayWork is True):
+                               this week is below {0} hours'.format(
+                                   weekTotalValidate))
+            elif (weekTotal > weekTotalExtra) | \
+                 (billableTotal > weekTotalExtra) | \
+                 (nonbillableTotal > weekTotalValidate) | \
+                 (leaveDayWork is True):
                 if len(activitiesList):
                     for eachActivity in activitiesList:
                         # Getting objects for models
@@ -476,7 +480,7 @@ def Timesheet(request):
             tsFormList = tsDataList['tsData']
             atFormList = tsDataList['atData']
         elif len(tsDataList['tsData']):
-            atFormList = tsDataList['tsData']
+            tsFormList = tsDataList['tsData']
         elif len(tsDataList['atData']):
             atFormList = tsDataList['atData']
 
@@ -708,10 +712,21 @@ def renderTimesheet(request, data):
     attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
 
     ocWeek = datetime.now().date() - data['weekstartDate']
+    prevWeekBlock = False
     if ocWeek.days > 6:
-        prevWeekBlock = True
-    else:
-        prevWeekBlock = False
+        pwActivityData = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=data['weekstartDate'],
+                wkend=data['weekendDate'],
+                teamMember=request.user,
+                project__isnull=True
+            )
+        ).values('approved', 'hold')
+        if len(pwActivityData):
+            if pwActivityData[0]['approved']:
+                prevWeekBlock = True
+            elif pwActivityData[0]['hold']:
+                prevWeekBlock = True
 
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
@@ -750,11 +765,29 @@ def ApproveTimesheet(request):
                 if v == 'approve':
                     TimeSheetEntry.objects.filter(
                         id=updateRec
-                    ).update(approved=True, approvedon=datetime.now())
+                    ).update(approved=True,
+                             approvedon=datetime.now().replace(tzinfo=utc)
+                             )
                 else:
                     TimeSheetEntry.objects.filter(
                         id=updateRec
                     ).update(hold=False)
+                    tsAct = TimeSheetEntry.objects.filter(pk=updateRec).values(
+                        'teamMember', 'wkstart', 'wkend'
+                    )[0]
+                    tsActId = TimeSheetEntry.objects.filter(
+                        Q(
+                            wkstart=tsAct['wkstart'],
+                            wkend=tsAct['wkend'],
+                            teamMember=tsAct['teamMember'],
+                            project__isnull=True
+                        )
+                    ).values('id')
+                    for eachId in tsActId:
+                        TimeSheetEntry.objects.filter(
+                            id=eachId['id']
+                        ).update(hold=False)
+
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(
