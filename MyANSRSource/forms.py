@@ -18,34 +18,49 @@ class ActivityForm(forms.Form):
     )
     activity_monday = forms.DecimalField(label="Mon",
                                          max_digits=12,
+                                         min_value=0.0,
+                                         max_value=24.0,
                                          decimal_places=2,
                                          )
     activity_tuesday = forms.DecimalField(label="Tue",
                                           max_digits=12,
+                                          min_value=0.0,
+                                          max_value=24.0,
                                           decimal_places=2,
                                           )
     activity_wednesday = forms.DecimalField(label="Wed",
                                             max_digits=12,
+                                            min_value=0.0,
+                                            max_value=24.0,
                                             decimal_places=2,
                                             )
     activity_thursday = forms.DecimalField(label="Thu",
                                            max_digits=12,
+                                           min_value=0.0,
+                                           max_value=24.0,
                                            decimal_places=2,
                                            )
     activity_friday = forms.DecimalField(label="Fri",
                                          max_digits=12,
+                                         min_value=0.0,
+                                         max_value=24.0,
                                          decimal_places=2,
                                          )
     activity_saturday = forms.DecimalField(label="Sat",
                                            max_digits=12,
+                                           min_value=0.0,
+                                           max_value=24.0,
                                            decimal_places=2,
                                            )
     activity_sunday = forms.DecimalField(label="Sun",
                                          max_digits=12,
+                                         min_value=0.0,
+                                         max_value=24.0,
                                          decimal_places=2,
                                          )
     activity_total = forms.DecimalField(label="Total",
                                         max_digits=12,
+                                        min_value=0.0,
                                         decimal_places=2,
                                         )
     activity_feedback = forms.CharField(
@@ -309,6 +324,7 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
             'bu',
             'customer',
             'name',
+            'customerContact',
             'book',
             'projectManager',
             'signed',
@@ -345,6 +361,8 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
             "id_Define_Project-book"
         self.fields['currentProject'].widget.attrs['class'] = \
             "form-control"
+        self.fields['customerContact'].widget.attrs['class'] = \
+            "form-control"
         self.fields['signed'].widget.attrs['class'] = \
             "form-control"
         self.fields['internal'].widget.attrs['class'] = \
@@ -375,7 +393,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         model = ProjectChangeInfo
         fields = (
             'reason', 'endDate', 'revisedEffort',
-            'revisedTotal', 'closed', 'signed'
+            'revisedTotal', 'salesForceNumber', 'po', 'closed', 'signed'
         )
         widgets = {
             'endDate': DateTimePicker(options=dateTimeOption),
@@ -390,6 +408,8 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
         self.fields['signed'].widget.attrs['class'] = "form-control"
+        self.fields['salesForceNumber'].widget.attrs['class'] = "form-control"
+        self.fields['po'].widget.attrs['class'] = "form-control"
 
 
 class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
@@ -467,7 +487,8 @@ class ProjectFlagForm(forms.ModelForm):
             'plannedEffort',
             'contingencyEffort',
             'totalValue',
-            'po'
+            'po',
+            'salesForceNumber'
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -479,6 +500,8 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['maxProductivityUnits'].widget.attrs['class'] = \
             "form-control"
         self.fields['po'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['salesForceNumber'].widget.attrs['class'] = \
             "form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "planned-effort-input form-control"

@@ -19,6 +19,9 @@ class Book(models.Model):
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
     edition = models.CharField(max_length=30, null=True, blank=True)
+    isbn = models.IntegerField(default=None,
+                               blank=True, null=True,
+                               verbose_name="ISBN")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -99,6 +102,13 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Type"
     )
+    name = models.CharField(max_length=50, verbose_name="Project Name")
+    customerContact = models.ForeignKey(
+        User,
+        default=None,
+        verbose_name="Customer Contact",
+        related_name="Cusomer Contact"
+    )
     maxProductivityUnits = models.DecimalField(
         default=0.0,
         max_digits=12,
@@ -146,6 +156,10 @@ class Project(models.Model):
                                  default=timezone.now)
     endDate = models.DateField(verbose_name="Project End Date",
                                default=timezone.now)
+    salesForceNumber = models.IntegerField(default=0,
+                                           verbose_name="Sales Force \
+                                           Oppurtunity Number",
+                                           validators=[MinValueValidator(0)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
                                         validators=[MinValueValidator(0)])
@@ -290,6 +304,9 @@ class ProjectMilestone(models.Model):
         blank=False,
         verbose_name="Completed"
     )
+    closedon = models.DateTimeField(default=None, null=True, blank=True,
+                                    verbose_name="Closed On",
+                                    editable=False)
     financial = models.BooleanField(default=False,
                                     verbose_name="Financial",
                                     blank=False,
@@ -337,6 +354,9 @@ class ProjectChangeInfo(models.Model):
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
+    po = models.CharField(max_length=60, null=False,
+                          blank=False, default=0,
+                          verbose_name="P.O.", validators=[alphanumeric])
     revisedEffort = models.IntegerField(default=0,
                                         validators=[MinValueValidator(0)],
                                         verbose_name="Revised Effort")
@@ -345,9 +365,13 @@ class ProjectChangeInfo(models.Model):
                                        validators=[MinValueValidator(0)],
                                        decimal_places=2,
                                        verbose_name="Revised amount")
+    salesForceNumber = models.IntegerField(default=0,
+                                           verbose_name="Sales Force \
+                                           Oppurtunity Number",
+                                           validators=[MinValueValidator(0)])
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
-    closedOn = models.DateField(default=None, blank=True, null=True)
+    closedOn = models.DateTimeField(default=None, blank=True, null=True)
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
     # Record Entered / Updated Date

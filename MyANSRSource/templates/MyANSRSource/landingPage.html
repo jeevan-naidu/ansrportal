@@ -10,18 +10,26 @@
 			color  : '#009452'
 		},
 	{% endfor %}
-	{% for eachProject in projectsList %}
-		{
-			start : '{{ eachProject.project__startDate }}',
-			title : '{{ eachProject.project__name }}',
-			color  : '#D6412B'
-		},
-	{% endfor %}
 	{% for eachTraining in trainingList %}
 		{
 			start : '{{ eachTraining.trainingDate }}',
+			end : '{{ eachTraining.endDate }}',
 			title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}',
 			color  : '#176CED'
+		},
+	{% endfor %}
+	{% for eachMilestone in financialM %}
+		{
+			start : '{{ eachMilestone.milestoneDate }}',
+			title : '{{ eachMilestone.description }}',
+			color  : '#D6412B'
+		},
+	{% endfor %}
+	{% for eachMilestone in nonfinancialM %}
+		{
+			start : '{{ eachMilestone.milestoneDate }}',
+			title : '{{ eachMilestone.description }}',
+			color  : '#FFBA02'
 		},
 	{% endfor %}
 {% endblock %}
@@ -109,9 +117,9 @@
                                 Manage Project / Enter Change Request
                             </a>
                         {% endif %}
-                        {% if activeProjects > 0 %}
+                        {% if myProjects > 0 %}
                             <a href="project/view-project" class="list-group-item">
-                                <span class="badge">{{ activeProjects }}</span>
+                                <span class="badge">{{ myProjects }}</span>
                                 View Project
                             </a>
                         {% else %}
@@ -204,11 +212,11 @@
 	</div>
 	<div class="col-md-8">
 		<div id='calendar'></div>
-        <div class="col-lg-6"><small><span><b>You have currently {{ cp }} active projects</b></span></small></div>
-		<div class="col-lg-6 pull-right">
+		<div class="col-lg-12">
 			<span><small><b>Legend:</b></small></span>
 			<span class="label label-default holiday">Holiday</span>
-			<span class="label label-default my-project">My Milestones</span>
+			<span class="label label-default financialM">Financial Milestone</span>
+			<span class="label label-default nonfinancialM">Non-Financial Milestone</span>
 			<span class="label label-default training">Learning & development</span>
 		</div>
 	</div>

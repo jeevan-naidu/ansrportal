@@ -41,11 +41,12 @@
 				<th>Business Unit</th>
 				<th>Name</th>
 				<th>Customer</th>
+				<th>Customer Contact</th>
 				<th>Book</th>
 				<th>Project Leader</th>
-				<th>Is it an internal Project?</th>
-				<th>Is this a new project?</th>
-				<th>Is this contract signed?</th>
+				<th>Internal Project?</th>
+				<th>New project?</th>
+				<th>Contract signed?</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -53,6 +54,7 @@
 			<td>{{ basicInfo.bu }}</td>
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer }}</td>
+			<td>{{ basicInfo.customerContact }}</td>
 			<td>{{ basicInfo.book }}</td>
 			<td>
 				{% for eachManager in basicInfo.projectManager %}
@@ -91,6 +93,7 @@
 				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
 				<input type="hidden" name="bu" value="{{ basicInfo.bu.id }}">
 				<input type="hidden" name="customer" value="{{ basicInfo.customer.id }}">
+				<input type="hidden" name="customerContact" value="{{ basicInfo.customerContact.id }}">
 				<input type="hidden" name="projectType" value="{{ basicInfo.projectType.id }}">
 		</tr>
 		</tbody>
@@ -109,6 +112,7 @@
 				<th>End Date</th>
 				<th>Total Value</th>
 				<th>P.O.</th>
+				<th>SalesForce Number</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -119,6 +123,7 @@
 			<td>{{ flagData.displayEndDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
 			<td>{{ flagData.po }}</td>
+			<td>{{ flagData.salesForceNumber }}</td>
 			{% for rec, value in flagData.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}

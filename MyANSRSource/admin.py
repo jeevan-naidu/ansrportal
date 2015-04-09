@@ -28,12 +28,12 @@ class ChapterInline(admin.TabularInline):
 
 # Admin Models for ansr
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('name', 'edition', 'author')
+    list_display = ('name', 'edition', 'author', 'isbn')
     # which fields should appear on the filter column
-    list_filter = ['name', 'edition', 'author']
+    list_filter = ['name', 'edition', 'author', 'isbn']
     # Search capabilitiy
-    search_fields = ['name', 'edition', 'author']
-    fields = ('name', 'edition', 'author')
+    search_fields = ['name', 'edition', 'author', 'isbn']
+    fields = ('name', 'edition', 'author', 'isbn')
     # Which of the fields can be edited in list mode
     # list_editable = ['']
     # Ordering of the books
