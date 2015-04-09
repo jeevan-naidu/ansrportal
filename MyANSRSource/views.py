@@ -158,16 +158,18 @@ def Timesheet(request):
                     location=locationId,
                     date__range=[changedStartDate, changedEndDate]
                 ).values('date')
+                weekTotalValidate = 40 - (8 * len(weekHolidays))
+                weekTotalExtra = weekTotalValidate + 4
             else:
                 weekHolidays = []
+                weekTotalValidate = 40
+                weekTotalExtra = 4
             for timesheet in timesheets:
                 if timesheet.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
                         id=timesheet.cleaned_data['tsId']
                     ).delete()
                 else:
-                    weekTotalValidate = 40 - (8 * len(weekHolidays))
-                    weekTotalExtra = weekTotalValidate + 4
                     for holiday in weekHolidays:
                         holidayDay = '{0}H'.format(
                             holiday['date'].strftime('%A').lower()
