@@ -3,6 +3,20 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+class CustomerType(models.Model):
+    name = models.CharField(
+        verbose_name="Type of Customer",
+        max_length=30,
+        blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Customer(models.Model):
     name = models.CharField(verbose_name='Customer Name',
                             max_length=100,
@@ -30,6 +44,9 @@ class Customer(models.Model):
         blank=False,
         null=False
     )
+    CType = models.ForeignKey(CustomerType, default=None,
+                              verbose_name='Customer Type',
+                              blank=False, null=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
