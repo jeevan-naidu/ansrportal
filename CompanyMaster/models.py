@@ -2,6 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+CENTERFLAG = (
+    ('P', 'Profit Center'),
+    ('C', 'Cost Center'),
+)
+
+
 # Create your models here.
 class CustomerType(models.Model):
     name = models.CharField(
@@ -166,6 +172,10 @@ class BusinessUnit(models.Model):
         blank=False)
     bu_head = models.OneToOneField(User, default=None,
                                    verbose_name="Business Unit Head")
+    centerType = models.CharField(max_length=2,
+                                  choices=CENTERFLAG,
+                                  verbose_name='Type of center',
+                                  default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
