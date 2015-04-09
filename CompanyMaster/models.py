@@ -22,6 +22,12 @@ class Customer(models.Model):
                             max_length=100,
                             null=False,
                             blank=False)
+    internal = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Internal Customer"
+    )
     customerCode = models.CharField(
         verbose_name="Customer Code",
         null=False,
