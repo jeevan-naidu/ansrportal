@@ -1,0 +1,7 @@
+Daily timesheet report
+=========================
+select pr.projectId, au.first_name, au.last_name, au.email, (MondayH + TuesdayH + wednesdayH + thursdayH + fridayH + saturdayH + sundayH) TotalHours 
+from MyANSRSource_timesheetentry tse left join MyANSRSource_project pr on tse.project_id = pr.id, auth_user au where tse.teamMember_Id = au.id and tse.wkstart = '2015-03-30' 
+order by tse.teamMember_id, TotalHours desc 
+INTO OUTFILE '/tmp/2015-03-30.4.csv' FIELDS ENCLOSED BY '"' TERMINATED BY ';' ESCAPED BY '"' LINES TERMINATED BY '\r\n';
+
