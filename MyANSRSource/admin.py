@@ -56,26 +56,28 @@ class ProjectAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(ProjectAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.has_perm('MyANSRSource.view_all_projects'):
             return qs
         else:
             return qs.filter(closed=False, projectManager=request.user)
 
     list_display = (
+        'bu',
+        'projectId',
         'name',
         'startDate',
         'endDate',
         'plannedEffort',
         'contingencyEffort',
-        'projectId',
         'totalValue')
     search_fields = (
         'name',
         'customer__name',
         'projectManager__username',)
 
-    filter_fields = ('startDate', 'endDate', )
+    list_filter = ('bu__name', 'startDate', 'endDate', 'book')
     inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
+    ordering = ['-updatedOn']
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -93,27 +95,14 @@ class ProjectAdmin(admin.ModelAdmin):
                 ]
 
     fieldsets = [
-        ('Basic Information',
-         {'fields': ['bu', 'projectType', 'customer', 'name', ], },),
-        ('Status',
-         {'fields': ['currentProject',
-                     'signed',
-                     'internal',
-                     'projectId',
-                     'po',
-                     'closed',
-                     ],
-          },
-         ),
-        ('Time and Money',
-         {'fields': ['startDate',
-                     'endDate',
-                     'plannedEffort',
-                     'contingencyEffort',
-                     ],
-          },
-         ),
-    ]
+        ('Basic Information', {
+            'fields': [
+                'bu', 'projectType', 'customer', 'customerContact', 'projectId', 'name', ], },), ('Status', {
+            'fields': [
+                'currentProject', 'signed', 'internal', 'po', 'salesForceNumber', 'closed', ], }, ), ('Time and Money', {
+            'fields': [
+                'startDate', 'endDate', 'plannedEffort', 'contingencyEffort', 'totalValue', ], }, ), ('Others', {
+            'fields' : ['book', ], }, ),]
 
 
 class projectTypeAdmin(admin.ModelAdmin):

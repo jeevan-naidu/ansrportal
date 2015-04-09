@@ -1,0 +1,52 @@
+MIS Reports
+==============
+
+#1 Weekly Projects Added
+-----------------------
+Columns
+---------
+Customer        
+#of Projects  added
+$value
+
+
+
+
+Weekly Projects Completed
+------------------------------
+
+Columns
+----------
+Project Code    
+Name    
+Planned End date
+Date of last  
+Milestone 
+Completed (Y/N)   
+$planned value   
+$Actual value
+
+When a milestone is closed capture the actual value of invoice closed - UI change
+
+
+Utilization Report
+--------------------
+
+This is a Monthly report
+
+Fields
+------------
+
+Project Code + Name
+Billed Hours
+Idle Hours
+Non-Project 
+Total hours
+Utilization %
+
+Group by
+--------
+BU, CustomerProject/Internal Project
+
+
+
