@@ -6,6 +6,7 @@ from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation
+from employee.models import Remainder
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
@@ -525,6 +526,16 @@ class changeProjectLeaderForm(autocomplete_light.ModelForm):
     def __init__(self, *args, **kwargs):
         super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
+
+
+class MyRemainderForm(forms.Form):
+    class Meta:
+        model = Remainder
+        fields = ('name', 'date', 'color', )
+
+        widgets = {
+            'date': DateTimePicker(options=dateTimeOption),
+        }
 
 
 # Form Class to create front-End Login

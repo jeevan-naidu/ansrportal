@@ -364,6 +364,24 @@ class PreviousEmployment(models.Model):
             str(self.employed_from) + ' ~ ' + str(self.employed_upto)
 
 
+class Remainder(models.Model):
+    employee = models.ForeignKey(Employee, default=None)
+    name = models.CharField(verbose_name="Event Name",
+                            max_length="100"
+                            )
+    date = models.DateField(verbose_name="Date")
+    color = models.CharField(verbose_name="Color",
+                             max_length="10"
+                             )
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class Attendance(models.Model):
     employee = models.ForeignKey(Employee, null=True)
     attdate = models.DateField(null=True, blank=True, verbose_name='Swipe Date')

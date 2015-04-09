@@ -24,7 +24,8 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
-    ChangeProjectForm, CloseProjectMilestoneForm, changeProjectLeaderForm
+    MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
+    changeProjectLeaderForm
 
 import CompanyMaster
 import employee
@@ -778,6 +779,10 @@ def ApproveTimesheet(request):
 
 @login_required
 def Dashboard(request):
+    if request.method == 'POST':
+        pass
+    remainder = MyRemainderForm()
+    print remainder
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
         closed=False
@@ -903,6 +908,7 @@ def Dashboard(request):
         'billableProjects': billableProjects,
         'myProjects': myProjects,
         'currentProjects': currentProjects,
+        'remainderForm': remainder,
         'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,

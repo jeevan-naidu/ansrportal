@@ -1,5 +1,6 @@
 {% extends 'master.inc' %}
 {% load permissions %}
+{% load bootstrap3 %}
 {% block siteTitle %}myansrsource:Dashboard{% endblock %}
 
 {% block events %}
@@ -218,8 +219,31 @@
 			<span class="label label-default financialM">Financial Milestone</span>
 			<span class="label label-default nonfinancialM">Non-Financial Milestone</span>
 			<span class="label label-default training">Learning & development</span>
+            <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
 		</div>
 	</div>
+	<div class="modal fade" id="myRemainder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			 <div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+                    <h4 class="modal-title" id="myModalLabel"><b>Personalize Calendar</b></h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-condensed">
+						<tbody>
+                            {% csrf_token %}
+                            {% bootstrap_messages %}
+                            {% bootstrap_form remainderForm layout='vertical' %} 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+         </div>
+    </div>  
 	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			 <div class="modal-content">
