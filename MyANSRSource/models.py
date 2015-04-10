@@ -384,6 +384,18 @@ class ProjectChangeInfo(models.Model):
         return self.crId
 
 
+class Report(models.Model):
+    name = models.CharField(default=None, max_length=100, verbose_name="Name")
+    notify = models.ManyToManyField(User, verbose_name="Notifier(s)")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class SendEmail(models.Model):
     toAddr = models.CharField(default=None, null=False, max_length=1000)
     template_name = models.CharField(default=None, null=False, max_length=100)
