@@ -485,6 +485,7 @@ def Timesheet(request):
         elif len(tsDataList['tsData']):
             tsFormList = tsDataList['tsData']
         elif len(tsDataList['atData']):
+            defaulLocation = [{'location': request.user.employee.location.id}]
             atFormList = tsDataList['atData']
 
         # Fresh TS data
