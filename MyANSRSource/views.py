@@ -477,6 +477,7 @@ def Timesheet(request):
         extra = 0
 
         tsFormList, atFormList = [], []
+
         # Approved TS data
         if len(tsDataList['tsData']) and len(tsDataList['atData']):
             tsFormList = tsDataList['tsData']
@@ -489,6 +490,7 @@ def Timesheet(request):
         # Fresh TS data
         else:
             extra = 1
+            defaulLocation = [{'location': request.user.employee.location.id}]
             messages.success(request, 'Please enter your timesheet for \
                              this week')
 
@@ -507,6 +509,8 @@ def Timesheet(request):
                     holdSet.add(tsObj.project.projectId)
                 else:
                     sentBackSet.add(tsObj.project.projectId)
+        else:
+            tsFormList = defaulLocation
 
         if len(approvedSet) > 0:
             messages.success(
