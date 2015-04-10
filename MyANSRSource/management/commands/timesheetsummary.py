@@ -26,8 +26,13 @@ class Command(BaseCommand):
                     eachTsData['sunday']
             notifier = Report.objects.filter(name=report_name).values(
                 'notify__email')
-            tsData = {'notify': notifier, 'data': weekData}
-            sendEmail(tsData)
+            if len(notifier):
+                tsData = {'notify': notifier, 'data': weekData}
+                sendEmail(tsData)
+            else:
+                print 'No Notifiers are mentioned'
+        else:
+            print 'No TS Data for {0} - {1} week'.format(start, end)
 
 
 def sendEmail(content):
