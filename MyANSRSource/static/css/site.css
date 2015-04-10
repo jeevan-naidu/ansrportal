@@ -284,6 +284,9 @@ body {
 .training { 
 	background-color : #176CED;
 }
+.hrAct { 
+	background-color : #F04C23;
+}
 
 /* Disabled class for ansr */
 .ansr-disabled {

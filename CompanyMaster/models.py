@@ -165,6 +165,24 @@ class Holiday(models.Model):
         return unicode(self.name)
 
 
+class HRActivity(models.Model):
+    name = models.CharField(verbose_name="Event Name",
+                            max_length="100",
+                            default=None)
+    date = models.DateField(verbose_name="Event Date")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    class Meta:
+        verbose_name = 'HR Activity'
+        verbose_name_plural = 'HR Activities'
+
+
 class BusinessUnit(models.Model):
     name = models.CharField(
         verbose_name="Business Unit Name",

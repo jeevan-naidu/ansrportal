@@ -28,7 +28,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 import CompanyMaster
 import employee
-from CompanyMaster.models import Holiday
+from CompanyMaster.models import Holiday, HRActivity
 
 
 from ldap import LDAPError
@@ -794,6 +794,13 @@ def Dashboard(request):
         project__closed=False
     ).count()
 
+    hract = HRActivity.objects.all().values('name', 'date')
+    if len(hract):
+        for eachAct in hract:
+            eachAct['date'] = eachAct[
+                'date'
+            ].strftime('%Y-%m-%d')
+
     cp = totalActiveProjects + totalCurrentProjects
 
     unApprovedTimeSheet = TimeSheetEntry.objects.filter(
@@ -900,6 +907,7 @@ def Dashboard(request):
         'holidayList': holidayList,
         'projectsList': myprojects,
         'trainingList': trainings,
+        'hrList': hract,
         'financialM': financialM,
         'nonfinancialM': nonfinancialM,
         'billableProjects': billableProjects,

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from CompanyMaster.models import OfficeLocation, CustomerType,\
-    Department, Division, BusinessUnit, Holiday, Customer, Training
+    Department, Division, BusinessUnit, Holiday, Customer, Training, HRActivity
 
 
 class DivisionInline(admin.TabularInline):
@@ -34,6 +34,10 @@ class HolidayAdmin(admin.ModelAdmin):
     list_display = ('name', 'date', )
 
 
+class HRActivityAdmin(admin.ModelAdmin):
+    list_display = ('name', 'date', )
+
+
 class TrainingAdmin(admin.ModelAdmin):
     list_display = ('batch', 'trainingDate', 'endDate')
 
@@ -41,6 +45,7 @@ class TrainingAdmin(admin.ModelAdmin):
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(CustomerType, CustomerTypeAdmin)
 admin.site.register(Holiday, HolidayAdmin)
+admin.site.register(HRActivity, HRActivityAdmin)
 # admin.site.register(Department, DepartmentAdmin)
 admin.site.register(BusinessUnit, BusinessUnitAdmin)
 admin.site.register(OfficeLocation, OfficeLocatonAdmin)
