@@ -28,7 +28,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 import CompanyMaster
 import employee
-from CompanyMaster.models import Holiday, HRActivity
+from CompanyMaster.models import Holiday, HRActivity, Customer
 
 
 from ldap import LDAPError
@@ -1616,8 +1616,8 @@ def saveProject(request):
 
             pr.projectId = projectIdPrefix
             pr.save()
-            pr.customer.seqNumber = pr.customer.seqNumber + 1
-            pr.customer.save()
+            cr = Customer.objects.get(pk=pr.customer.id)
+            cr.seqNumber = cr.seqNumber + 1
 
             for eachId in eval(request.POST.get('pm')):
                 pm = ProjectManager()
