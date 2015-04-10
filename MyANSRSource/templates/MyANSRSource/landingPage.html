@@ -235,9 +235,18 @@
 				<div class="modal-body">
 					<table class="table table-condensed">
 						<tbody>
-                            {% csrf_token %}
-                            {% bootstrap_messages %}
-                            {% bootstrap_form remainderForm layout='vertical' %} 
+                            <form id="remainderForm"  action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {% bootstrap_messages %}
+                                {% bootstrap_form remainderForm layout='vertical' %} 
+                                {% buttons %}
+                                    <button type="submit" class="btn btn-primary
+                                        col-lg-2 col-xs-12 col-md-12 pull-right">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    Add
+                                    </button>
+                                {% endbuttons %}
+                            </form>
                         </tbody>
                     </table>
                 </div>

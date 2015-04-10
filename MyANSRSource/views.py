@@ -30,6 +30,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 import CompanyMaster
 import employee
 from CompanyMaster.models import Holiday
+from employee.models import Remainder
 
 
 from ldap import LDAPError
@@ -780,9 +781,14 @@ def ApproveTimesheet(request):
 @login_required
 def Dashboard(request):
     if request.method == 'POST':
-        pass
+        myremainder = MyRemainderForm(request.POST)
+        if myremainder.is_valid():
+            remaind = Remainder()
+            remaind.name = myremainder.cleaned_data['name']
+            remaind.date = myremainder.cleaned_data['date']
+            remaind.user = request.user
+            remaind.save()
     remainder = MyRemainderForm()
-    print remainder
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
         closed=False

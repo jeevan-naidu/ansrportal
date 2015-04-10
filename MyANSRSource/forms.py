@@ -528,14 +528,20 @@ class changeProjectLeaderForm(autocomplete_light.ModelForm):
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
 
 
-class MyRemainderForm(forms.Form):
+class MyRemainderForm(forms.ModelForm):
+
     class Meta:
         model = Remainder
-        fields = ('name', 'date', 'color', )
+        fields = ('name', 'date',)
 
         widgets = {
             'date': DateTimePicker(options=dateTimeOption),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(MyRemainderForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['class'] = "form-control"
+        self.fields['date'].widget.attrs['class'] = "form-control"
 
 
 # Form Class to create front-End Login

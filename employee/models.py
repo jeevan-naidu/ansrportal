@@ -365,14 +365,11 @@ class PreviousEmployment(models.Model):
 
 
 class Remainder(models.Model):
-    employee = models.ForeignKey(Employee, default=None)
+    user = models.ForeignKey(Employee, default=None)
     name = models.CharField(verbose_name="Event Name",
                             max_length="100"
                             )
     date = models.DateField(verbose_name="Date")
-    color = models.CharField(verbose_name="Color",
-                             max_length="10"
-                             )
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
