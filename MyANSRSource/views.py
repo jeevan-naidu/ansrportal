@@ -943,16 +943,23 @@ def checkUser(userName, password, request, form):
         user = authenticate(username=userName, password=password)
         if user is not None:
             if user.is_active:
-                if user.has_perm('MyANSRSource.enter_timesheet'):
-                    auth.login(request, user)
-                    return HttpResponseRedirect('/myansrsource/dashboard')
+                if hasattr(user, 'employee'):
+                    if user.has_perm('MyANSRSource.enter_timesheet'):
+                        auth.login(request, user)
+                        return HttpResponseRedirect('/myansrsource/dashboard')
+                    else:
+                        # We have an unknow group
+                        logger.error(
+                            'User {0} permission details {1} group perms'.format(
+                                user.username,
+                                user.get_all_permissions(),
+                                user.get_group_permissions()))
+                        return render(request, 'MyANSRSource/welcome.html', {})
                 else:
-                    # We have an unknow group
                     logger.error(
-                        'User {0} permission details {1} group perms'.format(
-                            user.username,
-                            user.get_all_permissions(),
-                            user.get_group_permissions()))
+                        'User {0} has no employee data'.format(
+                            user.username)
+                    )
                     return render(request, 'MyANSRSource/welcome.html', {})
             else:
                 messages.error(request, 'Sorry this user is not active.')
