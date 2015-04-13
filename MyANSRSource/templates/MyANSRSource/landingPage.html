@@ -1,5 +1,10 @@
 {% extends 'master.inc' %}
 {% load permissions %}
+{% block addFormMedia %}
+
+{{ remainderForm.media }} 
+
+{% endblock %}
 {% load bootstrap3 %}
 {% block siteTitle %}myansrsource:Dashboard{% endblock %}
 
