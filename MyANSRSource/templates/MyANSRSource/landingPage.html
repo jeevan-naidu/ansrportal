@@ -23,6 +23,13 @@
 			color  : '#F04C23'
 		},
 	{% endfor %}
+	{% for eachRem in remainders %}
+		{
+			start : '{{ eachRem.date }}',
+			title : '{{ eachRem.name }}',
+			color  : '#F4B961'
+		},
+	{% endfor %}
 	{% for eachTraining in trainingList %}
 		{
 			start : '{{ eachTraining.trainingDate }}',
@@ -226,12 +233,12 @@
 	<div class="col-md-8">
 		<div id='calendar'></div>
 		<div class="col-lg-12">
-			<span><small><b>Legend:</b></small></span>
 			<span class="label label-default holiday">Holiday</span>
 			<span class="label label-default financialM">Financial Milestone</span>
 			<span class="label label-default nonfinancialM">Non-Financial Milestone</span>
 			<span class="label label-default training">Learning & development</span>
 			<span class="label label-default hrAct">HR Activity</span>
+			<span class="label label-default remainder">My Remainder</span>
             <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
 		</div>
 	</div>

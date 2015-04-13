@@ -809,6 +809,11 @@ def Dashboard(request):
     remainder = MyRemainderForm()
     myRemainders = Remainder.objects.filter(
         user=request.user.employee).values('name', 'date')
+    if len(myRemainders):
+        for eachRem in myRemainders:
+            eachRem['date'] = eachRem[
+                'date'
+            ].strftime('%Y-%m-%d')
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
         closed=False
@@ -937,6 +942,7 @@ def Dashboard(request):
         'projectsList': myprojects,
         'trainingList': trainings,
         'hrList': hract,
+        'remainders': myRemainders,
         'financialM': financialM,
         'nonfinancialM': nonfinancialM,
         'billableProjects': billableProjects,
