@@ -53,16 +53,8 @@ class ProjectManagerM2MInline(admin.TabularInline):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-
-    def get_queryset(self, request):
-        qs = super(ProjectAdmin, self).get_queryset(request)
-        if request.user.is_superuser or request.user.has_perm('MyANSRSource.view_all_projects'):
-            return qs
-        else:
-            return qs.filter(closed=False, projectManager=request.user)
-
     list_display = (
-        'bu',
+#        'bu',
         'projectId',
         'name',
         'startDate',
@@ -70,13 +62,28 @@ class ProjectAdmin(admin.ModelAdmin):
         'plannedEffort',
         'contingencyEffort',
         'totalValue')
+    fieldsets = [
+        ('Basic Information', {
+            'fields': [
+                'bu', 'projectType', 'customer', 'customerContact', 'projectId', 'name', ], },), ('Status', {
+            'fields': [
+                'currentProject', 'signed', 'internal', 'po', 'salesForceNumber', 'closed', ], }, ), ('Time and Money', {
+            'fields': [
+                'startDate', 'endDate', 'plannedEffort', 'contingencyEffort', 'totalValue', ], }, ), ('Others', {
+            'fields': ['book', ], }, ), ]
+    inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
+    def get_queryset(self, request):
+        qs = super(ProjectAdmin, self).get_queryset(request)
+        if request.user.is_superuser: #or request.user.has_perm('MyANSRSource.view_all_projects'):
+            return qs
+        else:
+            return qs.filter(closed=False, projectManager=request.user)
     search_fields = (
         'name',
         'customer__name',
         'projectManager__username',)
 
     list_filter = ('bu__name', 'startDate', 'endDate', 'book')
-    inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
     ordering = ['-updatedOn']
 
     def get_readonly_fields(self, request, obj=None):
@@ -93,16 +100,6 @@ class ProjectAdmin(admin.ModelAdmin):
                 'projectId',
                 'closed',
                 ]
-
-    fieldsets = [
-        ('Basic Information', {
-            'fields': [
-                'bu', 'projectType', 'customer', 'customerContact', 'projectId', 'name', ], },), ('Status', {
-            'fields': [
-                'currentProject', 'signed', 'internal', 'po', 'salesForceNumber', 'closed', ], }, ), ('Time and Money', {
-            'fields': [
-                'startDate', 'endDate', 'plannedEffort', 'contingencyEffort', 'totalValue', ], }, ), ('Others', {
-            'fields' : ['book', ], }, ),]
 
 
 class projectTypeAdmin(admin.ModelAdmin):
