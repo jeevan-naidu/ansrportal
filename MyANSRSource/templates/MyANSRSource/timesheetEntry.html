@@ -147,9 +147,9 @@
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
                                         {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }}">{{ tdata.value }}</span>H
+                                            <span class="b-hours {{ dayclass }} set-zero">{{ tdata.value }}</span>H
                                         {% else %}
-                                            <span class="b-hours {{ dayclass }}">0</span>H
+                                            <span class="b-hours {{ dayclass }} set-zero">0</span>H
                                         {% endif %}
                                     {% endwith %}
 									{{ tdata }}
