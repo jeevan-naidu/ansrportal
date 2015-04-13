@@ -11,6 +11,13 @@
 			color  : '#009452'
 		},
 	{% endfor %}
+	{% for eachAct in hrList %}
+		{
+			start : '{{ eachAct.date }}',
+			title : '{{ eachAct.name }}',
+			color  : '#F04C23'
+		},
+	{% endfor %}
 	{% for eachTraining in trainingList %}
 		{
 			start : '{{ eachTraining.trainingDate }}',
@@ -219,6 +226,7 @@
 			<span class="label label-default financialM">Financial Milestone</span>
 			<span class="label label-default nonfinancialM">Non-Financial Milestone</span>
 			<span class="label label-default training">Learning & development</span>
+			<span class="label label-default hrAct">HR Activity</span>
             <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
 		</div>
 	</div>

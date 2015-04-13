@@ -29,8 +29,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 import CompanyMaster
 import employee
-from CompanyMaster.models import Holiday
-from employee.models import Remainder
+from CompanyMaster.models import Holiday, HRActivity, Customer
 
 
 from ldap import LDAPError
@@ -160,16 +159,18 @@ def Timesheet(request):
                     location=locationId,
                     date__range=[changedStartDate, changedEndDate]
                 ).values('date')
+                weekTotalValidate = 40 - (8 * len(weekHolidays))
+                weekTotalExtra = weekTotalValidate + 4
             else:
                 weekHolidays = []
+                weekTotalValidate = 40
+                weekTotalExtra = 4
             for timesheet in timesheets:
                 if timesheet.cleaned_data['DELETE'] is True:
                     TimeSheetEntry.objects.filter(
                         id=timesheet.cleaned_data['tsId']
                     ).delete()
                 else:
-                    weekTotalValidate = 40 - (8 * len(weekHolidays))
-                    weekTotalExtra = weekTotalValidate + 4
                     for holiday in weekHolidays:
                         holidayDay = '{0}H'.format(
                             holiday['date'].strftime('%A').lower()
@@ -477,6 +478,7 @@ def Timesheet(request):
         extra = 0
 
         tsFormList, atFormList = [], []
+
         # Approved TS data
         if len(tsDataList['tsData']) and len(tsDataList['atData']):
             tsFormList = tsDataList['tsData']
@@ -484,11 +486,13 @@ def Timesheet(request):
         elif len(tsDataList['tsData']):
             tsFormList = tsDataList['tsData']
         elif len(tsDataList['atData']):
+            defaulLocation = [{'location': request.user.employee.location.id}]
             atFormList = tsDataList['atData']
 
         # Fresh TS data
         else:
             extra = 1
+            defaulLocation = [{'location': request.user.employee.location.id}]
             messages.success(request, 'Please enter your timesheet for \
                              this week')
 
@@ -507,6 +511,8 @@ def Timesheet(request):
                     holdSet.add(tsObj.project.projectId)
                 else:
                     sentBackSet.add(tsObj.project.projectId)
+        else:
+            tsFormList = defaulLocation
 
         if len(approvedSet) > 0:
             messages.success(
@@ -714,10 +720,21 @@ def renderTimesheet(request, data):
     attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
 
     ocWeek = datetime.now().date() - data['weekstartDate']
+    prevWeekBlock = False
     if ocWeek.days > 6:
-        prevWeekBlock = True
-    else:
-        prevWeekBlock = False
+        pwActivityData = TimeSheetEntry.objects.filter(
+                    Q(
+                                    wkstart=data['weekstartDate'],
+                                    wkend=data['weekendDate'],
+                                    teamMember=request.user,
+                                    project__isnull=True
+                                )
+                ).values('approved', 'hold')
+        if len(pwActivityData):
+            if pwActivityData[0]['approved']:
+                prevWeekBlock = True
+            elif pwActivityData[0]['hold']:
+                prevWeekBlock = True
 
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
@@ -802,6 +819,13 @@ def Dashboard(request):
         member=request.user,
         project__closed=False
     ).count()
+
+    hract = HRActivity.objects.all().values('name', 'date')
+    if len(hract):
+        for eachAct in hract:
+            eachAct['date'] = eachAct[
+                'date'
+            ].strftime('%Y-%m-%d')
 
     cp = totalActiveProjects + totalCurrentProjects
 
@@ -909,6 +933,7 @@ def Dashboard(request):
         'holidayList': holidayList,
         'projectsList': myprojects,
         'trainingList': trainings,
+        'hrList': hract,
         'financialM': financialM,
         'nonfinancialM': nonfinancialM,
         'billableProjects': billableProjects,
@@ -929,16 +954,23 @@ def checkUser(userName, password, request, form):
         user = authenticate(username=userName, password=password)
         if user is not None:
             if user.is_active:
-                if user.has_perm('MyANSRSource.enter_timesheet'):
-                    auth.login(request, user)
-                    return HttpResponseRedirect('/myansrsource/dashboard')
+                if hasattr(user, 'employee'):
+                    if user.has_perm('MyANSRSource.enter_timesheet'):
+                        auth.login(request, user)
+                        return HttpResponseRedirect('/myansrsource/dashboard')
+                    else:
+                        # We have an unknow group
+                        logger.error(
+                            'User {0} permission details {1} group perms'.format(
+                                user.username,
+                                user.get_all_permissions(),
+                                user.get_group_permissions()))
+                        return render(request, 'MyANSRSource/welcome.html', {})
                 else:
-                    # We have an unknow group
                     logger.error(
-                        'User {0} permission details {1} group perms'.format(
-                            user.username,
-                            user.get_all_permissions(),
-                            user.get_group_permissions()))
+                        'User {0} has no employee data'.format(
+                            user.username)
+                    )
                     return render(request, 'MyANSRSource/welcome.html', {})
             else:
                 messages.error(request, 'Sorry this user is not active.')
@@ -1614,8 +1646,8 @@ def saveProject(request):
 
             pr.projectId = projectIdPrefix
             pr.save()
-            pr.customer.seqNumber = pr.customer.seqNumber + 1
-            pr.customer.save()
+            cr = Customer.objects.get(pk=pr.customer.id)
+            cr.seqNumber = cr.seqNumber + 1
 
             for eachId in eval(request.POST.get('pm')):
                 pm = ProjectManager()
