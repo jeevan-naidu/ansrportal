@@ -54,12 +54,12 @@ class ProjectManagerM2MInline(admin.TabularInline):
 
 class ProjectAdmin(admin.ModelAdmin):
 
-    def get_queryset(self, request):
-        qs = super(ProjectAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        else:
-            return qs.filter(closed=False, projectManager=request.user)
+#    def get_queryset(self, request):
+#        qs = super(ProjectAdmin, self).get_queryset(request)
+#        if request.user.is_superuser:
+#            return qs
+##        else:
+#            return qs.filter(closed=False, projectManager=request.user)
 
     list_display = (
         'name',
@@ -74,8 +74,9 @@ class ProjectAdmin(admin.ModelAdmin):
         'customer__name',
         'projectManager__username',)
 
-    filter_fields = ('startDate', 'endDate', )
+    list_filter = ('bu__name', 'startDate', 'endDate', 'book')
     inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
+    ordering = ['-updatedOn']
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
