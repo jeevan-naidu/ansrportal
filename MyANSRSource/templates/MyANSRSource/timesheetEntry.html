@@ -127,10 +127,10 @@
 									{% for typeData in form.hidden_fields %}
 										{% if 'projectType' in typeData.id_for_label %}
 											{% if tdata.value > 0 %}
-												<span class="b-questions">{{ tdata.value }}</span>
+												<span class="b-questions set-zero">{{ tdata.value }}</span>
 												<span class="project-unit">{{ typeData.value }}</span>
 											{% else %}
-												<span class="b-questions">0</span> 
+												<span class="b-questions set-zero">0</span> 
 												{% if typeData.value == None %}
 													<span class="project-unit">Q</span>
 												{% else %}
@@ -147,9 +147,9 @@
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
                                         {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }}">{{ tdata.value }}</span>H
+                                            <span class="b-hours {{ dayclass }} set-zero">{{ tdata.value }}</span>H
                                         {% else %}
-                                            <span class="b-hours {{ dayclass }}">0</span>H
+                                            <span class="b-hours {{ dayclass }} set-zero">0</span>H
                                         {% endif %}
                                     {% endwith %}
 									{{ tdata }}
@@ -173,10 +173,10 @@
 									{% for typeData in form.hidden_fields %}
 										{% if 'projectType' in typeData.id_for_label %}
 										{% if data.value > 0 %}
-											<span class="t-questions">{{ data.value }}</span>
+											<span class="t-questions set-zero">{{ data.value }}</span>
 											<span class="project-unit">{{ typeData.value }}</span>
 										{% else %}
-											<span class="t-questions">0</span>
+											<span class="t-questions set-zero">0</span>
 											{% if typeData.value == None %}
 												<span class="project-unit">Q</span>
 											{% else %}
@@ -196,26 +196,26 @@
 									{% if Ndata.label == 'Task' %}
 									    {% if Ndata.value == 'I' %}
 										 {% if data.value > 0 %}
-										    <input type="hidden" class="r-total-idle-hours" value="{{ data.value }}" />
-										    <input type="hidden" class="r-total-billable-hours" value="0" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="{{ data.value }}" />
+										    <input type="hidden" class="r-total-billable-hours set-zero" value="0" />
 										 {% else %}
-										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="0" />
 										 {% endif %}
 									    {% else %}
 										 {% if data.value > 0 %}
-										    <input type="hidden" class="r-total-billable-hours" value="{{ data.value }}" />
-										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										    <input type="hidden" class="r-total-billable-hours set-zero" value="{{ data.value }}" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="0" />
 										 {% else %}
-										    <input type="hidden" class="r-total-billable-hours" value="0" />
-										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										    <input type="hidden" class="r-total-billable-hours set-zero" value="0" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="0" />
 										 {% endif %}
 									    {% endif %}
 									{% endif %}
 								    {% endfor %}
 									{% if data.value > 0 %}
-										<span class="t-hours">{{ data.value }}</span>H
+										<span class="t-hours set-zero">{{ data.value }}</span>H
 									{% else %}
-										<span class="t-hours">0</span>H
+										<span class="t-hours set-zero">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
