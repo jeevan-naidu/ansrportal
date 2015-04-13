@@ -232,7 +232,7 @@ def TimesheetFormset(currentUser):
             self.fields['location'].queryset = OfficeLocation.objects.all()
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
-                billable-select-project set-zero"
+                billable-select-project set-empty"
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item set-zero"
             self.fields['chapter'].widget.attrs[
