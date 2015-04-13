@@ -2,12 +2,38 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+CENTERFLAG = (
+    ('P', 'Profit Center'),
+    ('C', 'Cost Center'),
+)
+
+
 # Create your models here.
+class CustomerType(models.Model):
+    name = models.CharField(
+        verbose_name="Type of Customer",
+        max_length=30,
+        blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Customer(models.Model):
     name = models.CharField(verbose_name='Customer Name',
                             max_length=100,
                             null=False,
                             blank=False)
+    internal = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Internal Customer"
+    )
     customerCode = models.CharField(
         verbose_name="Customer Code",
         null=False,
@@ -30,6 +56,9 @@ class Customer(models.Model):
         blank=False,
         null=False
     )
+    CType = models.ForeignKey(CustomerType, default=None,
+                              verbose_name='Customer Type',
+                              blank=False, null=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -136,11 +165,35 @@ class Holiday(models.Model):
         return unicode(self.name)
 
 
+class HRActivity(models.Model):
+    name = models.CharField(verbose_name="Event Name",
+                            max_length="100",
+                            default=None)
+    date = models.DateField(verbose_name="Event Date")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    class Meta:
+        verbose_name = 'HR Activity'
+        verbose_name_plural = 'HR Activities'
+
+
 class BusinessUnit(models.Model):
     name = models.CharField(
         verbose_name="Business Unit Name",
         max_length=40,
         blank=False)
+    bu_head = models.OneToOneField(User, default=None,
+                                   verbose_name="Business Unit Head")
+    centerType = models.CharField(max_length=2,
+                                  choices=CENTERFLAG,
+                                  verbose_name='Type of center',
+                                  default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",

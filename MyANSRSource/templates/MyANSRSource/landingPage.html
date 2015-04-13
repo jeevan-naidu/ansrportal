@@ -10,6 +10,13 @@
 			color  : '#009452'
 		},
 	{% endfor %}
+	{% for eachAct in hrList %}
+		{
+			start : '{{ eachAct.date }}',
+			title : '{{ eachAct.name }}',
+			color  : '#F04C23'
+		},
+	{% endfor %}
 	{% for eachTraining in trainingList %}
 		{
 			start : '{{ eachTraining.trainingDate }}',
@@ -218,6 +225,7 @@
 			<span class="label label-default financialM">Financial Milestone</span>
 			<span class="label label-default nonfinancialM">Non-Financial Milestone</span>
 			<span class="label label-default training">Learning & development</span>
+			<span class="label label-default hrAct">HR Activity</span>
 		</div>
 	</div>
 	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

@@ -3,7 +3,7 @@ from django.contrib import admin
 
 from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
-    projectType, Task, Activity
+    projectType, Task, Activity, Report
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -132,6 +132,10 @@ class ActivityAdmin(admin.ModelAdmin):
     list_display = ('name', )
 
 
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+
+
 class TaskAdmin(admin.ModelAdmin):
     list_display = ('name', 'projectType', 'taskType', )
     filter_fields = ('projectType',)
@@ -142,6 +146,7 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
                     'startDate', 'plannedEffort')
 
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(Report, ReportAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(projectType, projectTypeAdmin)
 admin.site.register(Activity, ActivityAdmin)
