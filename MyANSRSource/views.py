@@ -29,6 +29,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 import CompanyMaster
 import employee
+from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity, Customer
 
 
@@ -803,9 +804,11 @@ def Dashboard(request):
             remaind = Remainder()
             remaind.name = myremainder.cleaned_data['name']
             remaind.date = myremainder.cleaned_data['date']
-            remaind.user = request.user
+            remaind.user = request.user.employee
             remaind.save()
     remainder = MyRemainderForm()
+    myRemainders = Remainder.objects.filter(
+        user=request.user.employee).values('name', 'date')
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
         closed=False
