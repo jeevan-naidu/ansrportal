@@ -1655,8 +1655,8 @@ def saveProject(request):
 
             pr.projectId = projectIdPrefix
             pr.save()
-            cr = Customer.objects.get(pk=pr.customer.id)
-            cr.seqNumber = cr.seqNumber + 1
+            pr.customer.seqNumber = pr.customer.seqNumber + 1
+            pr.customer.save()
 
             for eachId in eval(request.POST.get('pm')):
                 pm = ProjectManager()
