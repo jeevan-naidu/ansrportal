@@ -459,7 +459,9 @@ def Timesheet(request):
 
         if len(tsContent):
             for eachContent in tsContent:
-                eachContent['projectType'] = eachContent['project'].projectType.code
+                if 'project' in eachContent:
+                    eachContent['projectType'] = eachContent['project'].projectType.code
+
 
         # Constructing status of timesheet
 
