@@ -902,7 +902,7 @@ app.getSum = function($elements, $outputElement) {
                         $element.text('0');
                     }
                 }
-                
+
                 if($element.hasClass('remove-sel-options')) {
                     var elementType3 = $element.prop('tagName');
                     if(elementType3 === 'SELECT') {
@@ -912,6 +912,15 @@ app.getSum = function($elements, $outputElement) {
                                 .append('<option value>-----</option>');
                         console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
                     } 
+                }
+
+                if($element.hasClass('set-q')) {
+                    var elementType4 = $element.prop('tagName');
+                    if(elementType4 === 'SELECT' || elementType4 === 'INPUT') {
+                        $element.attr('value', 'Q');
+                    } else {
+                        $element.text('Q');
+                    }
                 }
                 
                 
