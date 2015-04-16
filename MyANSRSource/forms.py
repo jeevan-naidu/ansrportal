@@ -234,6 +234,8 @@ def TimesheetFormset(currentUser):
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
+            self.fields['projectType'].widget.attrs['class'] = "set-empty"
+            self.fields['tsId'].widget.attrs['class'] = "set-zero"
             self.fields['location'].widget.attrs['class'] = \
                 "form-control d-item set-zero"
             self.fields['chapter'].widget.attrs[
