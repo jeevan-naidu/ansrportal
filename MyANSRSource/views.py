@@ -457,6 +457,10 @@ def Timesheet(request):
             atErrorList = activities.errors
             atContent = [k.cleaned_data for k in activities]
 
+        if len(tsContent):
+            for eachContent in tsContent:
+                eachContent['projectType'] = eachContent['project'].projectType.code
+
         # Constructing status of timesheet
 
         data = {'weekstartDate': dates['start'],
