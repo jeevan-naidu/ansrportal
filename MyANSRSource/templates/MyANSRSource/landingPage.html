@@ -241,6 +241,31 @@
 			<span class="label label-default remainder">My Reminder</span>
             <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
 		</div>
+        <legend>My Projects<small></legend>
+            <small><b>This week you have {{ workingHours }} working Hour(s)</b></small>
+        <table class="table table-striped">
+            <thead>
+                <th>Project ID</th>
+                <th>Project Name</th>
+                <th>Book / Title</th>
+                <th>Edition</th>
+                <th>From</th>
+                <th>To</th>
+                <!-- <th>Hour(s) this week</th> -->
+            </thead>
+            <tbody>
+                {% for eachRec in cp %}
+                <tr>
+                    <td>{{ eachRec.project__projectId }}</td>
+                    <td>{{ eachRec.project__name }}</td>
+                    <td>{{ eachRec.project__book__name }}</td>
+                    <td>{{ eachRec.project__book__edition }}</td>
+                    <td>{{ eachRec.startDate }}</td>
+                    <td>{{ eachRec.endDate }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 	</div>
 	<div class="modal fade" id="myRemainder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
