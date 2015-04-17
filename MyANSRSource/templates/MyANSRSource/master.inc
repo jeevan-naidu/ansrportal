@@ -20,6 +20,9 @@
 
        {# Load Bootstrap Box JS #}
        <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.min.js"></script>
+
+       {# Load OpenSans Google Font #}
+       <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
        
        {# Load Ansr CSS and JS #}
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
@@ -30,16 +33,21 @@
        <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.js"></script>
        
        <script>
-	$(document).ready(function() {
-		$('#calendar').fullCalendar({
-			aspectRatio: 2.12,
-			eventLimit: true,
-			events: [
-				{% block events %}{% endblock %}
-			],
-		})
+            $(document).ready(function() {
+                $('#calendar').fullCalendar({
+                    aspectRatio: 2.12,
+                    eventLimit: true,
+                    events: [
+                        {% block events %}{% endblock %}
+                    ],
+                })
+            });
+       </script>
+       <script>
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+      })
 
-	});
        </script>
        
        {% block addFormMedia %}{% endblock %}

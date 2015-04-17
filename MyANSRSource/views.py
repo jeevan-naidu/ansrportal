@@ -839,8 +839,6 @@ def Dashboard(request):
                 'date'
             ].strftime('%Y-%m-%d')
 
-    cp = totalActiveProjects + totalCurrentProjects
-
     unApprovedTimeSheet = TimeSheetEntry.objects.filter(
         project__projectManager=request.user,
         approved=False, hold=True
@@ -937,10 +935,52 @@ def Dashboard(request):
             eachHoliday['date'] = eachHoliday['date'].strftime('%Y-%m-%d')
     else:
         holidayList = []
+    today = datetime.now().date()
+    weekstartDate = today - timedelta(days=datetime.now().date().weekday())
+    ansrEndDate = weekstartDate + timedelta(days=4)
+    if hasattr(request.user, 'employee'):
+        locationId = request.user.employee.location
+        weekHolidays = Holiday.objects.filter(
+            location=locationId,
+            date__range=[weekstartDate, ansrEndDate]
+        ).values('date')
+        workingHours = 40
+        if len(weekHolidays):
+            workingHours = 40 - weekHolidays
+    cp = ProjectTeamMember.objects.filter(
+        member=request.user,
+        project__closed=False
+    ).values(
+        'project__projectId',
+        'project__name',
+        'project__book__name',
+        'project__book__edition',
+        'startDate',
+        'endDate',
+        'plannedEffort'
+    )
+    eachProjectHours = 0
+    if len(cp):
+        eachProjectHours = workingHours / len(cp)
+        for eachRec in cp:
+            if eachRec['project__book__edition'] == '':
+                eachRec['project__book__edition'] = '-'
+            if eachRec['startDate'] < weekstartDate and eachRec['endDate'] > ansrEndDate:
+                eachRec['workingHours'] = eachProjectHours
+            elif eachRec['startDate'] > weekstartDate:
+                diff = eachRec['startDate'] - weekstartDate
+                if diff.days > 6:
+                    eachRec['workingHours'] = 0
+                elif diff.days == 0:
+                    eachRec['workingHours'] = eachProjectHours
+                else:
+                    eachRec['workingHours'] = eachProjectHours - (8 * diff.days)
+
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
         'cp': cp,
+        'workingHours': workingHours,
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
         'projectsList': myprojects,
