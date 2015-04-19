@@ -1,5 +1,11 @@
 {% extends 'master.inc' %}
 {% load permissions %}
+{% block addFormMedia %}
+
+{{ remainderForm.media }} 
+
+{% endblock %}
+{% load bootstrap3 %}
 {% block siteTitle %}myansrsource:Dashboard{% endblock %}
 
 {% block events %}
@@ -15,6 +21,13 @@
 			start : '{{ eachAct.date }}',
 			title : '{{ eachAct.name }}',
 			color  : '#F04C23'
+		},
+	{% endfor %}
+	{% for eachRem in remainders %}
+		{
+			start : '{{ eachRem.date }}',
+			title : '{{ eachRem.name }}',
+			color  : '#F4B961'
 		},
 	{% endfor %}
 	{% for eachTraining in trainingList %}
@@ -220,14 +233,71 @@
 	<div class="col-md-8">
 		<div id='calendar'></div>
 		<div class="col-lg-12">
-			<span><small><b>Legend:</b></small></span>
 			<span class="label label-default holiday">Holiday</span>
 			<span class="label label-default financialM">Financial Milestone</span>
 			<span class="label label-default nonfinancialM">Non-Financial Milestone</span>
 			<span class="label label-default training">Learning & development</span>
 			<span class="label label-default hrAct">HR Activity</span>
+			<span class="label label-default remainder">My Reminder</span>
+            <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
 		</div>
+        <legend>My Projects<small></legend>
+            <small><b>This week you have {{ workingHours }} working Hour(s)</b></small>
+        <table class="table table-striped">
+            <thead>
+                <th>Project ID</th>
+                <th>Project Name</th>
+                <th>Book / Title</th>
+                <th>Edition</th>
+                <th>From</th>
+                <th>To</th>
+                <!-- <th>Hour(s) this week</th> -->
+            </thead>
+            <tbody>
+                {% for eachRec in cp %}
+                <tr>
+                    <td>{{ eachRec.project__projectId }}</td>
+                    <td>{{ eachRec.project__name }}</td>
+                    <td>{{ eachRec.project__book__name }}</td>
+                    <td>{{ eachRec.project__book__edition }}</td>
+                    <td>{{ eachRec.startDate }}</td>
+                    <td>{{ eachRec.endDate }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 	</div>
+	<div class="modal fade" id="myRemainder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			 <div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+                    <h4 class="modal-title" id="myModalLabel"><b>Personalize Calendar</b></h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-condensed">
+						<tbody>
+                            <form id="remainderForm"  action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {% bootstrap_messages %}
+                                {% bootstrap_form remainderForm layout='vertical' %} 
+                                {% buttons %}
+                                    <button type="submit" class="btn btn-primary
+                                        col-lg-2 col-xs-12 col-md-12 pull-right">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    Add
+                                    </button>
+                                {% endbuttons %}
+                            </form>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+         </div>
+    </div>  
 	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			 <div class="modal-content">

@@ -6,6 +6,7 @@ from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation
+from employee.models import Remainder
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
@@ -231,65 +232,68 @@ def TimesheetFormset(currentUser):
             )
             self.fields['location'].queryset = OfficeLocation.objects.all()
             self.fields['project'].widget.attrs[
-                'class'] = "form-control d-item billable-select-project"
+                'class'] = "form-control d-item \
+                billable-select-project set-empty"
+            self.fields['tsId'].widget.attrs['class'] = "set-zero"
             self.fields['location'].widget.attrs['class'] = \
-                "form-control d-item"
+                "form-control d-item set-zero"
             self.fields['chapter'].widget.attrs[
-                'class'] = "form-control d-item b-chapter remove-sel-options"
+                'class'] = "form-control d-item b-chapter \
+                remove-sel-options set-zero"
             self.fields['task'].widget.attrs[
                 'class'
-            ] = "form-control d-item b-task remove-sel-options"
+            ] = "form-control d-item b-task remove-sel-options set-zero"
             self.fields['mondayQ'].widget.attrs[
                 'class'
-            ] = "b-questions-hidden d-item"
+            ] = "b-questions-hidden d-item set-zero"
             self.fields['mondayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item"
+            ] = "b-hours-hidden d-item set-zero"
             self.fields['tuesdayQ'].widget.attrs[
                 'class'
-            ] = "b-questions-hidden d-item"
+            ] = "b-questions-hidden d-item set-zero"
             self.fields['tuesdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item"
+            ] = "b-hours-hidden d-item set-zero"
             self.fields['wednesdayQ'].widget.attrs[
                 'class'
-            ] = "b-questions-hidden d-item"
+            ] = "b-questions-hidden d-item set-zero"
             self.fields['wednesdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item"
+            ] = "b-hours-hidden d-item set-zero"
             self.fields['thursdayQ'].widget.attrs[
                 'class'
-            ] = "b-questions-hidden d-item"
+            ] = "b-questions-hidden d-item set-zero"
             self.fields['thursdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item"
+            ] = "b-hours-hidden d-item set-zero"
             self.fields['fridayQ'].widget.attrs[
                 'class'
-            ] = "b-questions-hidden d-item"
+            ] = "b-questions-hidden d-item set-zero"
             self.fields['fridayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item"
+            ] = "b-hours-hidden d-item set-zero"
             self.fields['saturdayQ'].widget.attrs[
                 'class'
-            ] = "b-questions-hidden d-item"
+            ] = "b-questions-hidden d-item set-zero"
             self.fields['saturdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item"
+            ] = "b-hours-hidden d-item set-zero"
             self.fields['sundayQ'].widget.attrs[
                 'class'
-            ] = "b-questions-hidden d-item"
+            ] = "b-questions-hidden d-item set-zero"
             self.fields['sundayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item"
+            ] = "b-hours-hidden d-item set-zero"
             self.fields['totalQ'].widget.attrs[
                 'class'
-            ] = "t-questions-hidden d-item"
+            ] = "t-questions-hidden d-item set-zero"
             self.fields['totalH'].widget.attrs[
                 'class'
-            ] = "t-hours-hidden d-item"
+            ] = "t-hours-hidden d-item set-zero"
             self.fields['feedback'].widget.attrs[
                 'class'
-            ] = "form-control d-item"
+            ] = "form-control d-item set-zero"
             self.fields['feedback'].widget.attrs['readonly'] = 'True'
             self.fields['mondayH'].widget.attrs['value'] = 0
             self.fields['mondayQ'].widget.attrs['value'] = 0.0
@@ -523,6 +527,22 @@ class changeProjectLeaderForm(autocomplete_light.ModelForm):
     def __init__(self, *args, **kwargs):
         super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
+
+
+class MyRemainderForm(forms.ModelForm):
+
+    class Meta:
+        model = Remainder
+        fields = ('name', 'date',)
+
+        widgets = {
+            'date': DateTimePicker(options=dateTimeOption),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(MyRemainderForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['class'] = "form-control"
+        self.fields['date'].widget.attrs['class'] = "form-control"
 
 
 # Form Class to create front-End Login

@@ -12,6 +12,7 @@
 body {
 	padding-top: 70px;
 	padding-bottom: 70px;
+    font-family: 'Droid Sans', sans-serif;
 }
 
 .required { 
@@ -272,6 +273,10 @@ body {
 /* Event Colors */
 .holiday { 
 	background-color : #009452;
+}
+
+.remainder { 
+	background-color : #F4B961;
 }
 
 .financialM { 

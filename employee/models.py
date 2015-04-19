@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
 
 fs = FileSystemStorage(location='employee/emp_photo')
@@ -198,7 +199,7 @@ class Employee(models.Model):
         max_length=15,
         unique=True,
         blank=False)
-    #division = models.ForeignKey('CompanyMaster.Division')
+    # division = models.ForeignKey('CompanyMaster.Division')
     category = models.CharField(
         "Employment Category",
         max_length=3,
@@ -362,6 +363,22 @@ class PreviousEmployment(models.Model):
     def __unicode__(self):
         return self.company_name + ':' + \
             str(self.employed_from) + ' ~ ' + str(self.employed_upto)
+
+
+class Remainder(models.Model):
+    user = models.ForeignKey(Employee, default=None)
+    name = models.CharField(verbose_name="Event Name",
+                            max_length="100"
+                            )
+    date = models.DateField(verbose_name="Date",
+                            default=timezone.now)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 class Attendance(models.Model):
