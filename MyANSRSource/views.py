@@ -964,24 +964,12 @@ def Dashboard(request):
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
-        for eachRec in cp:
-            if eachRec['project__book__edition'] == '':
-                eachRec['project__book__edition'] = '-'
-            if eachRec['startDate'] < weekstartDate and eachRec['endDate'] > ansrEndDate:
-                eachRec['workingHours'] = eachProjectHours
-            elif eachRec['startDate'] > weekstartDate:
-                diff = eachRec['startDate'] - weekstartDate
-                if diff.days > 6:
-                    eachRec['workingHours'] = 0
-                elif diff.days == 0:
-                    eachRec['workingHours'] = eachProjectHours
-                else:
-                    eachRec['workingHours'] = eachProjectHours - (8 * diff.days)
 
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
         'cp': cp,
+        'eachProjectHours': eachProjectHours,
         'workingHours': workingHours,
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
