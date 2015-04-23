@@ -66,7 +66,6 @@ class ProjectAdmin(admin.ModelAdmin):
         'startDate',
         'endDate',
         'plannedEffort',
-        'contingencyEffort',
         'projectId',
         'totalValue')
     search_fields = (
@@ -86,7 +85,6 @@ class ProjectAdmin(admin.ModelAdmin):
                 'startDate',
                 'endDate',
                 'plannedEffort',
-                'contingencyEffort',
                 'totalValue',
                 'projectId',
                 'closed',
@@ -109,7 +107,6 @@ class ProjectAdmin(admin.ModelAdmin):
          {'fields': ['startDate',
                      'endDate',
                      'plannedEffort',
-                     'contingencyEffort',
                      ],
           },
          ),

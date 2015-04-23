@@ -1681,7 +1681,6 @@ def saveProject(request):
             pr.currentProject = request.POST.get('currentProject')
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
-            pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
             pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                 pk=int(request.POST.get('bu'))
             )

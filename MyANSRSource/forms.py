@@ -487,7 +487,6 @@ class ProjectFlagForm(forms.ModelForm):
             'startDate',
             'endDate',
             'plannedEffort',
-            'contingencyEffort',
             'totalValue',
             'po',
             'salesForceNumber'
@@ -507,8 +506,6 @@ class ProjectFlagForm(forms.ModelForm):
             "form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "planned-effort-input form-control"
-        self.fields['contingencyEffort'].widget.attrs['class'] = \
-            "contigency-effort-input form-control"
         self.fields['totalValue'].widget.attrs['class'] = \
             "total-value-input form-control"
         self.fields['startDate'].widget.attrs['class'] = \
