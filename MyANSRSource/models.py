@@ -164,6 +164,8 @@ class Project(models.Model):
                                         verbose_name="Planned Effort",
                                         validators=[MinValueValidator(0)])
     contingencyEffort = models.IntegerField(default=0,
+                                            blank=True,
+                                            null=True,
                                             verbose_name="Contigency Effort",
                                             validators=[MinValueValidator(0)])
     projectManager = models.ManyToManyField(User,

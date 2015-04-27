@@ -3,9 +3,10 @@ autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
 from MyANSRSource.models import Project, ProjectTeamMember, \
-    ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task
+    ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
+    projectType
 from bootstrap3_datetime.widgets import DateTimePicker
-from CompanyMaster.models import OfficeLocation
+from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -13,7 +14,7 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 class ActivityForm(forms.Form):
     activity = forms.ModelChoiceField(
-        queryset=Activity.objects.all(),
+        queryset=Activity.objects.all().order_by('name'),
         label="Activity",
         required=False,
     )
@@ -229,7 +230,7 @@ def TimesheetFormset(currentUser):
                     Q(member=currentUser.id) |
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
-            )
+            ).order_by('name')
             self.fields['location'].queryset = OfficeLocation.objects.all()
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
@@ -349,6 +350,12 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['projectType'].widget.attrs['class'] = \
             "form-control"
+        self.fields['projectType'].queryset = \
+            projectType.objects.all().order_by('description')
+        self.fields['bu'].queryset = \
+            BusinessUnit.objects.all().order_by('name')
+        self.fields['customer'].queryset = \
+            Customer.objects.all().order_by('name')
         self.fields['projectManager'].widget.attrs['class'] = \
             "form-control"
         self.fields['bu'].widget.attrs['class'] = \
@@ -487,7 +494,6 @@ class ProjectFlagForm(forms.ModelForm):
             'startDate',
             'endDate',
             'plannedEffort',
-            'contingencyEffort',
             'totalValue',
             'po',
             'salesForceNumber'
@@ -507,8 +513,6 @@ class ProjectFlagForm(forms.ModelForm):
             "form-control"
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "planned-effort-input form-control"
-        self.fields['contingencyEffort'].widget.attrs['class'] = \
-            "contigency-effort-input form-control"
         self.fields['totalValue'].widget.attrs['class'] = \
             "total-value-input form-control"
         self.fields['startDate'].widget.attrs['class'] = \

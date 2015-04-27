@@ -54,7 +54,6 @@ class ProjectManagerM2MInline(admin.TabularInline):
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
-#        'bu',
         'projectId',
         'name',
         'startDate',
@@ -69,12 +68,13 @@ class ProjectAdmin(admin.ModelAdmin):
             'fields': [
                 'currentProject', 'signed', 'internal', 'po', 'salesForceNumber', 'closed', ], }, ), ('Time and Money', {
             'fields': [
-                'startDate', 'endDate', 'plannedEffort', 'contingencyEffort', 'totalValue', ], }, ), ('Others', {
-            'fields': ['book', ], }, ), ]
+                'startDate', 'endDate', 'plannedEffort', 'contingencyEffort', 'totalValue', ], }, ), ]
     inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
+
     def get_queryset(self, request):
         qs = super(ProjectAdmin, self).get_queryset(request)
-        if request.user.is_superuser: #or request.user.has_perm('MyANSRSource.view_all_projects'):
+        # or request.user.has_perm('MyANSRSource.view_all_projects'):
+        if request.user.is_superuser:
             return qs
         else:
             return qs.filter(closed=False, projectManager=request.user)
@@ -95,7 +95,6 @@ class ProjectAdmin(admin.ModelAdmin):
                 'startDate',
                 'endDate',
                 'plannedEffort',
-                'contingencyEffort',
                 'totalValue',
                 'projectId',
                 'closed',

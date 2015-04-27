@@ -971,7 +971,7 @@ def Dashboard(request):
         ).values('date')
         workingHours = 40
         if len(weekHolidays):
-            workingHours = 40 - weekHolidays
+            workingHours = 40 - len(weekHolidays) * 8
     cp = ProjectTeamMember.objects.filter(
         member=request.user,
         project__closed=False
@@ -987,24 +987,12 @@ def Dashboard(request):
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
-        for eachRec in cp:
-            if eachRec['project__book__edition'] == '':
-                eachRec['project__book__edition'] = '-'
-            if eachRec['startDate'] < weekstartDate and eachRec['endDate'] > ansrEndDate:
-                eachRec['workingHours'] = eachProjectHours
-            elif eachRec['startDate'] > weekstartDate:
-                diff = eachRec['startDate'] - weekstartDate
-                if diff.days > 6:
-                    eachRec['workingHours'] = 0
-                elif diff.days == 0:
-                    eachRec['workingHours'] = eachProjectHours
-                else:
-                    eachRec['workingHours'] = eachProjectHours - (8 * diff.days)
 
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
         'cp': cp,
+        'eachProjectHours': eachProjectHours,
         'workingHours': workingHours,
         'TSProjectsCount': TSProjectsCount,
         'holidayList': holidayList,
@@ -1704,7 +1692,6 @@ def saveProject(request):
             pr.currentProject = request.POST.get('currentProject')
             pr.signed = (request.POST.get('signed') == 'True')
             pr.internal = (request.POST.get('internal') == 'True')
-            pr.contingencyEffort = int(request.POST.get('contingencyEffort'))
             pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                 pk=int(request.POST.get('bu'))
             )

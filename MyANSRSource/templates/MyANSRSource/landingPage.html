@@ -251,7 +251,7 @@
                 <th>Edition</th>
                 <th>From</th>
                 <th>To</th>
-                <!-- <th>Hour(s) this week</th> -->
+                <th>Hour(s) this week</th>
             </thead>
             <tbody>
                 {% for eachRec in cp %}
@@ -262,6 +262,7 @@
                     <td>{{ eachRec.project__book__edition }}</td>
                     <td>{{ eachRec.startDate }}</td>
                     <td>{{ eachRec.endDate }}</td>
+                    <td>{{ eachProjectHours }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
