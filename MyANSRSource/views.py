@@ -948,7 +948,7 @@ def Dashboard(request):
         ).values('date')
         workingHours = 40
         if len(weekHolidays):
-            workingHours = 40 - weekHolidays
+            workingHours = 40 - len(weekHolidays) * 8
     cp = ProjectTeamMember.objects.filter(
         member=request.user,
         project__closed=False
