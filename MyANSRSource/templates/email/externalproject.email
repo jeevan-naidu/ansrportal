@@ -1,0 +1,23 @@
+{% block subject %}New External Project Notification - {{ projectId }} {% endblock %}
+{% block plain %}
+  Hi {{first_name}},
+
+     A new external project {{ projectName }} wth ID : {{ projectId }} has been created.
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi {{first_name}},</p>
+
+  <p>
+      <dl>
+     <dd>A new external project {{ projectName }} wth ID : {{ projectId }} has been created.  </dd>
+      </dl>
+  </p>
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}

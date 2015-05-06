@@ -15,6 +15,7 @@ from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
 from django.db.models import Q
 from django.utils.timezone import utc
+from django.conf import settings
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -1654,8 +1655,10 @@ def NotifyMember(ptmid, delete):
 
 def SendMail(data, toAddr, templateName):
     sm = SendEmail()
-    data['startDate'] = data['startDate'].strftime("%d-%m-%Y")
-    data['mystartdate'] = data['mystartdate'].strftime("%d-%m-%Y")
+    if 'startdate' in data:
+        data['startDate'] = data['startDate'].strftime("%d-%m-%Y")
+    if 'mystartdate' in data:
+        data['mystartdate'] = data['mystartdate'].strftime("%d-%m-%Y")
     sm.content = json.dumps(data)
     sm.template_name = templateName
     sm.toAddr = json.dumps([toAddr])
@@ -1726,6 +1729,15 @@ def saveProject(request):
                 pm.user = request.user
                 pm.project = pr
                 pm.save()
+            if pr.internal == False:
+                context = {
+                    'projectId': pr.projectId,
+                    'projectName': pr.name,
+                }
+                senderEmail = settings.EXTERNAL_PROJECT_NOTIFIERS
+                for eachRecp in senderEmail:
+                    SendMail(context, eachRecp, 'externalproject')
+
         except ValueError as e:
             logger.exception(e)
             return render(

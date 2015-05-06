@@ -176,7 +176,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -278,6 +278,10 @@ FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
+
+# External Project Notifiers
+EXTERNAL_PROJECT_NOTIFIERS = ['naveen@fantain.com',
+                              'niranj@fantain.com']
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
