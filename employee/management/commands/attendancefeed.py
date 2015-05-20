@@ -83,6 +83,7 @@ def feedData(filereader, filename, everyRec):
                 attdate = datetime.strptime(eachRow[1],
                                             '%d-%m-%Y').date()
             except ValueError:
+                attdate = ''
                 logger.error("Attendance Date field data error: {0} |\
                              File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
@@ -92,8 +93,12 @@ def feedData(filereader, filename, everyRec):
                 if eachRow[2]:
                     intime = datetime.strptime(eachRow[2],
                                                '%H:%M:%S').time()
-                    swipe_in = datetime.combine(attdate, intime)
+                    if attdate != '':
+                        swipe_in = datetime.combine(attdate, intime)
+                    else:
+                        swipe_in = ''
             except ValueError:
+                swipe_in = ''
                 logger.error("In-time field data error: {0} |\
                              File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
@@ -103,8 +108,12 @@ def feedData(filereader, filename, everyRec):
                     outtime = datetime.strptime(eachRow[3],
                                                 '%H:%M:%S').time()
 
-                    swipe_out = datetime.combine(attdate, outtime)
+                    if attdate != '':
+                        swipe_out = datetime.combine(attdate, outtime)
+                    else:
+                        swipe_out = ''
             except ValueError:
+                swipe_out = ''
                 logger.error("Out-time field data error: {0} |\
                              File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
@@ -151,9 +160,12 @@ def insertToDb(employee, attdate, swipe_in, swipe_out, filename, row):
         att = Attendance()
         att.incoming_employee_id = employee
         att.employee = emp
-        att.attdate = attdate
-        att.swipe_in = swipe_in.replace(tzinfo=get_default_timezone())
-        att.swipe_out = swipe_out.replace(tzinfo=get_default_timezone())
+        if attdate != '':
+            att.attdate = attdate
+            if swipe_in != '':
+                att.swipe_in = swipe_in.replace(tzinfo=get_default_timezone())
+            if swipe_out != '':
+                att.swipe_out = swipe_out.replace(tzinfo=get_default_timezone())
         att.save()
 
     # To catch any validation errors if any
