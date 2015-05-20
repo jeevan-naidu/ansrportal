@@ -102,7 +102,9 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Type"
     )
-    name = models.CharField(max_length=50, verbose_name="Project Name")
+    name = models.CharField(max_length=50,
+                            verbose_name="Project Name",
+                            unique=True)
     customerContact = models.ForeignKey(
         User,
         default=None,
@@ -148,6 +150,7 @@ class Project(models.Model):
     projectId = models.CharField(
         max_length=60,
         null=False,
+        unique=True,
         verbose_name='Project Code')
     po = models.CharField(max_length=60, null=False,
                           blank=False, default=0,
