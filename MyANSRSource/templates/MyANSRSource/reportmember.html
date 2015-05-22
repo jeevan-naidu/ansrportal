@@ -1,0 +1,95 @@
+{% extends 'master.inc' %}
+{% load permissions %}
+{% block addFormMedia %}
+
+{{ form.media }} 
+
+{% endblock %}
+{% load bootstrap3 %}
+{% block siteTitle %}myansrsource:Reports{% endblock %}
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+     <span class="glyphicon glyphicon-home"></span>
+     Dashboard
+</a></li>
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+	<span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+	<span class="ansrLogout">Logout</span>
+</a></li>
+{% endblock %}
+
+{%block content %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td> 
+                    {% endfor %}
+                    <td><button type="submit" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-file"></span> Get Report
+                    </button></td>
+                </tr>
+            </table>
+        </form>
+        {% if member != '' %}
+        <span class="text-center"><h3><small><b>Member : {{ member }}</b></small></h3></span>
+        {% endif %}
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Project Code</th> 
+                <th>Project Name</th> 
+                <th>Book</th> 
+                <th>Task</th> 
+                <th>Total Hours</th> 
+                <th>Total Productivity</th> 
+                <th>Avg. Productivity</th> 
+                <th>Min. Productivity</th> 
+                <th>Max. Productivity</th> 
+                <th>Median Productivity</th> 
+                <th>Norm</th> 
+            </tr>
+            </thead>
+            {% if fresh == 1 %}
+                <tr>
+                    <td colspan="11" class="text-center"><h4><small><b>Please select a member and time frame to get the report</b></small></h4></td>
+                </tr>
+            {% elif fresh == 0 %}
+                <tr>
+                    <td colspan="11" class="text-center"><h4><small><b>No reports found for this timeframe</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% for eachData in data %}
+                    <tr>
+                        <td>{{ eachData.project__projectId }}</td> 
+                        <td>{{ eachData.project__name }}</td> 
+                        <td>{{ eachData.project__book__name }}</td> 
+                        <td>{{ eachData.task__name }}</td> 
+                        <td>{{ eachData.totalHours }}</td> 
+                        <td>{{ eachData.totalValue }}</td> 
+                        <td>{{ eachData.avgProd }}</td> 
+                        <td>{{ eachData.minProd }}</td> 
+                        <td>{{ eachData.maxProd }}</td> 
+                        <td>{{ eachData.medianProd }}</td> 
+                        <td>{{ eachData.project__maxProductivityUnits }}</td> 
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}

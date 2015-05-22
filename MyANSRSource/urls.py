@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from MyANSRSource import views
+from MyANSRSource import views, reportviews
 
 urlpatterns = patterns(u'',
                        url(r'^getchapters/(?P<projectid>[0-9]+)/$',
@@ -41,6 +41,9 @@ urlpatterns = patterns(u'',
                        url(r'^project/view-project$',
                            views.ViewProject,
                            name=u'viewproject'),
+                       url(r'^reports/member$',
+                           reportviews.TeamMemberReport,
+                           name=u'memberReport'),
                        url(r'^project/manage-team$',
                            views.WrappedManageTeamView,
                            name=u'manageteam'),

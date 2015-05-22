@@ -2,6 +2,7 @@ import autocomplete_light
 autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
+from django.utils import timezone
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType
@@ -557,3 +558,30 @@ class LoginForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['userid'].widget.attrs['autofocus'] = "autofocus"
+
+
+# Reports
+class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
+    startDate = forms.DateField(
+        label="From",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now
+    )
+    endDate = forms.DateField(
+        label="To",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now
+    )
+
+    class Meta:
+        model = ProjectTeamMember
+        fields = (
+            'member',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)
+        self.fields['member'].widget.attrs['class'] = "form-control"
+        self.fields['member'].required = True
+        self.fields['startDate'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
