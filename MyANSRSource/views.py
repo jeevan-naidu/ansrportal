@@ -1632,7 +1632,7 @@ def NotifyMember(ptmid, delete):
 
 def SendMail(data, toAddr, templateName):
     sm = SendEmail()
-    if 'startdate' in data:
+    if 'startDate' in data:
         data['startDate'] = data['startDate'].strftime("%d-%m-%Y")
     if 'mystartdate' in data:
         data['mystartdate'] = data['mystartdate'].strftime("%d-%m-%Y")
