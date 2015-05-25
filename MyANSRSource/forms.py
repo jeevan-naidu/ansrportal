@@ -2,9 +2,10 @@ import autocomplete_light
 autocomplete_light.autodiscover()
 from django.db.models import Q
 from django import forms
+from django.utils import timezone
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType
+    projectType, ProjectManager
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
@@ -557,3 +558,47 @@ class LoginForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['userid'].widget.attrs['autofocus'] = "autofocus"
+
+
+# Reports
+class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
+    startDate = forms.DateField(
+        label="From",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now
+    )
+    endDate = forms.DateField(
+        label="To",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now
+    )
+
+    class Meta:
+        model = ProjectTeamMember
+        fields = (
+            'member',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)
+        self.fields['member'].widget.attrs['class'] = "form-control"
+        self.fields['member'].required = True
+        self.fields['startDate'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
+
+
+class ProjectPerfomanceReportForm(forms.Form):
+    project = forms.ModelChoiceField(
+        queryset=None,
+        label="Project",
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        currentUser = kwargs.pop('user')
+        super(ProjectPerfomanceReportForm, self).__init__(*args, **kwargs)
+        self.fields['project'].queryset = Project.objects.filter(
+            id__in=ProjectManager.objects.filter(
+                user=currentUser).values('project')
+        ).all().order_by('name')
+        self.fields['project'].widget.attrs['class'] = "form-control"

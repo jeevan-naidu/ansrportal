@@ -1,0 +1,146 @@
+{% extends 'master.inc' %}
+{% load permissions %}
+{% block addFormMedia %}
+
+{{ form.media }} 
+
+{% endblock %}
+{% load bootstrap3 %}
+{% block siteTitle %}myansrsource:Reports{% endblock %}
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+     <span class="glyphicon glyphicon-home"></span>
+     Dashboard
+</a></li>
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+	<span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+	<span class="ansrLogout">Logout</span>
+</a></li>
+{% endblock %}
+
+{%block content %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td> 
+                    {% endfor %}
+                    <td><button type="submit" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-file"></span> Get Report
+                    </button></td>
+                </tr>
+            </table>
+        </form>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Project Name</th> 
+                <th>Start Date</th> 
+                <th>End Date</th> 
+                <th>Planned Effort</th> 
+                <th>Total Value</th> 
+            </tr>
+            </thead>
+            {% if fresh %}
+                <tr>
+                    <td colspan="8" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>{{ basicData.name }}</td> 
+                    <td>{{ basicData.startDate }}</td> 
+                    <td>{{ basicData.endDate }}</td> 
+                    <td>{{ basicData.plannedEffort }}</td> 
+                    <td>{{ basicData.totalValue }}</td> 
+                </tr>
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>CR#</th> 
+                <th>Reason</th> 
+                <th>End Date</th> 
+                <th>P.O.</th> 
+                <th>Revised Effort</th> 
+                <th>Revised Total</th> 
+                <th>SalesForce Number</th> 
+                <th>Signed</th> 
+            </tr>
+            </thead>
+            {% if crData %}
+                {% for eachData in crData %}
+                    <tr>
+                        <td>{{ eachData.crId }}</td> 
+                        <td>{{ eachData.reason }}</td> 
+                        <td>{{ eachData.endDate }}</td> 
+                        <td>{{ eachData.po }}</td> 
+                        <td>{{ eachData.revisedEffort }}</td> 
+                        <td>{{ eachData.revisedTotal }}</td> 
+                        <td>{{ eachData.salesForceNumber }}</td> 
+                        <td>{{ eachData.signed }}</td> 
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>No change request logged till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Week Start</th> 
+                <th>Week End</th> 
+                <th>Member Name</th> 
+                <th>Total Hours</th> 
+            </tr>
+            </thead>
+            {% if tsData %}
+                {% for eachData in tsData %}
+                    <tr>
+                        <td>{{ eachData.wkstart }}</td> 
+                        <td>{{ eachData.wkend }}</td> 
+                        <td>{{ eachData.teamMember__username }}</td> 
+                        <td>{{ eachData.total }}</td> 
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td colspan="2"><b>Total Actual Hour(s) : {{ actual }} </b></td>
+                        <td colspan="2"><b>Deviation From Planned Hour(s) : {{ deviation }}</b></td>
+                    </tr>
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="4" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}
