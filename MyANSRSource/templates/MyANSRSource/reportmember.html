@@ -46,7 +46,10 @@
             </table>
         </form>
         {% if member != '' %}
-        <span class="text-center"><h3><small><b>Member : {{ member }}</b></small></h3></span>
+        <div class="col-lg-12">
+            <span class="col-lg-6"><h3><small><b>Member : {{ member }}</b></small></h3></span>
+            <span class="col-lg-6 text-right"><h3><small><b>Period :  {{ wkstart }} to  {{ wkend }}</b></small></h3></span>
+        </div>
         {% endif %}
         <table class="table table-condensed">
             <thead>
@@ -54,7 +57,7 @@
                 <th>Project Code</th> 
                 <th>Project Name</th> 
                 <th>Book</th> 
-                <th>Task</th> 
+                <th>Task / Activity</th> 
                 <th>Total Hours</th> 
                 <th>Total Productivity</th> 
                 <th>Avg. Productivity</th> 
@@ -78,7 +81,7 @@
                         <td>{{ eachData.project__projectId }}</td> 
                         <td>{{ eachData.project__name }}</td> 
                         <td>{{ eachData.project__book__name }}</td> 
-                        <td>{{ eachData.task__name }}</td> 
+                        <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
                         <td>{{ eachData.totalHours }}</td> 
                         <td>{{ eachData.totalValue }}</td> 
                         <td>{{ eachData.avgProd }}</td> 
@@ -88,6 +91,9 @@
                         <td>{{ eachData.project__maxProductivityUnits }}</td> 
                     </tr>
                 {% endfor %}
+                    <tr>
+                        <td colspan="11" class="text-center"><h3><small><b>Total Hours : {{ grandTotal }}</b></small></h3><td>
+                    <tr>
             {% endif %}
         </table>
 	</div>

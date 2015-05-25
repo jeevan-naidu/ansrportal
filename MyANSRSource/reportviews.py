@@ -5,37 +5,57 @@ from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo
 from django.shortcuts import render
+from datetime import timedelta
 
 
 @login_required
 def TeamMemberReport(request):
     report = {}
     form = TeamMemberPerfomanceReportForm()
-    name = ''
+    name, wkstart, wkend, grdTotal = '', '', '', 0
     fresh = 1
     if request.method == 'POST':
         reportData = TeamMemberPerfomanceReportForm(request.POST)
         if reportData.is_valid():
+            start = reportData.cleaned_data['startDate'].weekday()
+            end = 6 - reportData.cleaned_data['endDate'].weekday()
+            wkstartDate = reportData.cleaned_data['startDate'] - timedelta(
+                days=start)
+            wkendDate = reportData.cleaned_data['endDate'] + timedelta(
+                days=end)
             report = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=reportData.cleaned_data['startDate'],
-                wkend__lte=reportData.cleaned_data['endDate'],
+                wkstart__gte=wkstartDate,
+                wkend__lte=wkendDate,
             ).values(
                 'teamMember__username', 'project__maxProductivityUnits',
                 'project__projectId', 'project__name',
                 'project__book__name', 'task__name',
+                'activity__name',
                 'mondayQ', 'tuesdayQ', 'wednesdayQ',
                 'thursdayQ', 'fridayQ', 'saturdayQ',
                 'sundayQ',
                 'mondayH', 'tuesdayH', 'wednesdayH',
                 'thursdayH', 'fridayH', 'saturdayH',
-                'sundayH'
-            )
+                'sundayH', 'wkstart', 'wkend'
+            ).order_by('project__projectId')
             days = ['monday', 'tuesday', 'wednesday',
                     'thursday', 'friday', 'saturday',
                     'sunday']
             if len(report):
                 for eachData in report:
+                    if eachData['project__projectId'] is None:
+                        eachData['project__projectId'] = ' - '
+                    if eachData['project__name'] is None:
+                        eachData['project__name'] = ' - '
+                    if eachData['project__book__name'] is None:
+                        eachData['project__book__name'] = ' - '
+                    if eachData['task__name'] is None:
+                        eachData['task__name'] = ''
+                    if eachData['activity__name'] is None:
+                        eachData['activity__name'] = ''
+                    if eachData['project__maxProductivityUnits'] is None:
+                        eachData['project__maxProductivityUnits'] = ' - '
                     eachData['totalHours'], eachData['totalValue'] = 0, 0
                     eachData['avgProd'], eachData['minProd'] = 0, 0
                     eachData['maxProd'], eachData['medianProd'] = 0, 0
@@ -50,8 +70,11 @@ def TeamMemberReport(request):
                     eachData['minProd'] = min(units)
                     eachData['avgProd'] = round(sum(units) / len(units), 2)
                     eachData['medianProd'] = units[len(units) // 2]
-                    name = report[0]['teamMember__username']
-                    fresh = 2
+                grdTotal = sum([eachData['totalHours'] for eachData in report])
+                name = report[0]['teamMember__username']
+                wkstart = wkstartDate
+                wkend = wkendDate
+                fresh = 2
             else:
                 fresh = 0
         else:
@@ -59,8 +82,9 @@ def TeamMemberReport(request):
             fresh = 1
     return render(request,
                   'MyANSRSource/reportmember.html',
-                  {'form': form, 'data': report,
-                   'member': name, 'fresh': fresh
+                  {'form': form, 'data': report, 'member': name,
+                   'fresh': fresh, 'wkstart': wkstart, 'wkend': wkend,
+                   'grandTotal': grdTotal
                    }
                   )
 
