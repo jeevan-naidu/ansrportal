@@ -6,6 +6,7 @@ from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo
 from django.shortcuts import render
 from datetime import timedelta
+from django.db.models import Sum
 
 
 @login_required
@@ -31,14 +32,22 @@ def TeamMemberReport(request):
                 'teamMember__username', 'project__maxProductivityUnits',
                 'project__projectId', 'project__name',
                 'project__book__name', 'task__name',
-                'activity__name',
-                'mondayQ', 'tuesdayQ', 'wednesdayQ',
-                'thursdayQ', 'fridayQ', 'saturdayQ',
-                'sundayQ',
-                'mondayH', 'tuesdayH', 'wednesdayH',
-                'thursdayH', 'fridayH', 'saturdayH',
-                'sundayH', 'wkstart', 'wkend'
-            ).order_by('project__projectId')
+                'chapter__name', 'activity__name', 'wkstart', 'wkend'
+            ).annotate(mondayh=Sum('mondayH'),
+                       tuesdayh=Sum('tuesdayH'),
+                       wednesdayh=Sum('wednesdayH'),
+                       thursdayh=Sum('thursdayH'),
+                       fridayh=Sum('fridayH'),
+                       saturdayh=Sum('saturdayH'),
+                       sundayh=Sum('sundayH'),
+                       mondayq=Sum('mondayQ'),
+                       tuesdayq=Sum('tuesdayQ'),
+                       wednesdayq=Sum('wednesdayQ'),
+                       thursdayq=Sum('thursdayQ'),
+                       fridayq=Sum('fridayQ'),
+                       saturdayq=Sum('saturdayQ'),
+                       sundayq=Sum('sundayQ')).order_by(
+                'project__projectId')
             days = ['monday', 'tuesday', 'wednesday',
                     'thursday', 'friday', 'saturday',
                     'sunday']
@@ -61,9 +70,9 @@ def TeamMemberReport(request):
                     eachData['maxProd'], eachData['medianProd'] = 0, 0
                     units = []
                     for k, v in eachData.iteritems():
-                        if k in ['{0}H'.format(eachDay) for eachDay in days]:
+                        if k in ['{0}h'.format(eachDay) for eachDay in days]:
                             eachData['totalHours'] += v
-                        if k in ['{0}Q'.format(eachDay) for eachDay in days]:
+                        if k in ['{0}q'.format(eachDay) for eachDay in days]:
                             units.append(v)
                             eachData['totalValue'] += v
                     eachData['maxProd'] = max(units)
