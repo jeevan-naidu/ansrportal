@@ -3,7 +3,8 @@ logger = logging.getLogger('MyANSRSource')
 from django.contrib.auth.decorators import login_required
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm
-from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo
+from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
+    ProjectMilestone
 from django.shortcuts import render
 from datetime import timedelta
 from django.db.models import Sum
@@ -103,6 +104,7 @@ def ProjectReport(request):
     basicData = {}
     crData = []
     tsData = []
+    msData = []
     fresh = 1
     actualHours = 0
     deviation = 0
@@ -125,12 +127,24 @@ def ProjectReport(request):
             ).values('crId', 'reason', 'endDate', 'po', 'revisedEffort',
                      'revisedTotal', 'salesForceNumber', 'closed',
                      'closedOn', 'signed')
-
+            msData = ProjectMilestone.objects.filter(
+                project=cProject
+            ).values('description', 'financial', 'amount', 'closed')
             tsData = TimeSheetEntry.objects.filter(project=cProject).values(
                 'wkstart', 'wkend', 'teamMember__username',
                 'mondayH', 'tuesdayH', 'wednesdayH',
                 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'
             )
+            if len(msData):
+                for eachRec in msData:
+                    if eachRec['financial']:
+                        eachRec['financial'] = 'Y'
+                    else:
+                        eachRec['financial'] = 'N'
+                    if eachRec['closed'] is True:
+                        eachRec['closed'] = 'Yes'
+                    else:
+                        eachRec['closed'] = 'No'
             if len(tsData):
                 for eachTsData in tsData:
                     eachTsData['total'] = eachTsData['mondayH'] + \
@@ -145,6 +159,6 @@ def ProjectReport(request):
     return render(request,
                   'MyANSRSource/reportproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
-                   'crData': crData, 'tsData': tsData, 'actual': actualHours,
-                   'deviation': deviation}
+                   'crData': crData, 'tsData': tsData, 'msData': msData,
+                   'actual': actualHours, 'deviation': deviation}
                   )

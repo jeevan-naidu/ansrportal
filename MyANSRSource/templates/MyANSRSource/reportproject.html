@@ -110,6 +110,36 @@
         <table class="table table-condensed">
             <thead>
             <tr>
+                <th>Milestone Name</th> 
+                <th>Financial (Y / N)</th> 
+                <th>Value</th> 
+                <th>Completed</th> 
+            </tr>
+            </thead>
+            {% if msData %}
+                {% for eachData in msData %}
+                    <tr>
+                        <td>{{ eachData.description }}</td> 
+                        <td>{{ eachData.financial }}</td> 
+                        <td>{{ eachData.amount }}</td> 
+                        <td>{{ eachData.closed }}</td> 
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>No milestones set till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
                 <th>Week Start</th> 
                 <th>Week End</th> 
                 <th>Member Name</th> 
