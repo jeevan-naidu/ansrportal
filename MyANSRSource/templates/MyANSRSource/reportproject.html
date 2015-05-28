@@ -110,25 +110,51 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Week Start</th> 
-                <th>Week End</th> 
+                <th>Milestone Name</th> 
+                <th>Financial</th> 
+                <th>Value</th> 
+                <th>Completed</th> 
+            </tr>
+            </thead>
+            {% if msData %}
+                {% for eachData in msData %}
+                    <tr>
+                        <td>{{ eachData.description }}</td> 
+                        <td>{{ eachData.financial }}</td> 
+                        <td>{{ eachData.amount }}</td> 
+                        <td>{{ eachData.closed }}</td> 
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>No milestones set till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
                 <th>Member Name</th> 
-                <th>Total Hours</th> 
+                <th>Designation</th> 
+                <th>Planned Effort</th> 
+                <th>Actual Effort</th> 
             </tr>
             </thead>
             {% if tsData %}
                 {% for eachData in tsData %}
                     <tr>
-                        <td>{{ eachData.wkstart }}</td> 
-                        <td>{{ eachData.wkend }}</td> 
-                        <td>{{ eachData.teamMember__username }}</td> 
-                        <td>{{ eachData.total }}</td> 
+                        <td>{{ eachData.teamMember }}</td> 
+                        <td>{{ eachData.designation }}</td> 
+                        <td>{{ eachData.planned }}</td> 
+                        <td>{{ eachData.actual }}</td> 
                     </tr>
                 {% endfor %}
-                    <tr>
-                        <td colspan="2"><b>Total Actual Hour(s) : {{ actual }} </b></td>
-                        <td colspan="2"><b>Deviation From Planned Hour(s) : {{ deviation }}</b></td>
-                    </tr>
             {% else %}
                 {% if fresh %}
                     <tr>
