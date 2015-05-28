@@ -3,9 +3,12 @@ logger = logging.getLogger('MyANSRSource')
 from django.contrib.auth.decorators import login_required
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm
-from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo
+from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
+    ProjectMilestone, ProjectTeamMember
 from django.shortcuts import render
 from datetime import timedelta
+from django.db.models import Sum
+from employee.models import Employee
 
 
 @login_required
@@ -31,14 +34,22 @@ def TeamMemberReport(request):
                 'teamMember__username', 'project__maxProductivityUnits',
                 'project__projectId', 'project__name',
                 'project__book__name', 'task__name',
-                'activity__name',
-                'mondayQ', 'tuesdayQ', 'wednesdayQ',
-                'thursdayQ', 'fridayQ', 'saturdayQ',
-                'sundayQ',
-                'mondayH', 'tuesdayH', 'wednesdayH',
-                'thursdayH', 'fridayH', 'saturdayH',
-                'sundayH', 'wkstart', 'wkend'
-            ).order_by('project__projectId')
+                'chapter__name', 'activity__name', 'wkstart', 'wkend'
+            ).annotate(mondayh=Sum('mondayH'),
+                       tuesdayh=Sum('tuesdayH'),
+                       wednesdayh=Sum('wednesdayH'),
+                       thursdayh=Sum('thursdayH'),
+                       fridayh=Sum('fridayH'),
+                       saturdayh=Sum('saturdayH'),
+                       sundayh=Sum('sundayH'),
+                       mondayq=Sum('mondayQ'),
+                       tuesdayq=Sum('tuesdayQ'),
+                       wednesdayq=Sum('wednesdayQ'),
+                       thursdayq=Sum('thursdayQ'),
+                       fridayq=Sum('fridayQ'),
+                       saturdayq=Sum('saturdayQ'),
+                       sundayq=Sum('sundayQ')).order_by(
+                'project__projectId')
             days = ['monday', 'tuesday', 'wednesday',
                     'thursday', 'friday', 'saturday',
                     'sunday']
@@ -61,9 +72,9 @@ def TeamMemberReport(request):
                     eachData['maxProd'], eachData['medianProd'] = 0, 0
                     units = []
                     for k, v in eachData.iteritems():
-                        if k in ['{0}H'.format(eachDay) for eachDay in days]:
+                        if k in ['{0}h'.format(eachDay) for eachDay in days]:
                             eachData['totalHours'] += v
-                        if k in ['{0}Q'.format(eachDay) for eachDay in days]:
+                        if k in ['{0}q'.format(eachDay) for eachDay in days]:
                             units.append(v)
                             eachData['totalValue'] += v
                     eachData['maxProd'] = max(units)
@@ -94,9 +105,10 @@ def ProjectReport(request):
     basicData = {}
     crData = []
     tsData = []
+    msData = []
+    pEffort = 0
     fresh = 1
     actualHours = 0
-    deviation = 0
     form = ProjectPerfomanceReportForm(user=request.user)
     if request.method == 'POST':
         fresh = 0
@@ -116,26 +128,52 @@ def ProjectReport(request):
             ).values('crId', 'reason', 'endDate', 'po', 'revisedEffort',
                      'revisedTotal', 'salesForceNumber', 'closed',
                      'closedOn', 'signed')
-
+            msData = ProjectMilestone.objects.filter(
+                project=cProject
+            ).values('description', 'financial', 'amount', 'closed')
             tsData = TimeSheetEntry.objects.filter(project=cProject).values(
-                'wkstart', 'wkend', 'teamMember__username',
-                'mondayH', 'tuesdayH', 'wednesdayH',
-                'thursdayH', 'fridayH', 'saturdayH', 'sundayH'
-            )
+                'teamMember',
+            ).annotate(mondayh=Sum('mondayH'),
+                       tuesdayh=Sum('tuesdayH'),
+                       wednesdayh=Sum('wednesdayH'),
+                       thursdayh=Sum('thursdayH'),
+                       fridayh=Sum('fridayH'),
+                       saturdayh=Sum('saturdayH'),
+                       sundayh=Sum('sundayH')
+                       )
+            if len(msData):
+                for eachRec in msData:
+                    if eachRec['financial']:
+                        eachRec['financial'] = 'Yes'
+                    else:
+                        eachRec['financial'] = 'No'
+                    if eachRec['closed'] is True:
+                        eachRec['closed'] = 'Yes'
+                    else:
+                        eachRec['closed'] = 'No'
             if len(tsData):
                 for eachTsData in tsData:
-                    eachTsData['total'] = eachTsData['mondayH'] + \
-                        eachTsData['tuesdayH'] + \
-                        eachTsData['wednesdayH'] + \
-                        eachTsData['thursdayH'] + \
-                        eachTsData['fridayH'] + \
-                        eachTsData['saturdayH'] + \
-                        eachTsData['sundayH']
-                    actualHours = actualHours + eachTsData['total']
-                deviation = basicData['plannedEffort'] - actualHours
+                    eachTsData['actual'] = eachTsData['mondayh'] + \
+                        eachTsData['tuesdayh'] + \
+                        eachTsData['wednesdayh'] + \
+                        eachTsData['thursdayh'] + \
+                        eachTsData['fridayh'] + \
+                        eachTsData['saturdayh'] + \
+                        eachTsData['sundayh']
+                    emp = Employee.objects.get(user=eachTsData['teamMember'])
+                    eachTsData['teamMember'] = emp.user.username
+                    eachTsData['designation'] = emp.designation.name
+                    effort = ProjectTeamMember.objects.filter(
+                        project=cProject,
+                        member=emp.user
+                    ).values('plannedEffort')
+                    if len(effort):
+                        for eachEffort in effort:
+                            pEffort = pEffort + eachEffort['plannedEffort']
+                    eachTsData['planned'] = pEffort
     return render(request,
                   'MyANSRSource/reportproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
-                   'crData': crData, 'tsData': tsData, 'actual': actualHours,
-                   'deviation': deviation}
+                   'crData': crData, 'tsData': tsData, 'msData': msData,
+                   'actual': actualHours}
                   )
