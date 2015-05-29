@@ -7,7 +7,7 @@ from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
 from django.shortcuts import render
 from datetime import timedelta
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from employee.models import Employee
 
 
@@ -34,8 +34,9 @@ def TeamMemberReport(request):
                 'teamMember__username', 'project__maxProductivityUnits',
                 'project__projectId', 'project__name',
                 'project__book__name', 'task__name',
-                'chapter__name', 'activity__name', 'wkstart', 'wkend'
-            ).annotate(mondayh=Sum('mondayH'),
+                'chapter__name', 'activity__name'
+            ).annotate(dcount=Count('project__projectId'),
+                       mondayh=Sum('mondayH'),
                        tuesdayh=Sum('tuesdayH'),
                        wednesdayh=Sum('wednesdayH'),
                        thursdayh=Sum('thursdayH'),
@@ -48,8 +49,8 @@ def TeamMemberReport(request):
                        thursdayq=Sum('thursdayQ'),
                        fridayq=Sum('fridayQ'),
                        saturdayq=Sum('saturdayQ'),
-                       sundayq=Sum('sundayQ')).order_by(
-                'project__projectId')
+                       sundayq=Sum('sundayQ')
+                       ).order_by('project__projectId')
             days = ['monday', 'tuesday', 'wednesday',
                     'thursday', 'friday', 'saturday',
                     'sunday']
@@ -63,6 +64,8 @@ def TeamMemberReport(request):
                         eachData['project__book__name'] = ' - '
                     if eachData['task__name'] is None:
                         eachData['task__name'] = ''
+                    if eachData['chapter__name'] is None:
+                        eachData['chapter__name'] = ' -  '
                     if eachData['activity__name'] is None:
                         eachData['activity__name'] = ''
                     if eachData['project__maxProductivityUnits'] is None:
