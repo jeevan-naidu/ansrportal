@@ -252,7 +252,6 @@ def Timesheet(request):
                 messages.error(request, 'You can only work for 24 hours a day')
             elif ('save' not in request.POST) and (
                 weekTotal < weekTotalValidate):
-                if weekTotal < weekTotalValidate:
                 messages.error(request,
                                'Your total timesheet activity for \
                                this week is below {0} hours'.format(
