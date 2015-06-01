@@ -146,6 +146,7 @@
                 <th>Designation</th> 
                 <th>Planned Effort</th> 
                 <th>Actual Effort</th> 
+                <th>Deviation(%)</th> 
             </tr>
             </thead>
             {% if tsData %}
@@ -155,16 +156,26 @@
                         <td>{{ eachData.designation }}</td> 
                         <td>{{ eachData.planned }}</td> 
                         <td>{{ eachData.actual }}</td> 
+                        <td>{{ eachData.deviation }}</td> 
                     </tr>
                 {% endfor %}
+                    <tr>
+                        <td colspan=5 class="text-center"><h4><small>Total Planned Effort : <b>{{ plannedTotal }}</b></small></h4></td>
+                    </tr>
+                    <tr>
+                        <td colspan=5 class="text-center"><h4><small>Total Actual Effort : <b>{{ actualTotal }}</b></small></h4></td>
+                    </tr>
+                    <tr>
+                        <td colspan=5 class="text-center"><h4><small>Deviation(%) : <b>{{ deviation }}</b></small></h4></td>
+                    </tr>
             {% else %}
                 {% if fresh %}
                     <tr>
-                        <td colspan="4" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                        <td colspan="5" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
+                        <td colspan="5" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
                     </tr>
                 {% endif %}
             {% endif %}

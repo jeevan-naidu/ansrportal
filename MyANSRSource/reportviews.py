@@ -111,7 +111,7 @@ def ProjectReport(request):
     msData = []
     pEffort = 0
     fresh = 1
-    actualHours = 0
+    actualHours, actualTotal, plannedTotal, deviation = 0, 0, 0, 0
     form = ProjectPerfomanceReportForm(user=request.user)
     if request.method == 'POST':
         fresh = 0
@@ -171,13 +171,23 @@ def ProjectReport(request):
                         project=cProject,
                         member=emp.user
                     ).values('plannedEffort')
+                    pEffort = 0
                     if len(effort):
                         for eachEffort in effort:
                             pEffort = pEffort + eachEffort['plannedEffort']
                     eachTsData['planned'] = pEffort
+                    eachTsData[
+                        'deviation'] = round(
+                            eachTsData['actual'] / pEffort * 100)
+                actualTotal = sum(
+                    [eachTsData['actual'] for eachTsData in tsData])
+                plannedTotal = sum(
+                    [eachTsData['planned'] for eachTsData in tsData])
+                deviation = round(actualTotal / plannedTotal * 100)
     return render(request,
                   'MyANSRSource/reportproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
                    'crData': crData, 'tsData': tsData, 'msData': msData,
-                   'actual': actualHours}
+                   'actual': actualHours, 'actualTotal': actualTotal,
+                   'plannedTotal': plannedTotal, 'deviation': deviation}
                   )
