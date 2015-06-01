@@ -72,6 +72,13 @@ class Task(models.Model):
                                 choices=TASKTYPEFLAG,
                                 verbose_name='Task type',
                                 default=None)
+    norm = models.DecimalField(
+        default=0.0,
+        max_digits=12,
+        decimal_places=2,
+        verbose_name="Norm",
+        validators=[MinValueValidator(0.0)]
+    )
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
