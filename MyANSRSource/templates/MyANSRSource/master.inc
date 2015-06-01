@@ -13,7 +13,6 @@
 
        {# Load Pace CSS and JS #}
        <script src="{% static 'js/pace.js' %}" async></script>
-       <link href="{% static 'css/pace.css' %}" rel="stylesheet" />
        
        {# Load the tag library #}
        {% load bootstrap3 %}
@@ -29,7 +28,7 @@
        <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
        
        {# Load Ansr CSS and JS #}
-       <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
+       <link rel="stylesheet" type="text/css" href="{% static 'css/site.min.css' %}">
 
        {# Load FullCalendar CSS and JS #}
        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
@@ -97,6 +96,6 @@
 			</nav>
 		</div><!-- End of Ansr Footer -->
       	</div>
-       <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
+       <script src='{% static 'js/main.min.js' %}' type="text/javascript"></script>
     </body>
 </html>
