@@ -81,7 +81,7 @@ class Task(models.Model):
         return self.name
 
     class Meta:
-        unique_together = (('projectType', 'code'),)
+        unique_together = (('projectType', 'code'), ('projectType', 'name'))
 
 
 class Chapter(models.Model):

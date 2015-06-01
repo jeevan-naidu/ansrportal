@@ -162,6 +162,7 @@ def Timesheet(request):
                     date__range=[changedStartDate, changedEndDate]
                 ).values('date')
                 weekTotalValidate = 40 - (8 * len(weekHolidays))
+                weekTotalValidate = float(weekTotalValidate)
                 weekTotalExtra = weekTotalValidate + 4
             else:
                 weekHolidays = []
@@ -249,7 +250,9 @@ def Timesheet(request):
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
-            elif ('save' not in request.POST) and (weekTotal < weekTotalValidate):
+            elif ('save' not in request.POST) and (
+                weekTotal < weekTotalValidate):
+                if weekTotal < weekTotalValidate:
                 messages.error(request,
                                'Your total timesheet activity for \
                                this week is below {0} hours'.format(
