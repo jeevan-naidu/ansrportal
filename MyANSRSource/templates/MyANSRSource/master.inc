@@ -7,6 +7,10 @@
        <meta name="viewport" content="width=device-width, initial-scale=1">                                                                                   
        <title>{% block siteTitle %}myansrsource{% endblock %}</title>
 
+       {# Ansrsource Favicon #}
+       <link rel="icon" type="image/png" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" />
+       <link rel="icon" type="image/png" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" />
+
        {# Load Pace CSS and JS #}
        <script src="{% static 'js/pace.js' %}" async></script>
        <link href="{% static 'css/pace.css' %}" rel="stylesheet" />
