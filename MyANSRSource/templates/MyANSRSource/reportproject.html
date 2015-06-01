@@ -111,6 +111,7 @@
             <thead>
             <tr>
                 <th>Milestone Name</th> 
+                <th>Milestone Date</th> 
                 <th>Financial</th> 
                 <th>Value</th> 
                 <th>Completed</th> 
@@ -120,6 +121,7 @@
                 {% for eachData in msData %}
                     <tr>
                         <td>{{ eachData.description }}</td> 
+                        <td>{{ eachData.milestoneDate }}</td> 
                         <td>{{ eachData.financial }}</td> 
                         <td>{{ eachData.amount }}</td> 
                         <td>{{ eachData.closed }}</td> 

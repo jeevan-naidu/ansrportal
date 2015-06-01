@@ -133,7 +133,8 @@ def ProjectReport(request):
                      'closedOn', 'signed')
             msData = ProjectMilestone.objects.filter(
                 project=cProject
-            ).values('description', 'financial', 'amount', 'closed')
+            ).values('description', 'financial', 'milestoneDate',
+                     'amount', 'closed')
             tsData = TimeSheetEntry.objects.filter(project=cProject).values(
                 'teamMember',
             ).annotate(mondayh=Sum('mondayH'),
