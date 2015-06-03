@@ -66,6 +66,7 @@
                 <th>Max. Productivity</th> 
                 <th>Median Productivity</th> 
                 <th>Norm</th> 
+                <th>Status</th> 
             </tr>
             </thead>
             {% if fresh == 1 %}
@@ -91,6 +92,11 @@
                         <td>{{ eachData.maxProd }}</td> 
                         <td>{{ eachData.medianProd }}</td> 
                         <td>{{ eachData.project__maxProductivityUnits }}</td> 
+                        {% if eachData.hold %}
+                           <td>Submitted</td>
+                        {% else %}
+                           <td>Not-Submitted</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                     <tr>

@@ -34,7 +34,7 @@ def TeamMemberReport(request):
                 'teamMember__username', 'project__maxProductivityUnits',
                 'project__projectId', 'project__name',
                 'project__book__name', 'task__name',
-                'chapter__name', 'activity__name'
+                'chapter__name', 'activity__name', 'hold'
             ).annotate(dcount=Count('project__projectId'),
                        mondayh=Sum('mondayH'),
                        tuesdayh=Sum('tuesdayH'),
@@ -50,7 +50,7 @@ def TeamMemberReport(request):
                        fridayq=Sum('fridayQ'),
                        saturdayq=Sum('saturdayQ'),
                        sundayq=Sum('sundayQ')
-                       ).order_by('project__projectId')
+                       ).order_by('project__projectId', 'hold')
             days = ['monday', 'tuesday', 'wednesday',
                     'thursday', 'friday', 'saturday',
                     'sunday']
