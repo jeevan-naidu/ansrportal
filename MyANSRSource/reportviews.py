@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 from django.contrib.auth.decorators import login_required
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
-    ProjectPerfomanceReportForm
+    ProjectPerfomanceReportForm, UtilizationReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember
 from django.shortcuts import render
@@ -176,14 +176,26 @@ def ProjectReport(request):
                         for eachEffort in effort:
                             pEffort = pEffort + eachEffort['plannedEffort']
                     eachTsData['planned'] = pEffort
-                    eachTsData[
-                        'deviation'] = round(
-                            eachTsData['actual'] / pEffort * 100)
-                actualTotal = sum(
-                    [eachTsData['actual'] for eachTsData in tsData])
-                plannedTotal = sum(
-                    [eachTsData['planned'] for eachTsData in tsData])
-                deviation = round(actualTotal / plannedTotal * 100)
+                    try:
+                        eachTsData[
+                            'deviation'] = round(
+                                eachTsData['actual'] / pEffort * 100)
+                    except ZeroDivisionError:
+                        eachTsData['deviation'] = 0
+                try:
+                    actualTotal = sum(
+                        [eachTsData['actual'] for eachTsData in tsData])
+                except ZeroDivisionError:
+                    actualTotal = 0
+                try:
+                    plannedTotal = sum(
+                        [eachTsData['planned'] for eachTsData in tsData])
+                except ZeroDivisionError:
+                    plannedTotal = 0
+                try:
+                    deviation = round(actualTotal / plannedTotal * 100)
+                except ZeroDivisionError:
+                    deviation = 0
     return render(request,
                   'MyANSRSource/reportproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
@@ -191,3 +203,107 @@ def ProjectReport(request):
                    'actual': actualHours, 'actualTotal': actualTotal,
                    'plannedTotal': plannedTotal, 'deviation': deviation}
                   )
+
+
+@login_required
+def UtilizationReport(request):
+    data = {}
+    fresh = 1
+    form = UtilizationReportForm()
+    if request.method == 'POST':
+        reportData = UtilizationReportForm(request.POST)
+        if reportData.is_valid():
+            reportMonth = reportData.cleaned_data['reportMonth'].month
+            reportYear = reportData.cleaned_data['reportMonth'].year
+            internalIdle = GenerateReport(request, reportMonth, reportYear,
+                                          idle=True, internal=True)
+            internalOthers = GenerateReport(request, reportMonth, reportYear,
+                                           idle=False, internal=True)
+            externalIdle = GenerateReport(request, reportMonth, reportYear,
+                                          idle=True, internal=False)
+            externalOthers = GenerateReport(request, reportMonth, reportYear,
+                                            idle=False, internal=False)
+            nonProd = TimeSheetEntry.objects.filter(
+                wkstart__year=reportYear,
+                wkstart__month=reportMonth,
+                project__projectId__isnull=True
+            ).values(
+                'teamMember__username'
+            ).annotate(
+                monday=Sum('mondayH'),
+                tuesday=Sum('tuesdayH'),
+                wednesday=Sum('wednesdayH'),
+                thursday=Sum('thursdayH'),
+                friday=Sum('fridayH'),
+                saturday=Sum('saturdayH'),
+                sunday=Sum('sundayH'),
+            ).order_by('teamMember__username')
+            data = {'internalIdle': calcTotal(request, internalIdle)[0],
+                    'internalIdleTotal': calcTotal(request, internalIdle)[1],
+                    'intenalOthers': calcTotal(request, internalOthers)[0],
+                    'internalOthersTotal': calcTotal(request, internalOthers)[1],
+                    'externalIdle': calcTotal(request, externalIdle)[0],
+                    'externalIdleTotal': calcTotal(request, externalIdle)[1],
+                    'externalOthers': calcTotal(request, externalOthers)[0],
+                    'externalOthersTotal': calcTotal(request, externalOthers)[1],
+                    'nonProd': calcTotal(request, nonProd)[0],
+                    'nonProdTotal': calcTotal(request, nonProd)[1]}
+            fresh = 0
+    return render(request,
+                  'MyANSRSource/reportutilize.html',
+                  {'form': form, 'data': data, 'fresh': fresh})
+
+
+@login_required
+def GenerateReport(request, reportMonth, reportYear, idle, internal):
+    ts = TimeSheetEntry.objects.filter(
+        wkstart__year=reportYear,
+        wkstart__month=reportMonth,
+        project__projectId__isnull=False,
+        project__internal=internal)
+    if idle:
+        return ts.filter(
+            task__name='Idle'
+        ).values(
+            'project__projectId', 'project__name'
+        ).annotate(
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH'),
+        ).order_by('project__projectId')
+    else:
+        return ts.exclude(
+            task__name='Idle'
+        ).values(
+            'project__projectId', 'project__name'
+        ).annotate(
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH'),
+        ).order_by('project__projectId')
+
+
+@login_required
+def calcTotal(request, data):
+    if len(data):
+        grandTotal = 0
+        for eachTsData in data:
+            eachTsData['total'] = eachTsData['monday'] + \
+                eachTsData['tuesday'] + \
+                eachTsData['wednesday'] + \
+                eachTsData['thursday'] + \
+                eachTsData['friday'] + \
+                eachTsData['saturday'] + \
+                eachTsData['sunday']
+        grandTotal = sum([eachRec['total'] for eachRec in data])
+        return [data, grandTotal]
+    else:
+        return [{}, 0]

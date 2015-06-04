@@ -602,3 +602,11 @@ class ProjectPerfomanceReportForm(forms.Form):
                 user=currentUser).values('project')
         ).all().order_by('name')
         self.fields['project'].widget.attrs['class'] = "form-control"
+
+
+class UtilizationReportForm(forms.Form):
+    reportMonth = forms.DateField(
+        label="Choose a month",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now
+    )
