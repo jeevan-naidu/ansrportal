@@ -118,7 +118,15 @@ def ProjectReport(request):
         reportData = ProjectPerfomanceReportForm(request.POST,
                                                  user=request.user)
         if reportData.is_valid():
+            start = reportData.cleaned_data['startDate'].weekday()
+            end = 6 - reportData.cleaned_data['endDate'].weekday()
+            wkstartDate = reportData.cleaned_data['startDate'] - timedelta(
+                days=start)
+            wkendDate = reportData.cleaned_data['endDate'] + timedelta(
+                days=end)
             cProject = reportData.cleaned_data['project']
+            startDate = reportData.cleaned_data['startDate']
+            endDate = reportData.cleaned_data['endDate']
             basicData = {
                 'name': cProject.name,
                 'startDate': cProject.startDate,
@@ -132,10 +140,16 @@ def ProjectReport(request):
                      'revisedTotal', 'salesForceNumber', 'closed',
                      'closedOn', 'signed')
             msData = ProjectMilestone.objects.filter(
-                project=cProject
+                project=cProject,
+                milestoneDate__gte=startDate,
+                milestoneDate__lte=endDate,
             ).values('description', 'financial', 'milestoneDate',
                      'amount', 'closed')
-            tsData = TimeSheetEntry.objects.filter(project=cProject).values(
+            tsData = TimeSheetEntry.objects.filter(
+                project=cProject,
+                wkstart__gte=wkstartDate,
+                wkend__lte=wkendDate
+            ).values(
                 'teamMember',
             ).annotate(mondayh=Sum('mondayH'),
                        tuesdayh=Sum('tuesdayH'),

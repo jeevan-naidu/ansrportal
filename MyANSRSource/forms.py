@@ -593,6 +593,16 @@ class ProjectPerfomanceReportForm(forms.Form):
         label="Project",
         required=True,
     )
+    startDate = forms.DateField(
+        label="From",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now
+    )
+    endDate = forms.DateField(
+        label="To",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now
+    )
 
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
@@ -602,6 +612,8 @@ class ProjectPerfomanceReportForm(forms.Form):
                 user=currentUser).values('project')
         ).all().order_by('name')
         self.fields['project'].widget.attrs['class'] = "form-control"
+        self.fields['startDate'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
 
 
 class UtilizationReportForm(forms.Form):
@@ -610,3 +622,6 @@ class UtilizationReportForm(forms.Form):
         widget=DateTimePicker(options=dateTimeOption),
         initial=timezone.now
     )
+
+    def __init__(self, *args, **kwargs):
+        self.fields['reportMonth'].widget.attrs['class'] = "form-control"
