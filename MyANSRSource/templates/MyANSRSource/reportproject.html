@@ -22,7 +22,7 @@
 {%block content %}
 <div class="row">
 	<div class="col-md-12">
-        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
             <table class="table table-condensed">

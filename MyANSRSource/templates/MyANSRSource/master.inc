@@ -28,7 +28,8 @@
        <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
        
        {# Load Ansr CSS and JS #}
-       <link rel="stylesheet" type="text/css" href="{% static 'css/site.min.css' %}">
+       <link rel="stylesheet" type="text/css" href="{% static 'css/site.min.css' %}" media="screen">
+       <link rel="stylesheet" type="text/css" href="{% static 'css/print.css' %}" media="print">
 
        {# Load FullCalendar CSS and JS #}
        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
