@@ -211,9 +211,10 @@ def ProjectReport(request):
 def UtilizationReport(request):
     data = {}
     fresh = 1
-    form = UtilizationReportForm()
+    form = UtilizationReportForm(user=request.user)
     if request.method == 'POST':
-        reportData = UtilizationReportForm(request.POST)
+        reportData = UtilizationReportForm(request.POST,
+                                           user=request.user)
         if reportData.is_valid():
             reportMonth = reportData.cleaned_data['reportMonth'].month
             reportYear = reportData.cleaned_data['reportMonth'].year
