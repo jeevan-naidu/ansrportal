@@ -624,4 +624,5 @@ class UtilizationReportForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        super(UtilizationReportForm, self).__init__(*args, **kwargs)
         self.fields['reportMonth'].widget.attrs['class'] = "form-control"

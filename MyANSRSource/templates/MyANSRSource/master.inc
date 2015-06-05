@@ -18,7 +18,13 @@
        {% load bootstrap3 %}
 
        {# Load Bootstrap CSS and JS #}
-       {% bootstrap_css %}
+           {# We can initialize boostrap css as bootstrap javascript       #}
+           {# The reason we are using bootstrap CDN is for report printing #}
+           {# boostrap css must have media set to all, so that we can have #}
+           {# same styles for both screen and printing. Unfortunately      #}
+           {# in the plugin django-boostrap3 we don't have an option       #} 
+           {# to change media from screen to all.                          #}
+       <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" media="all">
        {% bootstrap_javascript %}
 
        {# Load Bootstrap Box JS #}
