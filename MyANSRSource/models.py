@@ -212,6 +212,9 @@ class Project(models.Model):
             ("manage_project", "Manage ANSR Project"),
             ("approve_timesheet", "Approve timesheets"),
             ("manage_milestones", "Manage Project Milestones"),
+            ("report_project", "Project Level Report"),
+            ("report_bu", "BU Level Report"),
+            ("report_superuser", "SuperUser Level Report"),
             )
 
 
