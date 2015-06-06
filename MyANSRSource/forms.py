@@ -5,12 +5,20 @@ from django import forms
 from django.utils import timezone
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager
+    projectType, ProjectManager, TimeSheetEntry
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
+import calendar
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
+startDate = TimeSheetEntry.objects.all().values('wkstart').distinct()
+year = list(set([eachDate['wkstart'].year for eachDate in startDate]))
+MONTHS = tuple(zip(
+    range(1, 13),
+    (calendar.month_name[i] for i in range(1, 13))
+))
+YEARS = tuple(zip(year, year))
 
 
 class ActivityForm(forms.Form):
@@ -610,11 +618,8 @@ class UtilizationReportForm(forms.Form):
         label="Business Unit",
         required=True,
     )
-    reportMonth = forms.DateField(
-        label="Choose a month",
-        widget=DateTimePicker(options=dateTimeOption),
-        initial=timezone.now
-    )
+    month = forms.ChoiceField(choices=MONTHS)
+    year = forms.ChoiceField(choices=YEARS)
 
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
@@ -626,4 +631,5 @@ class UtilizationReportForm(forms.Form):
                 bu_head=currentUser
             )
         self.fields['bu'].widget.attrs['class'] = "form-control"
-        self.fields['reportMonth'].widget.attrs['class'] = "form-control"
+        self.fields['year'].widget.attrs['class'] = "form-control"
+        self.fields['month'].widget.attrs['class'] = "form-control"
