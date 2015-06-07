@@ -133,7 +133,7 @@ class ReportAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('name', 'projectType', 'taskType', )
+    list_display = ('name', 'projectType', 'taskType', 'norm')
     filter_fields = ('projectType',)
 
 

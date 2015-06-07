@@ -1,0 +1,177 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td> 
+                    {% endfor %}
+                    <td><button type="submit" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-file"></span> Get Report
+                    </button></td>
+                </tr>
+            </table>
+        </form>
+        {% if month != 0 %}
+            <span class="text-center"><h3><small>Period : {{ month }} / {{ year }}</small></h3></span>
+        {% endif %}
+        <legend>External Projects</legend>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Customer Name</th> 
+                <th>Lead</th> 
+                <th>Project Code</th> 
+                <th>Project Name</th> 
+                <th>Project Type</th> 
+                <th>BU</th> 
+                <th>Start Date</th> 
+                <th>End Date</th> 
+                <th>Total Value</th> 
+                <th>Planned Effort</th> 
+                <th>Billed Effort</th> 
+                <th>Idle Effort</th> 
+            </tr>
+            </thead>
+            {% if data.external %}
+                {% for eachData in data.external %}
+                    <tr>
+                        <td>{{ eachData.project__customer__name }}</td> 
+                        {% if eachData.lead %}
+                            <td> 
+                                {% for t in eachData.lead %}
+                                    {{ t.user__username }}, 
+                                {% endfor %}
+                            </td>
+                        {% else %}
+                                <td>-<td>
+                        {% endif %} 
+                        <td>{{ eachData.project__projectId }}</td> 
+                        <td>{{ eachData.project__name }}</td> 
+                        <td>{{ eachData.project__projectType__description }}</td> 
+                        <td>{{ eachData.project__bu__name }}</td> 
+                        <td>{{ eachData.project__startDate }}</td> 
+                        <td>{{ eachData.project__endDate }}</td> 
+                        <td>{{ eachData.project__totalValue }}</td> 
+                        <td>{{ eachData.project__plannedEffort }}</td>
+                        {% if eachData.others %} 
+                            {% for t in eachData.others %}
+                                <td>{{ t.otherstotal }}</td>
+                            {% endfor %}
+                        {% else %}
+                                <td>0<td>
+                        {% endif %} 
+                        {% if eachData.idle %} 
+                            {% for t in eachData.idle %}
+                                <td>{{ t.idletotal }}</td>
+                            {% endfor %}
+                        {% else %}
+                                <td>0<td>
+                        {% endif %} 
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="6" class="text-center"><h4><small><b>Total Billed Hours : {{ eoTotal }}</b></small></h4></td>
+                    <td colspan="6" class="text-center"><h4><small><b>Total Idle Hours : {{ eiTotal }}</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="12" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="12" class="text-center"><h4><small><b>No External Projects</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <legend>Internal Projects</legend>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Customer Name</th> 
+                <th>Lead</th> 
+                <th>Project Code</th> 
+                <th>Project Name</th> 
+                <th>Billed Type</th> 
+                <th>BU</th> 
+                <th>Start Date</th> 
+                <th>End Date</th> 
+                <th>Total Value</th> 
+                <th>Planned Effort</th> 
+                <th>Billed Effort</th> 
+                <th>Idle Effort</th> 
+            </tr>
+            </thead>
+            {% if data.internal %}
+                {% for eachData in data.internal %}
+                    <tr>
+                        <td>{{ eachData.project__customer__name }}</td> 
+                        {% if eachData.lead %}
+                            <td> 
+                                {% for t in eachData.lead %}
+                                    {{ t.user__username }}, 
+                                {% endfor %}
+                            </td>
+                        {% else %}
+                                <td>-<td>
+                        {% endif %} 
+                        <td>{{ eachData.project__projectId }}</td> 
+                        <td>{{ eachData.project__name }}</td> 
+                        <td>{{ eachData.project__projectType__description }}</td> 
+                        <td>{{ eachData.project__bu__name }}</td> 
+                        <td>{{ eachData.project__startDate }}</td> 
+                        <td>{{ eachData.project__endDate }}</td> 
+                        <td>{{ eachData.project__totalValue }}</td> 
+                        <td>{{ eachData.project__plannedEffort }}</td>
+                        {% if eachData.others %} 
+                            {% for t in eachData.others %}
+                                <td>{{ t.otherstotal }}</td>
+                            {% endfor %}
+                        {% else %}
+                                <td>0<td>
+                        {% endif %} 
+                        {% if eachData.idle %} 
+                            {% for t in eachData.idle %}
+                                <td>{{ t.idletotal }}</td>
+                            {% endfor %}
+                        {% else %}
+                                <td>0<td>
+                        {% endif %} 
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="6" class="text-center"><h4><small><b>Total Billed Hours : {{ ioTotal }}</b></small></h4></td>
+                    <td colspan="6" class="text-center"><h4><small><b>Total Idle Hours : {{ iiTotal }}</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="12" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="12" class="text-center"><h4><small><b>No Internal Projects</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}

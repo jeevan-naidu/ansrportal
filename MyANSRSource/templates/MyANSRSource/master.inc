@@ -7,15 +7,24 @@
        <meta name="viewport" content="width=device-width, initial-scale=1">                                                                                   
        <title>{% block siteTitle %}myansrsource{% endblock %}</title>
 
+       {# Ansrsource Favicon #}
+       <link rel="icon" type="image/png" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" />
+       <link rel="icon" type="image/png" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" />
+
        {# Load Pace CSS and JS #}
        <script src="{% static 'js/pace.js' %}" async></script>
-       <link href="{% static 'css/pace.css' %}" rel="stylesheet" />
        
        {# Load the tag library #}
        {% load bootstrap3 %}
 
        {# Load Bootstrap CSS and JS #}
-       {% bootstrap_css %}
+           {# We can initialize boostrap css as bootstrap javascript       #}
+           {# The reason we are using bootstrap CDN is for report printing #}
+           {# boostrap css must have media set to all, so that we can have #}
+           {# same styles for both screen and printing. Unfortunately      #}
+           {# in the plugin django-boostrap3 we don't have an option       #} 
+           {# to change media from screen to all.                          #}
+       <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" media="all">
        {% bootstrap_javascript %}
 
        {# Load Bootstrap Box JS #}
@@ -25,13 +34,14 @@
        <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
        
        {# Load Ansr CSS and JS #}
-       <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
+       <link rel="stylesheet" type="text/css" href="{% static 'css/site.min.css' %}" media="screen">
+       <link rel="stylesheet" type="text/css" href="{% static 'css/print.css' %}" media="print">
 
        {# Load FullCalendar CSS and JS #}
        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
        <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.css" media="screen" rel="stylesheet">
        <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.js"></script>
-       
+
        <script>
             $(document).ready(function() {
                 $('#calendar').fullCalendar({
@@ -93,6 +103,6 @@
 			</nav>
 		</div><!-- End of Ansr Footer -->
       	</div>
-       <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
+       <script src='{% static 'js/main.min.js' %}' type="text/javascript"></script>
     </body>
 </html>

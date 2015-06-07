@@ -1,28 +1,10 @@
-{% extends 'master.inc' %}
-{% load permissions %}
-{% block addFormMedia %}
-
-{{ form.media }} 
-
-{% endblock %}
+{% extends 'reportMaster.inc' %}
 {% load bootstrap3 %}
-{% block siteTitle %}myansrsource:Reports{% endblock %}
 
-{% block ansrMenu %}
- <li><a href="/myansrsource/dashboard">
-     <span class="glyphicon glyphicon-home"></span>
-     Dashboard
-</a></li>
-<li class="ansrLogout"><a href="{% url 'logout' %}">
-	<span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
-	<span class="ansrLogout">Logout</span>
-</a></li>
-{% endblock %}
-
-{%block content %}
+{%block childcontent %}
 <div class="row">
 	<div class="col-md-12">
-        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
             <table class="table table-condensed">
@@ -66,6 +48,7 @@
                 <th>Max. Productivity</th> 
                 <th>Median Productivity</th> 
                 <th>Norm</th> 
+                <th>Status</th> 
             </tr>
             </thead>
             {% if fresh == 1 %}
@@ -91,6 +74,11 @@
                         <td>{{ eachData.maxProd }}</td> 
                         <td>{{ eachData.medianProd }}</td> 
                         <td>{{ eachData.project__maxProductivityUnits }}</td> 
+                        {% if eachData.hold %}
+                           <td>Submitted</td>
+                        {% else %}
+                           <td>Not-Submitted</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                     <tr>

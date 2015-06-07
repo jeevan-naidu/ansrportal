@@ -1,28 +1,10 @@
-{% extends 'master.inc' %}
-{% load permissions %}
-{% block addFormMedia %}
-
-{{ form.media }} 
-
-{% endblock %}
+{% extends 'reportMaster.inc' %}
 {% load bootstrap3 %}
-{% block siteTitle %}myansrsource:Reports{% endblock %}
 
-{% block ansrMenu %}
- <li><a href="/myansrsource/dashboard">
-     <span class="glyphicon glyphicon-home"></span>
-     Dashboard
-</a></li>
-<li class="ansrLogout"><a href="{% url 'logout' %}">
-	<span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
-	<span class="ansrLogout">Logout</span>
-</a></li>
-{% endblock %}
-
-{%block content %}
+{%block childcontent %}
 <div class="row">
 	<div class="col-md-12">
-        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
             <table class="table table-condensed">
@@ -111,6 +93,7 @@
             <thead>
             <tr>
                 <th>Milestone Name</th> 
+                <th>Milestone Date</th> 
                 <th>Financial</th> 
                 <th>Value</th> 
                 <th>Completed</th> 
@@ -120,6 +103,7 @@
                 {% for eachData in msData %}
                     <tr>
                         <td>{{ eachData.description }}</td> 
+                        <td>{{ eachData.milestoneDate }}</td> 
                         <td>{{ eachData.financial }}</td> 
                         <td>{{ eachData.amount }}</td> 
                         <td>{{ eachData.closed }}</td> 
@@ -144,6 +128,7 @@
                 <th>Designation</th> 
                 <th>Planned Effort</th> 
                 <th>Actual Effort</th> 
+                <th>Deviation(%)</th> 
             </tr>
             </thead>
             {% if tsData %}
@@ -153,16 +138,34 @@
                         <td>{{ eachData.designation }}</td> 
                         <td>{{ eachData.planned }}</td> 
                         <td>{{ eachData.actual }}</td> 
+                        {% if eachData.deviation >= 0 %}
+                            <td style="color: green"><b>{{ eachData.deviation }}</b></td> 
+                        {% else %}
+                            <td style="color: red"><b>{{ eachData.deviation }}</b></td> 
+                        {% endif %}
                     </tr>
                 {% endfor %}
+                    <tr>
+                        <td colspan=5 class="text-center"><h4><small>Total Planned Effort : <b>{{ plannedTotal }}</b></small></h4></td>
+                    </tr>
+                    <tr>
+                        <td colspan=5 class="text-center"><h4><small>Total Actual Effort : <b>{{ actualTotal }}</b></small></h4></td>
+                    </tr>
+                    <tr>
+                        {% if deviation >= 0 %}
+                            <td colspan=5 class="text-center"><h4><small>Deviation(%) : <b style="color: green">{{ deviation }}</b></small></h4></td>
+                        {% else %}
+                            <td colspan=5 class="text-center"><h4><small>Deviation(%) : <b style="color: red">{{ deviation }}</b></small></h4></td>
+                        {% endif %}
+                    </tr>
             {% else %}
                 {% if fresh %}
                     <tr>
-                        <td colspan="4" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                        <td colspan="5" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
+                        <td colspan="5" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
                     </tr>
                 {% endif %}
             {% endif %}

@@ -64,3 +64,6 @@ docs/_build/
 target/
 
 backup/
+# Avoid ansrsourceLogs, Client Activities 
+errorlogs
+client-activities/

@@ -5,12 +5,20 @@ from django import forms
 from django.utils import timezone
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager
+    projectType, ProjectManager, TimeSheetEntry
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
+import calendar
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
+startDate = TimeSheetEntry.objects.all().values('wkstart').distinct()
+year = list(set([eachDate['wkstart'].year for eachDate in startDate]))
+MONTHS = tuple(zip(
+    range(1, 13),
+    (calendar.month_name[i] for i in range(1, 13))
+))
+YEARS = tuple(zip(year, year))
 
 
 class ActivityForm(forms.Form):
@@ -602,3 +610,26 @@ class ProjectPerfomanceReportForm(forms.Form):
                 user=currentUser).values('project')
         ).all().order_by('name')
         self.fields['project'].widget.attrs['class'] = "form-control"
+
+
+class UtilizationReportForm(forms.Form):
+    bu = forms.ModelChoiceField(
+        queryset=None,
+        label="Business Unit",
+        required=True,
+    )
+    month = forms.ChoiceField(choices=MONTHS)
+    year = forms.ChoiceField(choices=YEARS)
+
+    def __init__(self, *args, **kwargs):
+        currentUser = kwargs.pop('user')
+        super(UtilizationReportForm, self).__init__(*args, **kwargs)
+        if currentUser.has_perm('MyANSRSource.report_superuser'):
+            self.fields['bu'].queryset = BusinessUnit.objects.all()
+        else:
+            self.fields['bu'].queryset = BusinessUnit.objects.filter(
+                bu_head=currentUser
+            )
+        self.fields['bu'].widget.attrs['class'] = "form-control"
+        self.fields['year'].widget.attrs['class'] = "form-control"
+        self.fields['month'].widget.attrs['class'] = "form-control"
