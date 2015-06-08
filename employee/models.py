@@ -291,7 +291,7 @@ class FamilyMember(models.Model):
         blank=False)
 
     def __unicode__(self):
-        return (self.name, self.dob)
+        return '{0} - {1}'.format(self.name, self.dob)
 
 
 class Education(models.Model):
