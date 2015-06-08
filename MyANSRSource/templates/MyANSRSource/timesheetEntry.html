@@ -425,11 +425,26 @@
     	<button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
     	<a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
 	<script>
- 		$(document).on("click", "#submitTS", function(e) {		
-			bootbox.confirm("Once submitted, your timesheet will be approved by the system and cannot be modified. If you wanted to save for now and change it later, please click cancel and press the save button. Otherwise please click OK", function(result) {
-				if (result)
-					$("#timesheet").submit();		
-			});			
+ 		$(document).on("click", "#submitTS", function(e) {
+            swal({
+              title: "Are you sure?",
+              text: "Once submitted, your timesheet will be approved by the system and cannot be modified. If you want to save for now and change it later, Please click 'No, Cancel' and press the save button. Otherwise Please click 'Yes, Please'",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#37950B",
+              confirmButtonText: "Yes, Please!",
+              closeOnConfirm: false,
+              cancelButtonText: "No, Cancel!",
+              closeOnCancel: false
+            },
+            function(isConfirm) {
+                if (isConfirm) {
+                  $("#timesheet").submit();		
+                  swal("Done!", "Your timesheet is submitted", "success");
+                }
+                else
+                  swal("Stay Cool", "You can still edit your timesheet", "success");
+            });
 		});			
 	</script>
  </button>

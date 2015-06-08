@@ -25,10 +25,12 @@
 	{% endfor %}
 	{% for eachRem in remainders %}
 		{
+            id : {{ eachRem.id }},
 			start : '{{ eachRem.startDate }}',
 			end : '{{ eachRem.endDate }}',
 			title : '{{ eachRem.name }}',
-			color  : '#F4B961'
+			color  : '#F4B961',
+            editable : true,
 		},
 	{% endfor %}
 	{% for eachTraining in trainingList %}
@@ -222,7 +224,7 @@
 					    Team Member Performance
 					</a>
 					<a href="reports/utilization" class="list-group-item">
-					    Utilization
+					    Project Performance Summary
 					</a>
 				</ul>
 			</div>

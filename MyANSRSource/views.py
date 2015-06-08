@@ -818,7 +818,7 @@ def Dashboard(request):
             remaind.save()
     remainder = MyRemainderForm()
     myRemainders = Remainder.objects.filter(
-        user=request.user.employee).values('name', 'startDate', 'endDate')
+        user=request.user.employee).values('name', 'startDate', 'endDate', 'id')
     if len(myRemainders):
         for eachRem in myRemainders:
             eachRem['startDate'] = eachRem[
@@ -827,6 +827,7 @@ def Dashboard(request):
             eachRem['endDate'] = eachRem[
                 'endDate'
             ].strftime('%Y-%m-%d')
+            eachRem['del'] = eachRem['id']
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
         closed=False
@@ -1903,6 +1904,16 @@ def GetProjectType(request):
         data = {'data': list()}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
+
+
+def DeleteRemainder(request, remid):
+    if remid:
+        rem = Remainder.objects.get(pk=remid)
+        try:
+            rem.delete()
+            return HttpResponse({'data': 'S'}, content_type="application/json")
+        except:
+            return HttpResponse({'data': ''}, content_type="application/json")
 
 
 def csrf_failure(request, reason=""):
