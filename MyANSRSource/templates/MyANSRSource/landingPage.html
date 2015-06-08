@@ -25,7 +25,8 @@
 	{% endfor %}
 	{% for eachRem in remainders %}
 		{
-			start : '{{ eachRem.date }}',
+			start : '{{ eachRem.startDate }}',
+			end : '{{ eachRem.endDate }}',
 			title : '{{ eachRem.name }}',
 			color  : '#F4B961'
 		},

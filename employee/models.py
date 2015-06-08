@@ -370,8 +370,10 @@ class Remainder(models.Model):
     name = models.CharField(verbose_name="Event Name",
                             max_length="100"
                             )
-    date = models.DateField(verbose_name="Date",
-                            default=timezone.now)
+    startDate = models.DateField(verbose_name="Start Date",
+                                 default=timezone.now)
+    endDate = models.DateField(verbose_name="End Date",
+                               default=timezone.now)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

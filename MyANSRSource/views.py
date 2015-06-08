@@ -812,16 +812,20 @@ def Dashboard(request):
         if myremainder.is_valid():
             remaind = Remainder()
             remaind.name = myremainder.cleaned_data['name']
-            remaind.date = myremainder.cleaned_data['date']
+            remaind.startDate = myremainder.cleaned_data['startDate']
+            remaind.endDate = myremainder.cleaned_data['endDate']
             remaind.user = request.user.employee
             remaind.save()
     remainder = MyRemainderForm()
     myRemainders = Remainder.objects.filter(
-        user=request.user.employee).values('name', 'date')
+        user=request.user.employee).values('name', 'startDate', 'endDate')
     if len(myRemainders):
         for eachRem in myRemainders:
-            eachRem['date'] = eachRem[
-                'date'
+            eachRem['startDate'] = eachRem[
+                'startDate'
+            ].strftime('%Y-%m-%d')
+            eachRem['endDate'] = eachRem[
+                'endDate'
             ].strftime('%Y-%m-%d')
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
