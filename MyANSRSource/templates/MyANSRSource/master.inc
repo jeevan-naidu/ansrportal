@@ -16,6 +16,7 @@
        
        {# Load the tag library #}
        {% load bootstrap3 %}
+       {% load fontawesome %}
 
        {# Load Bootstrap CSS and JS #}
            {# We can initialize boostrap css as bootstrap javascript       #}
@@ -42,6 +43,9 @@
        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
        <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.css" media="screen" rel="stylesheet">
        <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.js"></script>
+
+       {# Load Font-Awesome CSS #}
+       {% fontawesome_stylesheet %}
 
        <script>
             $(document).ready(function() {

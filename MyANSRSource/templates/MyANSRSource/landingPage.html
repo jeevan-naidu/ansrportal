@@ -6,6 +6,7 @@
 
 {% endblock %}
 {% load bootstrap3 %}
+{% load fontawesome %}
 {% block siteTitle %}myansrsource:Dashboard{% endblock %}
 
 {% block events %}
@@ -59,7 +60,7 @@
 
 {% block ansrMenu %}
 <li class="ansrLogout"><a href="{% url 'logout' %}">
-	<span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
 	<span class="ansrLogout">Logout</span>
 </a></li>
 {% endblock %}
