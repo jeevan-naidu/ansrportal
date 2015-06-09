@@ -48,12 +48,12 @@
                 $('#calendar').fullCalendar({
                     aspectRatio: 2.12,
                     eventLimit: true,
-                    lazyFetching: true,
                     events: [
                         {% block events %}{% endblock %}
                     ],
                     eventClick: function(calEvent, jsEvent, view) {
                         eId = Number(calEvent._id);
+                        $('#calendar').fullCalendar('removeEvents', eId);
                         if (eId === parseInt(eId, 10))
                             swal({
                               title: "Are you sure?",
@@ -76,7 +76,7 @@
                                   swal("Done!", "I forgot your remainder", "success");
                               }
                               else
-                                  swal("Stay Cool", "I will remaind you :)", "success");
+                                  swal("Stay Cool", "I will remaind you :). Please refresh the page.", "success");
                             });
                     },
                 })
