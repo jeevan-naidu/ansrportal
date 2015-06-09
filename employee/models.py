@@ -238,17 +238,18 @@ class Employee(models.Model):
         max_length=14,
         blank=True)
     bank_name = models.CharField(verbose_name="Bank Name",
-                                 max_length=70, blank=False)
+                                 max_length=70, blank=True, null=True)
     bank_branch = models.CharField(verbose_name="Branch Name",
-                                   max_length=70, blank=False)
+                                   max_length=70, blank=True, null=True)
     bank_account = models.IntegerField(
         "Account Number",
         max_length=30,
-        blank=False,
+        blank=True,
+        null=True,
         unique=True)
     bank_ifsc_code = models.CharField(
         "IFSC Code",
-        max_length=20, blank=False)
+        max_length=20, blank=True, null=True)
     group_insurance_number = models.CharField(
         "Group Insurance Number",
         max_length=30,
