@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'session_security',  # Django session TimeOut / Security
     'fontawesome',
+    'xlsxwriter',
     'employee',
     'CompanyMaster',
     'MyANSRSource',

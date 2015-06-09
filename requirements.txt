@@ -2,6 +2,7 @@ Django==1.7.1
 MySQL-python==1.2.5
 Pillow==2.6.1
 PyYAML==3.11
+XlsxWriter==0.7.3
 argparse==1.2.1
 diff-match-patch==20121119
 django-auth-ldap==1.2.2
@@ -11,7 +12,6 @@ django-bootstrap3==4.11.0
 django-datetime-widget==0.9
 django-fontawesome==0.2.2
 django-grappelli==2.6.3
-django-import-export==0.2.7
 django-session-security==2.2.2
 django-templated-email==0.4.9
 python-dateutil==2.2
