@@ -136,7 +136,8 @@ class Employee(models.Model):
         max_length=2,
         choices=GENDER_CHOICES,
         blank=False)
-    date_of_birth = models.DateField("Date of Birth", blank=False)
+    date_of_birthO = models.DateField("Official DOB", blank=False, default=None)
+    date_of_birthR = models.DateField("Alternate DOB", blank=False, default=None)
     # Can we make this a choice field?
     nationality = models.CharField("Nationality", max_length=30, blank=False)
     marital_status = models.CharField(

@@ -86,7 +86,8 @@ class UserInline(admin.StackedInline):
     fieldsets = (
         ('Employee Identification', {
             'fields': (('middle_name',),
-                ('date_of_birth', 'gender', 'nationality'),
+                ('date_of_birthO', 'gender', 'nationality'),
+                'date_of_birthR',
                 ('marital_status', 'wedding_date', 'blood_group'),
                        'exprience'), }),
         ('Contact Details', {
