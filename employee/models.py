@@ -237,6 +237,12 @@ class Employee(models.Model):
         "Provident Fund Number",
         max_length=14,
         blank=True)
+    uan = models.IntegerField(
+        "Universal account number",
+        max_length=12,
+        blank=True,
+        null=True,
+        unique=True)
     bank_name = models.CharField(verbose_name="Bank Name",
                                  max_length=70, blank=True, null=True)
     bank_branch = models.CharField(verbose_name="Branch Name",

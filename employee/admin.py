@@ -99,7 +99,7 @@ class UserInline(admin.StackedInline):
                        ('business_unit', 'location'),
                        ('category', 'idcard'),)}),
         ('Financial Information', {
-            'fields': (('PAN', 'PF_number'),
+            'fields': (('PAN', 'PF_number', 'uan'),
                        ('group_insurance_number', 'esi_number',),
                        )}),
         ('Key Dates', {
