@@ -87,7 +87,8 @@ class UserInline(admin.StackedInline):
         ('Employee Identification', {
             'fields': (('middle_name',),
                 ('date_of_birth', 'gender', 'nationality'),
-                ('marital_status', 'blood_group'), 'exprience'), }),
+                ('marital_status', 'wedding_date', 'blood_group'),
+                       'exprience'), }),
         ('Contact Details', {
             'fields': (
                 ('mobile_phone', 'land_phone',
