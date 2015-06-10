@@ -283,6 +283,9 @@ FEED_DELIMITER = ","
 EXTERNAL_PROJECT_NOTIFIERS = ['naveen@fantain.com',
                               'niranj@fantain.com']
 
+# New Joinee Notifiers
+NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
+
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
