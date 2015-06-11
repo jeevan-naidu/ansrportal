@@ -32,6 +32,9 @@ class EducationInline(admin.TabularInline):
     verbose_name = 'Qualification'
     verbose_name_plural = 'Qualifications'
 
+    class Media:
+        js = ("js/grappelli_custom_datepicker_template.js",)
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj:
             # Don't add any extra forms if
