@@ -1016,12 +1016,20 @@ def checkUser(userName, password, request, form):
                                 user.username,
                                 user.get_all_permissions(),
                                 user.get_group_permissions()))
+                        senderEmail = settings.NEW_JOINEE_NOTIFIERS
+                        context = {'username': user.username}
+                        for eachRecp in senderEmail:
+                            SendMail(context, eachRecp, 'newjoinee')
                         return render(request, 'MyANSRSource/welcome.html', {})
                 else:
                     logger.error(
                         'User {0} has no employee data'.format(
                             user.username)
                     )
+                    senderEmail = settings.NEW_JOINEE_NOTIFIERS
+                    context = {'username': user.username}
+                    for eachRecp in senderEmail:
+                        SendMail(context, eachRecp, 'newjoinee')
                     return render(request, 'MyANSRSource/welcome.html', {})
             else:
                 messages.error(request, 'Sorry this user is not active.')

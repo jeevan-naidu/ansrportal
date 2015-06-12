@@ -136,7 +136,8 @@ class Employee(models.Model):
         max_length=2,
         choices=GENDER_CHOICES,
         blank=False)
-    date_of_birth = models.DateField("Date of Birth", blank=False)
+    date_of_birthO = models.DateField("Official DOB", blank=False, default=None)
+    date_of_birthR = models.DateField("Alternate DOB", blank=False, default=None)
     # Can we make this a choice field?
     nationality = models.CharField("Nationality", max_length=30, blank=False)
     marital_status = models.CharField(
@@ -236,18 +237,25 @@ class Employee(models.Model):
         "Provident Fund Number",
         max_length=14,
         blank=True)
+    uan = models.IntegerField(
+        "Universal account number",
+        max_length=12,
+        blank=True,
+        null=True,
+        unique=True)
     bank_name = models.CharField(verbose_name="Bank Name",
-                                 max_length=70, blank=False)
+                                 max_length=70, blank=True, null=True)
     bank_branch = models.CharField(verbose_name="Branch Name",
-                                   max_length=70, blank=False)
+                                   max_length=70, blank=True, null=True)
     bank_account = models.IntegerField(
         "Account Number",
         max_length=30,
-        blank=False,
+        blank=True,
+        null=True,
         unique=True)
     bank_ifsc_code = models.CharField(
         "IFSC Code",
-        max_length=20, blank=False)
+        max_length=20, blank=True, null=True)
     group_insurance_number = models.CharField(
         "Group Insurance Number",
         max_length=30,
