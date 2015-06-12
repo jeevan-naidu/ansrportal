@@ -1,4 +1,5 @@
 {% extends 'projectMaster.inc' %}
+{% load fontawesome %}
 
 {% block content %}
 <ul class="form-steps clearfix">
@@ -135,7 +136,7 @@
 	<b>Cancel Project</b>
 </a>
 <button type="submit" value="submit" class="btn btn-success pull-right">
-        <span class="glyphicon glyphicon-ok"></span>
+        {% fontawesome_icon 'upload' large=True %}
 	<b>Create Project</b>
 </button>
 </form>
