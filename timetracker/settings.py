@@ -130,6 +130,8 @@ INSTALLED_APPS = (
     'bootstrap3',  # Django Bootstrap3
     'bootstrap3_datetime',
     'session_security',  # Django session TimeOut / Security
+    'fontawesome',
+    'xlsxwriter',
     'employee',
     'CompanyMaster',
     'MyANSRSource',
@@ -186,6 +188,10 @@ DATABASES = {
 BOOTSTRAP3 = {
     'include_jquery': True,
 }
+
+# Font awesome related settings
+FONTAWESOME_CSS_URL = '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -282,6 +288,9 @@ FEED_DELIMITER = ","
 # External Project Notifiers
 EXTERNAL_PROJECT_NOTIFIERS = ['naveen@fantain.com',
                               'niranj@fantain.com']
+
+# New Joinee Notifiers
+NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'

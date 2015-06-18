@@ -1,0 +1,28 @@
+{% block subject %}New Joinee{% endblock %}
+{% block plain %}
+  Hi,
+
+  The following user has logged on myansrsource for first time.  
+      username: {{username}}
+
+  Please do the needful to register them on myansrsource.
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi,</p>
+
+  <p>The following user has logged on myansrsource for first time.  
+
+      <dl>
+        <dt>username</dt><dd>{{username}}</dd>
+      </dl>
+      Please do the needful to register them on myansrsource.
+  </p>
+
+  <p>Regards, </p>
+  <p>myansrsource team</p>
+{% endblock %}

@@ -1,5 +1,6 @@
 {% extends 'changeProjectMaster.inc' %}
 
+{% load fontawesome %}
 {% block content %}
 <ul class="form-steps clearfix">
     <li class="form-step one-fifth {% block MPactiveClass %}{% endblock %}">
@@ -32,7 +33,7 @@
 	<legend>No Changes detected!!!</legend>
 	<div><h4><b>Project not updated</b></h4></div>
 <a href="modify" class="btn btn-success pull-right">
-        <span class="glyphicon glyphicon-saved"></span>
+        {% fontawesome_icon 'check' large=True %}
 	<b>Complete</b>
 </a>
 </div>

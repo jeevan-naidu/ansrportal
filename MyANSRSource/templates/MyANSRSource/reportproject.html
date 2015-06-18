@@ -1,5 +1,6 @@
 {% extends 'reportMaster.inc' %}
 {% load bootstrap3 %}
+{% load fontawesome %}
 
 {%block childcontent %}
 <div class="row">
@@ -22,7 +23,8 @@
                         <td>{{ field }}</td> 
                     {% endfor %}
                     <td><button type="submit" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-file"></span> Get Report
+                        {% fontawesome_icon 'line-chart' large=True %}
+                        Get Report
                     </button></td>
                 </tr>
             </table>

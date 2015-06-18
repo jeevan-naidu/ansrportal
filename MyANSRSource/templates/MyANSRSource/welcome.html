@@ -13,8 +13,8 @@
                 Congratulations you have been successfully registered in myansrsource. Your information has to completed by the HR team so that you can log timesheets. Please get in touch with the HR team immediately.<br /><br />
                 Send a mail to the Project Manager and the HR team member saying that you have not yet been setup on the system. Please complete the same immediately.
 				<div class="text-right">
-					<a href="{% url 'logout'  %}" class="btn btn-sm btn-info">
-							<span class="glyphicon glyphicon-globe"></span>
+					<a href="{% url 'logout'  %}" class="btn btn-sm btn-danger">
+                            {% fontawesome_icon 'sign-out' large=True %}
 							<b>Logout</b>
 					</a>
 				</div>

@@ -1,5 +1,6 @@
 {% extends 'changeProjectMaster.inc' %}
 
+{% load fontawesome %}
 {% block content %}
 <ul class="form-steps clearfix">
     <li class="form-step one-third {% block MPactiveClass %}{% endblock %}">
@@ -23,7 +24,7 @@
 	<div><h4><b>Project Updated Successfully</b></h4></div>
 	<div><h5>Change Request id: <b>{{ crId }}</b></h5></div>
 <a href="modify" class="btn btn-success pull-right">
-        <span class="glyphicon glyphicon-saved"></span>
+        {% fontawesome_icon 'check' large=True %}
 	<b>Complete</b>
 </a>
 </div>

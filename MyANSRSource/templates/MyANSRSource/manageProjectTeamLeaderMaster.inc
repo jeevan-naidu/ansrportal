@@ -10,6 +10,8 @@
 
 {% load bootstrap3 %}
 
+{% load fontawesome %}
+
 {% block siteTitle %}myansrsource:Manager{% endblock %}
 
 {% block responsiveMenu %}
@@ -24,11 +26,11 @@
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
-    <span class="glyphicon glyphicon-home"></span>
+    {% fontawesome_icon 'university' large=True %}
     Dashboard
  </a></li>
  <li class="ansrLogout"><a href="{% url 'logout' %}">
-    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
@@ -72,16 +74,17 @@
         {% if wizard.steps.prev %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        {% fontawesome_icon 'arrow-circle-left' large=True %}
 		        <b>Choose Project</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
+                        {% fontawesome_icon 'upload' large=True %}
 		    <b>Update Project Leader(s)</b>
                 {% else %}
 		    <b>View Project Leader(s)</b>
-                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    {% fontawesome_icon 'arrow-circle-right' large=True %}
                 {% endif %}
             </button>
         {% endbuttons %}

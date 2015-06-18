@@ -11,11 +11,12 @@
        <link rel="icon" type="image/png" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" />
        <link rel="icon" type="image/png" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" />
 
-       {# Load Pace CSS and JS #}
-       <script src="{% static 'js/pace.js' %}" async></script>
+       {# Load Pace JS #}
+       <script src="{% static 'js/pace.js' %}"></script>
        
        {# Load the tag library #}
        {% load bootstrap3 %}
+       {% load fontawesome %}
 
        {# Load Bootstrap CSS and JS #}
            {# We can initialize boostrap css as bootstrap javascript       #}
@@ -24,11 +25,12 @@
            {# same styles for both screen and printing. Unfortunately      #}
            {# in the plugin django-boostrap3 we don't have an option       #} 
            {# to change media from screen to all.                          #}
-       <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" media="all">
+       <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
        {% bootstrap_javascript %}
 
-       {# Load Bootstrap Box JS #}
-       <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.min.js"></script>
+       {# Load SweetAlert CSS and JS #}
+       <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.0.1/sweetalert.min.css" media="screen">
+       <script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.0.1/sweetalert.min.js"></script>
 
        {# Load OpenSans Google Font #}
        <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
@@ -38,9 +40,12 @@
        <link rel="stylesheet" type="text/css" href="{% static 'css/print.css' %}" media="print">
 
        {# Load FullCalendar CSS and JS #}
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+       <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
        <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.css" media="screen" rel="stylesheet">
        <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.3/fullcalendar.min.js"></script>
+
+       {# Load Font-Awesome CSS #}
+       {% fontawesome_stylesheet %}
 
        <script>
             $(document).ready(function() {
@@ -50,14 +55,41 @@
                     events: [
                         {% block events %}{% endblock %}
                     ],
+                    eventClick: function(calEvent, jsEvent, view) {
+                        eId = Number(calEvent._id);
+                        $('#calendar').fullCalendar('removeEvents', eId);
+                        if (eId === parseInt(eId, 10))
+                            swal({
+                              title: "Are you sure?",
+                              text: "Do you want me to forget your remainder?",
+                              type: "warning",
+                              showCancelButton: true,
+                              confirmButtonColor: "#DD6B55",
+                              confirmButtonText: "Yes, Please!",
+                              closeOnConfirm: false,
+                              cancelButtonText: "No, Cancel!",
+                              closeOnCancel: false
+                            },
+                            function(isConfirm) {
+                              urlVar = "/myansrsource/remainder/delete/" + eId + "/";
+                              if (isConfirm) {
+                                  $.ajax({
+                                    dataType: "json",
+                                    url: urlVar, 
+                                  });
+                                  swal("Done!", "I forgot your remainder", "success");
+                              }
+                              else
+                                  swal("Stay Cool", "I will remaind you :). Please refresh the page.", "success");
+                            });
+                    },
                 })
             });
        </script>
        <script>
             $(function () {
               $('[data-toggle="tooltip"]').tooltip()
-      })
-
+            })
        </script>
        
        {% block addFormMedia %}{% endblock %}

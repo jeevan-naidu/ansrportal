@@ -1,6 +1,7 @@
 {% extends 'master.inc' %}
 {% block siteTitle %}myansrsource:Re-Login{% endblock %}
 
+{% load fontawesome %}
 
 {%block content %}
 <div class="row">
@@ -10,11 +11,10 @@
 			    <div class="panel-heading">Uh!Oh!</div>
 			    <div class="panel-body">  
 				Sorry! we have detected some strange activity on your browser.  You will have to login again.  
-				Please click on the link below to get started
 				<div class="text-right">
-					<a href="{% url 'logout'  %}" class="btn btn-sm btn-info">
-							<span class="glyphicon glyphicon-globe"></span>
-							<b>Login Again</b>
+					<a href="{% url 'logout'  %}" class="btn btn-sm btn-danger">
+                        {% fontawesome_icon 'sign-out' large=True %}
+                        <b>Logout</b>
 					</a>
 				</div>
 			    </div>

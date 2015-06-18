@@ -1,5 +1,7 @@
 {% extends 'viewProjectMaster.inc' %}
 
+{% load fontawesome %}
+
 {% block PSactiveClass %}active{% endblock %}
 {% block viewProjectContent %}
 <legend><b>Summary</b>
@@ -221,8 +223,8 @@
 	</table>
 </div>
 </div>
-<a href="view-project" class="btn btn-primary pull-right">
-        <span class="glyphicon glyphicon-ok"></span>
+<a href="view-project" class="btn btn-info">
+        {% fontawesome_icon 'arrow-circle-left' large=True %}
 	<b>Choose another project</b>
 </a>
 {% endblock %}

@@ -1,9 +1,11 @@
 {% extends 'manageMilestoneMaster.inc' %}
 
+{% load fontawesome %}
+
 {% block addForm %}
 <span class="pull-right">
     <a class="btn btn-success btn-xs" id="add-milestone-btn">
-        <span class="glyphicon glyphicon-plus"></span>
+        {% fontawesome_icon 'plus' %}
         Add Milestone
     </a>
 </span>

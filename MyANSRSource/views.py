@@ -828,17 +828,22 @@ def Dashboard(request):
         if myremainder.is_valid():
             remaind = Remainder()
             remaind.name = myremainder.cleaned_data['name']
-            remaind.date = myremainder.cleaned_data['date']
+            remaind.startDate = myremainder.cleaned_data['startDate']
+            remaind.endDate = myremainder.cleaned_data['endDate']
             remaind.user = request.user.employee
             remaind.save()
     remainder = MyRemainderForm()
     myRemainders = Remainder.objects.filter(
-        user=request.user.employee).values('name', 'date')
+        user=request.user.employee).values('name', 'startDate', 'endDate', 'id')
     if len(myRemainders):
         for eachRem in myRemainders:
-            eachRem['date'] = eachRem[
-                'date'
+            eachRem['startDate'] = eachRem[
+                'startDate'
             ].strftime('%Y-%m-%d')
+            eachRem['endDate'] = eachRem[
+                'endDate'
+            ].strftime('%Y-%m-%d')
+            eachRem['del'] = eachRem['id']
     totalActiveProjects = Project.objects.filter(
         projectManager=request.user,
         closed=False
@@ -1034,12 +1039,20 @@ def checkUser(userName, password, request, form):
                                 user.username,
                                 user.get_all_permissions(),
                                 user.get_group_permissions()))
+                        senderEmail = settings.NEW_JOINEE_NOTIFIERS
+                        context = {'username': user.username}
+                        for eachRecp in senderEmail:
+                            SendMail(context, eachRecp, 'newjoinee')
                         return render(request, 'MyANSRSource/welcome.html', {})
                 else:
                     logger.error(
                         'User {0} has no employee data'.format(
                             user.username)
                     )
+                    senderEmail = settings.NEW_JOINEE_NOTIFIERS
+                    context = {'username': user.username}
+                    for eachRecp in senderEmail:
+                        SendMail(context, eachRecp, 'newjoinee')
                     return render(request, 'MyANSRSource/welcome.html', {})
             else:
                 messages.error(request, 'Sorry this user is not active.')
@@ -1925,6 +1938,16 @@ def GetProjectType(request):
         data = {'data': list()}
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
+
+
+def DeleteRemainder(request, remid):
+    if remid:
+        rem = Remainder.objects.get(pk=remid)
+        try:
+            rem.delete()
+            return HttpResponse({'data': 'S'}, content_type="application/json")
+        except:
+            return HttpResponse({'data': ''}, content_type="application/json")
 
 
 def csrf_failure(request, reason=""):

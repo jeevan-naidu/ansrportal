@@ -88,7 +88,9 @@ class ProjectAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
-            return []
+            return [
+                'projectId',
+            ]
         else:
             return [
                 'internal', 'po', 'currentProject',

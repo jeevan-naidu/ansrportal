@@ -86,8 +86,10 @@ class UserInline(admin.StackedInline):
     fieldsets = (
         ('Employee Identification', {
             'fields': (('middle_name',),
-                ('date_of_birth', 'gender', 'nationality'),
-                ('marital_status', 'blood_group'), 'exprience'), }),
+                ('date_of_birthO', 'gender', 'nationality'),
+                'date_of_birthR',
+                ('marital_status', 'wedding_date', 'blood_group'),
+                       'exprience'), }),
         ('Contact Details', {
             'fields': (
                 ('mobile_phone', 'land_phone',
@@ -97,9 +99,7 @@ class UserInline(admin.StackedInline):
                        ('business_unit', 'location'),
                        ('category', 'idcard'),)}),
         ('Financial Information', {
-            'fields': (('bank_name', 'bank_branch'),
-                       ('bank_account', 'bank_ifsc_code',),
-                       ('PAN', 'PF_number'),
+            'fields': (('PAN', 'PF_number', 'uan'),
                        ('group_insurance_number', 'esi_number',),
                        )}),
         ('Key Dates', {
