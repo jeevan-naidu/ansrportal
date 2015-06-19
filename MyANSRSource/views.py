@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 import json
 from collections import OrderedDict
+from django.contrib.auth.decorators import permission_required
 
 from django.forms.util import ErrorList
 from django.contrib.auth.decorators import login_required
@@ -118,6 +119,7 @@ def append_tsstatus_msg(request, tsSet, msg):
 
 
 @login_required
+@permission_required('MyANSRSource.enter_timesheet')
 def Timesheet(request):
     # Creating Formset
     # Week Calculation.
@@ -770,6 +772,7 @@ def renderTimesheet(request, data):
 
 
 @login_required
+@permission_required('MyANSRSource.approve_timesheet')
 def ApproveTimesheet(request):
     if request.method == 'POST':
         for k, v in request.POST.iteritems():
@@ -1131,6 +1134,7 @@ manageTeamLeader = ManageTeamLeaderWizard.as_view(TLFORMS)
 
 
 @login_required
+@permission_required('MyANSRSource.manage_project')
 def WrappedManageTeamLeaderView(request):
     return manageTeamLeader(request)
 
@@ -1254,6 +1258,7 @@ TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 
 
 @login_required
+@permission_required('MyANSRSource.manage_milestones')
 def WrappedTrackMilestoneView(request):
     return TrackMilestone(request)
 
@@ -1379,6 +1384,7 @@ changeProject = ChangeProjectWizard.as_view(CFORMS)
 
 
 @login_required
+@permission_required('MyANSRSource.manage_project')
 def WrappedChangeProjectView(request):
     return changeProject(request)
 
@@ -1625,6 +1631,7 @@ manageTeam = ManageTeamWizard.as_view(MEMBERFORMS)
 
 
 @login_required
+@permission_required('MyANSRSource.manage_project')
 def WrappedManageTeamView(request):
     return manageTeam(request)
 
@@ -1681,6 +1688,7 @@ def SendMail(data, toAddr, templateName):
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def saveProject(request):
     # NIRANJ : Error checking and reporting is missing in this function.
     # Please go back and clean up error handling - for example a int() call
@@ -1772,11 +1780,13 @@ createProject = CreateProjectWizard.as_view(FORMS)
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def WrappedCreateProjectView(request):
     return createProject(request)
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def notify(request):
     projectId = int(request.POST.get('projectId'))
     projectName = request.POST.get('projectName')
@@ -1824,6 +1834,7 @@ def deleteProject(request):
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def ViewProject(request):
     if request.method == 'POST':
         projectId = int(request.POST.get('project'))

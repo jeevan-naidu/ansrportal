@@ -5,6 +5,7 @@ from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember, ProjectManager
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from datetime import timedelta, datetime
 from django.db.models import Sum, Count
@@ -18,6 +19,7 @@ import string
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def TeamMemberReport(request):
     report = {}
     form = TeamMemberPerfomanceReportForm()
@@ -117,6 +119,7 @@ def TeamMemberReport(request):
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def ProjectReport(request):
     basicData = {}
     crData = []
@@ -221,6 +224,7 @@ def ProjectReport(request):
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def ProjectPerfomanceReport(request):
     data = {}
     fresh = 1
