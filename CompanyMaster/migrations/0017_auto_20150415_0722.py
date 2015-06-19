@@ -8,15 +8,14 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('CompanyMaster', '0010_customer_location'),
+        ('CompanyMaster', '0016_hractivity'),
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='businessunit',
             name='bu_head',
-            field=models.OneToOneField(default=None, verbose_name=b'Business Unit Head', to=settings.AUTH_USER_MODEL, null=True, blank=True),
+            field=models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL, verbose_name=b'Business Unit Head'),
             preserve_default=True,
         ),
     ]

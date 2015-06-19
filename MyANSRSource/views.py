@@ -255,7 +255,7 @@ def Timesheet(request):
                 messages.error(request,
                                'Your total timesheet activity for \
                                this week is below {0} hours'.format(
-                                   weekTotalValidate))
+                    weekTotalValidate))
             elif (weekTotal > weekTotalExtra) | \
                  (billableTotal > weekTotalExtra) | \
                  (nonbillableTotal > weekTotalValidate) | \
@@ -733,13 +733,13 @@ def renderTimesheet(request, data):
     prevWeekBlock = False
     if ocWeek.days > 6:
         pwActivityData = TimeSheetEntry.objects.filter(
-                    Q(
-                                    wkstart=data['weekstartDate'],
-                                    wkend=data['weekendDate'],
-                                    teamMember=request.user,
-                                    project__isnull=True
-                                )
-                ).values('approved', 'hold')
+            Q(
+                wkstart=data['weekstartDate'],
+                wkend=data['weekendDate'],
+                teamMember=request.user,
+                project__isnull=True
+            )
+        ).values('approved', 'hold')
         if len(pwActivityData):
             if pwActivityData[0]['approved']:
                 prevWeekBlock = True
@@ -790,6 +790,22 @@ def ApproveTimesheet(request):
                     TimeSheetEntry.objects.filter(
                         id=updateRec
                     ).update(hold=False)
+                    tsAct = TimeSheetEntry.objects.filter(pk=updateRec).values(
+                        'teamMember', 'wkstart', 'wkend'
+                    )[0]
+                    tsActId = TimeSheetEntry.objects.filter(
+                        Q(
+                            wkstart=tsAct['wkstart'],
+                            wkend=tsAct['wkend'],
+                            teamMember=tsAct['teamMember'],
+                            project__isnull=True
+                        )
+                    ).values('id')
+                    for eachId in tsActId:
+                        TimeSheetEntry.objects.filter(
+                            id=eachId['id']
+                        ).update(hold=False)
+
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         unApprovedTimeSheet = TimeSheetEntry.objects.filter(
@@ -861,10 +877,17 @@ def Dashboard(request):
         closed=False
     )
 
-    activeMilestones = pm.count() if request.user.has_perm('MyANSRSource.manage_milestones') else 0
+    activeMilestones = pm.count() if request.user.has_perm(
+        'MyANSRSource.manage_milestones') else 0
 
-    financialM = pm.filter(financial=True).values('description', 'milestoneDate')
-    nonfinancialM = pm.filter(financial=False).values('description', 'milestoneDate')
+    financialM = pm.filter(
+        financial=True).values(
+        'description',
+        'milestoneDate')
+    nonfinancialM = pm.filter(
+        financial=False).values(
+        'description',
+        'milestoneDate')
 
     for eachRec in financialM:
         eachRec['milestoneDate'] = eachRec['milestoneDate'].strftime('%Y-%m-%d')
@@ -1844,7 +1867,10 @@ def ViewProject(request):
             'changes': changeTracker,
             }
         if len(changeTracker):
-            closedOn = [eachRec['closedOn'] for eachRec in changeTracker if eachRec['closedOn'] is not None]
+            closedOn = [
+                eachRec
+                ['closedOn']
+                for eachRec in changeTracker if eachRec['closedOn'] is not None]
             if len(closedOn):
                 data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)

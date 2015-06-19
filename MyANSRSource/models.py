@@ -167,7 +167,7 @@ class Project(models.Model):
     endDate = models.DateField(verbose_name="Project End Date",
                                default=timezone.now)
     salesForceNumber = models.IntegerField(default=0,
-                                           verbose_name="Sales Force \
+                                           verbose_name="SF\
                                            Oppurtunity Number",
                                            validators=[MinValueValidator(0)])
     plannedEffort = models.IntegerField(default=0,
@@ -212,6 +212,7 @@ class Project(models.Model):
             ("manage_project", "Manage ANSR Project"),
             ("approve_timesheet", "Approve timesheets"),
             ("manage_milestones", "Manage Project Milestones"),
+            ("view_all_projects", "View all projects"),
             ("report_project", "Project Level Report"),
             ("report_bu", "BU Level Report"),
             ("report_superuser", "SuperUser Level Report"),

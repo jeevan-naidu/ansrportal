@@ -188,7 +188,7 @@ class BusinessUnit(models.Model):
         verbose_name="Business Unit Name",
         max_length=40,
         blank=False)
-    bu_head = models.OneToOneField(User, default=None,
+    bu_head = models.OneToOneField(User, null=True, blank=True,
                                    verbose_name="Business Unit Head")
     centerType = models.CharField(max_length=2,
                                   choices=CENTERFLAG,
