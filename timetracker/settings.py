@@ -25,13 +25,13 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    #'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
 AUTH_LDAP_SERVER_URI = "ldap://ansr-blr-pdc.ansr.com"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
-AUTH_LDAP_BIND_PASSWORD = "P@ssword"
+AUTH_LDAP_BIND_PASSWORD = "Welcome123"
 
 
 AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
@@ -178,7 +178,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "mysqlroot",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -216,7 +216,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 EMAIL_HOST = 'smtp.office365.com'
 EMAIL_HOST_USER = 'myansrsource@ansrsource.com'
-EMAIL_HOST_PASSWORD = 'P@ssword'
+EMAIL_HOST_PASSWORD = 'Welcome123'
 EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
