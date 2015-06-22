@@ -5,17 +5,25 @@ from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember, ProjectManager
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Sum, Count
 from employee.models import Employee
+from django.core.servers.basehttp import FileWrapper
+from django.http import HttpResponse
+import mimetypes
+import xlsxwriter
+import os
+import string
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def TeamMemberReport(request):
     report = {}
     form = TeamMemberPerfomanceReportForm()
-    name, wkstart, wkend, grdTotal = '', '', '', 0
+    grdTotal = ''
     fresh = 1
     if request.method == 'POST':
         reportData = TeamMemberPerfomanceReportForm(request.POST)
@@ -85,25 +93,33 @@ def TeamMemberReport(request):
                     eachData['avgProd'] = round(sum(units) / len(units), 2)
                     eachData['medianProd'] = units[len(units) // 2]
                 grdTotal = sum([eachData['totalHours'] for eachData in report])
-                name = report[0]['teamMember__username']
-                wkstart = wkstartDate
-                wkend = wkendDate
                 fresh = 2
+                if 'status' in request.POST:
+                    heading = ['Project Code', 'Project Name', 'Book',
+                               'Chapter', 'Task / Activity', 'Total Hours',
+                               'Total Productivity', 'Avg. Productivity',
+                               'Min. Productivity', 'Max. Productivity',
+                               'Median Productivity', 'Norm', 'Status']
+                    return generateExcel(request, report, heading, grdTotal)
             else:
                 fresh = 0
+            form = TeamMemberPerfomanceReportForm(initial={
+                'startDate': reportData.cleaned_data['startDate'],
+                'endDate': reportData.cleaned_data['endDate'],
+                'member': reportData.cleaned_data['member']
+            })
         else:
-            logging.error(reportData.errors)
+            logger.error(reportData.errors)
             fresh = 1
     return render(request,
                   'MyANSRSource/reportmember.html',
-                  {'form': form, 'data': report, 'member': name,
-                   'fresh': fresh, 'wkstart': wkstart, 'wkend': wkend,
+                  {'form': form, 'data': report, 'fresh': fresh,
                    'grandTotal': grdTotal
-                   }
-                  )
+                   })
 
 
 @login_required
+@permission_required('MyANSRSource.create_project')
 def ProjectReport(request):
     basicData = {}
     crData = []
@@ -208,7 +224,8 @@ def ProjectReport(request):
 
 
 @login_required
-def UtilizationReport(request):
+@permission_required('MyANSRSource.create_project')
+def ProjectPerfomanceReport(request):
     data = {}
     fresh = 1
     iidleTotal, iothersTotal, eidleTotal, eothersTotal = 0, 0, 0, 0
@@ -231,13 +248,15 @@ def UtilizationReport(request):
                 'project__customer__name', 'project__projectId',
                 'project__name', 'project__projectType__description',
                 'project__bu__name', 'project__startDate',
-                'project__endDate', 'project__totalValue', 'project__plannedEffort'
+                'project__endDate', 'project__totalValue',
+                'project__plannedEffort'
             ).order_by('project__bu__name').distinct()
             if tsData:
                 internalIdle = GenerateReport(request, reportMonth, reportYear,
                                               tsData, idle=True)
-                internalOthers = GenerateReport(request, reportMonth, reportYear,
-                                                internalIdle, idle=False)
+                internalOthers = GenerateReport(request, reportMonth,
+                                                reportYear, internalIdle,
+                                                idle=False)
             else:
                 internalOthers = {}
             tsData = TimeSheetEntry.objects.filter(
@@ -250,13 +269,15 @@ def UtilizationReport(request):
                 'project__customer__name', 'project__projectId',
                 'project__name', 'project__projectType__description',
                 'project__bu__name', 'project__startDate',
-                'project__endDate', 'project__totalValue', 'project__plannedEffort'
+                'project__endDate', 'project__totalValue',
+                'project__plannedEffort'
             ).order_by('project__bu__name').distinct()
             if tsData:
                 externalIdle = GenerateReport(request, reportMonth, reportYear,
                                               tsData, idle=True)
-                externalOthers = GenerateReport(request, reportMonth, reportYear,
-                                                externalIdle, idle=False)
+                externalOthers = GenerateReport(request, reportMonth,
+                                                reportYear, externalIdle,
+                                                idle=False)
             else:
                 externalOthers = {}
             data = {'internal': calcTotal(request, internalOthers),
@@ -355,3 +376,90 @@ def calcTotal(request, data):
         return data
     else:
         return {}
+
+
+@login_required
+def generateExcel(request, report, heading, grdTotal):
+    if len(report):
+        dateObj = datetime.now().date()
+        timeObj = datetime.now().time()
+        fileName = "{0}-{1}-{2}_{3}_{4}_{5}.xlsx".format(dateObj.day,
+                                                         dateObj.month,
+                                                         dateObj.year,
+                                                         timeObj.hour,
+                                                         timeObj.minute,
+                                                         timeObj.second)
+        workbook = xlsxwriter.Workbook(fileName, {'constant_memory': True})
+        worksheet = workbook.add_worksheet('MyANSRSOURCE Report')
+        header = workbook.add_format({
+            'bold': True,
+            'font_name': 'Droid Sans',
+            'font_size': 11,
+            'align': 'center',
+            'valign': 'vcenter',
+        })
+        content = workbook.add_format({
+            'font_name': 'Droid Sans',
+            'font_size': 11,
+            'align': 'center',
+            'valign': 'vcenter',
+        })
+        alp = list(string.ascii_uppercase)
+        counter = 0
+        cellNumber = ['{0}1'.format(eachId) for eachId in alp[:len(heading)]]
+        for eachRec in cellNumber:
+            worksheet.write(eachRec, heading[counter], header)
+            counter += 1
+        generateContent(request, header, report, worksheet, content,
+                        alp, grdTotal)
+        worksheet.autofilter('{0}:{1}'.format(cellNumber[0], cellNumber[-1]))
+        workbook.close()
+        return generateDownload(request, fileName)
+    else:
+        return {}
+
+
+@login_required
+def generateContent(request, header, report, worksheet,
+                    content, alp, grdTotal):
+    row = 1
+    for eachRec in report:
+        worksheet.write(row, 0, eachRec['project__projectId'], content)
+        worksheet.write(row, 1, eachRec['project__name'], content)
+        worksheet.write(row, 2, eachRec['project__book__name'], content)
+        worksheet.write(row, 3, eachRec['chapter__name'], content)
+        if eachRec['activity__name'] != '':
+            worksheet.write(row, 4, eachRec['activity__name'], content)
+        else:
+            worksheet.write(row, 4, eachRec['task__name'], content)
+        worksheet.write(row, 5, eachRec['totalHours'], content)
+        worksheet.write(row, 6, eachRec['totalValue'], content)
+        worksheet.write(row, 7, eachRec['avgProd'], content)
+        worksheet.write(row, 8, eachRec['minProd'], content)
+        worksheet.write(row, 9, eachRec['maxProd'], content)
+        worksheet.write(row, 10, eachRec['medianProd'], content)
+        worksheet.write(row, 11, eachRec['project__maxProductivityUnits'],
+                        content)
+        if eachRec['hold']:
+            worksheet.write(row, 12, 'Not Submitted', content)
+        else:
+            worksheet.write(row, 12, 'Submitted', content)
+        row += 1
+    cellRange = 'A{1}:{0}{1}'.format(alp[12], row+1)
+    worksheet.merge_range(cellRange, '', header)
+    totalCell = 'A{0}'.format(row+1)
+    total = "Total Hour(s) : {0}".format(grdTotal)
+    worksheet.write(totalCell, total, header)
+
+
+@login_required
+def generateDownload(request, fileName):
+    wrapper = FileWrapper(open(fileName, 'r'))
+    content_type = mimetypes.guess_type(fileName)[0]
+    response = HttpResponse(wrapper, content_type=content_type)
+    response['Content-Length'] = os.path.getsize(fileName)
+    response['Content-Disposition'] = 'attachment; filename="{0}"'.format(
+        fileName
+    )
+    os.system('rm {0}'.format(fileName))
+    return response
