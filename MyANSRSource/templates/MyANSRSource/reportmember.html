@@ -22,11 +22,11 @@
                     {% for field in form %}
                         <td>{{ field }}</td> 
                     {% endfor %}
-                    <td><button type="submit" class="btn btn-primary" value="submit" name="submit">
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="submit">
                         {% fontawesome_icon 'line-chart' large=True %}
                         Get Report
                     </button></td>
-                    <td>
+                    <td class="col-lg-1">
                         {% if fresh != 0 and fresh != 1 %}
                             <input type="hidden" value="export" name="status" />
                             <button type="submit" class="btn btn-success">

@@ -20,12 +20,23 @@
                 </tr>
                 <tr>
                     {% for field in form %}
-                        <td>{{ field }}</td> 
+                        <td class="col-lg-10">{{ field }}</td> 
                     {% endfor %}
                     <td><button type="submit" class="btn btn-primary">
                         {% fontawesome_icon 'line-chart' large=True %}
                         Get Report
                     </button></td>
+                    <td>
+                        {% if fresh == 0 %}
+                            <input type="hidden" value="export" name="status" />
+                            <button type="submit" class="btn btn-success">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
                 </tr>
             </table>
         </form>
@@ -77,6 +88,11 @@
                         <td>{{ eachData.revisedTotal }}</td> 
                         <td>{{ eachData.salesForceNumber }}</td> 
                         <td>{{ eachData.signed }}</td> 
+                    </tr>
+                    <tr>
+                    {% if eachData.closed %}
+                        <td colspan="8" class="text-center"><h4><small>Project Closed On : <b>{{ eachData.closedOn }}</b></small></h4></td> 
+                    {% endif %}
                     </tr>
                 {% endfor %}
             {% else %}

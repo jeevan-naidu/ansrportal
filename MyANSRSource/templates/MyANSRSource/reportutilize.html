@@ -22,10 +22,21 @@
                     {% for field in form %}
                         <td>{{ field }}</td> 
                     {% endfor %}
-                    <td><button type="submit" class="btn btn-primary">
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary">
                         {% fontawesome_icon 'line-chart' large=True %}
                         Get Report
                     </button></td>
+                    <td class="col-lg-1">
+                        {% if fresh != 0 and fresh != 1 %}
+                            <input type="hidden" value="export" name="status" />
+                            <button type="submit" class="btn btn-success">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
                 </tr>
             </table>
         </form>
