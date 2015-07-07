@@ -412,6 +412,33 @@ class Report(models.Model):
         return self.name
 
 
+class BTGReport(models.Model):
+    project = models.ForeignKey(Project, verbose_name="Project Name")
+    member = models.ForeignKey(User)
+    lastMonthAE = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)])
+    currMonthAE = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)])
+    btg = models.IntegerField(default=0, verbose_name="BTG",
+                              validators=[MinValueValidator(0)])
+    btgDate = models.DateTimeField(default=timezone.now)
+    lastMonthRR = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)])
+    currMonthRR = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)])
+    lastMonthIN = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)])
+    currMonthIN = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)])
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.project
+
+
 class SendEmail(models.Model):
     toAddr = models.CharField(default=None, null=False, max_length=1000)
     template_name = models.CharField(default=None, null=False, max_length=100)
