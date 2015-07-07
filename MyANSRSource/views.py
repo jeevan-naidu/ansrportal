@@ -21,18 +21,18 @@ from django.conf import settings
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType, Task, ProjectManager, SendEmail
+    Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm
+    changeProjectLeaderForm, BTGReportForm
 
 import CompanyMaster
 import employee
 from employee.models import Remainder
-from CompanyMaster.models import Holiday, HRActivity, Customer
+from CompanyMaster.models import Holiday, HRActivity
 
 
 from ldap import LDAPError
@@ -467,7 +467,6 @@ def Timesheet(request):
                 if 'project' in eachContent:
                     eachContent['projectType'] = eachContent['project'].projectType.code
 
-
         # Constructing status of timesheet
 
         data = {'weekstartDate': dates['start'],
@@ -828,6 +827,7 @@ def ApproveTimesheet(request):
 def Dashboard(request):
     if request.method == 'POST':
         myremainder = MyRemainderForm(request.POST)
+        btg = BTGReportForm(request.POST, user=request.user)
         if myremainder.is_valid():
             remaind = Remainder()
             remaind.name = myremainder.cleaned_data['name']
@@ -835,7 +835,15 @@ def Dashboard(request):
             remaind.endDate = myremainder.cleaned_data['endDate']
             remaind.user = request.user.employee
             remaind.save()
+        if btg.is_valid():
+            updateBtg = BTGReport()
+            updateBtg.project = btg.cleaned_data['project']
+            updateBtg.btg = btg.cleaned_data['btg']
+            updateBtg.btgDate = datetime.now().date()
+            updateBtg.member = request.user
+            updateBtg.save()
     remainder = MyRemainderForm()
+    btg = BTGReportForm()
     myRemainders = Remainder.objects.filter(
         user=request.user.employee).values('name', 'startDate', 'endDate', 'id')
     if len(myRemainders):
@@ -1017,6 +1025,7 @@ def Dashboard(request):
         'myProjects': myProjects,
         'currentProjects': currentProjects,
         'remainderForm': remainder,
+        'btgForm': btg,
         'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,

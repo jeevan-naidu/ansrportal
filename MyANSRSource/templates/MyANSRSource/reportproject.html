@@ -1,6 +1,7 @@
 {% extends 'reportMaster.inc' %}
 {% load bootstrap3 %}
 {% load fontawesome %}
+{% load humanize %}
 
 {%block childcontent %}
 <div class="row">
@@ -20,12 +21,23 @@
                 </tr>
                 <tr>
                     {% for field in form %}
-                        <td>{{ field }}</td> 
+                        <td class="col-lg-10">{{ field }}</td> 
                     {% endfor %}
                     <td><button type="submit" class="btn btn-primary">
                         {% fontawesome_icon 'line-chart' large=True %}
                         Get Report
                     </button></td>
+                    <td>
+                        {% if fresh == 0 %}
+                            <input type="hidden" value="export" name="status" />
+                            <button type="submit" class="btn btn-success">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
                 </tr>
             </table>
         </form>
@@ -37,6 +49,8 @@
                 <th>End Date</th> 
                 <th>Planned Effort</th> 
                 <th>Total Value</th> 
+                <th>Salesforce Number</th> 
+                <th>Contract Signed</th> 
             </tr>
             </thead>
             {% if fresh %}
@@ -45,11 +59,13 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td>{{ basicData.name }}</td> 
+                    <td>{{ basicData.code }}:{{ basicData.name }}</td> 
                     <td>{{ basicData.startDate }}</td> 
                     <td>{{ basicData.endDate }}</td> 
-                    <td>{{ basicData.plannedEffort }}</td> 
-                    <td>{{ basicData.totalValue }}</td> 
+                    <td class="text-center">{{ basicData.plannedEffort }}</td> 
+                    <td class="text-center">${{ basicData.totalValue | intcomma }}</td> 
+                    <td class="text-center">{{ basicData.salesForceNumber | intcomma }}</td> 
+                    <td>{{ basicData.signed }}</td> 
                 </tr>
             {% endif %}
         </table>
@@ -62,8 +78,6 @@
                 <th>P.O.</th> 
                 <th>Revised Effort</th> 
                 <th>Revised Total</th> 
-                <th>SalesForce Number</th> 
-                <th>Signed</th> 
             </tr>
             </thead>
             {% if crData %}
@@ -72,11 +86,19 @@
                         <td>{{ eachData.crId }}</td> 
                         <td>{{ eachData.reason }}</td> 
                         <td>{{ eachData.endDate }}</td> 
-                        <td>{{ eachData.po }}</td> 
-                        <td>{{ eachData.revisedEffort }}</td> 
-                        <td>{{ eachData.revisedTotal }}</td> 
-                        <td>{{ eachData.salesForceNumber }}</td> 
-                        <td>{{ eachData.signed }}</td> 
+                        <td class="text-center">{{ eachData.po }}</td> 
+                        <td class="text-center">{{ eachData.revisedEffort }}</td> 
+                        <td class="text-center">${{ eachData.revisedTotal | intcomma }}</td> 
+                    </tr>
+                    <tr>
+                    {% if eachData.closed %}
+                        <td colspan="8" class="text-center"><h4><small>Project Closed On : <b>{{ eachData.closedOn }}</b></small></h4></td> 
+                    {% endif %}
+                    </tr>
+                    <tr>
+                    {% if eachData.closed %}
+                        <td colspan="8" class="text-center"><h4><small>Project Closed On : <b>{{ eachData.closedOn }}</b></small></h4></td> 
+                    {% endif %}
                     </tr>
                 {% endfor %}
             {% else %}
@@ -107,7 +129,7 @@
                         <td>{{ eachData.description }}</td> 
                         <td>{{ eachData.milestoneDate }}</td> 
                         <td>{{ eachData.financial }}</td> 
-                        <td>{{ eachData.amount }}</td> 
+                        <td class="text-center">${{ eachData.amount | intcomma }}</td> 
                         <td>{{ eachData.closed }}</td> 
                     </tr>
                 {% endfor %}
@@ -127,7 +149,7 @@
             <thead>
             <tr>
                 <th>Member Name</th> 
-                <th>Designation</th> 
+                <th>Role</th> 
                 <th>Planned Effort</th> 
                 <th>Actual Effort</th> 
                 <th>Deviation(%)</th> 
@@ -138,26 +160,23 @@
                     <tr>
                         <td>{{ eachData.teamMember }}</td> 
                         <td>{{ eachData.designation }}</td> 
-                        <td>{{ eachData.planned }}</td> 
-                        <td>{{ eachData.actual }}</td> 
+                        <td class="text-center">{{ eachData.planned }}</td> 
+                        <td class="text-center">{{ eachData.actual }}</td> 
                         {% if eachData.deviation >= 0 %}
-                            <td style="color: green"><b>{{ eachData.deviation }}</b></td> 
+                            <td class="text-center" style="color: green"><b>{{ eachData.deviation }}</b></td> 
                         {% else %}
-                            <td style="color: red"><b>{{ eachData.deviation }}</b></td> 
+                            <td class="text-center" style="color: red"><b>{{ eachData.deviation }}</b></td> 
                         {% endif %}
                     </tr>
                 {% endfor %}
                     <tr>
-                        <td colspan=5 class="text-center"><h4><small>Total Planned Effort : <b>{{ plannedTotal }}</b></small></h4></td>
-                    </tr>
-                    <tr>
-                        <td colspan=5 class="text-center"><h4><small>Total Actual Effort : <b>{{ actualTotal }}</b></small></h4></td>
-                    </tr>
-                    <tr>
+                        <td colspan=2><h4><small><b>Total  </b></small></h4></td>
+                        <td class="text-center"><h4><small><b>{{ plannedTotal }}</b></small></h4></td>
+                        <td class="text-center"><h4><small><b>{{ actualTotal }}</b></small></h4></td>
                         {% if deviation >= 0 %}
-                            <td colspan=5 class="text-center"><h4><small>Deviation(%) : <b style="color: green">{{ deviation }}</b></small></h4></td>
+                            <td class="text-center"><h4><small><b style="color: green">{{ deviation }}</b></small></h4></td>
                         {% else %}
-                            <td colspan=5 class="text-center"><h4><small>Deviation(%) : <b style="color: red">{{ deviation }}</b></small></h4></td>
+                            <td class="text-center"><h4><small><b style="color: red">{{ deviation }}</b></small></h4></td>
                         {% endif %}
                     </tr>
             {% else %}
