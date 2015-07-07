@@ -2,9 +2,10 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 from django.contrib.auth.decorators import login_required
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
-    ProjectPerfomanceReportForm, UtilizationReportForm
+    ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
+    BTGReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember, ProjectManager
+    ProjectMilestone, ProjectTeamMember, ProjectManager, Project
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from datetime import timedelta, datetime
@@ -22,6 +23,7 @@ import string
 @permission_required('MyANSRSource.create_project')
 def TeamMemberReport(request):
     report = {}
+    member, startDate, endDate = '', '', ''
     form = TeamMemberPerfomanceReportForm()
     grdTotal = ''
     fresh = 1
@@ -92,7 +94,20 @@ def TeamMemberReport(request):
                     eachData['minProd'] = min(units)
                     eachData['avgProd'] = round(sum(units) / len(units), 2)
                     eachData['medianProd'] = units[len(units) // 2]
-                grdTotal = sum([eachData['totalHours'] for eachData in report])
+                    if eachData['chapter__name'] == ' -  ':
+                        eachData['totalValue'] = ' -  '
+                        eachData['minProd'] = ' -  '
+                        eachData['maxProd'] = ' -  '
+                        eachData['avgProd'] = ' -  '
+                        eachData['medianProd'] = ' -  '
+                nonProjectTotal = sum([
+                    eachData['totalHours'] for eachData in report if eachData['chapter__name'] == ' -  '
+                ])
+                projectTotal = sum([
+                    eachData['totalHours'] for eachData in report if eachData['chapter__name'] != ' -  '
+                ])
+                grdTotal = {'nTotal': nonProjectTotal,
+                            'pTotal': projectTotal}
                 fresh = 2
                 if 'status' in request.POST:
                     sheetName = ['TeamMember Perfomance']
@@ -110,6 +125,9 @@ def TeamMemberReport(request):
                                          heading, grdTotal, fileName)
             else:
                 fresh = 0
+            startDate = reportData.cleaned_data['startDate']
+            endDate = reportData.cleaned_data['endDate']
+            member = reportData.cleaned_data['member']
             form = TeamMemberPerfomanceReportForm(initial={
                 'startDate': reportData.cleaned_data['startDate'],
                 'endDate': reportData.cleaned_data['endDate'],
@@ -121,7 +139,8 @@ def TeamMemberReport(request):
     return render(request,
                   'MyANSRSource/reportmember.html',
                   {'form': form, 'data': report, 'fresh': fresh,
-                   'grandTotal': grdTotal
+                   'grandTotal': grdTotal, 'startDate': startDate,
+                   'endDate': endDate, 'member': member
                    })
 
 
@@ -143,17 +162,19 @@ def ProjectReport(request):
         if reportData.is_valid():
             cProject = reportData.cleaned_data['project']
             basicData = {
+                'code': cProject.projectId,
                 'name': cProject.name,
                 'startDate': cProject.startDate,
                 'endDate': cProject.endDate,
                 'plannedEffort': cProject.plannedEffort,
-                'totalValue': cProject.totalValue
+                'totalValue': cProject.totalValue,
+                'salesForceNumber': cProject.salesForceNumber,
+                'signed': cProject.signed
             }
             crData = ProjectChangeInfo.objects.filter(
                 project=cProject
             ).values('crId', 'reason', 'endDate', 'po', 'revisedEffort',
-                     'revisedTotal', 'salesForceNumber', 'closed',
-                     'closedOn', 'signed')
+                     'revisedTotal', 'closed', 'closedOn')
             msData = ProjectMilestone.objects.filter(
                 project=cProject
             ).values('description', 'financial', 'milestoneDate',
@@ -170,9 +191,11 @@ def ProjectReport(request):
                        saturdayh=Sum('saturdayH'),
                        sundayh=Sum('sundayH')
                        )
-            form = ProjectPerfomanceReportForm(initial={
-                'project': reportData.cleaned_data['project'],
-            }, user=request.user)
+            if len(basicData):
+                if basicData['signed']:
+                    basicData['signed'] = 'Yes'
+                else:
+                    basicData['signed'] = 'No'
             if len(msData):
                 for eachRec in msData:
                     if eachRec['financial']:
@@ -224,6 +247,10 @@ def ProjectReport(request):
                     deviation = round(actualTotal / plannedTotal * 100)
                 except ZeroDivisionError:
                     deviation = 0
+            form = ProjectPerfomanceReportForm(
+                user=request.user,
+                initial={'project': cProject}
+            )
             if 'status' in request.POST:
                 fileName = '{0}_{1}.xlsx'.format(
                     datetime.now().date(),
@@ -237,9 +264,9 @@ def ProjectReport(request):
                              'TM Perfomance']
                 heading = [
                     ['Project Name', 'Start Date', 'End Date', 'Planned Effort',
-                     'Total Value'],
+                     'Total Value', 'salesForceNumber', 'Signed'],
                     ['CR#', 'Reason', 'End Date', 'P.O.', 'Revised Effort',
-                     'Revised Total', 'SalesForce Number', 'Signed'],
+                     'Revised Total'],
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
@@ -340,6 +367,32 @@ def ProjectPerfomanceReport(request):
                    'iiTotal': iidleTotal, 'ioTotal': iothersTotal,
                    'eiTotal': eidleTotal, 'eoTotal': eothersTotal,
                    'month': reportMonth, 'year': reportYear})
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def RevenueRecognitionReport(request):
+    fresh = 1
+    # cMonth = datetime.now().month
+    btg = BTGReportForm()
+    data = Project.objects.exclude(
+        closed=True,
+    ).values('projectId', 'name', 'totalValue',
+             'plannedEffort', 'startDate', 'endDate')
+    if len(data):
+        for eachMem in data:
+            # l = []
+            mem = ProjectManager.objects.filter(
+                project__projectId=eachMem['projectId']
+            ).values('user__username')
+            eachMem['tl'] = mem
+        fresh = 0
+    if request.method == 'POST':
+        pass
+    return render(request, 'MyANSRSource/reportrevenue.html',
+                  {'fresh': fresh,
+                   'data': data,
+                   'form': btg})
 
 
 @login_required
@@ -495,7 +548,9 @@ def generateMemberContent(request, header, report, worksheet,
         else:
             worksheet.write(row, 12, 'Submitted', content)
         row += 1
-    msg = "Total Hours(s) : {0}".format(grdTotal)
+    msg0 = "Total Non-Project Hours(s) : {0}".format(grdTotal['nTotal'])
+    msg1 = "Total Project Hours(s) : {0}".format(grdTotal['pTotal'])
+    msg = msg0 + '  ' + msg1
     generateReportFooter(request, worksheet, alp[12], row+1,
                          header, msg)
 
@@ -511,6 +566,8 @@ def generateProjectContent(request, header, report, worksheet,
         worksheet.write(row, 2, report['endDate'], dateformat)
         worksheet.write(row, 3, report['plannedEffort'], content)
         worksheet.write(row, 4, report['totalValue'], content)
+        worksheet.write(row, 5, report['salesForceNumber'], content)
+        worksheet.write(row, 6, report['signed'], content)
     else:
         row, msg = 1, ''
         for eachRec in report:
@@ -521,11 +578,6 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 3, eachRec['po'], content)
                 worksheet.write(row, 4, eachRec['revisedEffort'], content)
                 worksheet.write(row, 5, eachRec['revisedTotal'], content)
-                worksheet.write(row, 6, eachRec['salesForceNumber'], content)
-                if eachRec['signed']:
-                    worksheet.write(row, 7, 'True', content)
-                else:
-                    worksheet.write(row, 7, 'False', content)
                 if eachRec['closed']:
                     msg = "Project Closed On : {0}".format(
                         eachRec['closedOn']
@@ -595,6 +647,14 @@ def generateProjectPerfContent(request, header, report, worksheet,
     totalCell = 'A{0}'.format(row+1)
     total = "Total Hour(s) : {0}".format(grdTotal)
     worksheet.write(totalCell, total, header)
+
+
+@login_required
+def BalanceToGo(request):
+    btgForm = BTGForm(user=request.user)
+    return render(request,
+                  'MyANSRSource/reportbtg.html',
+                  {'form': btgForm})
 
 
 @login_required

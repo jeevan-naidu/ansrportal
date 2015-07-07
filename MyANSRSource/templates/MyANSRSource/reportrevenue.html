@@ -1,0 +1,96 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in btgForm %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td> 
+                    {% endfor %}
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="submit">
+                        {% fontawesome_icon 'line-chart' large=True %}
+                        Get Report
+                    </button></td>
+                    <td class="col-lg-1">
+                        {% if fresh != 0 and fresh != 1 %}
+                            <input type="hidden" value="export" name="status" />
+                            <button type="submit" class="btn btn-success">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Project ID</th> 
+                <th>Project Name</th> 
+                <th>Project Value</th> 
+                <th>Planned Effort</th> 
+                <th>Start Date</th> 
+                <th>End Date</th> 
+                <th>Team Lead</th> 
+                <th>Actual Effort till Last Month</th> 
+                <th>Actual Effort for current Month</th> 
+                <th>Period to date(PTD) actual Effort</th> 
+                <th>BTG</th> 
+                <th>Projected Total Efforts</th> 
+                <th>RR till last month</th> 
+                <th>RR till current month</th> 
+                <th>Invoicing until last month</th> 
+                <th>Invoicing for current month</th> 
+                <th>PTD Invoicing</th> 
+                <th>Actual for current month</th> 
+                <th>PTD Accrual</th> 
+                <th>Onverrun / Underrun</th> 
+            </tr>
+            </thead>
+            {% if fresh %}
+                <tr>
+                    <td colspan="21" class="text-center"><h4><small><b>You don't have any projects to look out for</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% for basicData in data %}
+                    <tr>
+                        <td>{{ basicData.projectId }}</td> 
+                        <td>{{ basicData.name }}</td> 
+                        <td>{{ basicData.totalValue }}</td> 
+                        <td>{{ basicData.plannedEffort }}</td> 
+                        <td>{{ basicData.startDate }}</td> 
+                        <td>{{ basicData.endDate }}</td>
+                        <td> 
+                            {% for eachTL in basicData.tl %}
+                                {% if forloop.last %}
+                                    {{ eachTL.user__username }}
+                                {% else %}
+                                    {{ eachTL.user__username }},
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}

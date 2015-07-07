@@ -40,6 +40,13 @@
                 </tr>
             </table>
         </form>
+        {% if member %}
+            <h3><small><b>
+                    <span>Member: {{ member }} </span>  
+                    <span>From: {{ startDate }} </span>
+                    <span>To: {{ endDate }}</b></span>
+            </b></small></h3>
+        {% endif %}
         <table class="table table-condensed">
             <thead>
             <tr>
@@ -82,14 +89,19 @@
                         <td>{{ eachData.medianProd }}</td> 
                         <td>{{ eachData.project__maxProductivityUnits }}</td> 
                         {% if eachData.hold %}
-                           <td>Submitted</td>
+                           <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
                         {% else %}
-                           <td>Not-Submitted</td>
+                           <td>{% fontawesome_icon 'chevron-circle-down' large=True color='red' %}</td>
                         {% endif %}
                     </tr>
                 {% endfor %}
                     <tr>
-                        <td colspan="11" class="text-center"><h3><small><b>Total Hours : {{ grandTotal }}</b></small></h3><td>
+                        <td colspan="4" class="text-center"><h3><small><b>Total Non Project Hour(s)</b></small></h3><td>
+                        <td><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
+                    <tr>
+                    <tr>
+                        <td colspan="4" class="text-center"><h3><small><b>Total Project Hour(s)</b></small></h3><td>
+                        <td><h3><small><b>{{ grandTotal.pTotal }}</b></small></h3><td>
                     <tr>
             {% endif %}
         </table>
