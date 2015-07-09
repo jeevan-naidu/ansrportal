@@ -61,7 +61,13 @@
                 <tr>
                     <td>{{ basicData.code }}:{{ basicData.name }}</td> 
                     <td>{{ basicData.startDate }}</td> 
-                    <td>{{ basicData.endDate }}</td> 
+                    {% if red %}
+                    <td style="color: red">
+                    {% else %}
+                    <td>
+                    {% endif %}
+                        {{ basicData.endDate }}
+                    </td> 
                     <td class="text-center">{{ basicData.plannedEffort }}</td> 
                     <td class="text-center">${{ basicData.totalValue | intcomma }}</td> 
                     <td class="text-center">{{ basicData.salesForceNumber | intcomma }}</td> 

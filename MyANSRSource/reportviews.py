@@ -154,6 +154,7 @@ def ProjectReport(request):
     pEffort = 0
     fresh = 1
     actualTotal, plannedTotal, deviation = 0, 0, 0
+    red = False
     form = ProjectPerfomanceReportForm(user=request.user)
     if request.method == 'POST':
         fresh = 0
@@ -175,6 +176,9 @@ def ProjectReport(request):
                 project=cProject
             ).values('crId', 'reason', 'endDate', 'po', 'revisedEffort',
                      'revisedTotal', 'closed', 'closedOn')
+            if basicData['endDate'] < datetime.now().date() \
+                    and cProject.closed is False:
+                red = True
             msData = ProjectMilestone.objects.filter(
                 project=cProject
             ).values('description', 'financial', 'milestoneDate',
@@ -282,7 +286,7 @@ def ProjectReport(request):
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
                    'crData': crData, 'tsData': tsData, 'msData': msData,
                    'actualTotal': actualTotal, 'plannedTotal': plannedTotal,
-                   'deviation': deviation}
+                   'deviation': deviation, 'red': red}
                   )
 
 
