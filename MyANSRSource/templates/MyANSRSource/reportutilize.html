@@ -48,12 +48,12 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Customer Name</th> 
-                <th>Lead</th> 
                 <th>Project Code</th> 
                 <th>Project Name</th> 
                 <th>Project Type</th> 
                 <th>BU</th> 
+                <th>Customer Name</th> 
+                <th>Lead</th> 
                 <th>Start Date</th> 
                 <th>End Date</th> 
                 <th>Total Value</th> 
@@ -65,6 +65,10 @@
             {% if data.external %}
                 {% for eachData in data.external %}
                     <tr>
+                        <td>{{ eachData.project__projectId }}</td> 
+                        <td>{{ eachData.project__name }}</td> 
+                        <td>{{ eachData.project__projectType__description }}</td> 
+                        <td>{{ eachData.project__bu__name }}</td> 
                         <td>{{ eachData.project__customer__name }}</td> 
                         {% if eachData.lead %}
                             <td> 
@@ -75,10 +79,6 @@
                         {% else %}
                                 <td>-<td>
                         {% endif %} 
-                        <td>{{ eachData.project__projectId }}</td> 
-                        <td>{{ eachData.project__name }}</td> 
-                        <td>{{ eachData.project__projectType__description }}</td> 
-                        <td>{{ eachData.project__bu__name }}</td> 
                         <td>{{ eachData.project__startDate }}</td> 
                         <td>{{ eachData.project__endDate }}</td> 
                         <td class="text-center">{{ eachData.project__totalValue | intcomma }}</td> 
@@ -120,12 +120,12 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Customer Name</th> 
-                <th>Lead</th> 
                 <th>Project Code</th> 
                 <th>Project Name</th> 
-                <th>Billed Type</th> 
+                <th>Project Type</th> 
                 <th>BU</th> 
+                <th>Customer Name</th> 
+                <th>Lead</th> 
                 <th>Start Date</th> 
                 <th>End Date</th> 
                 <th>Total Value</th> 
@@ -137,6 +137,10 @@
             {% if data.internal %}
                 {% for eachData in data.internal %}
                     <tr>
+                        <td>{{ eachData.project__projectId }}</td> 
+                        <td>{{ eachData.project__name }}</td> 
+                        <td>{{ eachData.project__projectType__description }}</td> 
+                        <td>{{ eachData.project__bu__name }}</td> 
                         <td>{{ eachData.project__customer__name }}</td> 
                         {% if eachData.lead %}
                             <td> 
@@ -147,10 +151,6 @@
                         {% else %}
                                 <td>-<td>
                         {% endif %} 
-                        <td>{{ eachData.project__projectId }}</td> 
-                        <td>{{ eachData.project__name }}</td> 
-                        <td>{{ eachData.project__projectType__description }}</td> 
-                        <td>{{ eachData.project__bu__name }}</td> 
                         <td>{{ eachData.project__startDate }}</td> 
                         <td>{{ eachData.project__endDate }}</td> 
                         <td class="text-center">{{ eachData.project__totalValue | intcomma }}</td> 
