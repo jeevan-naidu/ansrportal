@@ -86,13 +86,13 @@
                         <td>{{ eachData.project__book__name }}</td> 
                         <td>{{ eachData.chapter__name }}</td> 
                         <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
-                        <td>{{ eachData.totalHours }}</td> 
-                        <td>{{ eachData.totalValue }}</td> 
-                        <td>{{ eachData.avgProd }}</td> 
-                        <td>{{ eachData.minProd }}</td> 
-                        <td>{{ eachData.maxProd }}</td> 
-                        <td>{{ eachData.medianProd }}</td> 
-                        <td>{{ eachData.project__maxProductivityUnits }}</td> 
+                        <td class="text-center">{{ eachData.totalHours }}</td> 
+                        <td class="text-center">{{ eachData.totalValue }}</td> 
+                        <td class="text-center">{{ eachData.avgProd }}</td> 
+                        <td class="text-center">{{ eachData.minProd }}</td> 
+                        <td class="text-center">{{ eachData.maxProd }}</td> 
+                        <td class="text-center">{{ eachData.medianProd }}</td> 
+                        <td class="text-center">{{ eachData.project__maxProductivityUnits }}</td> 
                         {% if eachData.hold %}
                            <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
                         {% else %}
@@ -102,11 +102,11 @@
                 {% endfor %}
                     <tr>
                         <td colspan="4" class="text-center"><h3><small><b>Total Non Project Hour(s)</b></small></h3><td>
-                        <td><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
+                        <td class="text-center"><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
                     <tr>
                     <tr>
                         <td colspan="4" class="text-center"><h3><small><b>Total Project Hour(s)</b></small></h3><td>
-                        <td><h3><small><b>{{ grandTotal.pTotal }}</b></small></h3><td>
+                        <td class="text-center"><h3><small><b>{{ grandTotal.pTotal }}</b></small></h3><td>
                     <tr>
             {% endif %}
         </table>

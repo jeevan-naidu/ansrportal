@@ -81,28 +81,28 @@
                         <td>{{ eachData.project__bu__name }}</td> 
                         <td>{{ eachData.project__startDate }}</td> 
                         <td>{{ eachData.project__endDate }}</td> 
-                        <td>{{ eachData.project__totalValue | intcomma }}</td> 
-                        <td>{{ eachData.project__plannedEffort }}</td>
+                        <td class="text-center">{{ eachData.project__totalValue | intcomma }}</td> 
+                        <td class="text-center">{{ eachData.project__plannedEffort }}</td>
                         {% if eachData.others %} 
                             {% for t in eachData.others %}
-                                <td>{{ t.otherstotal }}</td>
+                                <td class="text-center">{{ t.otherstotal }}</td>
                             {% endfor %}
                         {% else %}
-                                <td>0<td>
+                                <td class="text-center">0<td>
                         {% endif %} 
                         {% if eachData.idle %} 
                             {% for t in eachData.idle %}
-                                <td>{{ t.idletotal }}</td>
+                                <td class="text-center">{{ t.idletotal }}</td>
                             {% endfor %}
                         {% else %}
-                                <td>0<td>
+                                <td class="text-center">0<td>
                         {% endif %} 
                     </tr>
                 {% endfor %}
                 <tr>
                     <td colspan="10" class="text-center"><h4><small><b>Total</b></small></h4></td>
-                    <td><h4><small><b>{{ eoTotal }}</b></small></h4></td>
-                    <td><h4><small><b>{{ eiTotal }}</b></small></h4></td>
+                    <td class="text-center"><h4><small><b>{{ eoTotal }}</b></small></h4></td>
+                    <td class="text-center"><h4><small><b>{{ eiTotal }}</b></small></h4></td>
                 </tr>
             {% else %}
                 {% if fresh %}
@@ -153,28 +153,28 @@
                         <td>{{ eachData.project__bu__name }}</td> 
                         <td>{{ eachData.project__startDate }}</td> 
                         <td>{{ eachData.project__endDate }}</td> 
-                        <td>{{ eachData.project__totalValue | intcomma }}</td> 
-                        <td>{{ eachData.project__plannedEffort }}</td>
+                        <td class="text-center">{{ eachData.project__totalValue | intcomma }}</td> 
+                        <td class="text-center">{{ eachData.project__plannedEffort }}</td>
                         {% if eachData.others %} 
                             {% for t in eachData.others %}
-                                <td>{{ t.otherstotal }}</td>
+                                <td class="text-center">{{ t.otherstotal }}</td>
                             {% endfor %}
                         {% else %}
-                                <td>0<td>
+                                <td class="text-center">0<td>
                         {% endif %} 
                         {% if eachData.idle %} 
                             {% for t in eachData.idle %}
-                                <td>{{ t.idletotal }}</td>
+                                <td class="text-center">{{ t.idletotal }}</td>
                             {% endfor %}
                         {% else %}
-                                <td>0<td>
+                                <td class="text-center">0<td>
                         {% endif %} 
                     </tr>
                 {% endfor %}
                 <tr>
                     <td colspan="10" class="text-center"><h4><small><b>Total</b></small></h4></td>
-                    <td><h4><small><b>{{ ioTotal }}</b></small></h4></td>
-                    <td><h4><small><b>{{ iiTotal }}</b></small></h4></td>
+                    <td class="text-center"><h4><small><b>{{ ioTotal }}</b></small></h4></td>
+                    <td class="text-center"><h4><small><b>{{ iiTotal }}</b></small></h4></td>
                 </tr>
             {% else %}
                 {% if fresh %}
