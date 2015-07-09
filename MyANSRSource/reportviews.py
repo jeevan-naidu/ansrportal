@@ -244,7 +244,9 @@ def ProjectReport(request):
                 except ZeroDivisionError:
                     plannedTotal = 0
                 try:
-                    deviation = round(actualTotal / plannedTotal * 100)
+                    deviation = round((
+                        (actualTotal - plannedTotal) * 100
+                    ) / plannedTotal)
                 except ZeroDivisionError:
                     deviation = 0
             form = ProjectPerfomanceReportForm(
