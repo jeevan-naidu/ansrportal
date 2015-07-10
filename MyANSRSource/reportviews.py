@@ -148,9 +148,7 @@ def TeamMemberReport(request):
 @permission_required('MyANSRSource.create_project')
 def ProjectReport(request):
     basicData = {}
-    crData = []
-    tsData = []
-    msData = []
+    crData, tsData, msData, taskData = [], [], [], []
     pEffort = 0
     fresh = 1
     actualTotal, plannedTotal, deviation = 0, 0, 0
@@ -183,6 +181,24 @@ def ProjectReport(request):
                 project=cProject
             ).values('description', 'financial', 'milestoneDate',
                      'amount', 'closed')
+            taskData = TimeSheetEntry.objects.filter(
+                project=cProject
+            ).values(
+                'task__name'
+            ).annotate(monday=Sum('mondayQ'),
+                       tuesday=Sum('tuesdayQ'),
+                       wednesday=Sum('wednesdayQ'),
+                       thursday=Sum('thursdayQ'),
+                       friday=Sum('fridayQ'),
+                       saturday=Sum('saturdayQ'),
+                       sunday=Sum('sundayQ')
+                       )
+            for eachData in taskData:
+                eachData['total'] = 0.0
+                eachData['norm'] = cProject.maxProductivityUnits
+                for k, v in eachData.iteritems():
+                    if k != 'task__name' and k != 'total':
+                        eachData['total'] += float(v)
             tsData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
@@ -263,11 +279,12 @@ def ProjectReport(request):
                     datetime.now().time()
                 )
                 fileName = fileName.replace("  ", "_")
-                report = [basicData, crData, msData, tsData]
+                report = [basicData, crData, msData, tsData, taskData]
                 sheetName = ['Basic Information',
                              'Change Requests',
                              'Milestones',
-                             'TM Perfomance']
+                             'TM Perfomance',
+                             'Productivity']
                 heading = [
                     ['Project Name', 'Start Date', 'End Date', 'Planned Effort',
                      'Total Value', 'salesForceNumber', 'Signed'],
@@ -276,7 +293,8 @@ def ProjectReport(request):
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
-                     'Actual Effort', 'Deviation(%)']
+                     'Actual Effort', 'Deviation(%)'],
+                    ['Task Name', 'Norm', 'Actual']
                 ]
                 grdTotal = [plannedTotal, actualTotal, deviation]
                 return generateExcel(request, report, sheetName,
@@ -285,8 +303,9 @@ def ProjectReport(request):
                   'MyANSRSource/reportproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
                    'crData': crData, 'tsData': tsData, 'msData': msData,
-                   'actualTotal': actualTotal, 'plannedTotal': plannedTotal,
-                   'deviation': deviation, 'red': red}
+                   'taskData': taskData, 'actualTotal': actualTotal,
+                   'plannedTotal': plannedTotal, 'deviation': deviation,
+                   'red': red}
                   )
 
 
@@ -596,6 +615,12 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 2, eachRec['financial'], content)
                 worksheet.write(row, 3, eachRec['amount'], content)
                 worksheet.write(row, 4, eachRec['closed'], content)
+            row += 1
+
+            if 'task__name' in eachRec:
+                worksheet.write(row, 0, eachRec['task__name'], content)
+                worksheet.write(row, 1, eachRec['norm'], content)
+                worksheet.write(row, 2, eachRec['total'], content)
             row += 1
 
         row, msg = 1, ''

@@ -192,6 +192,34 @@
                 {% endif %}
             {% endif %}
         </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Task Name</th> 
+                <th>Norm</th> 
+                <th>Actual</th> 
+            </tr>
+            </thead>
+            {% if taskData %}
+                {% for eachData in taskData %}
+                    <tr>
+                        <td>{{ eachData.task__name }}</td> 
+                        <td class="text-center">{{ eachData.norm }}</td> 
+                        <td class="text-center">{{ eachData.total }}</td> 
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="3" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
 	</div>
 </div>
 {% endblock %}
