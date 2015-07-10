@@ -827,7 +827,7 @@ def ApproveTimesheet(request):
 def Dashboard(request):
     if request.method == 'POST':
         myremainder = MyRemainderForm(request.POST)
-        btg = BTGReportForm(request.POST, user=request.user)
+        btg = BTGReportForm(request.POST)
         if myremainder.is_valid():
             remaind = Remainder()
             remaind.name = myremainder.cleaned_data['name']
@@ -843,7 +843,7 @@ def Dashboard(request):
             updateBtg.member = request.user
             updateBtg.save()
     remainder = MyRemainderForm()
-    btg = BTGReportForm()
+    #btg = BTGReportForm()
     myRemainders = Remainder.objects.filter(
         user=request.user.employee).values('name', 'startDate', 'endDate', 'id')
     if len(myRemainders):
@@ -1025,7 +1025,6 @@ def Dashboard(request):
         'myProjects': myProjects,
         'currentProjects': currentProjects,
         'remainderForm': remainder,
-        'btgForm': btg,
         'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,
