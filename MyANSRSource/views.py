@@ -1597,9 +1597,31 @@ class ManageTeamWizard(SessionWizardView):
             context.update({'holidayList': json.dumps(data)})
         return context
 
+    def get_form(self, step=None, data=None, files=None):
+        form = super(ManageTeamWizard, self).get_form(step, data, files)
+        step = step if step else self.steps.current
+        if step == 'Manage Team':
+            selectedProjectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            projectObj = Project.objects.get(pk=selectedProjectId)
+            predicted = projectObj.plannedEffort
+            actual = 0
+            for eachForm in form:
+                if eachForm.is_valid():
+                    actual += eachForm.cleaned_data['plannedEffort']
+            if actual > predicted:
+                for eachForm in form:
+                    errors = eachForm._errors.setdefault(
+                        actual, ErrorList())
+                    errors.append(u'Total planned effort is more than \
+                                  project total effort')
+        return form
+
     def done(self, form_list, **kwargs):
         project = [form.cleaned_data for form in form_list][0]['project']
-        for eachData in [form.cleaned_data for form in form_list][1]:
+        cleanList = [form.cleaned_data for form in form_list][1]
+        for eachData in cleanList:
             if None in eachData.values():
                 pass
             else:
