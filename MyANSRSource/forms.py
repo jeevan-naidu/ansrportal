@@ -615,8 +615,7 @@ class ProjectPerfomanceReportForm(forms.Form):
 
 
 class UtilizationReportForm(forms.Form):
-    bu = forms.ModelChoiceField(
-        queryset=None,
+    bu = forms.ChoiceField(
         label="Business Unit",
         required=True,
     )
@@ -627,11 +626,12 @@ class UtilizationReportForm(forms.Form):
         currentUser = kwargs.pop('user')
         super(UtilizationReportForm, self).__init__(*args, **kwargs)
         if currentUser.has_perm('MyANSRSource.report_superuser'):
-            self.fields['bu'].queryset = BusinessUnit.objects.all()
+            bu = list(BusinessUnit.objects.all())
+            opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
+            self.fields['bu'].choices = opt
         else:
-            self.fields['bu'].queryset = BusinessUnit.objects.filter(
-                bu_head=currentUser
-            )
+            bu = list(BusinessUnit.objects.filter(bu_head=currentUser))
+            self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
         self.fields['bu'].widget.attrs['class'] = "form-control"
         self.fields['year'].widget.attrs['class'] = "form-control"
         self.fields['month'].widget.attrs['class'] = "form-control"

@@ -47,10 +47,11 @@
                 <th>Project Name</th> 
                 <th>Start Date</th> 
                 <th>End Date</th> 
-                <th>Planned Effort</th> 
-                <th>Total Value</th> 
-                <th>Salesforce Number</th> 
+                <th>P.O.</th> 
                 <th>Contract Signed</th> 
+                <th class="text-right">Planned Effort</th> 
+                <th class="text-right">Total Value</th> 
+                <th class="text-right">Salesforce Number</th> 
             </tr>
             </thead>
             {% if fresh %}
@@ -59,7 +60,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td>{{ basicData.code }}:{{ basicData.name }}</td> 
+                    <td>{{ basicData.code }} : {{ basicData.name }}</td> 
                     <td>{{ basicData.startDate }}</td> 
                     {% if red %}
                     <td style="color: red">
@@ -68,10 +69,11 @@
                     {% endif %}
                         {{ basicData.endDate }}
                     </td> 
-                    <td class="text-center">{{ basicData.plannedEffort }}</td> 
-                    <td class="text-center">${{ basicData.totalValue | intcomma }}</td> 
-                    <td class="text-center">{{ basicData.salesForceNumber | intcomma }}</td> 
+                    <td>{{ basicData.po }}</td> 
                     <td>{{ basicData.signed }}</td> 
+                    <td class="text-right">{{ basicData.plannedEffort }}</td> 
+                    <td class="text-right">${{ basicData.totalValue | intcomma }}</td> 
+                    <td class="text-right">{{ basicData.salesForceNumber | intcomma }}</td> 
                 </tr>
             {% endif %}
         </table>
@@ -81,9 +83,8 @@
                 <th>CR#</th> 
                 <th>Reason</th> 
                 <th>End Date</th> 
-                <th>P.O.</th> 
-                <th>Revised Effort</th> 
-                <th>Revised Total</th> 
+                <th class="text-right">Revised Effort</th> 
+                <th class="text-right">Revised Total</th> 
             </tr>
             </thead>
             {% if crData %}
@@ -92,9 +93,8 @@
                         <td>{{ eachData.crId }}</td> 
                         <td>{{ eachData.reason }}</td> 
                         <td>{{ eachData.endDate }}</td> 
-                        <td class="text-center">{{ eachData.po }}</td> 
-                        <td class="text-center">{{ eachData.revisedEffort }}</td> 
-                        <td class="text-center">${{ eachData.revisedTotal | intcomma }}</td> 
+                        <td class="text-right">{{ eachData.revisedEffort }}</td> 
+                        <td class="text-right">${{ eachData.revisedTotal | intcomma }}</td> 
                     </tr>
                     <tr>
                     {% if eachData.closed %}
@@ -120,7 +120,7 @@
                 <th>Milestone Name</th> 
                 <th>Milestone Date</th> 
                 <th>Financial</th> 
-                <th>Value</th> 
+                <th class="text-right">Value</th> 
                 <th>Completed</th> 
             </tr>
             </thead>
@@ -130,7 +130,7 @@
                         <td>{{ eachData.description }}</td> 
                         <td>{{ eachData.milestoneDate }}</td> 
                         <td>{{ eachData.financial }}</td> 
-                        <td class="text-center">${{ eachData.amount | intcomma }}</td> 
+                        <td class="text-right">${{ eachData.amount | intcomma }}</td> 
                         <td>{{ eachData.closed }}</td> 
                     </tr>
                 {% endfor %}
@@ -151,9 +151,9 @@
             <tr>
                 <th>Member Name</th> 
                 <th>Role</th> 
-                <th>Planned Effort</th> 
-                <th>Actual Effort</th> 
-                <th>Deviation(%)</th> 
+                <th class="text-right">Planned Effort</th> 
+                <th class="text-right">Actual Effort</th> 
+                <th class="text-right">Deviation</th> 
             </tr>
             </thead>
             {% if tsData %}
@@ -161,23 +161,23 @@
                     <tr>
                         <td>{{ eachData.teamMember }}</td> 
                         <td>{{ eachData.designation }}</td> 
-                        <td class="text-center">{{ eachData.planned }}</td> 
-                        <td class="text-center">{{ eachData.actual }}</td> 
+                        <td class="text-right">{{ eachData.planned }}</td> 
+                        <td class="text-right">{{ eachData.actual }}</td> 
                         {% if eachData.deviation >= 0 %}
-                            <td class="text-center" style="color: green"><b>{{ eachData.deviation }}</b></td> 
+                            <td class="text-right" style="color: green"><b>{{ eachData.deviation }} %</b></td> 
                         {% else %}
-                            <td class="text-center" style="color: red"><b>{{ eachData.deviation }}</b></td> 
+                            <td class="text-right" style="color: red"><b>{{ eachData.deviation }} %</b></td> 
                         {% endif %}
                     </tr>
                 {% endfor %}
                     <tr>
                         <td colspan=2><h4><small><b>Total  </b></small></h4></td>
-                        <td class="text-center"><h4><small><b>{{ plannedTotal }}</b></small></h4></td>
-                        <td class="text-center"><h4><small><b>{{ actualTotal }}</b></small></h4></td>
+                        <td class="text-right"><h4><small><b>{{ plannedTotal }}</b></small></h4></td>
+                        <td class="text-right"><h4><small><b>{{ actualTotal }}</b></small></h4></td>
                         {% if deviation >= 0 %}
-                            <td class="text-center"><h4><small><b style="color: green">{{ deviation }}</b></small></h4></td>
+                            <td class="text-right"><h4><small><b style="color: green">{{ deviation }} %</b></small></h4></td>
                         {% else %}
-                            <td class="text-center"><h4><small><b style="color: red">{{ deviation }}</b></small></h4></td>
+                            <td class="text-right"><h4><small><b style="color: red">{{ deviation }} %</b></small></h4></td>
                         {% endif %}
                     </tr>
             {% else %}
@@ -196,26 +196,34 @@
             <thead>
             <tr>
                 <th>Task Name</th> 
-                <th>Norm</th> 
-                <th>Actual</th> 
+                <th class="text-right">Norm</th> 
+                <th class="text-right">Min. Productivity</th> 
+                <th class="text-right">Max. Productivity</th> 
+                <th class="text-right">Avg. Productivity</th> 
+                <th class="text-right">Median Productivity</th> 
+                <th class="text-right">Toal Productivity</th> 
             </tr>
             </thead>
             {% if taskData %}
                 {% for eachData in taskData %}
                     <tr>
                         <td>{{ eachData.task__name }}</td> 
-                        <td class="text-center">{{ eachData.norm }}</td> 
-                        <td class="text-center">{{ eachData.total }}</td> 
+                        <td class="text-right">{{ eachData.norm }}</td> 
+                        <td class="text-right">{{ eachData.min }}</td> 
+                        <td class="text-right">{{ eachData.max }}</td> 
+                        <td class="text-right">{{ eachData.avg }}</td> 
+                        <td class="text-right">{{ eachData.median }}</td> 
+                        <td class="text-right">{{ eachData.total }}</td> 
                     </tr>
                 {% endfor %}
             {% else %}
                 {% if fresh %}
                     <tr>
-                        <td colspan="3" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                        <td colspan="7" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="3" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
+                        <td colspan="7" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
                     </tr>
                 {% endif %}
             {% endif %}

@@ -6,6 +6,7 @@ from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     BTGReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember, ProjectManager, Project
+from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from datetime import timedelta, datetime
@@ -17,6 +18,10 @@ import mimetypes
 import xlsxwriter
 import os
 import string
+
+
+days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
+        'sunday']
 
 
 @login_required
@@ -61,9 +66,6 @@ def TeamMemberReport(request):
                        saturdayq=Sum('saturdayQ'),
                        sundayq=Sum('sundayQ')
                        ).order_by('project__projectId', 'hold')
-            days = ['monday', 'tuesday', 'wednesday',
-                    'thursday', 'friday', 'saturday',
-                    'sunday']
             if len(report):
                 for eachData in report:
                     if eachData['project__projectId'] is None:
@@ -93,6 +95,7 @@ def TeamMemberReport(request):
                     eachData['maxProd'] = max(units)
                     eachData['minProd'] = min(units)
                     eachData['avgProd'] = round(sum(units) / len(units), 2)
+                    units.sort()
                     eachData['medianProd'] = units[len(units) // 2]
                     if eachData['chapter__name'] == ' -  ':
                         eachData['totalValue'] = ' -  '
@@ -109,7 +112,7 @@ def TeamMemberReport(request):
                 grdTotal = {'nTotal': nonProjectTotal,
                             'pTotal': projectTotal}
                 fresh = 2
-                if 'status' in request.POST:
+                if request.POST['status'] == 'export':
                     sheetName = ['TeamMember Perfomance']
                     fileName = '{0}_{1}_{2}.xlsx'.format(
                         reportData.cleaned_data['member'],
@@ -168,11 +171,12 @@ def ProjectReport(request):
                 'plannedEffort': cProject.plannedEffort,
                 'totalValue': cProject.totalValue,
                 'salesForceNumber': cProject.salesForceNumber,
-                'signed': cProject.signed
+                'signed': cProject.signed,
+                'po': cProject.po
             }
             crData = ProjectChangeInfo.objects.filter(
                 project=cProject
-            ).values('crId', 'reason', 'endDate', 'po', 'revisedEffort',
+            ).values('crId', 'reason', 'endDate', 'revisedEffort',
                      'revisedTotal', 'closed', 'closedOn')
             if basicData['endDate'] < datetime.now().date() \
                     and cProject.closed is False:
@@ -194,11 +198,18 @@ def ProjectReport(request):
                        sunday=Sum('sundayQ')
                        )
             for eachData in taskData:
+                units = []
                 eachData['total'] = 0.0
-                eachData['norm'] = cProject.maxProductivityUnits
                 for k, v in eachData.iteritems():
                     if k != 'task__name' and k != 'total':
+                        units.append(v)
                         eachData['total'] += float(v)
+                eachData['norm'] = cProject.maxProductivityUnits
+                eachData['min'] = min(units)
+                eachData['max'] = max(units)
+                eachData['avg'] = sum(units) / 2
+                units.sort()
+                eachData['median'] = units[len(units) // 2]
             tsData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
@@ -249,8 +260,8 @@ def ProjectReport(request):
                     eachTsData['planned'] = pEffort
                     try:
                         eachTsData[
-                            'deviation'] = round(
-                                eachTsData['actual'] / pEffort * 100)
+                            'deviation'] = round((
+                                eachTsData['actual'] - eachTsData['planned']) * 100 / eachTsData['planned'])
                     except ZeroDivisionError:
                         eachTsData['deviation'] = 0
                 try:
@@ -287,8 +298,8 @@ def ProjectReport(request):
                              'Productivity']
                 heading = [
                     ['Project Name', 'Start Date', 'End Date', 'Planned Effort',
-                     'Total Value', 'salesForceNumber', 'Signed'],
-                    ['CR#', 'Reason', 'End Date', 'P.O.', 'Revised Effort',
+                     'Total Value', 'salesForceNumber', 'Signed', 'P.O.'],
+                    ['CR#', 'Reason', 'End Date', 'Revised Effort',
                      'Revised Total'],
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
@@ -323,12 +334,16 @@ def ProjectPerfomanceReport(request):
         if reportData.is_valid():
             reportMonth = reportData.cleaned_data['month']
             reportYear = reportData.cleaned_data['year']
-            reportbu = reportData.cleaned_data['bu']
+            bu = reportData.cleaned_data['bu']
+            if bu == '0':
+                reportbu = BusinessUnit.objects.all().values_list('id')
+            else:
+                reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
             tsData = TimeSheetEntry.objects.filter(
                 wkstart__year=reportYear,
                 wkstart__month=reportMonth,
                 project__internal=True,
-                project__bu=reportbu,
+                project__bu__id__in=reportbu,
                 project__projectId__isnull=False
             ).values(
                 'project__customer__name', 'project__projectId',

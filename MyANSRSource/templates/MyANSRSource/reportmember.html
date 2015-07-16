@@ -23,11 +23,12 @@
                         <td>{{ field }}</td> 
                     {% endfor %}
                     <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="submit">
+                        <input type="hidden" value="generate" name="status" />
                         {% fontawesome_icon 'line-chart' large=True %}
                         Get Report
                     </button></td>
                     <td class="col-lg-1">
-                        {% if fresh != 0 and fresh != 1 %}
+                        {% if data %}
                             <input type="hidden" value="export" name="status" />
                             <button type="submit" class="btn btn-success">
                         {% else %}
@@ -41,32 +42,35 @@
             </table>
         </form>
         {% if member %}
-            <h3><small><b>
-                    <span>Member: {{ member }} </span>  
-                    <span>From: {{ startDate }} </span>
-                    <span>To: {{ endDate }}</b></span>
-            </b></small></h3>
+            <table class="table table-condensed">
+                <tr>
+                    <td><b>Member: {{ member }}</b></td>
+                    <td class="text-right"><b>From: {{ startDate }}</b></td>
+                    <td class="text-right"><b>To: {{ endDate }}</b></td>
+                    <td class="text-right"><small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Submitted
+                               {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small></td>
+                </tr>
+            </table>
         {% endif %}
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th colspan="6"></th>
-                <th>Total </th> 
-                <th>Avg. </th> 
-                <th>Min. </th> 
-                <th>Max. </th> 
-                <th>Median </th> 
+                <th colspan="5"></th>
+                <th class="text-right">Total </th> 
+                <th class="text-right">Avg. </th> 
+                <th class="text-right">Min. </th> 
+                <th class="text-right">Max. </th> 
+                <th class="text-right">Median </th> 
                 <th colspan="2"></th>
-            <th>
+            </tr>
             <tr>
-                <th>Project Code</th> 
                 <th>Project Name</th> 
                 <th>Book</th> 
                 <th>Chapter</th> 
                 <th>Task / Activity</th> 
-                <th>Total Hours</th> 
+                <th class="text-right">Total Hours</th> 
                 <th colspan="5" class="text-center">Productivity</th>
-                <th>Norm</th> 
+                <th class="text-right">Norm</th> 
                 <th>Status</th> 
             </tr>
             </thead>
@@ -79,20 +83,23 @@
                     <td colspan="11" class="text-center"><h4><small><b>No reports found for this timeframe</b></small></h4></td>
                 </tr>
             {% else %}
-                {% for eachData in data %}
+                {% for eachData in data reversed %}
                     <tr>
-                        <td>{{ eachData.project__projectId }}</td> 
-                        <td>{{ eachData.project__name }}</td> 
+                        {% if eachData.project__projectId == ' - ' %}
+                            <td> - </td> 
+                        {% else %}
+                            <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td> 
+                        {% endif %}
                         <td>{{ eachData.project__book__name }}</td> 
                         <td>{{ eachData.chapter__name }}</td> 
                         <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
-                        <td class="text-center">{{ eachData.totalHours }}</td> 
-                        <td class="text-center">{{ eachData.totalValue }}</td> 
-                        <td class="text-center">{{ eachData.avgProd }}</td> 
-                        <td class="text-center">{{ eachData.minProd }}</td> 
-                        <td class="text-center">{{ eachData.maxProd }}</td> 
-                        <td class="text-center">{{ eachData.medianProd }}</td> 
-                        <td class="text-center">{{ eachData.project__maxProductivityUnits }}</td> 
+                        <td class="text-right">{{ eachData.totalHours }}</td> 
+                        <td class="text-right">{{ eachData.totalValue }}</td> 
+                        <td class="text-right">{{ eachData.avgProd }}</td> 
+                        <td class="text-right">{{ eachData.minProd }}</td> 
+                        <td class="text-right">{{ eachData.maxProd }}</td> 
+                        <td class="text-right">{{ eachData.medianProd }}</td> 
+                        <td class="text-right">{{ eachData.project__maxProductivityUnits }}</td> 
                         {% if eachData.hold %}
                            <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
                         {% else %}
@@ -101,12 +108,12 @@
                     </tr>
                 {% endfor %}
                     <tr>
-                        <td colspan="4" class="text-center"><h3><small><b>Total Non Project Hour(s)</b></small></h3><td>
-                        <td class="text-center"><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
+                        <td colspan="3" class="text-center"><h3><small><b>Total Project Hour(s)</b></small></h3><td>
+                        <td class="text-right"><h3><small><b>{{ grandTotal.pTotal }}</b></small></h3><td>
                     <tr>
                     <tr>
-                        <td colspan="4" class="text-center"><h3><small><b>Total Project Hour(s)</b></small></h3><td>
-                        <td class="text-center"><h3><small><b>{{ grandTotal.pTotal }}</b></small></h3><td>
+                        <td colspan="3" class="text-center"><h3><small><b>Total Non Project Hour(s)</b></small></h3><td>
+                        <td class="text-right"><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
                     <tr>
             {% endif %}
         </table>
