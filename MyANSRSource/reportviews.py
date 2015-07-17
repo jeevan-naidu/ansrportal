@@ -1,6 +1,7 @@
 import logging
 logger = logging.getLogger('MyANSRSource')
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
     BTGReportForm
@@ -322,6 +323,45 @@ def ProjectReport(request):
 
 @login_required
 @permission_required('MyANSRSource.create_project')
+def TeamMemberPerfomanceReport(request):
+    report = {}
+    form = UtilizationReportForm(user=request.user)
+    if request.method == 'POST':
+        reportData = UtilizationReportForm(request.POST,
+                                           user=request.user)
+        if reportData.is_valid():
+            reportMonth = reportData.cleaned_data['month']
+            reportYear = reportData.cleaned_data['year']
+            bu = reportData.cleaned_data['bu']
+            if bu == '0':
+                reportbu = BusinessUnit.objects.all().values_list('id')
+            else:
+                reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
+            tsData = TimeSheetEntry.objects.filter(
+                wkstart__year=reportYear,
+                wkstart__month=reportMonth,
+                project__bu__id__in=reportbu,
+            ).values(
+                'project__customer__name', 'project__projectId',
+                'project__name', 'project__projectType__description',
+                'project__bu__name', 'teamMember__first_name',
+                'teamMember__last_name', 'teamMember__id'
+            ).order_by('project__bu__name').distinct()
+            if tsData:
+                data = GenerateReport(request, reportMonth, reportYear,
+                                      tsData, idle=None)
+                if data:
+                    report = calcTotal(request, data)
+            else:
+                data = {}
+                report = {}
+    return render(request,
+                  'MyANSRSource/reportmembersummary.html',
+                  {'form': form, 'data': report})
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
 def ProjectPerfomanceReport(request):
     data = {}
     fresh = 1
@@ -459,10 +499,42 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 saturday=Sum('saturdayH'),
                 sunday=Sum('sundayH'),
             )
-        else:
+        elif idle is False:
             eachData['others'] = ts.exclude(
                 task__name='Idle'
             ).values(
+                'project__projectId'
+            ).annotate(
+                monday=Sum('mondayH'),
+                tuesday=Sum('tuesdayH'),
+                wednesday=Sum('wednesdayH'),
+                thursday=Sum('thursdayH'),
+                friday=Sum('fridayH'),
+                saturday=Sum('saturdayH'),
+                sunday=Sum('sundayH'),
+            )
+        else:
+            cUser = User.objects.filter(id=eachData['teamMember__id'])
+            eachData['empId'] = Employee.objects.filter(
+                user=cUser).values('employee_assigned_id')[0]['employee_assigned_id']
+            dates = ProjectTeamMember.objects.filter(
+                member=cUser
+            ).values('startDate', 'endDate')[0]
+            eachData['startDate'] = dates['startDate']
+            eachData['endDate'] = dates['endDate']
+            if eachData['startDate'] and eachData['endDate']:
+                diff = (eachData['endDate'] - eachData['startDate']).days
+                eachData['totalPlanned'] =  diff * 8
+                eachData['monthRec'] = 0
+                if diff > 0:
+                    rd = rdelta.relativedelta(
+                        eachData['endDate'],
+                        eachData['startDate']
+                    )
+                    if rd.months > 0:
+                        if eachData['totalPlanned'] > 0:
+                            eachData['monthRec'] = eachData['totalPlanned'] / rd.months
+            eachData['others'] = ts.values(
                 'project__projectId'
             ).annotate(
                 monday=Sum('mondayH'),
