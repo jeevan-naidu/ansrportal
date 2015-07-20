@@ -43,41 +43,49 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Project ID</th> 
-                <th>Project Name</th> 
-                <th>Project Value</th> 
-                <th>Planned Effort</th> 
+                <th colspan=5 class="text-center">Project</th>
+                <th></th>
+                <th colspan=3 class="text-center">Actual Effort</th>
+                <th colspan=3></th>
+                <th colspan=2 class="text-center">RR</th>
+                <th colspan=3 class="text-center">Invoicing</th>
+                <th colspan=3></th>
+            </tr>
+            <tr>
+                <th>Name</th> 
+                <th class="text-right">Value</th> 
+                <th class="text-right">Effort</th> 
                 <th>Start Date</th> 
                 <th>End Date</th> 
                 <th>Team Lead</th> 
-                <th>Actual Effort till Last Month</th> 
-                <th>Actual Effort for current Month</th> 
-                <th>Period to date(PTD) actual Effort</th> 
-                <th>BTG</th> 
-                <th>Projected Total Efforts</th> 
-                <th>RR till last month</th> 
-                <th>RR till current month</th> 
-                <th>Invoicing until last month</th> 
-                <th>Invoicing for current month</th> 
-                <th>PTD Invoicing</th> 
-                <th>Actual for current month</th> 
-                <th>PTD Accrual</th> 
+                <th class="text-right">Last Month</th> 
+                <th class="text-right">Current Month</th> 
+                <th class="text-right">PTD</th> 
+                <th class="text-right">Planned BTG</th> 
+                <th class="text-right">BTG</th> 
+                <th class="text-right">Projected Total Efforts</th> 
+                <th class="text-right">Last month</th> 
+                <th class="text-right">Current month</th> 
+                <th class="text-right">Last month</th> 
+                <th class="text-right">Current month</th> 
+                <th class="text-right">PTD</th> 
+                <th class="text-right">Actual for current month</th> 
+                <th class="text-right">PTD Accrual</th> 
                 <th>Onverrun / Underrun</th> 
             </tr>
             </thead>
-            {% if fresh %}
+            {% if not data %}
                 <tr>
                     <td colspan="21" class="text-center"><h4><small><b>You don't have any projects to look out for</b></small></h4></td>
                 </tr>
             {% else %}
                 {% for basicData in data %}
                     <tr>
-                        <td>{{ basicData.projectId }}</td> 
-                        <td>{{ basicData.name }}</td> 
-                        <td>{{ basicData.totalValue }}</td> 
-                        <td>{{ basicData.plannedEffort }}</td> 
-                        <td>{{ basicData.startDate }}</td> 
-                        <td>{{ basicData.endDate }}</td>
+                        <td>{{ basicData.project__projectId }} : {{ basicData.project__name }}</td> 
+                        <td class="text-right">${{ basicData.project__totalValue }}</td> 
+                        <td class="text-right">{{ basicData.project__plannedEffort }}</td> 
+                        <td>{{ basicData.project__startDate }}</td> 
+                        <td>{{ basicData.project__endDate }}</td>
                         <td> 
                             {% for eachTL in basicData.tl %}
                                 {% if forloop.last %}
@@ -87,6 +95,20 @@
                                 {% endif %}
                             {% endfor %}
                         </td>
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">0</td> 
+                        <td class="text-right">Underrun</td> 
                     </tr>
                 {% endfor %}
             {% endif %}

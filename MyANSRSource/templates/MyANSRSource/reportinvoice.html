@@ -11,7 +11,7 @@
             <table class="table table-condensed">
                 <tr>
                     <td class="text-center">
-                        <span class="text-center" data-toggle="modal" data-target="#myBTG"><a href="#">Enter BTG</a></span>
+                        <span class="text-center" data-toggle="modal" data-target="#myBTG"><a href="#">Enter Invoice</a></span>
                     </td>
                 </tr>
             </table>
@@ -21,19 +21,19 @@
             <tr>
                 <th>Project Name</th> 
                 <th>Month, Year</th> 
-                <th class="text-right">BTG Value</th> 
+                <th class="text-right">Number Of Invoice Generated</th> 
             </tr>
             </thead>
             {% if not data %}
                 <tr>
-                    <td colspan="4" class="text-center"><h4><small><b>You didn't record any BTG till date</b></small></h4></td>
+                    <td colspan="4" class="text-center"><h4><small><b>You didn't generated any Invoices till date</b></small></h4></td>
                 </tr>
             {% else %}
                 {% for basicData in data %}
                     <tr>
                         <td>{{ basicData.project__projectId }} : {{ basicData.project__name }}</td> 
                         <td>{{ basicData.btgMonth }}, {{ basicData.btgYear }}</td> 
-                        <td class="text-right">{{ basicData.btg }}</td> 
+                        <td class="text-right">{{ basicData.currMonthIN }}</td> 
                     </tr>
                 {% endfor %}
             {% endif %}
@@ -48,7 +48,7 @@
                     <span aria-hidden="true">&times;</span>
                     <span class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel"><b>Enter BTG (Balance to go)</b></h4>
+                <h4 class="modal-title" id="myModalLabel"><b>Enter Number of Invoices Generated</b></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-condensed">
@@ -61,7 +61,7 @@
                                 <button type="submit" class="btn btn-primary
                                     col-lg-2 col-xs-12 col-md-12 pull-right">
                                 <span class="fa fa-database"></span>
-                                Save BTG
+                                Save
                                 </button>
                             {% endbuttons %}
                         </form>

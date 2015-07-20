@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
-    BTGReportForm
+    BTGReportForm, InvoiceForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember, ProjectManager, Project
+    ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
+    BTGReport
 from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
@@ -24,6 +25,73 @@ import string
 
 days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
         'sunday']
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def BalanceToGo(request):
+    form = BTGForm(user=request.user)
+    data = BTGReport.objects.filter(member=request.user).values(
+        'btgMonth', 'btgYear', 'btg', 'project__projectId', 'project__name'
+    )
+    if request.method == 'POST':
+        savedForm = BTGForm(request.POST, user=request.user)
+        if savedForm.is_valid():
+            old = BTGReport.objects.filter(
+                project=savedForm.cleaned_data['project'],
+                btgYear=savedForm.cleaned_data['year'],
+                btgMonth=savedForm.cleaned_data['month']
+            ).values('id')
+            if old:
+                balancetogo = BTGReport.objects.get(id=old[0]['id'])
+                balancetogo.btg = savedForm.cleaned_data['btg']
+                balancetogo.member = request.user
+                balancetogo.save()
+            else:
+                balancetogo = BTGReport()
+                balancetogo.project = savedForm.cleaned_data['project']
+                balancetogo.member = request.user
+                balancetogo.btg = savedForm.cleaned_data['btg']
+                balancetogo.btgYear = savedForm.cleaned_data['year']
+                balancetogo.btgMonth = savedForm.cleaned_data['month']
+                balancetogo.save()
+    return render(request, 'MyANSRSource/reportbtg.html',
+                  {'form': form, 'data': data})
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def Invoice(request):
+    form = InvoiceForm(user=request.user)
+    data = BTGReport.objects.filter(member=request.user).values(
+        'btgMonth', 'btgYear', 'currMonthIN',
+        'project__projectId', 'project__name'
+    )
+    if request.method == 'POST':
+        savedForm = InvoiceForm(request.POST, user=request.user)
+        if savedForm.is_valid():
+            old = BTGReport.objects.filter(
+                project=savedForm.cleaned_data['project'],
+                btgYear=savedForm.cleaned_data['year'],
+                btgMonth=savedForm.cleaned_data['month']
+            ).values('id')
+            if old:
+                balancetogo = BTGReport.objects.get(id=old[0]['id'])
+                balancetogo.currMonthIN = savedForm.cleaned_data[
+                    'currMonthIN'
+                ]
+                balancetogo.member = request.user
+                balancetogo.save()
+            else:
+                balancetogo = BTGReport()
+                balancetogo.project = savedForm.cleaned_data['project']
+                balancetogo.member = request.user
+                balancetogo.currMonthIN = savedForm.cleaned_data['currMonthIN']
+                balancetogo.btgYear = savedForm.cleaned_data['year']
+                balancetogo.btgMonth = savedForm.cleaned_data['month']
+                balancetogo.save()
+    return render(request, 'MyANSRSource/reportinvoice.html',
+                  {'form': form, 'data': data})
 
 
 @login_required
@@ -454,27 +522,37 @@ def ProjectPerfomanceReport(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def RevenueRecognitionReport(request):
-    fresh = 1
-    # cMonth = datetime.now().month
     btg = BTGReportForm()
-    data = Project.objects.exclude(
-        closed=True,
-    ).values('projectId', 'name', 'totalValue',
-             'plannedEffort', 'startDate', 'endDate')
+    data = RR(request, datetime.now().month, datetime.now().year)
+    if request.method == 'POST':
+        reportData = BTGReportForm(request.POST)
+        if reportData.is_valid():
+            reportMonth = reportData.cleaned_data['month']
+            reportYear = reportData.cleaned_data['year']
+            data = RR(request, reportMonth, reportYear)
+    return render(request, 'MyANSRSource/reportrevenue.html',
+                  {'data': data,
+                   'form': btg,
+                   'fresh': 0})
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def RR(request, month, year):
+    data = BTGReport.objects.filter(
+        btgMonth=month,
+        btgYear=year
+    ).values(
+        'project__projectId', 'project__name', 'project__totalValue',
+        'project__plannedEffort', 'project__startDate', 'project__endDate'
+    )
     if len(data):
         for eachMem in data:
-            # l = []
             mem = ProjectManager.objects.filter(
-                project__projectId=eachMem['projectId']
+                project__projectId=eachMem['project__projectId']
             ).values('user__username')
             eachMem['tl'] = mem
-        fresh = 0
-    if request.method == 'POST':
-        pass
-    return render(request, 'MyANSRSource/reportrevenue.html',
-                  {'fresh': fresh,
-                   'data': data,
-                   'form': btg})
+    return data
 
 
 @login_required
@@ -803,14 +881,6 @@ def generateProjectPerfContent(request, header, report, worksheet,
     totalCell = 'A{0}'.format(row+1)
     total = "Total Hour(s) : {0}".format(grdTotal)
     worksheet.write(totalCell, total, header)
-
-
-@login_required
-def BalanceToGo(request):
-    btgForm = BTGForm(user=request.user)
-    return render(request,
-                  'MyANSRSource/reportbtg.html',
-                  {'form': btgForm})
 
 
 @login_required

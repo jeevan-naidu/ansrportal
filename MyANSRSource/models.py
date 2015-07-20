@@ -415,21 +415,17 @@ class Report(models.Model):
 class BTGReport(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     member = models.ForeignKey(User)
-    lastMonthAE = models.IntegerField(default=0,
-                                      validators=[MinValueValidator(0)])
-    currMonthAE = models.IntegerField(default=0,
-                                      validators=[MinValueValidator(0)])
     btg = models.IntegerField(default=0, verbose_name="BTG",
                               validators=[MinValueValidator(0)])
-    btgDate = models.DateTimeField(default=timezone.now)
-    lastMonthRR = models.IntegerField(default=0,
-                                      validators=[MinValueValidator(0)])
+    btgMonth = models.IntegerField(default=1, verbose_name="BTG",
+                                   validators=[MinValueValidator(1)])
+    btgYear = models.IntegerField(default=1990, verbose_name="BTG",
+                                  validators=[MinValueValidator(1990)])
     currMonthRR = models.IntegerField(default=0,
                                       validators=[MinValueValidator(0)])
-    lastMonthIN = models.IntegerField(default=0,
-                                      validators=[MinValueValidator(0)])
     currMonthIN = models.IntegerField(default=0,
-                                      validators=[MinValueValidator(0)])
+                                      validators=[MinValueValidator(0)],
+                                      verbose_name="Number Of Invoices")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
