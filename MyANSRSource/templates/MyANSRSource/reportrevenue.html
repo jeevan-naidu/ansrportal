@@ -27,15 +27,10 @@
                         Get Report
                     </button></td>
                     <td class="col-lg-1">
-                        {% if fresh != 0 and fresh != 1 %}
-                            <input type="hidden" value="export" name="status" />
-                            <button type="submit" class="btn btn-success">
-                        {% else %}
-                            <button type="submit" class="btn btn-success" disabled>
-                        {% endif %}
-                                {% fontawesome_icon 'file-excel-o' large=True %}
-                                Export to Excel
-                            </button>
+                        <button type="submit" class="btn btn-success" disabled>
+                            {% fontawesome_icon 'file-excel-o' large=True %}
+                            Export to Excel
+                        </button>
                     </td>
                 </tr>
             </table>
@@ -47,7 +42,7 @@
                 <th></th>
                 <th colspan=3 class="text-center">Actual Effort</th>
                 <th colspan=3></th>
-                <th colspan=2 class="text-center">RR</th>
+                <th class="text-center">RR</th>
                 <th colspan=3 class="text-center">Invoicing</th>
                 <th colspan=3></th>
             </tr>
@@ -64,7 +59,6 @@
                 <th class="text-right">Planned BTG</th> 
                 <th class="text-right">BTG</th> 
                 <th class="text-right">Projected Total Efforts</th> 
-                <th class="text-right">Last month</th> 
                 <th class="text-right">Current month</th> 
                 <th class="text-right">Last month</th> 
                 <th class="text-right">Current month</th> 
@@ -95,20 +89,19 @@
                                 {% endif %}
                             {% endfor %}
                         </td>
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">0</td> 
-                        <td class="text-right">Underrun</td> 
+                        <td class="text-right">{{ basicData.prevEffort }}</td> 
+                        <td class="text-right">{{ basicData.effort }}</td> 
+                        <td class="text-right">{{ basicData.PTDEffort }}</td> 
+                        <td class="text-right">{{ basicData.plannedBTG }}</td> 
+                        <td class="text-right">{{ basicData.BTG }}</td> 
+                        <td class="text-right">{{ basicData.projectedTE }}</td> 
+                        <td class="text-right">{{ basicData.RRCurrentMonth }}</td> 
+                        <td class="text-right">{{ basicData.invoiceLast }}</td> 
+                        <td class="text-right">{{ basicData.invoiceCurr }}</td> 
+                        <td class="text-right">{{ basicData.invoicePTD }}</td> 
+                        <td class="text-right">{{ basicData.currAcruval }}</td> 
+                        <td class="text-right">{{ basicData.ptdAcruval }}</td> 
+                        <td class="text-right">{{ basicData.status }}</td> 
                     </tr>
                 {% endfor %}
             {% endif %}

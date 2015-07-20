@@ -532,8 +532,7 @@ def RevenueRecognitionReport(request):
             data = RR(request, reportMonth, reportYear)
     return render(request, 'MyANSRSource/reportrevenue.html',
                   {'data': data,
-                   'form': btg,
-                   'fresh': 0})
+                   'form': btg})
 
 
 @login_required
@@ -552,7 +551,105 @@ def RR(request, month, year):
                 project__projectId=eachMem['project__projectId']
             ).values('user__username')
             eachMem['tl'] = mem
+            eachMem['effort'] = getRREffort(
+                request, month, year,
+                eachMem['project__projectId']
+            )
+            eachMem['prevEffort'] = getRREffort(
+                request, int(month)-1, year,
+                eachMem['project__projectId']
+            )
+            if eachMem['effort'] and eachMem['prevEffort']:
+                eachMem['PTDEffort'] = eachMem['effort'][0]['total'] + \
+                    eachMem['prevEffort'][0]['total']
+            else:
+                eachMem['effort'] = 0
+                eachMem['prevEffort'] = 0
+                eachMem['PTDEffort'] = 0
+            eachMem['plannedBTG'] = eachMem[
+                'project__plannedEffort'] - eachMem['PTDEffort']
+            eachMem['BTG'] = eachMem[
+                'project__plannedEffort'] - eachMem['PTDEffort']
+            eachMem['currentData'] = getEntryData(request, month, year,
+                                                  eachMem[
+                                                      'project__plannedEffort'],
+                                                  size=1)
+            eachMem['prevData'] = getEntryData(request, int(month) - 1,
+                                               year, eachMem[
+                                                   'project__plannedEffort'],
+                                               size=2)
+            if eachMem['currentData']:
+                eachMem['projectedTE'] = eachMem['currentData'][0]['btg']
+                eachMem['invoiceCurr'] = eachMem['currentData'][0]['currMonthIN']
+            else:
+                eachMem['projectedTE'] = 0
+                eachMem['invoiceCurr'] = 0
+            try:
+                eachMem['RRCurrentMonth'] = (eachMem['PTDEffort'] / eachMem['projectedTE']) * eachMem['project__totalValue']
+            except ZeroDivisionError:
+                eachMem['RRCurrentMonth'] = 0
+            if eachMem['currentData']:
+                eachMem['invoiceLast'] = eachMem['prevData'][0]['currMonthIN']
+            else:
+                eachMem['invoiceLast'] = 0
+            eachMem['invoicePTD'] = eachMem['invoiceLast'] + eachMem['invoiceCurr']
+            eachMem['invoicePTD'] = eachMem['invoiceLast'] + eachMem['invoiceCurr']
+            eachMem['currAcruval'] = eachMem['RRCurrentMonth'] - eachMem['invoiceCurr']
+            eachMem['ptdAcruval'] = eachMem['RRCurrentMonth'] - eachMem['invoiceCurr']
+            eachMem['currAcruval'] = eachMem['invoicePTD']
+            if eachMem['PTDEffort'] - eachMem['project__plannedEffort']:
+                eachMem['status'] = 'Overrun'
+            else:
+                eachMem['status'] = 'Underrun'
+    else:
+        data = {}
     return data
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def getEntryData(request, cmonth, cyear, projectId, size):
+    if size == 1:
+        return BTGReport.objects.filter(
+            btgMonth=cmonth,
+            btgYear=cyear,
+            project__projectId=projectId
+        ).values('currMonthIN')
+    else:
+        return BTGReport.objects.filter(
+            btgMonth=cmonth,
+            btgYear=cyear,
+            project__projectId=projectId
+        ).values('currMonthIN', 'btg')
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def getRREffort(request, month, year, projectId):
+    ts = TimeSheetEntry.objects.filter(
+        wkstart__year=year,
+        wkstart__month=month,
+        project__projectId=projectId
+    ).values(
+        'project__projectId'
+    ).annotate(
+        monday=Sum('mondayH'),
+        tuesday=Sum('tuesdayH'),
+        wednesday=Sum('wednesdayH'),
+        thursday=Sum('thursdayH'),
+        friday=Sum('fridayH'),
+        saturday=Sum('saturdayH'),
+        sunday=Sum('sundayH'),
+    )
+    if ts:
+        for eachTsData in ts:
+            eachTsData['total'] = eachTsData['monday'] + \
+                eachTsData['tuesday'] + \
+                eachTsData['wednesday'] + \
+                eachTsData['thursday'] + \
+                eachTsData['friday'] + \
+                eachTsData['saturday'] + eachTsData['sunday']
+    return ts
 
 
 @login_required
@@ -640,7 +737,7 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
             eachData['endDate'] = dates['endDate']
             if eachData['startDate'] and eachData['endDate']:
                 diff = (eachData['endDate'] - eachData['startDate']).days
-                eachData['totalPlanned'] =  diff * 8
+                eachData['totalPlanned'] = diff * 8
                 eachData['monthRec'] = 0
                 if diff > 0:
                     rd = rdelta.relativedelta(
