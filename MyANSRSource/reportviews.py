@@ -14,6 +14,7 @@ from datetime import timedelta, datetime
 from django.db.models import Sum, Count
 from employee.models import Employee
 from django.core.servers.basehttp import FileWrapper
+from dateutil import relativedelta as rdelta
 from django.http import HttpResponse
 import mimetypes
 import xlsxwriter
@@ -324,7 +325,7 @@ def ProjectReport(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def TeamMemberPerfomanceReport(request):
-    report = {}
+    report, final_report = {}, {}
     form = UtilizationReportForm(user=request.user)
     if request.method == 'POST':
         reportData = UtilizationReportForm(request.POST,
@@ -352,12 +353,13 @@ def TeamMemberPerfomanceReport(request):
                                       tsData, idle=None)
                 if data:
                     report = calcTotal(request, data)
+                    final_report = calcPTM(request, report)
             else:
                 data = {}
-                report = {}
+                final_report = {}
     return render(request,
                   'MyANSRSource/reportmembersummary.html',
-                  {'form': form, 'data': report})
+                  {'form': form, 'data': final_report})
 
 
 @login_required
@@ -473,6 +475,42 @@ def RevenueRecognitionReport(request):
                   {'fresh': fresh,
                    'data': data,
                    'form': btg})
+
+
+@login_required
+def calcPTM(request, tsData):
+    for eachData in tsData:
+        data = TimeSheetEntry.objects.filter(
+            project__bu=request.POST.get('bu'),
+            project__projectId=eachData['project__projectId']
+        ).values(
+            'project__projectId'
+        ).annotate(
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH'),
+        )
+        if data:
+            for eachTsData in data:
+                eachTsData['PTM'] = eachTsData['monday'] + \
+                    eachTsData['tuesday'] + \
+                    eachTsData['wednesday'] + \
+                    eachTsData['thursday'] + \
+                    eachTsData['friday'] + \
+                    eachTsData['saturday'] + \
+                    eachTsData['sunday']
+                diff = eachTsData['PTM'] - eachData['others'][0]['otherstotal']
+                if diff:
+                    eachData['correctPTM'] = diff
+                else:
+                    eachData['correctPTM'] = 0
+        else:
+            eachData['correctPTM'] = 0
+    return tsData
 
 
 @login_required
@@ -680,6 +718,7 @@ def generateProjectContent(request, header, report, worksheet,
         worksheet.write(row, 4, report['totalValue'], content)
         worksheet.write(row, 5, report['salesForceNumber'], content)
         worksheet.write(row, 6, report['signed'], content)
+        worksheet.write(row, 7, report['po'], content)
     else:
         row, msg = 1, ''
         for eachRec in report:
@@ -687,9 +726,8 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 0, eachRec['crId'], content)
                 worksheet.write(row, 1, eachRec['reason'], content)
                 worksheet.write(row, 2, eachRec['endDate'], dateformat)
-                worksheet.write(row, 3, eachRec['po'], content)
-                worksheet.write(row, 4, eachRec['revisedEffort'], content)
-                worksheet.write(row, 5, eachRec['revisedTotal'], content)
+                worksheet.write(row, 3, eachRec['revisedEffort'], content)
+                worksheet.write(row, 4, eachRec['revisedTotal'], content)
                 if eachRec['closed']:
                     msg = "Project Closed On : {0}".format(
                         eachRec['closedOn']
