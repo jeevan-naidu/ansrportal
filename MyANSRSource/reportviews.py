@@ -727,6 +727,11 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 sunday=Sum('sundayH'),
             )
         else:
+            ts = TimeSheetEntry.objects.filter(
+                wkstart__year=reportYear,
+                wkstart__month=reportMonth,
+                project__projectId=eachData['project__projectId'],
+                teamMember__id=eachData['teamMember__id'])
             cUser = User.objects.filter(id=eachData['teamMember__id'])
             eachData['empId'] = Employee.objects.filter(
                 user=cUser).values('employee_assigned_id')[0]['employee_assigned_id']
