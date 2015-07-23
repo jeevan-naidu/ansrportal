@@ -224,8 +224,8 @@ def SingleProjectReport(request):
     crData, tsData, msData, taskData = [], [], [], []
     pEffort = 0
     fresh = 1
-    actualTotal, plannedTotal, deviation = 0, 0, 0
-    red = False
+    actualTotal, plannedTotal, balanceTotal, deviation = 0, 0, 0, 0
+    red, closed = False, False
     form = ProjectPerfomanceReportForm(user=request.user)
     if request.method == 'POST':
         fresh = 0
@@ -233,6 +233,8 @@ def SingleProjectReport(request):
                                                  user=request.user)
         if reportData.is_valid():
             cProject = reportData.cleaned_data['project']
+            if cProject.closed:
+                closed = cProject.closed
             basicData = {
                 'code': cProject.projectId,
                 'name': cProject.name,
@@ -391,7 +393,7 @@ def SingleProjectReport(request):
                    'taskData': taskData, 'actualTotal': actualTotal,
                    'plannedTotal': plannedTotal, 'deviation': deviation,
                    'balanceTotal': balanceTotal, 'red': red,
-                   'closed': cProject.closed}
+                   'closed': closed}
                   )
 
 
@@ -930,7 +932,6 @@ def generateProjectContent(request, header, report, worksheet,
             if 'task__name' in eachRec:
                 worksheet.write(row, 0, eachRec['task__name'], content)
                 worksheet.write(row, 1, eachRec['norm'], content)
-                worksheet.write(row, 2, eachRec['total'], content)
             row += 1
 
         row, msg = 1, ''
