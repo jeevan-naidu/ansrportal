@@ -182,7 +182,7 @@ def SingleTeamMemberReport(request):
                 grdTotal = {'nTotal': nonProjectTotal,
                             'pTotal': projectTotal}
                 fresh = 2
-                if request.POST['status'] == 'export':
+                if 'generate' in request.POST:
                     sheetName = ['TeamMember Perfomance']
                     fileName = '{0}_{1}_{2}.xlsx'.format(
                         reportData.cleaned_data['member'],
@@ -360,7 +360,7 @@ def SingleProjectReport(request):
                 user=request.user,
                 initial={'project': cProject}
             )
-            if 'status' in request.POST:
+            if 'generate' in request.POST:
                 fileName = '{0}_{1}.xlsx'.format(
                     datetime.now().date(),
                     datetime.now().time()

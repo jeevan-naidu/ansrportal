@@ -22,15 +22,14 @@
                     {% for field in form %}
                         <td>{{ field }}</td> 
                     {% endfor %}
-                    <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="submit">
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="click">
                         <input type="hidden" value="generate" name="status" />
                         {% fontawesome_icon 'line-chart' large=True %}
                         Get Report
                     </button></td>
                     <td class="col-lg-1">
                         {% if data %}
-                            <input type="hidden" value="export" name="status" />
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success" name="generate">
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
                         {% endif %}
