@@ -41,11 +41,13 @@
                 </tr>
             </table>
         </form>
-        <table class="table table-condensed">
-            <tr>
-                <td class="text-center"><b>{{ basicData.code }} : {{ basicData.name }}</b></td> 
-            </tr>
-        </table>
+        {% if not fresh %}
+            <table class="table table-condensed">
+                <tr>
+                    <td class="text-center"><b>{{ basicData.code }} : {{ basicData.name }}</b></td> 
+                </tr>
+            </table>
+        {% endif %}
         <table class="table table-condensed">
             <thead>
             <tr>
