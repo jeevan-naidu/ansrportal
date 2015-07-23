@@ -42,6 +42,11 @@
             </table>
         </form>
         <table class="table table-condensed">
+            <tr>
+                <td class="text-center"><b>{{ basicData.code }} : {{ basicData.name }}</b></td> 
+            </tr>
+        </table>
+        <table class="table table-condensed">
             <thead>
             <tr>
                 <th>Project Name</th> 
@@ -152,8 +157,12 @@
                 <th>Member Name</th> 
                 <th>Role</th> 
                 <th class="text-right">Planned Effort</th> 
-                <th class="text-right">Actual Effort</th> 
-                <th class="text-right">Deviation</th> 
+                <th class="text-right">Actual Effort</th>
+                {% if not closed %} 
+                    <th class="text-right">Balance Effort</th> 
+                {% else %}
+                    <th class="text-right">Deviation</th>
+                {% endif %} 
             </tr>
             </thead>
             {% if tsData %}
@@ -163,10 +172,14 @@
                         <td>{{ eachData.designation }}</td> 
                         <td class="text-right">{{ eachData.planned }}</td> 
                         <td class="text-right">{{ eachData.actual }}</td> 
-                        {% if eachData.deviation >= 0 %}
-                            <td class="text-right" style="color: green"><b>{{ eachData.deviation }} %</b></td> 
-                        {% else %}
-                            <td class="text-right" style="color: red"><b>{{ eachData.deviation }} %</b></td> 
+                        {% if not closed %} 
+                            <td class="text-right">{{ eachData.balance }}</td>
+                        {% else %} 
+                            {% if eachData.deviation >= 0 %}
+                                <td class="text-right" style="color: green"><b>{{ eachData.deviation }} %</b></td> 
+                            {% else %}
+                                <td class="text-right" style="color: red"><b>{{ eachData.deviation }} %</b></td> 
+                            {% endif %}
                         {% endif %}
                     </tr>
                 {% endfor %}
@@ -174,10 +187,14 @@
                         <td colspan=2><h4><small><b>Total  </b></small></h4></td>
                         <td class="text-right"><h4><small><b>{{ plannedTotal }}</b></small></h4></td>
                         <td class="text-right"><h4><small><b>{{ actualTotal }}</b></small></h4></td>
-                        {% if deviation == 0 %}
-                            <td class="text-right"><h4><small><b style="color: green">{{ deviation }} %</b></small></h4></td>
-                        {% else %}
-                            <td class="text-right"><h4><small><b style="color: red">{{ deviation }} %</b></small></h4></td>
+                        {% if not closed %} 
+                            <td class="text-right"><h4><small><b>{{ balanceTotal }}</b></small></h4></td>
+                        {% else %} 
+                            {% if deviation <= 0 %}
+                                <td class="text-right"><h4><small><b style="color: green">{{ deviation }} %</b></small></h4></td>
+                            {% else %}
+                                <td class="text-right"><h4><small><b style="color: red">{{ deviation }} %</b></small></h4></td>
+                            {% endif %}
                         {% endif %}
                     </tr>
             {% else %}
@@ -201,7 +218,6 @@
                 <th class="text-right">Max. Productivity</th> 
                 <th class="text-right">Avg. Productivity</th> 
                 <th class="text-right">Median Productivity</th> 
-                <th class="text-right">Toal Productivity</th> 
             </tr>
             </thead>
             {% if taskData %}
@@ -213,7 +229,6 @@
                         <td class="text-right">{{ eachData.max }}</td> 
                         <td class="text-right">{{ eachData.avg }}</td> 
                         <td class="text-right">{{ eachData.median }}</td> 
-                        <td class="text-right">{{ eachData.total }}</td> 
                     </tr>
                 {% endfor %}
             {% else %}

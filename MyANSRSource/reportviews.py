@@ -96,7 +96,7 @@ def Invoice(request):
 
 @login_required
 @permission_required('MyANSRSource.create_project')
-def TeamMemberReport(request):
+def SingleTeamMemberReport(request):
     report = {}
     member, startDate, endDate = '', '', ''
     form = TeamMemberPerfomanceReportForm()
@@ -210,7 +210,7 @@ def TeamMemberReport(request):
             logger.error(reportData.errors)
             fresh = 1
     return render(request,
-                  'MyANSRSource/reportmember.html',
+                  'MyANSRSource/reportsinglemember.html',
                   {'form': form, 'data': report, 'fresh': fresh,
                    'grandTotal': grdTotal, 'startDate': startDate,
                    'endDate': endDate, 'member': member
@@ -219,7 +219,7 @@ def TeamMemberReport(request):
 
 @login_required
 @permission_required('MyANSRSource.create_project')
-def ProjectReport(request):
+def SingleProjectReport(request):
     basicData = {}
     crData, tsData, msData, taskData = [], [], [], []
     pEffort = 0
@@ -269,11 +269,9 @@ def ProjectReport(request):
                        )
             for eachData in taskData:
                 units = []
-                eachData['total'] = 0.0
                 for k, v in eachData.iteritems():
-                    if k != 'task__name' and k != 'total':
+                    if k != 'task__name':
                         units.append(v)
-                        eachData['total'] += float(v)
                 eachData['norm'] = cProject.maxProductivityUnits
                 eachData['min'] = min(units)
                 eachData['max'] = max(units)
@@ -328,6 +326,7 @@ def ProjectReport(request):
                         for eachEffort in effort:
                             pEffort = pEffort + eachEffort['plannedEffort']
                     eachTsData['planned'] = pEffort
+                    eachTsData['balance'] = eachTsData['planned'] - eachTsData['actual']
                     try:
                         eachTsData[
                             'deviation'] = round((
@@ -339,6 +338,11 @@ def ProjectReport(request):
                         [eachTsData['actual'] for eachTsData in tsData])
                 except ZeroDivisionError:
                     actualTotal = 0
+                try:
+                    balanceTotal = sum(
+                        [eachTsData['balance'] for eachTsData in tsData])
+                except ZeroDivisionError:
+                    balanceTotal = 0
                 try:
                     plannedTotal = sum(
                         [eachTsData['planned'] for eachTsData in tsData])
@@ -381,12 +385,13 @@ def ProjectReport(request):
                 return generateExcel(request, report, sheetName,
                                      heading, grdTotal, fileName)
     return render(request,
-                  'MyANSRSource/reportproject.html',
+                  'MyANSRSource/reportsingleproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
                    'crData': crData, 'tsData': tsData, 'msData': msData,
                    'taskData': taskData, 'actualTotal': actualTotal,
                    'plannedTotal': plannedTotal, 'deviation': deviation,
-                   'red': red}
+                   'balanceTotal': balanceTotal, 'red': red,
+                   'closed': cProject.closed}
                   )
 
 
@@ -512,7 +517,7 @@ def ProjectPerfomanceReport(request):
                             eothersTotal += eachRec['otherstotal']
             fresh = 0
     return render(request,
-                  'MyANSRSource/reportutilize.html',
+                  'MyANSRSource/reportprojectsummary.html',
                   {'form': form, 'data': data, 'fresh': fresh,
                    'iiTotal': iidleTotal, 'ioTotal': iothersTotal,
                    'eiTotal': eidleTotal, 'eoTotal': eothersTotal,
