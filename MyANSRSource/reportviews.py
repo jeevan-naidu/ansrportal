@@ -98,10 +98,12 @@ def Invoice(request):
 @permission_required('MyANSRSource.create_project')
 def SingleTeamMemberReport(request):
     report = {}
+    projectH, nonProjectH = [], []
     member, startDate, endDate = '', '', ''
     form = TeamMemberPerfomanceReportForm()
     grdTotal = ''
     fresh = 1
+    plannedHours = 0
     if request.method == 'POST':
         reportData = TeamMemberPerfomanceReportForm(request.POST)
         if reportData.is_valid():
@@ -111,6 +113,12 @@ def SingleTeamMemberReport(request):
                 days=start)
             wkendDate = reportData.cleaned_data['endDate'] + timedelta(
                 days=end)
+            tm = ProjectTeamMember.objects.filter(
+                member=reportData.cleaned_data['member'],
+                startDate__gte=reportData.cleaned_data['startDate'],
+                endDate__lte=reportData.cleaned_data['endDate'],
+            ).values('plannedEffort')
+            plannedHours = sum([eachRec['plannedEffort'] for eachRec in tm])
             report = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
                 wkstart__gte=wkstartDate,
@@ -206,15 +214,21 @@ def SingleTeamMemberReport(request):
                 'endDate': reportData.cleaned_data['endDate'],
                 'member': reportData.cleaned_data['member']
             })
+            for eachRec in report:
+                if eachRec['project__name'] != ' - ':
+                    projectH.append(eachRec)
+                else:
+                    nonProjectH.append(eachRec)
         else:
             logger.error(reportData.errors)
             fresh = 1
     return render(request,
                   'MyANSRSource/reportsinglemember.html',
                   {'form': form, 'data': report, 'fresh': fresh,
+                   'project': projectH, 'nonProject': nonProjectH,
                    'grandTotal': grdTotal, 'startDate': startDate,
-                   'endDate': endDate, 'member': member
-                   })
+                   'endDate': endDate, 'member': member,
+                   'pH': plannedHours})
 
 
 @login_required
