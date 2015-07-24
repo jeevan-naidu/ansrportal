@@ -414,7 +414,8 @@ def SingleProjectReport(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def TeamMemberPerfomanceReport(request):
-    report, final_report = {}, {}
+    report, final_report, totals = {}, {}, {}
+    buName, reportMonth, reportYear = '', '', ''
     form = UtilizationReportForm(user=request.user)
     if request.method == 'POST':
         reportData = UtilizationReportForm(request.POST,
@@ -425,8 +426,11 @@ def TeamMemberPerfomanceReport(request):
             bu = reportData.cleaned_data['bu']
             if bu == '0':
                 reportbu = BusinessUnit.objects.all().values_list('id')
+                buName = 'All'
             else:
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
+                for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
+                    buName = eachData['name']
             tsData = TimeSheetEntry.objects.filter(
                 wkstart__year=reportYear,
                 wkstart__month=reportMonth,
@@ -446,9 +450,18 @@ def TeamMemberPerfomanceReport(request):
             else:
                 data = {}
                 final_report = {}
+            for eachRec in final_report:
+                eachRec['PTD'] = eachRec['correctPTM'] + eachRec['others'][0]['otherstotal']
+            totals['sumTotalPlanned'] = sum([eachRec['totalPlanned'] for eachRec in final_report])
+            totals['monthRecTotal'] = sum([eachRec['monthRec'] for eachRec in final_report])
+            totals['PTMTotal'] = sum([eachRec['correctPTM'] for eachRec in final_report])
+            totals['sumOthersTotal'] = sum([eachRec['others'][0]['otherstotal'] for eachRec in final_report])
+            totals['PTDTotal'] = sum([eachRec['PTD'] for eachRec in final_report])
     return render(request,
                   'MyANSRSource/reportmembersummary.html',
-                  {'form': form, 'data': final_report})
+                  {'form': form, 'data': final_report, 'bu': buName,
+                   'month': reportMonth, 'year': reportYear,
+                   'totals': totals})
 
 
 @login_required
@@ -732,7 +745,7 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 friday=Sum('fridayH'),
                 saturday=Sum('saturdayH'),
                 sunday=Sum('sundayH'),
-            )
+            ).order_by('teamMember__id')
         elif idle is False:
             eachData['others'] = ts.exclude(
                 task__name='Idle'

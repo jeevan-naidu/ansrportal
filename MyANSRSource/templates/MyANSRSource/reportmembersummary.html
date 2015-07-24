@@ -29,7 +29,6 @@
                     </button></td>
                     <td class="col-lg-1">
                         {% if fresh == 1 %}
-                            <input type="hidden" value="export" name="status" />
                             <button type="submit" class="btn btn-success">
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
@@ -41,6 +40,17 @@
                 </tr>
             </table>
         </form>
+        {% if data %}
+            <table class="table table-condensed">
+                <tr>
+                    <td><b>
+                            BU: {{ bu }}
+                    </b></td>
+                    <td><b>Month: {{ month }}</b></td>
+                    <td class="text-right"><b>Year: {{ year }}</b></td>
+                </tr>
+            </table>
+        {% endif %}
         <table class="table table-condensed">
             <thead>
             <tr>
@@ -51,10 +61,11 @@
                 <th>BU</th> 
                 <th>Start Date</th> 
                 <th>End Date</th>
-                <th class="text-right">Total Planned Member Hour(s)</th> 
-                <th class="text-right">Total Planned Member Hour(s) For Month</th> 
-                <th class="text-right">Billed Planned Member Hour(s) For Month</th> 
-                <th class="text-right">Project To Month Billed Member Hour(s)</th> 
+                <th class="text-right">Planned Hour(s)</th> 
+                <th class="text-right">Planned Hour(s) For Month</th> 
+                <th class="text-right">PTM Billed Hour(s)</th> 
+                <th class="text-right">Billed Planned Hour(s) For Month</th> 
+                <th class="text-right">PTD</th> 
             </tr>
             </thead>
             {% if fresh == 1 %}
@@ -68,7 +79,7 @@
             {% else %}
                 {% for eachData in data %}
                     <tr>
-                        <td>{{ eachData.empId }} : {{ eachData.teamMember__first_name }} {{ eachData.teamMember__last_name }}</td> 
+                        <td>{{ eachData.teamMember__first_name }} {{ eachData.teamMember__last_name }} ( {{ eachData.empId }} )</td> 
                         <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td>
                         <td>
                             {% for eachLead in eachData.lead %}
@@ -85,14 +96,25 @@
                         </td>
                         <td class="text-right">{{ eachData.totalPlanned }}</td> 
                         <td class="text-right">{{ eachData.monthRec }}</td>
+                        <td class="text-right">{{ eachData.correctPTM }}</td> 
                         <td class="text-right">
                             {% for eachTotal in eachData.others %}
                                 {{ eachTotal.otherstotal }}
                             {% endfor %}
                         </td> 
-                        <td class="text-right">{{ eachData.correctPTM }}</td> 
+                        <td class="text-right">{{ eachData.PTD }}</td> 
                     </tr>
                 {% endfor %}
+                    {% if data %}
+                        <tr>
+                            <td colspan="7" class="text-center"><b>Total</b></td>
+                            <td class="text-right"><b>{{ totals.sumTotalPlanned }}</b></td> 
+                            <td class="text-right"><b>{{ totals.monthRecTotal }}</b></td>
+                            <td class="text-right"><b>{{ totals.PTMTotal }}</b></td>
+                            <td class="text-right"><b>{{ totals.sumOthersTotal }}</b></td>
+                            <td class="text-right"><b>{{ totals.PTDTotal }}</b></td>
+                        </tr> 
+                {% endif %}
             {% endif %}
         </table>
 	</div>
