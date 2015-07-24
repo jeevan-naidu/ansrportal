@@ -47,6 +47,7 @@
                     <td><b>Member: {{ member }}</b></td>
                     <td class="text-right"><b>From: {{ startDate }}</b></td>
                     <td class="text-right"><b>To: {{ endDate }}</b></td>
+                    <td class="text-right"><b>Planned Hour(s): {{ pH }}</b></td>
                     <td class="text-right"><small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Submitted
                                {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small></td>
                 </tr>
@@ -56,7 +57,6 @@
             <thead>
             <tr>
                 <th colspan="5"></th>
-                <th class="text-right">Total </th> 
                 <th class="text-right">Avg. </th> 
                 <th class="text-right">Min. </th> 
                 <th class="text-right">Max. </th> 
@@ -69,7 +69,7 @@
                 <th>Chapter</th> 
                 <th>Task / Activity</th> 
                 <th class="text-right">Total Hours</th> 
-                <th colspan="5" class="text-center">Productivity</th>
+                <th colspan="4" class="text-center">Productivity</th>
                 <th class="text-right">Norm</th> 
                 <th>Status</th> 
             </tr>
@@ -83,7 +83,7 @@
                     <td colspan="11" class="text-center"><h4><small><b>No reports found for this timeframe</b></small></h4></td>
                 </tr>
             {% else %}
-                {% for eachData in data reversed %}
+                {% for eachData in project %}
                     <tr>
                         {% if eachData.project__projectId == ' - ' %}
                             <td> - </td> 
@@ -94,7 +94,6 @@
                         <td>{{ eachData.chapter__name }}</td> 
                         <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
                         <td class="text-right">{{ eachData.totalHours }}</td> 
-                        <td class="text-right">{{ eachData.totalValue }}</td> 
                         <td class="text-right">{{ eachData.avgProd }}</td> 
                         <td class="text-right">{{ eachData.minProd }}</td> 
                         <td class="text-right">{{ eachData.maxProd }}</td> 
@@ -111,6 +110,29 @@
                         <td colspan="3" class="text-center"><h3><small><b>Total Project Hour(s)</b></small></h3><td>
                         <td class="text-right"><h3><small><b>{{ grandTotal.pTotal }}</b></small></h3><td>
                     <tr>
+                {% for eachData in nonProject %}
+                    <tr>
+                        {% if eachData.project__projectId == ' - ' %}
+                            <td> - </td> 
+                        {% else %}
+                            <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td> 
+                        {% endif %}
+                        <td>{{ eachData.project__book__name }}</td> 
+                        <td>{{ eachData.chapter__name }}</td> 
+                        <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
+                        <td class="text-right">{{ eachData.totalHours }}</td> 
+                        <td class="text-right">{{ eachData.avgProd }}</td> 
+                        <td class="text-right">{{ eachData.minProd }}</td> 
+                        <td class="text-right">{{ eachData.maxProd }}</td> 
+                        <td class="text-right">{{ eachData.medianProd }}</td> 
+                        <td class="text-right">{{ eachData.project__maxProductivityUnits }}</td> 
+                        {% if eachData.hold %}
+                           <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
+                        {% else %}
+                           <td>{% fontawesome_icon 'chevron-circle-down' large=True color='red' %}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
                     <tr>
                         <td colspan="3" class="text-center"><h3><small><b>Total Non Project Hour(s)</b></small></h3><td>
                         <td class="text-right"><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
