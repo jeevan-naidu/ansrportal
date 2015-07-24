@@ -471,7 +471,7 @@ def ProjectPerfomanceReport(request):
     fresh = 1
     iidleTotal, iothersTotal, eidleTotal, eothersTotal = 0, 0, 0, 0
     form = UtilizationReportForm(user=request.user)
-    reportMonth, reportYear = 0, 0
+    buName, reportMonth, reportYear = 0, 0, 0
     if request.method == 'POST':
         reportData = UtilizationReportForm(request.POST,
                                            user=request.user)
@@ -481,8 +481,11 @@ def ProjectPerfomanceReport(request):
             bu = reportData.cleaned_data['bu']
             if bu == '0':
                 reportbu = BusinessUnit.objects.all().values_list('id')
+                buName = 'All'
             else:
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
+                for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
+                    buName = eachData['name']
             tsData = TimeSheetEntry.objects.filter(
                 wkstart__year=reportYear,
                 wkstart__month=reportMonth,
@@ -547,7 +550,7 @@ def ProjectPerfomanceReport(request):
             fresh = 0
     return render(request,
                   'MyANSRSource/reportprojectsummary.html',
-                  {'form': form, 'data': data, 'fresh': fresh,
+                  {'form': form, 'data': data, 'fresh': fresh, 'bu': buName,
                    'iiTotal': iidleTotal, 'ioTotal': iothersTotal,
                    'eiTotal': eidleTotal, 'eoTotal': eothersTotal,
                    'month': reportMonth, 'year': reportYear})

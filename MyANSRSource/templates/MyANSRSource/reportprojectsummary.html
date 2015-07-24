@@ -42,16 +42,22 @@
             </table>
         </form>
         {% if month != 0 %}
-            <span class="text-center"><h3><small>Period : {{ month }} / {{ year }}</small></h3></span>
+            <table class="table table-condensed">
+                <tr>
+                    <td><b>
+                            BU: {{ bu }}
+                    </b></td>
+                    <td><b>Month: {{ month }}</b></td>
+                    <td class="text-right"><b>Year: {{ year }}</b></td>
+                </tr>
+            </table>
         {% endif %}
         <legend>External Projects</legend>
         <table class="table table-condensed">
             <thead>
             <tr>
                 <th colspan="8"></th> 
-                <th class="text-right">Planned</th> 
-                <th class="text-right">Billed</th> 
-                <th class="text-right">Idle</th> 
+                <th class="text-center" colspan="3">Effort</th> 
             </tr>
             <tr>
                 <th>Project Name</th> 
@@ -61,8 +67,10 @@
                 <th>Lead</th> 
                 <th>Start Date</th> 
                 <th>End Date</th> 
-                <th class="text-right">Total Value</th> 
-                <th class="text-center" colspan="3">Effort</th> 
+                <th class="text-right">Value</th> 
+                <th class="text-right">Planned</th> 
+                <th class="text-right">Billed</th> 
+                <th class="text-right">Idle</th> 
             </tr>
             </thead>
             {% if data.external %}
@@ -123,9 +131,7 @@
             <thead>
             <tr>
                 <th colspan="8"></th> 
-                <th class="text-right">Planned</th> 
-                <th class="text-right">Billed</th> 
-                <th class="text-right">Idle</th> 
+                <th class="text-center" colspan="3">Effort</th> 
             </tr>
             <tr>
                 <th>Project Name</th> 
@@ -135,8 +141,10 @@
                 <th>Lead</th> 
                 <th>Start Date</th> 
                 <th>End Date</th> 
-                <th class="text-right">Total Value</th> 
-                <th class="text-center" colspan="3">Effort</th> 
+                <th class="text-right">Value</th> 
+                <th class="text-right">Planned</th> 
+                <th class="text-right">Billed</th> 
+                <th class="text-right">Idle</th> 
             </tr>
             </thead>
             {% if data.internal %}
