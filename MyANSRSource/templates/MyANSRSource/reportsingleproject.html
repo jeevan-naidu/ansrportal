@@ -43,6 +43,9 @@
         {% if not fresh %}
             <table class="table table-condensed">
                 <tr>
+                    <td class="text-center"><b>Individual Project Perfomance</b></td> 
+                </tr>
+                <tr>
                     <td class="text-center"><b>{{ basicData.code }} : {{ basicData.name }}</b></td> 
                 </tr>
             </table>
@@ -169,7 +172,7 @@
             {% if tsData %}
                 {% for eachData in tsData %}
                     <tr>
-                        <td>{{ eachData.teamMember }}</td> 
+                        <td>{{ eachData.teamMember__first_name }} {{ eachData.teamMember__last_name }}</td> 
                         <td>{{ eachData.designation }}</td> 
                         <td class="text-right">{{ eachData.planned }}</td> 
                         <td class="text-right">{{ eachData.actual }}</td> 

@@ -143,7 +143,7 @@ def SingleTeamMemberReport(request):
                        fridayq=Sum('fridayQ'),
                        saturdayq=Sum('saturdayQ'),
                        sundayq=Sum('sundayQ')
-                       ).order_by('project__projectId', 'hold')
+                       ).order_by('project__name', 'hold')
             if len(report):
                 for eachData in report:
                     if eachData['project__projectId'] is None:
@@ -282,7 +282,7 @@ def SingleProjectReport(request):
                        friday=Sum('fridayQ'),
                        saturday=Sum('saturdayQ'),
                        sunday=Sum('sundayQ')
-                       )
+                       ).order_by('task__name')
             for eachData in taskData:
                 units = []
                 for k, v in eachData.iteritems():
@@ -298,6 +298,8 @@ def SingleProjectReport(request):
                 project=cProject
             ).values(
                 'teamMember',
+                'teamMember__first_name',
+                'teamMember__last_name'
             ).annotate(mondayh=Sum('mondayH'),
                        tuesdayh=Sum('tuesdayH'),
                        wednesdayh=Sum('wednesdayH'),
@@ -305,7 +307,8 @@ def SingleProjectReport(request):
                        fridayh=Sum('fridayH'),
                        saturdayh=Sum('saturdayH'),
                        sundayh=Sum('sundayH')
-                       )
+                       ).order_by('teamMember__first_name',
+                                  'teamMember__last_name')
             if len(basicData):
                 if basicData['signed']:
                     basicData['signed'] = 'Yes'
@@ -441,7 +444,8 @@ def TeamMemberPerfomanceReport(request):
                 'project__name', 'project__projectType__description',
                 'project__bu__name', 'teamMember__first_name',
                 'teamMember__last_name', 'teamMember__id'
-            ).order_by('project__bu__name').distinct()
+            ).order_by('teamMember__first_name',
+                       'teamMember__last_name').distinct()
             if tsData:
                 data = GenerateReport(request, reportMonth, reportYear,
                                       tsData, idle=None)
@@ -500,7 +504,7 @@ def ProjectPerfomanceReport(request):
                 'project__bu__name', 'project__startDate',
                 'project__endDate', 'project__totalValue',
                 'project__plannedEffort'
-            ).order_by('project__bu__name').distinct()
+            ).order_by('project__bu__name', 'project__name').distinct()
             if tsData:
                 internalIdle = GenerateReport(request, reportMonth, reportYear,
                                               tsData, idle=True)
