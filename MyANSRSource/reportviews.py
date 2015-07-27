@@ -415,13 +415,14 @@ def SingleProjectReport(request):
 @permission_required('MyANSRSource.create_project')
 def TeamMemberPerfomanceReport(request):
     report, final_report, totals = {}, {}, {}
-    buName, reportMonth, reportYear = '', '', ''
+    buName, currReportMonth, reportYear = '', '', ''
     form = UtilizationReportForm(user=request.user)
     if request.method == 'POST':
         reportData = UtilizationReportForm(request.POST,
                                            user=request.user)
         if reportData.is_valid():
             reportMonth = reportData.cleaned_data['month']
+            currReportMonth = datetime(1900, int(reportMonth), 1).strftime('%B')
             reportYear = reportData.cleaned_data['year']
             bu = reportData.cleaned_data['bu']
             if bu == '0':
@@ -460,7 +461,7 @@ def TeamMemberPerfomanceReport(request):
     return render(request,
                   'MyANSRSource/reportmembersummary.html',
                   {'form': form, 'data': final_report, 'bu': buName,
-                   'month': reportMonth, 'year': reportYear,
+                   'month': currReportMonth, 'year': reportYear,
                    'totals': totals})
 
 
@@ -471,12 +472,13 @@ def ProjectPerfomanceReport(request):
     fresh = 1
     iidleTotal, iothersTotal, eidleTotal, eothersTotal = 0, 0, 0, 0
     form = UtilizationReportForm(user=request.user)
-    buName, reportMonth, reportYear = 0, 0, 0
+    buName, currReportMonth, reportYear = 0, 0, 0
     if request.method == 'POST':
         reportData = UtilizationReportForm(request.POST,
                                            user=request.user)
         if reportData.is_valid():
             reportMonth = reportData.cleaned_data['month']
+            currReportMonth = datetime(1900, int(reportMonth), 1).strftime('%B')
             reportYear = reportData.cleaned_data['year']
             bu = reportData.cleaned_data['bu']
             if bu == '0':
@@ -553,7 +555,7 @@ def ProjectPerfomanceReport(request):
                   {'form': form, 'data': data, 'fresh': fresh, 'bu': buName,
                    'iiTotal': iidleTotal, 'ioTotal': iothersTotal,
                    'eiTotal': eidleTotal, 'eoTotal': eothersTotal,
-                   'month': reportMonth, 'year': reportYear})
+                   'month': currReportMonth, 'year': reportYear})
 
 
 @login_required
