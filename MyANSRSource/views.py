@@ -1361,6 +1361,7 @@ def UpdateProjectInfo(request, newInfo):
         pru.closed = newInfo[1]['closed']
         pru.signed = newInfo[1]['signed']
         pru.po = newInfo[1]['po']
+        pru.endDate = newInfo[1]['endDate']
         pru.save()
 
 
