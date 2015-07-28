@@ -33,7 +33,7 @@ Hi {{first_name}},
             {% if eachMilestone.label == 'week' %}
                     <dd><font color="blue">This milestone is due one week from now.</font></dd>
             {% elif eachMilestone.label == 'nextDay' %}
-                <dd><font color="green">Today is the milestone date.</font>  Please make sure you take necessary action and ensure its completion and mark it closed on myansrsource.</dd>
+                <dd>Please make sure you take necessary action and ensure its completion and mark it closed on myansrsource.</dd>
             {% elif eachMilestone.label == 'expired' %} 
                 <dd><font color="red">This milestone has expired and not marked as complete in myansrsource. Please do it immediately.</font></dd>
             {% endif %}
