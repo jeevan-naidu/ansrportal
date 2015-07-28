@@ -778,8 +778,14 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 project__projectId=eachData['project__projectId'],
                 teamMember__id=eachData['teamMember__id'])
             cUser = User.objects.filter(id=eachData['teamMember__id'])
-            eachData['empId'] = Employee.objects.filter(
-                user=cUser).values('employee_assigned_id')[0]['employee_assigned_id']
+            empId = Employee.objects.filter(user=cUser).values(
+                'employee_assigned_id')
+            if len(empId):
+                eachData['empId'] = Employee.objects.filter(
+                    user=cUser).values(
+                        'employee_assigned_id')[0]['employee_assigned_id']
+            else:
+                eachData['empId'] = 000
             dates = ProjectTeamMember.objects.filter(
                 member=cUser
             ).values('startDate', 'endDate')[0]
