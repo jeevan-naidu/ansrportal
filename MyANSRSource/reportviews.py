@@ -143,7 +143,8 @@ def SingleTeamMemberReport(request):
                        fridayq=Sum('fridayQ'),
                        saturdayq=Sum('saturdayQ'),
                        sundayq=Sum('sundayQ')
-                       ).order_by('project__name', 'hold')
+                       ).order_by('project__projectId',
+                                  'project__name', 'hold')
             if len(report):
                 for eachData in report:
                     if eachData['project__projectId'] is None:
@@ -511,7 +512,8 @@ def ProjectPerfomanceReport(request):
                 'project__bu__name', 'project__startDate',
                 'project__endDate', 'project__totalValue',
                 'project__plannedEffort'
-            ).order_by('project__bu__name', 'project__name').distinct()
+            ).order_by('project__projectId',
+                       'project__name').distinct()
             if tsData:
                 internalIdle = GenerateReport(request, reportMonth, reportYear,
                                               tsData, idle=True)
@@ -532,7 +534,8 @@ def ProjectPerfomanceReport(request):
                 'project__bu__name', 'project__startDate',
                 'project__endDate', 'project__totalValue',
                 'project__plannedEffort'
-            ).order_by('project__bu__name').distinct()
+            ).order_by('project__projectId',
+                       'project__name').distinct()
             if tsData:
                 externalIdle = GenerateReport(request, reportMonth, reportYear,
                                               tsData, idle=True)
