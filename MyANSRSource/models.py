@@ -30,6 +30,9 @@ class Book(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        unique_together = ('name', 'edition', )
+
 
 class Activity(models.Model):
     name = models.CharField(max_length=100, null=False,
