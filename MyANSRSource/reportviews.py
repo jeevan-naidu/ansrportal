@@ -801,13 +801,13 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 eachData['empId'] = 000
             dates = ProjectTeamMember.objects.filter(
                 member=cUser
-            ).values('startDate', 'endDate')
+            ).values('startDate', 'endDate', 'plannedEffort')
             if len(dates):
                 eachData['startDate'] = dates[0]['startDate']
                 eachData['endDate'] = dates[0]['endDate']
                 if eachData['startDate'] and eachData['endDate']:
                     diff = (eachData['endDate'] - eachData['startDate']).days
-                    eachData['totalPlanned'] = diff * 8
+                    eachData['totalPlanned'] = dates[0]['plannedEffort']
                     eachData['monthRec'] = 0
                     if diff > 0:
                         rd = rdelta.relativedelta(
