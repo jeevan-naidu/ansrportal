@@ -263,14 +263,14 @@ def SingleProjectReport(request):
             crData = ProjectChangeInfo.objects.filter(
                 project=cProject
             ).values('crId', 'reason', 'endDate', 'revisedEffort',
-                     'revisedTotal', 'closed', 'closedOn')
+                     'revisedTotal', 'closed', 'closedOn').order_by('endDate')
             if basicData['endDate'] < datetime.now().date() \
                     and cProject.closed is False:
                 red = True
             msData = ProjectMilestone.objects.filter(
                 project=cProject
             ).values('description', 'financial', 'milestoneDate',
-                     'amount', 'closed')
+                     'amount', 'closed').order_by('milestoneDate')
             taskData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
