@@ -464,6 +464,11 @@ def TeamMemberPerfomanceReport(request):
             totals['PTMTotal'] = sum([eachRec['correctPTM'] for eachRec in final_report])
             totals['sumOthersTotal'] = sum([eachRec['others'][0]['otherstotal'] for eachRec in final_report])
             totals['PTDTotal'] = sum([eachRec['PTD'] for eachRec in final_report])
+            form = UtilizationReportForm(initial={
+                'month': reportData.cleaned_data['month'],
+                'year': reportData.cleaned_data['year'],
+                'bu': reportData.cleaned_data['bu']
+            }, user=request.user)
     return render(request,
                   'MyANSRSource/reportmembersummary.html',
                   {'form': form, 'data': final_report, 'bu': buName,
@@ -556,6 +561,11 @@ def ProjectPerfomanceReport(request):
                         if 'otherstotal' in eachRec:
                             eothersTotal += eachRec['otherstotal']
             fresh = 0
+            form = UtilizationReportForm(initial={
+                'month': reportData.cleaned_data['month'],
+                'year': reportData.cleaned_data['year'],
+                'bu': reportData.cleaned_data['bu']
+            }, user=request.user)
     return render(request,
                   'MyANSRSource/reportprojectsummary.html',
                   {'form': form, 'data': data, 'fresh': fresh, 'bu': buName,
@@ -788,21 +798,25 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 eachData['empId'] = 000
             dates = ProjectTeamMember.objects.filter(
                 member=cUser
-            ).values('startDate', 'endDate')[0]
-            eachData['startDate'] = dates['startDate']
-            eachData['endDate'] = dates['endDate']
-            if eachData['startDate'] and eachData['endDate']:
-                diff = (eachData['endDate'] - eachData['startDate']).days
-                eachData['totalPlanned'] = diff * 8
+            ).values('startDate', 'endDate')
+            if len(dates):
+                eachData['startDate'] = dates[0]['startDate']
+                eachData['endDate'] = dates[0]['endDate']
+                if eachData['startDate'] and eachData['endDate']:
+                    diff = (eachData['endDate'] - eachData['startDate']).days
+                    eachData['totalPlanned'] = diff * 8
+                    eachData['monthRec'] = 0
+                    if diff > 0:
+                        rd = rdelta.relativedelta(
+                            eachData['endDate'],
+                            eachData['startDate']
+                        )
+                        if rd.months > 0:
+                            if eachData['totalPlanned'] > 0:
+                                eachData['monthRec'] = eachData['totalPlanned'] / rd.months
+            else:
+                eachData['totalPlanned'] = 0
                 eachData['monthRec'] = 0
-                if diff > 0:
-                    rd = rdelta.relativedelta(
-                        eachData['endDate'],
-                        eachData['startDate']
-                    )
-                    if rd.months > 0:
-                        if eachData['totalPlanned'] > 0:
-                            eachData['monthRec'] = eachData['totalPlanned'] / rd.months
             eachData['others'] = ts.values(
                 'project__projectId'
             ).annotate(
