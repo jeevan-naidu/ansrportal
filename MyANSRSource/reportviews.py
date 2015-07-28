@@ -352,6 +352,8 @@ def SingleProjectReport(request):
                                 eachTsData['actual'] - eachTsData['planned']) * 100 / eachTsData['planned'])
                     except ZeroDivisionError:
                         eachTsData['deviation'] = 0
+                    except:
+                        eachTsData['deviation'] = 0
                 try:
                     actualTotal = sum(
                         [eachTsData['actual'] for eachTsData in tsData])
