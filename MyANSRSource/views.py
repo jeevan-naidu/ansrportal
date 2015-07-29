@@ -866,6 +866,7 @@ def Dashboard(request):
 
     totalCurrentProjects = ProjectTeamMember.objects.filter(
         member=request.user,
+        member__is_active=True,
         project__closed=False
     ).count()
 
@@ -878,7 +879,8 @@ def Dashboard(request):
 
     unApprovedTimeSheet = TimeSheetEntry.objects.filter(
         project__projectManager=request.user,
-        approved=False, hold=True
+        approved=False, hold=True,
+        teamMember__is_active=True
     ).count() if request.user.has_perm('MyANSRSource.approve_timesheet') else 0
 
     totalEmployees = User.objects.all().count()
@@ -917,17 +919,20 @@ def Dashboard(request):
     billableProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
         member=request.user,
+        member__is_active=True,
         project__internal=False
     ).count()
     currentProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
         member=request.user,
+        member__is_active=True,
         project__startDate__lte=datetime.now(),
         project__endDate__gte=datetime.now()
     ).values('project__name', 'project__endDate')
     futureProjects = ProjectTeamMember.objects.filter(
         project__closed=False,
         member=request.user,
+        member__is_active=True,
         project__startDate__gte=datetime.now()
     ).values('project__name', 'project__startDate')
     for eachProject in futureProjects:
@@ -952,7 +957,8 @@ def Dashboard(request):
         del eachProject['project__endDate']
     myprojects = ProjectTeamMember.objects.filter(
         project__closed=False,
-        member=request.user
+        member=request.user,
+        member__is_active=True,
     ).values('project__name', 'project__startDate', 'project__endDate')
     for eachProject in myprojects:
         eachProject['project__startDate'] = eachProject[
