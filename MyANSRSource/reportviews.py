@@ -21,6 +21,7 @@ import mimetypes
 import xlsxwriter
 import os
 import string
+import calendar
 
 
 days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
@@ -756,9 +757,10 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
         eachData['lead'] = ProjectManager.objects.filter(
             project__projectId=eachData['project__projectId']
         ).values('user__username')
+        startEnd = getDateRange(request, reportYear, reportMonth)
         ts = TimeSheetEntry.objects.filter(
-            wkstart__year=reportYear,
-            wkstart__month=reportMonth,
+            wkstart__gte=startEnd[0],
+            wkend__lte=startEnd[2],
             project__projectId=eachData['project__projectId'])
         if idle:
             eachData['idle'] = ts.filter(
@@ -790,8 +792,8 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
             )
         else:
             ts = TimeSheetEntry.objects.filter(
-                wkstart__year=reportYear,
-                wkstart__month=reportMonth,
+                wkstart__gte=startEnd[0],
+                wkend__lte=startEnd[2],
                 project__projectId=eachData['project__projectId'],
                 teamMember__id=eachData['teamMember__id'])
             totalts = TimeSheetEntry.objects.filter(
@@ -854,6 +856,17 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 d[eachDay] = totalTsValue[0][eachDay] - eachData['others'][0][eachDay]
             eachData['PTMBilledHours'] = d
     return tsData
+
+
+@login_required
+def getDateRange(request, reportYear, reportMonth):
+    reportYear = int(reportYear)
+    reportMonth = int(reportMonth)
+    totaldays = calendar.monthrange(reportYear, reportMonth)[1]
+    startDate = datetime(reportYear, reportMonth, 1)
+    endDate = datetime(reportYear, reportMonth, totaldays)
+    return [startDate.date(), startDate.weekday(),
+            endDate.date(), endDate.weekday()]
 
 
 @login_required
