@@ -760,7 +760,7 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
         startEnd = getDateRange(request, reportYear, reportMonth)
         ts = TimeSheetEntry.objects.filter(
             wkstart__gte=startEnd[0],
-            wkend__lte=startEnd[2],
+            wkend__lte=startEnd[1],
             project__projectId=eachData['project__projectId'])
         if idle:
             eachData['idle'] = ts.filter(
@@ -793,7 +793,7 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
         else:
             ts = TimeSheetEntry.objects.filter(
                 wkstart__gte=startEnd[0],
-                wkend__lte=startEnd[2],
+                wkend__lte=startEnd[1],
                 project__projectId=eachData['project__projectId'],
                 teamMember__id=eachData['teamMember__id'])
             totalts = TimeSheetEntry.objects.filter(
@@ -865,8 +865,13 @@ def getDateRange(request, reportYear, reportMonth):
     totaldays = calendar.monthrange(reportYear, reportMonth)[1]
     startDate = datetime(reportYear, reportMonth, 1)
     endDate = datetime(reportYear, reportMonth, totaldays)
-    return [startDate.date(), startDate.weekday(),
-            endDate.date(), endDate.weekday()]
+    startWeek = startDate.weekday()
+    endWeek = endDate.weekday()
+    if startWeek > 0:
+        startDate = startDate - timedelta(days=startWeek)
+    if endWeek < 6:
+        endDate = endDate + timedelta(days=endWeek)
+    return [startDate.date(), endDate.date()]
 
 
 @login_required
