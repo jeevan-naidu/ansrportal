@@ -1,3 +1,4 @@
+import logger
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -28,7 +29,12 @@ class Book(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return '{0}|{1}|{2}'.format(self.author, self.edition, self.name)
+        try:
+            return '{0}|{1}|{2}'.format(self.author, self.edition, self.name)
+        except:
+            logger.error(
+                'Exception when formatting book name.  Record #' + str(self.id))
+            return 'COULD NOT FORMAT BOOK NAME'
 
     class Meta:
         unique_together = ('name', 'edition', 'author', )
