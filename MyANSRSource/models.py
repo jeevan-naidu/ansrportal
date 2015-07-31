@@ -31,7 +31,7 @@ class Book(models.Model):
         return self.name
 
     class Meta:
-        unique_together = ('name', 'edition', )
+        unique_together = ('name', 'edition', 'author', )
 
 
 class Activity(models.Model):
