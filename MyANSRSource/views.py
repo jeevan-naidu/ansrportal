@@ -559,9 +559,18 @@ def switchWeeks(request):
         ansrEndDate = datetime.strptime(
             request.GET.get('enddate'), '%d%m%Y'
         ).date() - timedelta(days=7)
-        disabled = 'prev'
+        disabled = ''
     elif request.GET.get('week') == 'next':
-        disabled = 'next'
+        weekstartDate = datetime.strptime(
+            request.GET.get('startdate'), '%d%m%Y'
+        ).date() + timedelta(days=7)
+        ansrEndDate = datetime.strptime(
+            request.GET.get('endDate'), '%d%m%Y'
+        ).date() + timedelta(days=7)
+        if (datetime.now().date() - ansrEndDate).days < 0:
+            disabled = 'next'
+        else:
+            disabled = ''
     return {'start': weekstartDate, 'end': ansrEndDate, 'disabled': disabled}
 
 
