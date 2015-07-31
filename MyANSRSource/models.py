@@ -28,7 +28,10 @@ class Book(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.name
+        return '{0}|{1}|{2}'.format(self.author, self.edition, self.name)
+
+    class Meta:
+        unique_together = ('name', 'edition', 'author', )
 
 
 class Activity(models.Model):
