@@ -806,6 +806,7 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
             else:
                 eachData['empId'] = 000
             dates = ProjectTeamMember.objects.filter(
+                project__projectId=eachData['project__projectId'],
                 member=cUser
             ).values('startDate', 'endDate', 'plannedEffort')
             if len(dates):
