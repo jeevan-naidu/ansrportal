@@ -14,6 +14,7 @@ django-fontawesome==0.2.2
 django-grappelli==2.6.3
 django-session-security==2.2.2
 django-templated-email==0.4.9
+numpy==1.9.2
 python-dateutil==2.2
 python-ldap==2.4.18
 pytz==2014.7
