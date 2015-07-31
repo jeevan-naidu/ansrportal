@@ -18,6 +18,7 @@ from django.core.servers.basehttp import FileWrapper
 from dateutil import relativedelta as rdelta
 from django.http import HttpResponse
 import mimetypes
+import numpy
 import xlsxwriter
 import os
 import string
@@ -174,8 +175,7 @@ def SingleTeamMemberReport(request):
                     eachData['maxProd'] = max(units)
                     eachData['minProd'] = min(units)
                     eachData['avgProd'] = round(sum(units) / len(units), 2)
-                    units.sort()
-                    eachData['medianProd'] = units[len(units) // 2]
+                    eachData['medianProd'] = numpy.median(units)
                     if eachData['chapter__name'] == ' -  ':
                         eachData['totalValue'] = ' -  '
                         eachData['minProd'] = ' -  '
@@ -292,9 +292,8 @@ def SingleProjectReport(request):
                 eachData['norm'] = cProject.maxProductivityUnits
                 eachData['min'] = min(units)
                 eachData['max'] = max(units)
-                eachData['avg'] = sum(units) / 2
-                units.sort()
-                eachData['median'] = units[len(units) // 2]
+                eachData['avg'] = round(sum(units) / len(units), 2)
+                eachData['median'] = numpy.median(units)
             tsData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
@@ -807,6 +806,7 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
             else:
                 eachData['empId'] = 000
             dates = ProjectTeamMember.objects.filter(
+                project__projectId=eachData['project__projectId'],
                 member=cUser
             ).values('startDate', 'endDate', 'plannedEffort')
             if len(dates):

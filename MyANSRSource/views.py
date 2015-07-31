@@ -883,7 +883,7 @@ def Dashboard(request):
         teamMember__is_active=True
     ).count() if request.user.has_perm('MyANSRSource.approve_timesheet') else 0
 
-    totalEmployees = User.objects.all().count()
+    totalEmployees = User.objects.filter(is_active=True).count()
     pm = ProjectMilestone.objects.filter(
         project__projectManager=request.user,
         project__closed=False,
