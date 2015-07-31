@@ -208,3 +208,22 @@ class BusinessUnit(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class DataPoint(models.Model):
+    bu = models.ForeignKey(BusinessUnit,
+                           verbose_name='BU',
+                           blank=False, null=False)
+    name = models.CharField(
+        verbose_name="Service Line",
+        max_length=40,
+        blank=False)
+    lead = models.ForeignKey(User, verbose_name='Lead',
+                             blank=False, null=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name

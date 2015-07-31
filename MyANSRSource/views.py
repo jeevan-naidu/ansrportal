@@ -1578,6 +1578,7 @@ class ManageTeamWizard(SessionWizardView):
                 currentProject = ProjectTeamMember.objects.filter(
                     project__id=projectId).values('id', 'member',
                                                   'startDate', 'endDate',
+                                                  'datapoint',
                                                   'plannedEffort', 'rate'
                                                   )
             else:
@@ -1653,6 +1654,7 @@ class ManageTeamWizard(SessionWizardView):
                            (eachData['endDate'] == ptm.endDate) and \
                            (eachData['plannedEffort'] == ptm.plannedEffort) and \
                            (eachData['member'] == ptm.member) and \
+                           (eachData['datapoint'] == ptm.datapoint) and \
                                 (eachData['rate'] == ptm.rate):
                             pass
                         else:
