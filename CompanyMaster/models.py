@@ -50,11 +50,18 @@ class Customer(models.Model):
     )
     seqNumber = models.PositiveIntegerField(null=False, default=1,
                                             verbose_name='Project ID Sequence')
-    relatedMember = models.ManyToManyField(
-        User,
-        verbose_name="Select Account Relationship team",
+    Crelation = models.ForeignKey(User, default=None, related_name="Relation",
+                                  verbose_name='Account relationship manager',
+                                  blank=True, null=True)
+    Cdelivery = models.ForeignKey(User, default=None,
+                                  verbose_name='Account delivery manager',
+                                  blank=True, null=True)
+    cContact = models.CharField(
+        verbose_name="Customer contact",
+        null=False,
         blank=False,
-        null=False
+        max_length=100,
+        default=None
     )
     CType = models.ForeignKey(CustomerType, default=None,
                               verbose_name='Customer Type',
