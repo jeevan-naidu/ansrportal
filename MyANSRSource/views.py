@@ -1751,8 +1751,6 @@ def saveProject(request):
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
-            pr.maxProductivityUnits = float(
-                request.POST.get('maxProductivityUnits'))
             startDate = datetime.fromtimestamp(
                 int(request.POST.get('startDate'))).date()
             endDate = datetime.fromtimestamp(
@@ -1899,7 +1897,7 @@ def ViewProject(request):
             basicInfo['customerContact__username'] = customerObj.username
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
-            'totalValue', 'maxProductivityUnits', 'po', 'salesForceNumber'
+            'totalValue', 'po', 'salesForceNumber'
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
@@ -1986,12 +1984,8 @@ def GetProjectType(request):
             'project__id',
             'project__name',
             'project__projectType__code',
-            'project__maxProductivityUnits',
             'project__projectType__description'
         ).filter(project__closed=False)
-        for eachData in typeData:
-            eachData['project__maxProductivityUnits'] = float(
-                eachData['project__maxProductivityUnits'])
         data = {'data': list(typeData)}
     except ProjectTeamMember.DoesNotExist:
         data = {'data': list()}

@@ -501,7 +501,6 @@ class ProjectFlagForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
-            'maxProductivityUnits',
             'startDate',
             'endDate',
             'plannedEffort',
@@ -516,8 +515,6 @@ class ProjectFlagForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectFlagForm, self).__init__(*args, **kwargs)
-        self.fields['maxProductivityUnits'].widget.attrs['class'] = \
-            "form-control"
         self.fields['po'].widget.attrs['class'] = \
             "form-control"
         self.fields['salesForceNumber'].widget.attrs['class'] = \

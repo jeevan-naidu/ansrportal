@@ -286,7 +286,8 @@ def SingleProjectReport(request):
                        ).order_by('task__name')
             taskNames = TimeSheetEntry.objects.filter(
                 project=cProject
-            ).values('task__name').order_by('task__name').distinct()
+            ).values('task__name',
+                     'task__norm').order_by('task__name').distinct()
             for eachTaskName in taskNames:
                 d = {}
                 memberData = TimeSheetEntry.objects.filter(
@@ -306,6 +307,7 @@ def SingleProjectReport(request):
                                       'teamMember__last_name',
                                       'teamMember__id')
                 d['taskName'] = eachTaskName['task__name']
+                d['norm'] = eachTaskName['task__norm']
                 if len(memberData):
                     for eachRec in memberData:
                         eachRec['total'] = 0
@@ -324,7 +326,6 @@ def SingleProjectReport(request):
                 for k, v in eachData.iteritems():
                     if k != 'task__name':
                         units.append(v)
-                eachData['norm'] = cProject.maxProductivityUnits
                 eachData['min'] = min(units)
                 eachData['max'] = max(units)
                 eachData['avg'] = round(sum(units) / len(units), 2)

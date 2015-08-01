@@ -236,7 +236,13 @@
                 {% for eachData in taskData %}
                     <tr>
                         <td>{{ eachData.task__name }}</td> 
-                        <td class="text-right">{{ eachData.norm }}</td> 
+                        <td class="text-right">
+                            {% for eachTask in topPerformer %}
+                                {% if eachTask.taskName == eachData.task__name %}
+                                    {{ eachTask.norm }}
+                                {% endif %}
+                            {% endfor %}     
+                        </td> 
                         <td class="text-right">{{ eachData.min }}</td> 
                         <td class="text-right">{{ eachData.max }}</td> 
                         <td class="text-right">{{ eachData.avg }}</td> 

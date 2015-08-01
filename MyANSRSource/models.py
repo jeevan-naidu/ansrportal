@@ -128,13 +128,6 @@ class Project(models.Model):
         verbose_name="Customer Contact",
         related_name="Cusomer Contact"
     )
-    maxProductivityUnits = models.DecimalField(
-        default=0.0,
-        max_digits=12,
-        decimal_places=2,
-        verbose_name="Norm",
-        validators=[MinValueValidator(0.0)]
-    )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
         verbose_name="Business Unit"
