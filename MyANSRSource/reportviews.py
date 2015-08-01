@@ -236,7 +236,7 @@ def SingleTeamMemberReport(request):
 @permission_required('MyANSRSource.create_project')
 def SingleProjectReport(request):
     basicData = {}
-    crData, tsData, msData, taskData, memberData = [], [], [], [], []
+    crData, tsData, msData, taskData, topPerformer = [], [], [], [], []
     pEffort = 0
     fresh = 1
     actualTotal, plannedTotal, balanceTotal, deviation = 0, 0, 0, 0
@@ -286,11 +286,11 @@ def SingleProjectReport(request):
                        ).order_by('task__name')
             taskNames = TimeSheetEntry.objects.filter(
                 project=cProject
-            ).values('task').order_by('task').distinct()
+            ).values('task__name').order_by('task__name').distinct()
             for eachTaskName in taskNames:
                 d = {}
                 memberData = TimeSheetEntry.objects.filter(
-                    task=eachTaskName['task']
+                    task__name=eachTaskName['task__name']
                 ).values(
                     'teamMember__first_name',
                     'teamMember__last_name',
@@ -305,13 +305,20 @@ def SingleProjectReport(request):
                            ).order_by('teamMember__first_name',
                                       'teamMember__last_name',
                                       'teamMember__id')
-                d['taskName'] = eachTaskName['task']
+                d['taskName'] = eachTaskName['task__name']
                 if len(memberData):
                     for eachRec in memberData:
-                        l = []
-                        total = 0
+                        eachRec['total'] = 0
                         for eachDay in days:
-                            total += eachRec[eachDay]
+                            eachRec['total'] += eachRec[eachDay]
+                    totals = [eachRec['total'] for eachRec in memberData]
+                    max_member = totals.index(max(totals))
+                    d['top'] = "{0} {1} ({2})".format(
+                        memberData[max_member]['teamMember__first_name'],
+                        memberData[max_member]['teamMember__last_name'],
+                        memberData[max_member]['teamMember__id']
+                    )
+                topPerformer.append(d)
             for eachData in taskData:
                 units = []
                 for k, v in eachData.iteritems():
@@ -437,7 +444,7 @@ def SingleProjectReport(request):
                   'MyANSRSource/reportsingleproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
                    'crData': crData, 'tsData': tsData, 'msData': msData,
-                   'memberData': memberData, 'taskData': taskData,
+                   'topPerformer': topPerformer, 'taskData': taskData,
                    'actualTotal': actualTotal, 'plannedTotal': plannedTotal,
                    'deviation': deviation, 'balanceTotal': balanceTotal,
                    'red': red, 'closed': closed}

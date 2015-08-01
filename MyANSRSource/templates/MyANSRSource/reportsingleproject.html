@@ -242,8 +242,10 @@
                         <td class="text-right">{{ eachData.avg }}</td> 
                         <td class="text-right">{{ eachData.median }}</td> 
                         <td>
-                            {% for eachData in  memberData %}
-                                {{ eachData.teamMember__first_name }}  {{ eachData.teamMember__last_name }} ({{ eachData.teamMember__id }})      
+                            {% for eachTask in topPerformer %}
+                                {% if eachTask.taskName == eachData.task__name %}
+                                    {{ eachTask.top }}
+                                {% endif %}
                             {% endfor %}     
                         </td> 
                     </tr>
