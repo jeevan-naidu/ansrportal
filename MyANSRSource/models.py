@@ -144,7 +144,6 @@ class Project(models.Model):
         default=None,
         null=False,
     )
-    name = models.CharField(max_length=50, verbose_name="Project Name")
     currentProject = models.BooleanField(
         blank=False,
         default=True,
