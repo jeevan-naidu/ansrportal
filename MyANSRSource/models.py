@@ -1,4 +1,5 @@
-import logger
+import logging
+logger = logging.getLogger('MyANSRSource')
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -126,13 +127,6 @@ class Project(models.Model):
         default=None,
         verbose_name="Customer Contact",
         related_name="Cusomer Contact"
-    )
-    maxProductivityUnits = models.DecimalField(
-        default=0.0,
-        max_digits=12,
-        decimal_places=2,
-        verbose_name="Norm",
-        validators=[MinValueValidator(0.0)]
     )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
@@ -348,6 +342,11 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
     member = models.ForeignKey(User, blank=True, null=True)
+    datapoint = models.ForeignKey(
+        CompanyMaster.models.DataPoint,
+        blank=True,
+        null=True
+    )
     startDate = models.DateField(verbose_name='Start date on project',
                                  blank=True,
                                  default=timezone.now)

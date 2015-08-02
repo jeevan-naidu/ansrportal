@@ -50,11 +50,18 @@ class Customer(models.Model):
     )
     seqNumber = models.PositiveIntegerField(null=False, default=1,
                                             verbose_name='Project ID Sequence')
-    relatedMember = models.ManyToManyField(
-        User,
-        verbose_name="Select Account Relationship team",
+    Crelation = models.ForeignKey(User, default=None, related_name="Relation",
+                                  verbose_name='Account relationship manager',
+                                  blank=True, null=True)
+    Cdelivery = models.ForeignKey(User, default=None,
+                                  verbose_name='Account delivery manager',
+                                  blank=True, null=True)
+    cContact = models.CharField(
+        verbose_name="Customer contact",
+        null=False,
         blank=False,
-        null=False
+        max_length=100,
+        default=None
     )
     CType = models.ForeignKey(CustomerType, default=None,
                               verbose_name='Customer Type',
@@ -194,6 +201,25 @@ class BusinessUnit(models.Model):
                                   choices=CENTERFLAG,
                                   verbose_name='Type of center',
                                   default=None)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class DataPoint(models.Model):
+    bu = models.ForeignKey(BusinessUnit,
+                           verbose_name='BU',
+                           blank=False, null=False)
+    name = models.CharField(
+        verbose_name="Service Line",
+        max_length=40,
+        blank=False)
+    lead = models.ForeignKey(User, verbose_name='Lead',
+                             blank=False, null=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",

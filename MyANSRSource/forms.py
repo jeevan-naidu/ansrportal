@@ -438,6 +438,7 @@ class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
         model = ProjectTeamMember
         fields = (
             'member',
+            'datapoint',
             'startDate',
             'endDate',
             'rate',
@@ -454,6 +455,7 @@ class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['id'].widget.attrs['class'] = "set-zero"
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
+        self.fields['datapoint'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs[
             'class'] = "form-control min-100 pro-start-date"
         self.fields['endDate'].widget.attrs[
@@ -499,7 +501,6 @@ class ProjectFlagForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
-            'maxProductivityUnits',
             'startDate',
             'endDate',
             'plannedEffort',
@@ -514,8 +515,6 @@ class ProjectFlagForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectFlagForm, self).__init__(*args, **kwargs)
-        self.fields['maxProductivityUnits'].widget.attrs['class'] = \
-            "form-control"
         self.fields['po'].widget.attrs['class'] = \
             "form-control"
         self.fields['salesForceNumber'].widget.attrs['class'] = \

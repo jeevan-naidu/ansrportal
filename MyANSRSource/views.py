@@ -559,9 +559,18 @@ def switchWeeks(request):
         ansrEndDate = datetime.strptime(
             request.GET.get('enddate'), '%d%m%Y'
         ).date() - timedelta(days=7)
-        disabled = 'prev'
+        disabled = ''
     elif request.GET.get('week') == 'next':
-        disabled = 'next'
+        weekstartDate = datetime.strptime(
+            request.GET.get('startdate'), '%d%m%Y'
+        ).date() + timedelta(days=7)
+        ansrEndDate = datetime.strptime(
+            request.GET.get('endDate'), '%d%m%Y'
+        ).date() + timedelta(days=7)
+        if (datetime.now().date() - ansrEndDate).days < 0:
+            disabled = 'next'
+        else:
+            disabled = ''
     return {'start': weekstartDate, 'end': ansrEndDate, 'disabled': disabled}
 
 
@@ -1569,6 +1578,7 @@ class ManageTeamWizard(SessionWizardView):
                 currentProject = ProjectTeamMember.objects.filter(
                     project__id=projectId).values('id', 'member',
                                                   'startDate', 'endDate',
+                                                  'datapoint',
                                                   'plannedEffort', 'rate'
                                                   )
             else:
@@ -1644,6 +1654,7 @@ class ManageTeamWizard(SessionWizardView):
                            (eachData['endDate'] == ptm.endDate) and \
                            (eachData['plannedEffort'] == ptm.plannedEffort) and \
                            (eachData['member'] == ptm.member) and \
+                           (eachData['datapoint'] == ptm.datapoint) and \
                                 (eachData['rate'] == ptm.rate):
                             pass
                         else:
@@ -1740,8 +1751,6 @@ def saveProject(request):
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
-            pr.maxProductivityUnits = float(
-                request.POST.get('maxProductivityUnits'))
             startDate = datetime.fromtimestamp(
                 int(request.POST.get('startDate'))).date()
             endDate = datetime.fromtimestamp(
@@ -1888,7 +1897,7 @@ def ViewProject(request):
             basicInfo['customerContact__username'] = customerObj.username
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
-            'totalValue', 'maxProductivityUnits', 'po', 'salesForceNumber'
+            'totalValue', 'po', 'salesForceNumber'
         )[0]
         cleanedTeamData = ProjectTeamMember.objects.filter(
             project=projectObj).values(
@@ -1975,12 +1984,8 @@ def GetProjectType(request):
             'project__id',
             'project__name',
             'project__projectType__code',
-            'project__maxProductivityUnits',
             'project__projectType__description'
         ).filter(project__closed=False)
-        for eachData in typeData:
-            eachData['project__maxProductivityUnits'] = float(
-                eachData['project__maxProductivityUnits'])
         data = {'data': list(typeData)}
     except ProjectTeamMember.DoesNotExist:
         data = {'data': list()}
