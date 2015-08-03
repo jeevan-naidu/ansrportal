@@ -313,10 +313,12 @@ def SingleProjectReport(request):
                             eachRec['total'] += eachRec[eachDay]
                     totals = [eachRec['total'] for eachRec in memberData]
                     max_member = totals.index(max(totals))
+                    cUser = User.objects.get(pk=memberData[max_member]['teamMember__id'])
+                    eId = Employee.objects.filter(user=cUser).values('employee_assigned_id')
                     d['top'] = "{0} {1} ({2})".format(
                         memberData[max_member]['teamMember__first_name'],
                         memberData[max_member]['teamMember__last_name'],
-                        memberData[max_member]['teamMember__id']
+                        eId[0]['employee_assigned_id']
                     )
                 topPerformer.append(d)
             for eachData in taskData:
