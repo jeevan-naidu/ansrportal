@@ -125,7 +125,7 @@ def SingleTeamMemberReport(request):
                 wkstart__gte=wkstartDate,
                 wkend__lte=wkendDate,
             ).values(
-                'teamMember__username', 'project__maxProductivityUnits',
+                'teamMember__username',
                 'project__projectId', 'project__name',
                 'project__book__name', 'task__name',
                 'chapter__name', 'activity__name', 'hold'
@@ -160,8 +160,6 @@ def SingleTeamMemberReport(request):
                         eachData['chapter__name'] = ' -  '
                     if eachData['activity__name'] is None:
                         eachData['activity__name'] = ''
-                    if eachData['project__maxProductivityUnits'] is None:
-                        eachData['project__maxProductivityUnits'] = ' - '
                     eachData['totalHours'], eachData['totalValue'] = 0, 0
                     eachData['avgProd'], eachData['minProd'] = 0, 0
                     eachData['maxProd'], eachData['medianProd'] = 0, 0
@@ -315,10 +313,12 @@ def SingleProjectReport(request):
                             eachRec['total'] += eachRec[eachDay]
                     totals = [eachRec['total'] for eachRec in memberData]
                     max_member = totals.index(max(totals))
+                    cUser = User.objects.get(pk=memberData[max_member]['teamMember__id'])
+                    eId = Employee.objects.filter(user=cUser).values('employee_assigned_id')
                     d['top'] = "{0} {1} ({2})".format(
                         memberData[max_member]['teamMember__first_name'],
                         memberData[max_member]['teamMember__last_name'],
-                        memberData[max_member]['teamMember__id']
+                        eId[0]['employee_assigned_id']
                     )
                 topPerformer.append(d)
             for eachData in taskData:
@@ -997,8 +997,6 @@ def generateMemberContent(request, header, report, worksheet,
         worksheet.write(row, 8, eachRec['minProd'], content)
         worksheet.write(row, 9, eachRec['maxProd'], content)
         worksheet.write(row, 10, eachRec['medianProd'], content)
-        worksheet.write(row, 11, eachRec['project__maxProductivityUnits'],
-                        content)
         if eachRec['hold']:
             worksheet.write(row, 12, 'Not Submitted', content)
         else:
@@ -1050,7 +1048,7 @@ def generateProjectContent(request, header, report, worksheet,
 
             if 'task__name' in eachRec:
                 worksheet.write(row, 0, eachRec['task__name'], content)
-                worksheet.write(row, 1, eachRec['norm'], content)
+                #worksheet.write(row, 1, eachRec['norm'], content)
             row += 1
 
         row, msg = 1, ''
