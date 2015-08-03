@@ -79,6 +79,7 @@ class ProjectAdmin(admin.ModelAdmin):
         else:
             return qs.filter(closed=False, projectManager=request.user)
     search_fields = (
+        'projectId',
         'name',
         'customer__name',
         'projectManager__username',)
@@ -135,8 +136,10 @@ class ReportAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('name', 'projectType', 'taskType', 'norm')
+    list_display = ('projectType', 'name', 'taskType', 'norm')
     filter_fields = ('projectType',)
+    ordering = ['projectType', 'name', ]
+    search_fields = ['name', ]
 
 
 class ProjectTeamMemberAdmin(admin.ModelAdmin):
