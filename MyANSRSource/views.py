@@ -1914,8 +1914,9 @@ def ViewProject(request):
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(
             'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-            'closed', 'closedOn', 'signed', 'salesForceNumber'
-        )
+            'closed', 'closedOn', 'signed', 'salesForceNumber',
+            'updatedOn'
+        ).order_by('updatedOn')
         data = {
             'basicInfo': basicInfo,
             'flagData': flagData,

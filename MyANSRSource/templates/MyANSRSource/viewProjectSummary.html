@@ -65,7 +65,6 @@
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-				<th>Norm</th>
 				<th>Planned Effort</th>
 				<th>Contigency Effort</th>
 				<th>Start Date</th>
@@ -75,7 +74,6 @@
 		</thead>
 		<tbody>
 		<tr>
-			<td>{{ flagData.maxProductivityUnits }} / DAY</td>
 			<td>{{ flagData.plannedEffort }}</td>
 			<td>{{ flagData.contingencyEffort }}</td>
 			<td>{{ flagData.startDate }}</td>
@@ -174,6 +172,7 @@
 			<th>CR Reason</th>
 			<th>Revised Total</th>
 			<th>Revised Effort</th>
+			<th>Project End Date</th>
 			<th>Signed</th>
 			<th>Closed</th>
 			<th>SalesForce Number</th>
@@ -182,7 +181,7 @@
 		{% for eachChange in changes %}
 		<tr>
 			<td>
-				{{ eachChange.endDate }}
+				{{ eachChange.updatedOn }}
 			</td>
 			<td>
 				{{ eachChange.reason }}
@@ -192,6 +191,9 @@
 			</td>
 			<td>
 				{{ eachChange.revisedEffort }}
+			</td>
+			<td>
+				{{ eachChange.endDate }}
 			</td>
 			<td>
                 {% if eachChange.signed %}

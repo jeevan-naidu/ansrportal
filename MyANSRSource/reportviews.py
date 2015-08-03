@@ -12,7 +12,7 @@ from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from datetime import timedelta, datetime
-from django.db.models import Sum, Count
+from django.db.models import Sum, Avg, Min, Max
 from employee.models import Employee
 from django.core.servers.basehttp import FileWrapper
 from dateutil import relativedelta as rdelta
@@ -129,21 +129,31 @@ def SingleTeamMemberReport(request):
                 'project__projectId', 'project__name',
                 'project__book__name', 'task__name',
                 'chapter__name', 'activity__name', 'hold'
-            ).annotate(dcount=Count('project__projectId'),
-                       mondayh=Sum('mondayH'),
+            ).annotate(mondayh=Sum('mondayH'),
                        tuesdayh=Sum('tuesdayH'),
                        wednesdayh=Sum('wednesdayH'),
                        thursdayh=Sum('thursdayH'),
                        fridayh=Sum('fridayH'),
                        saturdayh=Sum('saturdayH'),
                        sundayh=Sum('sundayH'),
-                       mondayq=Sum('mondayQ'),
-                       tuesdayq=Sum('tuesdayQ'),
-                       wednesdayq=Sum('wednesdayQ'),
-                       thursdayq=Sum('thursdayQ'),
-                       fridayq=Sum('fridayQ'),
-                       saturdayq=Sum('saturdayQ'),
-                       sundayq=Sum('sundayQ')
+                       ).order_by('project__projectId',
+                                  'project__name', 'hold')
+            minProd = TimeSheetEntry.objects.filter(
+                teamMember=reportData.cleaned_data['member'],
+                wkstart__gte=wkstartDate,
+                wkend__lte=wkendDate,
+            ).values(
+                'teamMember__username',
+                'project__projectId', 'project__name',
+                'project__book__name', 'task__name',
+                'chapter__name', 'activity__name', 'hold'
+            ).annotate(monday=Avg('mondayQ'),
+                       tuesday=Avg('tuesdayQ'),
+                       wednesday=Avg('wednesdayQ'),
+                       thursday=Avg('thursdayQ'),
+                       friday=Avg('fridayQ'),
+                       saturday=Avg('saturdayQ'),
+                       sunday=Avg('sundayQ'),
                        ).order_by('project__projectId',
                                   'project__name', 'hold')
             if len(report):
@@ -163,17 +173,9 @@ def SingleTeamMemberReport(request):
                     eachData['totalHours'], eachData['totalValue'] = 0, 0
                     eachData['avgProd'], eachData['minProd'] = 0, 0
                     eachData['maxProd'], eachData['medianProd'] = 0, 0
-                    units = []
                     for k, v in eachData.iteritems():
                         if k in ['{0}h'.format(eachDay) for eachDay in days]:
                             eachData['totalHours'] += v
-                        if k in ['{0}q'.format(eachDay) for eachDay in days]:
-                            units.append(v)
-                            eachData['totalValue'] += v
-                    eachData['maxProd'] = max(units)
-                    eachData['minProd'] = min(units)
-                    eachData['avgProd'] = round(sum(units) / len(units), 2)
-                    eachData['medianProd'] = numpy.median(units)
                     if eachData['chapter__name'] == ' -  ':
                         eachData['totalValue'] = ' -  '
                         eachData['minProd'] = ' -  '
@@ -262,7 +264,8 @@ def SingleProjectReport(request):
             crData = ProjectChangeInfo.objects.filter(
                 project=cProject
             ).values('crId', 'reason', 'endDate', 'revisedEffort',
-                     'revisedTotal', 'closed', 'closedOn').order_by('endDate')
+                     'revisedTotal', 'closed', 'closedOn',
+                     'updatedOn').order_by('updatedOn')
             if basicData['endDate'] < datetime.now().date() \
                     and cProject.closed is False:
                 red = True
