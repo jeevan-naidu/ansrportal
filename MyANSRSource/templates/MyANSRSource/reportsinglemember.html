@@ -63,7 +63,7 @@
                 <th class="text-right">Min. </th> 
                 <th class="text-right">Max. </th> 
                 <th class="text-right">Median </th> 
-                <th colspan="2"></th>
+                <th></th>
             </tr>
             <tr>
                 <th>Project Name</th> 
@@ -72,7 +72,6 @@
                 <th>Task / Activity</th> 
                 <th class="text-right">Total Hours</th> 
                 <th colspan="4" class="text-center">Productivity</th>
-                <th class="text-right">Norm</th> 
                 <th>Status</th> 
             </tr>
             </thead>
@@ -100,7 +99,6 @@
                         <td class="text-right">{{ eachData.minProd }}</td> 
                         <td class="text-right">{{ eachData.maxProd }}</td> 
                         <td class="text-right">{{ eachData.medianProd }}</td> 
-                        <td class="text-right">{{ eachData.project__maxProductivityUnits }}</td> 
                         {% if eachData.hold %}
                            <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
                         {% else %}
@@ -127,7 +125,6 @@
                         <td class="text-right">{{ eachData.minProd }}</td> 
                         <td class="text-right">{{ eachData.maxProd }}</td> 
                         <td class="text-right">{{ eachData.medianProd }}</td> 
-                        <td class="text-right">{{ eachData.project__maxProductivityUnits }}</td> 
                         {% if eachData.hold %}
                            <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
                         {% else %}
