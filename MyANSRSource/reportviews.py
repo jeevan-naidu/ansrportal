@@ -98,7 +98,7 @@ def Invoice(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def SingleTeamMemberReport(request):
-    report = {}
+    report, minProd, maxProd, avgProd = {}, {}, {}, {}
     projectH, nonProjectH = [], []
     member, startDate, endDate = '', '', ''
     form = TeamMemberPerfomanceReportForm()
@@ -138,7 +138,7 @@ def SingleTeamMemberReport(request):
                        sundayh=Sum('sundayH'),
                        ).order_by('project__projectId',
                                   'project__name', 'hold')
-            minProd = TimeSheetEntry.objects.filter(
+            avgProd = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
                 wkstart__gte=wkstartDate,
                 wkend__lte=wkendDate,
@@ -156,6 +156,65 @@ def SingleTeamMemberReport(request):
                        sunday=Avg('sundayQ'),
                        ).order_by('project__projectId',
                                   'project__name', 'hold')
+            for eachRec in avgProd:
+                eachRec['avg'] = 0
+                total = 0
+                for k, v in eachRec.iteritems():
+                    if k in ['{0}'.format(eachDay) for eachDay in days]:
+                        total += v
+                        eachRec['avg'] = round((total / 7), 2)
+            minProd = TimeSheetEntry.objects.filter(
+                teamMember=reportData.cleaned_data['member'],
+                wkstart__gte=wkstartDate,
+                wkend__lte=wkendDate,
+            ).values(
+                'teamMember__username',
+                'project__projectId', 'project__name',
+                'project__book__name', 'task__name',
+                'chapter__name', 'activity__name', 'hold'
+            ).annotate(monday=Min('mondayQ'),
+                       tuesday=Min('tuesdayQ'),
+                       wednesday=Min('wednesdayQ'),
+                       thursday=Min('thursdayQ'),
+                       friday=Min('fridayQ'),
+                       saturday=Min('saturdayQ'),
+                       sunday=Min('sundayQ'),
+                       ).order_by('project__projectId',
+                                  'project__name', 'hold')
+            for eachRec in minProd:
+                eachRec['min'] = 0
+                l = []
+                for k, v in eachRec.iteritems():
+                    if k in ['{0}'.format(eachDay) for eachDay in days]:
+                        l.append(v)
+                    if len(l):
+                        eachRec['min'] = min(l)
+            maxProd = TimeSheetEntry.objects.filter(
+                teamMember=reportData.cleaned_data['member'],
+                wkstart__gte=wkstartDate,
+                wkend__lte=wkendDate,
+            ).values(
+                'teamMember__username',
+                'project__projectId', 'project__name',
+                'project__book__name', 'task__name',
+                'chapter__name', 'activity__name', 'hold'
+            ).annotate(monday=Max('mondayQ'),
+                       tuesday=Max('tuesdayQ'),
+                       wednesday=Max('wednesdayQ'),
+                       thursday=Max('thursdayQ'),
+                       friday=Max('fridayQ'),
+                       saturday=Max('saturdayQ'),
+                       sunday=Max('sundayQ'),
+                       ).order_by('project__projectId',
+                                  'project__name', 'hold')
+            for eachRec in maxProd:
+                eachRec['max'] = 0
+                l = []
+                for k, v in eachRec.iteritems():
+                    if k in ['{0}'.format(eachDay) for eachDay in days]:
+                        l.append(v)
+                    if len(l):
+                        eachRec['max'] = max(l)
             if len(report):
                 for eachData in report:
                     if eachData['project__projectId'] is None:
@@ -226,6 +285,7 @@ def SingleTeamMemberReport(request):
     return render(request,
                   'MyANSRSource/reportsinglemember.html',
                   {'form': form, 'data': report, 'fresh': fresh,
+                   'minProd': minProd, 'maxProd': maxProd, 'avgProd': avgProd,
                    'project': projectH, 'nonProject': nonProjectH,
                    'grandTotal': grdTotal, 'startDate': startDate,
                    'endDate': endDate, 'member': member,

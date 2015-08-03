@@ -95,9 +95,27 @@
                         <td>{{ eachData.chapter__name }}</td> 
                         <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
                         <td class="text-right">{{ eachData.totalHours }}</td> 
-                        <td class="text-right">{{ eachData.avgProd }}</td> 
-                        <td class="text-right">{{ eachData.minProd }}</td> 
-                        <td class="text-right">{{ eachData.maxProd }}</td> 
+                        <td class="text-right">
+                            {% for eachAvg in avgProd %}
+                                {% if eachAvg.project__projectId == eachData.project__projectId %}
+                                    {{ eachAvg.avg }}
+                                {% endif %}
+                            {% endfor  %}
+                        </td> 
+                        <td class="text-right">
+                            {% for eachMin in minProd %}
+                                {% if eachMin.project__projectId == eachData.project__projectId %}
+                                    {{ eachMin.min }}
+                                {% endif %}
+                            {% endfor  %}
+                        </td> 
+                        <td class="text-right">
+                            {% for eachMax in maxProd %}
+                                {% if eachMax.project__projectId == eachData.project__projectId %}
+                                    {{ eachMax.max }}
+                                {% endif %}
+                            {% endfor  %}
+                        </td> 
                         <td class="text-right"></td> 
                         {% if eachData.hold %}
                            <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
