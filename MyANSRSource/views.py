@@ -1369,8 +1369,6 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
-        oldCost = pru.totalValue
-        oldEffort = pru.plannedEffort
         pru.plannedEffort = newInfo[1]['revisedEffort']
         pru.totalValue = newInfo[1]['revisedTotal']
         pru.closed = newInfo[1]['closed']
@@ -1385,8 +1383,8 @@ def UpdateProjectInfo(request, newInfo):
         pci.reason = newInfo[1]['reason']
         pci.endDate = newInfo[1]['endDate']
         pci.salesForceNumber = newInfo[1]['salesForceNumber']
-        pci.revisedEffort = oldEffort
-        pci.revisedTotal = oldCost
+        pci.revisedEffort = newInfo[1]['revisedEffort']
+        pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
         if pci.closed is True:
             pci.closedOn = datetime.now().replace(tzinfo=utc)
