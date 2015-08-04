@@ -1639,7 +1639,7 @@ class ManageTeamWizard(SessionWizardView):
         project = [form.cleaned_data for form in form_list][0]['project']
         cleanList = [form.cleaned_data for form in form_list][1]
         for eachData in cleanList:
-            if None in eachData.values():
+            if eachData['member'] is None:
                 pass
             else:
                 if eachData['id']:
