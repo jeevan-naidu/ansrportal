@@ -66,6 +66,17 @@ class Customer(models.Model):
     CType = models.ForeignKey(CustomerType, default=None,
                               verbose_name='Customer Type',
                               blank=False, null=False)
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
+    address = models.CharField(
+        verbose_name="Address",
+        default=None,
+        max_length=100,
+        blank=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -83,6 +94,12 @@ class OfficeLocation(models.Model):
     city = models.CharField("City", max_length=15, blank=False)
     state = models.CharField("State", max_length=20, blank=False)
     zipcode = models.CharField("ZIP or PIN code ", max_length=6, blank=False)
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",

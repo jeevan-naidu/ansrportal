@@ -46,6 +46,12 @@ class Activity(models.Model):
                             verbose_name="Activity")
     code = models.CharField(max_length=1, null=False, unique=True,
                             verbose_name="Short Code", default=None)
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

@@ -74,6 +74,12 @@ class Designation(models.Model):
         max_length=40,
         blank=False)
     billable = models.BooleanField(default=True, verbose_name='Billable')
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
