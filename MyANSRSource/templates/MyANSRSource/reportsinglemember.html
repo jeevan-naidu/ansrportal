@@ -104,14 +104,14 @@
                         </td> 
                         <td class="text-right">
                             {% for eachMin in minProd %}
-                                {% if eachMin.project__projectId == eachData.project__projectId  and  eachMin.project__book__name == eachData.project__book__name and eachMin.chapter__name == eachData.chapter__name and eachMin.task__name == eachData.task__name and eachMin.hold == eachData.hold %}
+                                {% if eachMin.project__projectId == eachData.project__projectId and eachMin.project__book__name == eachData.project__book__name and eachMin.chapter__name == eachData.chapter__name and eachMin.hold == eachData.hold %}
                                     {{ eachMin.min }}
                                 {% endif %}
                             {% endfor  %}
                         </td> 
                         <td class="text-right">
                             {% for eachMax in maxProd %}
-                                {% if eachMax.project__projectId == eachData.project__projectId  and  eachMax.project__book__name == eachData.project__book__name and eachMax.chapter__name == eachData.chapter__name and eachMax.task__name == eachData.task__name and eachMax.hold == eachData.hold %}
+                                {% if eachMax.project__projectId == eachData.project__projectId and eachMax.project__book__name == eachData.project__book__name and eachMax.chapter__name == eachData.chapter__name and eachMax.hold == eachData.hold %}
                                     {{ eachMax.max }}
                                 {% endif %}
                             {% endfor  %}

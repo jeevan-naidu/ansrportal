@@ -297,6 +297,7 @@ def SingleTeamMemberReport(request):
 def SingleProjectReport(request):
     basicData = {}
     crData, tsData, msData, taskData, topPerformer = [], [], [], [], []
+    minTaskData, maxTaskData, avgTaskData = [], [], []
     pEffort = 0
     fresh = 1
     actualTotal, plannedTotal, balanceTotal, deviation = 0, 0, 0, 0
@@ -345,6 +346,65 @@ def SingleProjectReport(request):
                        saturday=Sum('saturdayQ'),
                        sunday=Sum('sundayQ')
                        ).order_by('task__name')
+            minTaskData = TimeSheetEntry.objects.filter(
+                project=cProject
+            ).values(
+                'task__name'
+            ).annotate(monday=Min('mondayQ'),
+                       tuesday=Min('tuesdayQ'),
+                       wednesday=Min('wednesdayQ'),
+                       thursday=Min('thursdayQ'),
+                       friday=Min('fridayQ'),
+                       saturday=Min('saturdayQ'),
+                       sunday=Min('sundayQ')
+                       ).order_by('task__name')
+            for eachRec in minTaskData:
+                eachRec['min'] = 0
+                l = []
+                for k, v in eachRec.iteritems():
+                    if k in ['{0}'.format(eachDay) for eachDay in days]:
+                        l.append(v)
+                    if len(l):
+                        eachRec['min'] = min(l)
+            maxTaskData = TimeSheetEntry.objects.filter(
+                project=cProject
+            ).values(
+                'task__name'
+            ).annotate(monday=Max('mondayQ'),
+                       tuesday=Max('tuesdayQ'),
+                       wednesday=Max('wednesdayQ'),
+                       thursday=Max('thursdayQ'),
+                       friday=Max('fridayQ'),
+                       saturday=Max('saturdayQ'),
+                       sunday=Max('sundayQ')
+                       ).order_by('task__name')
+            for eachRec in maxTaskData:
+                eachRec['max'] = 0
+                l = []
+                for k, v in eachRec.iteritems():
+                    if k in ['{0}'.format(eachDay) for eachDay in days]:
+                        l.append(v)
+                    if len(l):
+                        eachRec['max'] = max(l)
+            avgTaskData = TimeSheetEntry.objects.filter(
+                project=cProject
+            ).values(
+                'task__name'
+            ).annotate(monday=Avg('mondayQ'),
+                       tuesday=Avg('tuesdayQ'),
+                       wednesday=Avg('wednesdayQ'),
+                       thursday=Avg('thursdayQ'),
+                       friday=Avg('fridayQ'),
+                       saturday=Avg('saturdayQ'),
+                       sunday=Avg('sundayQ'),
+                       ).order_by('task__name')
+            for eachRec in avgTaskData:
+                eachRec['avg'] = 0
+                total = 0
+                for k, v in eachRec.iteritems():
+                    if k in ['{0}'.format(eachDay) for eachDay in days]:
+                        total += v
+                        eachRec['avg'] = round((total / 7), 2)
             taskNames = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values('task__name',
@@ -508,6 +568,8 @@ def SingleProjectReport(request):
                   'MyANSRSource/reportsingleproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
                    'crData': crData, 'tsData': tsData, 'msData': msData,
+                   'minTaskData': minTaskData, 'maxTaskData': maxTaskData,
+                   'avgTaskData': avgTaskData,
                    'topPerformer': topPerformer, 'taskData': taskData,
                    'actualTotal': actualTotal, 'plannedTotal': plannedTotal,
                    'deviation': deviation, 'balanceTotal': balanceTotal,
