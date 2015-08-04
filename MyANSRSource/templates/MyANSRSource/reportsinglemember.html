@@ -97,21 +97,21 @@
                         <td class="text-right">{{ eachData.totalHours }}</td> 
                         <td class="text-right">
                             {% for eachAvg in avgProd %}
-                                {% if eachAvg.project__projectId == eachData.project__projectId %}
+                                {% if eachAvg.project__projectId == eachData.project__projectId  and  eachAvg.project__book__name == eachData.project__book__name and eachAvg.chapter__name == eachData.chapter__name and eachAvg.task__name == eachData.task__name and eachAvg.hold == eachData.hold %}
                                     {{ eachAvg.avg }}
                                 {% endif %}
                             {% endfor  %}
                         </td> 
                         <td class="text-right">
                             {% for eachMin in minProd %}
-                                {% if eachMin.project__projectId == eachData.project__projectId %}
+                                {% if eachMin.project__projectId == eachData.project__projectId  and  eachMin.project__book__name == eachData.project__book__name and eachMin.chapter__name == eachData.chapter__name and eachMin.task__name == eachData.task__name and eachMin.hold == eachData.hold %}
                                     {{ eachMin.min }}
                                 {% endif %}
                             {% endfor  %}
                         </td> 
                         <td class="text-right">
                             {% for eachMax in maxProd %}
-                                {% if eachMax.project__projectId == eachData.project__projectId %}
+                                {% if eachMax.project__projectId == eachData.project__projectId  and  eachMax.project__book__name == eachData.project__book__name and eachMax.chapter__name == eachData.chapter__name and eachMax.task__name == eachData.task__name and eachMax.hold == eachData.hold %}
                                     {{ eachMax.max }}
                                 {% endif %}
                             {% endfor  %}
