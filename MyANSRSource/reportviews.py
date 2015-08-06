@@ -108,12 +108,18 @@ def SingleTeamMemberReport(request):
     if request.method == 'POST':
         reportData = TeamMemberPerfomanceReportForm(request.POST)
         if reportData.is_valid():
-            start = reportData.cleaned_data['startDate'].weekday()
-            end = 6 - reportData.cleaned_data['endDate'].weekday()
-            wkstartDate = reportData.cleaned_data['startDate'] - timedelta(
-                days=start)
-            wkendDate = reportData.cleaned_data['endDate'] + timedelta(
-                days=end)
+            valuesList = ['teamMember__username',
+                          'project__projectId', 'project__name',
+                          'project__book__name', 'task__name',
+                          'chapter__name', 'activity__name', 'hold']
+            startWeekData = getUnwantedValue(request,
+                                             reportData.cleaned_data['member'],
+                                             reportData.cleaned_data['startDate'],
+                                             'Start', valuesList)
+            endWeekData = getUnwantedValue(request,
+                                           reportData.cleaned_data['member'],
+                                           reportData.cleaned_data['endDate'],
+                                           'End', valuesList)
             tm = ProjectTeamMember.objects.filter(
                 member=reportData.cleaned_data['member'],
                 startDate__gte=reportData.cleaned_data['startDate'],
@@ -122,40 +128,30 @@ def SingleTeamMemberReport(request):
             plannedHours = sum([eachRec['plannedEffort'] for eachRec in tm])
             report = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=wkstartDate,
-                wkend__lte=wkendDate,
-            ).values(
-                'teamMember__username',
-                'project__projectId', 'project__name',
-                'project__book__name', 'task__name',
-                'chapter__name', 'activity__name', 'hold'
-            ).annotate(mondayh=Sum('mondayH'),
-                       tuesdayh=Sum('tuesdayH'),
-                       wednesdayh=Sum('wednesdayH'),
-                       thursdayh=Sum('thursdayH'),
-                       fridayh=Sum('fridayH'),
-                       saturdayh=Sum('saturdayH'),
-                       sundayh=Sum('sundayH'),
-                       ).order_by('project__projectId',
-                                  'project__name', 'hold')
+                wkstart__gte=reportData.cleaned_data['startDate'],
+                wkend__lte=reportData.cleaned_data['endDate'],
+            ).values(*valuesList).annotate(
+                mondayh=Sum('mondayH'),
+                tuesdayh=Sum('tuesdayH'),
+                wednesdayh=Sum('wednesdayH'),
+                thursdayh=Sum('thursdayH'),
+                fridayh=Sum('fridayH'),
+                saturdayh=Sum('saturdayH'),
+                sundayh=Sum('sundayH'),
+            ).order_by('project__projectId', 'project__name', 'hold')
             avgProd = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=wkstartDate,
-                wkend__lte=wkendDate,
-            ).values(
-                'teamMember__username',
-                'project__projectId', 'project__name',
-                'project__book__name', 'task__name',
-                'chapter__name', 'activity__name', 'hold'
-            ).annotate(monday=Avg('mondayQ'),
-                       tuesday=Avg('tuesdayQ'),
-                       wednesday=Avg('wednesdayQ'),
-                       thursday=Avg('thursdayQ'),
-                       friday=Avg('fridayQ'),
-                       saturday=Avg('saturdayQ'),
-                       sunday=Avg('sundayQ'),
-                       ).order_by('project__projectId',
-                                  'project__name', 'hold')
+                wkstart__gte=reportData.cleaned_data['startDate'],
+                wkend__lte=reportData.cleaned_data['endDate'],
+            ).values(*valuesList).annotate(
+                monday=Avg('mondayQ'),
+                tuesday=Avg('tuesdayQ'),
+                wednesday=Avg('wednesdayQ'),
+                thursday=Avg('thursdayQ'),
+                friday=Avg('fridayQ'),
+                saturday=Avg('saturdayQ'),
+                sunday=Avg('sundayQ'),
+            ).order_by('project__projectId', 'project__name', 'hold')
             for eachRec in avgProd:
                 eachRec['avg'] = 0
                 total = 0
@@ -165,8 +161,8 @@ def SingleTeamMemberReport(request):
                         eachRec['avg'] = round((total / 7), 2)
             minProd = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=wkstartDate,
-                wkend__lte=wkendDate,
+                wkstart__gte=reportData.cleaned_data['startDate'],
+                wkend__lte=reportData.cleaned_data['endDate'],
             ).values(
                 'teamMember__username',
                 'project__projectId', 'project__name',
@@ -191,8 +187,8 @@ def SingleTeamMemberReport(request):
                         eachRec['min'] = min(l)
             maxProd = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=wkstartDate,
-                wkend__lte=wkendDate,
+                wkstart__gte=reportData.cleaned_data['startDate'],
+                wkend__lte=reportData.cleaned_data['endDate'],
             ).values(
                 'teamMember__username',
                 'project__projectId', 'project__name',
@@ -1244,3 +1240,55 @@ def generateDownload(request, fileName):
     )
     os.system('rm {0}'.format(fileName))
     return response
+
+
+@login_required
+def getUnwantedValue(request, member, date, label, valuesList):
+    dateWeekDay = date.weekday()
+    extraData = []
+    if label == 'Start':
+        wkstartDate = date - timedelta(days=dateWeekDay)
+        weekData = getOneWeekData(request, member, wkstartDate,
+                                  wkstartDate + timedelta(days=6), valuesList)
+        if len(weekData):
+            extraData = getExtraValueForWeek(request, weekData,
+                                             dateWeekDay, 'Start')
+    else:
+        dateWeekDay = 6 - dateWeekDay
+        wkendDate = date + timedelta(days=dateWeekDay)
+        weekData = getOneWeekData(request, member,
+                                  wkendDate - timedelta(days=6),
+                                  wkendDate, valuesList)
+        if len(weekData):
+            extraData = getExtraValueForWeek(request, weekData,
+                                             dateWeekDay, 'End')
+    return extraData
+
+
+@login_required
+def getExtraValueForWeek(request, weekData, dateWeekDay, label):
+    for eachData in weekData:
+        eachData['extra'] = 0
+        if label == 'Start':
+            for eachDay in days[:dateWeekDay]:
+                eachData['extra'] += eachData[eachDay]
+        else:
+            for eachDay in days[dateWeekDay:]:
+                eachData['extra'] += eachData[eachDay]
+    return weekData
+
+
+@login_required
+def getOneWeekData(request, member, wkstartDate, wkendDate, valuesList):
+    return TimeSheetEntry.objects.filter(
+        teamMember=member,
+        wkstart=wkstartDate,
+        wkend=wkendDate
+    ).values(*valuesList).annotate(
+        monday=Sum('mondayH'),
+        tuesday=Sum('tuesdayH'),
+        wednesday=Sum('wednesdayH'),
+        thursday=Sum('thursdayH'),
+        friday=Sum('fridayH'),
+        saturday=Sum('saturdayH'),
+        sunday=Sum('sundayH'))

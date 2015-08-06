@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from django.utils.timezone import utc
 from django.conf import settings
+from django.db.models import Sum
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -825,7 +826,18 @@ def ApproveTimesheet(request):
         ).values('id', 'project__id', 'project__name', 'wkstart', 'wkend',
                  'teamMember__username', 'totalH', 'exception', 'approved',
                  'managerFeedback').order_by('project__id')
-
+        unApprovedTimeSheet1 = TimeSheetEntry.objects.filter(
+            project__projectManager=request.user,
+            approved=False, hold=True).values('teamMember').distinct()
+        for eachMember in unApprovedTimeSheet1:
+            print TimeSheetEntry.objects.filter(
+                teamMember=eachMember['teamMember']
+            ).values('project__projectId', 'project__name').annotate(
+                monday=Sum('mondayH'), tuesday=Sum('tuesdayH'),
+                wednesday=Sum('wednesdayH'), thursday=Sum('thursdayH'),
+                friday=Sum('fridayH'), saturday=Sum('saturdayH'),
+                sunday=Sum('sundayH')
+            )
         data = {
             'timesheetInfo': unApprovedTimeSheet
         }
