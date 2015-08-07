@@ -139,78 +139,15 @@ def SingleTeamMemberReport(request):
                 saturdayh=Sum('saturdayH'),
                 sundayh=Sum('sundayH'),
             ).order_by('project__projectId', 'project__name', 'hold')
-            avgProd = TimeSheetEntry.objects.filter(
+            ts = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
                 wkstart__gte=reportData.cleaned_data['startDate'],
                 wkend__lte=reportData.cleaned_data['endDate'],
-            ).values(*valuesList).annotate(
-                monday=Avg('mondayQ'),
-                tuesday=Avg('tuesdayQ'),
-                wednesday=Avg('wednesdayQ'),
-                thursday=Avg('thursdayQ'),
-                friday=Avg('fridayQ'),
-                saturday=Avg('saturdayQ'),
-                sunday=Avg('sundayQ'),
-            ).order_by('project__projectId', 'project__name', 'hold')
-            for eachRec in avgProd:
-                eachRec['avg'] = 0
-                total = 0
-                for k, v in eachRec.iteritems():
-                    if k in ['{0}'.format(eachDay) for eachDay in days]:
-                        total += v
-                        eachRec['avg'] = round((total / 7), 2)
-            minProd = TimeSheetEntry.objects.filter(
-                teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=reportData.cleaned_data['startDate'],
-                wkend__lte=reportData.cleaned_data['endDate'],
-            ).values(
-                'teamMember__username',
-                'project__projectId', 'project__name',
-                'project__book__name', 'task__name',
-                'chapter__name', 'activity__name', 'hold'
-            ).annotate(monday=Min('mondayQ'),
-                       tuesday=Min('tuesdayQ'),
-                       wednesday=Min('wednesdayQ'),
-                       thursday=Min('thursdayQ'),
-                       friday=Min('fridayQ'),
-                       saturday=Min('saturdayQ'),
-                       sunday=Min('sundayQ'),
-                       ).order_by('project__projectId',
-                                  'project__name', 'hold')
-            for eachRec in minProd:
-                eachRec['min'] = 0
-                l = []
-                for k, v in eachRec.iteritems():
-                    if k in ['{0}'.format(eachDay) for eachDay in days]:
-                        l.append(v)
-                    if len(l):
-                        eachRec['min'] = min(l)
-            maxProd = TimeSheetEntry.objects.filter(
-                teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=reportData.cleaned_data['startDate'],
-                wkend__lte=reportData.cleaned_data['endDate'],
-            ).values(
-                'teamMember__username',
-                'project__projectId', 'project__name',
-                'project__book__name', 'task__name',
-                'chapter__name', 'activity__name', 'hold'
-            ).annotate(monday=Max('mondayQ'),
-                       tuesday=Max('tuesdayQ'),
-                       wednesday=Max('wednesdayQ'),
-                       thursday=Max('thursdayQ'),
-                       friday=Max('fridayQ'),
-                       saturday=Max('saturdayQ'),
-                       sunday=Max('sundayQ'),
-                       ).order_by('project__projectId',
-                                  'project__name', 'hold')
-            for eachRec in maxProd:
-                eachRec['max'] = 0
-                l = []
-                for k, v in eachRec.iteritems():
-                    if k in ['{0}'.format(eachDay) for eachDay in days]:
-                        l.append(v)
-                    if len(l):
-                        eachRec['max'] = max(l)
+            ).values(*valuesList)
+            orderbyList = ['project__projectId', 'project__name', 'hold']
+            avgProd = getAvgProd(request, ts, orderbyList)
+            minProd = getMinProd(request, ts, orderbyList)
+            maxProd = getMaxProd(request, ts, orderbyList)
             if len(report):
                 for eachData in report:
                     if eachData['project__projectId'] is None:
@@ -1292,3 +1229,68 @@ def getOneWeekData(request, member, wkstartDate, wkendDate, valuesList):
         friday=Sum('fridayH'),
         saturday=Sum('saturdayH'),
         sunday=Sum('sundayH'))
+
+
+@login_required
+def getMinProd(request, ts, orderbyList):
+    newTs = ts.annotate(
+        monday=Avg('mondayQ'),
+        tuesday=Avg('tuesdayQ'),
+        wednesday=Avg('wednesdayQ'),
+        thursday=Avg('thursdayQ'),
+        friday=Avg('fridayQ'),
+        saturday=Avg('saturdayQ'),
+        sunday=Avg('sundayQ'),
+    ).order_by(*orderbyList)
+    for eachRec in newTs:
+        eachRec['min'] = 0
+        l = []
+        for k, v in eachRec.iteritems():
+            if k in ['{0}'.format(eachDay) for eachDay in days]:
+                l.append(v)
+            if len(l):
+                eachRec['min'] = min(l)
+    return newTs
+
+
+@login_required
+def getMaxProd(request, ts, orderbyList):
+    newTs = ts.annotate(
+        monday=Avg('mondayQ'),
+        tuesday=Avg('tuesdayQ'),
+        wednesday=Avg('wednesdayQ'),
+        thursday=Avg('thursdayQ'),
+        friday=Avg('fridayQ'),
+        saturday=Avg('saturdayQ'),
+        sunday=Avg('sundayQ'),
+    ).order_by(*orderbyList)
+    for eachRec in newTs:
+        eachRec['max'] = 0
+        l = []
+        for k, v in eachRec.iteritems():
+            if k in ['{0}'.format(eachDay) for eachDay in days]:
+                l.append(v)
+            if len(l):
+                eachRec['max'] = max(l)
+    return newTs
+
+
+@login_required
+def getAvgProd(request, ts, orderbyList):
+    newTs = ts.annotate(
+        monday=Avg('mondayQ'),
+        tuesday=Avg('tuesdayQ'),
+        wednesday=Avg('wednesdayQ'),
+        thursday=Avg('thursdayQ'),
+        friday=Avg('fridayQ'),
+        saturday=Avg('saturdayQ'),
+        sunday=Avg('sundayQ'),
+    ).order_by(*orderbyList)
+    for eachRec in newTs:
+        eachRec['avg'] = 0
+        total = 0
+        for k, v in eachRec.iteritems():
+            if k in ['{0}'.format(eachDay) for eachDay in days]:
+                total += v
+            eachRec['avg'] = round((total / 7), 2)
+    return newTs
