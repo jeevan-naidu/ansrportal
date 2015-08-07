@@ -1,7 +1,12 @@
+import logging
+logger = logging.getLogger('MyANSRSource')
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
+from django.db.models.signals import post_save
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
 
 fs = FileSystemStorage(location='employee/emp_photo')
 
@@ -128,6 +133,9 @@ class Employee(models.Model):
     # User model will have the usual fields.  We will have the remaining ones
     # here
     user = models.OneToOneField(User, verbose_name="User")
+    manager = models.ForeignKey('self', verbose_name="Manager",
+                                blank=True, null=True,
+                                related_name="Manager", default=None)
     status = models.BooleanField(default=True)
     '''
     ================================================
@@ -279,6 +287,19 @@ class Employee(models.Model):
             self.user.last_name)
 
 
+def DefaultPermission(sender, instance, **kwargs):
+    try:
+        g = Group.objects.get(name='myansrsourceUsers')
+        g.user_set.add(instance)
+    except ObjectDoesNotExist:
+        logger.error(
+            'Unable to assign group to user, group is not having a match')
+
+post_save.connect(DefaultPermission,
+                  sender=User,
+                  dispatch_uid="Add Default Permission")
+
+
 class TeamMember(User):
 
     class Meta:
@@ -286,6 +307,10 @@ class TeamMember(User):
         app_label = 'auth'
         verbose_name = 'Team Member'
         verbose_name_plural = 'Team Members'
+
+post_save.connect(DefaultPermission,
+                  sender=TeamMember,
+                  dispatch_uid="Add Default Permission")
 
 
 class FamilyMember(models.Model):

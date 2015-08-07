@@ -212,8 +212,9 @@ class BusinessUnit(models.Model):
         verbose_name="Business Unit Name",
         max_length=40,
         blank=False)
-    bu_head = models.OneToOneField(User, null=True, blank=True,
-                                   verbose_name="Business Unit Head")
+    new_bu_head = models.ManyToManyField(User, null=True, blank=True,
+                                         related_name='New BU Head',
+                                         verbose_name="Business Unit Head")
     centerType = models.CharField(max_length=2,
                                   choices=CENTERFLAG,
                                   verbose_name='Type of center',
