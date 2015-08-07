@@ -829,15 +829,6 @@ def ApproveTimesheet(request):
         unApprovedTimeSheet1 = TimeSheetEntry.objects.filter(
             project__projectManager=request.user,
             approved=False, hold=True).values('teamMember').distinct()
-        for eachMember in unApprovedTimeSheet1:
-            print TimeSheetEntry.objects.filter(
-                teamMember=eachMember['teamMember']
-            ).values('project__projectId', 'project__name').annotate(
-                monday=Sum('mondayH'), tuesday=Sum('tuesdayH'),
-                wednesday=Sum('wednesdayH'), thursday=Sum('thursdayH'),
-                friday=Sum('fridayH'), saturday=Sum('saturdayH'),
-                sunday=Sum('sundayH')
-            )
         data = {
             'timesheetInfo': unApprovedTimeSheet
         }
