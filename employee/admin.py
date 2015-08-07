@@ -84,6 +84,9 @@ class UserInline(admin.StackedInline):
     min_num = 1
 
     fieldsets = (
+        ('Manager Information', {
+            'fields': ('manager', ),
+        }),
         ('Employee Identification', {
             'fields': (('middle_name',),
                 ('date_of_birthO', 'gender', 'nationality'),

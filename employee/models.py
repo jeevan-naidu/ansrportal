@@ -128,6 +128,9 @@ class Employee(models.Model):
     # User model will have the usual fields.  We will have the remaining ones
     # here
     user = models.OneToOneField(User, verbose_name="User")
+    manager = models.ForeignKey('self', verbose_name="Manager",
+                                blank=True, null=True,
+                                related_name="Manager", default=None)
     status = models.BooleanField(default=True)
     '''
     ================================================
