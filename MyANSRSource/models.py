@@ -24,6 +24,12 @@ class Book(models.Model):
     isbn = models.IntegerField(default=None,
                                blank=True, null=True,
                                verbose_name="ISBN")
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

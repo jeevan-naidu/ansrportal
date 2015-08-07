@@ -32,8 +32,8 @@ class BookAdmin(admin.ModelAdmin):
     # which fields should appear on the filter column
     list_filter = ['name', 'edition', 'author', 'isbn']
     # Search capabilitiy
-    search_fields = ['name', 'edition', 'author', 'isbn']
-    fields = ('name', 'edition', 'author', 'isbn')
+    search_fields = ['name', 'edition', 'author', 'isbn', 'active']
+    fields = ('name', 'edition', 'author', 'isbn', 'active')
     # Which of the fields can be edited in list mode
     # list_editable = ['']
     # Ordering of the books
