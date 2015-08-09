@@ -98,7 +98,7 @@ def Invoice(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def SingleTeamMemberReport(request):
-    report, minProd, maxProd, avgProd = {}, {}, {}, {}
+    report, newReport, minProd, maxProd, avgProd = {}, {}, {}, {}, {}
     projectH, nonProjectH = [], []
     member, startDate, endDate = '', '', ''
     form = TeamMemberPerfomanceReportForm()
@@ -112,6 +112,7 @@ def SingleTeamMemberReport(request):
                           'project__projectId', 'project__name',
                           'project__book__name', 'task__name',
                           'chapter__name', 'activity__name', 'hold']
+            orderbyList = ['project__projectId', 'project__name', 'hold']
             startWeekData = getUnwantedValue(request,
                                              reportData.cleaned_data['member'],
                                              reportData.cleaned_data['startDate'],
@@ -120,36 +121,50 @@ def SingleTeamMemberReport(request):
                                            reportData.cleaned_data['member'],
                                            reportData.cleaned_data['endDate'],
                                            'End', valuesList)
+
+            weekStart = getDate(request,
+                                reportData.cleaned_data['startDate'],
+                                'Start')
+            weekEnd = getDate(request,
+                              reportData.cleaned_data['endDate'],
+                              'End')
             tm = ProjectTeamMember.objects.filter(
                 member=reportData.cleaned_data['member'],
-                startDate__gte=reportData.cleaned_data['startDate'],
-                endDate__lte=reportData.cleaned_data['endDate'],
+                startDate__gte=weekStart,
+                endDate__lte=weekEnd,
             ).values('plannedEffort')
             plannedHours = sum([eachRec['plannedEffort'] for eachRec in tm])
+
             report = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=reportData.cleaned_data['startDate'],
-                wkend__lte=reportData.cleaned_data['endDate'],
+                wkstart__gte=weekStart,
+                wkend__lte=weekEnd,
             ).values(*valuesList).annotate(
-                mondayh=Sum('mondayH'),
-                tuesdayh=Sum('tuesdayH'),
-                wednesdayh=Sum('wednesdayH'),
-                thursdayh=Sum('thursdayH'),
-                fridayh=Sum('fridayH'),
-                saturdayh=Sum('saturdayH'),
-                sundayh=Sum('sundayH'),
-            ).order_by('project__projectId', 'project__name', 'hold')
+                monday=Sum('mondayH'),
+                tuesday=Sum('tuesdayH'),
+                wednesday=Sum('wednesdayH'),
+                thursday=Sum('thursdayH'),
+                friday=Sum('fridayH'),
+                saturday=Sum('saturdayH'),
+                sunday=Sum('sundayH')
+            ).order_by(*orderbyList)
+            for eachData in report:
+                eachData['total'] = sum([eachData[eachDay] for eachDay in days])
+            if len(startWeekData) or len(endWeekData):
+                newReport = getMemberExactTsHours(request, startWeekData,
+                                                endWeekData, report)
+            else:
+                newReport = report
             ts = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=reportData.cleaned_data['startDate'],
-                wkend__lte=reportData.cleaned_data['endDate'],
+                wkstart__gte=weekStart,
+                wkend__lte=weekEnd,
             ).values(*valuesList)
-            orderbyList = ['project__projectId', 'project__name', 'hold']
             avgProd = getAvgProd(request, ts, orderbyList)
             minProd = getMinProd(request, ts, orderbyList)
             maxProd = getMaxProd(request, ts, orderbyList)
-            if len(report):
-                for eachData in report:
+            if len(newReport):
+                for eachData in newReport:
                     if eachData['project__projectId'] is None:
                         eachData['project__projectId'] = ' - '
                     if eachData['project__name'] is None:
@@ -162,26 +177,13 @@ def SingleTeamMemberReport(request):
                         eachData['chapter__name'] = ' -  '
                     if eachData['activity__name'] is None:
                         eachData['activity__name'] = ''
-                    eachData['totalHours'], eachData['totalValue'] = 0, 0
-                    eachData['avgProd'], eachData['minProd'] = 0, 0
-                    eachData['maxProd'], eachData['medianProd'] = 0, 0
-                    for k, v in eachData.iteritems():
-                        if k in ['{0}h'.format(eachDay) for eachDay in days]:
-                            eachData['totalHours'] += v
-                    if eachData['chapter__name'] == ' -  ':
-                        eachData['totalValue'] = ' -  '
-                        eachData['minProd'] = ' -  '
-                        eachData['maxProd'] = ' -  '
-                        eachData['avgProd'] = ' -  '
-                        eachData['medianProd'] = ' -  '
                 nonProjectTotal = sum([
-                    eachData['totalHours'] for eachData in report if eachData['chapter__name'] == ' -  '
+                    eachData['total'] for eachData in newReport if eachData['chapter__name'] == ' -  '
                 ])
                 projectTotal = sum([
-                    eachData['totalHours'] for eachData in report if eachData['chapter__name'] != ' -  '
+                    eachData['total'] for eachData in newReport if eachData['chapter__name'] != ' -  '
                 ])
-                grdTotal = {'nTotal': nonProjectTotal,
-                            'pTotal': projectTotal}
+                grdTotal = {'nTotal': nonProjectTotal, 'pTotal': projectTotal}
                 fresh = 2
                 if 'generate' in request.POST:
                     sheetName = ['TeamMember Perfomance']
@@ -207,7 +209,7 @@ def SingleTeamMemberReport(request):
                 'endDate': reportData.cleaned_data['endDate'],
                 'member': reportData.cleaned_data['member']
             })
-            for eachRec in report:
+            for eachRec in newReport:
                 if eachRec['project__name'] != ' - ':
                     projectH.append(eachRec)
                 else:
@@ -217,7 +219,7 @@ def SingleTeamMemberReport(request):
             fresh = 1
     return render(request,
                   'MyANSRSource/reportsinglemember.html',
-                  {'form': form, 'data': report, 'fresh': fresh,
+                  {'form': form, 'data': newReport, 'fresh': fresh,
                    'minProd': minProd, 'maxProd': maxProd, 'avgProd': avgProd,
                    'project': projectH, 'nonProject': nonProjectH,
                    'grandTotal': grdTotal, 'startDate': startDate,
@@ -279,65 +281,12 @@ def SingleProjectReport(request):
                        saturday=Sum('saturdayQ'),
                        sunday=Sum('sundayQ')
                        ).order_by('task__name')
-            minTaskData = TimeSheetEntry.objects.filter(
-                project=cProject
-            ).values(
-                'task__name'
-            ).annotate(monday=Min('mondayQ'),
-                       tuesday=Min('tuesdayQ'),
-                       wednesday=Min('wednesdayQ'),
-                       thursday=Min('thursdayQ'),
-                       friday=Min('fridayQ'),
-                       saturday=Min('saturdayQ'),
-                       sunday=Min('sundayQ')
-                       ).order_by('task__name')
-            for eachRec in minTaskData:
-                eachRec['min'] = 0
-                l = []
-                for k, v in eachRec.iteritems():
-                    if k in ['{0}'.format(eachDay) for eachDay in days]:
-                        l.append(v)
-                    if len(l):
-                        eachRec['min'] = min(l)
-            maxTaskData = TimeSheetEntry.objects.filter(
-                project=cProject
-            ).values(
-                'task__name'
-            ).annotate(monday=Max('mondayQ'),
-                       tuesday=Max('tuesdayQ'),
-                       wednesday=Max('wednesdayQ'),
-                       thursday=Max('thursdayQ'),
-                       friday=Max('fridayQ'),
-                       saturday=Max('saturdayQ'),
-                       sunday=Max('sundayQ')
-                       ).order_by('task__name')
-            for eachRec in maxTaskData:
-                eachRec['max'] = 0
-                l = []
-                for k, v in eachRec.iteritems():
-                    if k in ['{0}'.format(eachDay) for eachDay in days]:
-                        l.append(v)
-                    if len(l):
-                        eachRec['max'] = max(l)
-            avgTaskData = TimeSheetEntry.objects.filter(
-                project=cProject
-            ).values(
-                'task__name'
-            ).annotate(monday=Avg('mondayQ'),
-                       tuesday=Avg('tuesdayQ'),
-                       wednesday=Avg('wednesdayQ'),
-                       thursday=Avg('thursdayQ'),
-                       friday=Avg('fridayQ'),
-                       saturday=Avg('saturdayQ'),
-                       sunday=Avg('sundayQ'),
-                       ).order_by('task__name')
-            for eachRec in avgTaskData:
-                eachRec['avg'] = 0
-                total = 0
-                for k, v in eachRec.iteritems():
-                    if k in ['{0}'.format(eachDay) for eachDay in days]:
-                        total += v
-                        eachRec['avg'] = round((total / 7), 2)
+            orderbyList = ['task__name']
+            ts = TimeSheetEntry.objects.filter(
+                project=cProject).values('task__name')
+            avgTaskData = getAvgProd(request, ts, orderbyList)
+            minTaskData = getMinProd(request, ts, orderbyList)
+            maxTaskData = getMaxProd(request, ts, orderbyList)
             taskNames = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values('task__name',
@@ -1049,12 +998,12 @@ def generateMemberContent(request, header, report, worksheet,
             worksheet.write(row, 4, eachRec['activity__name'], content)
         else:
             worksheet.write(row, 4, eachRec['task__name'], content)
-        worksheet.write(row, 5, eachRec['totalHours'], content)
-        worksheet.write(row, 6, eachRec['totalValue'], content)
-        worksheet.write(row, 7, eachRec['avgProd'], content)
-        worksheet.write(row, 8, eachRec['minProd'], content)
-        worksheet.write(row, 9, eachRec['maxProd'], content)
-        worksheet.write(row, 10, eachRec['medianProd'], content)
+        worksheet.write(row, 5, eachRec['total'], content)
+        worksheet.write(row, 6, eachRec['total'], content)
+        worksheet.write(row, 7, eachRec['total'], content)
+        worksheet.write(row, 8, eachRec['total'], content)
+        worksheet.write(row, 9, eachRec['total'], content)
+        worksheet.write(row, 10, '', content)
         if eachRec['hold']:
             worksheet.write(row, 12, 'Not Submitted', content)
         else:
@@ -1180,25 +1129,39 @@ def generateDownload(request, fileName):
 
 
 @login_required
+def getDate(request, date, label):
+    dateWeekDay = date.weekday()
+    if dateWeekDay:
+        if label == 'Start':
+            date = date - timedelta(days=dateWeekDay)
+        else:
+            dateWeekDay = 6 - dateWeekDay
+            date = date + timedelta(days=dateWeekDay)
+    return date
+
+
+@login_required
 def getUnwantedValue(request, member, date, label, valuesList):
     dateWeekDay = date.weekday()
     extraData = []
-    if label == 'Start':
-        wkstartDate = date - timedelta(days=dateWeekDay)
-        weekData = getOneWeekData(request, member, wkstartDate,
-                                  wkstartDate + timedelta(days=6), valuesList)
-        if len(weekData):
-            extraData = getExtraValueForWeek(request, weekData,
-                                             dateWeekDay, 'Start')
-    else:
-        dateWeekDay = 6 - dateWeekDay
-        wkendDate = date + timedelta(days=dateWeekDay)
-        weekData = getOneWeekData(request, member,
-                                  wkendDate - timedelta(days=6),
-                                  wkendDate, valuesList)
-        if len(weekData):
-            extraData = getExtraValueForWeek(request, weekData,
-                                             dateWeekDay, 'End')
+    if dateWeekDay:
+        if label == 'Start':
+            wkstartDate = date - timedelta(days=dateWeekDay)
+            weekData = getOneWeekData(request, member, wkstartDate,
+                                      wkstartDate + timedelta(days=6),
+                                      valuesList)
+            if len(weekData):
+                extraData = getExtraValueForWeek(request, weekData,
+                                                 dateWeekDay, 'Start')
+        else:
+            dateWeekDay = 6 - dateWeekDay
+            wkendDate = date + timedelta(days=dateWeekDay)
+            weekData = getOneWeekData(request, member,
+                                      wkendDate - timedelta(days=6),
+                                      wkendDate, valuesList)
+            if len(weekData):
+                extraData = getExtraValueForWeek(request, weekData,
+                                                 dateWeekDay, 'End')
     return extraData
 
 
@@ -1232,15 +1195,45 @@ def getOneWeekData(request, member, wkstartDate, wkendDate, valuesList):
 
 
 @login_required
+def getMemberExactTsHours(request, start, end, report):
+    for eachData in report:
+        if len(start):
+            for eachStart in start:
+                if eachData['project__projectId'] == eachStart['project__projectId'] and \
+                        eachData['project__book__name'] == eachStart['project__book__name'] and \
+                        eachData['chapter__name'] == eachStart['chapter__name'] and \
+                        eachData['teamMember__username'] == eachStart['teamMember__username'] and \
+                        eachData['hold'] == eachStart['hold'] and \
+                        eachData['task__name'] == eachStart['task__name'] and \
+                        eachData['activity__name'] == eachStart['activity__name']:
+                    total = eachData['total'] - eachStart['extra']
+                    if total >= 0:
+                        eachData['total'] = total
+        if len(end):
+            for eachEnd in end:
+                if eachData['project__projectId'] == eachEnd['project__projectId'] and \
+                        eachData['project__book__name'] == eachEnd['project__book__name'] and \
+                        eachData['chapter__name'] == eachEnd['chapter__name'] and \
+                        eachData['teamMember__username'] == eachEnd['teamMember__username'] and \
+                        eachData['hold'] == eachEnd['hold'] and \
+                        eachData['task__name'] == eachEnd['task__name'] and \
+                        eachData['activity__name'] == eachEnd['activity__name']:
+                    total = eachData['total'] - eachEnd['extra']
+                    if total >= 0:
+                        eachData['total'] = total
+    return report
+
+
+@login_required
 def getMinProd(request, ts, orderbyList):
     newTs = ts.annotate(
-        monday=Avg('mondayQ'),
-        tuesday=Avg('tuesdayQ'),
-        wednesday=Avg('wednesdayQ'),
-        thursday=Avg('thursdayQ'),
-        friday=Avg('fridayQ'),
-        saturday=Avg('saturdayQ'),
-        sunday=Avg('sundayQ'),
+        monday=Min('mondayQ'),
+        tuesday=Min('tuesdayQ'),
+        wednesday=Min('wednesdayQ'),
+        thursday=Min('thursdayQ'),
+        friday=Min('fridayQ'),
+        saturday=Min('saturdayQ'),
+        sunday=Min('sundayQ'),
     ).order_by(*orderbyList)
     for eachRec in newTs:
         eachRec['min'] = 0
@@ -1256,13 +1249,13 @@ def getMinProd(request, ts, orderbyList):
 @login_required
 def getMaxProd(request, ts, orderbyList):
     newTs = ts.annotate(
-        monday=Avg('mondayQ'),
-        tuesday=Avg('tuesdayQ'),
-        wednesday=Avg('wednesdayQ'),
-        thursday=Avg('thursdayQ'),
-        friday=Avg('fridayQ'),
-        saturday=Avg('saturdayQ'),
-        sunday=Avg('sundayQ'),
+        monday=Max('mondayQ'),
+        tuesday=Max('tuesdayQ'),
+        wednesday=Max('wednesdayQ'),
+        thursday=Max('thursdayQ'),
+        friday=Max('fridayQ'),
+        saturday=Max('saturdayQ'),
+        sunday=Max('sundayQ'),
     ).order_by(*orderbyList)
     for eachRec in newTs:
         eachRec['max'] = 0

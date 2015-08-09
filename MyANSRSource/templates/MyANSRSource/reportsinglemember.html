@@ -94,7 +94,7 @@
                         <td>{{ eachData.project__book__name }}</td> 
                         <td>{{ eachData.chapter__name }}</td> 
                         <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
-                        <td class="text-right">{{ eachData.totalHours }}</td> 
+                        <td class="text-right">{{ eachData.total }}</td> 
                         <td class="text-right">
                             {% for eachAvg in avgProd %}
                                 {% if eachAvg.project__projectId == eachData.project__projectId  and  eachAvg.project__book__name == eachData.project__book__name and eachAvg.chapter__name == eachData.chapter__name and eachAvg.task__name == eachData.task__name and eachAvg.hold == eachData.hold %}
