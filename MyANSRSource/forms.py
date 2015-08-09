@@ -629,7 +629,7 @@ class UtilizationReportForm(forms.Form):
             opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
             self.fields['bu'].choices = opt
         else:
-            bu = list(BusinessUnit.objects.filter(bu_head=currentUser))
+            bu = list(BusinessUnit.objects.filter(new_bu_head=currentUser))
             self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
         self.fields['bu'].widget.attrs['class'] = "form-control"
         self.fields['year'].widget.attrs['class'] = "form-control"
