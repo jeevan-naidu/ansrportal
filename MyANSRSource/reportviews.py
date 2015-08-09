@@ -11,12 +11,13 @@ from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
 from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from django.db.models import Sum, Avg, Min, Max
 from employee.models import Employee
 from django.core.servers.basehttp import FileWrapper
 from dateutil import relativedelta as rdelta
 from django.http import HttpResponse
+from calendar import monthrange
 import mimetypes
 import numpy
 import xlsxwriter
@@ -472,6 +473,11 @@ def TeamMemberPerfomanceReport(request):
             reportMonth = reportData.cleaned_data['month']
             currReportMonth = datetime(1900, int(reportMonth), 1).strftime('%B')
             reportYear = reportData.cleaned_data['year']
+            lastDay = monthrange(int(reportYear), int(reportMonth))[1]
+            startDate = date(int(reportYear), int(reportMonth), 1)
+            endDate = date(int(reportYear), int(reportMonth), lastDay)
+            start = getDate(request, startDate, 'Start')
+            end = getDate(request, endDate, 'End')
             bu = reportData.cleaned_data['bu']
             if bu == '0':
                 reportbu = BusinessUnit.objects.all().values_list('id')
@@ -480,17 +486,18 @@ def TeamMemberPerfomanceReport(request):
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
                 for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
                     buName = eachData['name']
+            valuesList = ['project__customer__name', 'project__projectId',
+                          'project__name', 'project__projectType__description',
+                          'project__bu__name', 'teamMember__first_name',
+                          'teamMember__last_name', 'teamMember__id']
+            orderbyList = ['teamMember__first_name',
+                           'teamMember__last_name']
+
             tsData = TimeSheetEntry.objects.filter(
-                wkstart__year=reportYear,
-                wkstart__month=reportMonth,
+                wkstart__gte=start,
+                wkstart__lte=end,
                 project__bu__id__in=reportbu,
-            ).values(
-                'project__customer__name', 'project__projectId',
-                'project__name', 'project__projectType__description',
-                'project__bu__name', 'teamMember__first_name',
-                'teamMember__last_name', 'teamMember__id'
-            ).order_by('teamMember__first_name',
-                       'teamMember__last_name').distinct()
+            ).values(*valuesList).order_by(*orderbyList).distinct()
             if tsData:
                 data = GenerateReport(request, reportMonth, reportYear,
                                       tsData, idle=None)
