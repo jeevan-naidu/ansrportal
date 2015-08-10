@@ -504,7 +504,10 @@ def Timesheet(request):
         # Fresh TS data
         else:
             extra = 1
-            defaulLocation = [{'location': request.user.employee.location.id}]
+            if hasattr(request.user, 'employee'):
+                defaulLocation = [{'location': request.user.employee.location.id}]
+            else:
+                defaulLocation = [{'location': None}]
             messages.success(request, 'Please enter your timesheet for \
                              this week')
 
@@ -649,6 +652,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
 
 
 def renderTimesheet(request, data):
+    attendance = {}
     tsObj = TimeSheetEntry.objects.filter(
         wkstart=data['weekstartDate'],
         wkend=data['weekendDate'],
@@ -726,19 +730,20 @@ def renderTimesheet(request, data):
     else:
         atFormset = atFormset(prefix='at')
 
-    attendanceObj = employee.models.Attendance.objects.filter(
-        employee=request.user.employee,
-        attdate__range=[data['weekstartDate'], data['weekendDate']]
-    )
-    attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
-    for eachObj in attendanceObj:
-        if eachObj.swipe_out is not None or eachObj.swipe_in is not None:
-            timediff = eachObj.swipe_out - eachObj.swipe_in
-            atttime = "{0}:{1}".format(timediff.seconds // 3600,
-                                       (timediff.seconds % 3600) // 60)
-            attendance['{0}'.format(eachObj.attdate.weekday())] = atttime
+    if hasattr(request.user, 'employee'):
+        attendanceObj = employee.models.Attendance.objects.filter(
+            employee=request.user.employee,
+            attdate__range=[data['weekstartDate'], data['weekendDate']]
+        )
+        attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
+        for eachObj in attendanceObj:
+            if eachObj.swipe_out is not None or eachObj.swipe_in is not None:
+                timediff = eachObj.swipe_out - eachObj.swipe_in
+                atttime = "{0}:{1}".format(timediff.seconds // 3600,
+                                           (timediff.seconds % 3600) // 60)
+                attendance['{0}'.format(eachObj.attdate.weekday())] = atttime
 
-    attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
+        attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
 
     ocWeek = datetime.now().date() - data['weekstartDate']
     prevWeekBlock = False
@@ -856,8 +861,12 @@ def Dashboard(request):
             updateBtg.save()
     remainder = MyRemainderForm()
     #btg = BTGReportForm()
-    myRemainders = Remainder.objects.filter(
-        user=request.user.employee).values('name', 'startDate', 'endDate', 'id')
+    if hasattr(request.user, 'employee'):
+        myRemainders = Remainder.objects.filter(
+            user=request.user.employee
+        ).values('name', 'startDate', 'endDate', 'id')
+    else:
+        myRemainders = []
     if len(myRemainders):
         for eachRem in myRemainders:
             eachRem['startDate'] = eachRem[
@@ -1000,13 +1009,13 @@ def Dashboard(request):
     today = datetime.now().date()
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=4)
+    workingHours = 40
     if hasattr(request.user, 'employee'):
         locationId = request.user.employee.location
         weekHolidays = Holiday.objects.filter(
             location=locationId,
             date__range=[weekstartDate, ansrEndDate]
         ).values('date')
-        workingHours = 40
         if len(weekHolidays):
             workingHours = 40 - len(weekHolidays) * 8
     cp = ProjectTeamMember.objects.filter(
