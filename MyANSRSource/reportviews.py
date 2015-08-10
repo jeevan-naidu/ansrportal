@@ -900,8 +900,12 @@ def GenerateReport(request, reportMonth, reportYear, tsData, idle):
                 sunday=Sum('sundayH')
             )
             d = {}
-            for eachDay in days:
-                d[eachDay] = totalTsValue[0][eachDay] - eachData['others'][0][eachDay]
+            if len(eachData['others']):
+                for eachDay in days:
+                    d[eachDay] = totalTsValue[0][eachDay] - eachData['others'][0][eachDay]
+            else:
+                for eachDay in days:
+                    d[eachDay] = 0
             eachData['PTMBilledHours'] = d
     return tsData
 
