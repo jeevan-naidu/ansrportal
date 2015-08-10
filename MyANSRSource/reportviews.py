@@ -797,7 +797,10 @@ def calcPTM(request, tsData):
                     eachTsData['friday'] + \
                     eachTsData['saturday'] + \
                     eachTsData['sunday']
-                diff = eachTsData['PTM'] - eachData['others'][0]['otherstotal']
+                if len(eachData['others']):
+                    diff = eachTsData['PTM'] - eachData['others'][0]['otherstotal']
+                else:
+                    diff = eachTsData['PTM']
                 if diff:
                     eachData['correctPTM'] = diff
                 else:
