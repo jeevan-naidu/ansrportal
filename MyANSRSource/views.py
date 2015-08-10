@@ -1627,7 +1627,10 @@ class ManageTeamWizard(SessionWizardView):
             actual = 0
             for eachForm in form:
                 if eachForm.is_valid():
-                    actual += eachForm.cleaned_data['plannedEffort']
+                    if eachForm.cleaned_data['plannedEffort'] is None:
+                        actual += 0
+                    else:
+                        actual += eachForm.cleaned_data['plannedEffort']
             if actual > predicted:
                 for eachForm in form:
                     errors = eachForm._errors.setdefault(
@@ -1640,6 +1643,8 @@ class ManageTeamWizard(SessionWizardView):
         project = [form.cleaned_data for form in form_list][0]['project']
         cleanList = [form.cleaned_data for form in form_list][1]
         for eachData in cleanList:
+            if eachData['plannedEffort'] is None:
+                eachData['plannedEffort'] = 0
             if eachData['member'] is None:
                 pass
             else:
