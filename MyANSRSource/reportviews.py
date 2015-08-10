@@ -519,10 +519,12 @@ def TeamMemberPerfomanceReport(request):
             totals['sumTotalPlanned'] = sum([eachRec['totalPlanned'] for eachRec in report])
             totals['monthRecTotal'] = sum([eachRec['monthRec'] for eachRec in report])
             totals['PTMTotal'] = sum([eachRec['correctPTM'] for eachRec in report])
-            if len(eachRec['others']):
-                totals['sumOthersTotal'] = sum([eachRec['others'][0]['otherstotal'] for eachRec in report])
-            else:
-                totals['sumOthersTotal'] = 0
+            totals['sumOthersTotal'] = 0
+            for eachRec in report:
+                if len(eachRec['others']):
+                    totals['sumOthersTotal'] += eachRec['others'][0]['otherstotal']
+                else:
+                    totals['sumOthersTotal'] = 0
             totals['PTDTotal'] = sum([eachRec['PTD'] for eachRec in report])
             form = UtilizationReportForm(initial={
                 'month': reportData.cleaned_data['month'],
