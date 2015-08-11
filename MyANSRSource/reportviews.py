@@ -463,22 +463,36 @@ def SingleProjectReport(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def TeamMemberPerfomanceReport(request):
-    report, final_report, totals = {}, {}, {}
+    # common variable initilization
+    users, totals = {}, {}
     buName, currReportMonth, reportYear = '', '', ''
+    valuesList = ['project__customer__name', 'project__projectId',
+                  'project__name', 'project__projectType__description',
+                  'project__bu__name']
+    orderbyList = ['teamMember__first_name', 'teamMember__last_name']
     form = UtilizationReportForm(user=request.user)
     if request.method == 'POST':
         reportData = UtilizationReportForm(request.POST,
                                            user=request.user)
         if reportData.is_valid():
+            # Get user input value
             reportMonth = reportData.cleaned_data['month']
-            currReportMonth = datetime(1900, int(reportMonth), 1).strftime('%B')
             reportYear = reportData.cleaned_data['year']
+            bu = reportData.cleaned_data['bu']
+
+            # Change Month Number to Month Name
+            currReportMonth = datetime(1900, int(reportMonth), 1).strftime('%B')
+
+            # Creating date range from month and year (User Input)
             lastDay = monthrange(int(reportYear), int(reportMonth))[1]
             startDate = date(int(reportYear), int(reportMonth), 1)
             endDate = date(int(reportYear), int(reportMonth), lastDay)
+
+            # Finding the weekstart and weekend for generated date range
             start = getDate(request, startDate, 'Start')
             end = getDate(request, endDate, 'End')
-            bu = reportData.cleaned_data['bu']
+
+            # Getting BU object from user input
             if bu == '0':
                 reportbu = BusinessUnit.objects.all().values_list('id')
                 buName = 'All'
@@ -486,46 +500,135 @@ def TeamMemberPerfomanceReport(request):
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
                 for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
                     buName = eachData['name']
-            valuesList = ['project__customer__name', 'project__projectId',
-                          'project__name', 'project__projectType__description',
-                          'project__bu__name', 'teamMember__first_name',
-                          'teamMember__last_name', 'teamMember__id']
-            orderbyList = ['teamMember__first_name',
-                           'teamMember__last_name']
 
-            tsData = TimeSheetEntry.objects.filter(
-                wkstart__gte=start,
-                wkstart__lte=end,
-                project__bu__id__in=reportbu,
-            ).values(*valuesList).order_by(*orderbyList).distinct()
-            if tsData:
-                data = GenerateReport(request, reportMonth, reportYear,
-                                      tsData, idle=None)
-                if data:
-                    for eachRec in data:
-                        correctPTM = 0
-                        for v in eachRec['PTMBilledHours'].values():
-                            correctPTM += v
-                        eachRec['correctPTM'] = correctPTM
-                    report = calcTotal(request, data)
-            else:
-                data = {}
-                report = {}
-            for eachRec in report:
-                if len(eachRec['others']):
-                    eachRec['PTD'] = eachRec['correctPTM'] + eachRec['others'][0]['otherstotal']
-                else:
-                    eachRec['PTD'] = eachRec['correctPTM']
-            totals['sumTotalPlanned'] = sum([eachRec['totalPlanned'] for eachRec in report])
-            totals['monthRecTotal'] = sum([eachRec['monthRec'] for eachRec in report])
-            totals['PTMTotal'] = sum([eachRec['correctPTM'] for eachRec in report])
-            totals['sumOthersTotal'] = 0
-            for eachRec in report:
-                if len(eachRec['others']):
-                    totals['sumOthersTotal'] += eachRec['others'][0]['otherstotal']
-                else:
-                    totals['sumOthersTotal'] = 0
-            totals['PTDTotal'] = sum([eachRec['PTD'] for eachRec in report])
+            # Getting eachUser information in line with selected BU
+            users = User.objects.filter(is_active=True,
+                                        is_superuser=False).values(
+                                            'id',
+                                            'first_name',
+                                            'last_name'
+                                        ).order_by('first_name', 'last_name')
+            for eachUser in users:
+                emp = Employee.objects.get(user__id=eachUser['id'])
+                eachUser['fullName'] = "{0} {1}({2})".format(
+                    eachUser['first_name'], eachUser['last_name'],
+                    emp.employee_assigned_id)
+                eachUser['ts'] = TimeSheetEntry.objects.filter(
+                    wkstart__gte=start,
+                    wkend__lte=end,
+                    project__bu__id__in=reportbu,
+                    teamMember__id=eachUser['id']
+                ).values(*valuesList).annotate(
+                    monday=Sum('mondayH'),
+                    tuesday=Sum('tuesdayH'),
+                    wednesday=Sum('wednesdayH'),
+                    thursday=Sum('thursdayH'),
+                    friday=Sum('fridayH'),
+                    saturday=Sum('saturdayH'),
+                    sunday=Sum('sundayH'))
+                if len(eachUser['ts']):
+                    wkStrtWeek = getDate(request, start, 'Start')
+                    wkEndWeek = getDate(request, end, 'Start')
+                    for eachTS in eachUser['ts']:
+                        eachTS['fullName'] = eachUser['fullName']
+                        eachTS['total'] = sum([
+                            eachTS[eachDay] for eachDay in days])
+                        eachTS['leads'] = ProjectManager.objects.filter(
+                            project__projectId=eachTS['project__projectId']
+                        ).values('user__username')
+                        eachTS['dates'] = ProjectTeamMember.objects.filter(
+                            project__projectId=eachTS['project__projectId'],
+                            member__id=eachUser['id']
+                        ).values('project').annotate(
+                            start=Min('startDate'),
+                            end=Max('endDate'),
+                            effort=Sum('plannedEffort')
+                        )
+                        eachTS['MonthHours'] = 0
+                        if len(eachTS['dates']):
+                            rd = rdelta.relativedelta(
+                                eachTS['dates'][0]['end'],
+                                eachTS['dates'][0]['start']
+                            )
+                            if eachTS['dates'][0]['effort'] and \
+                                    rd.months:
+                                eachTS['MonthHours'] = eachTS['dates'][0]['effort'] / rd.months
+                            if rd.months == 0:
+                                eachTS['MonthHours'] = eachTS['dates'][0]['effort']
+                        ptm = TimeSheetEntry.objects.filter(
+                            wkend__lt=wkStrtWeek + timedelta(days=6),
+                            project__bu__id__in=reportbu,
+                            teamMember__id=eachUser['id'],
+                            project__projectId=eachTS['project__projectId']
+                        ).values('project__projectId').annotate(
+                            monday=Sum('mondayH'),
+                            tuesday=Sum('tuesdayH'),
+                            wednesday=Sum('wednesdayH'),
+                            thursday=Sum('thursdayH'),
+                            friday=Sum('fridayH'),
+                            saturday=Sum('saturdayH'),
+                            sunday=Sum('sundayH'))
+                        if len(ptm):
+                            for eachptm in ptm:
+                                eachTS['ptm'] = sum([eachptm[eachDay] for eachDay in days])
+                        else:
+                            eachTS['ptm'] = 0
+                        startData = TimeSheetEntry.objects.filter(
+                            wkstart=wkStrtWeek,
+                            wkend=wkStrtWeek + timedelta(days=6),
+                            project__bu__id__in=reportbu,
+                            teamMember__id=eachUser['id'],
+                            project__projectId=eachTS['project__projectId']
+                        ).values('project__projectId').annotate(
+                            monday=Sum('mondayH'),
+                            tuesday=Sum('tuesdayH'),
+                            wednesday=Sum('wednesdayH'),
+                            thursday=Sum('thursdayH'),
+                            friday=Sum('fridayH'),
+                            saturday=Sum('saturdayH'),
+                            sunday=Sum('sundayH'))
+                        if len(startData):
+                            for eachData in startData:
+                                total = sum([
+                                    eachData[eachDay] for eachDay in days[
+                                        :startDate.weekday()]
+                                ])
+                                eachTS['total'] = eachTS['total'] - total
+                                if eachTS['ptm']:
+                                    eachTS['ptm'] = eachTS['ptm'] + total
+                        endData = TimeSheetEntry.objects.filter(
+                            wkstart=wkEndWeek,
+                            wkend=wkEndWeek + timedelta(days=6),
+                            project__bu__id__in=reportbu,
+                            teamMember__id=eachUser['id'],
+                            project__projectId=eachTS['project__projectId']
+                        ).values('project__projectId').annotate(
+                            monday=Sum('mondayH'),
+                            tuesday=Sum('tuesdayH'),
+                            wednesday=Sum('wednesdayH'),
+                            thursday=Sum('thursdayH'),
+                            friday=Sum('fridayH'),
+                            saturday=Sum('saturdayH'),
+                            sunday=Sum('sundayH'))
+                        if len(endData):
+                            for eachData in endData:
+                                endRange = endDate.weekday() + 1
+                                endtotal = sum([
+                                    eachData[eachDay] for eachDay in days[
+                                        endRange:]
+                                ])
+                                eachTS['total'] = eachTS['total'] - endtotal
+                        eachTS['ptd'] = eachTS['total'] + eachTS['ptm']
+            for eachUser in users:
+                if len(eachUser['ts']):
+                    totals['ptm'] = sum([eachRec['ptm'] for eachRec in eachUser['ts']])
+                    totals['total'] = sum([eachRec['total'] for eachRec in eachUser['ts']])
+                    totals['ptd'] = sum([eachRec['ptd'] for eachRec in eachUser['ts']])
+                    totals['MonthHours'] = sum([eachRec['MonthHours'] for eachRec in eachUser['ts']])
+                    totals['plannedTotal'] = 0
+                    for eachTS in eachUser['ts']:
+                        if len(eachTS['dates']):
+                            totals['plannedTotal'] += sum([eachDate['effort'] for eachDate in eachTS['dates']])
             form = UtilizationReportForm(initial={
                 'month': reportData.cleaned_data['month'],
                 'year': reportData.cleaned_data['year'],
@@ -533,7 +636,7 @@ def TeamMemberPerfomanceReport(request):
             }, user=request.user)
     return render(request,
                   'MyANSRSource/reportmembersummary.html',
-                  {'form': form, 'data': report, 'bu': buName,
+                  {'form': form, 'data': users, 'bu': buName,
                    'month': currReportMonth, 'year': reportYear,
                    'totals': totals})
 

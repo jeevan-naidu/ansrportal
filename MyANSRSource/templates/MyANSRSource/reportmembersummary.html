@@ -80,42 +80,47 @@
                     <td colspan="11" class="text-center"><h4><small><b>No reports found for this timeframe</b></small></h4></td>
                 </tr>
             {% else %}
-                {% for eachData in data %}
-                    <tr>
-                        <td>{{ eachData.teamMember__first_name }} {{ eachData.teamMember__last_name }} ( {{ eachData.empId }} )</td> 
-                        <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td>
-                        <td>
-                            {% for eachLead in eachData.lead %}
-                                {{ eachLead.user__username }}, 
-                            {% endfor %}
-                        </td> 
-                        <td>{{ eachData.project__customer__name }}</td> 
-                        <td>{{ eachData.project__bu__name }}</td> 
-                        <td>
-                            {{ eachData.startDate }}
-                        </td>
-                        <td>
-                            {{ eachData.endDate }}
-                        </td>
-                        <td class="text-right">{{ eachData.totalPlanned }}</td> 
-                        <td class="text-right">{{ eachData.monthRec }}</td>
-                        <td class="text-right">{{ eachData.correctPTM }}</td> 
-                        <td class="text-right">
-                            {% for eachTotal in eachData.others %}
-                                {{ eachTotal.otherstotal }}
-                            {% endfor %}
-                        </td> 
-                        <td class="text-right">{{ eachData.PTD }}</td> 
-                    </tr>
+                {% for eachTS in data %}
+                    {% if eachTS.ts %}
+                        {% for eachData in eachTS.ts %}
+                            <tr>
+                                <td>{{ eachData.fullName }}</td>
+                                <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td>
+                                <td>
+                                    {% for eachLead in eachData.leads %}
+                                        {{ eachLead.user__username }}, 
+                                    {% endfor %}
+                                </td> 
+                                <td>{{ eachData.project__customer__name }}</td> 
+                                <td>{{ eachData.project__bu__name }}</td> 
+                                {% if eachData.dates %}
+                                    {% for eachDate in eachData.dates %}
+                                        <td>{{ eachDate.start }}</td>
+                                        <td>{{ eachDate.end }}</td>
+                                        <td class="text-right">{{ eachDate.effort }}</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right">{{ eachData.MonthHours }}</td>
+                                <td class="text-right">{{ eachData.ptm }}</td> 
+                                <td class="text-right">{{ eachData.total }}</td> 
+                                <td class="text-right">{{ eachData.ptd }}</td> 
+                            <tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>{{ eachTS.fullName }}</td>
+                            <td class="text-center" colspan="10"><small><b>No timesheet Submitted for this month</b></small></td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
                     {% if data %}
                         <tr>
                             <td colspan="7" class="text-center"><b>Total</b></td>
-                            <td class="text-right"><b>{{ totals.sumTotalPlanned }}</b></td> 
-                            <td class="text-right"><b>{{ totals.monthRecTotal }}</b></td>
-                            <td class="text-right"><b>{{ totals.PTMTotal }}</b></td>
-                            <td class="text-right"><b>{{ totals.sumOthersTotal }}</b></td>
-                            <td class="text-right"><b>{{ totals.PTDTotal }}</b></td>
+                            <td class="text-right"><b>{{ totals.plannedTotal }}</b></td> 
+                            <td class="text-right"><b>{{ totals.MonthHours }}</b></td>
+                            <td class="text-right"><b>{{ totals.ptm }}</b></td>
+                            <td class="text-right"><b>{{ totals.total }}</b></td>
+                            <td class="text-right"><b>{{ totals.ptd }}</b></td>
                         </tr> 
                 {% endif %}
             {% endif %}
