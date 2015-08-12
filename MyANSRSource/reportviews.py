@@ -16,6 +16,7 @@ from django.db.models import Sum, Avg, Min, Max
 from employee.models import Employee
 from django.core.servers.basehttp import FileWrapper
 from dateutil import relativedelta as rdelta
+from django.db.models import Q
 from django.http import HttpResponse
 from calendar import monthrange
 import mimetypes
@@ -647,8 +648,8 @@ def TeamMemberPerfomanceReport(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def ProjectPerfomanceReport(request):
+    fresh = 1,
     data = {}
-    fresh = 1
     iidleTotal, iothersTotal, eidleTotal, eothersTotal = 0, 0, 0, 0
     form = UtilizationReportForm(user=request.user)
     buName, currReportMonth, reportYear = 0, 0, 0
@@ -657,9 +658,21 @@ def ProjectPerfomanceReport(request):
                                            user=request.user)
         if reportData.is_valid():
             reportMonth = reportData.cleaned_data['month']
-            currReportMonth = datetime(1900, int(reportMonth), 1).strftime('%B')
             reportYear = reportData.cleaned_data['year']
             bu = reportData.cleaned_data['bu']
+
+            # Change Month Number to Month Name
+            currReportMonth = datetime(1900, int(reportMonth), 1).strftime('%B')
+
+            # Creating date range from month and year (User Input)
+            lastDay = monthrange(int(reportYear), int(reportMonth))[1]
+            startDate = date(int(reportYear), int(reportMonth), 1)
+            endDate = date(int(reportYear), int(reportMonth), lastDay)
+
+            # Finding the weekstart and weekend for generated date range
+            start = getDate(request, startDate, 'Start')
+            end = getDate(request, endDate, 'End')
+
             if bu == '0':
                 reportbu = BusinessUnit.objects.all().values_list('id')
                 buName = 'All'
@@ -667,69 +680,39 @@ def ProjectPerfomanceReport(request):
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
                 for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
                     buName = eachData['name']
-            tsData = TimeSheetEntry.objects.filter(
-                wkstart__year=reportYear,
-                wkstart__month=reportMonth,
-                project__internal=True,
-                project__bu__id__in=reportbu,
-                project__projectId__isnull=False
-            ).values(
-                'project__customer__name', 'project__projectId',
-                'project__name', 'project__projectType__description',
-                'project__bu__name', 'project__startDate',
-                'project__endDate', 'project__totalValue',
-                'project__plannedEffort'
-            ).order_by('project__projectId',
-                       'project__name').distinct()
-            if tsData:
-                internalIdle = GenerateReport(request, reportMonth, reportYear,
-                                              tsData, idle=True)
-                internalOthers = GenerateReport(request, reportMonth,
-                                                reportYear, internalIdle,
-                                                idle=False)
-            else:
-                internalOthers = {}
-            tsData = TimeSheetEntry.objects.filter(
-                wkstart__year=reportYear,
-                wkstart__month=reportMonth,
-                project__internal=False,
-                project__bu=reportbu,
-                project__projectId__isnull=False
-            ).values(
-                'project__customer__name', 'project__projectId',
-                'project__name', 'project__projectType__description',
-                'project__bu__name', 'project__startDate',
-                'project__endDate', 'project__totalValue',
-                'project__plannedEffort'
-            ).order_by('project__projectId',
-                       'project__name').distinct()
-            if tsData:
-                externalIdle = GenerateReport(request, reportMonth, reportYear,
-                                              tsData, idle=True)
-                externalOthers = GenerateReport(request, reportMonth,
-                                                reportYear, externalIdle,
-                                                idle=False)
-            else:
-                externalOthers = {}
-            data = {'internal': calcTotal(request, internalOthers),
-                    'external': calcTotal(request, externalOthers),
-                    }
-            if len(data['internal']):
-                for eachD in data['internal']:
-                    for eachRec in eachD['idle']:
-                        if 'idletotal' in eachRec:
-                            iidleTotal += eachRec['idletotal']
-                    for eachRec in eachD['others']:
-                        if 'otherstotal' in eachRec:
-                            iothersTotal += eachRec['otherstotal']
-            if len(data['external']):
-                for eachD in data['external']:
-                    for eachRec in eachD['idle']:
-                        if 'idletotal' in eachRec:
-                            eidleTotal += eachRec['idletotal']
-                    for eachRec in eachD['others']:
-                        if 'otherstotal' in eachRec:
-                            eothersTotal += eachRec['otherstotal']
+
+            eProjects = Project.objects.filter(
+                startDate__range=(startDate, endDate),
+                endDate__range=(startDate, endDate),
+                internal=False,
+                bu__id__in=reportbu,
+                projectId__isnull=False)
+            iProjects = Project.objects.filter(
+                startDate__range=(startDate, endDate),
+                endDate__range=(startDate, endDate),
+                internal=True,
+                bu__id__in=reportbu,
+                projectId__isnull=False)
+            externalData = getProjectData(request, startDate, endDate,
+                                          eProjects, start, end)
+            internalData = getProjectData(request, startDate, endDate,
+                                          iProjects, start, end)
+            if len(externalData):
+                eothersTotal = sum([
+                    eachData['billed'] for eachData in externalData
+                ])
+                iothersTotal = sum([
+                    eachData['idle'] for eachData in externalData
+                ])
+            if len(internalData):
+                eidleTotal = sum([
+                    eachData['billed'] for eachData in internalData
+                ])
+                iidleTotal = sum([
+                    eachData['idle'] for eachData in internalData
+                ])
+            data['external'] = externalData
+            data['internal'] = internalData
             fresh = 0
             form = UtilizationReportForm(initial={
                 'month': reportData.cleaned_data['month'],
@@ -742,6 +725,147 @@ def ProjectPerfomanceReport(request):
                    'iiTotal': iidleTotal, 'ioTotal': iothersTotal,
                    'eiTotal': eidleTotal, 'eoTotal': eothersTotal,
                    'month': currReportMonth, 'year': reportYear})
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def getProjectData(request, startDate, endDate, projects, start, end):
+    report = []
+    if len(projects):
+        for eachProject in projects:
+            data = {}
+            data['pName'] = "{0}:{1}".format(
+                eachProject.projectId,
+                eachProject.name
+            )
+            data['type'] = eachProject.projectType.description
+            data['bu'] = eachProject.bu.name
+            data['customer'] = eachProject.customer.name
+            pm = ProjectManager.objects.filter(project=eachProject)
+            if len(pm):
+                data['pm'] = [eachPM.user.username for eachPM in pm]
+            else:
+                data['pm'] = []
+            data['startDate'] = eachProject.startDate
+            data['endDate'] = eachProject.endDate
+            data['value'] = eachProject.totalValue
+            data['pEffort'] = eachProject.plannedEffort
+            data['billed'] = getEffort(request, startDate,
+                                        endDate, start, end,
+                                        eachProject, 'Billed')
+            data['idle'] = getEffort(request, startDate,
+                                        endDate, start, end,
+                                        eachProject, 'Idle')
+            report.append(data)
+    return report
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def getEffort(request, startDate, endDate, start, end, eachProject, label):
+    if label == 'Billed':
+        allData = TimeSheetEntry.objects.filter(
+            ~Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkstart__gte=start),
+            Q(wkend__lte=end)
+        ).values('project').annotate(
+            monday=Sum('mondayQ'),
+            tuesday=Sum('tuesdayQ'),
+            wednesday=Sum('wednesdayQ'),
+            thursday=Sum('thursdayQ'),
+            friday=Sum('fridayQ'),
+            saturday=Sum('saturdayQ'),
+            sunday=Sum('sundayQ')
+        )
+        startData = TimeSheetEntry.objects.filter(
+            ~Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkstart=start),
+            Q(wkend=start + timedelta(days=6))
+        ).values('project').annotate(
+            monday=Sum('mondayQ'),
+            tuesday=Sum('tuesdayQ'),
+            wednesday=Sum('wednesdayQ'),
+            thursday=Sum('thursdayQ'),
+            friday=Sum('fridayQ'),
+            saturday=Sum('saturdayQ'),
+            sunday=Sum('sundayQ')
+        )
+        endData = TimeSheetEntry.objects.filter(
+            ~Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkstart=end - timedelta(days=6)),
+            Q(wkend=end)
+        ).values('project').annotate(
+            monday=Sum('mondayQ'),
+            tuesday=Sum('tuesdayQ'),
+            wednesday=Sum('wednesdayQ'),
+            thursday=Sum('thursdayQ'),
+            friday=Sum('fridayQ'),
+            saturday=Sum('saturdayQ'),
+            sunday=Sum('sundayQ')
+        )
+    else:
+        allData = TimeSheetEntry.objects.filter(
+            Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkstart__gte=start),
+            Q(wkend__lte=end)
+        ).values('project').annotate(
+            monday=Sum('mondayQ'),
+            tuesday=Sum('tuesdayQ'),
+            wednesday=Sum('wednesdayQ'),
+            thursday=Sum('thursdayQ'),
+            friday=Sum('fridayQ'),
+            saturday=Sum('saturdayQ'),
+            sunday=Sum('sundayQ')
+        )
+        startData = TimeSheetEntry.objects.filter(
+            Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkstart=start),
+            Q(wkend=start + timedelta(days=6))
+        ).values('project').annotate(
+            monday=Sum('mondayQ'),
+            tuesday=Sum('tuesdayQ'),
+            wednesday=Sum('wednesdayQ'),
+            thursday=Sum('thursdayQ'),
+            friday=Sum('fridayQ'),
+            saturday=Sum('saturdayQ'),
+            sunday=Sum('sundayQ')
+        )
+        endData = TimeSheetEntry.objects.filter(
+            Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkstart=end - timedelta(days=6)),
+            Q(wkend=end)
+        ).values('project').annotate(
+            monday=Sum('mondayQ'),
+            tuesday=Sum('tuesdayQ'),
+            wednesday=Sum('wednesdayQ'),
+            thursday=Sum('thursdayQ'),
+            friday=Sum('fridayQ'),
+            saturday=Sum('saturdayQ'),
+            sunday=Sum('sundayQ')
+        )
+    finalTotal = 0
+    if len(allData):
+        finalTotal = sum([eachData[eachDay] for eachDay in days for eachData in allData])
+    if len(startData):
+        total = sum([eachData[eachDay] for eachDay in days[:startDate.weekday()] for eachData in startData])
+        finalTotal = finalTotal - total
+    if len(endData):
+        weekday = endDate.weekday() + 1
+        total = sum([eachData[eachDay] for eachDay in days[weekday:] for eachData in endData])
+        finalTotal = finalTotal - total
+    return finalTotal
+
+
+@login_required
+@permission_required('MyANSRSource.create_project')
+def getInternalData(request):
+    pass
 
 
 @login_required

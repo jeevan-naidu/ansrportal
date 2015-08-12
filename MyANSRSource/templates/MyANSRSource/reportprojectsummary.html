@@ -79,37 +79,25 @@
             {% if data.external %}
                 {% for eachData in data.external %}
                     <tr>
-                        <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td> 
-                        <td>{{ eachData.project__projectType__description }}</td> 
-                        <td>{{ eachData.project__bu__name }}</td> 
-                        <td>{{ eachData.project__customer__name }}</td> 
-                        {% if eachData.lead %}
+                        <td>{{ eachData.pName }}</td> 
+                        <td>{{ eachData.type }}</td> 
+                        <td>{{ eachData.bu }}</td> 
+                        <td>{{ eachData.customer }}</td> 
+                        {% if eachData.pm %}
                             <td> 
-                                {% for t in eachData.lead %}
-                                    {{ t.user__username }}, 
+                                {% for t in eachData.pm %}
+                                    {{ t }}, 
                                 {% endfor %}
                             </td>
                         {% else %}
                                 <td>-<td>
                         {% endif %} 
-                        <td>{{ eachData.project__startDate }}</td>
-                        <td>{{ eachData.project__endDate }}</td> 
-                        <td class="text-right">${{ eachData.project__totalValue | intcomma }}</td> 
-                        <td class="text-right">{{ eachData.project__plannedEffort }}</td>
-                        {% if eachData.others %} 
-                            {% for t in eachData.others %}
-                                <td class="text-right">{{ t.otherstotal }}</td>
-                            {% endfor %}
-                        {% else %}
-                                <td class="text-right">0<td>
-                        {% endif %} 
-                        {% if eachData.idle %} 
-                            {% for t in eachData.idle %}
-                                <td class="text-right">{{ t.idletotal }}</td>
-                            {% endfor %}
-                        {% else %}
-                                <td class="text-right">0<td>
-                        {% endif %} 
+                        <td>{{ eachData.startDate }}</td>
+                        <td>{{ eachData.endDate }}</td> 
+                        <td class="text-right">${{ eachData.value | intcomma }}</td> 
+                        <td class="text-right">{{ eachData.pEffort }}</td>
+                        <td class="text-right">{{ eachData.billed }}</td>
+                        <td class="text-right">{{ eachData.idle }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
@@ -153,37 +141,25 @@
             {% if data.internal %}
                 {% for eachData in data.internal %}
                     <tr>
-                        <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td> 
-                        <td>{{ eachData.project__projectType__description }}</td> 
-                        <td>{{ eachData.project__bu__name }}</td> 
-                        <td>{{ eachData.project__customer__name }}</td> 
-                        {% if eachData.lead %}
+                        <td>{{ eachData.pName }}</td> 
+                        <td>{{ eachData.type }}</td> 
+                        <td>{{ eachData.bu }}</td> 
+                        <td>{{ eachData.customer }}</td> 
+                        {% if eachData.pm %}
                             <td> 
-                                {% for t in eachData.lead %}
-                                    {{ t.user__username }}, 
+                                {% for t in eachData.pm %}
+                                    {{ t }}, 
                                 {% endfor %}
                             </td>
                         {% else %}
                                 <td>-<td>
                         {% endif %} 
-                        <td>{{ eachData.project__startDate }}</td> 
-                        <td>{{ eachData.project__endDate }}</td> 
-                        <td class="text-right">${{ eachData.project__totalValue | intcomma }}</td> 
-                        <td class="text-right">{{ eachData.project__plannedEffort }}</td>
-                        {% if eachData.others %} 
-                            {% for t in eachData.others %}
-                                <td class="text-right">{{ t.otherstotal }}</td>
-                            {% endfor %}
-                        {% else %}
-                                <td class="text-right">0<td>
-                        {% endif %} 
-                        {% if eachData.idle %} 
-                            {% for t in eachData.idle %}
-                                <td class="text-right">{{ t.idletotal }}</td>
-                            {% endfor %}
-                        {% else %}
-                                <td class="text-right">0<td>
-                        {% endif %} 
+                        <td>{{ eachData.startDate }}</td>
+                        <td>{{ eachData.endDate }}</td> 
+                        <td class="text-right">${{ eachData.value | intcomma }}</td> 
+                        <td class="text-right">{{ eachData.pEffort }}</td>
+                        <td class="text-right">{{ eachData.billed }}</td>
+                        <td class="text-right">{{ eachData.idle }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
