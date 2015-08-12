@@ -72,6 +72,7 @@ def feedData(filereader, filename, everyRec):
 
     for eachRow in filereader:
         row += 1
+        swipe_in, swipe_out = '', ''
 
         if checkRow(eachRow):
 
