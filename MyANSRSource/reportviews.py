@@ -699,11 +699,11 @@ def ProjectPerfomanceReport(request):
                 eothersTotal = sum([
                     eachData['billed'] for eachData in externalData
                 ])
-                iothersTotal = sum([
+                eidleTotal = sum([
                     eachData['idle'] for eachData in externalData
                 ])
             if len(internalData):
-                eidleTotal = sum([
+                iothersTotal = sum([
                     eachData['billed'] for eachData in internalData
                 ])
                 iidleTotal = sum([
