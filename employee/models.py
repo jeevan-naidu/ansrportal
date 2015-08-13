@@ -137,6 +137,7 @@ class Employee(models.Model):
                                 blank=True, null=True,
                                 related_name="Manager", default=None)
     status = models.BooleanField(default=True)
+    is_360eligible = models.BooleanField(default=False)
     '''
     ================================================
     Basic Employee Attributes

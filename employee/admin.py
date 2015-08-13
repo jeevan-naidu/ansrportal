@@ -85,7 +85,7 @@ class UserInline(admin.StackedInline):
 
     fieldsets = (
         ('Manager Information', {
-            'fields': ('manager', ),
+            'fields': ('manager', 'is_360eligible', ),
         }),
         ('Employee Identification', {
             'fields': (('middle_name',),
