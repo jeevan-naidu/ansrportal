@@ -132,8 +132,8 @@ def SingleTeamMemberReport(request):
                               'End')
             tm = ProjectTeamMember.objects.filter(
                 member=reportData.cleaned_data['member'],
-                startDate__gte=weekStart,
-                endDate__lte=weekEnd,
+                startDate__lte=weekStart,
+                endDate__gte=weekEnd,
             ).values('plannedEffort')
             plannedHours = sum([eachRec['plannedEffort'] for eachRec in tm])
 
