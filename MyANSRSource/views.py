@@ -1778,13 +1778,13 @@ def saveProject(request):
             pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
             pr.currentProject = request.POST.get('currentProject')
             pr.signed = (request.POST.get('signed') == 'True')
-            pr.internal = (request.POST.get('internal') == 'True')
             pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                 pk=int(request.POST.get('bu'))
             )
             pr.customer = CompanyMaster.models.Customer.objects.get(
                 pk=int(request.POST.get('customer'))
             )
+            pr.internal = pr.customer.internal
             pr.customerContact = User.objects.get(
                 pk=int(request.POST.get('customerContact'))
             )

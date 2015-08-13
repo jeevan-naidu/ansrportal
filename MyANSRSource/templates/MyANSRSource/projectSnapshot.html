@@ -45,7 +45,6 @@
 				<th>Customer Contact</th>
 				<th>Book</th>
 				<th>Project Leader</th>
-				<th>Internal Project?</th>
 				<th>New project?</th>
 				<th>Contract signed?</th>
 		</thead>
@@ -65,13 +64,6 @@
 						{{ eachManager }},
 					{% endif %}
 				{% endfor %}
-			</td>
-			<td>
-				{% if basicInfo.internal == True  %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
 			</td>
 			<td>
 				{% if basicInfo.currentProject == True %}

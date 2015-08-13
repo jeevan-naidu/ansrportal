@@ -340,7 +340,6 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
             'book',
             'projectManager',
             'signed',
-            'internal',
             'currentProject',
         )
         widgets = {
@@ -350,9 +349,6 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
             ),
-            'internal': forms.RadioSelect(
-                choices=[(True, 'Yes'), (False, 'No')]
-            )
         }
 
     def __init__(self, *args, **kwargs):
@@ -382,8 +378,6 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
         self.fields['customerContact'].widget.attrs['class'] = \
             "form-control"
         self.fields['signed'].widget.attrs['class'] = \
-            "form-control"
-        self.fields['internal'].widget.attrs['class'] = \
             "form-control"
 
 
