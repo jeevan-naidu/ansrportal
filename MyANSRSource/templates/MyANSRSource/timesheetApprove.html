@@ -5,64 +5,53 @@
 {% block content %}
 <div class="jumbotron shadow">
 	<legend><h2><small>Approve / Hold Exceptions</small></h2></legend>
-<form id="approveTS" method="post" action="" >
-	{% csrf_token %}
-	<table class="table table-condensed">
-		<thead>
-			<th>Person</th>
-			<th>WeekStart</th>
-			<th>WeekEnd</th>
-			<th>Hours</th>
-			<th>Exception Details</th>
-			<th>Approve / Hold</th>
-			<th>Feedback</th>
-		</thead>
-		{% regroup timesheetInfo by project__name as projectTSInfo %}
-		{% for eachTS in projectTSInfo %}
-			<tbody>
-				<tr>
-					<td><b><small>Project : {{ eachTS.grouper }}</small></b></td>
-				</tr>
-				{% for rec in eachTS.list %}
-				<tr>
-					<td>{{ rec.teamMember__username }}</td>
-					<td>{{ rec.wkstart }}</td>
-					<td>{{ rec.wkend }}</td>
-					<td>{{ rec.totalH }}</td>
-					<td>{{ rec.exception }}</td>
-					<td>
-						{% if 'approved' in rec %}
-							<label class="radio-inline">
-							{% with recIdString=rec.id|stringformat:"s" %}
-								{% with apId="status-"|add:recIdString %}
-									<input type="radio" value="approve" name='{{ apId }}'>Approve
-								{% endwith %}
-							{% endwith %}
-							</label>
-							<label class="radio-inline">
-							{% with recIdString=rec.id|stringformat:"s" %}
-								{% with hoId="status-"|add:recIdString %}
-									<input type="radio" value="hold" name='{{ hoId }}' checked>Hold
-								{% endwith %}
-							{% endwith %}
-							</label>
-						{% endif %}
-					</td>
-					<td>
-						{% if 'managerFeedback' in rec %}
-							{% with recIdString=rec.id|stringformat:"s" %}
-								{% with fbId="feedback-"|add:recIdString %}
-								<textarea class="form-control" rows="1" cols="10" name='{{ fbId }}' id='{{ fbId }}'></textarea>
-								{% endwith %}
-							{% endwith %}
-						{% endif %}
-					</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-	{% endfor %}
-	</table>
-	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
-</form>
+    {% if timesheetInfo %}
+        {% for eachInfo in timesheetInfo %}
+            <form id="approveTS" method="post" action="">
+            {% csrf_token %}
+                <table class="table table-condensed">
+                    <thead>
+                        {% with "member"|add:forloop.counter as member %}
+                            {{ member }}
+                            <input type="hidden" name="member" value="{{ eachInfo.member }}"> 
+                            <input type="hidden" name="wkstart" value="{{ eachInfo.wkstart }}"> 
+                            <input type="hidden" name="wkend" value="{{ eachInfo.wkend }}">
+                        {% endwith %} 
+                        <th>{{ eachInfo.member }}</th>
+                        <th class="text-right">{{ eachInfo.wkstart }} - {{ eachInfo.wkend }}</th>
+                        <th class="text-right">
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-default btn-sm"><input type="radio" name="approve"><b>Approve</b></label>
+                                <label class="btn btn-default btn-sm active"><input type="radio" name="hold" checked><b>Hold</b></label>
+                                <label class="btn btn-default btn-sm"><input type="radio" name="reject"><b>Reject</b></label> 
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> <b>View TS</b></button>
+                        </th>
+                    </thead>
+                    <tbody>
+                        {% if eachInfo.projects %}
+                            {% for eachProject in eachInfo.projects %}
+                                <tr>
+                                    <td>{{ eachProject.project }}</td>
+                                    <td class="text-right"><b>{{ eachProject.billed }}</b> Billed Hour(s)</td>
+                                    <td class="text-right"><b>{{ eachProject.idle }}</b> Idle Hour(s)</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        <tr>
+                            <td colspan="2" class="text-right">
+                                <h3><small><b>{{ eachInfo.np }}</b> Non-Project Hour(s)</small></h3>
+                            </td>
+                            <td class="text-right">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        {% endfor %}
+    {% endif %}
+    <div class="text-right">
+        <button type="submit" class="btn btn-info btn-md"><i class="fa fa-upload"></i> <b>Update Status</b></button>
+    </div>
 </div>
 {% endblock %}
