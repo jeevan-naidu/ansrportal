@@ -179,7 +179,11 @@
                         <td class="text-right">{{ eachData.planned }}</td> 
                         <td class="text-right">{{ eachData.actual }}</td> 
                         {% if not closed %} 
-                            <td class="text-right">{{ eachData.balance }}</td>
+                            {% if eachData.balance >= 0 %}
+                                <td class="text-right" style="color: green">{{ eachData.balance }}</td>
+                            {% else %}
+                                <td class="text-right" style="color: red">{{ eachData.balance }}</td>
+                            {% endif %}
                         {% else %} 
                             {% if eachData.deviation >= 0 %}
                                 <td class="text-right" style="color: green"><b>{{ eachData.deviation }} %</b></td> 
@@ -194,7 +198,11 @@
                         <td class="text-right"><h4><small><b>{{ plannedTotal }}</b></small></h4></td>
                         <td class="text-right"><h4><small><b>{{ actualTotal }}</b></small></h4></td>
                         {% if not closed %} 
-                            <td class="text-right"><h4><small><b>{{ balanceTotal }}</b></small></h4></td>
+                            {% if balanceTotal <= 0 %}
+                                <td class="text-right"><h4><small><b style="color: red">{{ balanceTotal }}</b></small></h4></td>
+                            {% else %}
+                                <td class="text-right"><h4><small><b style="color: green">{{ balanceTotal }}</b></small></h4></td>
+                            {% endif %}
                         {% else %} 
                             {% if deviation <= 0 %}
                                 <td class="text-right"><h4><small><b style="color: green">{{ deviation }} %</b></small></h4></td>
