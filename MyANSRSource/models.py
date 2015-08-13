@@ -10,6 +10,13 @@ TASKTYPEFLAG = (
     ('B', 'Billable'),
     ('I', 'Idle'),
 )
+FREQUENCY = (
+    ('M', 'Monthly'),
+    ('W', 'Weekly'),
+)
+
+days = ['monday', 'tuesday', 'wednesday', 'thursday',
+        'friday', 'saturday', 'sunday']
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z-]*$',
                               'Only alphanumeric characters are allowed.')
@@ -422,6 +429,21 @@ class ProjectChangeInfo(models.Model):
 class Report(models.Model):
     name = models.CharField(default=None, max_length=100, verbose_name="Name")
     notify = models.ManyToManyField(User, verbose_name="Notifier(s)")
+    freq = models.CharField(max_length=2,
+                            choices=FREQUENCY,
+                            verbose_name='Frequency',
+                            default='W')
+    day = models.CharField(max_length=2,
+                           choices=[
+                               (k, v) for k, v in enumerate(
+                                   [i for i in xrange(1, 31)])
+                           ],
+                           verbose_name='Day',
+                           default='0')
+    weekday = models.CharField(max_length=2,
+                               choices=[(k, v) for k, v in enumerate(days)],
+                               verbose_name='Weekday',
+                               default='0')
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
