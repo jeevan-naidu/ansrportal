@@ -107,10 +107,11 @@
                             <tr>
                         {% endfor %}
                     {% else %}
-                        <tr>
-                            <td>{{ eachTS.fullName }}</td>
-                            <td class="text-center" colspan="10"><small><b>No timesheet Submitted for this month</b></small></td>
-                        </tr>
+                        {% if eachTS.fullName %}
+                            <tr>
+                                <td colspan="11">{{ eachTS.fullName }} - <small><b>No timesheet submitted for this week</b></small></td>
+                            </tr>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
                     {% if data %}
