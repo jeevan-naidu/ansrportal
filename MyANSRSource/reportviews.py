@@ -547,15 +547,11 @@ def TeamMemberPerfomanceReport(request):
                             )
                             eachTS['MonthHours'] = 0
                             if len(eachTS['dates']):
-                                if eachTS['dates'][0]['end'] < startDate:
-                                    eachTS['MonthHours'] = 0
-                                else:
-                                    if eachTS['dates'][0]['start'] > startDate:
-                                        num = (endDate - eachTS['dates'][0]['start']).days
-                                    else:
-                                        num = (endDate - startDate).days
-                                    deno = (eachTS['dates'][0]['end'] - eachTS['dates'][0]['start']).days
-                                    eachTS['MonthHours'] = round(eachTS['dates'][0]['effort'] * (num / float(deno)), 2)
+                                mh = getPlannedMonthHours(startDate, endDate,
+                                                          eachTS['dates'][0]['start'],
+                                                          eachTS['dates'][0]['end'],
+                                                          eachTS['dates'][0]['effort'])
+                                eachTS['MonthHours'] = mh
                             ptm = TimeSheetEntry.objects.filter(
                                 wkend__lt=wkStrtWeek + timedelta(days=6),
                                 project__bu__id__in=reportbu,
@@ -1538,3 +1534,18 @@ def getAvgProd(request, ts, orderbyList):
                 total += v
             eachRec['avg'] = round((total / 7), 2)
     return newTs
+
+
+def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
+    if Eend < Rstart:
+        return 0
+    else:
+        if Estart > Rstart:
+            num = (Rend - Estart).days
+        else:
+            num = (Rend - Rstart).days
+        deno = (Eend - Estart).days
+        if num > deno:
+            return effort
+        else:
+            return round(effort * (num / float(deno)), 2)
