@@ -178,7 +178,7 @@ def Timesheet(request):
                     ).delete()
                 else:
                     for holiday in weekHolidays:
-                        holidayDay = '{0}H'.format(
+                        holidayDay = u'{0}H'.format(
                             holiday['date'].strftime('%A').lower()
                         )
                         if timesheet.cleaned_data[holidayDay] > 0:
@@ -254,9 +254,9 @@ def Timesheet(request):
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
             elif ('save' not in request.POST) and (
-                weekTotal < weekTotalValidate):
+                    weekTotal < weekTotalValidate):
                 messages.error(request,
-                               'Your total timesheet activity for \
+                               u'Your total timesheet activity for \
                                this week is below {0} hours'.format(
                     weekTotalValidate))
             elif (weekTotal > weekTotalExtra) | \
@@ -466,7 +466,8 @@ def Timesheet(request):
         if len(tsContent):
             for eachContent in tsContent:
                 if 'project' in eachContent:
-                    eachContent['projectType'] = eachContent['project'].projectType.code
+                    eachContent['projectType'] = eachContent[
+                        'project'].projectType.code
 
         # Constructing status of timesheet
 
@@ -505,7 +506,8 @@ def Timesheet(request):
         else:
             extra = 1
             if hasattr(request.user, 'employee'):
-                defaulLocation = [{'location': request.user.employee.location.id}]
+                defaulLocation = [
+                    {'location': request.user.employee.location.id}]
             else:
                 defaulLocation = [{'location': None}]
             messages.success(request, 'Please enter your timesheet for \
@@ -683,18 +685,18 @@ def renderTimesheet(request, data):
             'friday', 'saturday', 'sunday']
     d = {}
     for eachDay in days:
-        newK = '{0}Total'.format(eachDay)
+        newK = u'{0}Total'.format(eachDay)
         d[newK] = 0
         if 'atErrorList' not in data:
             if len(data['atFormList']):
                 for eachData in data['atFormList']:
-                    k = 'activity_{0}'.format(eachDay)
+                    k = u'activity_{0}'.format(eachDay)
                     if k in eachData:
                         d[newK] += eachData[k]
         if 'tsErrorList' not in data:
             if len(data['tsFormList']):
                 for eachData in data['tsFormList']:
-                    k = '{0}H'.format(eachDay)
+                    k = u'{0}H'.format(eachDay)
                     if k in eachData:
                         d[newK] += eachData[k]
     tsform = TimesheetFormset(request.user)
@@ -739,9 +741,9 @@ def renderTimesheet(request, data):
         for eachObj in attendanceObj:
             if eachObj.swipe_out is not None or eachObj.swipe_in is not None:
                 timediff = eachObj.swipe_out - eachObj.swipe_in
-                atttime = "{0}:{1}".format(timediff.seconds // 3600,
-                                           (timediff.seconds % 3600) // 60)
-                attendance['{0}'.format(eachObj.attdate.weekday())] = atttime
+                atttime = u"{0}:{1}".format(timediff.seconds // 3600,
+                                            (timediff.seconds % 3600) // 60)
+                attendance[u'{0}'.format(eachObj.attdate.weekday())] = atttime
 
         attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
 
@@ -1073,7 +1075,7 @@ def checkUser(userName, password, request, form):
                     else:
                         # We have an unknow group
                         logger.error(
-                            'User {0} permission details {1} group perms'.format(
+                            u'User {0} permission details {1} group perms'.format(
                                 user.username,
                                 user.get_all_permissions(),
                                 user.get_group_permissions()))
@@ -1084,7 +1086,7 @@ def checkUser(userName, password, request, form):
                         return render(request, 'MyANSRSource/welcome.html', {})
                 else:
                     logger.error(
-                        'User {0} has no employee data'.format(
+                        u'User {0} has no employee data'.format(
                             user.username)
                     )
                     senderEmail = settings.NEW_JOINEE_NOTIFIERS
@@ -1316,8 +1318,8 @@ class ChangeProjectWizard(SessionWizardView):
                 'projectId'
                 )[0]
             totalEffort = currentProject['plannedEffort']
-            projectName = "{1} : {0}".format(currentProject['name'],
-                                             currentProject['projectId'])
+            projectName = u"{1} : {0}".format(currentProject['name'],
+                                              currentProject['projectId'])
             context.update({'totalEffort': totalEffort,
                             'projectName': projectName})
         return context
@@ -1389,7 +1391,6 @@ def UpdateProjectInfo(request, newInfo):
         pru.endDate = newInfo[1]['endDate']
         pru.save()
 
-
         pci = ProjectChangeInfo()
         pci.project = pru
         pci.reason = newInfo[1]['reason']
@@ -1404,7 +1405,7 @@ def UpdateProjectInfo(request, newInfo):
         pci.save()
 
         # We need the Primary key to create the CRId
-        pci.crId = "CR-{0}".format(pci.id)
+        pci.crId = u"CR-{0}".format(pci.id)
         pci.save()
 
         return {'crId': pci.crId}
@@ -1592,7 +1593,7 @@ class ManageTeamWizard(SessionWizardView):
                                                   'plannedEffort', 'rate'
                                                   )
             else:
-                logger.error("Project Id : {0}, Request: {1},".format(
+                logger.error(u"Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
         return self.initial_dict.get(step, currentProject)
 
@@ -1792,7 +1793,7 @@ def saveProject(request):
                 pk=int(request.POST.get('book'))
             )
 
-            projectIdPrefix = "{0}-{1}-{2}".format(
+            projectIdPrefix = u"{0}-{1}-{2}".format(
                 pr.customer.customerCode,
                 datetime.now().year,
                 str(pr.customer.seqNumber).zfill(3)

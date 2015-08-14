@@ -22,7 +22,7 @@ class Command(BaseCommand):
         fileName = fileName.replace(' ', '_')
         currentTime = datetime.now().strftime("%A, %d %B %Y %I:%M%p")
 
-        bkCmd = 'mysqldump --log-error={5}/{6}.log --port={0} --host={1} --user={2} --password={3} {4} | gzip > \
+        bkCmd = u'mysqldump --log-error={5}/{6}.log --port={0} --host={1} --user={2} --password={3} {4} | gzip > \
             {5}/{6}.sql.gz'.format(port,
                                    host,
                                    userName,
@@ -35,9 +35,9 @@ class Command(BaseCommand):
 
         if status == 0:
             logging.info(
-                'All tables in DB are backedup on {0}'.format(currentTime))
+                u'All tables in DB are backedup on {0}'.format(currentTime))
         else:
             logging.error(
-                'DB backup failed on {0}, due to {1}'.format(
+                u'DB backup failed on {0}, due to {1}'.format(
                     currentTime,
                     status))
