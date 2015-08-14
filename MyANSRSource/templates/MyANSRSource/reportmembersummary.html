@@ -77,7 +77,7 @@
                 </tr>
             {% elif fresh == 0 %}
                 <tr>
-                    <td colspan="11" class="text-center"><h4><small><b>No reports found for this timeframe</b></small></h4></td>
+                    <td colspan="11" class="text-center"><h4><small><b>No reports found for this period</b></small></h4></td>
                 </tr>
             {% else %}
                 {% for eachTS in data %}
@@ -108,7 +108,7 @@
                                         <td class="text-right">{{ eachDate.effort }}</td>
                                     {% endfor %}
                                 {% endif %}
-                                {% if eachData.MonthHours == -0.0 %}
+                                {% if eachData.MonthHours < 0 %}
                                     <td class="text-right">0</td>
                                 {% else %}
                                     <td class="text-right">{{ eachData.MonthHours }}</td>
@@ -121,7 +121,7 @@
                     {% else %}
                         {% if eachTS.fullName %}
                             <tr>
-                                <td colspan="11">{{ eachTS.fullName }} - <small><b>No timesheet submitted for this timeframe</b></small></td>
+                                <td colspan="11">{{ eachTS.fullName }} - <small><b>No timesheet submitted for this period</b></small></td>
                             </tr>
                         {% endif %}
                     {% endif %}
