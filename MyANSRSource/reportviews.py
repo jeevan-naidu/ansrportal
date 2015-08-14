@@ -1539,6 +1539,8 @@ def getAvgProd(request, ts, orderbyList):
 def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
     if Eend < Rstart:
         return 0
+    elif Estart > Rend:
+        return 0
     else:
         if Estart > Rstart:
             num = (Rend - Estart).days
