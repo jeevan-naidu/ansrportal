@@ -123,7 +123,6 @@ def SingleTeamMemberReport(request):
                                            reportData.cleaned_data['member'],
                                            reportData.cleaned_data['endDate'],
                                            'End', valuesList)
-
             weekStart = getDate(request,
                                 reportData.cleaned_data['startDate'],
                                 'Start')
@@ -623,13 +622,14 @@ def TeamMemberPerfomanceReport(request):
                             eachTS['ptd'] = eachTS['total'] + eachTS['ptm']
                 except:
                     eachUser['ts'] = []
+            totals['ptm'], totals['total'], totals['ptd'] = 0, 0, 0
+            totals['MonthHours'], totals['plannedTotal'] = 0, 0
             for eachUser in users:
                 if len(eachUser['ts']):
-                    totals['ptm'] = sum([eachRec['ptm'] for eachRec in eachUser['ts']])
-                    totals['total'] = sum([eachRec['total'] for eachRec in eachUser['ts']])
-                    totals['ptd'] = sum([eachRec['ptd'] for eachRec in eachUser['ts']])
-                    totals['MonthHours'] = sum([eachRec['MonthHours'] for eachRec in eachUser['ts']])
-                    totals['plannedTotal'] = 0
+                    totals['ptm'] += sum([eachRec['ptm'] for eachRec in eachUser['ts']])
+                    totals['total'] += sum([eachRec['total'] for eachRec in eachUser['ts']])
+                    totals['ptd'] += sum([eachRec['ptd'] for eachRec in eachUser['ts']])
+                    totals['MonthHours'] += sum([eachRec['MonthHours'] for eachRec in eachUser['ts']])
                     for eachTS in eachUser['ts']:
                         if len(eachTS['dates']):
                             totals['plannedTotal'] += sum([eachDate['effort'] for eachDate in eachTS['dates']])
@@ -1404,14 +1404,15 @@ def getUnwantedValue(request, member, date, label, valuesList):
                 extraData = getExtraValueForWeek(request, weekData,
                                                  dateWeekDay, 'Start')
         else:
-            dateWeekDay = 6 - dateWeekDay
-            wkendDate = date + timedelta(days=dateWeekDay)
+            dateWeekDay1 = 6 - dateWeekDay
+            wkendDate = date + timedelta(days=dateWeekDay1)
             weekData = getOneWeekData(request, member,
                                       wkendDate - timedelta(days=6),
                                       wkendDate, valuesList)
             if len(weekData):
                 extraData = getExtraValueForWeek(request, weekData,
-                                                 dateWeekDay, 'End')
+                                                 dateWeekDay + 1,
+                                                 'End')
     return extraData
 
 
