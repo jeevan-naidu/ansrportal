@@ -49,7 +49,7 @@
                     <td><b>
                             BU: {{ bu }}
                     </b></td>
-                    <td><b>Month: {{ month }}</b></td>
+                    <td class="text-center"><b>Month: {{ month }}</b></td>
                     <td class="text-right"><b>Year: {{ year }}</b></td>
                 </tr>
             </table>
@@ -95,8 +95,16 @@
                                 <td>{{ eachData.project__bu__name }}</td> 
                                 {% if eachData.dates %}
                                     {% for eachDate in eachData.dates %}
-                                        <td>{{ eachDate.start }}</td>
-                                        <td>{{ eachDate.end }}</td>
+                                        {% if eachDate.start %}
+                                            <td>{{ eachDate.start }}</td>
+                                        {% else %}
+                                            <td>&nbsp;</td>
+                                        {% endif %}
+                                        {% if eachDate.end %}
+                                            <td>{{ eachDate.end }}</td>
+                                        {% else %}
+                                            <td>&nbsp;</td>
+                                        {% endif %}
                                         <td class="text-right">{{ eachDate.effort }}</td>
                                     {% endfor %}
                                 {% endif %}

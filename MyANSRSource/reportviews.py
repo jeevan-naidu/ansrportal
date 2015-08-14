@@ -547,15 +547,15 @@ def TeamMemberPerfomanceReport(request):
                             )
                             eachTS['MonthHours'] = 0
                             if len(eachTS['dates']):
-                                rd = rdelta.relativedelta(
-                                    eachTS['dates'][0]['end'],
-                                    eachTS['dates'][0]['start']
-                                )
-                                if eachTS['dates'][0]['effort'] and \
-                                        rd.months:
-                                    eachTS['MonthHours'] = eachTS['dates'][0]['effort'] / rd.months
-                                if rd.months == 0:
-                                    eachTS['MonthHours'] = eachTS['dates'][0]['effort']
+                                if eachTS['dates'][0]['end'] < startDate:
+                                    eachTS['MonthHours'] = 0
+                                else:
+                                    if eachTS['dates'][0]['start'] > startDate:
+                                        num = (endDate - eachTS['dates'][0]['start']).days
+                                    else:
+                                        num = (endDate - startDate).days
+                                    deno = (eachTS['dates'][0]['end'] - eachTS['dates'][0]['start']).days
+                                    eachTS['MonthHours'] = round(eachTS['dates'][0]['effort'] * (num / float(deno)), 2)
                             ptm = TimeSheetEntry.objects.filter(
                                 wkend__lt=wkStrtWeek + timedelta(days=6),
                                 project__bu__id__in=reportbu,
