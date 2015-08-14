@@ -1110,7 +1110,9 @@ app.getSum = function($elements, $outputElement) {
                         }
 
                         // Get project norms
-                        $curProjectPopupNorm.text(app.norms + '  ' + app.curProjectUnitShort + '/DAY');
+                        if(app.norms > 0) {
+                            $curProjectPopupNorm.text(app.norms + '  ' + app.curProjectUnitShort + '/DAY');
+                        }
                     };
 
                     projectUnitViewToPopUp();
