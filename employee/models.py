@@ -117,7 +117,7 @@ class EmpAddress(models.Model):
     zipcode = models.CharField("Zip Code", max_length=10, blank=False)
 
     def __unicode__(self):
-        return '{0}, {1}, {2}, {3}, {4}'.format(
+        return u'{0}, {1}, {2}, {3}, {4}'.format(
             self.address1,
             self.address2,
             self.city,
@@ -151,7 +151,10 @@ class Employee(models.Model):
         choices=GENDER_CHOICES,
         blank=False)
     date_of_birthO = models.DateField("Official DOB", blank=False, default=None)
-    date_of_birthR = models.DateField("Alternate DOB", blank=False, default=None)
+    date_of_birthR = models.DateField(
+        "Alternate DOB",
+        blank=False,
+        default=None)
     # Can we make this a choice field?
     nationality = models.CharField("Nationality", max_length=30, blank=False)
     marital_status = models.CharField(
@@ -281,7 +284,7 @@ class Employee(models.Model):
         blank=True)
 
     def __unicode__(self):
-        return '{0}|{1},{2}'.format(
+        return u'{0}|{1},{2}'.format(
             self.employee_assigned_id,
             self.user.first_name,
             self.user.last_name)
@@ -330,7 +333,7 @@ class FamilyMember(models.Model):
         blank=False)
 
     def __unicode__(self):
-        return '{0} - {1}'.format(self.name, self.dob)
+        return u'{0} - {1}'.format(self.name, self.dob)
 
 
 class Education(models.Model):
@@ -360,7 +363,7 @@ class Education(models.Model):
         blank=False)
 
     def __unicode__(self):
-        return '{0}({4})-{3} / {1} to {2}'.format(
+        return u'{0}({4})-{3} / {1} to {2}'.format(
             self.name,
             self.from_date,
             self.to_date,

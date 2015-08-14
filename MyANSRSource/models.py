@@ -36,12 +36,7 @@ class Book(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        try:
-            return '{0}|{1}|{2}'.format(self.author, self.edition, self.name)
-        except:
-            logger.error(
-                'Exception when formatting book name.  Record #' + str(self.id))
-            return 'COULD NOT FORMAT BOOK NAME'
+        return u'{0}|{1}|{2}'.format(self.author, self.edition, self.name)
 
     class Meta:
         unique_together = ('name', 'edition', 'author', )
