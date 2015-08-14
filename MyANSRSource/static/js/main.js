@@ -1050,7 +1050,7 @@ app.getSum = function($elements, $outputElement) {
 
                 var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
                 popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0 / DAY</label></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input">0.0 Q/DAY</label></div>';
 
                 $dayPopoverBtn.popover({
                     trigger: 'click',
@@ -1110,7 +1110,7 @@ app.getSum = function($elements, $outputElement) {
                         }
 
                         // Get project norms
-                        $curProjectPopupNorm.text(app.norms + '/DAY');
+                        $curProjectPopupNorm.text(app.norms + '  ' + app.curProjectUnitShort + '/DAY');
                     };
 
                     projectUnitViewToPopUp();

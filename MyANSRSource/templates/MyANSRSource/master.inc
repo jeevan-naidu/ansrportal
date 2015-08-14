@@ -135,6 +135,6 @@
 			</nav>
 		</div><!-- End of Ansr Footer -->
       	</div>
-       <script src='{% static 'js/main.min.js' %}' type="text/javascript"></script>
+       <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
     </body>
 </html>
