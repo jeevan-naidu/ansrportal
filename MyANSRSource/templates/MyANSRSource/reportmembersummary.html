@@ -94,13 +94,13 @@
                                 <td>{{ eachData.project__bu__name }}</td> 
                                 {% if eachData.dates %}
                                     {% for eachDate in eachData.dates %}
-                                        {% if eachDate.start %}
-                                            <td>{{ eachDate.start }}</td>
+                                        {% if eachDate.startDate %}
+                                            <td>{{ eachDate.startDate }}</td>
                                         {% else %}
                                             <td>&nbsp;</td>
                                         {% endif %}
-                                        {% if eachDate.end %}
-                                            <td>{{ eachDate.end }}</td>
+                                        {% if eachDate.endDate %}
+                                            <td>{{ eachDate.endDate }}</td>
                                         {% else %}
                                             <td>&nbsp;</td>
                                         {% endif %}

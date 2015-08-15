@@ -554,16 +554,16 @@ def TeamMemberPerfomanceReport(request):
                             eachTS['dates'] = ProjectTeamMember.objects.filter(
                                 project__projectId=eachTS['project__projectId'],
                                 member__id=eachUser['id']
-                            ).values('project').annotate(
-                                start=Min('startDate'),
-                                end=Max('endDate'),
+                            ).values('project',
+                                     'startDate',
+                                     'endDate').annotate(
                                 effort=Sum('plannedEffort')
                             )
                             eachTS['MonthHours'] = 0
                             if len(eachTS['dates']):
                                 mh = getPlannedMonthHours(startDate, endDate,
-                                                          eachTS['dates'][0]['start'],
-                                                          eachTS['dates'][0]['end'],
+                                                          eachTS['dates'][0]['startDate'],
+                                                          eachTS['dates'][0]['endDate'],
                                                           eachTS['dates'][0]['effort'])
                                 eachTS['MonthHours'] = mh
                             ptm = TimeSheetEntry.objects.filter(
@@ -1337,8 +1337,8 @@ def generateMemSumContent(request, header, report, worksheet,
                 worksheet.write(row, 3, eachRec['project__customer__name'], content)
                 worksheet.write(row, 4, eachRec['project__bu__name'], content)
                 if len(eachRec['dates']):
-                    worksheet.write(row, 5, eachRec['dates'][0]['start'], dateformat)
-                    worksheet.write(row, 6, eachRec['dates'][0]['end'], dateformat)
+                    worksheet.write(row, 5, eachRec['dates'][0]['startDate'], dateformat)
+                    worksheet.write(row, 6, eachRec['dates'][0]['endDate'], dateformat)
                     worksheet.write(row, 7, eachRec['dates'][0]['effort'], content)
                 worksheet.write(row, 8, eachRec['MonthHours'], content)
                 worksheet.write(row, 9, eachRec['ptm'], content)
