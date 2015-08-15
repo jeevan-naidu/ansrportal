@@ -655,7 +655,7 @@ def TeamMemberPerfomanceReport(request):
                 'bu': reportData.cleaned_data['bu']
             }, user=request.user)
             if 'generate' in request.POST:
-                fileName = u'Project-Perfomance{0}_{1}.xlsx'.format(
+                fileName = u'Member-Perfomance{0}_{1}.xlsx'.format(
                     datetime.now().date(),
                     datetime.now().time()
                 )
@@ -677,7 +677,7 @@ def TeamMemberPerfomanceReport(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def ProjectPerfomanceReport(request):
-    fresh = 1,
+    fresh = 0,
     data = {}
     iidleTotal, iothersTotal, eidleTotal, eothersTotal = 0, 0, 0, 0
     form = UtilizationReportForm(user=request.user)
@@ -738,12 +738,30 @@ def ProjectPerfomanceReport(request):
                 ])
             data['external'] = externalData
             data['internal'] = internalData
-            fresh = 0
+            fresh = 1
             form = UtilizationReportForm(initial={
                 'month': reportData.cleaned_data['month'],
                 'year': reportData.cleaned_data['year'],
                 'bu': reportData.cleaned_data['bu']
             }, user=request.user)
+            if 'generate' in request.POST:
+                fileName = u'Project-Perfomance{0}_{1}.xlsx'.format(
+                    datetime.now().date(),
+                    datetime.now().time()
+                )
+                fileName = fileName.replace("  ", "_")
+                totals = [eothersTotal, iothersTotal, eidleTotal, iidleTotal]
+                sheetName = ['External', 'Internal']
+                heading = [
+                    ['Project Name', 'Project Type', 'BU', 'Customer Name',
+                     'Lead', 'Start Date', 'En Date', 'Value', 'Planned',
+                     'Billed', 'Idle'],
+                    ['Project Name', 'Project Type', 'BU', 'Customer Name',
+                     'Lead', 'Start Date', 'En Date', 'Value', 'Planned',
+                     'Billed', 'Idle']]
+                report = [externalData, internalData]
+                return generateExcel(request, report, sheetName,
+                                     heading, totals, fileName)
     return render(request,
                   'MyANSRSource/reportprojectsummary.html',
                   {'form': form, 'data': data, 'fresh': fresh, 'bu': buName,
@@ -1260,12 +1278,12 @@ def generateExcel(request, report, sheetName, heading, grdTotal, fileName):
                     generateProjectContent(request, header, report[counter],
                                            eachName, content, alp, grdTotal,
                                            dateformat, reportDateformat)
-                elif sheetName[0] == '':
+                elif sheetName[0] == 'External':
                     generateSheetHeader(request, heading[counter], header,
                                         alp, eachName)
                     generateProjectPerfContent(request, header, report[counter],
                                                eachName, content, alp, grdTotal,
-                                               dateformat, reportDateformat)
+                                               dateformat)
                 counter += 1
         workbook.close()
         return generateDownload(request, fileName)
@@ -1425,34 +1443,35 @@ def generateReportFooter(request, worksheet, alpValue, rowValue, cFormat, msg):
 
 @login_required
 def generateProjectPerfContent(request, header, report, worksheet,
-                               content, alp, grdTotal):
+                               content, alp, grdTotal, dateFormat):
     row = 1
     for eachRec in report:
-        worksheet.write(row, 0, eachRec['project__projectId'], content)
-        worksheet.write(row, 1, eachRec['project__name'], content)
-        worksheet.write(row, 2, eachRec['project__book__name'], content)
-        worksheet.write(row, 3, eachRec['chapter__name'], content)
-        if eachRec['activity__name'] != '':
-            worksheet.write(row, 4, eachRec['activity__name'], content)
+        worksheet.write(row, 0, eachRec['pName'], content)
+        worksheet.write(row, 1, eachRec['type'], content)
+        worksheet.write(row, 2, eachRec['bu'], content)
+        worksheet.write(row, 3, eachRec['customer'], content)
+        if len(eachRec['pm']):
+            lead = ",".join(eachRec['pm'])
         else:
-            worksheet.write(row, 4, eachRec['task__name'], content)
-        worksheet.write(row, 5, eachRec['totalHours'], content)
-        worksheet.write(row, 6, eachRec['totalValue'], content)
-        worksheet.write(row, 7, eachRec['avgProd'], content)
-        worksheet.write(row, 8, eachRec['minProd'], content)
-        worksheet.write(row, 9, eachRec['maxProd'], content)
-        worksheet.write(row, 10, eachRec['medianProd'], content)
-        worksheet.write(row, 11, eachRec['project__maxProductivityUnits'],
-                        content)
-        if eachRec['hold']:
-            worksheet.write(row, 12, 'Not Submitted', content)
-        else:
-            worksheet.write(row, 12, 'Submitted', content)
+            lead = ''
+        worksheet.write(row, 4, lead, content)
+        worksheet.write(row, 5, eachRec['startDate'], dateFormat)
+        worksheet.write(row, 6, eachRec['endDate'], dateFormat)
+        worksheet.write(row, 7, eachRec['value'], content)
+        worksheet.write(row, 8, eachRec['pEffort'], content)
+        worksheet.write(row, 9, eachRec['billed'], content)
+        worksheet.write(row, 10, eachRec['idle'], content)
         row += 1
-    cellRange = u'A{1}:{0}{1}'.format(alp[12], row+1)
+    cellRange = u'A{1}:{0}{1}'.format(alp[10], row+1)
     worksheet.merge_range(cellRange, '', header)
     totalCell = u'A{0}'.format(row+1)
-    total = u"Total Hour(s) : {0}".format(grdTotal)
+    total = u"External Idle Hour(s) : {0}, \
+        External Billed Hour(s) : {1} \
+        Internal Idle Hour(s) : {2} \
+        Internal Billed Hour(s) : {3}".format(
+            grdTotal[2], grdTotal[0],
+            grdTotal[3], grdTotal[1]
+        )
     worksheet.write(totalCell, total, header)
 
 
