@@ -301,6 +301,7 @@ def SingleProjectReport(request):
             for eachTaskName in taskNames:
                 d = {}
                 memberData = TimeSheetEntry.objects.filter(
+                    project=cProject,
                     task__name=eachTaskName['task__name']
                 ).values(
                     'teamMember__first_name',
