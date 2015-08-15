@@ -1246,7 +1246,7 @@ def generateExcel(request, report, sheetName, heading, grdTotal, fileName):
             generateSheetHeader(request, heading, header, alp, worksheet)
             if sheetName[0] == 'Team-Member Perfomance Summary':
                 generateMemSumContent(request, header, report, worksheet, content,
-                                      alp, grdTotal)
+                                      alp, grdTotal, dateformat)
             else:
                 generateMemberContent(request, header, report, worksheet, content,
                                       alp, grdTotal)
@@ -1318,33 +1318,41 @@ def generateMemberContent(request, header, report, worksheet,
 
 @login_required
 def generateMemSumContent(request, header, report, worksheet,
-                          content, alp, grdTotal):
+                          content, alp, grdTotal, dateformat):
     row = 1
     for eachData in report:
-        worksheet.write(row, 0, eachData['fullName'], content)
+        if 'fullName' in eachData:
+            worksheet.write(row, 0, eachData['fullName'], content)
+        else:
+            worksheet.write(row, 0, '', content)
         if len(eachData['ts']):
             for eachRec in eachData['ts']:
-                print eachRec['leads']
                 worksheet.write(row, 1, eachRec['project__name'], content)
                 leads = [eachLead['user__username'] for eachLead in eachRec['leads']]
                 if len(leads):
                     lead = ",".join(leads)
                 else:
                     lead = ''
-                worksheet.write(row, 2, eachRec['lead'], content)
+                worksheet.write(row, 2, lead, content)
                 worksheet.write(row, 3, eachRec['project__customer__name'], content)
                 worksheet.write(row, 4, eachRec['project__bu__name'], content)
                 if len(eachRec['dates']):
-                    worksheet.write(row, 5, eachRec['dates'][0]['startDate'], content)
-                    worksheet.write(row, 6, eachRec['dates'][0]['endDate'], content)
+                    worksheet.write(row, 5, eachRec['dates'][0]['start'], dateformat)
+                    worksheet.write(row, 6, eachRec['dates'][0]['end'], dateformat)
                     worksheet.write(row, 7, eachRec['dates'][0]['effort'], content)
                 worksheet.write(row, 8, eachRec['MonthHours'], content)
-                worksheet.write(row, 9, eachec['ptm'], content)
-                worksheet.write(row, 10, eachRec['totals'], content)
+                worksheet.write(row, 9, eachRec['ptm'], content)
+                worksheet.write(row, 10, eachRec['total'], content)
                 worksheet.write(row, 11, eachRec['ptd'], content)
         else:
             worksheet.write(row, 1, 'No Timesheet for this period', content)
-    print grdTotal
+        row += 1
+    msg0 =  u'Total PTD' + str(grdTotal['ptd'])
+    msg1 =  u'Total PTM' + str(grdTotal['ptm'])
+    msg2 =  u'Total Billed Hours For Month' + str(grdTotal['total'])
+    msg3 =  u'Total Planned Hours For Month' + str(grdTotal['MonthHours'])
+    msg4 =  u'Total Planned Hours' + str(grdTotal['plannedTotal'])
+    msg = msg0 + '  ' + msg1 + '  ' + msg2 + '  ' + msg3 + '  ' + msg4
     generateReportFooter(request, worksheet, alp[12], row+1,
                          header, msg)
 
