@@ -475,7 +475,7 @@ def SingleProjectReport(request):
 @permission_required('MyANSRSource.create_project')
 def TeamMemberPerfomanceReport(request):
     # common variable initilization
-    users, totals = {}, {}
+    users, totals, fresh = {}, {}, 0
     buName, currReportMonth, reportYear = '', '', ''
     valuesList = ['project__customer__name', 'project__projectId',
                   'project__name', 'project__projectType__description',
@@ -519,7 +519,10 @@ def TeamMemberPerfomanceReport(request):
                 'first_name',
                 'last_name'
                 ).order_by('first_name', 'last_name')
+            if len(users) == 0:
+                fresh = 2
             for eachUser in users:
+                fresh = 1
                 try:
                     emp = Employee.objects.get(user__id=eachUser['id'])
                     eachUser['fullName'] = u"{0} {1}({2})".format(
@@ -651,11 +654,24 @@ def TeamMemberPerfomanceReport(request):
                 'year': reportData.cleaned_data['year'],
                 'bu': reportData.cleaned_data['bu']
             }, user=request.user)
+            if 'generate' in request.POST:
+                fileName = u'Project-Perfomance{0}_{1}.xlsx'.format(
+                    datetime.now().date(),
+                    datetime.now().time()
+                )
+                fileName = fileName.replace("  ", "_")
+                sheetName = ['Team-Member Perfomance Summary']
+                heading = ['Member Name', 'Project Name', 'Lead(s)', 'Customer Name',
+                           'BU', 'StartDate', 'EndDate', 'PlannedHours',
+                           'Planned Hours for Month', 'PTM Billed Hours',
+                           'Billed Hours for Month', 'PTD']
+                return generateExcel(request, users, sheetName,
+                                     heading, totals, fileName)
     return render(request,
                   'MyANSRSource/reportmembersummary.html',
                   {'form': form, 'data': users, 'bu': buName,
                    'month': currReportMonth, 'year': reportYear,
-                   'totals': totals})
+                   'totals': totals, 'fresh': fresh})
 
 
 @login_required
@@ -779,13 +795,13 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             Q(wkstart__gte=start),
             Q(wkend__lte=end)
         ).values('project').annotate(
-            monday=Sum('mondayQ'),
-            tuesday=Sum('tuesdayQ'),
-            wednesday=Sum('wednesdayQ'),
-            thursday=Sum('thursdayQ'),
-            friday=Sum('fridayQ'),
-            saturday=Sum('saturdayQ'),
-            sunday=Sum('sundayQ')
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
         )
         startData = TimeSheetEntry.objects.filter(
             ~Q(task__taskType='I'),
@@ -793,13 +809,13 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             Q(wkstart=start),
             Q(wkend=start + timedelta(days=6))
         ).values('project').annotate(
-            monday=Sum('mondayQ'),
-            tuesday=Sum('tuesdayQ'),
-            wednesday=Sum('wednesdayQ'),
-            thursday=Sum('thursdayQ'),
-            friday=Sum('fridayQ'),
-            saturday=Sum('saturdayQ'),
-            sunday=Sum('sundayQ')
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
         )
         endData = TimeSheetEntry.objects.filter(
             ~Q(task__taskType='I'),
@@ -807,13 +823,13 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             Q(wkstart=end - timedelta(days=6)),
             Q(wkend=end)
         ).values('project').annotate(
-            monday=Sum('mondayQ'),
-            tuesday=Sum('tuesdayQ'),
-            wednesday=Sum('wednesdayQ'),
-            thursday=Sum('thursdayQ'),
-            friday=Sum('fridayQ'),
-            saturday=Sum('saturdayQ'),
-            sunday=Sum('sundayQ')
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
         )
     else:
         allData = TimeSheetEntry.objects.filter(
@@ -822,13 +838,13 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             Q(wkstart__gte=start),
             Q(wkend__lte=end)
         ).values('project').annotate(
-            monday=Sum('mondayQ'),
-            tuesday=Sum('tuesdayQ'),
-            wednesday=Sum('wednesdayQ'),
-            thursday=Sum('thursdayQ'),
-            friday=Sum('fridayQ'),
-            saturday=Sum('saturdayQ'),
-            sunday=Sum('sundayQ')
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
         )
         startData = TimeSheetEntry.objects.filter(
             Q(task__taskType='I'),
@@ -836,13 +852,13 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             Q(wkstart=start),
             Q(wkend=start + timedelta(days=6))
         ).values('project').annotate(
-            monday=Sum('mondayQ'),
-            tuesday=Sum('tuesdayQ'),
-            wednesday=Sum('wednesdayQ'),
-            thursday=Sum('thursdayQ'),
-            friday=Sum('fridayQ'),
-            saturday=Sum('saturdayQ'),
-            sunday=Sum('sundayQ')
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
         )
         endData = TimeSheetEntry.objects.filter(
             Q(task__taskType='I'),
@@ -850,13 +866,13 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             Q(wkstart=end - timedelta(days=6)),
             Q(wkend=end)
         ).values('project').annotate(
-            monday=Sum('mondayQ'),
-            tuesday=Sum('tuesdayQ'),
-            wednesday=Sum('wednesdayQ'),
-            thursday=Sum('thursdayQ'),
-            friday=Sum('fridayQ'),
-            saturday=Sum('saturdayQ'),
-            sunday=Sum('sundayQ')
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
         )
     finalTotal = 0
     if len(allData):
@@ -1228,8 +1244,12 @@ def generateExcel(request, report, sheetName, heading, grdTotal, fileName):
         if len(sheetName) == 1:
             worksheet = workbook.add_worksheet(sheetName[0])
             generateSheetHeader(request, heading, header, alp, worksheet)
-            generateMemberContent(request, header, report, worksheet, content,
-                                  alp, grdTotal)
+            if sheetName[0] == 'Team-Member Perfomance Summary':
+                generateMemSumContent(request, header, report, worksheet, content,
+                                      alp, grdTotal)
+            else:
+                generateMemberContent(request, header, report, worksheet, content,
+                                      alp, grdTotal)
         else:
             counter = 0
             for eachName in sheetName:
@@ -1292,6 +1312,39 @@ def generateMemberContent(request, header, report, worksheet,
     msg0 = u"Total Non-Project Hours(s) : {0}".format(grdTotal['nTotal'])
     msg1 = u"Total Project Hours(s) : {0}".format(grdTotal['pTotal'])
     msg = msg0 + '  ' + msg1
+    generateReportFooter(request, worksheet, alp[12], row+1,
+                         header, msg)
+
+
+@login_required
+def generateMemSumContent(request, header, report, worksheet,
+                          content, alp, grdTotal):
+    row = 1
+    for eachData in report:
+        worksheet.write(row, 0, eachData['fullName'], content)
+        if len(eachData['ts']):
+            for eachRec in eachData['ts']:
+                print eachRec['leads']
+                worksheet.write(row, 1, eachRec['project__name'], content)
+                leads = [eachLead['user__username'] for eachLead in eachRec['leads']]
+                if len(leads):
+                    lead = ",".join(leads)
+                else:
+                    lead = ''
+                worksheet.write(row, 2, eachRec['lead'], content)
+                worksheet.write(row, 3, eachRec['project__customer__name'], content)
+                worksheet.write(row, 4, eachRec['project__bu__name'], content)
+                if len(eachRec['dates']):
+                    worksheet.write(row, 5, eachRec['dates'][0]['startDate'], content)
+                    worksheet.write(row, 6, eachRec['dates'][0]['endDate'], content)
+                    worksheet.write(row, 7, eachRec['dates'][0]['effort'], content)
+                worksheet.write(row, 8, eachRec['MonthHours'], content)
+                worksheet.write(row, 9, eachec['ptm'], content)
+                worksheet.write(row, 10, eachRec['totals'], content)
+                worksheet.write(row, 11, eachRec['ptd'], content)
+        else:
+            worksheet.write(row, 1, 'No Timesheet for this period', content)
+    print grdTotal
     generateReportFooter(request, worksheet, alp[12], row+1,
                          header, msg)
 
