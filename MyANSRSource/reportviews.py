@@ -557,15 +557,13 @@ def TeamMemberPerfomanceReport(request):
                                 member__id=eachUser['id']
                             ).values('project',
                                      'startDate',
-                                     'endDate').annotate(
-                                effort=Sum('plannedEffort')
-                            )
+                                     'endDate', 'plannedEffort')
                             eachTS['MonthHours'] = 0
                             if len(eachTS['dates']):
                                 mh = getPlannedMonthHours(startDate, endDate,
                                                           eachTS['dates'][0]['startDate'],
                                                           eachTS['dates'][0]['endDate'],
-                                                          eachTS['dates'][0]['effort'])
+                                                          eachTS['dates'][0]['plannedEffort'])
                                 eachTS['MonthHours'] = mh
                             ptm = TimeSheetEntry.objects.filter(
                                 wkend__lt=wkStrtWeek + timedelta(days=6),
@@ -649,7 +647,7 @@ def TeamMemberPerfomanceReport(request):
                     for eachTS in eachUser['ts']:
                         if len(eachTS['dates']):
                             totals[
-                                'plannedTotal'] += sum([eachDate['effort'] for eachDate in eachTS['dates']])
+                                'plannedTotal'] += sum([eachDate['plannedEffort'] for eachDate in eachTS['dates']])
             form = UtilizationReportForm(initial={
                 'month': reportData.cleaned_data['month'],
                 'year': reportData.cleaned_data['year'],
@@ -1603,8 +1601,8 @@ def getMinProd(request, ts, orderbyList):
         for k, v in eachRec.iteritems():
             if k in days:
                 l.append(v)
-            if len(l):
-                eachRec['min'] = min(l)
+        if len(l):
+            eachRec['min'] = min(l)
     return newTs
 
 
@@ -1625,8 +1623,8 @@ def getMaxProd(request, ts, orderbyList):
         for k, v in eachRec.iteritems():
             if k in days:
                 l.append(v)
-            if len(l):
-                eachRec['max'] = max(l)
+        if len(l):
+            eachRec['max'] = max(l)
     return newTs
 
 
@@ -1647,7 +1645,7 @@ def getAvgProd(request, ts, orderbyList):
         for k, v in eachRec.iteritems():
             if k in days:
                 total += v
-            eachRec['avg'] = round((total / 7), 2)
+        eachRec['avg'] = round((total / 7), 2)
     return newTs
 
 
