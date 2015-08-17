@@ -18,18 +18,19 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if os.path.exists(settings.FEED_DIR):
-            file_pattern = "/*.{0}".format(settings.FEED_EXT)
+            file_pattern = u"/*.{0}".format(settings.FEED_EXT)
 
             if glob.glob(settings.FEED_DIR + file_pattern):
 
                 # Reading each file and pushing record to db
                 for eachFile in glob.glob(settings.FEED_DIR + file_pattern):
                     with open(eachFile, 'r') as csvfile:
-                        filereader = csv.reader(csvfile,
-                                                delimiter=settings.FEED_DELIMITER)
+                        filereader = csv.reader(
+                            csvfile,
+                            delimiter=settings.FEED_DELIMITER)
 
                         logger.info(
-                            "Processing file {0}".format(eachFile))
+                            u"Processing file {0}".format(eachFile))
 
                         # Validate data and insert to db
                         if len(args) and args[0]:
@@ -39,23 +40,25 @@ class Command(BaseCommand):
 
                         feedData(filereader, eachFile, everyRec)
 
-                        logger.info("Processed file {0}".format(eachFile))
+                        logger.info(u"Processed file {0}".format(eachFile))
 
                         # Move backed up feed to a new folder
                         if os.path.exists(settings.FEED_SUCCESS_DIR) is False:
-                            os.system('mkdir {0}'.format(
+                            os.system(u'mkdir {0}'.format(
                                 settings.FEED_SUCCESS_DIR))
 
-                        os.system('mv {0} {1}'.format(eachFile,
-                                                      settings.FEED_SUCCESS_DIR))
+                        os.system(
+                            u'mv {0} {1}'.format(
+                                eachFile,
+                                settings.FEED_SUCCESS_DIR))
                         logger.info(
-                            "Moved file {0} to processed directory".
+                            u"Moved file {0} to processed directory".
                             format(eachFile))
             else:
                 logger.info("No more files to process.")
         else:
             # No Such backup folder found
-            logger.error("Directory {0} missing.".format(
+            logger.error(u"Directory {0} missing.".format(
                 settings.FEED_DIR))
 
 
@@ -77,7 +80,7 @@ def feedData(filereader, filename, everyRec):
         if checkRow(eachRow):
 
             if row % everyRec == 0:
-                print "Processed {0} records".format(row)
+                print u"Processed {0} records".format(row)
 
             # Converting data to relevant types
             try:
@@ -85,7 +88,7 @@ def feedData(filereader, filename, everyRec):
                                             '%d-%m-%Y').date()
             except ValueError:
                 attdate = ''
-                logger.error("Attendance Date field data error: {0} |\
+                logger.error(u"Attendance Date field data error: {0} |\
                              File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
 
@@ -100,8 +103,8 @@ def feedData(filereader, filename, everyRec):
                         swipe_in = ''
             except ValueError:
                 swipe_in = ''
-                logger.error("In-time field data error: {0} |\
-                             File: {1}  | Line # : {2}".format(eachRow, filename, row)
+                logger.error(u"""In-time field data error: {0} |
+                             File: {1}  | Line # : {2}""".format(eachRow, filename, row)
                              )
 
             try:
@@ -115,7 +118,7 @@ def feedData(filereader, filename, everyRec):
                         swipe_out = ''
             except ValueError:
                 swipe_out = ''
-                logger.error("Out-time field data error: {0} |\
+                logger.error(u"Out-time field data error: {0} |\
                              File: {1}  | Line # : {2}".format(eachRow, filename, row)
                              )
 
@@ -131,12 +134,12 @@ def feedData(filereader, filename, everyRec):
 
             # To handle the unique key exception
             except IntegrityError:
-                logger.error("Intime field error in data : {0} |\
+                logger.error(u"Intime field error in data : {0} |\
                              File: {1}  | Line # : {2}".
                              format(eachRow, filename, row)
                              )
         else:
-            logger.error("{0} is corrupted on line {1}".format(filename, row))
+            logger.error(u"{0} is corrupted on line {1}".format(filename, row))
             break
 
 
@@ -150,7 +153,7 @@ def insertToDb(employee, attdate, swipe_in, swipe_out, filename, row):
     except Employee.DoesNotExist:
         emp = None
         logger.error(
-            "Emp.ID: {0} Not in myansrsource system. \
+            u"Emp.ID: {0} Not in myansrsource system. \
             Found in file : {1} | line {2}".format(
             employee,
             filename,
@@ -171,7 +174,7 @@ def insertToDb(employee, attdate, swipe_in, swipe_out, filename, row):
 
     # To catch any validation errors if any
     except ValidationError as e:
-        logger.error("Validation Error {2} processing \
+        logger.error(u"Validation Error {2} processing \
                      employee {0} in {1}  | Line #: {3}".
                      format(employee, filename, e, row)
                      )

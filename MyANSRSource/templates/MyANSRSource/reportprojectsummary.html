@@ -28,9 +28,8 @@
                         Get Report
                     </button></td>
                     <td class="col-lg-1">
-                        {% if fresh != 0 and fresh != 1 %}
-                            <input type="hidden" value="export" name="status" />
-                            <button type="submit" class="btn btn-success">
+                        {% if fresh == 1 %}
+                            <button type="submit" class="btn btn-success" name="generate">
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
                         {% endif %}
@@ -50,7 +49,7 @@
                     <td><b>
                             BU: {{ bu }}
                     </b></td>
-                    <td><b>Month: {{ month }}</b></td>
+                    <td class="text-center"><b>Month: {{ month }}</b></td>
                     <td class="text-right"><b>Year: {{ year }}</b></td>
                 </tr>
             </table>

@@ -106,7 +106,7 @@ class OfficeLocation(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.name + ' - ' + self.city
+        return u'{0} - {1}'.format(self.name, self.city)
 
 
 class Training(models.Model):
@@ -170,7 +170,7 @@ class Division(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.department.name + ' - ' + self.name
+        return u'{0} - {1}'.format(self.department.name, self.name)
 
 
 class Holiday(models.Model):
