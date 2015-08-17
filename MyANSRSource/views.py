@@ -1972,7 +1972,9 @@ def GetTasks(request, projectid):
     try:
         tasks = Task.objects.filter(
             projectType=Project.objects.get(pk=projectid).projectType
-        ).values('code', 'name', 'id', 'taskType')
+        ).values('code', 'name', 'id', 'taskType', 'norm')
+        for eachRec in tasks:
+            eachRec['norm'] = float(eachRec['norm'])
         data = {'data': list(tasks)}
     except Task.DoesNotExist:
         data = {'data': list()}
