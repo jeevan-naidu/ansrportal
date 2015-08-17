@@ -23,13 +23,12 @@
                         <td>{{ field }}</td> 
                     {% endfor %}
                     <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="submit">
-                        <input type="hidden" value="generate" name="status" />
                         {% fontawesome_icon 'line-chart' large=True %}
                         Get Report
                     </button></td>
                     <td class="col-lg-1">
                         {% if fresh == 1 %}
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success" name="generate">
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
                         {% endif %}
@@ -49,7 +48,7 @@
                     <td><b>
                             BU: {{ bu }}
                     </b></td>
-                    <td><b>Month: {{ month }}</b></td>
+                    <td class="text-center"><b>Month: {{ month }}</b></td>
                     <td class="text-right"><b>Year: {{ year }}</b></td>
                 </tr>
             </table>
@@ -71,13 +70,13 @@
                 <th class="text-right">PTD</th> 
             </tr>
             </thead>
-            {% if fresh == 1 %}
+            {% if fresh == 0 %}
                 <tr>
                     <td colspan="11" class="text-center"><h4><small><b>Please select a member and time frame to get the report</b></small></h4></td>
                 </tr>
-            {% elif fresh == 0 %}
+            {% elif fresh == 2 %}
                 <tr>
-                    <td colspan="11" class="text-center"><h4><small><b>No reports found for this timeframe</b></small></h4></td>
+                    <td colspan="11" class="text-center"><h4><small><b>No reports found for this period</b></small></h4></td>
                 </tr>
             {% else %}
                 {% for eachTS in data %}
@@ -95,22 +94,35 @@
                                 <td>{{ eachData.project__bu__name }}</td> 
                                 {% if eachData.dates %}
                                     {% for eachDate in eachData.dates %}
-                                        <td>{{ eachDate.start }}</td>
-                                        <td>{{ eachDate.end }}</td>
-                                        <td class="text-right">{{ eachDate.effort }}</td>
+                                        {% if eachDate.startDate %}
+                                            <td>{{ eachDate.startDate }}</td>
+                                        {% else %}
+                                            <td>&nbsp;</td>
+                                        {% endif %}
+                                        {% if eachDate.endDate %}
+                                            <td>{{ eachDate.endDate }}</td>
+                                        {% else %}
+                                            <td>&nbsp;</td>
+                                        {% endif %}
+                                        <td class="text-right">{{ eachDate.plannedEffort }}</td>
                                     {% endfor %}
                                 {% endif %}
-                                <td class="text-right">{{ eachData.MonthHours }}</td>
+                                {% if eachData.MonthHours < 0 %}
+                                    <td class="text-right">0</td>
+                                {% else %}
+                                    <td class="text-right">{{ eachData.MonthHours }}</td>
+                                {% endif %}
                                 <td class="text-right">{{ eachData.ptm }}</td> 
                                 <td class="text-right">{{ eachData.total }}</td> 
                                 <td class="text-right">{{ eachData.ptd }}</td> 
                             <tr>
                         {% endfor %}
                     {% else %}
-                        <tr>
-                            <td>{{ eachTS.fullName }}</td>
-                            <td class="text-center" colspan="10"><small><b>No timesheet Submitted for this month</b></small></td>
-                        </tr>
+                        {% if eachTS.fullName %}
+                            <tr>
+                                <td colspan="11">{{ eachTS.fullName }} - <small><b>No timesheet submitted for this period</b></small></td>
+                            </tr>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
                     {% if data %}
