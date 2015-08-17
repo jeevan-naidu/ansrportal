@@ -106,6 +106,10 @@
                                         {% endif %}
                                         <td class="text-right">{{ eachDate.plannedEffort }}</td>
                                     {% endfor %}
+                                {% else %}
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-right"></td>
                                 {% endif %}
                                 {% if eachData.MonthHours < 0 %}
                                     <td class="text-right">0</td>

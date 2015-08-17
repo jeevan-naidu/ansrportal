@@ -555,9 +555,11 @@ def TeamMemberPerfomanceReport(request):
                             eachTS['dates'] = ProjectTeamMember.objects.filter(
                                 project__projectId=eachTS['project__projectId'],
                                 member__id=eachUser['id']
-                            ).values('project',
-                                     'startDate',
-                                     'endDate', 'plannedEffort')
+                            ).values('project').annotate(
+                                     startDate=Min('startDate'),
+                                     endDate=Max('endDate'),
+                                     plannedEffort=Sum('plannedEffort')
+                            )
                             eachTS['MonthHours'] = 0
                             if len(eachTS['dates']):
                                 mh = getPlannedMonthHours(startDate, endDate,
@@ -1356,7 +1358,7 @@ def generateMemSumContent(request, header, report, worksheet,
                 if len(eachRec['dates']):
                     worksheet.write(row, 5, eachRec['dates'][0]['startDate'], dateformat)
                     worksheet.write(row, 6, eachRec['dates'][0]['endDate'], dateformat)
-                    worksheet.write(row, 7, eachRec['dates'][0]['effort'], content)
+                    worksheet.write(row, 7, eachRec['dates'][0]['plannedEffort'], content)
                 worksheet.write(row, 8, eachRec['MonthHours'], content)
                 worksheet.write(row, 9, eachRec['ptm'], content)
                 worksheet.write(row, 10, eachRec['total'], content)
