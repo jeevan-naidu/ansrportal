@@ -488,9 +488,11 @@ def TeamMemberPerfomanceReport(request):
                             eachTS['dates'] = ProjectTeamMember.objects.filter(
                                 project__projectId=eachTS['project__projectId'],
                                 member__id=eachUser['id']
-                            ).values('project',
-                                     'startDate',
-                                     'endDate', 'plannedEffort')
+                            ).values('project').annotate(
+                                     startDate=Min('startDate'),
+                                     endDate=Max('endDate'),
+                                     plannedEffort=Sum('plannedEffort')
+                            )
                             eachTS['MonthHours'] = 0
                             if len(eachTS['dates']):
                                 mh = getPlannedMonthHours(startDate, endDate,
