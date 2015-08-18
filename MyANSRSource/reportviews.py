@@ -611,9 +611,10 @@ def TeamMemberPerfomanceReport(request):
 @login_required
 @permission_required('MyANSRSource.create_project')
 def ProjectPerfomanceReport(request):
-    fresh = 0,
+    fresh, eptdTotal, iptdTotal = 0, 0, 0
     data = {}
     iidleTotal, iothersTotal, eidleTotal, eothersTotal = 0, 0, 0, 0
+    iidleTotalPTM, iothersTotalPTM, eidleTotalPTM, eothersTotalPTM = 0, 0, 0,0
     form = UtilizationReportForm(user=request.user)
     buName, currReportMonth, reportYear = 0, 0, 0
     if request.method == 'POST':
@@ -660,15 +661,33 @@ def ProjectPerfomanceReport(request):
                 eothersTotal = sum([
                     eachData['billed'] for eachData in externalData
                 ])
+                eothersTotalPTM = sum([
+                    eachData['bPTM'] for eachData in externalData
+                ])
                 eidleTotal = sum([
                     eachData['idle'] for eachData in externalData
+                ])
+                eidleTotalPTM = sum([
+                    eachData['iPTM'] for eachData in externalData
+                ])
+                eptdTotal = sum([
+                    eachData['ptd'] for eachData in externalData
                 ])
             if len(internalData):
                 iothersTotal = sum([
                     eachData['billed'] for eachData in internalData
                 ])
+                iothersTotalPTM = sum([
+                    eachData['bPTM'] for eachData in internalData
+                ])
                 iidleTotal = sum([
                     eachData['idle'] for eachData in internalData
+                ])
+                iidleTotalPTM = sum([
+                    eachData['iPTM'] for eachData in internalData
+                ])
+                iptdTotal = sum([
+                    eachData['ptd'] for eachData in internalData
                 ])
             data['external'] = externalData
             data['internal'] = internalData
@@ -700,7 +719,10 @@ def ProjectPerfomanceReport(request):
                   'MyANSRSource/reportprojectsummary.html',
                   {'form': form, 'data': data, 'fresh': fresh, 'bu': buName,
                    'iiTotal': iidleTotal, 'ioTotal': iothersTotal,
+                   'iiTotalPTM': iidleTotalPTM, 'ioTotalPTM': iothersTotalPTM,
                    'eiTotal': eidleTotal, 'eoTotal': eothersTotal,
+                   'eiTotalPTM': eidleTotalPTM, 'eoTotalPTM': eothersTotalPTM,
+                   'eptdTotal': eptdTotal, 'iptdTotal': iptdTotal,
                    'month': currReportMonth, 'year': reportYear})
 
 
@@ -729,10 +751,17 @@ def getProjectData(request, startDate, endDate, projects, start, end):
             data['pEffort'] = eachProject.plannedEffort
             data['billed'] = getEffort(request, startDate,
                                        endDate, start, end,
-                                       eachProject, 'Billed')
+                                       eachProject, 'Billed')[0]
+            data['bPTM'] = getEffort(request, startDate,
+                                     endDate, start, end,
+                                     eachProject, 'Billed')[1]
             data['idle'] = getEffort(request, startDate,
                                      endDate, start, end,
-                                     eachProject, 'Idle')
+                                     eachProject, 'Idle')[0]
+            data['iPTM'] = getEffort(request, startDate,
+                                     endDate, start, end,
+                                     eachProject, 'Idle')[1]
+            data['ptd'] = data['billed'] + data['bPTM'] + data['idle'] + data['iPTM']
             report.append(data)
     return report
 
@@ -746,6 +775,19 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             Q(project=eachProject),
             Q(wkstart__gte=start),
             Q(wkend__lte=end)
+        ).values('project').annotate(
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
+        )
+        ptmAlldata = TimeSheetEntry.objects.filter(
+            ~Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkend__lte=start - timedelta(days=1))
         ).values('project').annotate(
             monday=Sum('mondayH'),
             tuesday=Sum('tuesdayH'),
@@ -798,6 +840,19 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             saturday=Sum('saturdayH'),
             sunday=Sum('sundayH')
         )
+        ptmAlldata = TimeSheetEntry.objects.filter(
+            Q(task__taskType='I'),
+            Q(project=eachProject),
+            Q(wkend__lte=start - timedelta(days=1))
+        ).values('project').annotate(
+            monday=Sum('mondayH'),
+            tuesday=Sum('tuesdayH'),
+            wednesday=Sum('wednesdayH'),
+            thursday=Sum('thursdayH'),
+            friday=Sum('fridayH'),
+            saturday=Sum('saturdayH'),
+            sunday=Sum('sundayH')
+        )
         startData = TimeSheetEntry.objects.filter(
             Q(task__taskType='I'),
             Q(project=eachProject),
@@ -826,12 +881,17 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
             saturday=Sum('saturdayH'),
             sunday=Sum('sundayH')
         )
-    finalTotal = 0
+    finalTotal, ptmTotal = 0, 0
     if len(allData):
         finalTotal = sum(
             [eachData
              [eachDay]
              for eachDay in days for eachData in allData])
+    if len(ptmAlldata):
+        ptmTotal = sum(
+            [eachData
+             [eachDay]
+             for eachDay in days for eachData in ptmAlldata])
     if len(startData):
         total = sum(
             [eachData
@@ -839,6 +899,7 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
              for eachDay in days
              [: startDate.weekday()] for eachData in startData])
         finalTotal = finalTotal - total
+        ptmTotal = ptmTotal + total
     if len(endData):
         weekday = endDate.weekday() + 1
         total = sum(
@@ -846,7 +907,7 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
              [eachDay]
              for eachDay in days[weekday:] for eachData in endData])
         finalTotal = finalTotal - total
-    return finalTotal
+    return [finalTotal, ptmTotal]
 
 
 @login_required
