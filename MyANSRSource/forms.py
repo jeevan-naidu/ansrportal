@@ -23,7 +23,7 @@ YEARS = tuple(zip(year, year))
 
 class ActivityForm(forms.Form):
     activity = forms.ModelChoiceField(
-        queryset=Activity.objects.all().order_by('name'),
+        queryset=Activity.objects.filter(active=True).order_by('name'),
         label="Activity",
         required=False,
     )
@@ -144,7 +144,7 @@ def TimesheetFormset(currentUser):
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
         task = forms.ModelChoiceField(
-            queryset=Task.objects.all(),
+            queryset=Task.objects.filter(active=True),
             label="Task",
             required=True,
         )
@@ -240,7 +240,8 @@ def TimesheetFormset(currentUser):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             ).order_by('name')
-            self.fields['location'].queryset = OfficeLocation.objects.all()
+            self.fields['location'].queryset = OfficeLocation.objects.filter(
+                active=True)
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
@@ -364,7 +365,7 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
         self.fields['bu'].queryset = \
             BusinessUnit.objects.all().order_by('name')
         self.fields['customer'].queryset = \
-            Customer.objects.all().order_by('name')
+            Customer.objects.filter(active=True).order_by('name')
         self.fields['projectManager'].widget.attrs['class'] = \
             "form-control"
         self.fields['bu'].widget.attrs['class'] = \
