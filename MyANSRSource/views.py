@@ -1971,7 +1971,8 @@ def GetChapters(request, projectid):
 def GetTasks(request, projectid):
     try:
         tasks = Task.objects.filter(
-            projectType=Project.objects.get(pk=projectid).projectType
+            projectType=Project.objects.get(pk=projectid).projectType,
+            active=True
         ).values('code', 'name', 'id', 'taskType')
         data = {'data': list(tasks)}
     except Task.DoesNotExist:
