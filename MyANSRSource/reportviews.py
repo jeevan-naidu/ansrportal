@@ -754,10 +754,10 @@ def ProjectPerfomanceReport(request):
                 sheetName = ['External', 'Internal']
                 heading = [
                     ['Project Name', 'Project Type', 'BU', 'Customer Name',
-                     'Lead', 'Start Date', 'En Date', 'Value', 'Planned',
+                     'Lead', 'Start Date', 'End Date', 'Value', 'Planned',
                      'Billed', 'Idle'],
                     ['Project Name', 'Project Type', 'BU', 'Customer Name',
-                     'Lead', 'Start Date', 'En Date', 'Value', 'Planned',
+                     'Lead', 'Start Date', 'End Date', 'Value', 'Planned',
                      'Billed', 'Idle']]
                 report = [externalData, internalData]
                 return generateExcel(request, report, sheetName,
@@ -1250,8 +1250,11 @@ def generateExcel(request, report, sheetName, heading, grdTotal, fileName):
                   'align': 'center', 'valign': 'vcenter'}
         headerFormat = common.copy()
         headerFormat['bold'] = True
+        numberFormat = common.copy()
+        numberFormat['align'] = 'right'
         header = workbook.add_format(headerFormat)
         content = workbook.add_format(common)
+        number = workbook.add_format(numberFormat)
         dateFormat = common.copy()
         dateFormat['num_format'] = 'mmmm dd, yyyy'
         dateformat = workbook.add_format(dateFormat)
@@ -1277,13 +1280,14 @@ def generateExcel(request, report, sheetName, heading, grdTotal, fileName):
                                         alp, eachName)
                     generateProjectContent(request, header, report[counter],
                                            eachName, content, alp, grdTotal,
-                                           dateformat, reportDateformat)
+                                           dateformat, reportDateformat,
+                                           number)
                 elif sheetName[0] == 'External':
                     generateSheetHeader(request, heading[counter], header,
                                         alp, eachName)
                     generateProjectPerfContent(request, header, report[counter],
                                                eachName, content, alp, grdTotal,
-                                               dateformat)
+                                               dateformat, number)
                 counter += 1
         workbook.close()
         return generateDownload(request, fileName)
@@ -1378,15 +1382,17 @@ def generateMemSumContent(request, header, report, worksheet,
 @login_required
 def generateProjectContent(request, header, report, worksheet,
                            content, alp, grdTotal, dateformat,
-                           reportDateformat):
+                           reportDateformat, numberFormat):
     if 'totalValue' in report:
         row = 1
-        worksheet.write(row, 0, report['name'], content)
+        pName = report['code'] + ' : ' + report['name']
+        pValue = "$" + str(report['totalValue'])
+        worksheet.write(row, 0, pName, content)
         worksheet.write(row, 1, report['startDate'], dateformat)
         worksheet.write(row, 2, report['endDate'], dateformat)
-        worksheet.write(row, 3, report['plannedEffort'], content)
-        worksheet.write(row, 4, report['totalValue'], content)
-        worksheet.write(row, 5, report['salesForceNumber'], content)
+        worksheet.write(row, 3, report['plannedEffort'], numberFormat)
+        worksheet.write(row, 4, pValue, numberFormat)
+        worksheet.write(row, 5, report['salesForceNumber'], numberFormat)
         worksheet.write(row, 6, report['signed'], content)
         worksheet.write(row, 7, report['po'], content)
     else:
@@ -1396,13 +1402,14 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 0, eachRec['crId'], content)
                 worksheet.write(row, 1, eachRec['reason'], content)
                 worksheet.write(row, 2, eachRec['endDate'], dateformat)
-                worksheet.write(row, 3, eachRec['revisedEffort'], content)
-                worksheet.write(row, 4, eachRec['revisedTotal'], content)
+                worksheet.write(row, 3, eachRec['revisedEffort'], numberFormat)
+                worksheet.write(row, 4, eachRec['revisedTotal'], numberFormat)
+                row += 1
                 if eachRec['closed']:
                     msg = u"Project Closed On : {0}".format(
                         eachRec['closedOn']
                     )
-                    generateReportFooter(request, worksheet, alp[7], row+1,
+                    generateReportFooter(request, worksheet, alp[7], row,
                                          reportDateformat, msg)
             if 'financial' in eachRec:
                 worksheet.write(row, 0, eachRec['description'], content)
@@ -1410,12 +1417,12 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 2, eachRec['financial'], content)
                 worksheet.write(row, 3, eachRec['amount'], content)
                 worksheet.write(row, 4, eachRec['closed'], content)
-            row += 1
+                row += 1
 
             if 'task__name' in eachRec:
                 worksheet.write(row, 0, eachRec['task__name'], content)
                 #worksheet.write(row, 1, eachRec['norm'], content)
-            row += 1
+                row += 1
 
         row, msg = 1, ''
         for eachRec in report:
@@ -1443,9 +1450,11 @@ def generateReportFooter(request, worksheet, alpValue, rowValue, cFormat, msg):
 
 @login_required
 def generateProjectPerfContent(request, header, report, worksheet,
-                               content, alp, grdTotal, dateFormat):
+                               content, alp, grdTotal, dateFormat,
+                               numberFormat):
     row = 1
     for eachRec in report:
+        pValue = "$" + str(eachRec['value'])
         worksheet.write(row, 0, eachRec['pName'], content)
         worksheet.write(row, 1, eachRec['type'], content)
         worksheet.write(row, 2, eachRec['bu'], content)
@@ -1457,10 +1466,10 @@ def generateProjectPerfContent(request, header, report, worksheet,
         worksheet.write(row, 4, lead, content)
         worksheet.write(row, 5, eachRec['startDate'], dateFormat)
         worksheet.write(row, 6, eachRec['endDate'], dateFormat)
-        worksheet.write(row, 7, eachRec['value'], content)
-        worksheet.write(row, 8, eachRec['pEffort'], content)
-        worksheet.write(row, 9, eachRec['billed'], content)
-        worksheet.write(row, 10, eachRec['idle'], content)
+        worksheet.write(row, 7, pValue, numberFormat)
+        worksheet.write(row, 8, eachRec['pEffort'], numberFormat)
+        worksheet.write(row, 9, eachRec['billed'], numberFormat)
+        worksheet.write(row, 10, eachRec['idle'], numberFormat)
         row += 1
     cellRange = u'A{1}:{0}{1}'.format(alp[10], row+1)
     worksheet.merge_range(cellRange, '', header)
