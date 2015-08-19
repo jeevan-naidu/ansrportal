@@ -714,10 +714,10 @@ def ProjectPerfomanceReport(request):
             eProjects = Project.objects.filter(
                 startDate__lte=endDate, endDate__gte=startDate,
                 internal=False, bu__id__in=reportbu, projectId__isnull=False
-            )
+            ).order_by('projectId')
             iProjects = Project.objects.filter(
                 startDate__lte=endDate, endDate__gte=startDate, internal=True,
-                bu__id__in=reportbu, projectId__isnull=False)
+                bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')
             externalData = getProjectData(request, startDate, endDate,
                                           eProjects, start, end)
             internalData = getProjectData(request, startDate, endDate,
