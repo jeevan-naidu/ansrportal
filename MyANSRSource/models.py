@@ -103,6 +103,11 @@ class Task(models.Model):
         verbose_name="Norm",
         validators=[MinValueValidator(0.0)]
     )
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

@@ -89,9 +89,9 @@ class UserInline(admin.StackedInline):
         }),
         ('Employee Identification', {
             'fields': (('middle_name',),
-                ('date_of_birthO', 'gender', 'nationality'),
-                'date_of_birthR',
-                ('marital_status', 'wedding_date', 'blood_group'),
+                       ('date_of_birthO', 'gender', 'nationality'),
+                       'date_of_birthR',
+                       ('marital_status', 'wedding_date', 'blood_group'),
                        'exprience'), }),
         ('Contact Details', {
             'fields': (
@@ -167,13 +167,26 @@ class EmployeeAdmin(OriginalUserAdmin):
 
 class DesignationAdmin(admin.ModelAdmin):
     pass
+#    def get_queryset(self, request):
+#        return self.get_queryset(request).filter(active=True)
 
 
 class AttendanceAdmin(admin.ModelAdmin):
-    readonly_fields = ('employee', 'incoming_employee_id', 'swipe_in', 'swipe_out')
-    list_display = ('attdate', 'employee', 'incoming_employee_id', 'swipe_in', 'swipe_out', )
+    readonly_fields = (
+        'employee',
+        'incoming_employee_id',
+        'swipe_in',
+        'swipe_out')
+    list_display = (
+        'attdate',
+        'employee',
+        'incoming_employee_id',
+        'swipe_in',
+        'swipe_out',
+        )
     list_filter = ('employee', 'incoming_employee_id', 'attdate',)
     ordering = ('attdate', 'employee',)
+    date_hierarchy = 'attdate'
 
 admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(TeamMember, EmployeeAdmin)

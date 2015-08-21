@@ -17,7 +17,6 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from django.utils.timezone import utc
 from django.conf import settings
-from django.db.models import Sum
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -1704,7 +1703,7 @@ def NotifyMember(ptmid, delete):
     teamMember = ProjectTeamMember.objects.get(pk=ptmid)
     email = teamMember.member.email
     if delete:
-        if email != '':
+        if len(email) > 0:
             context = {
                 'first_name': teamMember.member.first_name,
                 'projectId': teamMember.project.projectId,
@@ -1971,7 +1970,8 @@ def GetChapters(request, projectid):
 def GetTasks(request, projectid):
     try:
         tasks = Task.objects.filter(
-            projectType=Project.objects.get(pk=projectid).projectType
+            projectType=Project.objects.get(pk=projectid).projectType,
+            active=True
         ).values('code', 'name', 'id', 'taskType', 'norm')
         for eachRec in tasks:
             eachRec['norm'] = float(eachRec['norm'])
