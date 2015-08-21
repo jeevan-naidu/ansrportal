@@ -59,7 +59,7 @@
             <thead>
             <tr>
                 <th colspan="8"></th> 
-                <th class="text-center" colspan="3">Effort</th> 
+                <th class="text-center" colspan="6">Effort</th> 
             </tr>
             <tr>
                 <th>Project Name</th> 
@@ -72,7 +72,10 @@
                 <th class="text-right">Value</th> 
                 <th class="text-right">Planned</th> 
                 <th class="text-right">Billed</th> 
+                <th class="text-right">Billed PTM</th> 
                 <th class="text-right">Idle</th> 
+                <th class="text-right">Idle PTM</th> 
+                <th class="text-right">PTD</th> 
             </tr>
             </thead>
             {% if data.external %}
@@ -96,22 +99,28 @@
                         <td class="text-right">${{ eachData.value | intcomma }}</td> 
                         <td class="text-right">{{ eachData.pEffort }}</td>
                         <td class="text-right">{{ eachData.billed }}</td>
+                        <td class="text-right">{{ eachData.bPTM }}</td>
                         <td class="text-right">{{ eachData.idle }}</td>
+                        <td class="text-right">{{ eachData.iPTM }}</td>
+                        <td class="text-right">{{ eachData.ptd }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
                     <td colspan="9" class="text-center"><h4><small><b>Total</b></small></h4></td>
                     <td class="text-right"><h4><small><b>{{ eoTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eoTotalPTM }}</b></small></h4></td>
                     <td class="text-right"><h4><small><b>{{ eiTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eiTotalPTM }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eptdTotal }}</b></small></h4></td>
                 </tr>
             {% else %}
                 {% if fresh %}
                     <tr>
-                        <td colspan="12" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
+                        <td colspan="14" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="12" class="text-center"><h4><small><b>No External Projects</b></small></h4></td>
+                        <td colspan="14" class="text-center"><h4><small><b>No External Projects</b></small></h4></td>
                     </tr>
                 {% endif %}
             {% endif %}
@@ -121,7 +130,7 @@
             <thead>
             <tr>
                 <th colspan="8"></th> 
-                <th class="text-center" colspan="3">Effort</th> 
+                <th class="text-center" colspan="6">Effort</th> 
             </tr>
             <tr>
                 <th>Project Name</th> 
@@ -134,7 +143,10 @@
                 <th class="text-right">Value</th> 
                 <th class="text-right">Planned</th> 
                 <th class="text-right">Billed</th> 
+                <th class="text-right">Billed PTM</th> 
                 <th class="text-right">Idle</th> 
+                <th class="text-right">Idle PTM</th> 
+                <th class="text-right">PTD</th> 
             </tr>
             </thead>
             {% if data.internal %}
@@ -158,22 +170,28 @@
                         <td class="text-right">${{ eachData.value | intcomma }}</td> 
                         <td class="text-right">{{ eachData.pEffort }}</td>
                         <td class="text-right">{{ eachData.billed }}</td>
+                        <td class="text-right">{{ eachData.bPTM }}</td>
                         <td class="text-right">{{ eachData.idle }}</td>
+                        <td class="text-right">{{ eachData.iPTM }}</td>
+                        <td class="text-right">{{ eachData.ptd }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
                     <td colspan="9" class="text-center"><h4><small><b>Total</b></small></h4></td>
                     <td class="text-right"><h4><small><b>{{ ioTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ ioTotalPTM }}</b></small></h4></td>
                     <td class="text-right"><h4><small><b>{{ iiTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ iiTotalPTM }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ iptdTotal }}</b></small></h4></td>
                 </tr>
             {% else %}
                 {% if fresh %}
                     <tr>
-                        <td colspan="12" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
+                        <td colspan="14" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="12" class="text-center"><h4><small><b>No Internal Projects</b></small></h4></td>
+                        <td colspan="14" class="text-center"><h4><small><b>No Internal Projects</b></small></h4></td>
                     </tr>
                 {% endif %}
             {% endif %}

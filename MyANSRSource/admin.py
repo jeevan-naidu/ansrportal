@@ -44,7 +44,7 @@ class BookAdmin(admin.ModelAdmin):
 
 class ProjectMilestoneInline(admin.TabularInline):
     model = ProjectMilestone
-    extra = 1
+    extra = 0
 
 
 class ProjectManagerM2MInline(admin.TabularInline):

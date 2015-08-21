@@ -94,18 +94,14 @@
                                 <td>{{ eachData.project__bu__name }}</td> 
                                 {% if eachData.dates %}
                                     {% for eachDate in eachData.dates %}
-                                        {% if eachDate.startDate %}
-                                            <td>{{ eachDate.startDate }}</td>
-                                        {% else %}
-                                            <td>&nbsp;</td>
-                                        {% endif %}
-                                        {% if eachDate.endDate %}
-                                            <td>{{ eachDate.endDate }}</td>
-                                        {% else %}
-                                            <td>&nbsp;</td>
-                                        {% endif %}
+                                        <td>{{ eachDate.startDate }}</td>
+                                        <td>{{ eachDate.endDate }}</td>
                                         <td class="text-right">{{ eachDate.plannedEffort }}</td>
                                     {% endfor %}
+                                {% else %}
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-right">0</td>
                                 {% endif %}
                                 {% if eachData.MonthHours < 0 %}
                                     <td class="text-right">0</td>

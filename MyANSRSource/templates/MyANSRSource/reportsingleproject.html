@@ -204,10 +204,10 @@
                                 <td class="text-right"><h4><small><b style="color: green">{{ balanceTotal }}</b></small></h4></td>
                             {% endif %}
                         {% else %} 
-                            {% if deviation <= 0 %}
-                                <td class="text-right"><h4><small><b style="color: green">{{ deviation }} %</b></small></h4></td>
-                            {% else %}
+                            {% if deviation < 0 %}
                                 <td class="text-right"><h4><small><b style="color: red">{{ deviation }} %</b></small></h4></td>
+                            {% else %}
+                                <td class="text-right"><h4><small><b style="color: green">{{ deviation }} %</b></small></h4></td>
                             {% endif %}
                         {% endif %}
                     </tr>
