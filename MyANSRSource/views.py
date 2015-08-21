@@ -94,6 +94,9 @@ MEMBERTEMPLATES = {
     "Manage Team": "MyANSRSource/manageProjectMember.html",
 }
 
+days = ['monday', 'tuesday', 'wednesday', 'thursday',
+        'friday', 'saturday', 'sunday']
+
 
 def index(request):
     if request.user.is_authenticated():
@@ -791,55 +794,109 @@ def renderTimesheet(request, data):
 @permission_required('MyANSRSource.approve_timesheet')
 def ApproveTimesheet(request):
     if request.method == 'POST':
-        for k, v in request.POST.iteritems():
-            if 'feedback' in k:
-                updateRec = k.split('-', 1)[1]
-                TimeSheetEntry.objects.filter(
-                    id=updateRec
-                ).update(managerFeedback=v)
-            elif 'status' in k:
-                updateRec = k.split('-', 1)[1]
-                if v == 'approve':
-                    TimeSheetEntry.objects.filter(
-                        id=updateRec
-                    ).update(approved=True,
-                             approvedon=datetime.now().replace(tzinfo=utc)
-                             )
-                else:
-                    TimeSheetEntry.objects.filter(
-                        id=updateRec
-                    ).update(hold=False)
-                    tsAct = TimeSheetEntry.objects.filter(pk=updateRec).values(
-                        'teamMember', 'wkstart', 'wkend'
-                    )[0]
-                    tsActId = TimeSheetEntry.objects.filter(
-                        Q(
-                            wkstart=tsAct['wkstart'],
-                            wkend=tsAct['wkend'],
-                            teamMember=tsAct['teamMember'],
-                            project__isnull=True
-                        )
-                    ).values('id')
-                    for eachId in tsActId:
-                        TimeSheetEntry.objects.filter(
-                            id=eachId['id']
-                        ).update(hold=False)
-
+        for i in range(1, int(request.POST.get('totalValue')) + 2):
+            choice = "choice" + str(i)
+            mem = "mem" + str(i)
+            start = "start" + str(i)
+            end = "end" + str(i)
+            try:
+                startDate = datetime.strptime(request.POST.get(start), '%B %d, %Y')
+            except ValueError:
+                startDate = datetime.strptime(request.POST.get(start), '%b. %d, %Y')
+            try:
+                endDate = datetime.strptime(request.POST.get(end), '%B %d, %Y')
+            except ValueError:
+                endDate = datetime.strptime(request.POST.get(end), '%b. %d, %Y')
+            if request.POST.get(choice) != 'hold':
+                updateTS = TimeSheetEntry.objects.filter(
+                    teamMember__id=int(request.POST.get(mem)),
+                    wkstart=startDate.date(),
+                    wkend=endDate.date()
+                )
+                print updateTS
+                for eachTS in updateTS:
+                    print eachTS.id
+                    if request.POST.get(choice) == 'redo':
+                        eachTS.hold = False
+                        eachTS.approved = False
+                    else:
+                        eachTS.hold = True
+                        eachTS.approved = True
+                    eachTS.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
-        unApprovedTimeSheet = TimeSheetEntry.objects.filter(
-            project__projectManager=request.user,
-            approved=False, hold=True
-        ).values('id', 'project__id', 'project__name', 'wkstart', 'wkend',
-                 'teamMember__username', 'totalH', 'exception', 'approved',
-                 'managerFeedback').order_by('project__id')
-        unApprovedTimeSheet1 = TimeSheetEntry.objects.filter(
-            project__projectManager=request.user,
-            approved=False, hold=True).values('teamMember').distinct()
-        data = {
-            'timesheetInfo': unApprovedTimeSheet
-        }
-        return render(request, 'MyANSRSource/timesheetApprove.html', data)
+        myProjects = ProjectManager.objects.filter(user=request.user)
+        myTeam = ProjectTeamMember.objects.filter(
+            project__in=[eachProject.project for eachProject in myProjects]
+        ).values('member',
+                 'member__first_name',
+                 'member__last_name').distinct()
+        data = []
+        for eachMem in myTeam:
+            rec = {}
+            rec['member'] = eachMem['member__first_name'] + '  ' + eachMem['member__last_name']
+            rec['ts'] = TimeSheetEntry.objects.filter(
+                teamMember__id=eachMem['member'],
+                hold=True, approved=False,
+            ).values('wkstart', 'wkend').distinct()
+            rec['mem'] = eachMem['member']
+            if len(rec['ts']):
+                data.append(rec)
+        if len(data):
+            for eachData in data:
+                for eachTS in eachData['ts']:
+                    totalNon = TimeSheetEntry.objects.filter(
+                        wkstart=eachTS['wkstart'],
+                        wkend=eachTS['wkend'],
+                        hold=True, approved=False,
+                        project__isnull=True
+                    ).values('project').annotate(
+                        monday=Sum('mondayH'),
+                        tuesday=Sum('tuesdayH'),
+                        wednesday=Sum('wednesdayH'),
+                        thursday=Sum('thursdayH'),
+                        friday=Sum('fridayH'),
+                        saturday=Sum('saturdayH'),
+                        sunday=Sum('sundayH')
+                    )
+                    eachTS['NHours'] = sum([eachRec[eachDay] for eachDay in days for eachRec in totalNon])
+                    totalProjects = TimeSheetEntry.objects.filter(
+                        wkstart=eachTS['wkstart'],
+                        wkend=eachTS['wkend'],
+                        hold=True, approved=False,
+                        project__isnull=False
+                    ).values('project', 'project__projectId',
+                             'project__name')
+                    eachTS['projects'] = []
+                    for eachProject in totalProjects:
+                        project = {}
+                        project['name'] = eachProject['project__projectId'] + ' :  ' + eachProject['project__name']
+                        project['BHours'] = getHours(request, eachTS['wkstart'],
+                                                     eachTS['wkend'], eachData['mem'],
+                                                     eachProject['project'], 'B')
+                        project['IHours'] = getHours(request, eachTS['wkstart'],
+                                                     eachTS['wkend'], eachData['mem'],
+                                                     eachProject['project'], 'I')
+                        eachTS['projects'].append(project)
+        unTsData = {'timesheetInfo': data}
+        return render(request, 'MyANSRSource/timesheetApprove.html', unTsData)
+
+
+@login_required
+def getHours(request, wstart, wend, mem, project, label):
+    ts = TimeSheetEntry.objects.filter(
+        wkstart=wstart, wkend=wend,
+        teamMember=mem, project=project, task__taskType=label
+    ).values('project').annotate(
+        monday=Sum('mondayH'),
+        tuesday=Sum('tuesdayH'),
+        wednesday=Sum('wednesdayH'),
+        thursday=Sum('thursdayH'),
+        friday=Sum('fridayH'),
+        saturday=Sum('saturdayH'),
+        sunday=Sum('sundayH')
+    )
+    return sum([eachRec[eachDay] for eachDay in days for eachRec in ts])
 
 
 @login_required
