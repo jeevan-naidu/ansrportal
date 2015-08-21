@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
@@ -799,29 +799,32 @@ def ApproveTimesheet(request):
             start = "start" + str(i)
             end = "end" + str(i)
             try:
-                startDate = datetime.strptime(request.POST.get(start), '%B %d, %Y')
+                if start in request.POST:
+                    startDate = datetime.strptime(request.POST.get(start), '%B %d, %Y')
             except ValueError:
-                startDate = datetime.strptime(request.POST.get(start), '%b. %d, %Y')
+                if start in request.POST:
+                    startDate = datetime.strptime(request.POST.get(start), '%b. %d, %Y')
             try:
-                endDate = datetime.strptime(request.POST.get(end), '%B %d, %Y')
+                if end in request.POST:
+                    endDate = datetime.strptime(request.POST.get(end), '%B %d, %Y')
             except ValueError:
-                endDate = datetime.strptime(request.POST.get(end), '%b. %d, %Y')
-            if request.POST.get(choice) != 'hold':
-                updateTS = TimeSheetEntry.objects.filter(
-                    teamMember__id=int(request.POST.get(mem)),
-                    wkstart=startDate.date(),
-                    wkend=endDate.date()
-                )
-                print updateTS
-                for eachTS in updateTS:
-                    print eachTS.id
-                    if request.POST.get(choice) == 'redo':
-                        eachTS.hold = False
-                        eachTS.approved = False
-                    else:
-                        eachTS.hold = True
-                        eachTS.approved = True
-                    eachTS.save()
+                if end in request.POST:
+                    endDate = datetime.strptime(request.POST.get(end), '%b. %d, %Y')
+            if choice in request.POST:
+                if request.POST.get(choice) != 'hold':
+                    updateTS = TimeSheetEntry.objects.filter(
+                        teamMember__id=int(request.POST.get(mem)),
+                        wkstart=startDate.date(),
+                        wkend=endDate.date()
+                    )
+                    for eachTS in updateTS:
+                        if request.POST.get(choice) == 'redo':
+                            eachTS.hold = False
+                            eachTS.approved = False
+                        else:
+                            eachTS.hold = True
+                            eachTS.approved = True
+                        eachTS.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
         myProjects = ProjectManager.objects.filter(user=request.user)

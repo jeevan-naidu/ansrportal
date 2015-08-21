@@ -21,7 +21,7 @@
                             {% with forloop.counter|stringformat:"s" as t %}
                                 {% with "choice"|add:t as total %}
                                     <label class="btn btn-default"><input type="radio" name="{{ total }}" value="approve" /> Approve </label>
-                                    <label class="btn btn-default"><input type="radio" name="{{ total }}" value="hold" checked /> Hold </label>
+                                    <label class="btn btn-default"><input checked type="radio" name="{{ total }}" value="hold" /> Hold </label>
                                     <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
                                 {% endwith %}
                                 {% with "start"|add:t as total %}
@@ -41,12 +41,12 @@
                     {% for eachProject in eachTs.projects %}
                         <tr>
                             <td class="text-center">{{ eachProject.name }}</td>
-                            <td>{{ eachProject.BHours }} Billed Hour(s)</td>
-                            <td>{{ eachProject.IHours }} Idle Hour(s)</td>
+                            <td><b>{{ eachProject.BHours }}</b> Billed Hour(s)</td>
+                            <td><b>{{ eachProject.IHours }}</b> Idle Hour(s)</td>
                         </tr>
                     {% endfor %}
                     <tr>
-                        <td class="text-center" colspan="3">{{ eachTs.NHours }} Non-Project Hour(s)</td>
+                        <td class="text-center" colspan="3"><b>{{ eachTs.NHours }}</b> Non-Project Hour(s)</td>
                     </tr>
                 </tbody>
             {% endfor %}
