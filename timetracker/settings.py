@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'employee',
     'CompanyMaster',
     'MyANSRSource',
+    'data_obfuscator',
 )
 
 MIDDLEWARE_CLASSES = (
