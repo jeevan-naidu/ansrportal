@@ -178,7 +178,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansrsource",
+        "NAME": "ansrprod",
         "USER": "root",
         "PASSWORD": "mysqlroot",
         "HOST": "localhost",
@@ -250,6 +250,10 @@ LOGGING = {
             'class': 'logging.handlers.WatchedFileHandler',
             'filename': os.path.join(BASE_DIR, 'logs', 'django-log')
         },
+        'obfuscator_file': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'obfuscator-log')
+        },
     },
     'loggers': {
         # Again, default Django configuration to email unhandled exceptions
@@ -274,6 +278,11 @@ LOGGING = {
         'employee': {
             'handlers': ['logfile'],
             'level': 'DEBUG',  # Or maybe INFO or WARNING
+            'propagate': False
+        },
+        'data_obfuscator': {
+            'handlers': ['obfuscator_file'],
+            'level': 'INFO',  # Or maybe INFO or WARNING
             'propagate': False
         },
     },
