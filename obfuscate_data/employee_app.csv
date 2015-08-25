@@ -1,0 +1,15 @@
+employee,FamilyMember,name,name
+employee,FamilyMember,dob,datetoday
+employee,Education,name,name
+employee,Education,specialization,randomstring
+employee,Education,from_date,datetoday
+employee,Education,to_date,datetoday
+employee,Education,institute,randomstring
+employee,Education,overall_marks,randomint
+employee,PreviousEmployment,company_name,randomstring
+employee,PreviousEmployment,company_address,randomstring
+employee,PreviousEmployment,employed_from,datetoday
+employee,PreviousEmployment,employed_upto,datetoday
+employee,PreviousEmployment,pf_number,randomstring
+employee,PreviousEmployment,last_ctc,zero
+employee,PreviousEmployment,reason_for_exit,randomstring

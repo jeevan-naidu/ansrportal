@@ -1,0 +1,7 @@
+MyANSRSource,Project,salesForceNumber,randomint
+MyANSRSource,Project,totalValue,randomint
+MyANSRSource,Project,po,randomstring
+MyANSRSource,ProjectMilestone,amount,zero
+MyANSRSource,ProjectChangeInfo,po,randomstring
+MyANSRSource,ProjectChangeInfo,revisedTotal,randomint
+MyANSRSource,ProjectChangeInfo,salesForceNumber,randomint
