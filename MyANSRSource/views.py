@@ -827,6 +827,11 @@ def ApproveTimesheet(request):
                         eachTS.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
+
+        """ Why do you need all this complex logic.  The query can be simply written as
+         TimeSheetEntry.objects.filter(project__projectmanager__user = request.user).order_by('teamMember', 'wkstart')
+
+        """
         myProjects = ProjectManager.objects.filter(user=request.user)
         myTeam = ProjectTeamMember.objects.filter(
             project__in=[eachProject.project for eachProject in myProjects]
