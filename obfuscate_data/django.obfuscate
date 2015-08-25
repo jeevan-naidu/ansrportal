@@ -1,0 +1,6 @@
+app_name,model_name,field_name,operation
+auth,User,username,randomstring
+auth,User,first_name,name
+auth,User,last_name,name
+auth,User,email,randomemail
+

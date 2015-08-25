@@ -1,5 +1,0 @@
-CompanyMaster,Customer,address,randomstring
-CompanyMaster,OfficeLocation,name,randomstring
-CompanyMaster,OfficeLocation,city,randomstring
-CompanyMaster,OfficeLocation,state,randomstring
-CompanyMaster,OfficeLocation,zipcode,randomstring

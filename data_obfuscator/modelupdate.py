@@ -133,3 +133,8 @@ def process_file(filedata):
         model = discover.get_model(modelinfo[0], modelinfo[1])
         if model:
             process_model(model, fieldinfo)
+        else:
+            logger.error(
+                u"Unknown App {0} or model  {1}".format(
+                    modelinfo[0],
+                    modelinfo[1]))
