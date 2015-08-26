@@ -831,6 +831,7 @@ def ApproveTimesheet(request):
             project__projectmanager__user=request.user,
             hold=True, approved=False
         ).values('teamMember', 'teamMember__first_name',
+                 'teamMember__id',
                  'teamMember__employee__employee_assigned_id',
                  'teamMember__last_name', 'wkstart', 'wkend').order_by(
                      'teamMember', 'wkstart', 'wkend').distinct()
@@ -839,6 +840,7 @@ def ApproveTimesheet(request):
             for eachTS in data:
                 tsData = {}
                 tsData['member'] = eachTS['teamMember__first_name'] + ' :  ' + eachTS['teamMember__last_name'] + ' (' + eachTS['teamMember__employee__employee_assigned_id'] + ')'
+                tsData['mem'] = eachTS['teamMember__id']
                 tsData['wkstart'] = eachTS['wkstart']
                 tsData['wkend'] = eachTS['wkend']
                 totalNon = TimeSheetEntry.objects.filter(
