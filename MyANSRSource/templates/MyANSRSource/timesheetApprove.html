@@ -9,47 +9,45 @@
 	{% csrf_token %}
     {% for eachInfo in timesheetInfo %}
         <table class="table table-condensed">
-            {% for eachTs in eachInfo.ts %}
-                {% if forloop.last %}
-                    <input type="hidden" name="totalValue" value="{{ forloop.revcounter }}" />
-                {% endif %}
-                <thead>
-                    <th>{{ eachInfo.member }}</th>
-                    <th class="text-center">{{ eachTs.wkstart }} - {{ eachTs.wkend }}</th>
-                    <th class="text-right" colspan=2>
-                        <div class="btn-group" data-toggle="buttons">
-                            {% with forloop.counter|stringformat:"s" as t %}
-                                {% with "choice"|add:t as total %}
-                                    <label class="btn btn-default"><input type="radio" name="{{ total }}" value="approve" /> Approve </label>
-                                    <label class="btn btn-default"><input checked type="radio" name="{{ total }}" value="hold" /> Hold </label>
-                                    <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
-                                {% endwith %}
-                                {% with "start"|add:t as total %}
-                                    <input type="hidden" name="{{ total }}" value="{{ eachTs.wkstart }}" />
-                                {% endwith %}
-                                {% with "end"|add:t as total %}
-                                    <input type="hidden" name="{{ total }}" value="{{ eachTs.wkend }}" />
-                                {% endwith %}
-                                {% with "mem"|add:t as total %}
-                                    <input type="hidden" name="{{ total }}" value="{{ eachInfo.mem }}" />
-                                {% endwith %}
+            {% if forloop.last %}
+                <input type="hidden" name="totalValue" value="{{ forloop.revcounter }}" />
+            {% endif %}
+            <thead>
+                <th>{{ eachInfo.member }}</th>
+                <th class="text-center">{{ eachInfo.wkstart }} - {{ eachInfo.wkend }}</th>
+                <th class="text-right" colspan=2>
+                    <div class="btn-group" data-toggle="buttons">
+                        {% with forloop.counter|stringformat:"s" as t %}
+                            {% with "choice"|add:t as total %}
+                                <label class="btn btn-default"><input type="radio" name="{{ total }}" value="approve" /> Approve </label>
+                                <label class="btn btn-default"><input checked type="radio" name="{{ total }}" value="hold" /> Hold </label>
+                                <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
                             {% endwith %}
-                        </div>
-                    </th>
-                </thead>
-                <tbody>
-                    {% for eachProject in eachTs.projects %}
-                        <tr>
-                            <td class="text-center">{{ eachProject.name }}</td>
-                            <td><b>{{ eachProject.BHours }}</b> Billed Hour(s)</td>
-                            <td><b>{{ eachProject.IHours }}</b> Idle Hour(s)</td>
-                        </tr>
-                    {% endfor %}
+                            {% with "start"|add:t as total %}
+                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkstart }}" />
+                            {% endwith %}
+                            {% with "end"|add:t as total %}
+                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkend }}" />
+                            {% endwith %}
+                            {% with "mem"|add:t as total %}
+                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.member }}" />
+                            {% endwith %}
+                        {% endwith %}
+                    </div>
+                </th>
+            </thead>
+            <tbody>
+                {% for eachProject in eachInfo.projects %}
                     <tr>
-                        <td class="text-center" colspan="3"><b>{{ eachTs.NHours }}</b> Non-Project Hour(s)</td>
+                        <td class="text-center">{{ eachProject.name }}</td>
+                        <td><b>{{ eachProject.BHours }}</b> Billed Hour(s)</td>
+                        <td><b>{{ eachProject.IHours }}</b> Idle Hour(s)</td>
                     </tr>
-                </tbody>
-            {% endfor %}
+                {% endfor %}
+                <tr>
+                    <td class="text-center" colspan="3"><b>{{ eachInfo.NHours }}</b> Non-Project Hour(s)</td>
+                </tr>
+            </tbody>
         <table>
     {% endfor %}
 	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
