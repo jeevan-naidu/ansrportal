@@ -4,8 +4,9 @@
 
 {% block content %}
 <div class="jumbotron shadow">
-	<legend><h2><small>Approve / Hold Exceptions</small></h2></legend>
 <form id="approveTS" method="post" action="" >
+    <button type="submit" class="btn btn-info pull-right">Submit Status</button>
+    <legend><h2><small>Approve / Hold Exceptions</small></h2></legend>
 	{% csrf_token %}
     {% for eachInfo in timesheetInfo %}
         <table class="table table-condensed">
