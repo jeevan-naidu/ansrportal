@@ -1,5 +1,4 @@
-app_name,model_name,field_name,operation
-CompanyMaster,Customer,name,randomstring
-CompanyMaster,Customer,customerCode,randomstring
+CompanyMaster,Customer,name,name
+CompanyMaster,Customer,customerCode,name
 CompanyMaster,Customer,cContact,name
-CompanyMaster,BusinessUnit,name,randomstring
+CompanyMaster,BusinessUnit,name,name
