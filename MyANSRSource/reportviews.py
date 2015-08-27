@@ -447,8 +447,7 @@ def TeamMemberPerfomanceReport(request):
                     buName = eachData['name']
 
             # Getting eachUser information in line with selected BU
-            users = User.objects.filter(is_active=True,
-                                        is_superuser=False).values(
+            users = User.objects.all().values(
                 'id',
                 'first_name',
                 'last_name'
@@ -465,6 +464,7 @@ def TeamMemberPerfomanceReport(request):
                     eachUser['ts'] = TimeSheetEntry.objects.filter(
                         wkstart__gte=start,
                         wkend__lte=end,
+                        project__isnull=False,
                         project__bu__id__in=reportbu,
                         teamMember__id=eachUser['id']
                     ).values(*valuesList).annotate(
@@ -503,6 +503,7 @@ def TeamMemberPerfomanceReport(request):
                             ptm = TimeSheetEntry.objects.filter(
                                 wkend__lt=wkStrtWeek + timedelta(days=6),
                                 project__bu__id__in=reportbu,
+                                project__isnull=False,
                                 teamMember__id=eachUser['id'],
                                 project__projectId=eachTS['project__projectId']
                             ).values('project__projectId').annotate(
@@ -523,6 +524,7 @@ def TeamMemberPerfomanceReport(request):
                                 wkstart=wkStrtWeek,
                                 wkend=wkStrtWeek + timedelta(days=6),
                                 project__bu__id__in=reportbu,
+                                project__isnull=False,
                                 teamMember__id=eachUser['id'],
                                 project__projectId=eachTS['project__projectId']
                             ).values('project__projectId').annotate(
@@ -546,6 +548,7 @@ def TeamMemberPerfomanceReport(request):
                                 wkstart=wkEndWeek,
                                 wkend=wkEndWeek + timedelta(days=6),
                                 project__bu__id__in=reportbu,
+                                project__isnull=False,
                                 teamMember__id=eachUser['id'],
                                 project__projectId=eachTS['project__projectId']
                             ).values('project__projectId').annotate(
@@ -1201,7 +1204,8 @@ def generateMemSumContent(request, header, report, worksheet,
             worksheet.write(row, 0, '', content)
         if len(eachData['ts']):
             for eachRec in eachData['ts']:
-                worksheet.write(row, 1, eachRec['project__name'], content)
+                name = eachRec['project__projectId'] + ':' + eachRec['project__name']
+                worksheet.write(row, 1, name, content)
                 leads = [eachLead['user__username'] for eachLead in eachRec['leads']]
                 if len(leads):
                     lead = ",".join(leads)
