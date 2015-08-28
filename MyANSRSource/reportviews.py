@@ -458,118 +458,116 @@ def TeamMemberPerfomanceReport(request):
                 fresh = 1
                 try:
                     emp = Employee.objects.get(user__id=eachUser['id'])
-                    eachUser['fullName'] = u"{0} {1}({2})".format(
-                        eachUser['first_name'], eachUser['last_name'],
-                        emp.employee_assigned_id)
-                    eachUser['ts'] = TimeSheetEntry.objects.filter(
-                        wkstart__gte=start,
-                        wkend__lte=end,
-                        project__isnull=False,
-                        project__bu__id__in=reportbu,
-                        teamMember__id=eachUser['id']
-                    ).values(*valuesList).annotate(
-                        monday=Sum('mondayH'),
-                        tuesday=Sum('tuesdayH'),
-                        wednesday=Sum('wednesdayH'),
-                        thursday=Sum('thursdayH'),
-                        friday=Sum('fridayH'),
-                        saturday=Sum('saturdayH'),
-                        sunday=Sum('sundayH'))
-                    if len(eachUser['ts']):
-                        wkStrtWeek = getDate(request, start, 'Start')
-                        wkEndWeek = getDate(request, end, 'Start')
-                        for eachTS in eachUser['ts']:
-                            eachTS['fullName'] = eachUser['fullName']
-                            eachTS['total'] = sum([
-                                eachTS[eachDay] for eachDay in days])
-                            eachTS['leads'] = ProjectManager.objects.filter(
-                                project__projectId=eachTS['project__projectId']
-                            ).values('user__username')
-                            eachTS['dates'] = ProjectTeamMember.objects.filter(
-                                project__projectId=eachTS['project__projectId'],
-                                member__id=eachUser['id']
-                            ).values('project').annotate(
-                                     startDate=Min('startDate'),
-                                     endDate=Max('endDate'),
-                                     plannedEffort=Sum('plannedEffort')
-                            )
-                            eachTS['MonthHours'] = 0
-                            if len(eachTS['dates']):
-                                mh = getPlannedMonthHours(startDate, endDate,
-                                                          eachTS['dates'][0]['startDate'],
-                                                          eachTS['dates'][0]['endDate'],
-                                                          eachTS['dates'][0]['plannedEffort'])
-                                eachTS['MonthHours'] = mh
-                            ptm = TimeSheetEntry.objects.filter(
-                                wkend__lt=wkStrtWeek + timedelta(days=6),
-                                project__bu__id__in=reportbu,
-                                project__isnull=False,
-                                teamMember__id=eachUser['id'],
-                                project__projectId=eachTS['project__projectId']
-                            ).values('project__projectId').annotate(
-                                monday=Sum('mondayH'),
-                                tuesday=Sum('tuesdayH'),
-                                wednesday=Sum('wednesdayH'),
-                                thursday=Sum('thursdayH'),
-                                friday=Sum('fridayH'),
-                                saturday=Sum('saturdayH'),
-                                sunday=Sum('sundayH'))
-                            if len(ptm):
-                                for eachptm in ptm:
-                                    eachTS['ptm'] = sum(
-                                        [eachptm[eachDay] for eachDay in days])
-                            else:
-                                eachTS['ptm'] = 0
-                            startData = TimeSheetEntry.objects.filter(
-                                wkstart=wkStrtWeek,
-                                wkend=wkStrtWeek + timedelta(days=6),
-                                project__bu__id__in=reportbu,
-                                project__isnull=False,
-                                teamMember__id=eachUser['id'],
-                                project__projectId=eachTS['project__projectId']
-                            ).values('project__projectId').annotate(
-                                monday=Sum('mondayH'),
-                                tuesday=Sum('tuesdayH'),
-                                wednesday=Sum('wednesdayH'),
-                                thursday=Sum('thursdayH'),
-                                friday=Sum('fridayH'),
-                                saturday=Sum('saturdayH'),
-                                sunday=Sum('sundayH'))
-                            if len(startData):
-                                for eachData in startData:
-                                    total = sum([
-                                        eachData[eachDay] for eachDay in days[
-                                            :startDate.weekday()]
-                                    ])
-                                    eachTS['total'] = eachTS['total'] - total
-                                    if eachTS['ptm']:
-                                        eachTS['ptm'] = eachTS['ptm'] + total
-                            endData = TimeSheetEntry.objects.filter(
-                                wkstart=wkEndWeek,
-                                wkend=wkEndWeek + timedelta(days=6),
-                                project__bu__id__in=reportbu,
-                                project__isnull=False,
-                                teamMember__id=eachUser['id'],
-                                project__projectId=eachTS['project__projectId']
-                            ).values('project__projectId').annotate(
-                                monday=Sum('mondayH'),
-                                tuesday=Sum('tuesdayH'),
-                                wednesday=Sum('wednesdayH'),
-                                thursday=Sum('thursdayH'),
-                                friday=Sum('fridayH'),
-                                saturday=Sum('saturdayH'),
-                                sunday=Sum('sundayH'))
-                            if len(endData):
-                                for eachData in endData:
-                                    endRange = endDate.weekday() + 1
-                                    endtotal = sum([
-                                        eachData[eachDay] for eachDay in days[
-                                            endRange:]
-                                    ])
-                                    eachTS['total'] = eachTS['total'] - endtotal
-                            eachTS['ptd'] = eachTS['total'] + eachTS['ptm']
+                    empId = emp.employee_assigned_id
                 except:
-                    eachUser['ts'] = []
+                    empId = 0
+                eachUser['fullName'] = u"{0} {1}({2})".format(
+                    eachUser['first_name'], eachUser['last_name'],
+                    empId)
+                eachUser['ts'] = TimeSheetEntry.objects.filter(
+                    wkstart__gte=start,
+                    wkend__lte=end,
+                    project__bu__id__in=reportbu,
+                    teamMember__id=eachUser['id']
+                ).values(*valuesList).annotate(
+                    monday=Sum('mondayH'),
+                    tuesday=Sum('tuesdayH'),
+                    wednesday=Sum('wednesdayH'),
+                    thursday=Sum('thursdayH'),
+                    friday=Sum('fridayH'),
+                    saturday=Sum('saturdayH'),
+                    sunday=Sum('sundayH'))
+                if len(eachUser['ts']):
+                    wkStrtWeek = getDate(request, start, 'Start')
+                    wkEndWeek = getDate(request, end, 'Start')
+                    for eachTS in eachUser['ts']:
+                        eachTS['fullName'] = eachUser['fullName']
+                        eachTS['total'] = sum([
+                            eachTS[eachDay] for eachDay in days])
+                        eachTS['leads'] = ProjectManager.objects.filter(
+                            project__projectId=eachTS['project__projectId']
+                        ).values('user__username')
+                        eachTS['dates'] = ProjectTeamMember.objects.filter(
+                            project__projectId=eachTS['project__projectId'],
+                            member__id=eachUser['id']
+                        ).values('project').annotate(
+                                    startDate=Min('startDate'),
+                                    endDate=Max('endDate'),
+                                    plannedEffort=Sum('plannedEffort')
+                        )
+                        eachTS['MonthHours'] = 0
+                        if len(eachTS['dates']):
+                            mh = getPlannedMonthHours(startDate, endDate,
+                                                        eachTS['dates'][0]['startDate'],
+                                                        eachTS['dates'][0]['endDate'],
+                                                        eachTS['dates'][0]['plannedEffort'])
+                            eachTS['MonthHours'] = mh
+                        ptm = TimeSheetEntry.objects.filter(
+                            wkend__lt=wkStrtWeek + timedelta(days=6),
+                            project__bu__id__in=reportbu,
+                            teamMember__id=eachUser['id'],
+                            project__projectId=eachTS['project__projectId']
+                        ).values('project__projectId').annotate(
+                            monday=Sum('mondayH'),
+                            tuesday=Sum('tuesdayH'),
+                            wednesday=Sum('wednesdayH'),
+                            thursday=Sum('thursdayH'),
+                            friday=Sum('fridayH'),
+                            saturday=Sum('saturdayH'),
+                            sunday=Sum('sundayH'))
+                        if len(ptm):
+                            for eachptm in ptm:
+                                eachTS['ptm'] = sum(
+                                    [eachptm[eachDay] for eachDay in days])
+                        else:
+                            eachTS['ptm'] = 0
+                        startData = TimeSheetEntry.objects.filter(
+                            wkstart=wkStrtWeek,
+                            wkend=wkStrtWeek + timedelta(days=6),
+                            project__bu__id__in=reportbu,
+                            teamMember__id=eachUser['id'],
+                            project__projectId=eachTS['project__projectId']
+                        ).values('project__projectId').annotate(
+                            monday=Sum('mondayH'),
+                            tuesday=Sum('tuesdayH'),
+                            wednesday=Sum('wednesdayH'),
+                            thursday=Sum('thursdayH'),
+                            friday=Sum('fridayH'),
+                            saturday=Sum('saturdayH'),
+                            sunday=Sum('sundayH'))
+                        if len(startData):
+                            for eachData in startData:
+                                total = sum([
+                                    eachData[eachDay] for eachDay in days[
+                                        :startDate.weekday()]
+                                ])
+                                eachTS['total'] = eachTS['total'] - total
+                                if eachTS['ptm']:
+                                    eachTS['ptm'] = eachTS['ptm'] + total
+                        endData = TimeSheetEntry.objects.filter(
+                            wkstart=wkEndWeek,
+                            wkend=wkEndWeek + timedelta(days=6),
+                            project__bu__id__in=reportbu,
+                            project__isnull=False,
+                            teamMember__id=eachUser['id'],
+                            project__projectId=eachTS['project__projectId']
+                        ).values('project__projectId').annotate(
+                            monday=Sum('mondayH'),
+                            tuesday=Sum('tuesdayH'),
+                            wednesday=Sum('wednesdayH'),
+                            thursday=Sum('thursdayH'),
+                            friday=Sum('fridayH'),
+                            saturday=Sum('saturdayH'),
+                            sunday=Sum('sundayH'))
+                        if len(endData):
+                            for eachData in endData:
+                                endRange = endDate.weekday() + 1
+                                endtotal = sum([
+                                    eachData[eachDay] for eachDay in days[
+                                        endRange:]
+                                ])
+                                eachTS['total'] = eachTS['total'] - endtotal
+                        eachTS['ptd'] = eachTS['total'] + eachTS['ptm']
             totals['ptm'], totals['total'], totals['ptd'] = 0, 0, 0
             totals['MonthHours'], totals['plannedTotal'] = 0, 0
             for eachUser in users:
@@ -1529,4 +1527,7 @@ def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
         if num > deno:
             return effort
         else:
-            return round(effort * (num / float(deno)), 2)
+            if deno == 0:
+                return 0
+            else:
+                return round(effort * (num / float(deno)), 2)
