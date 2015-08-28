@@ -1448,6 +1448,7 @@ def UpdateProjectInfo(request, newInfo):
         pru.signed = newInfo[1]['signed']
         pru.po = newInfo[1]['po']
         pru.endDate = newInfo[1]['endDate']
+        pru.salesForceNumber = newInfo[1]['salesForceNumber']
         pru.save()
 
         pci = ProjectChangeInfo()
