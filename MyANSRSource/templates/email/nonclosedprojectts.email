@@ -1,0 +1,25 @@
+{% block subject %}TS Entries for non-closed projects {% endblock %}
+{% block plain %}
+  Hi, <br />
+ 
+  List of non closed projects whose end date is less than today, but has TS entries for this week,
+  {% for eachRec in data %}
+       <p><b>{{ eachRec }}</b></p>
+  {% endfor %}
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  Hi, <br />
+ 
+  List of non closed projects whose end date is less than today, but has TS entries for this week,
+    {% for eachRec in data %}
+        <p><b>{{ eachRec }}</b></p>
+    {% endfor %}
+
+  <p>Thanks, </p>
+  <p>myansrsource team</p>
+{% endblock %}
