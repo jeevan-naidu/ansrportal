@@ -15,6 +15,20 @@ GENDER_CHOICES = (
     ('F', 'Female'),
     )
 
+STATUS = (
+    ('P', 'Peding'),
+    ('A', 'Approved'),
+    ('R', 'Rejected'),
+    )
+
+CATEGORY = (
+    ('P', 'Peers'),
+    ('R', 'Reportees'),
+    ('M', 'Manager'),
+    )
+
+YEAR = [(k, v) for k, v in enumerate([i for i in xrange(2015, 10000)])]
+
 MARITAL_CHOICES = (
     ('MA', 'Married'),
     ('WD', 'Windowed'),
@@ -129,6 +143,61 @@ User model can be found here.
 https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 
 
+class Peer(models.Model):
+    sender = models.ForeignKey(User, verbose_name="Sender",
+                               related_name="sender", default=None)
+    receiver = models.ForeignKey(User, verbose_name="Receiver",
+                                 related_name="rcvr", default=None)
+    status = models.CharField(
+        verbose_name='Status',
+        max_length=1,
+        choices=STATUS,
+        default='P')
+    year = models.IntegerField(
+        verbose_name='Year',
+        choices=YEAR,
+        default=0
+    )
+    is_active = models.BooleanField(default=True, verbose_name='Active?')
+
+
+class FeedbackQuestion(models.Model):
+    qst = models.CharField("Question", max_length=100, blank=False)
+    category = models.CharField(
+        verbose_name='Category',
+        max_length=1,
+        choices=CATEGORY,
+        default='P')
+
+
+class Feedback(models.Model):
+    qst = models.ForeignKey(FeedbackQuestion,
+                            verbose_name="Feedback Question",
+                            default=None)
+    year = models.IntegerField(
+        verbose_name='Year',
+        choices=YEAR,
+        default=0
+    )
+    start_date = models.DateTimeField(
+        verbose_name="Start Date"
+    )
+    end_date = models.DateTimeField(
+        verbose_name="Completion Date"
+    )
+    """
+    PEER DATE INFORMATION
+    =====================
+    """
+    selection_date = models.DateTimeField(
+        verbose_name="Peer selection date"
+    )
+    approval_date = models.DateTimeField(
+        verbose_name="Peer approval completion date"
+    )
+
+
+
 class Employee(models.Model):
     # User model will have the usual fields.  We will have the remaining ones
     # here
@@ -137,6 +206,10 @@ class Employee(models.Model):
                                 blank=True, null=True,
                                 related_name="Manager", default=None)
     status = models.BooleanField(default=True)
+    reportees = models.ManyToManyField(User, blank=True, null=True,
+                                       related_name="reportees",
+                                       default=None,
+                                       verbose_name="Reportee(s)")
     is_360eligible = models.BooleanField(default=False)
     '''
     ================================================
