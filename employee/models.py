@@ -15,13 +15,14 @@ GENDER_CHOICES = (
     ('F', 'Female'),
     )
 
-STATUS = (
-    ('P', 'Peding'),
+FB360_STATUS = (
+    ('P', 'Pending'),
     ('A', 'Approved'),
     ('R', 'Rejected'),
+    ('D', 'Deleted'),
     )
 
-CATEGORY = (
+FB360_CATEGORY = (
     ('P', 'Peers'),
     ('R', 'Reportees'),
     ('M', 'Manager'),
@@ -143,35 +144,34 @@ User model can be found here.
 https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 
 
-class Peer(models.Model):
-    sender = models.ForeignKey(User, verbose_name="Sender",
-                               related_name="sender", default=None)
-    receiver = models.ForeignKey(User, verbose_name="Receiver",
-                                 related_name="rcvr", default=None)
+class EmpPeer(models.Model):
+    employee = models.ForeignKey(User, verbose_name="Employee",
+                                 related_name="empl", default=None)
+    peer = models.ForeignKey(User, verbose_name="Employee's peer",
+                             related_name="peer", default=None)
     status = models.CharField(
         verbose_name='Status',
         max_length=1,
-        choices=STATUS,
-        default='P')
+        choices=FB360_STATUS,
+        default=FB360_STATUS[0][0])
     year = models.IntegerField(
         verbose_name='Year',
         choices=YEAR,
         default=0
     )
-    is_active = models.BooleanField(default=True, verbose_name='Active?')
 
 
-class FeedbackQuestion(models.Model):
+class FB360Question(models.Model):
     qst = models.CharField("Question", max_length=100, blank=False)
     category = models.CharField(
-        verbose_name='Category',
+        verbose_name='Question Category',
         max_length=1,
-        choices=CATEGORY,
-        default='P')
+        choices=FB360_CATEGORY,
+        default=FB360_CATEGORY[0][0])
 
 
-class Feedback(models.Model):
-    qst = models.ForeignKey(FeedbackQuestion,
+class FB360Feedback(models.Model):
+    qst = models.ForeignKey(FB360Question,
                             verbose_name="Feedback Question",
                             default=None)
     year = models.IntegerField(
@@ -179,24 +179,38 @@ class Feedback(models.Model):
         choices=YEAR,
         default=0
     )
+    """
+    Feedback process planning
+    """
     start_date = models.DateTimeField(
-        verbose_name="Start Date"
+        verbose_name="Start 360 degree appraisal"
     )
     end_date = models.DateTimeField(
-        verbose_name="Completion Date"
+        verbose_name="Complete 360 degree appraisal"
     )
-    """
-    PEER DATE INFORMATION
-    =====================
-    """
     selection_date = models.DateTimeField(
-        verbose_name="Peer selection date"
+        verbose_name="Peer selection completion date"
     )
     approval_date = models.DateTimeField(
         verbose_name="Peer approval completion date"
     )
 
 
+class FB360Answer(models.Model):
+    """ This is the set of answers that a question can possibly have """
+    pass
+
+class FB360Response(models.Model):
+
+    employee
+    respondent
+    question
+    answer
+
+class QualitativeResponse(models.Model):
+    employee
+    respondent
+    TextField
 
 class Employee(models.Model):
     # User model will have the usual fields.  We will have the remaining ones
@@ -206,11 +220,6 @@ class Employee(models.Model):
                                 blank=True, null=True,
                                 related_name="Manager", default=None)
     status = models.BooleanField(default=True)
-    reportees = models.ManyToManyField(User, blank=True, null=True,
-                                       related_name="reportees",
-                                       default=None,
-                                       verbose_name="Reportee(s)")
-    is_360eligible = models.BooleanField(default=False)
     '''
     ================================================
     Basic Employee Attributes
@@ -356,6 +365,17 @@ class Employee(models.Model):
         max_length=30,
         null=True,
         blank=True)
+    '''
+    ================================================
+    For 360 degree feedback system
+    ================================================
+    '''
+
+    reportees = models.ManyToManyField(User, blank=True, null=True,
+                                       related_name="reportees",
+                                       default=None,
+                                       verbose_name="Reportee(s)")
+    is_360eligible = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'{0}|{1},{2}'.format(
