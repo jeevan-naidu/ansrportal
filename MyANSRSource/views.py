@@ -806,8 +806,8 @@ def ApproveTimesheet(request):
                 if request.POST.get(choice) != 'hold':
                     updateTS = TimeSheetEntry.objects.filter(
                         teamMember__id=int(request.POST.get(mem)),
-                        wkstart=startDate.date(),
-                        wkend=endDate.date()
+                        wkstart=startDate,
+                        wkend=endDate
                     )
                     for eachTS in updateTS:
                         if request.POST.get(choice) == 'redo':
