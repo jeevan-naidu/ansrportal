@@ -25,10 +25,10 @@
                                 <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
                             {% endwith %}
                             {% with "start"|add:t as total %}
-                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkstart }}" />
+                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkstartNum }}" />
                             {% endwith %}
                             {% with "end"|add:t as total %}
-                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkend }}" />
+                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkendNum }}" />
                             {% endwith %}
                             {% with "mem"|add:t as total %}
                                 <input type="hidden" name="{{ total }}" value="{{ eachInfo.mem }}" />

@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
@@ -798,18 +798,10 @@ def ApproveTimesheet(request):
             mem = "mem" + str(i)
             start = "start" + str(i)
             end = "end" + str(i)
-            try:
-                if start in request.POST:
-                    startDate = datetime.strptime(request.POST.get(start), '%B %d, %Y')
-            except ValueError:
-                if start in request.POST:
-                    startDate = datetime.strptime(request.POST.get(start), '%b. %d, %Y')
-            try:
-                if end in request.POST:
-                    endDate = datetime.strptime(request.POST.get(end), '%B %d, %Y')
-            except ValueError:
-                if end in request.POST:
-                    endDate = datetime.strptime(request.POST.get(end), '%b. %d, %Y')
+            if start in request.POST:
+                startDate = date.fromordinal(int(request.POST.get(start)))
+            if end in request.POST:
+                endDate = date.fromordinal(int(request.POST.get(end)))
             if choice in request.POST:
                 if request.POST.get(choice) != 'hold':
                     updateTS = TimeSheetEntry.objects.filter(
@@ -842,7 +834,9 @@ def ApproveTimesheet(request):
                 tsData['member'] = eachTS['teamMember__first_name'] + ' :  ' + eachTS['teamMember__last_name'] + ' (' + eachTS['teamMember__employee__employee_assigned_id'] + ')'
                 tsData['mem'] = eachTS['teamMember__id']
                 tsData['wkstart'] = eachTS['wkstart']
+                tsData['wkstartNum'] = eachTS['wkstart'].toordinal()
                 tsData['wkend'] = eachTS['wkend']
+                tsData['wkendNum'] = eachTS['wkend'].toordinal()
                 totalNon = TimeSheetEntry.objects.filter(
                     wkstart=eachTS['wkstart'],
                     wkend=eachTS['wkend'],
