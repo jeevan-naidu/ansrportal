@@ -15,21 +15,6 @@ GENDER_CHOICES = (
     ('F', 'Female'),
     )
 
-FB360_STATUS = (
-    ('P', 'Pending'),
-    ('A', 'Approved'),
-    ('R', 'Rejected'),
-    ('D', 'Deleted'),
-    )
-
-FB360_CATEGORY = (
-    ('P', 'Peers'),
-    ('R', 'Reportees'),
-    ('M', 'Manager'),
-    )
-
-YEAR = [(k, v) for k, v in enumerate([i for i in xrange(2015, 10000)])]
-
 MARITAL_CHOICES = (
     ('MA', 'Married'),
     ('WD', 'Windowed'),
@@ -143,74 +128,6 @@ class EmpAddress(models.Model):
 User model can be found here.
 https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 
-
-class EmpPeer(models.Model):
-    employee = models.ForeignKey(User, verbose_name="Employee",
-                                 related_name="empl", default=None)
-    peer = models.ForeignKey(User, verbose_name="Employee's peer",
-                             related_name="peer", default=None)
-    status = models.CharField(
-        verbose_name='Status',
-        max_length=1,
-        choices=FB360_STATUS,
-        default=FB360_STATUS[0][0])
-    year = models.IntegerField(
-        verbose_name='Year',
-        choices=YEAR,
-        default=0
-    )
-
-
-class FB360Question(models.Model):
-    qst = models.CharField("Question", max_length=100, blank=False)
-    category = models.CharField(
-        verbose_name='Question Category',
-        max_length=1,
-        choices=FB360_CATEGORY,
-        default=FB360_CATEGORY[0][0])
-
-
-class FB360Feedback(models.Model):
-    qst = models.ForeignKey(FB360Question,
-                            verbose_name="Feedback Question",
-                            default=None)
-    year = models.IntegerField(
-        verbose_name='Year',
-        choices=YEAR,
-        default=0
-    )
-    """
-    Feedback process planning
-    """
-    start_date = models.DateTimeField(
-        verbose_name="Start 360 degree appraisal"
-    )
-    end_date = models.DateTimeField(
-        verbose_name="Complete 360 degree appraisal"
-    )
-    selection_date = models.DateTimeField(
-        verbose_name="Peer selection completion date"
-    )
-    approval_date = models.DateTimeField(
-        verbose_name="Peer approval completion date"
-    )
-
-
-class FB360Answer(models.Model):
-    """ This is the set of answers that a question can possibly have """
-    pass
-
-class FB360Response(models.Model):
-
-    employee
-    respondent
-    question
-    answer
-
-class QualitativeResponse(models.Model):
-    employee
-    respondent
-    TextField
 
 class Employee(models.Model):
     # User model will have the usual fields.  We will have the remaining ones
