@@ -1,4 +1,4 @@
-auth,User,username,uniquename
+auth,User,username,name
 auth,User,first_name,name
 auth,User,last_name,name
 auth,User,email,randomemail
