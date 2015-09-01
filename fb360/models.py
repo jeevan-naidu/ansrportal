@@ -66,7 +66,7 @@ class Answer(models.Model):
     """
     Set of answers that a question can possibly have
     """
-    ans = models.CharField("Question", max_length=100, blank=False)
+    ans = models.CharField("Choice", max_length=100, blank=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -83,7 +83,7 @@ class Question(models.Model):
     """
     qst = models.CharField("Question", max_length=100, blank=False)
     ans = models.ManyToManyField(Answer,
-                                 verbose_name="Feedback Question",
+                                 verbose_name="Choice",
                                  default=None)
     category = models.CharField(
         verbose_name='Question Category',
