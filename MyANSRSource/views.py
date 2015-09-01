@@ -1923,19 +1923,19 @@ def notify(request):
         manager = "  ".join(l)
     projectHead = CompanyMaster.models.Customer.objects.filter(
         id=int(request.POST.get('customer')),
-    ).values('relatedMember__email',
-             'relatedMember__first_name',
-             'relatedMember__last_name')
+    ).values('Crelation__email',
+             'Crelation__first_name',
+             'Crelation__last_name')
     for eachHead in projectHead:
-        if eachHead['relatedMember__email'] != '':
+        if eachHead['Crelation__email'] != '':
             context = {
-                'first_name': eachHead['relatedMember__first_name'],
+                'first_name': eachHead['Crelation__first_name'],
                 'projectId': projectDetails.projectId,
                 'projectName': projectName,
                 'pmname': manager,
                 'startDate': projectDetails.startDate
             }
-            SendMail(context, eachHead['relatedMember_email'],
+            SendMail(context, eachHead['Crelation_email'],
                      'projectCreatedMgmt')
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
