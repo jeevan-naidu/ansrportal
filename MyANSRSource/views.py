@@ -1935,7 +1935,7 @@ def notify(request):
                 'pmname': manager,
                 'startDate': projectDetails.startDate
             }
-            SendMail(context, eachHead['Crelation_email'],
+            SendMail(context, eachHead['Crelation__email'],
                      'projectCreatedMgmt')
     data = {'projectCode': request.POST.get('projectCode'),
             'projectName': projectName,
