@@ -76,6 +76,7 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
         Peer must not be already added to this employee in Approved / Pending
         state.
         Peer cannot be self assigned.
+        Peer cannot be my manager.
         Peer must be FB360 eligible.
     Returns 0 -> Not Eligible or  1 -> Is Eligible
     """
@@ -83,18 +84,21 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
         if eachPeer != request.user:
             try:
                 if eachPeer.employee.is_360eligible:
-                    myPeerObj = Peer.objects.filter(
-                        employee=eachPeer,
-                        emppeer=empPeerObj,
-                    )
-                    if myPeerObj:
-                        if myPeerObj.filter(status__in=('D', 'R')):
-                            UpdatePeerStatus(myPeerObj[0], 'P')
-                            return 0
+                    if request.user.employee.manager != eachPeer:
+                        myPeerObj = Peer.objects.filter(
+                            employee=eachPeer,
+                            emppeer=empPeerObj,
+                        )
+                        if myPeerObj:
+                            if myPeerObj.filter(status__in=('D', 'R')):
+                                UpdatePeerStatus(myPeerObj[0], 'P')
+                                return 0
+                            else:
+                                return 0
                         else:
-                            return 0
+                            return 1
                     else:
-                        return 1
+                        return 0
                 else:
                     return 0
             except ObjectDoesNotExist:
