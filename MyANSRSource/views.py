@@ -1094,7 +1094,6 @@ def Dashboard(request):
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
-
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,

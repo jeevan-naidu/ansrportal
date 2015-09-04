@@ -1,13 +1,24 @@
 from django.contrib import admin
+from django import forms
 from .models import Question, Answer, Feedback
 
 
-class AnswerAdmin(admin.ModelAdmin):
-    list_display = (
-        'ans',
-        )
-    list_filter = ('ans',)
-    ordering = ('ans', )
+class AnswerInlineFormSet(forms.ModelForm):
+
+    class Meta:
+        widgets = {
+            'ans': forms.TextInput(
+                attrs={
+                    'style': 'width:1024px',
+                    })
+        }
+
+
+class AnswerInline(admin.TabularInline):
+    model = Answer
+    extra = 4
+    exclude = []
+    form = AnswerInlineFormSet
 
 
 class QuestionAdmin(admin.ModelAdmin):
@@ -17,6 +28,7 @@ class QuestionAdmin(admin.ModelAdmin):
         )
     list_filter = ('qst',)
     ordering = ('qst', )
+    inlines = [AnswerInline, ]
 
 
 class FeedbackAdmin(admin.ModelAdmin):
@@ -31,5 +43,4 @@ class FeedbackAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Answer, AnswerAdmin)
 admin.site.register(Feedback, FeedbackAdmin)

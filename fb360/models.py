@@ -15,8 +15,8 @@ CATEGORY = (
     ('M', 'Manager'),
     )
 
-# Year choice ranges from 2015 to 9999
-YEAR = [(k, v) for k, v in enumerate([i for i in xrange(2015, 10000)])]
+# Year choice ranges from 2015 to 3999
+YEAR = [(k, v) for k, v in enumerate([i for i in xrange(2015, 4000)])]
 
 
 # FB360 Models
@@ -25,9 +25,9 @@ class EmpPeer(models.Model):
     """
     Information about employee and their peers
     """
-    employee = models.ForeignKey(User, verbose_name="Employee",
-                                 related_name="Eempl", default=None)
-    peer = models.ManyToManyField(User, verbose_name="Peer(s)",
+    employee = models.ForeignKey(User, related_name="emp",
+                                 default=None, unique=True)
+    peer = models.ManyToManyField(User, verbose_name="Choose Peer",
                                   through='Peer',
                                   related_name="Epeer", default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
@@ -50,30 +50,13 @@ class Peer(models.Model):
         max_length=1,
         choices=STATUS,
         default=STATUS[0][0])
-    year = models.IntegerField(
-        verbose_name='Year',
-        choices=YEAR,
-        default=0
-    )
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
 
-
-class Answer(models.Model):
-
-    """
-    Set of answers that a question can possibly have
-    """
-    ans = models.CharField("Choice", max_length=100, blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.ans
+    class Meta:
+        unique_together = ('employee', 'emppeer', )
 
 
 class Question(models.Model):
@@ -82,9 +65,6 @@ class Question(models.Model):
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=100, blank=False)
-    ans = models.ManyToManyField(Answer,
-                                 verbose_name="Choice",
-                                 default=None)
     category = models.CharField(
         verbose_name='Question Category',
         max_length=1,
@@ -97,6 +77,23 @@ class Question(models.Model):
 
     def __unicode__(self):
         return self.qst
+
+
+class Answer(models.Model):
+
+    """
+    Set of answers that a question can possibly have
+    """
+    qst = models.ForeignKey(Question, verbose_name="Question",
+                            related_name="ansr_new", default=None)
+    ans = models.CharField("Choice", max_length=100, blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.ans
 
 
 class Feedback(models.Model):
@@ -113,17 +110,17 @@ class Feedback(models.Model):
         default=0
     )
     # Feedback process planning
-    start_date = models.DateTimeField(
+    start_date = models.DateField(
         verbose_name="Start 360 degree appraisal"
     )
-    end_date = models.DateTimeField(
+    end_date = models.DateField(
         verbose_name="Complete 360 degree appraisal"
     )
     # Peer dates
-    selection_date = models.DateTimeField(
+    selection_date = models.DateField(
         verbose_name="Peer selection completion date"
     )
-    approval_date = models.DateTimeField(
+    approval_date = models.DateField(
         verbose_name="Peer approval completion date"
     )
     createdon = models.DateTimeField(verbose_name="created Date",

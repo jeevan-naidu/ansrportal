@@ -1,0 +1,56 @@
+{% extends 'fb360Master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
+        <legend><h2><small>Approve / Reject Peer Request</small></h2></legend>
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Peer</th>
+                        <th>Email ID</th>
+                        <th class="text-right">Decide</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if data %}
+                        {% for eachPeer in data %}
+                            {% if forloop.last %}
+                                <input type="hidden" name="totalValue" value="{{ forloop.counter }}" />
+                            {% endif %}
+                            <tr>
+                                <td>{{ eachPeer.name }}</td>
+                                <td>{{ eachPeer.emailid }}</td>
+                                <td class="text-right">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        {% with forloop.counter|stringformat:"s" as t %}
+                                            {% with "choice"|add:t as total %}
+                                                <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="A" /> Accept </label>
+                                                <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="R" /> Reject </label>
+                                            {% endwith %}
+                                            {% with "rowid"|add:t as total %}
+                                                <input type="hidden" name="{{ total }}" value="{{ eachPeer.id }}" />
+                                            {% endwith %}
+                                        {% endwith %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan=3 class="text-center"><h4><small><b>No Pending request found</b><small></h4></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
+        </form>
+	</div>
+</div>
+{% endblock %}
