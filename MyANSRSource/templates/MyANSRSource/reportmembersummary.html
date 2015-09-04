@@ -114,10 +114,12 @@
                             <tr>
                         {% endfor %}
                     {% else %}
-                        {% if eachTS.fullName %}
-                            <tr>
-                                <td colspan="11">{{ eachTS.fullName }} - <small><b>No timesheet submitted for this period</b></small></td>
-                            </tr>
+                        {% if eachTS.active %}
+                            {% if eachTS.fullName %}
+                                <tr>
+                                    <td colspan="11">{{ eachTS.fullName }} - <small><b>No timesheet submitted for this period</b></small></td>
+                                </tr>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endfor %}

@@ -450,7 +450,8 @@ def TeamMemberPerfomanceReport(request):
             users = User.objects.all().values(
                 'id',
                 'first_name',
-                'last_name'
+                'last_name',
+                'is_active'
                 ).order_by('first_name', 'last_name')
             if len(users) == 0:
                 fresh = 2
@@ -464,6 +465,7 @@ def TeamMemberPerfomanceReport(request):
                 eachUser['fullName'] = u"{0} {1}({2})".format(
                     eachUser['first_name'], eachUser['last_name'],
                     empId)
+                eachUser['active'] = eachUser['is_active']
                 eachUser['ts'] = TimeSheetEntry.objects.filter(
                     wkstart__gte=start,
                     wkend__lte=end,
