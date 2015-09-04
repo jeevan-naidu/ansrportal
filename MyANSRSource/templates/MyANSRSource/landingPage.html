@@ -133,17 +133,10 @@
 						</div>
 					{% endif %}
 					{% if user|approve_timesheet %}
-						{% if unapprovedts > 0 %}
-							<a href="fb360/approve-peer" class="list-group-item">
-								<span class="badge">{{ unapprovedts }}</span>
-								Approve Peer
-							</a>
-						{% else %}
-							<div class="list-group-item">
-								<span class="badge">0</span>
-								Approve Peer
-							</div>
-						{% endif %}
+                        <a href="fb360/approve-peer" class="list-group-item">
+                            <span class="badge">{{ myPeerReqCount }}</span>
+                            Approve Peer
+                        </a>
 					{% endif %}
 				</ul>
 			</div>
