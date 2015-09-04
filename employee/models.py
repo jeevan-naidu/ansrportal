@@ -137,7 +137,6 @@ class Employee(models.Model):
                                 blank=True, null=True,
                                 related_name="Manager", default=None)
     status = models.BooleanField(default=True)
-    is_360eligible = models.BooleanField(default=False)
     '''
     ================================================
     Basic Employee Attributes
@@ -283,6 +282,17 @@ class Employee(models.Model):
         max_length=30,
         null=True,
         blank=True)
+    '''
+    ================================================
+    For 360 degree feedback system
+    ================================================
+    '''
+
+    reportees = models.ManyToManyField(User, blank=True, null=True,
+                                       related_name="reportees",
+                                       default=None,
+                                       verbose_name="Reportee(s)")
+    is_360eligible = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'{0}|{1},{2}'.format(

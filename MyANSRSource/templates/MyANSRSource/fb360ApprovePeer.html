@@ -1,0 +1,74 @@
+{% extends 'fb360Master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        {% if accept_eligible %}
+            <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
+        {% else %}
+            <button type="submit" class="btn btn-info pull-right disabled">Respond to invite(s)</button>
+        {% endif %}
+        <legend>
+            <h2><small>Approve / Reject Peer Request</small></h2>
+        </legend>
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Peer</th>
+                        <th>Email ID</th>
+                        {% if accept_eligible %}
+                            <th class="text-right">Decide</th>
+                        {% else %}
+                            <th class="text-right">Status</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if data %}
+                        {% for eachPeer in data %}
+                            {% if forloop.last %}
+                                <input type="hidden" name="totalValue" value="{{ forloop.counter }}" />
+                            {% endif %}
+                            <tr>
+                                <td>{{ eachPeer.name }}</td>
+                                <td>{{ eachPeer.emailid }}</td>
+                                {% if accept_eligible %}
+                                    <td class="text-right">
+                                        <div class="btn-group" data-toggle="buttons">
+                                            {% with forloop.counter|stringformat:"s" as t %}
+                                                {% with "choice"|add:t as total %}
+                                                    <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="A" /> Accept </label>
+                                                    <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="R" /> Reject </label>
+                                                {% endwith %}
+                                                {% with "rowid"|add:t as total %}
+                                                    <input type="hidden" name="{{ total }}" value="{{ eachPeer.id }}" />
+                                                {% endwith %}
+                                            {% endwith %}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td class="text-right"><h5><small>Peer Approval Date has expired</small></h5></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan=3 class="text-center"><h4><small><b>No Pending request found</b><small></h4></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% if accept_eligible %}
+                <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
+            {% else %}
+                <button type="submit" class="btn btn-info pull-right disabled">Respond to invite(s)</button>
+            {% endif %}
+        </form>
+	</div>
+</div>
+{% endblock %}

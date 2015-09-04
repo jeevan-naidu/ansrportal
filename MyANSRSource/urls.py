@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from MyANSRSource import views, reportviews
+from MyANSRSource import views, reportviews, fb360views
 
 urlpatterns = patterns(u'',
                        url(r'^getchapters/(?P<projectid>[0-9]+)/$',
@@ -50,6 +50,12 @@ urlpatterns = patterns(u'',
                        url(r'^reports/member-perfomance$',
                            reportviews.TeamMemberPerfomanceReport,
                            name=u'memberperfomancereport'),
+                       url(r'^fb360/choose-peer$',
+                           fb360views.PeerRequest,
+                           name=u'projectreport'),
+                       url(r'^fb360/approve-peer$',
+                           fb360views.PeerAccept,
+                           name=u'projectreport'),
                        url(r'^reports/single-project$',
                            reportviews.SingleProjectReport,
                            name=u'projectreport'),

@@ -18,6 +18,8 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
+from fb360.models import Peer, Feedback
+
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
@@ -1088,7 +1090,9 @@ def Dashboard(request):
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
-
+    myRequests = Peer.objects.filter(employee=request.user, status='P')
+    myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
+    is360eligible = request.user.employee.is_360eligible
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1111,7 +1115,9 @@ def Dashboard(request):
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,
         'unapprovedts': unApprovedTimeSheet,
-        'totalemp': totalEmployees
+        'myPeerReqCount': myPeerReqCount,
+        'totalemp': totalEmployees,
+        'is360eligible': is360eligible,
     }
     return render(request, 'MyANSRSource/landingPage.html', data)
 
