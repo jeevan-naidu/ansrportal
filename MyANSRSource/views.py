@@ -13,12 +13,12 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from fb360.models import Peer
+from fb360.models import Peer, Feedback
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -1098,6 +1098,7 @@ def Dashboard(request):
         eachProjectHours = workingHours / len(cp)
     myRequests = Peer.objects.filter(employee=request.user, status='P')
     myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
+    is360eligible = request.user.employee.is_360eligible
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1121,7 +1122,8 @@ def Dashboard(request):
         'activeMilestones': activeMilestones,
         'unapprovedts': unApprovedTimeSheet,
         'myPeerReqCount': myPeerReqCount,
-        'totalemp': totalEmployees
+        'totalemp': totalEmployees,
+        'is360eligible': is360eligible,
     }
     return render(request, 'MyANSRSource/landingPage.html', data)
 

@@ -2,23 +2,24 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 
 from fb360.forms import PeerForm
-from fb360.models import EmpPeer, Peer
+from fb360.models import EmpPeer, Peer, Feedback
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from .fb360eligible import eligible_360
+from datetime import date
 
 
 @login_required
+@eligible_360
 def PeerRequest(request):
     """
     Handler to show list of peers along with thier status.
     Also support ability to add a new peer.
     Status types -> Pending, Approved, Rejected
     """
-    form = PeerForm()
-    peerList = GetMyPeerList(request)
     if request.method == 'POST':
         acceptedForm = PeerForm(request.POST)
         if acceptedForm.is_valid():
@@ -34,12 +35,13 @@ def PeerRequest(request):
                     peerObj.employee = eachPeer
                     peerObj.emppeer = empPeerObj
                     peerObj.save()
-        peerList = GetMyPeerList(request)
     return render(request, 'fb360SelectPeer.html',
-                  {'form': form, 'data': peerList})
+                  {'form': PeerForm(), 'data': GetMyPeerList(request),
+                   'request_eligible': IsPeerRequestEligible()})
 
 
 @login_required
+@eligible_360
 def GetMyPeerList(request):
     """
     Handler sends back peer list for logged in user.
@@ -65,6 +67,7 @@ def GetMyPeerList(request):
 
 
 @login_required
+@eligible_360
 def IsPeerEligible(request, eachPeer, empPeerObj):
     """
     Handler checks the current peer is eligible to be added or not.
@@ -102,12 +105,27 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
         return 0
 
 
+def IsPeerRequestEligible():
+    """
+    Handler to check peer selection date is expired or not
+    Returns True -> If Not expired / False -> If Expired
+    """
+    fbObj = Feedback.objects.filter(year=date.today().year)
+    if fbObj:
+        if fbObj[0].selection_date >= date.today():
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 @login_required
+@eligible_360
 def PeerAccept(request):
     """
-    Handler to approve peer or remove peer
+    Handler to approve peer
     """
-    approvalList = GetPeerRequest(request)
     if request.method == 'POST':
         for i in range(1, int(request.POST.get('totalValue')) + 1):
             choice = "choice" + str(i)
@@ -116,11 +134,28 @@ def PeerAccept(request):
                 id=int(request.POST.get(rowid))
             )
             UpdatePeerStatus(myPeerObj, request.POST.get(choice))
-        approvalList = GetPeerRequest(request)
-    return render(request, 'fb360ApprovePeer.html', {'data': approvalList})
+    return render(request, 'fb360ApprovePeer.html',
+                  {'data': GetPeerRequest(request),
+                   'accept_eligible': IsPeerAcceptEligible()})
+
+
+def IsPeerAcceptEligible():
+    """
+    Handler to check peer approval date is expired or not
+    Returns True -> If Not expired / False -> If Expired
+    """
+    fbObj = Feedback.objects.filter(year=date.today().year)
+    if fbObj:
+        if fbObj[0].approval_date >= date.today():
+            return True
+        else:
+            return False
+    else:
+        return False
 
 
 @login_required
+@eligible_360
 def GetPeerRequest(request):
     """
     Returns List of peer requests.
@@ -137,6 +172,7 @@ def GetPeerRequest(request):
 
 
 @login_required
+@eligible_360
 def ConstructList(request, myObj):
     """
     Handler to contruct basic employee information.

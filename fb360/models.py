@@ -16,7 +16,7 @@ CATEGORY = (
     )
 
 # Year choice ranges from 2015 to 3999
-YEAR = [(k, v) for k, v in enumerate([i for i in xrange(2015, 4000)])]
+YEAR = [(v, v) for k, v in enumerate([i for i in xrange(2015, 4000)])]
 
 
 # FB360 Models

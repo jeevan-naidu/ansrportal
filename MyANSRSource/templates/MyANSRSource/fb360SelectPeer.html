@@ -8,30 +8,34 @@
         <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
-            <table class="table table-condensed">
-                <tr>
-                    {% for field in form %}
-                        <th>Choose Peer(s)
-                            {% if field.field.required %}
-                                <span class="required">*</span>
-                            {% endif %}
-                        </th>
-                    {% endfor %}
-                </tr>
-                <tr>
-                    {% for field in form %}
-                        <td class="col-lg-6">
-                            {{ field }}
+            {% if request_eligible %}
+                <table class="table table-condensed">
+                    <tr>
+                        {% for field in form %}
+                            <th>Choose Peer(s)
+                                {% if field.field.required %}
+                                    <span class="required">*</span>
+                                {% endif %}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for field in form %}
+                            <td class="col-lg-6">
+                                {{ field }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="submit" class="btn btn-primary"> Send Invite !!!
+                            </button>
                         </td>
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <td>
-                        <button type="submit" class="btn btn-primary"> Send Invite !!!
-                        </button>
-                    </td>
-                </tr>
-            </table>
+                    </tr>
+                </table>
+            {% else %}
+                <h4><small><b> Peer Selection date has expired.. Below are the peers you have chosen </b></small></h4>
+            {% endif %}
             <table class="table table-condensed">
                 <thead>
                     <tr>
