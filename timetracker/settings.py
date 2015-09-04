@@ -25,7 +25,7 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
+    # 'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'employee',
     'CompanyMaster',
     'MyANSRSource',
+    'fb360'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -177,9 +178,9 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansrsource",
+        "NAME": "ansrprod",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
