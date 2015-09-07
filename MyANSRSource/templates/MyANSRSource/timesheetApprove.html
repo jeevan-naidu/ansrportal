@@ -11,7 +11,7 @@
     {% for eachInfo in timesheetInfo %}
         <table class="table table-condensed">
             {% if forloop.last %}
-                <input type="hidden" name="totalValue" value="{{ forloop.revcounter }}" />
+                <input type="hidden" name="totalValue" value="{{ forloop.counter }}" />
             {% endif %}
             <thead>
                 <th>{{ eachInfo.member }}</th>
@@ -21,7 +21,7 @@
                         {% with forloop.counter|stringformat:"s" as t %}
                             {% with "choice"|add:t as total %}
                                 <label class="btn btn-default"><input type="radio" name="{{ total }}" value="approve" /> Approve </label>
-                                <label class="btn btn-default"><input checked type="radio" name="{{ total }}" value="hold" /> Hold </label>
+                                <label class="btn btn-default"><input type="radio" name="{{ total }}" value="hold" /> Hold </label>
                                 <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
                             {% endwith %}
                             {% with "start"|add:t as total %}
