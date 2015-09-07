@@ -5,7 +5,7 @@
 {%block childcontent %}
 <div class="row">
 	<div class="col-md-12">
-        {% if accept_eligible %}
+        {% if accept_eligible and data %}
             <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
         {% else %}
             <button type="submit" class="btn btn-info pull-right disabled">Respond to invite(s)</button>
@@ -63,7 +63,7 @@
                     {% endif %}
                 </tbody>
             </table>
-            {% if accept_eligible %}
+            {% if accept_eligible and data %}
                 <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
             {% else %}
                 <button type="submit" class="btn btn-info pull-right disabled">Respond to invite(s)</button>
