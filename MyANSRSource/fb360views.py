@@ -164,7 +164,7 @@ def GetPeerRequest(request):
     """
     Returns List of peer requests.
     """
-    myObj = EmpPeer.objects.get(employee=request.user)
+    myObj = EmpPeer.objects.filter(employee=request.user)
     if myObj:
         myRequests = Peer.objects.filter(employee=request.user,
                                          status='P')
