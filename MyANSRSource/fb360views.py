@@ -169,8 +169,10 @@ def GetPeerRequest(request):
         myRequests = Peer.objects.filter(employee=request.user,
                                          status='P')
         if myRequests:
-            return ConstructList(request,
-                                 [eachReq.emppeer for eachReq in myRequests])
+            list1 = ConstructList(request, myRequests)
+            list2 = ConstructList(request,
+                                  [eachReq.emppeer for eachReq in myRequests])
+            return list1 + list2
         else:
             return None
 
