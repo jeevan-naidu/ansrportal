@@ -25,7 +25,7 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # 'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
@@ -178,9 +178,9 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "ansrprod",
+        "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "mysqlroot",
         "HOST": "localhost",
         "PORT": "3306",
         },
