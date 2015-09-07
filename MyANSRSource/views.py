@@ -795,7 +795,7 @@ def renderTimesheet(request, data):
 @permission_required('MyANSRSource.approve_timesheet')
 def ApproveTimesheet(request):
     if request.method == 'POST':
-        for i in range(1, int(request.POST.get('totalValue')) + 2):
+        for i in range(1, int(request.POST.get('totalValue')) + 1):
             choice = "choice" + str(i)
             mem = "mem" + str(i)
             start = "start" + str(i)
@@ -811,7 +811,6 @@ def ApproveTimesheet(request):
                         wkstart=startDate,
                         wkend=endDate
                     )
-                    print updateTS
                     for eachTS in updateTS:
                         if request.POST.get(choice) == 'redo':
                             eachTS.hold = False
