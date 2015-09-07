@@ -164,17 +164,13 @@ def GetPeerRequest(request):
     """
     Returns List of peer requests.
     """
-    myObj = EmpPeer.objects.filter(employee=request.user)
-    if myObj:
-        myRequests = Peer.objects.filter(employee=request.user,
-                                         status='P')
-        if myRequests:
-            list1 = ConstructList(request, myRequests)
-            list2 = ConstructList(request,
-                                  [eachReq.emppeer for eachReq in myRequests])
-            return list1 + list2
-        else:
-            return None
+    myRequests = Peer.objects.filter(employee=request.user,
+                                     status='P')
+    if myRequests:
+        return ConstructList(request,
+                             [eachReq.emppeer for eachReq in myRequests])
+    else:
+        return None
 
 
 @login_required
