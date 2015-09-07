@@ -5,6 +5,7 @@
 {%block childcontent %}
 <div class="row">
 	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
         {% if accept_eligible and data %}
             <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
         {% else %}
@@ -13,7 +14,6 @@
         <legend>
             <h2><small>Approve / Reject Peer Request</small></h2>
         </legend>
-        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
             <table class="table table-condensed">

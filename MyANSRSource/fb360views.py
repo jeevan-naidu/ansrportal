@@ -207,5 +207,6 @@ def UpdatePeerStatus(myPeerObj, status):
     Handler updates peer's status.
     Returns Nothing.
     """
-    myPeerObj.status = status
-    myPeerObj.save()
+    if status is not None:
+        myPeerObj.status = status
+        myPeerObj.save()
