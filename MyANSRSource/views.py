@@ -811,6 +811,7 @@ def ApproveTimesheet(request):
                         wkstart=startDate,
                         wkend=endDate
                     )
+                    print updateTS
                     for eachTS in updateTS:
                         if request.POST.get(choice) == 'redo':
                             eachTS.hold = False
