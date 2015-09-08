@@ -37,7 +37,7 @@ def PeerRequest(request):
                     peerObj.save()
     return render(request, 'fb360SelectPeer.html',
                   {'form': PeerForm(), 'data': GetMyPeerList(request),
-                   'request_eligible': IsPeerRequestEligible()})
+                   'request_eligible': IsPageActionEligible('Request')})
 
 
 @login_required
@@ -109,21 +109,6 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
         return 0
 
 
-def IsPeerRequestEligible():
-    """
-    Handler to check peer selection date is expired or not
-    Returns True -> If Not expired / False -> If Expired
-    """
-    fbObj = Feedback.objects.filter(year=date.today().year)
-    if fbObj:
-        if fbObj[0].selection_date >= date.today():
-            return True
-        else:
-            return False
-    else:
-        return False
-
-
 @login_required
 @eligible_360
 def PeerAccept(request):
@@ -140,22 +125,25 @@ def PeerAccept(request):
             UpdatePeerStatus(myPeerObj, request.POST.get(choice))
     return render(request, 'fb360ApprovePeer.html',
                   {'data': GetPeerRequest(request),
-                   'accept_eligible': IsPeerAcceptEligible()})
+                   'accept_eligible': IsPageActionEligible('Accept')})
 
 
-def IsPeerAcceptEligible():
+def IsPageActionEligible(action):
     """
-    Handler to check peer approval date is expired or not
-    Returns True -> If Not expired / False -> If Expired
+    Handler to check today is in peer / feedback date ranges or not
+    Returns True -> If in range, False -> If not in range
+            None -> If there is no FB object
     """
     fbObj = Feedback.objects.filter(year=date.today().year)
     if fbObj:
-        if fbObj[0].approval_date >= date.today():
-            return True
-        else:
-            return False
+        if action == 'Accept':
+            return (fbObj[0].approval_date >= date.today() and
+                    fbObj[0].selection_start_date <= date.today())
+        elif action == 'Request':
+            return (fbObj[0].selection_date >= date.today() and
+                    fbObj[0].selection_start_date <= date.today())
     else:
-        return False
+        return None
 
 
 @login_required

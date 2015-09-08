@@ -33,8 +33,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = (
-        'qst',
-        'year',
+        'qst', 'year', 'selection_start_date',
         'start_date', 'end_date',
         'selection_date', 'approval_date'
         )

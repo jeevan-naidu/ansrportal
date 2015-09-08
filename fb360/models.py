@@ -117,6 +117,10 @@ class Feedback(models.Model):
         verbose_name="Complete 360 degree appraisal"
     )
     # Peer dates
+    selection_start_date = models.DateField(
+        default=None,
+        verbose_name="Peer selection start date"
+    )
     selection_date = models.DateField(
         verbose_name="Peer selection completion date"
     )
