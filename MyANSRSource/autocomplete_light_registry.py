@@ -1,7 +1,7 @@
 import autocomplete_light
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book
+from MyANSRSource.models import Book, Project
 
 
 class AutocompleteUser(autocomplete_light.AutocompleteModelBase):

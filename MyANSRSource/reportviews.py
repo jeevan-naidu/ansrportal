@@ -372,7 +372,10 @@ def SingleProjectReport(request):
                     datetime.now().time()
                 )
                 fileName = fileName.replace("  ", "_")
-                report = [basicData, crData, msData, tsData, taskData]
+                print topPerformer, avgTaskData, maxTaskData, minTaskData
+                report = [basicData, crData, msData, tsData,
+                          taskData, topPerformer, avgTaskData,
+                          maxTaskData, minTaskData]
                 sheetName = ['Basic Information',
                              'Change Requests',
                              'Milestones',
@@ -387,7 +390,7 @@ def SingleProjectReport(request):
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
                      'Actual Effort', 'Deviation(%)'],
-                    ['Task Name', 'Norm', 'Actual']
+                    ['Task Name', 'Min.', 'Max.', 'Median', 'Avg.']
                 ]
                 grdTotal = [plannedTotal, actualTotal, deviation]
                 return generateExcel(request, report, sheetName,
@@ -1268,22 +1271,24 @@ def generateProjectContent(request, header, report, worksheet,
                     generateReportFooter(request, worksheet, alp[7], row,
                                          reportDateformat, msg)
             if 'financial' in eachRec:
+                value = '$' + str(eachRec['amount'])
                 worksheet.write(row, 0, eachRec['description'], content)
                 worksheet.write(row, 1, eachRec['milestoneDate'], dateformat)
                 worksheet.write(row, 2, eachRec['financial'], content)
-                worksheet.write(row, 3, eachRec['amount'], content)
+                worksheet.write(row, 3, value, content)
                 worksheet.write(row, 4, eachRec['closed'], content)
                 row += 1
 
-            if 'task__name' in eachRec:
+            if 'task__name' in eachRec or 'taskName' in eachRec:
+                taskName = eachRec['task__name']
                 worksheet.write(row, 0, eachRec['task__name'], content)
-                #worksheet.write(row, 1, eachRec['norm'], content)
                 row += 1
 
         row, msg = 1, ''
         for eachRec in report:
             if 'deviation' in eachRec:
-                worksheet.write(row, 0, eachRec['teamMember'], content)
+                name = eachRec['teamMember__first_name'] + '  ' +eachRec['teamMember__last_name']
+                worksheet.write(row, 0, name, content)
                 worksheet.write(row, 1, eachRec['designation'], content)
                 worksheet.write(row, 2, eachRec['planned'], content)
                 worksheet.write(row, 3, eachRec['actual'], content)
