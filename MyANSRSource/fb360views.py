@@ -30,7 +30,8 @@ def PeerRequest(request):
             except IntegrityError:
                 empPeerObj = EmpPeer.objects.get(employee=request.user)
             for eachPeer in acceptedForm.cleaned_data['peer']:
-                if IsPeerEligible(request, eachPeer, empPeerObj):
+                if IsPeerEligible(request, eachPeer, empPeerObj) and \
+                        IsPeerRequestExist(request, eachPeer, empPeerObj):
                     peerObj = Peer()
                     peerObj.employee = eachPeer
                     peerObj.emppeer = empPeerObj
@@ -107,6 +108,18 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
             return 0
     else:
         return 0
+
+
+@login_required
+@eligible_360
+def IsPeerRequestExist(request, eachPeer, empPeerObj):
+    """
+    Handler checks the current peer has requested me
+    Returns 0 -> Not Eligible or  1 -> Is Eligible
+    """
+    print Peer.objects.filter(employee=request.user).values('emppeer__employee')
+    print eachPeer.id
+    return 1
 
 
 @login_required
