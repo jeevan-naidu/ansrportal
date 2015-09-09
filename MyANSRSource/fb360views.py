@@ -117,9 +117,11 @@ def IsPeerRequestExist(request, eachPeer, empPeerObj):
     Handler checks the current peer has requested me
     Returns 0 -> Not Eligible or  1 -> Is Eligible
     """
-    print Peer.objects.filter(employee=request.user).values('emppeer__employee')
-    print eachPeer.id
-    return 1
+    req = Peer.objects.filter(employee=request.user).values('emppeer__employee')
+    if eachPeer.id in [eachReq['emppeer__employee'] for eachReq in req]:
+        return 0
+    else:
+        return 1
 
 
 @login_required
