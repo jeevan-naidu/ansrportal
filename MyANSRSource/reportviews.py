@@ -125,6 +125,11 @@ def SingleTeamMemberReport(request):
                      newReport if eachData['chapter__name'] != ' -  '])
                 grdTotal = {'nTotal': nonProjectTotal, 'pTotal': projectTotal}
                 fresh = 2
+                for eachRec in newReport:
+                    if eachRec['project__name'] != ' - ':
+                        projectH.append(eachRec)
+                    else:
+                        nonProjectH.append(eachRec)
                 if 'generate' in request.POST:
                     sheetName = ['TeamMember Perfomance']
                     fileName = u'{0}_{1}_{2}.xlsx'.format(
@@ -136,9 +141,9 @@ def SingleTeamMemberReport(request):
                                'Chapter', 'Task / Activity', 'Total Hours',
                                'Total Productivity', 'Avg. Productivity',
                                'Min. Productivity', 'Max. Productivity',
-                               'Median Productivity', 'Norm', 'Status']
-                    return generateExcel(request, report, sheetName,
-                                         heading, grdTotal, fileName)
+                               'Median Productivity', 'Status']
+                    return generateExcel(request, [projectH, nonProjectH],
+                                         sheetName, heading, grdTotal, fileName)
             else:
                 fresh = 0
             startDate = reportData.cleaned_data['startDate']
@@ -149,11 +154,6 @@ def SingleTeamMemberReport(request):
                 'endDate': reportData.cleaned_data['endDate'],
                 'member': reportData.cleaned_data['member']
             })
-            for eachRec in newReport:
-                if eachRec['project__name'] != ' - ':
-                    projectH.append(eachRec)
-                else:
-                    nonProjectH.append(eachRec)
         else:
             logger.error(reportData.errors)
             fresh = 1
@@ -1168,7 +1168,7 @@ def generateSheetHeader(request, heading, header, alp, worksheet):
 def generateMemberContent(request, header, report, worksheet,
                           content, alp, grdTotal):
     row = 1
-    for eachRec in report:
+    for eachRec in report[0]:
         worksheet.write(row, 0, eachRec['project__projectId'], content)
         worksheet.write(row, 1, eachRec['project__name'], content)
         worksheet.write(row, 2, eachRec['project__book__name'], content)
@@ -1182,11 +1182,30 @@ def generateMemberContent(request, header, report, worksheet,
         worksheet.write(row, 7, eachRec['total'], content)
         worksheet.write(row, 8, eachRec['total'], content)
         worksheet.write(row, 9, eachRec['total'], content)
-        worksheet.write(row, 10, '', content)
         if eachRec['hold']:
-            worksheet.write(row, 12, 'Not Submitted', content)
+            worksheet.write(row, 11, 'Not Submitted', content)
         else:
-            worksheet.write(row, 12, 'Submitted', content)
+            worksheet.write(row, 11, 'Submitted', content)
+        row += 1
+    print row
+    for eachRec in report[1]:
+        worksheet.write(row, 0, eachRec['project__projectId'], content)
+        worksheet.write(row, 1, eachRec['project__name'], content)
+        worksheet.write(row, 2, eachRec['project__book__name'], content)
+        worksheet.write(row, 3, eachRec['chapter__name'], content)
+        if eachRec['activity__name'] != '':
+            worksheet.write(row, 4, eachRec['activity__name'], content)
+        else:
+            worksheet.write(row, 4, eachRec['task__name'], content)
+        worksheet.write(row, 5, eachRec['total'], content)
+        worksheet.write(row, 6, eachRec['total'], content)
+        worksheet.write(row, 7, eachRec['total'], content)
+        worksheet.write(row, 8, eachRec['total'], content)
+        worksheet.write(row, 9, eachRec['total'], content)
+        if eachRec['hold']:
+            worksheet.write(row, 11, 'Not Submitted', content)
+        else:
+            worksheet.write(row, 11, 'Submitted', content)
         row += 1
     msg0 = u"Total Non-Project Hours(s) : {0}".format(grdTotal['nTotal'])
     msg1 = u"Total Project Hours(s) : {0}".format(grdTotal['pTotal'])
