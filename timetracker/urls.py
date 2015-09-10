@@ -17,6 +17,7 @@ urlpatterns = patterns('',
                            include('autocomplete_light.urls')),
                        url(r'^grappelli/', include('grappelli.urls')),
                        url(r'^admin/', include(admin.site.urls)),
+                       url(r'^fb360/', include('fb360.urls')),
                        url(r'^myansrsource/', include('MyANSRSource.urls')),
                        url(r'session_security/',
                            include('session_security.urls')
