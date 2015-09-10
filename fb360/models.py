@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from employee.models import Designation
+import employee as emp
 
 # Choice field declaration
 STATUS = (
@@ -95,8 +95,8 @@ class Question(models.Model):
     """
     qst = models.CharField("Question", max_length=100, blank=False)
     fb = models.ForeignKey(FB360, default=None)
-    category = models.ManyToManyField(
-        Designation,
+    category = models.ForeignKey(
+        emp.models.Designation,
         default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -105,6 +105,20 @@ class Question(models.Model):
 
     def __unicode__(self):
         return self.qst
+
+
+class ManagerRequest(models.Model):
+
+    """
+    Stores manager's request and response.
+    """
+    respondent = models.ForeignKey(User,
+                                   related_name="Rrespon", default=None)
+    status = models.CharField(max_length=1)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
 
 
 class Response(models.Model):

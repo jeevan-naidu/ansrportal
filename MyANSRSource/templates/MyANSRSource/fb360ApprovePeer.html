@@ -30,7 +30,16 @@
                 </thead>
                 <tbody>
                     {% if data %}
-                        {% for eachPeer in data %}
+                        {% if data.1 %}
+                            <tr>
+                                <td colspan="2">Your manager has requested your feedback</td>
+                                <td>
+                                    <label class="btn btn-default btn-sm"><input type="radio" name="mgrChoice" value="A" /> Accept </label>
+                                    <label class="btn btn-default btn-sm"><input type="radio" name="mgrChoice" value="R" /> Reject </label>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% for eachPeer in data.0 %}
                             {% if forloop.last %}
                                 <input type="hidden" name="totalValue" value="{{ forloop.counter }}" />
                             {% endif %}

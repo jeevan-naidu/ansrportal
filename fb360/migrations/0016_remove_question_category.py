@@ -11,10 +11,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='question',
             name='category',
-            field=models.ManyToManyField(default=None, to='employee.Designation'),
-            preserve_default=True,
         ),
     ]

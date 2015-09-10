@@ -33,6 +33,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 import CompanyMaster
 import employee
+import employee as emp
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 
@@ -1092,6 +1093,10 @@ def Dashboard(request):
         eachProjectHours = workingHours / len(cp)
     myRequests = Peer.objects.filter(employee=request.user, status='P')
     myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
+    myPeers = employee.objects.filter(manager=request.user)
+    isManager = 0
+    if myPeers:
+        isManager = 1
     is360eligible = request.user.employee.is_360eligible
     data = {
         'username': request.user.username,
@@ -1118,6 +1123,7 @@ def Dashboard(request):
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
         'is360eligible': is360eligible,
+        'isManager': isManager
     }
     return render(request, 'MyANSRSource/landingPage.html', data)
 

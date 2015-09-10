@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 
 from .forms import PeerForm
-from .models import EmpPeer, Peer, FB360
+from .models import EmpPeer, Peer, FB360, ManagerRequest
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -130,6 +130,7 @@ def PeerAccept(request):
     """
     Handler to approve peer
     """
+    myApprovalList = [GetPeerRequest(request), GetMyManagerRequest(request)]
     if request.method == 'POST':
         for i in range(1, int(request.POST.get('totalValue')) + 1):
             choice = "choice" + str(i)
@@ -138,8 +139,9 @@ def PeerAccept(request):
                 id=int(request.POST.get(rowid))
             )
             UpdatePeerStatus(myPeerObj, request.POST.get(choice))
+        myApprovalList = [GetPeerRequest(request), GetMyManagerRequest(request)]
     return render(request, 'fb360ApprovePeer.html',
-                  {'data': GetPeerRequest(request),
+                  {'data': myApprovalList,
                    'accept_eligible': IsPageActionEligible('Accept')})
 
 
@@ -203,6 +205,24 @@ def ConstructList(request, myObj):
                 myPeerInfo['status'] = peerObj.status
         myPeerList.append(myPeerInfo)
     return myPeerList
+
+
+@login_required
+@eligible_360
+def GetMyManagerRequest(request):
+    """
+    Handler sends back my manager request for feedback
+    Returns True if a request is in place,
+            False if i have no manager / no request from my manager
+    """
+    if request.user.manager:
+        mgrReq = ManagerRequest.objects.filter(respondent=request.user)
+        if len(mgrReq):
+            return True
+        else:
+            return False
+    else:
+        return False
 
 
 def UpdatePeerStatus(myPeerObj, status):
