@@ -744,7 +744,12 @@ def renderTimesheet(request, data):
         attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
         for eachObj in attendanceObj:
             if eachObj.swipe_out is not None or eachObj.swipe_in is not None:
-                timediff = eachObj.swipe_out - eachObj.swipe_in
+                if eachObj.swipe_out is None:
+                    timediff = eachObj.swipe_in
+                elif eachObj.swipe_in is None:
+                    timediff = eachObj.swipe_out
+                else:
+                    timediff = eachObj.swipe_out - eachObj.swipe_in
                 atttime = u"{0}:{1}".format(timediff.seconds // 3600,
                                             (timediff.seconds % 3600) // 60)
                 attendance[u'{0}'.format(eachObj.attdate.weekday())] = atttime
