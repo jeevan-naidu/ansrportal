@@ -228,7 +228,7 @@ class Project(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.projectId+' : '+self.name
+        return self.projectId + u' : ' + self.name
 
     class Meta:
         permissions = (
