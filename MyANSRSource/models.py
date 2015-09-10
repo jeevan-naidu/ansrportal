@@ -7,8 +7,9 @@ import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator
 
 TASKTYPEFLAG = (
-    ('B', 'Billable'),
+    ('B', 'Revenue'),
     ('I', 'Idle'),
+    ('N', 'Non-Revenue'),
 )
 FREQUENCY = (
     ('M', 'Monthly'),
