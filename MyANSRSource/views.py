@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from fb360.models import Peer, Feedback
+from fb360.models import Peer, FB360
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \

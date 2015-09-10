@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 
 from .forms import PeerForm
-from .models import EmpPeer, Peer, Feedback
+from .models import EmpPeer, Peer, FB360
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -149,7 +149,7 @@ def IsPageActionEligible(action):
     Returns True -> If in range, False -> If not in range
             None -> If there is no FB object
     """
-    fbObj = Feedback.objects.filter(year=date.today().year)
+    fbObj = FB360.objects.filter(year=date.today().year)
     if fbObj:
         if action == 'Accept':
             return (fbObj[0].approval_date >= date.today() and

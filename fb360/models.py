@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from employee.models import Designation
 
 # Choice field declaration
 STATUS = (
@@ -7,12 +8,6 @@ STATUS = (
     ('A', 'Approved'),
     ('R', 'Rejected'),
     ('D', 'Deleted'),
-    )
-
-CATEGORY = (
-    ('P', 'Peers'),
-    ('R', 'Reportees'),
-    ('M', 'Manager'),
     )
 
 # Year choice ranges from 2015 to 3999
@@ -59,51 +54,11 @@ class Peer(models.Model):
         unique_together = ('employee', 'emppeer', )
 
 
-class Question(models.Model):
-
-    """
-    QA assigned with its respective category
-    """
-    qst = models.CharField("Question", max_length=100, blank=False)
-    category = models.CharField(
-        verbose_name='Question Category',
-        max_length=1,
-        choices=CATEGORY,
-        default=CATEGORY[0][0])
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.qst
-
-
-class Answer(models.Model):
-
-    """
-    Set of answers that a question can possibly have
-    """
-    qst = models.ForeignKey(Question, verbose_name="Question",
-                            related_name="ansr_new", default=None)
-    ans = models.CharField("Choice", max_length=100, blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.ans
-
-
-class Feedback(models.Model):
+class FB360(models.Model):
 
     """
     Feedback Information
     """
-    qst = models.ForeignKey(Question,
-                            verbose_name="Feedback Question",
-                            default=None)
     year = models.IntegerField(
         verbose_name='Year',
         choices=YEAR,
@@ -133,6 +88,25 @@ class Feedback(models.Model):
                                      auto_now=True)
 
 
+class Question(models.Model):
+
+    """
+    QA assigned with its respective category
+    """
+    qst = models.CharField("Question", max_length=100, blank=False)
+    fb = models.ForeignKey(FB360, default=None)
+    category = models.ManyToManyField(
+        Designation,
+        default=None)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.qst
+
+
 class Response(models.Model):
 
     """
@@ -144,9 +118,7 @@ class Response(models.Model):
                                    related_name="Rresp", default=None)
     qst = models.ForeignKey(Question,
                             default=None)
-    ans = models.ForeignKey(Answer,
-                            default=None)
-    year = models.IntegerField(default=0)
+    ans = models.CharField(max_length=8)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
