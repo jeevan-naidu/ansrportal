@@ -6,16 +6,37 @@
 <div class="row">
 	<div class="col-md-12">
         <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
-        {% if accept_eligible and data %}
+        {% if accept_eligible and data.0 or data.1.0 %}
             <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
         {% else %}
             <button type="submit" class="btn btn-info pull-right disabled">Respond to invite(s)</button>
         {% endif %}
         <legend>
-            <h2><small>Approve / Reject Peer Request</small></h2>
+            <h2><small>Approve / Reject Peer, Manager Request</small></h2>
         </legend>
             {% csrf_token %}
             {% bootstrap_messages %}
+            {% if data %}
+                {% if data.1.0 %}
+                    {% if data.1.1 == 'A' %}
+                        <div class="text-center"><b>You have accepted to give feedback to your manager</b></div>
+                        <hr />
+                    {% elif data.1.1 == 'P' %}
+                        <div class="col-lg-6 text-right" >Your manager has requested your feedback</div>
+                        <div class="col-lg-6 text-center">
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-default btn-sm"><input type="radio" name="mgrChoice" value="A" /> 
+                                    <i class="fa fa-check fa-lg"></i>
+                                </label>
+                                <label class="btn btn-default btn-sm"><input type="radio" name="mgrChoice" value="R" /> 
+                                    <i class="fa fa-times fa-lg"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <hr />
+                    {% endif %}
+                {% endif %}
+             {% endif %}
             <table class="table table-condensed">
                 <thead>
                     <tr>
@@ -30,15 +51,6 @@
                 </thead>
                 <tbody>
                     {% if data %}
-                        {% if data.1 %}
-                            <tr>
-                                <td colspan="2">Your manager has requested your feedback</td>
-                                <td>
-                                    <label class="btn btn-default btn-sm"><input type="radio" name="mgrChoice" value="A" /> Accept </label>
-                                    <label class="btn btn-default btn-sm"><input type="radio" name="mgrChoice" value="R" /> Reject </label>
-                                </td>
-                            </tr>
-                        {% endif %}
                         {% for eachPeer in data.0 %}
                             {% if forloop.last %}
                                 <input type="hidden" name="totalValue" value="{{ forloop.counter }}" />
@@ -51,8 +63,12 @@
                                         <div class="btn-group" data-toggle="buttons">
                                             {% with forloop.counter|stringformat:"s" as t %}
                                                 {% with "choice"|add:t as total %}
-                                                    <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="A" /> Accept </label>
-                                                    <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="R" /> Reject </label>
+                                                    <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="A" /> 
+                                                        <i class="fa fa-check fa-lg"></i>
+                                                    </label>
+                                                    <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="R" /> 
+                                                        <i class="fa fa-times fa-lg"></i>
+                                                    </label>
                                                 {% endwith %}
                                                 {% with "rowid"|add:t as total %}
                                                     <input type="hidden" name="{{ total }}" value="{{ eachPeer.id }}" />
@@ -72,7 +88,7 @@
                     {% endif %}
                 </tbody>
             </table>
-            {% if accept_eligible and data %}
+            {% if accept_eligible and data.0 or data.1.0 %}
                 <button type="submit" class="btn btn-info pull-right">Respond to invite(s)</button>
             {% else %}
                 <button type="submit" class="btn btn-info pull-right disabled">Respond to invite(s)</button>

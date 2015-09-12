@@ -64,6 +64,10 @@ class FB360(models.Model):
         choices=YEAR,
         default=0
     )
+    process_start_date = models.DateField(
+        default=None,
+        verbose_name="Process Start Date"
+    )
     # Feedback process planning
     start_date = models.DateField(
         verbose_name="Start 360 degree appraisal"
@@ -71,7 +75,8 @@ class FB360(models.Model):
     end_date = models.DateField(
         verbose_name="Complete 360 degree appraisal"
     )
-    # Peer dates
+    # Peer / Reportee dates
+    # Reportee and Peer have same dates
     selection_start_date = models.DateField(
         default=None,
         verbose_name="Peer selection start date"
@@ -87,6 +92,13 @@ class FB360(models.Model):
     updatedon = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
 
+    def __unicode__(self):
+        return str(self.year)
+
+    class Meta:
+        verbose_name = 'FB360 Information'
+        verbose_name_plural = 'FB360 Informations'
+
 
 class Question(models.Model):
 
@@ -94,8 +106,9 @@ class Question(models.Model):
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=100, blank=False)
-    fb = models.ForeignKey(FB360, default=None)
-    category = models.ForeignKey(
+    fb = models.ForeignKey(FB360, default=None,
+                           verbose_name="FB360 Information")
+    category = models.ManyToManyField(
         emp.models.Designation,
         default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
@@ -113,6 +126,7 @@ class ManagerRequest(models.Model):
     Stores manager's request and response.
     """
     respondent = models.ForeignKey(User,
+                                   unique=True,
                                    related_name="Rrespon", default=None)
     status = models.CharField(max_length=1)
     createdon = models.DateTimeField(verbose_name="created Date",

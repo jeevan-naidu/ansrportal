@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from fb360.models import Peer, FB360
+from fb360.models import Peer, FB360, ManagerRequest
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -1097,7 +1097,13 @@ def Dashboard(request):
         eachProjectHours = workingHours / len(cp)
     myRequests = Peer.objects.filter(employee=request.user, status='P')
     myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
-    myPeers = User.objects.filter(Employee__manager=request.user)
+    myMgrReq = ManagerRequest.objects.filter(
+        respondent=request.user, status='P'
+    )
+    if len(myMgrReq):
+        myPeerReqCount = myPeerReqCount + 1
+    myPeers = employee.models.Employee.objects.filter(
+        manager=request.user.employee)
     isManager = 0
     if myPeers:
         isManager = 1

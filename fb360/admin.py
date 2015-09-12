@@ -14,7 +14,8 @@ class FB360Admin(admin.ModelAdmin):
     list_display = (
         'year', 'selection_start_date',
         'start_date', 'end_date',
-        'selection_date', 'approval_date'
+        'selection_date', 'approval_date',
+        'process_start_date'
         )
     list_filter = ('year', )
     ordering = ('year', )

@@ -1,15 +1,28 @@
+# Log file management
 import logging
 logger = logging.getLogger('MyANSRSource')
 
+# FB360 models and forms import
 from .forms import PeerForm
 from .models import EmpPeer, Peer, FB360, ManagerRequest
+
+# Employee model import
+import employee
+
+# Miscellaneous imports
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.contrib.auth.models import User
+from datetime import date
+
+# Exception hanlders import
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+
+# Decorator imports
+from django.contrib.auth.decorators import login_required
 from .fb360eligible import eligible_360
-from datetime import date
+from .ismanager import is_manager
 
 
 @login_required
@@ -92,7 +105,7 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
                         )
                         if myPeerObj:
                             if myPeerObj.filter(status__in=('D', 'R')):
-                                UpdatePeerStatus(myPeerObj[0], 'P')
+                                UpdateRequestStatus(myPeerObj[0], 'P')
                                 return 0
                             else:
                                 return 0
@@ -126,28 +139,67 @@ def IsPeerRequestExist(request, eachPeer, empPeerObj):
 
 @login_required
 @eligible_360
-def PeerAccept(request):
+def RequestAction(request):
     """
-    Handler to approve peer
+    Handler to approve / Reject peer, manager requests
     """
-    myApprovalList = [GetPeerRequest(request), GetMyManagerRequest(request)]
     if request.method == 'POST':
         for i in range(1, int(request.POST.get('totalValue')) + 1):
             choice = "choice" + str(i)
             rowid = "rowid" + str(i)
-            myPeerObj = Peer.objects.get(
-                id=int(request.POST.get(rowid))
-            )
-            UpdatePeerStatus(myPeerObj, request.POST.get(choice))
-        myApprovalList = [GetPeerRequest(request), GetMyManagerRequest(request)]
-    return render(request, 'fb360ApprovePeer.html',
-                  {'data': myApprovalList,
+            if 'mgrChoice' in request.POST:
+                myManagerObj = ManagerRequest.objects.get(
+                    respondent=request.user
+                )
+                UpdateRequestStatus(myManagerObj, request.POST.get('mgrChoice'))
+            if choice in request.POST:
+                myPeerObj = Peer.objects.get(
+                    id=int(request.POST.get(rowid))
+                )
+                UpdateRequestStatus(myPeerObj, request.POST.get(choice))
+    return render(request, 'fb360RequestAction.html',
+                  {'data': [GetPeerRequest(request),
+                            GetMyManagerRequest(request)
+                            ],
                    'accept_eligible': IsPageActionEligible('Accept')})
+
+
+@login_required
+@eligible_360
+@is_manager
+def ChooseReportee(request):
+    """
+    Handler to choose my reportee(s) to get feedback
+    """
+    if request.method == 'POST':
+        for i in range(1, int(request.POST.get('totalValue')) + 1):
+            choice = "choice" + str(i)
+            rowid = "rowid" + str(i)
+            if request.POST.get(choice) is not None:
+                try:
+                    mgrReqObj = ManagerRequest()
+                    mgrReqObj.respondent = User.objects.get(
+                        pk=int(request.POST.get(rowid))
+                    )
+                    mgrReqObj.status = 'P'
+                    mgrReqObj.save()
+                except IntegrityError:
+                    mgrReqObj = ManagerRequest.objects.get(
+                        respondent__id=int(request.POST.get(rowid))
+                    )
+                    UpdateRequestStatus(mgrReqObj, 'P')
+    return render(request, 'fb360ChooseReportee.html',
+                  {'data': [
+                      GetMyReporteeList(request),
+                      GetMyReporteeFeedbackList(request)
+                  ],
+                      'choose_eligible': IsPageActionEligible('Choose')})
 
 
 def IsPageActionEligible(action):
     """
-    Handler to check today is in peer / feedback date ranges or not
+    Handler to check today is in peer / feedback / reportee
+    date ranges or not
     Returns True -> If in range, False -> If not in range
             None -> If there is no FB object
     """
@@ -156,7 +208,7 @@ def IsPageActionEligible(action):
         if action == 'Accept':
             return (fbObj[0].approval_date >= date.today() and
                     fbObj[0].selection_start_date <= date.today())
-        elif action == 'Request':
+        elif action == 'Request' or action == 'Choose':
             return (fbObj[0].selection_date >= date.today() and
                     fbObj[0].selection_start_date <= date.today())
     else:
@@ -188,9 +240,7 @@ def ConstructList(request, myObj):
     myPeerList = []
     for eachObj in myObj:
         myPeerInfo = {}
-        myPeerInfo['name'] = eachObj.employee.first_name + '  ' + \
-            eachObj.employee.last_name + '(' + \
-            eachObj.employee.employee.employee_assigned_id + ')'
+        myPeerInfo['name'] = GetUserFullName(eachObj.employee)
         myPeerInfo['emailid'] = eachObj.employee.email
         try:
             myPeerInfo['status'] = eachObj.status
@@ -215,21 +265,100 @@ def GetMyManagerRequest(request):
     Returns True if a request is in place,
             False if i have no manager / no request from my manager
     """
-    if request.user.manager:
+    try:
         mgrReq = ManagerRequest.objects.filter(respondent=request.user)
         if len(mgrReq):
-            return True
+            return [True, mgrReq[0].status]
         else:
-            return False
-    else:
-        return False
+            return [False, None]
+    except AttributeError:
+        return [False, None]
 
 
-def UpdatePeerStatus(myPeerObj, status):
+def UpdateRequestStatus(obj, status):
     """
-    Handler updates peer's status.
+    Handler updates request status.
+    Requests will be from peer / manager.
     Returns Nothing.
     """
     if status is not None:
-        myPeerObj.status = status
-        myPeerObj.save()
+        obj.status = status
+        obj.save()
+
+
+@login_required
+@eligible_360
+@is_manager
+def GetMyReporteeFeedbackList(request):
+    """
+    Handler returns requested and approved list of reportees with
+    first name, last name, email and employee ID along with thier status
+    """
+    myFBReportees = employee.models.Employee.objects.filter(
+        manager=request.user.employee)
+    myFBReporteesId = [eachReportee.user.id for eachReportee in myFBReportees]
+    myFBReporteesStatus = ManagerRequest.objects.filter(
+        respondent__in=myFBReporteesId,
+        status__in=['A', 'P']
+    )
+    l = []
+    for eachReporteeStatus in myFBReporteesStatus:
+        d = {}
+        d['name'] = GetUserFullName(eachReporteeStatus.respondent)
+        d['emailid'] = eachReporteeStatus.respondent.email
+        d['status'] = eachReporteeStatus.status
+        l.append(d)
+    return l
+
+
+@login_required
+@eligible_360
+@is_manager
+def GetMyReporteeList(request):
+    """
+    Handler returns the list of eligible reportees
+    Eligible Criteria
+        Manager cannot send request to reportee
+        when already a request is in place with either approved
+        or pending state
+        Manager can resend request if reportee rejects request.
+    """
+    myReportees = employee.models.Employee.objects.filter(
+        manager=request.user.employee)
+    mgrReq = ManagerRequest.objects.all()
+    requestId = [eachReq.respondent.id for eachReq in mgrReq]
+    reporteeId = [eachReportee.user.id for eachReportee in myReportees]
+    # Union of requestId and reporteeId
+    reqExist = list(set(requestId) & set(reporteeId))
+    if len(reqExist):
+        # Removes reporteeId whose request already exist
+        finalList = list(set(reporteeId) - set(reqExist))
+    else:
+        finalList = reporteeId
+    # Picking eligible re-requests respondent ids if any
+    rejectedReq = ManagerRequest.objects.filter(
+        respondent__employee__manager=request.user.employee,
+        status='R'
+    )
+    if len(rejectedReq):
+        finalList = finalList + [eachReq.respondent.id
+                                 for eachReq in rejectedReq]
+    validReportees = User.objects.filter(id__in=finalList)
+    l = []
+    for eachValidReportee in validReportees:
+        d = {}
+        d['id'] = eachValidReportee.id
+        d['name'] = GetUserFullName(eachValidReportee)
+        d['emailid'] = eachValidReportee.email
+        l.append(d)
+    return l
+
+
+def GetUserFullName(cUser):
+    """
+    Handler returns user's full name
+    Full Name format
+        {FIRST_NAME} {LAST_NAME}{(EMPLOYEE_ID)}
+    """
+    return cUser.first_name + '  ' + \
+        cUser.last_name + '(' + cUser.employee.employee_assigned_id + ')'
