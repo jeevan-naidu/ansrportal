@@ -15,7 +15,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from datetime import date
 
-# Exception hanlders import
+# Exception handlers import
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 

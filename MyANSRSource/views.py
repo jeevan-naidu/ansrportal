@@ -1108,6 +1108,11 @@ def Dashboard(request):
     if myPeers:
         isManager = 1
     is360eligible = request.user.employee.is_360eligible
+    fbObj = FB360.objects.filter(year=date.today().year)
+    isFBEligible = False
+    if fbObj:
+        isFBEligible = (fbObj[0].start_date <= date.today() and
+                        fbObj[0].end_date >= date.today())
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1133,6 +1138,7 @@ def Dashboard(request):
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
         'is360eligible': is360eligible,
+        'isFBEligible': isFBEligible,
         'isManager': isManager
     }
     return render(request, 'MyANSRSource/landingPage.html', data)

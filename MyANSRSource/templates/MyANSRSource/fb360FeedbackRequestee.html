@@ -1,0 +1,32 @@
+{% extends 'fb360FeedbackMaster.inc' %}
+{% load fontawesome %}
+
+{% block MRactiveClass %}active{% endblock %}
+{% block feedbackChild %}
+<form id="summary" method="POST" action="">
+	{% csrf_token %}
+	<div class="table-responsive col-lg-12">
+	<table class="table table-bordered">
+		<thead>
+			<th class="text-center">Choose</th>
+			<th class="text-center">Requestee</th>
+			<th class="text-center">Remaining</th>
+		</thead>
+	</table>
+	</div>
+	<div class="text-right">
+		<button type="submit" class="btn btn-info">
+			Give Feedback
+            {% fontawesome_icon 'arrow-circle-right' large=True %}
+		</button>
+	</div>
+</form>
+<script>
+    var app = app || {};
+
+    (function() {
+
+    }());
+</script>
+
+{% endblock %}
