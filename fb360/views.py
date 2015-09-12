@@ -4,7 +4,7 @@ logger = logging.getLogger('MyANSRSource')
 
 # FB360 models and forms import
 from .forms import PeerForm
-from .models import EmpPeer, Peer, FB360, ManagerRequest
+from .models import EmpPeer, Peer, FB360, ManagerRequest, STATUS
 
 # Employee model import
 import employee
@@ -64,10 +64,10 @@ def GetMyPeerList(request):
     myObj = EmpPeer.objects.filter(
         employee=request.user
     )
-    myObjAccepted = Peer.objects.filter(~Q(status='D'),
+    myObjAccepted = Peer.objects.filter(~Q(status=STATUS[3][0]),
                                         employee=request.user)
     if myObj or myObjAccepted:
-        myPeerObj = Peer.objects.filter(~Q(status='D'), emppeer=myObj)
+        myPeerObj = Peer.objects.filter(~Q(status=STATUS[3][0]), emppeer=myObj)
         if myPeerObj or myObjAccepted:
             list1 = ConstructList(request, myPeerObj)
             list2 = ConstructList(request,
@@ -104,8 +104,9 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
                             emppeer=empPeerObj,
                         )
                         if myPeerObj:
-                            if myPeerObj.filter(status__in=('D', 'R')):
-                                UpdateRequestStatus(myPeerObj[0], 'P')
+                            if myPeerObj.filter(status__in=(STATUS[3][0],
+                                                            STATUS[2][0])):
+                                UpdateRequestStatus(myPeerObj[0], STATUS[0][0])
                                 return 0
                             else:
                                 return 0
@@ -181,13 +182,13 @@ def ChooseReportee(request):
                     mgrReqObj.respondent = User.objects.get(
                         pk=int(request.POST.get(rowid))
                     )
-                    mgrReqObj.status = 'P'
+                    mgrReqObj.status = STATUS[0][0]
                     mgrReqObj.save()
                 except IntegrityError:
                     mgrReqObj = ManagerRequest.objects.get(
                         respondent__id=int(request.POST.get(rowid))
                     )
-                    UpdateRequestStatus(mgrReqObj, 'P')
+                    UpdateRequestStatus(mgrReqObj, STATUS[0][0])
     return render(request, 'fb360ChooseReportee.html',
                   {'data': [
                       GetMyReporteeList(request),
@@ -222,7 +223,7 @@ def GetPeerRequest(request):
     Returns List of peer requests.
     """
     myRequests = Peer.objects.filter(employee=request.user,
-                                     status='P')
+                                     status=STATUS[0][0])
     if myRequests:
         return ConstructList(request,
                              [eachReq.emppeer for eachReq in myRequests])
@@ -251,7 +252,7 @@ def ConstructList(request, myObj):
         else:
             peerObj = Peer.objects.get(employee=request.user, emppeer=eachObj)
             myPeerInfo['id'] = peerObj.id
-            if peerObj.status == 'A':
+            if peerObj.status == STATUS[1][0]:
                 myPeerInfo['status'] = peerObj.status
         myPeerList.append(myPeerInfo)
     return myPeerList
@@ -299,7 +300,7 @@ def GetMyReporteeFeedbackList(request):
     myFBReporteesId = [eachReportee.user.id for eachReportee in myFBReportees]
     myFBReporteesStatus = ManagerRequest.objects.filter(
         respondent__in=myFBReporteesId,
-        status__in=['A', 'P']
+        status__in=[STATUS[1][0], STATUS[0][0]]
     )
     l = []
     for eachReporteeStatus in myFBReporteesStatus:
@@ -338,7 +339,7 @@ def GetMyReporteeList(request):
     # Picking eligible re-requests respondent ids if any
     rejectedReq = ManagerRequest.objects.filter(
         respondent__employee__manager=request.user.employee,
-        status='R'
+        status=STATUS[2][0]
     )
     if len(rejectedReq):
         finalList = finalList + [eachReq.respondent.id
