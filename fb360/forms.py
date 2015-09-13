@@ -2,14 +2,6 @@ import autocomplete_light
 autocomplete_light.autodiscover()
 from .models import EmpPeer
 
-CHOICE_OPTIONS = (
-    ('SA', 'Strongly agree'),
-    ('A', 'Agree'),
-    ('NAND', 'Neither agree nor disagree'),
-    ('D', 'Disagree'),
-    ('CD', 'Completely disagree'),
-    )
-
 
 class PeerForm(autocomplete_light.ModelForm):
 

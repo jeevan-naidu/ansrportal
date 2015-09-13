@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url
-import views, fbviews
+from . import views
+from . import fbviews
 
 urlpatterns = patterns(u'',
                        url(r'^choose-peer/$',
@@ -14,4 +15,7 @@ urlpatterns = patterns(u'',
                        url(r'^feedback/$',
                            fbviews.MyFBRequestees,
                            name=u'MyFBRequestees'),
+                       url(r'^feedback/qa$',
+                           fbviews.GetQA,
+                           name=u'getqa'),
                        )

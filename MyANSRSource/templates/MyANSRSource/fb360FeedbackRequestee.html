@@ -10,8 +10,25 @@
 		<thead>
 			<th class="text-center">Choose</th>
 			<th class="text-center">Requestee</th>
-			<th class="text-center">Remaining</th>
+			<th class="text-center">Remaining QA</th>
 		</thead>
+		<tbody>
+            {% if data %}
+                {% for eachData in data %}
+                    <tr>
+                        <td class="text-center">
+                            {% if forloop.first %}
+                                <input type="radio" class="center" name="id" value="{{ eachData.id }}" checked>
+                            {% else %}
+                                <input type="radio" class="center" name="id" value="{{ eachData.id }}">
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ eachData.name }}</td>
+                        <td class="text-center">{{ eachData.QCount }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+		</tbody>
 	</table>
 	</div>
 	<div class="text-right">
