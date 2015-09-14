@@ -149,19 +149,20 @@ def RequestAction(request):
     Handler to approve / Reject peer, manager requests
     """
     if request.method == 'POST':
-        for i in range(1, int(request.POST.get('totalValue')) + 1):
-            choice = "choice" + str(i)
-            rowid = "rowid" + str(i)
-            if 'mgrChoice' in request.POST:
-                myManagerObj = ManagerRequest.objects.get(
-                    respondent=request.user
-                )
-                UpdateRequestStatus(myManagerObj, request.POST.get('mgrChoice'))
-            if choice in request.POST:
-                myPeerObj = Peer.objects.get(
-                    id=int(request.POST.get(rowid))
-                )
-                UpdateRequestStatus(myPeerObj, request.POST.get(choice))
+        if 'mgrChoice' in request.POST:
+            myManagerObj = ManagerRequest.objects.get(
+                respondent=request.user
+            )
+            UpdateRequestStatus(myManagerObj, request.POST.get('mgrChoice'))
+        if 'totalValue' in request.POST:
+            for i in range(1, int(request.POST.get('totalValue')) + 1):
+                choice = "choice" + str(i)
+                rowid = "rowid" + str(i)
+                if choice in request.POST:
+                    myPeerObj = Peer.objects.get(
+                        id=int(request.POST.get(rowid))
+                    )
+                    UpdateRequestStatus(myPeerObj, request.POST.get(choice))
     return render(request, 'fb360RequestAction.html',
                   {'data': [GetPeerRequest(request),
                             GetMyManagerRequest(request)
