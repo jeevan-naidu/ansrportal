@@ -91,6 +91,7 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
         state.
         Peer cannot be self assigned.
         Peer cannot be my manager.
+        If i am a manager, i can't add my reportee as peer
         Peer must be FB360 eligible.
     Returns 0 -> Not Eligible or  1 -> Is Eligible
     """
@@ -111,7 +112,10 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
                             else:
                                 return 0
                         else:
-                            return 1
+                            if eachPeer.employee.manager == request.user.employee:
+                                return 0
+                            else:
+                                return 1
                     else:
                         return 0
                 else:

@@ -57,13 +57,17 @@ def GetQA(request):
     Also has the ability to update answers
     """
     if request.method == 'POST':
+        if request.POST.get('about'):
+            DecideAction(request.user, int(request.session['selectedUser']),
+                         [request.POST.get('about')])
         for i in range(1, int(request.POST.get('totalValue')) + 1):
             qst = 'qId' + str(i)
             ans = 'choice' + str(i)
             data = {'qst': int(request.POST.get(qst)),
                     'ans': request.POST.get(ans)}
-            DecideAction(request.user, int(request.session['selectedUser']),
-                         data)
+            if request.POST.get(ans):
+                DecideAction(request.user, int(request.session['selectedUser']),
+                             data)
     return render(request, 'fb360FeedbackQA.html',
                   {'qst': GetCurrentYearQuestions(request),
                    'ans': CHOICE_OPTIONS})
@@ -72,13 +76,43 @@ def GetQA(request):
 def DecideAction(cUser, sUser, data):
     """
     Handler insert / updates new response, also general feedback
-    return nothing
+    Returns nothing
     """
-    if len(data):
-        resp = Response.objects.get(employee=sUser, respondent=cUser,
-                                    qst__id=data['qst'])
-    else:
-        pass
+    # Checks QA or general response and responds accordingly
+    if len(data) == 2:
+        try:
+            # Updates user's response
+            resp = Response.objects.get(employee__id=sUser,
+                                        respondent=cUser,
+                                        qst__id=data['qst'])
+            resp.ans = data['ans']
+            resp.save()
+
+        except Response.DoesNotExist:
+            # Inserts new response
+            resp = Response()
+            resp.employee = User.objects.get(pk=sUser)
+            resp.respondent = cUser
+            resp.qst = Question.objects.get(pk=data['qst'])
+            resp.ans = data['ans']
+            resp.save()
+    elif len(data) == 1:
+        try:
+            # Updates user's general response
+            resp = QualitativeResponse.objects.get(employee__id=sUser,
+                                                   respondent=cUser,
+                                                   year=date.today().year)
+            resp.general_fb = data[0]
+            resp.save()
+
+        except QualitativeResponse.DoesNotExist:
+            # Inserts new general response
+            resp = QualitativeResponse()
+            resp.employee = User.objects.get(pk=sUser)
+            resp.respondent = cUser
+            resp.year = date.today().year
+            resp.general_fb = data[0]
+            resp.save()
 
 
 @login_required
@@ -88,20 +122,55 @@ def GetCurrentYearQuestions(request):
     """
     Handler returns list of question for chosen user
     Return Type
-        {'qst': QST, 'qstId': ID}
+        {'qst': QST, 'qstId': ID,
+         'myfb': CHOICE_OPTIONS, 'mygeneralfb': GENERALFB}
     """
-    selectedUser = User.objects.get(pk=request.session['selectedUser'])
-    QuestionYear = Question.objects.filter(
-        fb__year=date.today().year
-    ).values('category', 'qst', 'id')
-    l = []
-    for eachCategory in QuestionYear:
-        d = {}
-        if eachCategory['category'] == selectedUser.employee.designation.id:
-            d['qst'] = eachCategory['qst']
-            d['qstId'] = eachCategory['id']
-            l.append(d)
-    return l
+    if 'selectedUser' in request.session:
+        selectedUser = User.objects.get(pk=request.session['selectedUser'])
+        QuestionYear = Question.objects.filter(
+            fb__year=date.today().year
+        ).values('category', 'qst', 'id')
+        l = []
+        for eachCategory in QuestionYear:
+            d = {}
+            if eachCategory['category'] == selectedUser.employee.designation.id:
+                d['qst'] = eachCategory['qst']
+                d['qstId'] = eachCategory['id']
+                d['myfb'], d['mygeneralfb'] = '', ''
+                if eachCategory['id']:
+                    d['myfb'] = GetMyResponse([request.user, selectedUser,
+                                            eachCategory['id']])
+                    d['mygeneralfb'] = GetMyResponse([request.user, selectedUser])
+                l.append(d)
+        return l
+    else:
+        return []
+
+
+def GetMyResponse(data):
+    """
+    Handler returns my response to corresponding Question
+    and general feedback
+    Return Type
+        None if its a fresh record
+        Returns answer / general FB if a record exist
+    """
+    if len(data) == 3:
+        try:
+            resp = Response.objects.get(employee=data[1],
+                                        respondent=data[0],
+                                        qst__id=data[2])
+            return resp.ans
+        except Response.DoesNotExist:
+            return None
+    elif len(data) == 2:
+        try:
+            resp = QualitativeResponse.objects.get(employee=data[1],
+                                                   respondent=data[0],
+                                                   year=date.today().year)
+            return resp.general_fb
+        except QualitativeResponse.DoesNotExist:
+            return None
 
 
 @login_required
