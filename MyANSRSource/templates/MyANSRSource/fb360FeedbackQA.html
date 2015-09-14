@@ -21,10 +21,18 @@
                     {% for eachAnsr in ans %}
                         {% with eachQst.qstId|stringformat:"s" as t %}
                             {% with "choice"|add:t as choicename %}
-                                {% if eachAnsr.0 == eachQst.myfb %}
-                                    <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" checked /> <small>{{ eachAnsr.1 }}</small></h4>
+                                {% if eachQst.myfb.1 %}
+                                    {% if eachAnsr.0 == eachQst.myfb.0 %}
+                                        <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" checked disabled='disabled' /> <small>{{ eachAnsr.1 }}</small></h4>
+                                    {% else %}
+                                        <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" disabled='disabled' /> <small>{{ eachAnsr.1 }}</small></h4>
+                                    {% endif %}
                                 {% else %}
-                                    <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" /> <small>{{ eachAnsr.1 }}</small></h4>
+                                    {% if eachAnsr.0 == eachQst.myfb.0 %}
+                                        <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" checked /> <small>{{ eachAnsr.1 }}</small></h4>
+                                    {% else %}
+                                        <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" /> <small>{{ eachAnsr.1 }}</small></h4>
+                                    {% endif %}
                                 {% endif %}
                             {% endwith %}
                         {% endwith %}
@@ -35,25 +43,29 @@
         <div class="col-lg-12">
             General Feedback about the person
             <h4><small>
-                <textarea rows="8" cols="50" name="about" placeholder="Whaterver comes to your mind">
                     {% spaceless %}
                         {% for eachQst in qst %}
                             {% if forloop.last %}
-                                {% if eachQst.mygeneralfb %}
-                                    {{ eachQst.mygeneralfb }}
+                                {% if eachQst.mygeneralfb.1 %}
+                                    <textarea disabled rows="8" cols="50" name="about" placeholder="Whaterver comes to your mind">
+                                {% else %}
+                                    <textarea rows="8" cols="50" name="about" placeholder="Whaterver comes to your mind">
                                 {% endif %}
+                                        {% if eachQst.mygeneralfb.0 %}
+                                            {{ eachQst.mygeneralfb.0 }}
+                                        {% endif %}
+                                    </textarea>
                             {% endif %}
                         {% endfor %}
                     {% endspaceless %}
-                </textarea>
         </small></h4>
         </div>
         <div>
-            <button type="submit" class="btn btn-info">
+            <button type="submit" class="btn btn-info" name="save">
                 <i class="fa fa-floppy-o fa-lg"></i>
                 Save
             </button>
-            <button type="submit" class="btn btn-info pull-right">
+            <button type="submit" class="btn btn-info pull-right" name="submit">
                 <i class="fa fa-check-square fa-lg"></i>
                 Submit
             </button>

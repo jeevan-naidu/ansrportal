@@ -24,7 +24,11 @@
                             {% endif %}
                         </td>
                         <td class="text-center">{{ eachData.name }}</td>
-                        <td class="text-center">{{ eachData.QCount }}</td>
+                        {% if eachData.QCount >= 0 %}
+                            <td class="text-center">{{ eachData.QCount }}</td>
+                        {% else %}
+                            <td class="text-center">Submitted</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             {% else %}

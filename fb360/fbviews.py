@@ -57,9 +57,12 @@ def GetQA(request):
     Also has the ability to update answers
     """
     if request.method == 'POST':
+        submit = 0
+        if 'submit' in request.POST:
+            submit = 1
         if request.POST.get('about'):
             DecideAction(request.user, int(request.session['selectedUser']),
-                         [request.POST.get('about')])
+                         [request.POST.get('about')], submit)
         for i in range(1, int(request.POST.get('totalValue')) + 1):
             qst = 'qId' + str(i)
             ans = 'choice' + str(i)
@@ -67,13 +70,13 @@ def GetQA(request):
                     'ans': request.POST.get(ans)}
             if request.POST.get(ans):
                 DecideAction(request.user, int(request.session['selectedUser']),
-                             data)
+                             data, submit)
     return render(request, 'fb360FeedbackQA.html',
                   {'qst': GetCurrentYearQuestions(request),
                    'ans': CHOICE_OPTIONS})
 
 
-def DecideAction(cUser, sUser, data):
+def DecideAction(cUser, sUser, data, action):
     """
     Handler insert / updates new response, also general feedback
     Returns nothing
@@ -86,6 +89,8 @@ def DecideAction(cUser, sUser, data):
                                         respondent=cUser,
                                         qst__id=data['qst'])
             resp.ans = data['ans']
+            if action:
+                resp.submitted = True
             resp.save()
 
         except Response.DoesNotExist:
@@ -95,24 +100,32 @@ def DecideAction(cUser, sUser, data):
             resp.respondent = cUser
             resp.qst = Question.objects.get(pk=data['qst'])
             resp.ans = data['ans']
+            if action:
+                resp.submitted = True
             resp.save()
     elif len(data) == 1:
         try:
             # Updates user's general response
-            resp = QualitativeResponse.objects.get(employee__id=sUser,
-                                                   respondent=cUser,
-                                                   year=date.today().year)
-            resp.general_fb = data[0]
-            resp.save()
+            if len(data[0].strip()):
+                resp = QualitativeResponse.objects.get(employee__id=sUser,
+                                                       respondent=cUser,
+                                                       year=date.today().year)
+                resp.general_fb = data[0]
+                if action:
+                    resp.submitted = True
+                resp.save()
 
         except QualitativeResponse.DoesNotExist:
             # Inserts new general response
-            resp = QualitativeResponse()
-            resp.employee = User.objects.get(pk=sUser)
-            resp.respondent = cUser
-            resp.year = date.today().year
-            resp.general_fb = data[0]
-            resp.save()
+            if len(data[0].strip()):
+                resp = QualitativeResponse()
+                resp.employee = User.objects.get(pk=sUser)
+                resp.respondent = cUser
+                resp.year = date.today().year
+                resp.general_fb = data[0]
+                if action:
+                    resp.submitted = True
+                resp.save()
 
 
 @login_required
@@ -139,8 +152,9 @@ def GetCurrentYearQuestions(request):
                 d['myfb'], d['mygeneralfb'] = '', ''
                 if eachCategory['id']:
                     d['myfb'] = GetMyResponse([request.user, selectedUser,
-                                            eachCategory['id']])
-                    d['mygeneralfb'] = GetMyResponse([request.user, selectedUser])
+                                               eachCategory['id']])
+                    d['mygeneralfb'] = GetMyResponse(
+                        [request.user, selectedUser])
                 l.append(d)
         return l
     else:
@@ -160,7 +174,7 @@ def GetMyResponse(data):
             resp = Response.objects.get(employee=data[1],
                                         respondent=data[0],
                                         qst__id=data[2])
-            return resp.ans
+            return [resp.ans, resp.submitted]
         except Response.DoesNotExist:
             return None
     elif len(data) == 2:
@@ -168,7 +182,7 @@ def GetMyResponse(data):
             resp = QualitativeResponse.objects.get(employee=data[1],
                                                    respondent=data[0],
                                                    year=date.today().year)
-            return resp.general_fb
+            return [resp.general_fb, resp.submitted]
         except QualitativeResponse.DoesNotExist:
             return None
 
@@ -247,11 +261,15 @@ def GetQuestionRemainingCount(request, cUser):
             employee=cUser,
             respondent=request.user
         )
-        # General Feedback
-        totalQResp = QualitativeResponse.objects.filter(
-            employee=cUser,
-            respondent=request.user
-        )
-        return (len(totalQuestionYear) + 1) - (len(totalResp) + len(totalQResp))
+        if [eachResp.submitted for eachResp in totalResp][0]:
+            return -1
+        else:
+            # General Feedback
+            totalQResp = QualitativeResponse.objects.filter(
+                employee=cUser,
+                respondent=request.user
+            )
+            return (len(totalQuestionYear) + 1) - \
+                (len(totalResp) + len(totalQResp))
     else:
         return 0

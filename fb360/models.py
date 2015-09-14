@@ -147,6 +147,7 @@ class Response(models.Model):
     qst = models.ForeignKey(Question,
                             default=None)
     ans = models.CharField(max_length=8)
+    submitted = models.BooleanField(default=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -164,6 +165,7 @@ class QualitativeResponse(models.Model):
                                    related_name="resp", default=None)
     general_fb = models.CharField("Feedback", max_length=500, blank=False)
     year = models.IntegerField(default=0)
+    submitted = models.BooleanField(default=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
