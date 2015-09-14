@@ -261,8 +261,17 @@ def GetQuestionRemainingCount(request, cUser):
             employee=cUser,
             respondent=request.user
         )
-        if [eachResp.submitted for eachResp in totalResp][0]:
-            return -1
+        if len([eachResp.submitted for eachResp in totalResp]):
+            if [eachResp.submitted for eachResp in totalResp][0]:
+                return -1
+            else:
+                # General Feedback
+                totalQResp = QualitativeResponse.objects.filter(
+                    employee=cUser,
+                    respondent=request.user
+                )
+                return (len(totalQuestionYear) + 1) - \
+                    (len(totalResp) + len(totalQResp))
         else:
             # General Feedback
             totalQResp = QualitativeResponse.objects.filter(
