@@ -158,7 +158,7 @@
 			<div class="panel-body">
                 <ul class="list-group">
                     {% if user|create_project or user|manage_project %}
-                    <a href="project/add" class="list-group-item">Create Project</a>
+                    <a href="project/add" class="list-group-item" testid="createproject">Create Project</a>
                     {% endif %}
                     {% if user|manage_project %}
                         {% if activeProjects > 0 %}
