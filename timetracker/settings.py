@@ -119,6 +119,10 @@ CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'
 # Application definition
 
 INSTALLED_APPS = (
+    'material',
+    'material.frontend',
+    'material.admin',
+    'easy_pjax',
     'autocomplete_light',
     'grappelli',
     'django.contrib.admin',
@@ -136,7 +140,7 @@ INSTALLED_APPS = (
     'employee',
     'CompanyMaster',
     'MyANSRSource',
-    'fb360'
+    'fb360',
 )
 
 MIDDLEWARE_CLASSES = (

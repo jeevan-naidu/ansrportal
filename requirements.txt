@@ -10,8 +10,10 @@ django-autocomplete-light==2.0.3
 django-bootstrap3==4.11.0
 -e git+https://github.com/vivekfantain/django-bootstrap3-datetimepicker.git@46204a78521dd9b4a57571113cc0101f7de5bfee#egg=django_bootstrap3_datetimepicker-master
 django-datetime-widget==0.9
+django-easy-pjax==1.2.0
 django-fontawesome==0.2.2
 django-grappelli==2.6.3
+django-material==0.4.1
 django-session-security==2.2.2
 django-templated-email==0.4.9
 numpy==1.9.2
