@@ -750,8 +750,11 @@ def renderTimesheet(request, data):
                     timediff = eachObj.swipe_out
                 else:
                     timediff = eachObj.swipe_out - eachObj.swipe_in
-                atttime = u"{0}:{1}".format(timediff.seconds // 3600,
-                                            (timediff.seconds % 3600) // 60)
+                if timediff:
+                    atttime = u"{0}:{1}".format(timediff.seconds // 3600,
+                                                (timediff.seconds % 3600) // 60)
+                else:
+                    atttime = ''
                 attendance[u'{0}'.format(eachObj.attdate.weekday())] = atttime
 
         attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
