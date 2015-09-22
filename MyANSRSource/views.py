@@ -996,6 +996,7 @@ def Dashboard(request):
 
     tsProjectsCount = Project.objects.filter(
         closed=False,
+        endDate__gte=datetime.now().date(),
         id__in=ProjectTeamMember.objects.filter(
             Q(member=request.user) |
             Q(project__projectManager=request.user)
