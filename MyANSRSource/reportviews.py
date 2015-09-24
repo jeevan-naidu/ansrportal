@@ -1260,11 +1260,12 @@ def generateProjectContent(request, header, report, worksheet,
         row, msg = 1, ''
         for eachRec in report:
             if 'crId' in eachRec:
+                rValue = "$" + str(eachRec['revisedTotal'])
                 worksheet.write(row, 0, eachRec['crId'], content)
                 worksheet.write(row, 1, eachRec['reason'], content)
                 worksheet.write(row, 2, eachRec['endDate'], dateformat)
                 worksheet.write(row, 3, eachRec['revisedEffort'], numberFormat)
-                worksheet.write(row, 4, eachRec['revisedTotal'], numberFormat)
+                worksheet.write(row, 4, rValue, numberFormat)
                 row += 1
                 if eachRec['closed']:
                     msg = u"Project Closed On : {0}".format(
