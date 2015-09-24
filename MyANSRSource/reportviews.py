@@ -372,8 +372,16 @@ def SingleProjectReport(request):
                     datetime.now().time()
                 )
                 fileName = fileName.replace("  ", "_")
-                print topPerformer, avgTaskData, maxTaskData, minTaskData
-                report = [basicData, crData, msData, tsData,
+                newCR = list(crData)
+                if cProject.closed:
+                    closedDate = [eachD['closedOn'] for eachD in crData if eachD['closedOn'] is not None]
+                    closingInfo = 'Project Closed on ' + str(closedDate[0])
+                    newCR.append({'data': closingInfo, 'crId': None,
+                                  'reason': None, 'closed': None,
+                                  'endDate': None, 'revisedEffort': None,
+                                  'revisedTotal': None, 'closed': None,
+                                  'closedOn': None, 'updatedOn': None})
+                report = [basicData, newCR, msData, tsData,
                           taskData, topPerformer, avgTaskData,
                           maxTaskData, minTaskData]
                 sheetName = ['Basic Information',
@@ -1267,12 +1275,9 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 3, eachRec['revisedEffort'], numberFormat)
                 worksheet.write(row, 4, rValue, numberFormat)
                 row += 1
-                if eachRec['closed']:
-                    msg = u"Project Closed On : {0}".format(
-                        eachRec['closedOn']
-                    )
+                if 'data' in eachRec:
                     generateReportFooter(request, worksheet, alp[7], row,
-                                         reportDateformat, msg)
+                                         reportDateformat, eachRec['data'])
             if 'financial' in eachRec:
                 value = '$' + str(eachRec['amount'])
                 worksheet.write(row, 0, eachRec['description'], content)
