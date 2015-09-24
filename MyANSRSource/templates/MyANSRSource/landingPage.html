@@ -126,12 +126,22 @@
                 <div id="pCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="peer">
                 <div class="panel-body">
                     <ul class="list-group">
-                        <a href="fb360/choose-peer" class="list-group-item">Choose Peer
+                        <a href="/fb360/choose-peer" class="list-group-item">Choose Peer(s)
                         </a>
-                        <a href="fb360/approve-peer" class="list-group-item">
+                        {% if isManager %}
+                            <a href="/fb360/choose-reportee" class="list-group-item">
+                                Choose Reportee(s)
+                            </a>
+                        {% endif %}
+                        <a href="/fb360/request-action" class="list-group-item">
                             <span class="badge">{{ myPeerReqCount }}</span>
-                            Approve Peer
+                            Approve Peer(s) / Manager Request
                         </a>
+                        {% if isFBEligible %}
+                            <a href="/fb360/feedback" class="list-group-item">
+                                Feedback
+                            </a>
+                        {% endif %}
                     </ul>
                 </div>
                 </div>
@@ -148,7 +158,7 @@
 			<div class="panel-body">
                 <ul class="list-group">
                     {% if user|create_project or user|manage_project %}
-                    <a href="project/add" class="list-group-item">Create Project</a>
+                    <a href="project/add" class="list-group-item" testid="createproject">Create Project</a>
                     {% endif %}
                     {% if user|manage_project %}
                         {% if activeProjects > 0 %}

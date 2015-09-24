@@ -7,8 +7,9 @@ import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator
 
 TASKTYPEFLAG = (
-    ('B', 'Billable'),
+    ('B', 'Revenue'),
     ('I', 'Idle'),
+    ('N', 'Non-Revenue'),
 )
 FREQUENCY = (
     ('M', 'Monthly'),
@@ -228,7 +229,7 @@ class Project(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.projectId+' : '+self.name
+        return self.projectId + u' : ' + self.name
 
     class Meta:
         permissions = (
@@ -379,6 +380,7 @@ class ProjectTeamMember(models.Model):
                                         blank=True,
                                         verbose_name="Planned Effort")
     rate = models.IntegerField(default=100, verbose_name="%", blank=True)
+    active = models.BooleanField(default=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

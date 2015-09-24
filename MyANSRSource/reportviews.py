@@ -708,15 +708,17 @@ def ProjectPerfomanceReport(request):
                     datetime.now().time()
                 )
                 fileName = fileName.replace("  ", "_")
-                totals = [eothersTotal, iothersTotal, eidleTotal, iidleTotal]
+                totals = [eothersTotal, iothersTotal, eidleTotal, iidleTotal,
+                          eothersTotalPTM, iothersTotalPTM, eidleTotalPTM,
+                          iidleTotalPTM, eptdTotal, iptdTotal]
                 sheetName = ['External', 'Internal']
                 heading = [
                     ['Project Name', 'Project Type', 'BU', 'Customer Name',
                      'Lead', 'Start Date', 'End Date', 'Value', 'Planned',
-                     'Billed', 'Idle'],
+                     'Billed', 'Billed PTM', 'Idle', 'Idle PTM', 'PTD'],
                     ['Project Name', 'Project Type', 'BU', 'Customer Name',
                      'Lead', 'Start Date', 'End Date', 'Value', 'Planned',
-                     'Billed', 'Idle']]
+                     'Billed', 'Billed PTM', 'Idle', 'Idle PTM', 'PTD']]
                 report = [externalData, internalData]
                 return generateExcel(request, report, sheetName,
                                      heading, totals, fileName)
@@ -1330,17 +1332,29 @@ def generateProjectPerfContent(request, header, report, worksheet,
         worksheet.write(row, 7, pValue, numberFormat)
         worksheet.write(row, 8, eachRec['pEffort'], numberFormat)
         worksheet.write(row, 9, eachRec['billed'], numberFormat)
-        worksheet.write(row, 10, eachRec['idle'], numberFormat)
+        worksheet.write(row, 10, eachRec['bPTM'], numberFormat)
+        worksheet.write(row, 11, eachRec['idle'], numberFormat)
+        worksheet.write(row, 12, eachRec['iPTM'], numberFormat)
+        worksheet.write(row, 13, eachRec['ptd'], numberFormat)
         row += 1
-    cellRange = u'A{1}:{0}{1}'.format(alp[10], row+1)
+    cellRange = u'A{1}:{0}{1}'.format(alp[13], row+1)
     worksheet.merge_range(cellRange, '', header)
     totalCell = u'A{0}'.format(row+1)
-    total = u"External Idle Hour(s) : {0}, \
-        External Billed Hour(s) : {1} \
-        Internal Idle Hour(s) : {2} \
-        Internal Billed Hour(s) : {3}".format(
-            grdTotal[2], grdTotal[0],
-            grdTotal[3], grdTotal[1]
+    total = u"External Idle Hour(s) : {0} \
+        External Idle PTM : {1} \
+        External Billed Hour(s) : {2} \
+        External Billed PTM : {3} \
+        External PTD : {4} \
+        Internal Idle Hour(s) : {5} \
+        Internal Idle PTM : {6} \
+        Internal Billed Hour(s) : {7} \
+        Internal Billed PTM : {8} \
+        Internal PTD : {9}".format(
+            grdTotal[2], grdTotal[6],
+            grdTotal[0], grdTotal[4],
+            grdTotal[8], grdTotal[3],
+            grdTotal[7], grdTotal[1],
+            grdTotal[5], grdTotal[9]
         )
     worksheet.write(totalCell, total, header)
 

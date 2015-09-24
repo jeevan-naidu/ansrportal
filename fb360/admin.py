@@ -1,46 +1,31 @@
 from django.contrib import admin
-from django import forms
-from .models import Question, Answer, Feedback
-
-
-class AnswerInlineFormSet(forms.ModelForm):
-
-    class Meta:
-        widgets = {
-            'ans': forms.TextInput(
-                attrs={
-                    'style': 'width:1024px',
-                    })
-        }
-
-
-class AnswerInline(admin.TabularInline):
-    model = Answer
-    extra = 4
-    exclude = []
-    form = AnswerInlineFormSet
+from .models import Question, FB360
+import employee
 
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         'qst',
-        'category',
         )
     list_filter = ('qst',)
     ordering = ('qst', )
-    inlines = [AnswerInline, ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(QuestionAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['category'].queryset = employee.models.Designation.objects.filter(active=True)
+        return form
 
 
-class FeedbackAdmin(admin.ModelAdmin):
+class FB360Admin(admin.ModelAdmin):
     list_display = (
-        'qst',
-        'year',
+        'year', 'selection_start_date',
         'start_date', 'end_date',
-        'selection_date', 'approval_date'
+        'selection_date', 'approval_date',
+        'process_start_date'
         )
-    list_filter = ('qst', 'year', )
+    list_filter = ('year', )
     ordering = ('year', )
 
 
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(FB360, FB360Admin)

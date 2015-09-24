@@ -7,7 +7,7 @@
 
 {% endblock %}
 {% load bootstrap3 %}
-{% block siteTitle %}myansrsource:Reports{% endblock %}
+{% block siteTitle %}myansrsource:FB360&deg;{% endblock %}
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">

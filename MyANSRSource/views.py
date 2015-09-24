@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from fb360.models import Peer, Feedback
+from fb360.models import Peer, FB360, ManagerRequest
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -33,7 +33,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 import CompanyMaster
 import employee
-from employee.models import Remainder
+from employee.models import Remainder, Employee
 from CompanyMaster.models import Holiday, HRActivity
 
 
@@ -744,9 +744,18 @@ def renderTimesheet(request, data):
         attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
         for eachObj in attendanceObj:
             if eachObj.swipe_out is not None or eachObj.swipe_in is not None:
-                timediff = eachObj.swipe_out - eachObj.swipe_in
-                atttime = u"{0}:{1}".format(timediff.seconds // 3600,
-                                            (timediff.seconds % 3600) // 60)
+                if eachObj.swipe_out is None:
+                    timediff = eachObj.swipe_in
+                    atttime = u"{0}:{1}".format(timediff.second // 3600,
+                                                (timediff.second % 3600) // 60)
+                elif eachObj.swipe_in is None:
+                    timediff = eachObj.swipe_out
+                    atttime = u"{0}:{1}".format(timediff.second // 3600,
+                                                (timediff.second % 3600) // 60)
+                else:
+                    timediff = eachObj.swipe_out - eachObj.swipe_in
+                    atttime = u"{0}:{1}".format(timediff.seconds // 3600,
+                                                (timediff.seconds % 3600) // 60)
                 attendance[u'{0}'.format(eachObj.attdate.weekday())] = atttime
 
         attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
@@ -800,6 +809,7 @@ def ApproveTimesheet(request):
             mem = "mem" + str(i)
             start = "start" + str(i)
             end = "end" + str(i)
+            fb = "fb" + str(i)
             if start in request.POST:
                 startDate = date.fromordinal(int(request.POST.get(start)))
             if end in request.POST:
@@ -815,9 +825,11 @@ def ApproveTimesheet(request):
                         if request.POST.get(choice) == 'redo':
                             eachTS.hold = False
                             eachTS.approved = False
+                            eachTS.managerFeedback = request.POST.get(fb)
                         else:
                             eachTS.hold = True
                             eachTS.approved = True
+                            eachTS.managerFeedback = request.POST.get(fb)
                         eachTS.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
@@ -987,6 +999,7 @@ def Dashboard(request):
 
     tsProjectsCount = Project.objects.filter(
         closed=False,
+        endDate__gte=datetime.now().date(),
         id__in=ProjectTeamMember.objects.filter(
             Q(member=request.user) |
             Q(project__projectManager=request.user)
@@ -1092,7 +1105,22 @@ def Dashboard(request):
         eachProjectHours = workingHours / len(cp)
     myRequests = Peer.objects.filter(employee=request.user, status='P')
     myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
+    myMgrReq = ManagerRequest.objects.filter(
+        respondent=request.user, status='P'
+    )
+    if len(myMgrReq):
+        myPeerReqCount = myPeerReqCount + 1
+    myPeers = employee.models.Employee.objects.filter(
+        manager=request.user.employee)
+    isManager = 0
+    if myPeers:
+        isManager = 1
     is360eligible = request.user.employee.is_360eligible
+    fbObj = FB360.objects.filter(year=date.today().year)
+    isFBEligible = False
+    if fbObj:
+        isFBEligible = (fbObj[0].start_date <= date.today() and
+                        fbObj[0].end_date >= date.today())
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1118,6 +1146,8 @@ def Dashboard(request):
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
         'is360eligible': is360eligible,
+        'isFBEligible': isFBEligible,
+        'isManager': isManager
     }
     return render(request, 'MyANSRSource/landingPage.html', data)
 
@@ -1647,11 +1677,12 @@ class ManageTeamWizard(SessionWizardView):
                 'My Projects')['My Projects-project']
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
-                    project__id=projectId).values('id', 'member',
-                                                  'startDate', 'endDate',
-                                                  'datapoint',
-                                                  'plannedEffort', 'rate'
-                                                  )
+                    project__id=projectId,
+                    active=True).values('id', 'member',
+                                        'startDate', 'endDate',
+                                        'datapoint',
+                                        'plannedEffort', 'rate'
+                                        )
             else:
                 logger.error(u"Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
@@ -1723,7 +1754,8 @@ class ManageTeamWizard(SessionWizardView):
                         ptm = ProjectTeamMember.objects.get(
                             pk=eachData['id'])
                         NotifyMember(ptm.id, True)
-                        ptm.delete()
+                        ptm.active = False
+                        ptm.save()
                     else:
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \

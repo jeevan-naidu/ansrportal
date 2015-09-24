@@ -9,6 +9,7 @@ from MyANSRSource.models import Project, ProjectTeamMember, \
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
+import datetime
 import calendar
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -235,6 +236,7 @@ def TimesheetFormset(currentUser):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
                 closed=False,
+                endDate__gte=datetime.date.today(),
                 id__in=ProjectTeamMember.objects.filter(
                     Q(member=currentUser.id) |
                     Q(project__projectManager=currentUser.id)

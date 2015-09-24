@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import employee as emp
 
 # Choice field declaration
 STATUS = (
@@ -7,12 +8,6 @@ STATUS = (
     ('A', 'Approved'),
     ('R', 'Rejected'),
     ('D', 'Deleted'),
-    )
-
-CATEGORY = (
-    ('P', 'Peers'),
-    ('R', 'Reportees'),
-    ('M', 'Manager'),
     )
 
 # Year choice ranges from 2015 to 3999
@@ -59,17 +54,63 @@ class Peer(models.Model):
         unique_together = ('employee', 'emppeer', )
 
 
+class FB360(models.Model):
+
+    """
+    Feedback Information
+    """
+    year = models.IntegerField(
+        verbose_name='Year',
+        choices=YEAR,
+        default=0
+    )
+    process_start_date = models.DateField(
+        default=None,
+        verbose_name="Process Start Date"
+    )
+    # Feedback process planning
+    start_date = models.DateField(
+        verbose_name="Start 360 degree appraisal"
+    )
+    end_date = models.DateField(
+        verbose_name="Complete 360 degree appraisal"
+    )
+    # Peer / Reportee dates
+    # Reportee and Peer have same dates
+    selection_start_date = models.DateField(
+        default=None,
+        verbose_name="Peer selection start date"
+    )
+    selection_date = models.DateField(
+        verbose_name="Peer selection completion date"
+    )
+    approval_date = models.DateField(
+        verbose_name="Peer approval completion date"
+    )
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return str(self.year)
+
+    class Meta:
+        verbose_name = 'FB360 Information'
+        verbose_name_plural = 'FB360 Informations'
+
+
 class Question(models.Model):
 
     """
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=100, blank=False)
-    category = models.CharField(
-        verbose_name='Question Category',
-        max_length=1,
-        choices=CATEGORY,
-        default=CATEGORY[0][0])
+    fb = models.ForeignKey(FB360, default=None,
+                           verbose_name="FB360 Information")
+    category = models.ManyToManyField(
+        emp.models.Designation,
+        default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -79,50 +120,15 @@ class Question(models.Model):
         return self.qst
 
 
-class Answer(models.Model):
+class ManagerRequest(models.Model):
 
     """
-    Set of answers that a question can possibly have
+    Stores manager's request and response.
     """
-    qst = models.ForeignKey(Question, verbose_name="Question",
-                            related_name="ansr_new", default=None)
-    ans = models.CharField("Choice", max_length=100, blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.ans
-
-
-class Feedback(models.Model):
-
-    """
-    Feedback Information
-    """
-    qst = models.ForeignKey(Question,
-                            verbose_name="Feedback Question",
-                            default=None)
-    year = models.IntegerField(
-        verbose_name='Year',
-        choices=YEAR,
-        default=0
-    )
-    # Feedback process planning
-    start_date = models.DateField(
-        verbose_name="Start 360 degree appraisal"
-    )
-    end_date = models.DateField(
-        verbose_name="Complete 360 degree appraisal"
-    )
-    # Peer dates
-    selection_date = models.DateField(
-        verbose_name="Peer selection completion date"
-    )
-    approval_date = models.DateField(
-        verbose_name="Peer approval completion date"
-    )
+    respondent = models.ForeignKey(User,
+                                   unique=True,
+                                   related_name="Rrespon", default=None)
+    status = models.CharField(max_length=1)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -140,9 +146,8 @@ class Response(models.Model):
                                    related_name="Rresp", default=None)
     qst = models.ForeignKey(Question,
                             default=None)
-    ans = models.ForeignKey(Answer,
-                            default=None)
-    year = models.IntegerField(default=0)
+    ans = models.CharField(max_length=8)
+    submitted = models.BooleanField(default=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -160,6 +165,7 @@ class QualitativeResponse(models.Model):
                                    related_name="resp", default=None)
     general_fb = models.CharField("Feedback", max_length=500, blank=False)
     year = models.IntegerField(default=0)
+    submitted = models.BooleanField(default=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",

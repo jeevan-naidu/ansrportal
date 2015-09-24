@@ -16,26 +16,51 @@
             <thead>
                 <th>{{ eachInfo.member }}</th>
                 <th class="text-center">{{ eachInfo.wkstart }} - {{ eachInfo.wkend }}</th>
-                <th class="text-right" colspan=2>
-                    <div class="btn-group" data-toggle="buttons">
-                        {% with forloop.counter|stringformat:"s" as t %}
-                            {% with "choice"|add:t as total %}
-                                <label class="btn btn-default"><input type="radio" name="{{ total }}" value="approve" /> Approve </label>
-                                <label class="btn btn-default"><input checked type="radio" name="{{ total }}" value="hold" /> Hold </label>
-                                <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
-                            {% endwith %}
-                            {% with "start"|add:t as total %}
-                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkstartNum }}" />
-                            {% endwith %}
-                            {% with "end"|add:t as total %}
-                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkendNum }}" />
-                            {% endwith %}
-                            {% with "mem"|add:t as total %}
-                                <input type="hidden" name="{{ total }}" value="{{ eachInfo.mem }}" />
-                            {% endwith %}
+                {% with forloop.counter|stringformat:"s" as t %}
+                    <th class="text-right">
+                        {% with "#fb"|add:t as total %}
+                            <a href="#" data-toggle="modal" data-target="{{ total }}">Give Feedback</a>
                         {% endwith %}
+                    </th>
+                    {% with "fb"|add:t as total %}
+                    <div class="modal fade" id="{{ total }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    {% endwith %}
+                        <div class="modal-dialog">
+                             <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span aria-hidden="true">&times;</span>
+                                        <span class="sr-only">Close</span>
+                                    </button>
+                                    <h4 class="modal-title" id="myModalLabel"><b>Week's Feedback</b></h4>
+                                </div>
+                                <div class="modal-body">
+                                    {% with "fb"|add:t as total %}
+                                        <textarea name="{{ total }}" class="form-control" rows="4" cols="50" placeholder="Enter Feedback..."></textarea>
+                                    {% endwith %}
+                                </div>
+                             </div>
+                         </div>
                     </div>
-                </th>
+                    <th class="text-right">
+                        <div class="btn-group" data-toggle="buttons">
+                                {% with "choice"|add:t as total %}
+                                    <label class="btn btn-default"><input type="radio" name="{{ total }}" value="approve" /> Approve </label>
+                                    <label class="btn btn-default active"><input checked type="radio" name="{{ total }}" value="hold" /> Hold </label>
+                                    <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
+                                {% endwith %}
+                                {% with "start"|add:t as total %}
+                                    <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkstartNum }}" />
+                                {% endwith %}
+                                {% with "end"|add:t as total %}
+                                    <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkendNum }}" />
+                                {% endwith %}
+                                {% with "mem"|add:t as total %}
+                                    <input type="hidden" name="{{ total }}" value="{{ eachInfo.mem }}" />
+                                {% endwith %}
+                        </div>
+                    </th>
+                {% endwith %}
             </thead>
             <tbody>
                 {% for eachProject in eachInfo.projects %}
@@ -46,7 +71,7 @@
                     </tr>
                 {% endfor %}
                 <tr>
-                    <td class="text-center" colspan="3"><b>{{ eachInfo.NHours }}</b> Non-Project Hour(s)</td>
+                    <td class="text-center" colspan="4"><b>{{ eachInfo.NHours }}</b> Non-Project Hour(s)</td>
                 </tr>
             </tbody>
         <table>
