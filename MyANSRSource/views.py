@@ -809,6 +809,7 @@ def ApproveTimesheet(request):
             mem = "mem" + str(i)
             start = "start" + str(i)
             end = "end" + str(i)
+            fb = "fb" + str(i)
             if start in request.POST:
                 startDate = date.fromordinal(int(request.POST.get(start)))
             if end in request.POST:
@@ -824,9 +825,11 @@ def ApproveTimesheet(request):
                         if request.POST.get(choice) == 'redo':
                             eachTS.hold = False
                             eachTS.approved = False
+                            eachTS.managerFeedback = request.POST.get(fb)
                         else:
                             eachTS.hold = True
                             eachTS.approved = True
+                            eachTS.managerFeedback = request.POST.get(fb)
                         eachTS.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
     else:
@@ -1674,11 +1677,12 @@ class ManageTeamWizard(SessionWizardView):
                 'My Projects')['My Projects-project']
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
-                    project__id=projectId).values('id', 'member',
-                                                  'startDate', 'endDate',
-                                                  'datapoint',
-                                                  'plannedEffort', 'rate'
-                                                  )
+                    project__id=projectId,
+                    active=True).values('id', 'member',
+                                        'startDate', 'endDate',
+                                        'datapoint',
+                                        'plannedEffort', 'rate'
+                                        )
             else:
                 logger.error(u"Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
@@ -1750,7 +1754,8 @@ class ManageTeamWizard(SessionWizardView):
                         ptm = ProjectTeamMember.objects.get(
                             pk=eachData['id'])
                         NotifyMember(ptm.id, True)
-                        ptm.delete()
+                        ptm.active = False
+                        ptm.save()
                     else:
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
