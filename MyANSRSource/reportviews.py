@@ -407,6 +407,7 @@ def SingleProjectReport(request):
                     for eachTsData in tsData:
                         eachTsData['status'] = cProject.closed
                 if len(taskData):
+                    print maxTaskData
                     for eachData in taskData:
                         for eachMinData in minTaskData:
                             if eachData['task__name'] == eachMinData['task__name']:
