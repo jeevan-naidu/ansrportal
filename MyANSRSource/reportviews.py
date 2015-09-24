@@ -132,11 +132,33 @@ def SingleTeamMemberReport(request):
                         reportData.cleaned_data['startDate'],
                         reportData.cleaned_data['endDate']
                     )
+                    for eachData in report:
+                        for eachMinData in minProd:
+                            if eachData['project__projectId'] == eachMinData['project__projectId'] and \
+                                    eachData['project__book__name'] == eachMinData['project__book__name'] and \
+                                    eachData['chapter__name'] == eachMinData['chapter__name'] and \
+                                    eachData['task__name'] == eachMinData['task__name'] and \
+                                    eachData['hold'] == eachMinData['hold']:
+                                eachData['min'] = eachMinData['min']
+                        for eachMinData in maxProd:
+                            if eachData['project__projectId'] == eachMinData['project__projectId'] and \
+                                    eachData['project__book__name'] == eachMinData['project__book__name'] and \
+                                    eachData['chapter__name'] == eachMinData['chapter__name'] and \
+                                    eachData['task__name'] == eachMinData['task__name'] and \
+                                    eachData['hold'] == eachMinData['hold']:
+                                eachData['max'] = eachMinData['max']
+                        for eachMinData in avgProd:
+                            if eachData['project__projectId'] == eachMinData['project__projectId'] and \
+                                    eachData['project__book__name'] == eachMinData['project__book__name'] and \
+                                    eachData['chapter__name'] == eachMinData['chapter__name'] and \
+                                    eachData['task__name'] == eachMinData['task__name'] and \
+                                    eachData['hold'] == eachMinData['hold']:
+                                eachData['avg'] = eachMinData['avg']
                     heading = ['Project Code', 'Project Name', 'Book',
                                'Chapter', 'Task / Activity', 'Total Hours',
-                               'Total Productivity', 'Avg. Productivity',
-                               'Min. Productivity', 'Max. Productivity',
-                               'Median Productivity', 'Norm', 'Status']
+                               'Avg. Productivity', 'Min. Productivity',
+                               'Max. Productivity', 'Median Productivity',
+                               'Status']
                     return generateExcel(request, report, sheetName,
                                          heading, grdTotal, fileName)
             else:
@@ -381,9 +403,25 @@ def SingleProjectReport(request):
                                   'endDate': None, 'revisedEffort': None,
                                   'revisedTotal': None, 'closed': None,
                                   'closedOn': None, 'updatedOn': None})
-                report = [basicData, newCR, msData, tsData,
-                          taskData, topPerformer, avgTaskData,
-                          maxTaskData, minTaskData]
+                if len(tsData):
+                    for eachTsData in tsData:
+                        eachTsData['status'] = cProject.closed
+                if len(taskData):
+                    for eachData in taskData:
+                        for eachMinData in minTaskData:
+                            if eachData['task__name'] == eachMinData['task__name']:
+                                eachData['min'] = eachMinData['min']
+                        for eachMaxData in maxTaskData:
+                            if eachData['task__name'] == eachMaxData['task__name']:
+                                eachData['max'] = eachMaxData['max']
+                        for eachAvgData in avgTaskData:
+                            if eachData['task__name'] == eachAvgData['task__name']:
+                                eachData['avg'] = eachAvgData['avg']
+                        for eachTopData in topPerformer:
+                            if eachData['task__name'] == eachTopData['taskName']:
+                                eachData['norm'] = eachTopData['norm']
+                                eachData['top'] = eachTopData['top']
+                report = [basicData, newCR, msData, tsData, taskData, topPerformer]
                 sheetName = ['Basic Information',
                              'Change Requests',
                              'Milestones',
@@ -397,10 +435,17 @@ def SingleProjectReport(request):
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
-                     'Actual Effort', 'Deviation(%)'],
-                    ['Task Name', 'Min.', 'Max.', 'Median', 'Avg.']
+                     'Actual Effort'],
+                    ['Task Name', 'Min.', 'Max.', 'Median', 'Avg.',
+                     'Norm', 'Top Performer']
                 ]
-                grdTotal = [plannedTotal, actualTotal, deviation]
+                grdTotal = [plannedTotal, actualTotal]
+                if cProject.closed:
+                    heading[3].append('Deviation')
+                    grdTotal.append(deviation)
+                else:
+                    heading[3].append('Balance Effort')
+                    grdTotal.append(balanceTotal)
                 return generateExcel(request, report, sheetName,
                                      heading, grdTotal, fileName)
     return render(request,
@@ -1189,15 +1234,23 @@ def generateMemberContent(request, header, report, worksheet,
         else:
             worksheet.write(row, 4, eachRec['task__name'], content)
         worksheet.write(row, 5, eachRec['total'], content)
-        worksheet.write(row, 6, eachRec['total'], content)
-        worksheet.write(row, 7, eachRec['total'], content)
-        worksheet.write(row, 8, eachRec['total'], content)
-        worksheet.write(row, 9, eachRec['total'], content)
-        worksheet.write(row, 10, '', content)
-        if eachRec['hold']:
-            worksheet.write(row, 12, 'Not Submitted', content)
+        if 'avg' in eachRec:
+            worksheet.write(row, 6, eachRec['avg'], content)
         else:
-            worksheet.write(row, 12, 'Submitted', content)
+            worksheet.write(row, 6, '-', content)
+        if 'min' in eachRec:
+            worksheet.write(row, 7, eachRec['min'], content)
+        else:
+            worksheet.write(row, 7, '-', content)
+        if 'max' in eachRec:
+            worksheet.write(row, 8, eachRec['max'], content)
+        else:
+            worksheet.write(row, 8, '-', content)
+        worksheet.write(row, 9, '', content)
+        if eachRec['hold']:
+            worksheet.write(row, 10, 'Not Submitted', content)
+        else:
+            worksheet.write(row, 10, 'Submitted', content)
         row += 1
     msg0 = u"Total Non-Project Hours(s) : {0}".format(grdTotal['nTotal'])
     msg1 = u"Total Project Hours(s) : {0}".format(grdTotal['pTotal'])
@@ -1287,9 +1340,14 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 4, eachRec['closed'], content)
                 row += 1
 
-            if 'task__name' in eachRec or 'taskName' in eachRec:
-                taskName = eachRec['task__name']
+            if 'task__name' in eachRec:
                 worksheet.write(row, 0, eachRec['task__name'], content)
+                worksheet.write(row, 1, eachRec['min'], content)
+                worksheet.write(row, 2, eachRec['max'], content)
+                worksheet.write(row, 3, '  ', content)
+                worksheet.write(row, 4, eachRec['avg'], content)
+                worksheet.write(row, 5, eachRec['norm'], content)
+                worksheet.write(row, 6, eachRec['top'], content)
                 row += 1
 
         row, msg = 1, ''
@@ -1300,10 +1358,17 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 1, eachRec['designation'], content)
                 worksheet.write(row, 2, eachRec['planned'], content)
                 worksheet.write(row, 3, eachRec['actual'], content)
-                worksheet.write(row, 4, eachRec['deviation'], content)
+                if eachRec['status']:
+                    dev = str(eachRec['deviation']) + '%'
+                    worksheet.write(row, 4, dev, content)
+                else:
+                    worksheet.write(row, 4, eachRec['balance'], content)
                 msg0 = u'Total Planned Effort : {0} '.format(grdTotal[0])
                 msg1 = u'Total Actual Effort : {0} '.format(grdTotal[1])
-                msg2 = u'Deivation(%) : {0} '.format(grdTotal[2])
+                if eachRec['status']:
+                    msg2 = u'Total Deivation : {0}% '.format(grdTotal[2])
+                else:
+                    msg2 = u'Total Balance Effort: {0} '.format(grdTotal[2])
                 msg = msg0 + '  ' + msg1 + '  ' + msg2
             row += 1
         generateReportFooter(request, worksheet, alp[4], row+1, header, msg)
