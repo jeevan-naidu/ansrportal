@@ -429,7 +429,8 @@ def SingleProjectReport(request):
                              'Productivity']
                 heading = [
                     ['Project Name', 'Start Date', 'End Date', 'Planned Effort',
-                     'Total Value', 'salesForceNumber', 'Signed', 'P.O.'],
+                     'Total Value', 'salesForceNumber', 'Contract Signed',
+                     'P.O.'],
                     ['CR#', 'Reason', 'End Date', 'Revised Effort',
                      'Revised Total'],
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
@@ -1248,9 +1249,9 @@ def generateMemberContent(request, header, report, worksheet,
             worksheet.write(row, 8, '-', content)
         worksheet.write(row, 9, '', content)
         if eachRec['hold']:
-            worksheet.write(row, 10, 'Not Submitted', content)
-        else:
             worksheet.write(row, 10, 'Submitted', content)
+        else:
+            worksheet.write(row, 10, 'Not Submitted', content)
         row += 1
     msg0 = u"Total Non-Project Hours(s) : {0}".format(grdTotal['nTotal'])
     msg1 = u"Total Project Hours(s) : {0}".format(grdTotal['pTotal'])
@@ -1291,11 +1292,11 @@ def generateMemSumContent(request, header, report, worksheet,
         else:
             worksheet.write(row, 1, 'No Timesheet for this period', content)
         row += 1
-    msg0 =  u'Total PTD' + str(grdTotal['ptd'])
-    msg1 =  u'Total PTM' + str(grdTotal['ptm'])
-    msg2 =  u'Total Billed Hours For Month' + str(grdTotal['total'])
-    msg3 =  u'Total Planned Hours For Month' + str(grdTotal['MonthHours'])
-    msg4 =  u'Total Planned Hours' + str(grdTotal['plannedTotal'])
+    msg0 =  u'Total PTD : ' + str(grdTotal['ptd'])
+    msg1 =  u'Total PTM : ' + str(grdTotal['ptm'])
+    msg2 =  u'Total Billed Hours For Month : ' + str(grdTotal['total'])
+    msg3 =  u'Total Planned Hours For Month : ' + str(grdTotal['MonthHours'])
+    msg4 =  u'Total Planned Hours : ' + str(grdTotal['plannedTotal'])
     msg = msg0 + '  ' + msg1 + '  ' + msg2 + '  ' + msg3 + '  ' + msg4
     generateReportFooter(request, worksheet, alp[12], row+1,
                          header, msg)
