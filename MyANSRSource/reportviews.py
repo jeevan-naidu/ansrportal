@@ -432,7 +432,7 @@ def SingleProjectReport(request):
                      'Total Value', 'salesForceNumber', 'Contract Signed',
                      'P.O.'],
                     ['CR#', 'Reason', 'End Date', 'Revised Effort',
-                     'Revised Total'],
+                     'Revised Total', 'CR Date'],
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
@@ -1328,6 +1328,7 @@ def generateProjectContent(request, header, report, worksheet,
                 worksheet.write(row, 2, eachRec['endDate'], dateformat)
                 worksheet.write(row, 3, eachRec['revisedEffort'], numberFormat)
                 worksheet.write(row, 4, rValue, numberFormat)
+                worksheet.write(row, 5, str(eachRec['updatedOn']), content)
                 row += 1
                 if 'data' in eachRec:
                     generateReportFooter(request, worksheet, alp[7], row,
@@ -1367,7 +1368,7 @@ def generateProjectContent(request, header, report, worksheet,
                 msg0 = u'Total Planned Effort : {0} '.format(grdTotal[0])
                 msg1 = u'Total Actual Effort : {0} '.format(grdTotal[1])
                 if eachRec['status']:
-                    msg2 = u'Total Deivation : {0}% '.format(grdTotal[2])
+                    msg2 = u'Total Deviation : {0}% '.format(grdTotal[2])
                 else:
                     msg2 = u'Total Balance Effort: {0} '.format(grdTotal[2])
                 msg = msg0 + '  ' + msg1 + '  ' + msg2
