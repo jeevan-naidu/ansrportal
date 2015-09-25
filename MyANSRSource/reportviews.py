@@ -1271,6 +1271,8 @@ def generateMemSumContent(request, header, report, worksheet,
             worksheet.write(row, 0, '', content)
         if len(eachData['ts']):
             for eachRec in eachData['ts']:
+                if 'fullName' in eachData:
+                    worksheet.write(row, 0, eachData['fullName'], content)
                 name = eachRec['project__projectId'] + ':' + eachRec['project__name']
                 worksheet.write(row, 1, name, content)
                 leads = [eachLead['user__username'] for eachLead in eachRec['leads']]
@@ -1289,9 +1291,10 @@ def generateMemSumContent(request, header, report, worksheet,
                 worksheet.write(row, 9, eachRec['ptm'], content)
                 worksheet.write(row, 10, eachRec['total'], content)
                 worksheet.write(row, 11, eachRec['ptd'], content)
+                row += 1
         else:
             worksheet.write(row, 1, 'No Timesheet for this period', content)
-        row += 1
+            row += 1
     msg0 =  u'Total PTD : ' + str(grdTotal['ptd'])
     msg1 =  u'Total PTM : ' + str(grdTotal['ptm'])
     msg2 =  u'Total Billed Hours For Month : ' + str(grdTotal['total'])
