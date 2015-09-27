@@ -256,21 +256,21 @@
                         <td class="text-right">
                             {% for eachVal in minTaskData %}
                                 {% if eachVal.task__name == eachData.task__name %}
-                                    {{ eachData.min }}
+                                    {{ eachVal.min }}
                                 {% endif %}
                             {% endfor %}
                         </td> 
                         <td class="text-right">
                             {% for eachVal in maxTaskData %}
                                 {% if eachVal.task__name == eachData.task__name %}
-                                    {{ eachData.max }}
+                                    {{ eachVal.max }}
                                 {% endif %}
                             {% endfor %}
                         </td> 
                         <td class="text-right">
                             {% for eachVal in avgTaskData %}
                                 {% if eachVal.task__name == eachData.task__name %}
-                                    {{ eachData.avg }}
+                                    {{ eachVal.avg }}
                                 {% endif %}
                             {% endfor %}
                         </td> 

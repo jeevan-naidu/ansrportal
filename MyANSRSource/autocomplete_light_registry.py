@@ -1,7 +1,7 @@
 import autocomplete_light
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book
+from MyANSRSource.models import Book, Project
 
 
 class AutocompleteUser(autocomplete_light.AutocompleteModelBase):
@@ -24,7 +24,10 @@ class AutocompleteBook(autocomplete_light.AutocompleteModelBase):
 
     def choices_for_request(self):
         q = self.request.GET.get('q', '')
-        choices = self.choices.filter(name__icontains=q)
+        choices = self.choices.filter(
+            name__icontains=q,
+            active=True
+        )
         return self.order_choices(choices)[0:self.limit_choices]
 
 autocomplete_light.register(Book, AutocompleteBook)
