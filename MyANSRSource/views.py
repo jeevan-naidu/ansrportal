@@ -282,9 +282,9 @@ def Timesheet(request):
                         nonbillableTS.teamMember = request.user
                         if 'save' not in request.POST:
                             nonbillableTS.hold = True
-                        if (weekTotal > 44):
+                        if (weekTotal > 40):
                             nonbillableTS.exception = \
-                                '10% deviation in totalhours for this week'
+                                "Week's total is more than 40 hours"
                         elif nonbillableTotal > 40:
                             nonbillableTS.exception = \
                                 'NonBillable activity more than 40 Hours'
@@ -324,9 +324,9 @@ def Timesheet(request):
                     if 'save' not in request.POST:
                         billableTS.hold = True
                     billableTS.billable = True
-                    if (weekTotal < 36) | (weekTotal > 44):
+                    if (weekTotal > 40):
                         billableTS.exception = \
-                            '10% deviation in totalhours for this week'
+                            "Week's total is more than 40 hours"
                     elif billableTotal > 40:
                         billableTS.exception = \
                             'Billable activity more than 40 Hours'
@@ -839,8 +839,8 @@ def ApproveTimesheet(request):
         ).values('teamMember', 'teamMember__first_name',
                  'teamMember__id',
                  'teamMember__employee__employee_assigned_id',
-                 'teamMember__last_name', 'wkstart', 'wkend').order_by(
-                     'teamMember', 'wkstart', 'wkend').distinct()
+                 'teamMember__last_name', 'wkstart', 'wkend'
+                 ).order_by('teamMember', 'wkstart', 'wkend').distinct()
         tsList = []
         if len(data):
             for eachTS in data:
@@ -873,11 +873,12 @@ def ApproveTimesheet(request):
                     teamMember=eachTS['teamMember'],
                     hold=True, approved=False,
                     project__isnull=False
-                ).values('project', 'project__projectId', 'project__name').distinct()
+                ).values('project', 'project__projectId', 'project__name', 'exception').distinct()
                 tsData['projects'] = []
                 for eachProject in totalProjects:
                     project = {}
                     project['name'] = eachProject['project__projectId'] + ' :  ' + eachProject['project__name']
+                    project['exception'] = eachProject['exception']
                     project['BHours'] = getHours(request, eachTS['wkstart'],
                                                  eachTS['wkend'],
                                                  eachTS['teamMember'],
