@@ -8,14 +8,14 @@ import django.core.validators
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fb360', '0031_question_qtype'),
+        ('fb360', '0035_auto_20150930_1926'),
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='group',
+        migrations.AddField(
+            model_name='question',
             name='priority',
-            field=models.IntegerField(max_length=100, verbose_name=b'Priority', validators=[django.core.validators.MinValueValidator(0)]),
+            field=models.IntegerField(default=None, max_length=100, verbose_name=b'Priority', validators=[django.core.validators.MinValueValidator(0)]),
             preserve_default=True,
         ),
     ]

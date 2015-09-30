@@ -2,20 +2,19 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.core.validators
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fb360', '0031_question_qtype'),
+        ('fb360', '0033_question_group'),
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.AddField(
             model_name='group',
-            name='priority',
-            field=models.IntegerField(max_length=100, verbose_name=b'Priority', validators=[django.core.validators.MinValueValidator(0)]),
+            name='fb',
+            field=models.ForeignKey(default=None, to='fb360.FB360'),
             preserve_default=True,
         ),
     ]

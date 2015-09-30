@@ -65,6 +65,10 @@ class FB360(models.Model):
     """
     Feedback Information
     """
+    name = models.CharField("Name", max_length=100, blank=False, default=None)
+    category = models.ManyToManyField(
+        emp.models.Employee,
+        default=None)
     year = models.IntegerField(
         verbose_name='Year',
         choices=YEAR,
@@ -107,6 +111,7 @@ class Group(models.Model):
     priority = models.IntegerField("Priority", max_length=100,
                                    validators=[MinValueValidator(0)],
                                    blank=False)
+    fb = models.ForeignKey(FB360, default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -122,12 +127,15 @@ class Question(models.Model):
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=100, blank=False)
-    group = models.ForeignKey(Group, verbose_name="Group", default=None)
+    priority = models.IntegerField("Priority", max_length=100,
+                                   validators=[MinValueValidator(0)],
+                                   blank=False, default=None)
     qtype = models.CharField(
         verbose_name='Type',
         max_length=1,
         choices=QST_TYPE,
         default=QST_TYPE[0][0])
+    group = models.ForeignKey(Group, default=None)
     category = models.ManyToManyField(
         emp.models.Designation,
         default=None)
