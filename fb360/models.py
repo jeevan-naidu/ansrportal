@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import employee as emp
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Choice field declaration
 STATUS = (
@@ -90,6 +91,26 @@ class FB360(models.Model):
     class Meta:
         verbose_name = 'FB360 Information'
         verbose_name_plural = 'FB360 Information'
+
+
+class Group(models.Model):
+
+    """
+    Group to manage question
+    """
+    name = models.CharField("Name", max_length=100, blank=False)
+    priority = models.IntegerField("Priority", max_length=100,
+                                   validators=[
+                                       MinValueValidator(0),
+                                       MaxValueValidator(1000)],
+                                   blank=False)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return str(self.name)
 
 
 class Question(models.Model):

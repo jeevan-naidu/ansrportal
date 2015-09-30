@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, FB360
+from .models import Question, FB360, Group
 import employee
 
 
@@ -14,7 +14,7 @@ class QuestionAdmin(admin.ModelAdmin):
         form = super(QuestionAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields[
             'category'].queryset = employee.models.Designation.objects.filter(
-                active=True
+            active=True
             )
         return form
 
@@ -28,5 +28,11 @@ class FB360Admin(admin.ModelAdmin):
     ordering = ('year', )
 
 
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+    list_filter = ('name', )
+    ordering = ('name', )
+
+admin.site.register(Group, GroupAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(FB360, FB360Admin)
