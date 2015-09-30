@@ -191,6 +191,8 @@ class QualitativeResponse(models.Model):
                                  related_name="empl", default=None)
     respondent = models.ForeignKey(User, verbose_name="Respondent",
                                    related_name="resp", default=None)
+    qst = models.ForeignKey(Question,
+                            default=None)
     general_fb = models.CharField("Feedback", max_length=500, blank=False)
     year = models.IntegerField(default=0)
     submitted = models.BooleanField(default=False)
