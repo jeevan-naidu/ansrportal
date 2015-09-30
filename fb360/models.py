@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import employee as emp
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 
 # Choice field declaration
 STATUS = (
@@ -9,6 +9,11 @@ STATUS = (
     ('A', 'Approved'),
     ('R', 'Rejected'),
     ('D', 'Deleted'),
+    )
+
+QST_TYPE = (
+    ('Q', 'Qualitative'),
+    ('M', 'Multiple Choice'),
     )
 
 # Year choice ranges from 2015 to 3999
@@ -100,9 +105,7 @@ class Group(models.Model):
     """
     name = models.CharField("Name", max_length=100, blank=False)
     priority = models.IntegerField("Priority", max_length=100,
-                                   validators=[
-                                       MinValueValidator(0),
-                                       MaxValueValidator(1000)],
+                                   validators=[MinValueValidator(0)],
                                    blank=False)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -110,7 +113,7 @@ class Group(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return str(self.name)
+        return self.name
 
 
 class Question(models.Model):
@@ -119,8 +122,12 @@ class Question(models.Model):
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=100, blank=False)
-    fb = models.ForeignKey(FB360, default=None,
-                           verbose_name="FB360 Information")
+    group = models.ForeignKey(Group, verbose_name="Group", default=None)
+    qtype = models.CharField(
+        verbose_name='Type',
+        max_length=1,
+        choices=QST_TYPE,
+        default=QST_TYPE[0][0])
     category = models.ManyToManyField(
         emp.models.Designation,
         default=None)
