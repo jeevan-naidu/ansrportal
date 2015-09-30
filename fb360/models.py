@@ -64,10 +64,6 @@ class FB360(models.Model):
         choices=YEAR,
         default=0
     )
-    process_start_date = models.DateField(
-        default=None,
-        verbose_name="Process Start Date"
-    )
     # Feedback process planning
     start_date = models.DateField(
         verbose_name="Start 360 degree appraisal"
@@ -77,10 +73,6 @@ class FB360(models.Model):
     )
     # Peer / Reportee dates
     # Reportee and Peer have same dates
-    selection_start_date = models.DateField(
-        default=None,
-        verbose_name="Peer selection start date"
-    )
     selection_date = models.DateField(
         verbose_name="Peer selection completion date"
     )
@@ -97,7 +89,7 @@ class FB360(models.Model):
 
     class Meta:
         verbose_name = 'FB360 Information'
-        verbose_name_plural = 'FB360 Informations'
+        verbose_name_plural = 'FB360 Information'
 
 
 class Question(models.Model):

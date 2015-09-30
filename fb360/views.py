@@ -213,10 +213,10 @@ def IsPageActionEligible(action):
     if fbObj:
         if action == 'Accept':
             return (fbObj[0].approval_date >= date.today() and
-                    fbObj[0].selection_start_date <= date.today())
+                    fbObj[0].start_date <= date.today())
         elif action == 'Request' or action == 'Choose':
             return (fbObj[0].selection_date >= date.today() and
-                    fbObj[0].selection_start_date <= date.today())
+                    fbObj[0].start_date <= date.today())
     else:
         return None
 
