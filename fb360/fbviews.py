@@ -4,7 +4,7 @@ logger = logging.getLogger('MyANSRSource')
 
 # FB360 models, views import
 from .models import EmpPeer, Peer, ManagerRequest, Question, \
-    Response, QualitativeResponse, STATUS
+    Response, QualitativeResponse, Group, STATUS
 import fb360
 
 # Miscellaneous imports
@@ -61,13 +61,12 @@ def GetQA(request):
         submit = 0
         if 'submit' in request.POST:
             submit = 1
-        if request.POST.get('about'):
-            DecideAction(request.user, int(request.session['selectedUser']),
-                         [request.POST.get('about')], submit)
         for i in range(1, int(request.POST.get('totalValue')) + 1):
             qst = 'qId' + str(i)
+            qtype = 'qtype' + str(i)
             ans = 'choice' + str(i)
             data = {'qst': int(request.POST.get(qst)),
+                    'type': request.POST.get(qtype),
                     'ans': request.POST.get(ans)}
             if request.POST.get(ans):
                 DecideAction(request.user, int(request.session['selectedUser']),
@@ -83,7 +82,7 @@ def DecideAction(cUser, sUser, data, action):
     Returns nothing
     """
     # Checks QA or general response and responds accordingly
-    if len(data) == 2:
+    if data['type'] == 'M':
         try:
             # Updates user's response
             resp = Response.objects.get(employee__id=sUser,
@@ -104,26 +103,27 @@ def DecideAction(cUser, sUser, data, action):
             if action:
                 resp.submitted = True
             resp.save()
-    elif len(data) == 1:
+    elif data['type'] == 'Q':
         try:
             # Updates user's general response
-            if len(data[0].strip()):
+            if len(data['ans'].strip()):
                 resp = QualitativeResponse.objects.get(employee__id=sUser,
                                                        respondent=cUser,
-                                                       year=date.today().year)
-                resp.general_fb = data[0]
+                                                       qst__id=data['qst'])
+                resp.general_fb = data['ans']
                 if action:
                     resp.submitted = True
                 resp.save()
 
         except QualitativeResponse.DoesNotExist:
             # Inserts new general response
-            if len(data[0].strip()):
+            if len(data['ans'].strip()):
                 resp = QualitativeResponse()
                 resp.employee = User.objects.get(pk=sUser)
                 resp.respondent = cUser
+                resp.qst = Question.objects.get(pk=data['qst'])
                 resp.year = date.today().year
-                resp.general_fb = data[0]
+                resp.general_fb = data['ans']
                 if action:
                     resp.submitted = True
                 resp.save()
@@ -135,31 +135,61 @@ def DecideAction(cUser, sUser, data, action):
 def GetCurrentYearQuestions(request):
     """
     Handler returns list of question for chosen user
+    based on priority and with its group
     Return Type
-        {'qst': QST, 'qstId': ID,
-         'myfb': CHOICE_OPTIONS, 'mygeneralfb': GENERALFB}
+    [{
+      'gName': GROUP_NAME,
+      'qst_set': [{'qst': QST, 'qstId': ID, 'myfb': CHOICE_OPTIONS, \
+                   'type': QUESTION_TYPE, mygeneralfb': GENERALFB, \
+                   'qno': QUESTION_NUMBER
+                }]
+    }]
     """
     if 'selectedUser' in request.session:
         selectedUser = User.objects.get(pk=request.session['selectedUser'])
-        QuestionYear = Question.objects.filter(
-            fb__year=date.today().year
-        ).values('category', 'qst', 'id')
-        l = []
-        for eachCategory in QuestionYear:
-            d = {}
-            if eachCategory['category'] == selectedUser.employee.designation.id:
-                d['qst'] = eachCategory['qst']
-                d['qstId'] = eachCategory['id']
-                d['myfb'], d['mygeneralfb'] = '', ''
-                if eachCategory['id']:
-                    d['myfb'] = GetMyResponse([request.user, selectedUser,
-                                               eachCategory['id']])
-                    d['mygeneralfb'] = GetMyResponse(
-                        [request.user, selectedUser])
-                l.append(d)
-        return l
+        groupObj = GetGroupInfo()
+        cList = []
+        if groupObj:
+            qno = 1
+            for eachGroup in groupObj:
+                cDict = {}
+                QuestionYear = Question.objects.filter(
+                    group=eachGroup
+                ).values('category', 'qst', 'id', 'qtype').order_by('priority')
+                cDict['gName'] = eachGroup.name
+                cDict['qst_set'] = []
+                for eachCategory in QuestionYear:
+                    qDict = {}
+                    if eachCategory['category'] == selectedUser.employee.designation.id:
+                        qDict['qno'] = qno
+                        qDict['qst'] = eachCategory['qst']
+                        qDict['qstId'] = eachCategory['id']
+                        qDict['type'] = eachCategory['qtype']
+                        qDict['myfb'], qDict['mygeneralfb'] = '', ''
+                        if eachCategory['id']:
+                            qDict['myfb'] = GetMyResponse([request.user,
+                                                           selectedUser,
+                                                           eachCategory['id']])
+                            qDict['mygeneralfb'] = GetMyResponse(
+                                [request.user, selectedUser])
+                    if qDict:
+                        qno += 1
+                        cDict['qst_set'].append(qDict)
+                if len(cDict['qst_set']):
+                    cList.append(cDict)
+            return cList
+        else:
+            return cList
     else:
         return []
+
+
+def GetGroupInfo():
+    """
+    Handler returns current year's group obj
+    which is ordered by priority seq. given by admin
+    """
+    return Group.objects.filter(fb__year=date.today().year).order_by('priority')
 
 
 def GetMyResponse(data):
@@ -248,7 +278,7 @@ def GetQuestionRemainingCount(request, cUser):
         Else Remaining questions's count will be returned.
     """
     QuestionYear = Question.objects.filter(
-        fb__year=date.today().year
+        group__fb__year=date.today().year
     ).values('category')
     totalQuestionYear = [
         eachCategory
@@ -271,7 +301,7 @@ def GetQuestionRemainingCount(request, cUser):
                     employee=cUser,
                     respondent=request.user
                 )
-                return (len(totalQuestionYear) + 1) - \
+                return (len(totalQuestionYear)) - \
                     (len(totalResp) + len(totalQResp))
         else:
             # General Feedback
@@ -279,7 +309,7 @@ def GetQuestionRemainingCount(request, cUser):
                 employee=cUser,
                 respondent=request.user
             )
-            return (len(totalQuestionYear) + 1) - \
+            return (len(totalQuestionYear)) - \
                 (len(totalResp) + len(totalQResp))
     else:
         return 0
