@@ -10,48 +10,13 @@ STATUS = (
     ('D', 'Deleted'),
     )
 
+RESPONDENTTYPES = (
+    ('P', "Peer"),
+    ('E', "Reportee"),
+    ('M', "Manager"),
+)
 # Year choice ranges from 2015 to 3999
 YEAR = [(v, v) for k, v in enumerate([i for i in xrange(2015, 4000)])]
-
-
-# FB360 Models
-class EmpPeer(models.Model):
-
-    """
-    Information about employee and their peers
-    """
-    employee = models.ForeignKey(User, related_name="emp",
-                                 default=None, unique=True)
-    peer = models.ManyToManyField(User, verbose_name="Choose Peer",
-                                  through='Peer',
-                                  related_name="Epeer", default=None)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-
-class Peer(models.Model):
-
-    """
-    Intermediate table for Peer
-    """
-    employee = models.ForeignKey(User, verbose_name="Employee",
-                                 related_name="Pempl", default=None)
-    emppeer = models.ForeignKey(EmpPeer, verbose_name="Employee",
-                                related_name="Pempl", default=None)
-    status = models.CharField(
-        verbose_name='Status',
-        max_length=1,
-        choices=STATUS,
-        default=STATUS[0][0])
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    class Meta:
-        unique_together = ('employee', 'emppeer', )
 
 
 class FB360(models.Model):
@@ -170,3 +135,50 @@ class QualitativeResponse(models.Model):
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+
+# FB360 Models
+
+
+class Initiator(models.Model):
+
+    survey = models.ForeignKey(FB360)
+
+    """
+    Information about employee and their peers
+    """
+    employee = models.ForeignKey(User, related_name="emp",
+                                 default=None, unique=True)
+    respondents = models.ManyToManyField(User, verbose_name="Choose Respondent",
+                                         through='Respondent',
+                                         default=None)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+
+class Respondent(models.Model):
+
+    """
+    Intermediate table for Peer
+    """
+    employee = models.ForeignKey(User, verbose_name="Respondent",
+                                 default=None)
+    Initiator = models.ForeignKey(Initiator, verbose_name="Surve Initiator",
+                                  default=None)
+    respondenttype = models.CharField(verbose_name='Type of Respondent',
+                                      max_length=1,
+                                      choices=RESPONDENTTYPES,
+                                      default=RESPONDENTTYPES[0][0])
+    status = models.CharField(
+        verbose_name='Status',
+        max_length=1,
+        choices=STATUS,
+        default=STATUS[0][0])
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    class Meta:
+        unique_together = ('employee', 'emppeer', )
