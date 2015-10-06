@@ -83,13 +83,9 @@ class UserInline(admin.StackedInline):
     max_num = 1
     min_num = 1
 
-    readonly_fields = (
-        'reportees',
-    )
-
     fieldsets = (
         ('Manager Information', {
-            'fields': ('manager', 'is_360eligible', ),
+            'fields': ('manager', ),
         }),
         ('Employee Identification', {
             'fields': (('middle_name',),

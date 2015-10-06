@@ -16,48 +16,14 @@ QST_TYPE = (
     ('M', 'Multiple Choice'),
     )
 
+RESPONDENT_TYPES = (
+    ('P', "Peer"),
+    ('E', "Reportee"),
+    ('M', "Manager"),
+)
+
 # Year choice ranges from 2015 to 3999
 YEAR = [(v, v) for k, v in enumerate([i for i in xrange(2015, 4000)])]
-
-
-# FB360 Models
-class EmpPeer(models.Model):
-
-    """
-    Information about employee and their peers
-    """
-    employee = models.ForeignKey(User, related_name="emp",
-                                 default=None, unique=True)
-    peer = models.ManyToManyField(User, verbose_name="Choose Peer",
-                                  through='Peer',
-                                  related_name="Epeer", default=None)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-
-class Peer(models.Model):
-
-    """
-    Intermediate table for Peer
-    """
-    employee = models.ForeignKey(User, verbose_name="Employee",
-                                 related_name="Pempl", default=None)
-    emppeer = models.ForeignKey(EmpPeer, verbose_name="Employee",
-                                related_name="Pempl", default=None)
-    status = models.CharField(
-        verbose_name='Status',
-        max_length=1,
-        choices=STATUS,
-        default=STATUS[0][0])
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    class Meta:
-        unique_together = ('employee', 'emppeer', )
 
 
 class FB360(models.Model):
@@ -66,14 +32,10 @@ class FB360(models.Model):
     Feedback Information
     """
     name = models.CharField("Name", max_length=100, blank=False, default=None)
-    category = models.ManyToManyField(
-        emp.models.Employee,
+    eligible = models.ManyToManyField(
+        User,
+        verbose_name='Eligible Person(s)',
         default=None)
-    year = models.IntegerField(
-        verbose_name='Year',
-        choices=YEAR,
-        default=0
-    )
     # Feedback process planning
     start_date = models.DateField(
         verbose_name="Start 360 degree appraisal"
@@ -95,11 +57,59 @@ class FB360(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return str(self.year)
+        return str(self.name)
 
     class Meta:
         verbose_name = 'FB360 Information'
         verbose_name_plural = 'FB360 Information'
+
+
+# FB360 Models
+class Initiator(models.Model):
+
+    """
+    Information about employee and their feedback respondent
+    """
+    survey = models.ForeignKey(FB360, default=None)
+    employee = models.ForeignKey(User, related_name="emp",
+                                 default=None, unique=True)
+    respondents = models.ManyToManyField(User,
+                                         verbose_name="Choose Respondent",
+                                         through='Respondent',
+                                         related_name="Epeer", default=None)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+
+class Respondent(models.Model):
+
+    """
+    Intermediate table for respondents
+    """
+    employee = models.ForeignKey(User, verbose_name="Respondent",
+                                 related_name="Pempl", default=None)
+    initiator = models.ForeignKey(Initiator,
+                                  verbose_name="Initiator",
+                                  related_name="Pempl", default=None)
+    respondent_type = models.CharField(
+        verbose_name='Respondent Type',
+        max_length=1,
+        choices=RESPONDENT_TYPES,
+        default=RESPONDENT_TYPES[0][0])
+    status = models.CharField(
+        verbose_name='Status',
+        max_length=1,
+        choices=STATUS,
+        default=STATUS[0][0])
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    class Meta:
+        unique_together = ('employee', 'initiator', )
 
 
 class Group(models.Model):
@@ -146,21 +156,6 @@ class Question(models.Model):
 
     def __unicode__(self):
         return self.qst
-
-
-class ManagerRequest(models.Model):
-
-    """
-    Stores manager's request and response.
-    """
-    respondent = models.ForeignKey(User,
-                                   unique=True,
-                                   related_name="Rrespon", default=None)
-    status = models.CharField(max_length=1)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
 
 
 class Response(models.Model):

@@ -21,11 +21,11 @@ class QuestionAdmin(admin.ModelAdmin):
 
 class FB360Admin(admin.ModelAdmin):
     list_display = (
-        'name', 'year', 'start_date', 'end_date', 'selection_date',
-        'approval_date',
+        'name', 'start_date', 'end_date', 'selection_date',
+        'approval_date'
         )
-    list_filter = ('year', 'name')
-    ordering = ('year', 'name')
+    list_filter = ('name', )
+    ordering = ('name', )
 
 
 class GroupAdmin(admin.ModelAdmin):

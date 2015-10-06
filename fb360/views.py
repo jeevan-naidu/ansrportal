@@ -4,7 +4,7 @@ logger = logging.getLogger('MyANSRSource')
 
 # FB360 models and forms import
 from .forms import PeerForm
-from .models import EmpPeer, Peer, FB360, ManagerRequest, STATUS
+from .models import Initiator, Respondent, FB360, STATUS
 
 # Employee model import
 import employee

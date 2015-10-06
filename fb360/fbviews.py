@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 
 # FB360 models, views import
-from .models import EmpPeer, Peer, ManagerRequest, Question, \
+from .models import Initiator, Respondent, Question, \
     Response, QualitativeResponse, Group, STATUS
 import fb360
 

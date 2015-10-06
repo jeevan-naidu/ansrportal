@@ -1,10 +1,9 @@
 from django.conf.urls import patterns, url
-from . import views
-from . import fbviews
+from . import views, fbviews, choosepeerview
 
 urlpatterns = patterns(u'',
                        url(r'^choose-peer/$',
-                           views.PeerRequest,
+                           choosepeerview.WrappedChoosePeerView,
                            name=u'peerrequest'),
                        url(r'^request-action/$',
                            views.RequestAction,

@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from fb360.models import Peer, FB360, ManagerRequest
+from fb360.models import Respondent, FB360
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -1104,6 +1104,7 @@ def Dashboard(request):
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
+    """
     myRequests = Peer.objects.filter(employee=request.user, status='P')
     myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
     myMgrReq = ManagerRequest.objects.filter(
@@ -1111,17 +1112,12 @@ def Dashboard(request):
     )
     if len(myMgrReq):
         myPeerReqCount = myPeerReqCount + 1
-    myPeers = employee.models.Employee.objects.filter(
+    myReportee = employee.models.Employee.objects.filter(
         manager=request.user.employee)
     isManager = 0
-    if myPeers:
+    if myReportee:
         isManager = 1
-    is360eligible = request.user.employee.is_360eligible
-    fbObj = FB360.objects.filter(year=date.today().year)
-    isFBEligible = False
-    if fbObj:
-        isFBEligible = (fbObj[0].start_date <= date.today() and
-                        fbObj[0].end_date >= date.today())
+    """
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1144,11 +1140,9 @@ def Dashboard(request):
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,
         'unapprovedts': unApprovedTimeSheet,
-        'myPeerReqCount': myPeerReqCount,
+        'myPeerReqCount': 0,
         'totalemp': totalEmployees,
-        'is360eligible': is360eligible,
-        'isFBEligible': isFBEligible,
-        'isManager': isManager
+        'isManager': 1
     }
     return render(request, 'MyANSRSource/landingPage.html', data)
 
