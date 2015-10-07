@@ -52,6 +52,10 @@
                                         <td class="text-right"><span class="label label-danger">Rejected</span></td>
                                     {% endif %}
                                 </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan=3 class="text-center"><h4><small><b>You have no peer</b><small></h4></td>
+                                </tr>
                             {% endif %}
                         {% endfor %}
                     {% else %}

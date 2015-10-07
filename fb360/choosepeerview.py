@@ -7,9 +7,6 @@ from .forms import SurveyForm, PeerForm
 from .models import Initiator, Respondent, FB360, STATUS
 from . import helper
 
-# Employee model import
-import employee
-
 # Decorator imports
 from django.contrib.auth.decorators import login_required
 
@@ -19,9 +16,6 @@ from django.db.models import Q
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
-
-# Miscellaneous imports
-from datetime import date
 
 
 # Form Wizard initialization
