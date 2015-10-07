@@ -69,6 +69,7 @@ class ChooseReporteeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChooseReporteeForm, self).__init__(*args, **kwargs)
         self.fields['user'].widget.attrs['class'] = "form-control"
+        self.fields['user'].required = False
 
 
 # Decide action on request screen form

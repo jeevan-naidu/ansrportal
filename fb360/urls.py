@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from . import views, fbviews, choosepeerview
+from . import views, fbviews, choosepeerview, choosereporteeview
 
 urlpatterns = patterns(u'',
                        url(r'^choose-peer/$',
@@ -9,7 +9,7 @@ urlpatterns = patterns(u'',
                            views.RequestAction,
                            name=u'requestaction'),
                        url(r'^choose-reportee/$',
-                           views.ChooseReportee,
+                           choosereporteeview.WrappedChoosePeerView,
                            name=u'choosereportee'),
                        url(r'^feedback/$',
                            fbviews.MyFBRequestees,

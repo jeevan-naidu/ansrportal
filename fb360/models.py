@@ -72,7 +72,7 @@ class Initiator(models.Model):
     """
     survey = models.ForeignKey(FB360, default=None)
     employee = models.ForeignKey(User, related_name="emp",
-                                 default=None, unique=True)
+                                 default=None)
     respondents = models.ManyToManyField(User,
                                          verbose_name="Choose Respondent",
                                          through='Respondent',
@@ -81,6 +81,9 @@ class Initiator(models.Model):
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+
+    class Meta:
+        unique_together = ('employee', 'survey', )
 
 
 class Respondent(models.Model):
@@ -109,7 +112,7 @@ class Respondent(models.Model):
                                      auto_now=True)
 
     class Meta:
-        unique_together = ('employee', 'initiator', )
+        unique_together = ('employee', 'initiator', 'respondent_type', )
 
 
 class Group(models.Model):
