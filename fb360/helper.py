@@ -5,7 +5,7 @@ from datetime import date
 from django.contrib.auth.decorators import login_required
 
 # Import app models
-from .models import Initiator, Respondent, FB360, STATUS
+from .models import Respondent, STATUS
 
 
 def IsPageActionEligible(action, fbObj):
@@ -24,6 +24,7 @@ def IsPageActionEligible(action, fbObj):
                     fbObj.start_date <= date.today())
     else:
         return None
+
 
 @login_required
 def ConstructList(request, myObj):

@@ -80,7 +80,12 @@ class DecideOnRequestForm(forms.ModelForm):
     """
     class Meta:
         model = Respondent
-        fields = ('initiator', 'respondent_type', 'status')
+        fields = ('respondent_type', 'status')
+
+    def __init__(self, *args, **kwargs):
+        super(DecideOnRequestForm, self).__init__(*args, **kwargs)
+        self.fields['respondent_type'].required = False
+        self.fields['status'].required = False
 
 
 # Decide action on request screen form

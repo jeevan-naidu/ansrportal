@@ -31,12 +31,18 @@
                     <tr>
                         <td>{{ eachReportee.name }}</td>
                         <td>{{ eachReportee.emailid }}</td>
-                        {% if eachReportee.status == 'P' %}
-                            <td class="text-right"><span class="label label-warning">Request Sent</span></td>
-                        {% elif eachReportee.status == 'A' %}
-                            <td class="text-right"><span class="label label-success">Accepted</span></td>
+                        {% if eachReportee.name %}
+                            {% if eachReportee.status == 'P' %}
+                                <td class="text-right"><span class="label label-warning">Request Sent</span></td>
+                            {% elif eachReportee.status == 'A' %}
+                                <td class="text-right"><span class="label label-success">Accepted</span></td>
+                            {% else %}
+                                <td class="text-right"><span class="label label-danger">Rejected</span></td>
+                            {% endif %}
                         {% else %}
-                            <td class="text-right"><span class="label label-danger">Rejected</span></td>
+                            <tr>
+                                <td colspan=3 class="text-center"><h4><small><b>You have not requested even one reportee for this survey</b><small></h4></td>
+                            </tr>
                         {% endif %}
                     </tr>
                 {% endfor %}
@@ -72,23 +78,29 @@
                     <tr>
                         <td>{{ eachReportee.name }}</td>
                         <td>{{ eachReportee.emailid }}</td>
-                        {% if choose_eligible %}
-                            <td class="text-right">
-                                <div class="btn-group" data-toggle="buttons">
-                                    {% with forloop.counter|stringformat:"s" as t %}
-                                        {% with "choice"|add:t as total %}
-                                            <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="C" /> 
-                                                <i class="fa fa-check fa-lg"></i>
-                                            </label>
+                        {% if eachReportee.name %}
+                            {% if choose_eligible %}
+                                <td class="text-right">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        {% with forloop.counter|stringformat:"s" as t %}
+                                            {% with "choice"|add:t as total %}
+                                                <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="C" /> 
+                                                    <i class="fa fa-check fa-lg"></i>
+                                                </label>
+                                            {% endwith %}
+                                            {% with "rowid"|add:t as total %}
+                                                <input type="hidden" name="{{ total }}" value="{{ eachReportee.id }}" />
+                                            {% endwith %}
                                         {% endwith %}
-                                        {% with "rowid"|add:t as total %}
-                                            <input type="hidden" name="{{ total }}" value="{{ eachReportee.id }}" />
-                                        {% endwith %}
-                                    {% endwith %}
-                                </div>
-                            </td>
+                                    </div>
+                                </td>
+                            {% else %}
+                                <td class="text-right"><h5><small>Choosing reportee date has either expired / not yet started for this survey</small></h5></td>
+                            {% endif %}
                         {% else %}
-                            <td class="text-right"><h5><small>Choosing reportee date has either expired / not yet started for this survey</small></h5></td>
+                            <tr>
+                                <td colspan=3 class="text-center"><h4><small><b>You have chosen all your reportees for this survey</b><small></h4></td>
+                            </tr>
                         {% endif %}
                     </tr>
                 {% endfor %}

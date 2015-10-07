@@ -103,10 +103,12 @@ def GetMyPeerList(request, surveyObj):
         survey=surveyObj
     )
     myObjAccepted = Respondent.objects.filter(~Q(status=STATUS[3][0]),
-                                              employee=request.user)
+                                              employee=request.user,
+                                              initiator__survey=surveyObj)
     if myObj or myObjAccepted:
         myPeerObj = Respondent.objects.filter(~Q(status=STATUS[3][0]),
-                                              initiator=myObj)
+                                              initiator=myObj,
+                                              initiator__survey=surveyObj)
         if myPeerObj or myObjAccepted:
             list1 = helper.ConstructList(request, myPeerObj)
             list2 = helper.ConstructList(request,

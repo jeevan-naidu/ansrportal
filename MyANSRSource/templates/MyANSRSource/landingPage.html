@@ -132,10 +132,17 @@
                             Choose Reportee(s)
                         </a>
                     {% endif %}
-                    <a href="#" class="list-group-item">
-                        <span class="badge">{{ myPeerReqCount }}</span>
-                        Manage Request(s)
-                    </a>
+                    {% if myPeerReqCount %}
+                        <a href="/fb360/request-action" class="list-group-item">
+                            <span class="badge">{{ myPeerReqCount }}</span>
+                            Manage Request(s)
+                        </a>
+                    {% else %}
+                        <a href="#" class="list-group-item">
+                            <span class="badge">{{ myPeerReqCount }}</span>
+                            Manage Request(s)
+                        </a>
+                    {% endif %}
                     <a href="#" class="list-group-item">
                         Feedback
                     </a>

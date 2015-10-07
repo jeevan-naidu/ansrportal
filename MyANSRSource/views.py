@@ -1104,20 +1104,16 @@ def Dashboard(request):
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
-    """
-    myRequests = Peer.objects.filter(employee=request.user, status='P')
-    myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
-    myMgrReq = ManagerRequest.objects.filter(
-        respondent=request.user, status='P'
+    myReq = Respondent.objects.filter(
+        employee=request.user,
+        status='P',
     )
-    if len(myMgrReq):
-        myPeerReqCount = myPeerReqCount + 1
+    myPeerReqCount = len(myReq)
     myReportee = employee.models.Employee.objects.filter(
         manager=request.user.employee)
     isManager = 0
     if myReportee:
         isManager = 1
-    """
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1140,9 +1136,9 @@ def Dashboard(request):
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,
         'unapprovedts': unApprovedTimeSheet,
-        'myPeerReqCount': 0,
+        'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
-        'isManager': 1
+        'isManager': isManager
     }
     return render(request, 'MyANSRSource/landingPage.html', data)
 
