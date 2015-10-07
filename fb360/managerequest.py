@@ -74,7 +74,7 @@ class DecideOnRequestWizard(SessionWizardView):
                     )
                     helper.UpdateRequestStatus(myPeerObj,
                                                self.request.POST.get(choice))
-        return HttpResponseRedirect('/fb360/decide-action/')
+        return HttpResponseRedirect('/fb360/request-action/')
 
 decide_request = DecideOnRequestWizard.as_view(FORMS)
 
