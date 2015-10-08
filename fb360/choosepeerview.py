@@ -4,7 +4,7 @@ logger = logging.getLogger('MyANSRSource')
 
 # FB360 models and forms import
 from .forms import SurveyForm, PeerForm
-from .models import Initiator, Respondent, FB360, STATUS
+from .models import Initiator, Respondent, FB360, STATUS, RESPONDENT_TYPES
 from . import helper
 
 # Decorator imports
@@ -103,10 +103,12 @@ def GetMyPeerList(request, surveyObj):
         survey=surveyObj
     )
     myObjAccepted = Respondent.objects.filter(~Q(status=STATUS[3][0]),
+                                              respondent_type=RESPONDENT_TYPES[0][0],
                                               employee=request.user,
                                               initiator__survey=surveyObj)
     if myObj or myObjAccepted:
         myPeerObj = Respondent.objects.filter(~Q(status=STATUS[3][0]),
+                                              respondent_type=RESPONDENT_TYPES[0][0],
                                               initiator=myObj,
                                               initiator__survey=surveyObj)
         if myPeerObj or myObjAccepted:
