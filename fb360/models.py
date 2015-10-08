@@ -46,10 +46,10 @@ class FB360(models.Model):
     # Peer / Reportee dates
     # Reportee and Peer have same dates
     selection_date = models.DateField(
-        verbose_name="Peer selection completion date"
+        verbose_name="Peer / Reportee selection completion date"
     )
     approval_date = models.DateField(
-        verbose_name="Peer approval completion date"
+        verbose_name="Peer / Reportee approval completion date"
     )
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
