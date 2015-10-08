@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 import employee as emp
 from django.core.validators import MinValueValidator
+from django.db.models.signals import post_save
+from django.db import IntegrityError
 
 # Choice field declaration
 STATUS = (
@@ -62,6 +64,42 @@ class FB360(models.Model):
     class Meta:
         verbose_name = 'FB360 Information'
         verbose_name_plural = 'FB360 Information'
+
+
+# This tweek is to add manager -> reportee relationship.
+# As default, manager has to give
+# feedback to thier reportee.
+def DefaultRelation(sender, instance, **kwargs):
+    """
+    Helper to insert default realtion (manager -> Reportee)
+    for selected survey
+    Returns Nothing
+    """
+    eligible = FB360.objects.filter(id=instance.id).values('eligible')
+    fbObj = FB360.objects.get(id=instance.id)
+    for eachEligible in eligible:
+        # Check to confirm if eligible is none or not
+        if eachEligible['eligible'] is not None:
+            cUser = User.objects.get(id=eachEligible['eligible'])
+            # Escapes user who doesn't have a manager
+            try:
+                initObj = Initiator()
+                initObj.survey = fbObj
+                initObj.employee = cUser
+                initObj.save()
+            except IntegrityError:
+                initObj = Initiator.objects.get(survey=fbObj, employee=cUser)
+            if cUser.employee.manager is not None:
+                respObj = Respondent()
+                respObj.employee = cUser.employee.manager.user
+                respObj.initiator = initObj
+                respObj.status = STATUS[1][0]
+                respObj.respondent_type = RESPONDENT_TYPES[2][0]
+                respObj.save()
+
+post_save.connect(DefaultRelation,
+                  sender=FB360,
+                  dispatch_uid="Add Default Relation")
 
 
 # FB360 Models
