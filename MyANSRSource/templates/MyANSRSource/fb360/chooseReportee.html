@@ -77,8 +77,8 @@
                                 <div class="btn-group" data-toggle="buttons">
                                     {% with forloop.counter|stringformat:"s" as t %}
                                         {% with "choice"|add:t as total %}
-                                            <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="C" /> 
-                                                <i class="fa fa-check fa-lg"></i>
+                                            <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="C" />
+                                                Click to select 
                                             </label>
                                         {% endwith %}
                                         {% with "rowid"|add:t as total %}
