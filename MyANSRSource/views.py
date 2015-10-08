@@ -440,18 +440,22 @@ def Timesheet(request):
             if len(approvedSet) > 0:
                 messages.success(
                     request, 'Timesheet approved :' + str(list(approvedSet)))
+                hold_button = True
             if len(autoApprovedSet) > 0:
                 messages.success(
                     request, 'Timesheet auto-approved by the system :' +
                     str(list(autoApprovedSet)))
+                hold_button = True
             if len(holdSet) > 0:
                 messages.info(
                     request, 'Timesheet sent to your manager :' +
                     str(list(holdSet)))
+                hold_button = True
             if len(saveSet) > 0:
                 messages.info(
                     request, 'Timesheet has been saved:' +
                     str(list(saveSet)))
+                hold_button = False
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -479,6 +483,7 @@ def Timesheet(request):
                 'weekendDate': dates['end'],
                 'disabled': dates['disabled'],
                 'extra': 0,
+                'hold_button': hold_button,
                 'tsErrorList': tsErrorList,
                 'atErrorList': atErrorList,
                 'tsFormList': tsContent,
@@ -516,6 +521,7 @@ def Timesheet(request):
                 defaulLocation = [{'location': None}]
             messages.success(request, 'Please enter your timesheet for \
                              this week')
+            hold_button = False
 
         # Constructing status of timesheet
 
@@ -538,19 +544,23 @@ def Timesheet(request):
         if len(approvedSet) > 0:
             messages.success(
                 request, 'Timesheet approved :' + str(list(approvedSet)))
+            hold_button = True
         if len(holdSet) > 0:
             messages.info(
                 request, 'Timesheet pending manager approval :' +
                 str(list(holdSet)))
+            hold_button = True
         if len(sentBackSet) > 0:
             messages.info(
                 request, 'Timesheet you have to submit:' +
                 str(list(sentBackSet)))
+            hold_button = False
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
                 'disabled': dates['disabled'],
                 'extra': extra,
+                'hold_button': hold_button,
                 'tsFormList': tsFormList,
                 'atFormList': atFormList}
         return renderTimesheet(request, data)
@@ -782,6 +792,7 @@ def renderTimesheet(request, data):
                  'disabled': data['disabled'],
                  'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
                                'Fri', 'Sat', 'Sun'],
+                 'hold_button': data['hold_button'],
                  'billableHours': billableHours,
                  'idleHours': idleHours,
                  'bTotal': bTotal,
