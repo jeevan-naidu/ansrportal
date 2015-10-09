@@ -5,8 +5,7 @@ from datetime import date
 from django.contrib.auth.decorators import login_required
 
 # Import app models
-from .models import Respondent, STATUS
-
+from .models import Initiator, Respondent, STATUS, FB360
 
 
 def IsPageActionEligible(action, fbObj):
@@ -25,6 +24,31 @@ def IsPageActionEligible(action, fbObj):
                     fbObj.start_date <= date.today())
     else:
         return None
+
+
+@login_required
+def GetSurveyList(request, currentStatus):
+    """
+    Hepler returns survey list based on current Status given
+    Returns List of survey objects, if there is no survey
+            returns None
+    """
+    initIds = []
+    if currentStatus == STATUS[1][0]:
+        initid = Initiator.objects.filter(
+            employee=request.user,
+        )
+        myResp = Respondent.objects.filter(
+            initiator__in=[eachId.id for eachId in initid]
+        ).values('initiator__survey').distinct()
+        initIds = [eachResp['initiator__survey'] for eachResp in myResp]
+    resp = Respondent.objects.filter(
+        employee=request.user,
+        status=currentStatus
+    ).values('initiator__survey').distinct()
+    respIds = [eachResp['initiator__survey'] for eachResp in resp]
+    surveyIds = respIds + initIds
+    return FB360.objects.filter(id__in=surveyIds)
 
 
 @login_required

@@ -109,6 +109,7 @@ choose_peer = ChoosePeerWizard.as_view(FORMS)
 
 
 @login_required
+@is_manager
 def WrappedChoosePeerView(request):
     return choose_peer(request)
 

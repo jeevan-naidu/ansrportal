@@ -1,11 +1,26 @@
-{% extends 'fb360FeedbackMaster.inc' %}
-{% load fontawesome %}
+{% extends 'fb360/feedbackMaster.inc' %}
 
-{% block QAactiveClass %}active{% endblock %}
-{% block feedbackChild %}
-<form id="summary" method="POST" action="">
-	{% csrf_token %}
+{% block PGiveFeedback %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %} 
+            {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+            {% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
+<div class="row">
+    <div class="col-sm-12 center-block">
     {% if qst %}
+        <input type="hidden" name="sUser" value="{{ sUser }}" />
+        <div class="btn-group pull-right" data-toggle="buttons">
+            <label class="btn btn-default btn-sm active"><input checked type="radio" name="save" value="save" /> Save </label>
+            <label class="btn btn-default btn-sm"><input type="radio" name="submit" value="submit" /> Submit </label>
+        </div>
         {% for eachQst in qst %}
             <legend>{{ eachQst.gName }}</legend>
             {% for eachQ in eachQst.qst_set %}
@@ -69,25 +84,11 @@
             {% endfor %}
         {% endfor %}
         <div>
-            <button type="submit" class="btn btn-info" name="save">
-                <i class="fa fa-floppy-o fa-lg"></i>
-                Save
-            </button>
-            <button type="submit" class="btn btn-info pull-right" name="submit">
-                <i class="fa fa-check-square fa-lg"></i>
-                Submit
-            </button>
         </div>
     {% else %}
         <h3 class="text-center"><small>No Feedback Questions available </small></h3>
     {% endif %}
-</form>
-<script>
-    var app = app || {};
-
-    (function() {
-
-    }());
-</script>
-
+    </div>
+</div>
+{% endblock %}
 {% endblock %}

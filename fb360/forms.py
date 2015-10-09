@@ -97,7 +97,11 @@ class FB360RequesteeForm(forms.ModelForm):
     """
     class Meta:
         model = Respondent
-        fields = ('initiator', 'respondent_type', )
+        fields = ('respondent_type', )
+
+    def __init__(self, *args, **kwargs):
+        super(FB360RequesteeForm, self).__init__(*args, **kwargs)
+        self.fields['respondent_type'].required = False
 
 
 # Show Feedback Question
@@ -108,4 +112,10 @@ class QuestionForm(forms.ModelForm):
     """
     class Meta:
         model = Question
-        fields = ('qst', 'priority', 'qtype', 'group')
+        fields = ('qst', 'priority', 'qtype', )
+
+    def __init__(self, *args, **kwargs):
+        super(QuestionForm, self).__init__(*args, **kwargs)
+        self.fields['qst'].required = False
+        self.fields['priority'].required = False
+        self.fields['qtype'].required = False

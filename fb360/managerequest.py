@@ -4,7 +4,7 @@ logger = logging.getLogger('MyANSRSource')
 
 # FB360 models and forms import
 from .forms import SurveyForm, DecideOnRequestForm
-from .models import Respondent, FB360, STATUS
+from .models import Respondent, STATUS
 from . import helper
 
 # Decorator imports
@@ -36,14 +36,8 @@ class DecideOnRequestWizard(SessionWizardView):
         form = super(DecideOnRequestWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'Select Survey':
-            resp = Respondent.objects.filter(
-                employee=self.request.user,
-                status=STATUS[0][0]
-            ).values('initiator__survey')
-            surveyIds = [eachResp['initiator__survey'] for eachResp in resp]
-            form.fields['survey'].queryset = FB360.objects.filter(
-                id__in=surveyIds,
-            )
+            form.fields['survey'].queryset = helper.GetSurveyList(self.request,
+                                                                  STATUS[0][0])
         return form
 
     # Returns List of pending requests
