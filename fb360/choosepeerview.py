@@ -130,7 +130,7 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
     Eligible Criteria:
         Peer must not be None.
         Peer must not be already added to this employee in Approved / Pending
-        state.
+        state for selected survey.
         Peer cannot be self assigned.
         Peer cannot be my manager.
         If i am a manager, i can't add my reportee as peer
@@ -142,6 +142,7 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
                 myPeerObj = Respondent.objects.filter(
                     employee=eachPeer,
                     initiator=empPeerObj,
+                    initiator__survey=empPeerObj.survey,
                 )
                 if myPeerObj:
                     if myPeerObj.filter(status__in=(STATUS[3][0],
@@ -169,7 +170,9 @@ def IsPeerRequestExist(request, eachPeer, empPeerObj):
     Handler checks the current peer has requested me
     Returns 0 -> Not Eligible or  1 -> Is Eligible
     """
-    req = Respondent.objects.filter(employee=request.user).values(
+    req = Respondent.objects.filter(
+        employee=request.user, initiator__survey=empPeerObj.survey
+    ).values(
         'initiator__employee'
     )
     if eachPeer.id in [eachReq['initiator__employee'] for eachReq in req]:
