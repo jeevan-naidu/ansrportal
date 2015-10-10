@@ -72,37 +72,38 @@ class ChoosePeerWizard(SessionWizardView):
         request_data = [form.cleaned_data for form in form_list]
 
         if self.request.method == 'POST':
-            init = Initiator.objects.filter(
-                employee=self.request.user,
-                survey=request_data[0]['survey'],
-            )
-            if init:
-                initObj = init[0]
-            else:
-                initObj = Initiator()
-                initObj.survey = request_data[0]['survey']
-                initObj.employee = self.request.user
-                initObj.save()
-            for i in range(1, int(self.request.POST.get('totalValue')) + 1):
-                choice = "choice" + str(i)
-                rowid = "rowid" + str(i)
-                if self.request.POST.get(choice) is not None:
-                    try:
-                        mgrReqObj = Respondent()
-                        mgrReqObj.employee = User.objects.get(
-                            pk=int(self.request.POST.get(rowid))
-                        )
-                        mgrReqObj.initiator = initObj
-                        mgrReqObj.respondent_type = RESPONDENT_TYPES[1][0]
-                        mgrReqObj.status = STATUS[0][0]
-                        mgrReqObj.save()
-                    except IntegrityError:
-                        mgrReqObj = Respondent.objects.get(
-                            employee__id=int(self.request.POST.get(rowid)),
-                            initiator__survey=request_data[0]['survey'],
-                            respondent_type=RESPONDENT_TYPES[1][0]
-                        )
-                        helper.UpdateRequestStatus(mgrReqObj, STATUS[0][0])
+            if 'totalValue' in self.request.POST:
+                init = Initiator.objects.filter(
+                    employee=self.request.user,
+                    survey=request_data[0]['survey'],
+                )
+                if init:
+                    initObj = init[0]
+                else:
+                    initObj = Initiator()
+                    initObj.survey = request_data[0]['survey']
+                    initObj.employee = self.request.user
+                    initObj.save()
+                for i in range(1, int(self.request.POST.get('totalValue')) + 1):
+                    choice = "choice" + str(i)
+                    rowid = "rowid" + str(i)
+                    if self.request.POST.get(choice) is not None:
+                        try:
+                            mgrReqObj = Respondent()
+                            mgrReqObj.employee = User.objects.get(
+                                pk=int(self.request.POST.get(rowid))
+                            )
+                            mgrReqObj.initiator = initObj
+                            mgrReqObj.respondent_type = RESPONDENT_TYPES[1][0]
+                            mgrReqObj.status = STATUS[0][0]
+                            mgrReqObj.save()
+                        except IntegrityError:
+                            mgrReqObj = Respondent.objects.get(
+                                employee__id=int(self.request.POST.get(rowid)),
+                                initiator__survey=request_data[0]['survey'],
+                                respondent_type=RESPONDENT_TYPES[1][0]
+                            )
+                            helper.UpdateRequestStatus(mgrReqObj, STATUS[0][0])
         return HttpResponseRedirect('/fb360/choose-reportee/')
 
 choose_peer = ChoosePeerWizard.as_view(FORMS)
