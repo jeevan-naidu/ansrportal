@@ -7,7 +7,6 @@ from .models import Initiator, Respondent, Question, \
     Response, QualitativeResponse, Group, STATUS, QST_TYPE
 from .forms import SurveyForm, FB360RequesteeForm, QuestionForm
 from . import helper
-import fb360
 
 # Miscellaneous imports
 from django.contrib.formtools.wizard.views import SessionWizardView
@@ -77,14 +76,13 @@ class GiveFeedbackWizard(SessionWizardView):
                     'Select Survey')['survey']
             context.update({
                 'qst': GetCurrentYearQuestions(
-                      self.request, self.request.POST.get('id'), surveyObj),
+                    self.request, self.request.POST.get('id'), surveyObj),
                 'ans': CHOICE_OPTIONS,
                 'sUser': self.request.POST.get('id')
             })
         return context
 
     def done(self, form_list, **kwargs):
-        request_data = [form.cleaned_data for form in form_list]
         if self.request.method == 'POST':
             submit = 0
             if 'submit' in self.request.POST:
@@ -200,8 +198,8 @@ def GetCurrentYearQuestions(request, userId, surveyObj):
                         qDict['myfb'], qDict['mygeneralfb'] = '', ''
                         if eachCategory['id']:
                             qDict['myfb'] = GetMyResponse([request.user,
-                                                            selectedUser,
-                                                            eachCategory['id']])
+                                                           selectedUser,
+                                                           eachCategory['id']])
                             qDict['mygeneralfb'] = GetMyResponse(
                                 [request.user, selectedUser])
                     if qDict:
@@ -317,25 +315,29 @@ def GetQuestionRemainingCount(request, cUser, surveyObj):
         # QA Choices
         totalResp = Response.objects.filter(
             employee=cUser,
-            respondent=request.user
+            respondent=request.user,
+            qst__group__fb=surveyObj
         )
-        if len([eachResp.submitted for eachResp in totalResp]):
-            if [eachResp.submitted for eachResp in totalResp][0]:
-                return -1
-            else:
-                # General Feedback
-                totalQResp = QualitativeResponse.objects.filter(
-                    employee=cUser,
-                    respondent=request.user
-                )
-                return (len(totalQuestionYear)) - \
-                    (len(totalResp) + len(totalQResp))
+        totalQResp = QualitativeResponse.objects.filter(
+            employee=cUser,
+            respondent=request.user,
+            qst__group__fb=surveyObj
+        )
+        if len([eachResp.submitted for eachResp in totalResp] or
+               [eachResp.submitted for eachResp in totalQResp]):
+            if len(totalResp):
+                if [eachResp.submitted for eachResp in totalResp][0]:
+                    return -1
+                else:
+                    return (len(totalQuestionYear)) - \
+                        (len(totalResp) + len(totalQResp))
+            elif len(totalQResp):
+                if [eachResp.submitted for eachResp in totalQResp][0]:
+                    return -1
+                else:
+                    return (len(totalQuestionYear)) - \
+                        (len(totalResp) + len(totalQResp))
         else:
-            # General Feedback
-            totalQResp = QualitativeResponse.objects.filter(
-                employee=cUser,
-                respondent=request.user
-            )
             return (len(totalQuestionYear)) - \
                 (len(totalResp) + len(totalQResp))
     else:
