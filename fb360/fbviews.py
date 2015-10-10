@@ -87,17 +87,18 @@ class GiveFeedbackWizard(SessionWizardView):
             submit = 0
             if 'submit' in self.request.POST:
                 submit = 1
-            for i in range(1, int(self.request.POST.get('totalValue')) + 1):
-                qst = 'qId' + str(i)
-                qtype = 'qtype' + str(i)
-                ans = 'choice' + str(i)
-                data = {'qst': int(self.request.POST.get(qst)),
-                        'type': self.request.POST.get(qtype),
-                        'ans': self.request.POST.get(ans)}
-                if self.request.POST.get(ans):
-                    DecideAction(self.request.user,
-                                 int(self.request.POST.get('sUser')),
-                                 data, submit)
+            if 'totalValue' in self.request.POST:
+                for i in range(1, int(self.request.POST.get('totalValue')) + 1):
+                    qst = 'qId' + str(i)
+                    qtype = 'qtype' + str(i)
+                    ans = 'choice' + str(i)
+                    data = {'qst': int(self.request.POST.get(qst)),
+                            'type': self.request.POST.get(qtype),
+                            'ans': self.request.POST.get(ans)}
+                    if self.request.POST.get(ans):
+                        DecideAction(self.request.user,
+                                     int(self.request.POST.get('sUser')),
+                                     data, submit)
         return HttpResponseRedirect('/fb360/give-feedback/')
 
 give_feedback = GiveFeedbackWizard.as_view(FORMS)
