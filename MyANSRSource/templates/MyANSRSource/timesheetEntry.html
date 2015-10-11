@@ -422,8 +422,13 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    	<button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
-    	<a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
+        {% if hold_button %}
+            <button type="submit" value="save" name="save" class="btn btn-info" disabled="disabled">Save Timesheet</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right" disabled="disabled">Submit Timesheet</a>
+        {% else %}
+            <button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
+        {% endif %}
 	<script>
  		$(document).on("click", "#submitTS", function(e) {
             swal({

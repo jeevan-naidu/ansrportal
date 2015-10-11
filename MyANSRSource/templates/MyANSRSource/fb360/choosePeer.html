@@ -1,24 +1,23 @@
-{% extends 'fb360Master.inc' %}
-{% load bootstrap3 %}
-{% load fontawesome %}
+{% extends 'fb360/peerMaster.inc' %}
 
-{%block childcontent %}
+{% block PChoosePeer %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %} 
+            {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+            {% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
 <div class="row">
-	<div class="col-md-12">
-        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
-            {% csrf_token %}
-            {% bootstrap_messages %}
+    <div class="col-sm-12 center-block">
+        <div class="table-responsive col-lg-12">
             {% if request_eligible %}
                 <table class="table table-condensed">
-                    <tr>
-                        {% for field in form %}
-                            <th>Choose Peer(s)
-                                {% if field.field.required %}
-                                    <span class="required">*</span>
-                                {% endif %}
-                            </th>
-                        {% endfor %}
-                    </tr>
                     <tr>
                         {% for field in form %}
                             <td class="col-lg-6">
@@ -26,15 +25,9 @@
                             </td>
                         {% endfor %}
                     </tr>
-                    <tr>
-                        <td>
-                            <button type="submit" class="btn btn-primary"> Send Invite !!!
-                            </button>
-                        </td>
-                    </tr>
                 </table>
             {% else %}
-                <h4><small><b>Peer Selection date has either expired / not yet started for this year</b></small></h4>
+                <h4><small><b>Peer Selection date has either expired / not yet started for this survey</b></small></h4>
             {% endif %}
             <table class="table table-condensed">
                 <thead>
@@ -54,10 +47,14 @@
                                     {% if eachPeer.status == 'P' %}
                                         <td class="text-right"><span class="label label-warning">Request Sent</span></td>
                                     {% elif eachPeer.status == 'A' %}
-                                        <td class="text-right"><span class="label label-success">Connected</span></td>
+                                        <td class="text-right"><span class="label label-success">Accepted</span></td>
                                     {% else %}
                                         <td class="text-right"><span class="label label-danger">Rejected</span></td>
                                     {% endif %}
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan=3 class="text-center"><h4><small><b>You have no peer</b><small></h4></td>
                                 </tr>
                             {% endif %}
                         {% endfor %}
@@ -68,7 +65,7 @@
                     {% endif %}
                 </tbody>
             </table>
-        </form>
-	</div>
+        </div>
+    </div>
 </div>
-{% endblock %}
+{% endblock %}{% endblock %}

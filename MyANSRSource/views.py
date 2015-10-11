@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from fb360.models import Peer, FB360, ManagerRequest
+from fb360.models import Respondent, FB360
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -282,9 +282,9 @@ def Timesheet(request):
                         nonbillableTS.teamMember = request.user
                         if 'save' not in request.POST:
                             nonbillableTS.hold = True
-                        if (weekTotal > 44):
+                        if (weekTotal > 40):
                             nonbillableTS.exception = \
-                                '10% deviation in totalhours for this week'
+                                "Week's total is more than 40 hours"
                         elif nonbillableTotal > 40:
                             nonbillableTS.exception = \
                                 'NonBillable activity more than 40 Hours'
@@ -324,9 +324,9 @@ def Timesheet(request):
                     if 'save' not in request.POST:
                         billableTS.hold = True
                     billableTS.billable = True
-                    if (weekTotal < 36) | (weekTotal > 44):
+                    if (weekTotal > 40):
                         billableTS.exception = \
-                            '10% deviation in totalhours for this week'
+                            "Week's total is more than 40 hours"
                     elif billableTotal > 40:
                         billableTS.exception = \
                             'Billable activity more than 40 Hours'
@@ -440,18 +440,22 @@ def Timesheet(request):
             if len(approvedSet) > 0:
                 messages.success(
                     request, 'Timesheet approved :' + str(list(approvedSet)))
+                hold_button = True
             if len(autoApprovedSet) > 0:
                 messages.success(
                     request, 'Timesheet auto-approved by the system :' +
                     str(list(autoApprovedSet)))
+                hold_button = True
             if len(holdSet) > 0:
                 messages.info(
                     request, 'Timesheet sent to your manager :' +
                     str(list(holdSet)))
+                hold_button = True
             if len(saveSet) > 0:
                 messages.info(
                     request, 'Timesheet has been saved:' +
                     str(list(saveSet)))
+                hold_button = False
         else:
             # Switch dates back and forth
             dates = switchWeeks(request)
@@ -479,6 +483,7 @@ def Timesheet(request):
                 'weekendDate': dates['end'],
                 'disabled': dates['disabled'],
                 'extra': 0,
+                'hold_button': hold_button,
                 'tsErrorList': tsErrorList,
                 'atErrorList': atErrorList,
                 'tsFormList': tsContent,
@@ -516,6 +521,7 @@ def Timesheet(request):
                 defaulLocation = [{'location': None}]
             messages.success(request, 'Please enter your timesheet for \
                              this week')
+            hold_button = False
 
         # Constructing status of timesheet
 
@@ -538,19 +544,23 @@ def Timesheet(request):
         if len(approvedSet) > 0:
             messages.success(
                 request, 'Timesheet approved :' + str(list(approvedSet)))
+            hold_button = True
         if len(holdSet) > 0:
             messages.info(
                 request, 'Timesheet pending manager approval :' +
                 str(list(holdSet)))
+            hold_button = True
         if len(sentBackSet) > 0:
             messages.info(
                 request, 'Timesheet you have to submit:' +
                 str(list(sentBackSet)))
+            hold_button = False
 
         data = {'weekstartDate': dates['start'],
                 'weekendDate': dates['end'],
                 'disabled': dates['disabled'],
                 'extra': extra,
+                'hold_button': hold_button,
                 'tsFormList': tsFormList,
                 'atFormList': atFormList}
         return renderTimesheet(request, data)
@@ -782,6 +792,7 @@ def renderTimesheet(request, data):
                  'disabled': data['disabled'],
                  'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
                                'Fri', 'Sat', 'Sun'],
+                 'hold_button': data['hold_button'],
                  'billableHours': billableHours,
                  'idleHours': idleHours,
                  'bTotal': bTotal,
@@ -839,8 +850,8 @@ def ApproveTimesheet(request):
         ).values('teamMember', 'teamMember__first_name',
                  'teamMember__id',
                  'teamMember__employee__employee_assigned_id',
-                 'teamMember__last_name', 'wkstart', 'wkend').order_by(
-                     'teamMember', 'wkstart', 'wkend').distinct()
+                 'teamMember__last_name', 'wkstart', 'wkend'
+                 ).order_by('teamMember', 'wkstart', 'wkend').distinct()
         tsList = []
         if len(data):
             for eachTS in data:
@@ -873,11 +884,12 @@ def ApproveTimesheet(request):
                     teamMember=eachTS['teamMember'],
                     hold=True, approved=False,
                     project__isnull=False
-                ).values('project', 'project__projectId', 'project__name').distinct()
+                ).values('project', 'project__projectId', 'project__name', 'exception').distinct()
                 tsData['projects'] = []
                 for eachProject in totalProjects:
                     project = {}
                     project['name'] = eachProject['project__projectId'] + ' :  ' + eachProject['project__name']
+                    project['exception'] = eachProject['exception']
                     project['BHours'] = getHours(request, eachTS['wkstart'],
                                                  eachTS['wkend'],
                                                  eachTS['teamMember'],
@@ -1103,24 +1115,16 @@ def Dashboard(request):
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
-    myRequests = Peer.objects.filter(employee=request.user, status='P')
-    myPeerReqCount = len([eachReq.emppeer for eachReq in myRequests])
-    myMgrReq = ManagerRequest.objects.filter(
-        respondent=request.user, status='P'
+    myReq = Respondent.objects.filter(
+        employee=request.user,
+        status='P',
     )
-    if len(myMgrReq):
-        myPeerReqCount = myPeerReqCount + 1
-    myPeers = employee.models.Employee.objects.filter(
+    myPeerReqCount = len(myReq)
+    myReportee = employee.models.Employee.objects.filter(
         manager=request.user.employee)
     isManager = 0
-    if myPeers:
+    if myReportee:
         isManager = 1
-    is360eligible = request.user.employee.is_360eligible
-    fbObj = FB360.objects.filter(year=date.today().year)
-    isFBEligible = False
-    if fbObj:
-        isFBEligible = (fbObj[0].start_date <= date.today() and
-                        fbObj[0].end_date >= date.today())
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1145,8 +1149,6 @@ def Dashboard(request):
         'unapprovedts': unApprovedTimeSheet,
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
-        'is360eligible': is360eligible,
-        'isFBEligible': isFBEligible,
         'isManager': isManager
     }
     return render(request, 'MyANSRSource/landingPage.html', data)

@@ -1,0 +1,38 @@
+{% extends 'fb360/feedbackMaster.inc' %}
+
+{% block PChooseSurvey %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %} 
+            {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+            {% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
+<div class="row">
+    <div class="col-sm-12 center-block">
+        <div class="table-responsive col-lg-12">
+            <table class="table table-bordered">
+                <thead>
+                    <th class="text-center">Choose</th>
+                    <th>Survey Name</th>
+                </thead>
+                {% for field in form.survey %}
+                    <tr>
+                        <td class="col-lg-1 text-center">
+                            {{ field.tag }}
+                        </td>
+                        <td class="col-lg-11">
+                            {{ field.choice_label }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}{% endblock %}

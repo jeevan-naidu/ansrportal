@@ -64,6 +64,11 @@
             </thead>
             <tbody>
                 {% for eachProject in eachInfo.projects %}
+                    {% if forloop.first %}
+                        <tr>
+                            <td class="text-center" colspan=4><h4><small><b>Reason</b> : {{ eachProject.exception }}</small></h4></td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td class="text-center">{{ eachProject.name }}</td>
                         <td><b>{{ eachProject.BHours }}</b> Billed Hour(s)</td>

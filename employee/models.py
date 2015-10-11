@@ -288,12 +288,6 @@ class Employee(models.Model):
     ================================================
     '''
 
-    reportees = models.ManyToManyField(User, blank=True, null=True,
-                                       related_name="reportees",
-                                       default=None,
-                                       verbose_name="Reportee(s)")
-    is_360eligible = models.BooleanField(default=False)
-
     def __unicode__(self):
         return u'{0}|{1},{2}'.format(
             self.employee_assigned_id,
