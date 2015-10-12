@@ -17,7 +17,7 @@ class QuestionAdmin(admin.ModelAdmin):
         form.base_fields[
         'category'].queryset = employee.models.Designation.objects.filter(
             active=True
-)
+        ).order_by('name')
         return form
 
 
