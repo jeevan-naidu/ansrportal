@@ -245,3 +245,7 @@ class DataPoint(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Service Line'
+        verbose_name_plural = 'Service Lines'
