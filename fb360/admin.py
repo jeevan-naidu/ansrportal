@@ -25,7 +25,7 @@ class FB360Form(forms.ModelForm):
 
     class Meta:
         model = FB360
-        exclude = None
+        exclude = FB360._meta.get_all_field_names()
         widgets = {'eligible': FilteredSelectMultiple("Person(s)", is_stacked=False)}
 
 
