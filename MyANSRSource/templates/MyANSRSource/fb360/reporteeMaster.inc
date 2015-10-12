@@ -75,7 +75,7 @@
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
                         {% fontawesome_icon 'arrow-circle-left' large=True %}
-		        <b>Choose Survey</b>
+		        <b>Previous</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
@@ -83,7 +83,7 @@
                     {% fontawesome_icon 'upload' large=True %}
 		    <b>Send Request(s)</b>
                 {% else %}
-		    <b>Choose Reportee(s)</b>
+		    <b>Next</b>
                     {% fontawesome_icon 'arrow-circle-right' large=True %}
                 {% endif %}
             </button>
