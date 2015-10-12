@@ -1,6 +1,8 @@
-from django.contrib import admin
 from .models import Question, FB360, Group
 import employee
+from django import forms
+from django.contrib import admin
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
 class QuestionAdmin(admin.ModelAdmin):
@@ -13,13 +15,23 @@ class QuestionAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super(QuestionAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields[
-            'category'].queryset = employee.models.Designation.objects.filter(
+        'category'].queryset = employee.models.Designation.objects.filter(
             active=True
-            )
+)
         return form
 
 
+class FB360Form(forms.ModelForm):
+
+    class Meta:
+        model = FB360
+        exclude = None
+        widgets = {'eligible': FilteredSelectMultiple("Person(s)", is_stacked=False)}
+
+
 class FB360Admin(admin.ModelAdmin):
+
+    form = FB360Form
     list_display = (
         'name', 'start_date', 'end_date', 'selection_date',
         'approval_date'
