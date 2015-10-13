@@ -189,7 +189,8 @@ class Question(models.Model):
     group = models.ForeignKey(Group, default=None)
     category = models.ManyToManyField(
         emp.models.Designation,
-        default=None)
+        default=None,
+        verbose_name="Roles")
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -197,6 +198,9 @@ class Question(models.Model):
 
     def __unicode__(self):
         return self.qst
+
+    class Meta:
+        ordering = ('category__name', )
 
 
 class Response(models.Model):

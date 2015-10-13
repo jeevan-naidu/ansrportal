@@ -132,6 +132,7 @@ def Timesheet(request):
     # Getting the form values and storing it to DB.
     if request.method == 'POST':
         # Getting the forms with submitted values
+        hold_button = False
         tsform = TimesheetFormset(request.user)
         tsFormset = formset_factory(
             tsform, extra=1, max_num=1, can_delete=True
