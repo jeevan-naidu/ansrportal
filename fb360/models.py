@@ -177,7 +177,7 @@ class Question(models.Model):
     """
     QA assigned with its respective category
     """
-    qst = models.CharField("Question", max_length=100, blank=False)
+    qst = models.CharField("Question", max_length=256, blank=False)
     priority = models.IntegerField("Priority", max_length=100,
                                    validators=[MinValueValidator(0)],
                                    blank=False, default=None)
