@@ -72,7 +72,8 @@ class ChoosePeerWizard(SessionWizardView):
         try:
             InitiatorObj.save()
         except IntegrityError:
-            InitiatorObj = Initiator.objects.get(employee=self.request.user)
+            InitiatorObj = Initiator.objects.get(employee=self.request.user,
+                                                 survey=request_data[0]['survey'])
         for eachResp in request_data[1]['respondents']:
             if IsPeerEligible(self.request, eachResp, InitiatorObj) and \
                     IsPeerRequestExist(self.request, eachResp, InitiatorObj):
