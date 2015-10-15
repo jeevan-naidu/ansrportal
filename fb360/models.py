@@ -72,7 +72,7 @@ class FB360(models.Model):
 def DefaultRelation(sender, instance, **kwargs):
     """
     Helper to insert default realtion (manager -> Reportee)
-    for selected survey
+    for selected su rvey
     Returns Nothing
     """
     eligible = FB360.objects.filter(id=instance.id).values('eligible')
