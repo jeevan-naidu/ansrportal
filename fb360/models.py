@@ -62,8 +62,8 @@ class FB360(models.Model):
         return str(self.name)
 
     class Meta:
-        verbose_name = 'FB360 Information'
-        verbose_name_plural = 'FB360 Information'
+        verbose_name = '360 degree Survey Information'
+        verbose_name_plural = '360 degree Survey Information'
 
 
 # This tweek is to add manager -> reportee relationship.
