@@ -6,7 +6,16 @@ from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
+class QuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = Question
+        fields = '__all__'
+        widgets = {'category': FilteredSelectMultiple("Role(s)", is_stacked=False)}
+
+
 class QuestionAdmin(admin.ModelAdmin):
+    form = QuestionForm
     list_display = (
         'qst',
         )
