@@ -56,6 +56,22 @@ class PeerForm(autocomplete_light.ModelForm):
         self.fields['respondents'].widget.attrs['class'] = "form-control"
 
 
+# Choose Peer screen form
+class AdditionalManagerForm(autocomplete_light.ModelForm):
+
+    """
+        Form show additional manager autocomplete to choose manager
+        based on certain logics
+    """
+    class Meta:
+        model = Initiator
+        fields = ('respondents',)
+
+    def __init__(self, *args, **kwargs):
+        super(AdditionalManagerForm, self).__init__(*args, **kwargs)
+        self.fields['respondents'].widget.attrs['class'] = "form-control"
+
+
 # Choose reportee screen form
 class ChooseReporteeForm(forms.ModelForm):
 

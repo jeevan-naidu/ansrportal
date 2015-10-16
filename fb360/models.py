@@ -23,6 +23,7 @@ RESPONDENT_TYPES = (
     ('P', "Peer"),
     ('E', "Reportee"),
     ('M', "Manager"),
+    ('AM', "Additional Manager"),
 )
 
 # Year choice ranges from 2015 to 3999
@@ -144,7 +145,7 @@ class Respondent(models.Model):
                                   related_name="Pempl", default=None)
     respondent_type = models.CharField(
         verbose_name='Respondent Type',
-        max_length=1,
+        max_length=2,
         choices=RESPONDENT_TYPES,
         default=RESPONDENT_TYPES[0][0])
     status = models.CharField(
