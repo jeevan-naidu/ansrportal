@@ -2,10 +2,20 @@ from .models import Question, FB360, Group
 import employee
 from django import forms
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
+class QuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = Question
+        fields = '__all__'
+        widgets = {'category': FilteredSelectMultiple("Role(s)", is_stacked=False)}
+
+
 class QuestionAdmin(admin.ModelAdmin):
+    form = QuestionForm
     list_display = (
         'qst',
         )
@@ -38,6 +48,14 @@ class FB360Admin(admin.ModelAdmin):
         )
     list_filter = ('name', )
     ordering = ('name', )
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(FB360Admin, self).get_form(request, obj, **kwargs)
+        form.base_fields[
+        'eligible'].queryset = User.objects.filter(
+            is_active=True
+        ).order_by('username')
+        return form
 
 
 class GroupAdmin(admin.ModelAdmin):

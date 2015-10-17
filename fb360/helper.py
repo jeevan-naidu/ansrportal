@@ -10,7 +10,7 @@ from .models import Initiator, Respondent, STATUS, FB360
 
 def IsPageActionEligible(action, fbObj):
     """
-    Helper to check today is in peer / feedback / reportee
+    Helper to check today is in peer / feedback / reportee / additional managers
     date ranges or not
     Returns True -> If in range, False -> If not in range
             None -> If there is no FB object

@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 import employee as emp
 from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
+
 
 # Choice field declaration
 STATUS = (
@@ -22,6 +23,7 @@ RESPONDENT_TYPES = (
     ('P', "Peer"),
     ('E', "Reportee"),
     ('M', "Manager"),
+    ('AM', "Additional Manager"),
 )
 
 # Year choice ranges from 2015 to 3999
@@ -62,8 +64,8 @@ class FB360(models.Model):
         return str(self.name)
 
     class Meta:
-        verbose_name = 'FB360 Information'
-        verbose_name_plural = 'FB360 Information'
+        verbose_name = '360 degree Survey Information'
+        verbose_name_plural = '360 degree Survey Information'
 
 
 # This tweek is to add manager -> reportee relationship.
@@ -83,19 +85,26 @@ def DefaultRelation(sender, instance, **kwargs):
             cUser = User.objects.get(id=eachEligible['eligible'])
             # Escapes user who doesn't have a manager
             try:
-                initObj = Initiator()
-                initObj.survey = fbObj
-                initObj.employee = cUser
-                initObj.save()
+                # Atomic transaction is used to avoid TransactionManagementError
+                with transaction.atomic():
+                    initObj = Initiator()
+                    initObj.survey = fbObj
+                    initObj.employee = cUser
+                    initObj.save()
             except IntegrityError:
                 initObj = Initiator.objects.get(survey=fbObj, employee=cUser)
             if cUser.employee.manager is not None:
-                respObj = Respondent()
-                respObj.employee = cUser.employee.manager.user
-                respObj.initiator = initObj
-                respObj.status = STATUS[1][0]
-                respObj.respondent_type = RESPONDENT_TYPES[2][0]
-                respObj.save()
+                try:
+                    # Atomic transaction is used to avoid TransactionManagementError
+                    with transaction.atomic():
+                        respObj = Respondent()
+                        respObj.employee = cUser.employee.manager.user
+                        respObj.initiator = initObj
+                        respObj.status = STATUS[1][0]
+                        respObj.respondent_type = RESPONDENT_TYPES[2][0]
+                        respObj.save()
+                except IntegrityError:
+                    pass
 
 post_save.connect(DefaultRelation,
                   sender=FB360,
@@ -136,7 +145,7 @@ class Respondent(models.Model):
                                   related_name="Pempl", default=None)
     respondent_type = models.CharField(
         verbose_name='Respondent Type',
-        max_length=1,
+        max_length=2,
         choices=RESPONDENT_TYPES,
         default=RESPONDENT_TYPES[0][0])
     status = models.CharField(

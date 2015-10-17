@@ -198,6 +198,7 @@
 			</div>
 			</div>
         </div>
+            {%  endif %}
         <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="peer">
                 <a data-toggle="collapse" data-parent="#accordion" href="#pCollapse" aria-expanded="true" aria-controls="collapseFive">
@@ -214,6 +215,8 @@
                             Choose Reportee(s)
                         </a>
                     {% endif %}
+                    <a href="/fb360/choose-additional-manager" class="list-group-item">Choose Additional Manager(s)
+                    </a>
                     {% if myPeerReqCount %}
                         <a href="/fb360/request-action" class="list-group-item">
                             <span class="badge">{{ myPeerReqCount }}</span>
@@ -232,6 +235,7 @@
             </div>
             </div>
         </div>
+        {% if user|manage_project or user|create_project %}
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="em">
 				<a data-toggle="collapse" data-parent="#accordion" href="#emCollapse" aria-expanded="false" aria-controls="collapseThree">

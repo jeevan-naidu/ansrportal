@@ -25,7 +25,7 @@ CHOICE_OPTIONS = (
     ('NAND', 'Neither agree nor disagree'),
     ('D', 'Disagree'),
     ('CD', 'Completely disagree'),
-    ('NA', 'Not Applicable'),
+    ('NA', 'Cannot Rate'),
     )
 
 
