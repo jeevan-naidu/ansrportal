@@ -11,7 +11,10 @@ class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = '__all__'
-        widgets = {'category': FilteredSelectMultiple("Role(s)", is_stacked=False)}
+        widgets = {
+            'category': FilteredSelectMultiple("Role(s)", is_stacked=False),
+            'group': FilteredSelectMultiple("Group(s)", is_stacked=False)
+        }
 
 
 class QuestionAdmin(admin.ModelAdmin):
@@ -58,7 +61,17 @@ class FB360Admin(admin.ModelAdmin):
         return form
 
 
+class GroupForm(forms.ModelForm):
+
+    class Meta:
+        model = Group
+        fields = '__all__'
+        widgets = {'fb': FilteredSelectMultiple("Survey(s)", is_stacked=False)}
+
+
 class GroupAdmin(admin.ModelAdmin):
+
+    form = GroupForm
     list_display = ('name', )
     list_filter = ('name', )
     ordering = ('name', )
