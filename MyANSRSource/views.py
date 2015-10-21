@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from fb360.models import Respondent, FB360
+from fb360.models import Respondent
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -32,8 +32,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     changeProjectLeaderForm, BTGReportForm
 
 import CompanyMaster
-import employee
-from employee.models import Remainder, Employee
+from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 
 
@@ -542,6 +541,7 @@ def Timesheet(request):
         else:
             tsFormList = defaulLocation
 
+        hold_button = False
         if len(approvedSet) > 0:
             messages.success(
                 request, 'Timesheet approved :' + str(list(approvedSet)))
@@ -857,7 +857,8 @@ def ApproveTimesheet(request):
         if len(data):
             for eachTS in data:
                 tsData = {}
-                tsData['member'] = eachTS['teamMember__first_name'] + ' :  ' + eachTS['teamMember__last_name'] + ' (' + eachTS['teamMember__employee__employee_assigned_id'] + ')'
+                tsData['member'] = eachTS['teamMember__first_name'] + ' :  ' + eachTS['teamMember__last_name'] + \
+                    ' (' + eachTS['teamMember__employee__employee_assigned_id'] + ')'
                 tsData['mem'] = eachTS['teamMember__id']
                 tsData['wkstart'] = eachTS['wkstart']
                 tsData['wkstartNum'] = eachTS['wkstart'].toordinal()
@@ -878,18 +879,24 @@ def ApproveTimesheet(request):
                     saturday=Sum('saturdayH'),
                     sunday=Sum('sundayH')
                 )
-                tsData['NHours'] = sum([eachRec[eachDay] for eachDay in days for eachRec in totalNon])
+                tsData['NHours'] = sum(
+                    [eachRec[eachDay] for eachDay in days for eachRec in totalNon])
                 totalProjects = TimeSheetEntry.objects.filter(
                     wkstart=eachTS['wkstart'],
                     wkend=eachTS['wkend'],
                     teamMember=eachTS['teamMember'],
-                    hold=True, approved=False,
-                    project__isnull=False
-                ).values('project', 'project__projectId', 'project__name', 'exception').distinct()
+                    hold=True,
+                    approved=False,
+                    project__isnull=False).values(
+                    'project',
+                    'project__projectId',
+                    'project__name',
+                    'exception').distinct()
                 tsData['projects'] = []
                 for eachProject in totalProjects:
                     project = {}
-                    project['name'] = eachProject['project__projectId'] + ' :  ' + eachProject['project__name']
+                    project['name'] = eachProject[
+                        'project__projectId'] + ' :  ' + eachProject['project__name']
                     project['exception'] = eachProject['exception']
                     project['BHours'] = getHours(request, eachTS['wkstart'],
                                                  eachTS['wkend'],
