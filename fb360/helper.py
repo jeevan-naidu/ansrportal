@@ -37,15 +37,23 @@ def GetSurveyList(request, currentStatus):
     if currentStatus == STATUS[1][0]:
         initid = Initiator.objects.filter(
             employee=request.user,
+            survey__approval_date__lt=date.today()
         )
         myResp = Respondent.objects.filter(
-            initiator__in=[eachId.id for eachId in initid]
+            initiator__in=[eachId.id for eachId in initid],
+            initiator__survey__approval_date__lt=date.today()
         ).values('initiator__survey').distinct()
         initIds = [eachResp['initiator__survey'] for eachResp in myResp]
-    resp = Respondent.objects.filter(
-        employee=request.user,
-        status=currentStatus
-    ).values('initiator__survey').distinct()
+        resp = Respondent.objects.filter(
+            employee=request.user,
+            status=currentStatus,
+            initiator__survey__approval_date__lt=date.today()
+        ).values('initiator__survey').distinct()
+    else:
+        resp = Respondent.objects.filter(
+            employee=request.user,
+            status=currentStatus
+        ).values('initiator__survey').distinct()
     respIds = [eachResp['initiator__survey'] for eachResp in resp]
     surveyIds = respIds + initIds
     return FB360.objects.filter(id__in=surveyIds)

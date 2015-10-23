@@ -50,10 +50,10 @@ class FB360(models.Model):
     # Peer / Reportee dates
     # Reportee and Peer have same dates
     selection_date = models.DateField(
-        verbose_name="Peer / Reportee selection completion date"
+        verbose_name="Peer / Reportee / Additional Manager selection completion date"
     )
     approval_date = models.DateField(
-        verbose_name="Peer / Reportee approval completion date"
+        verbose_name="Peer / Reportee / Additional Manager approval completion date"
     )
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -70,7 +70,7 @@ class FB360(models.Model):
 
 # This tweek is to add manager -> reportee relationship.
 # As default, manager has to give
-# feedback to thier reportee.
+# feedback to their reportee.
 def DefaultRelation(sender, instance, **kwargs):
     """
     Helper to insert default realtion (manager -> Reportee)
