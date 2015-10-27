@@ -56,7 +56,7 @@ def GetSurveyList(request, currentStatus):
         ).values('initiator__survey').distinct()
     respIds = [eachResp['initiator__survey'] for eachResp in resp]
     surveyIds = respIds + initIds
-    return FB360.objects.filter(id__in=surveyIds)
+    return FB360.objects.filter(id__in=surveyIds).order_by('end_date')
 
 
 @login_required

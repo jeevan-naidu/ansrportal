@@ -4,6 +4,7 @@ import employee as emp
 from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.db import IntegrityError, transaction
+from django.core.exceptions import ValidationError
 
 
 # Choice field declaration
@@ -62,6 +63,16 @@ class FB360(models.Model):
 
     def __unicode__(self):
         return str(self.name)
+
+    def clean(self):
+        if self.start_date > self.end_date:
+            raise ValidationError('Survey Start date is greater than End date')
+        elif self.start_date > self.selection_date or self.start_date > self.approval_date:
+            raise ValidationError('Survey start date is greater than Selection date / approval date')
+        elif self.end_date < self.selection_date or self.end_date < self.approval_date:
+            raise ValidationError('Selection date / approval date is greater than survey end date')
+        elif self.selection_date > self.approval_date:
+            raise ValidationError('Selection date is greater than approval date')
 
     class Meta:
         verbose_name = '360 degree Survey Information'
