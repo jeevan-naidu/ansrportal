@@ -124,7 +124,7 @@ def DecideAction(cUser, sUser, data, action):
             resp = Response.objects.get(employee__id=sUser,
                                         respondent=cUser,
                                         qst__id=data['qst'],
-                                        qst__group__fb=data['survey'])
+                                        fb=data['survey'])
             resp.ans = data['ans']
             if action:
                 resp.submitted = True
@@ -136,6 +136,7 @@ def DecideAction(cUser, sUser, data, action):
             resp.employee = User.objects.get(pk=sUser)
             resp.respondent = cUser
             resp.qst = Question.objects.get(pk=data['qst'])
+            resp.fb = data['survey']
             resp.ans = data['ans']
             if action:
                 resp.submitted = True
@@ -147,7 +148,7 @@ def DecideAction(cUser, sUser, data, action):
                 resp = QualitativeResponse.objects.get(employee__id=sUser,
                                                        respondent=cUser,
                                                        qst__id=data['qst'],
-                                                       qst__group__fb=data['survey'])
+                                                       fb=data['survey'])
                 resp.general_fb = data['ans']
                 if action:
                     resp.submitted = True
@@ -160,6 +161,7 @@ def DecideAction(cUser, sUser, data, action):
                 resp.employee = User.objects.get(pk=sUser)
                 resp.respondent = cUser
                 resp.qst = Question.objects.get(pk=data['qst'])
+                resp.fb = data['survey']
                 resp.year = date.today().year
                 resp.general_fb = data['ans']
                 if action:
@@ -243,7 +245,7 @@ def GetMyResponse(data):
             resp = Response.objects.get(employee=data[1],
                                         respondent=data[0],
                                         qst__id=data[2],
-                                        qst__group__fb=data[3])
+                                        fb=data[3])
             return [resp.ans, resp.submitted]
         except Response.DoesNotExist:
             return None
@@ -252,7 +254,7 @@ def GetMyResponse(data):
             resp = QualitativeResponse.objects.get(employee=data[1],
                                                    respondent=data[0],
                                                    qst__id=data[2],
-                                                   qst__group__fb=data[3])
+                                                   fb=data[3])
             return [resp.general_fb, resp.submitted]
         except QualitativeResponse.DoesNotExist:
             return None
@@ -326,12 +328,12 @@ def GetQuestionRemainingCount(request, cUser, surveyObj):
         totalResp = Response.objects.filter(
             employee=cUser,
             respondent=request.user,
-            qst__group__fb=surveyObj
+            fb=surveyObj
         )
         totalQResp = QualitativeResponse.objects.filter(
             employee=cUser,
             respondent=request.user,
-            qst__group__fb=surveyObj
+            fb=surveyObj
         )
         if len([eachResp.submitted for eachResp in totalResp] or
                [eachResp.submitted for eachResp in totalQResp]):
