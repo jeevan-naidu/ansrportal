@@ -5,7 +5,7 @@ from django import forms
 from django.utils import timezone
 from MyANSRSource.models import Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager, TimeSheetEntry, BTGReport
+    projectType, ProjectManager, TimeSheetEntry
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
@@ -631,62 +631,3 @@ class UtilizationReportForm(forms.Form):
         self.fields['bu'].widget.attrs['class'] = "form-control"
         self.fields['year'].widget.attrs['class'] = "form-control"
         self.fields['month'].widget.attrs['class'] = "form-control"
-
-
-class BTGReportForm(forms.Form):
-
-    month = forms.ChoiceField(choices=MONTHS)
-    year = forms.ChoiceField(choices=YEARS)
-
-    def __init__(self, *args, **kwargs):
-        super(BTGReportForm, self).__init__(*args, **kwargs)
-        self.fields['month'].widget.attrs['class'] = "form-control"
-        self.fields['year'].widget.attrs['class'] = "form-control"
-
-
-class InvoiceForm(forms.ModelForm):
-
-    month = forms.ChoiceField(choices=MONTHS)
-    year = forms.ChoiceField(choices=YEARS)
-
-    class Meta:
-        model = BTGReport
-        fields = ('project', 'currMonthIN')
-
-    def __init__(self, *args, **kwargs):
-        currentUser = kwargs.pop('user')
-        super(InvoiceForm, self).__init__(*args, **kwargs)
-        pr = Project.objects.filter(
-            id__in=ProjectManager.objects.filter(
-                user=currentUser
-            ).values('project')
-        )
-        self.fields['project'].queryset = pr
-        self.fields['project'].widget.attrs['class'] = "form-control"
-        self.fields['month'].widget.attrs['class'] = "form-control"
-        self.fields['year'].widget.attrs['class'] = "form-control"
-        self.fields['currMonthIN'].widget.attrs['class'] = "form-control"
-
-
-class BTGForm(forms.ModelForm):
-
-    month = forms.ChoiceField(choices=MONTHS)
-    year = forms.ChoiceField(choices=YEARS)
-
-    class Meta:
-        model = BTGReport
-        fields = ('project', 'btg')
-
-    def __init__(self, *args, **kwargs):
-        currentUser = kwargs.pop('user')
-        super(BTGForm, self).__init__(*args, **kwargs)
-        pr = Project.objects.filter(
-            id__in=ProjectManager.objects.filter(
-                user=currentUser
-            ).values('project')
-        )
-        self.fields['project'].queryset = pr
-        self.fields['project'].widget.attrs['class'] = "form-control"
-        self.fields['month'].widget.attrs['class'] = "form-control"
-        self.fields['year'].widget.attrs['class'] = "form-control"
-        self.fields['btg'].widget.attrs['class'] = "form-control"

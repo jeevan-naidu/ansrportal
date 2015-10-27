@@ -461,20 +461,17 @@ class Report(models.Model):
         return self.name
 
 
-class BTGReport(models.Model):
+class RevenueRecognition(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     member = models.ForeignKey(User)
-    btg = models.IntegerField(default=0, verbose_name="BTG",
+    btg = models.IntegerField(default=0, verbose_name="Current Month BTG",
                               validators=[MinValueValidator(0)])
-    btgMonth = models.IntegerField(default=1, verbose_name="BTG",
-                                   validators=[MinValueValidator(1)])
-    btgYear = models.IntegerField(default=1990, verbose_name="BTG",
-                                  validators=[MinValueValidator(1990)])
-    currMonthRR = models.IntegerField(default=0,
-                                      validators=[MinValueValidator(0)])
-    currMonthIN = models.IntegerField(default=0,
-                                      validators=[MinValueValidator(0)],
-                                      verbose_name="Number Of Invoices")
+    btg_future = models.IntegerField(default=0, verbose_name="Current Current Month BTG",
+                                     validators=[MinValueValidator(0)])
+    estimated_effort = models.IntegerField(default=0, verbose_name="Total Estimated Effort",
+                                           validators=[MinValueValidator(0)])
+    status = models.IntegerField(default=0, verbose_name="Overrun/Underrun",
+                                 validators=[MinValueValidator(0)])
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

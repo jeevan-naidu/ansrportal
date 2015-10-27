@@ -3,11 +3,9 @@ logger = logging.getLogger('MyANSRSource')
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
-    ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
-    BTGReportForm, InvoiceForm
+    ProjectPerfomanceReportForm, UtilizationReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
-    ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
-    BTGReport
+    ProjectMilestone, ProjectTeamMember, ProjectManager, Project
 from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
@@ -969,151 +967,6 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
              for eachDay in days[weekday:] for eachData in endData])
         finalTotal = finalTotal - total
     return [finalTotal, ptmTotal]
-
-
-@login_required
-@permission_required('MyANSRSource.create_project')
-def getInternalData(request):
-    pass
-
-
-@login_required
-@permission_required('MyANSRSource.create_project')
-def RevenueRecognitionReport(request):
-    btg = BTGReportForm()
-    data = RR(request, datetime.now().month, datetime.now().year)
-    if request.method == 'POST':
-        reportData = BTGReportForm(request.POST)
-        if reportData.is_valid():
-            reportMonth = reportData.cleaned_data['month']
-            reportYear = reportData.cleaned_data['year']
-            data = RR(request, reportMonth, reportYear)
-    return render(request, 'MyANSRSource/reportrevenue.html',
-                  {'data': data,
-                   'form': btg})
-
-
-@login_required
-@permission_required('MyANSRSource.create_project')
-def RR(request, month, year):
-    data = BTGReport.objects.filter(
-        btgMonth=month,
-        btgYear=year
-    ).values(
-        'project__projectId', 'project__name', 'project__totalValue',
-        'project__plannedEffort', 'project__startDate', 'project__endDate'
-    )
-    if len(data):
-        for eachMem in data:
-            mem = ProjectManager.objects.filter(
-                project__projectId=eachMem['project__projectId']
-            ).values('user__username')
-            eachMem['tl'] = mem
-            eachMem['effort'] = getRREffort(
-                request, month, year,
-                eachMem['project__projectId']
-            )
-            eachMem['prevEffort'] = getRREffort(
-                request, int(month)-1, year,
-                eachMem['project__projectId']
-            )
-            if eachMem['effort'] and eachMem['prevEffort']:
-                eachMem['PTDEffort'] = eachMem['effort'][0]['total'] + \
-                    eachMem['prevEffort'][0]['total']
-            else:
-                eachMem['effort'] = 0
-                eachMem['prevEffort'] = 0
-                eachMem['PTDEffort'] = 0
-            eachMem['plannedBTG'] = eachMem[
-                'project__plannedEffort'] - eachMem['PTDEffort']
-            eachMem['BTG'] = eachMem[
-                'project__plannedEffort'] - eachMem['PTDEffort']
-            eachMem['currentData'] = getEntryData(request, month, year,
-                                                  eachMem[
-                                                      'project__plannedEffort'],
-                                                  size=1)
-            eachMem['prevData'] = getEntryData(request, int(month) - 1,
-                                               year, eachMem[
-                                                   'project__plannedEffort'],
-                                               size=2)
-            if eachMem['currentData']:
-                eachMem['projectedTE'] = eachMem['currentData'][0]['btg']
-                eachMem['invoiceCurr'] = eachMem[
-                    'currentData'][0]['currMonthIN']
-            else:
-                eachMem['projectedTE'] = 0
-                eachMem['invoiceCurr'] = 0
-            try:
-                eachMem['RRCurrentMonth'] = (
-                    eachMem['PTDEffort'] / eachMem['projectedTE']) * eachMem['project__totalValue']
-            except ZeroDivisionError:
-                eachMem['RRCurrentMonth'] = 0
-            if eachMem['currentData']:
-                eachMem['invoiceLast'] = eachMem['prevData'][0]['currMonthIN']
-            else:
-                eachMem['invoiceLast'] = 0
-            eachMem['invoicePTD'] = eachMem[
-                'invoiceLast'] + eachMem['invoiceCurr']
-            eachMem['invoicePTD'] = eachMem[
-                'invoiceLast'] + eachMem['invoiceCurr']
-            eachMem['currAcruval'] = eachMem[
-                'RRCurrentMonth'] - eachMem['invoiceCurr']
-            eachMem['ptdAcruval'] = eachMem[
-                'RRCurrentMonth'] - eachMem['invoiceCurr']
-            eachMem['currAcruval'] = eachMem['invoicePTD']
-            if eachMem['PTDEffort'] - eachMem['project__plannedEffort']:
-                eachMem['status'] = 'Overrun'
-            else:
-                eachMem['status'] = 'Underrun'
-    else:
-        data = {}
-    return data
-
-
-@login_required
-@permission_required('MyANSRSource.create_project')
-def getEntryData(request, cmonth, cyear, projectId, size):
-    if size == 1:
-        return BTGReport.objects.filter(
-            btgMonth=cmonth,
-            btgYear=cyear,
-            project__projectId=projectId
-        ).values('currMonthIN')
-    else:
-        return BTGReport.objects.filter(
-            btgMonth=cmonth,
-            btgYear=cyear,
-            project__projectId=projectId
-        ).values('currMonthIN', 'btg')
-
-
-@login_required
-@permission_required('MyANSRSource.create_project')
-def getRREffort(request, month, year, projectId):
-    ts = TimeSheetEntry.objects.filter(
-        wkstart__year=year,
-        wkstart__month=month,
-        project__projectId=projectId
-    ).values(
-        'project__projectId'
-    ).annotate(
-        monday=Sum('mondayH'),
-        tuesday=Sum('tuesdayH'),
-        wednesday=Sum('wednesdayH'),
-        thursday=Sum('thursdayH'),
-        friday=Sum('fridayH'),
-        saturday=Sum('saturdayH'),
-        sunday=Sum('sundayH'),
-    )
-    if ts:
-        for eachTsData in ts:
-            eachTsData['total'] = eachTsData['monday'] + \
-                eachTsData['tuesday'] + \
-                eachTsData['wednesday'] + \
-                eachTsData['thursday'] + \
-                eachTsData['friday'] + \
-                eachTsData['saturday'] + eachTsData['sunday']
-    return ts
 
 
 @login_required
