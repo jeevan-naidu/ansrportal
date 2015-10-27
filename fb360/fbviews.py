@@ -83,6 +83,8 @@ class GiveFeedbackWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
+        request_data = [form.cleaned_data for form in form_list]
+
         if self.request.method == 'POST':
             submit = 0
             if 'submit' in self.request.POST:
@@ -94,7 +96,8 @@ class GiveFeedbackWizard(SessionWizardView):
                     ans = 'choice' + str(i)
                     data = {'qst': int(self.request.POST.get(qst)),
                             'type': self.request.POST.get(qtype),
-                            'ans': self.request.POST.get(ans)}
+                            'ans': self.request.POST.get(ans),
+                            'survey': request_data[0]['survey']}
                     if self.request.POST.get(ans):
                         DecideAction(self.request.user,
                                      int(self.request.POST.get('sUser')),
@@ -120,7 +123,8 @@ def DecideAction(cUser, sUser, data, action):
             # Updates user's response
             resp = Response.objects.get(employee__id=sUser,
                                         respondent=cUser,
-                                        qst__id=data['qst'])
+                                        qst__id=data['qst'],
+                                        qst__group__fb=data['survey'])
             resp.ans = data['ans']
             if action:
                 resp.submitted = True
@@ -142,7 +146,8 @@ def DecideAction(cUser, sUser, data, action):
             if len(data['ans'].strip()):
                 resp = QualitativeResponse.objects.get(employee__id=sUser,
                                                        respondent=cUser,
-                                                       qst__id=data['qst'])
+                                                       qst__id=data['qst'],
+                                                       qst__group__fb=data['survey'])
                 resp.general_fb = data['ans']
                 if action:
                     resp.submitted = True
@@ -200,9 +205,11 @@ def GetCurrentYearQuestions(request, userId, surveyObj):
                         if eachCategory['id']:
                             qDict['myfb'] = GetMyResponse([request.user,
                                                            selectedUser,
-                                                           eachCategory['id']])
+                                                           eachCategory['id'],
+                                                           surveyObj,
+                                                           'MCQ'])
                             qDict['mygeneralfb'] = GetMyResponse(
-                                [request.user, selectedUser])
+                                [request.user, selectedUser, eachCategory['id'], surveyObj, 'Q'])
                     if qDict:
                         qno += 1
                         cDict['qst_set'].append(qDict)
@@ -231,19 +238,21 @@ def GetMyResponse(data):
         None if its a fresh record
         Returns answer / general FB if a record exist
     """
-    if len(data) == 3:
+    if data[4] == 'MCQ':
         try:
             resp = Response.objects.get(employee=data[1],
                                         respondent=data[0],
-                                        qst__id=data[2])
+                                        qst__id=data[2],
+                                        qst__group__fb=data[3])
             return [resp.ans, resp.submitted]
         except Response.DoesNotExist:
             return None
-    elif len(data) == 2:
+    elif data[4] == 'Q':
         try:
             resp = QualitativeResponse.objects.get(employee=data[1],
                                                    respondent=data[0],
-                                                   year=date.today().year)
+                                                   qst__id=data[2],
+                                                   qst__group__fb=data[3])
             return [resp.general_fb, resp.submitted]
         except QualitativeResponse.DoesNotExist:
             return None
