@@ -32,6 +32,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     changeProjectLeaderForm, BTGReportForm
 
 import CompanyMaster
+import employee
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 

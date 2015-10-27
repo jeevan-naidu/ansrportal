@@ -176,6 +176,7 @@ def GetMyReporteeFeedbackList(request, surveyObj):
     myFBReporteesStatus = Respondent.objects.filter(
         employee__in=myFBReporteesId,
         status__in=[STATUS[1][0], STATUS[0][0]],
+        respondent_type=RESPONDENT_TYPES[1][0],
         initiator__survey=surveyObj
     )
     l = []
