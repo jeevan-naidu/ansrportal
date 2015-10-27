@@ -227,6 +227,12 @@ class Response(models.Model):
                                  related_name="Rempl", default=None)
     respondent = models.ForeignKey(User,
                                    related_name="Rresp", default=None)
+    # Small tweak to make sure that the first survey is
+    # default for survey None values
+    fb = models.ForeignKey(
+        FB360,
+        null=True,
+        default=2)
     qst = models.ForeignKey(Question,
                             default=None)
     ans = models.CharField(max_length=8)
@@ -246,6 +252,12 @@ class QualitativeResponse(models.Model):
                                  related_name="empl", default=None)
     respondent = models.ForeignKey(User, verbose_name="Respondent",
                                    related_name="resp", default=None)
+    # Small tweak to make sure that the first survey is
+    # default for survey None values
+    fb = models.ForeignKey(
+        FB360,
+        null=True,
+        default=2)
     qst = models.ForeignKey(Question,
                             default=None)
     general_fb = models.CharField("Feedback", max_length=500, blank=False)
