@@ -140,7 +140,7 @@ def IsPeerEligible(request, eachPeer, empPeerObj):
     """
     if eachPeer != request.user:
         try:
-            if request.user.employee.manager != eachPeer:
+            if request.user.employee.manager != eachPeer.employee:
                 myAddManagerObj = Respondent.objects.filter(
                     employee=eachPeer,
                     initiator=empPeerObj,

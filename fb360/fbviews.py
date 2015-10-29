@@ -277,16 +277,6 @@ def GetMyRequesteesList(request, surveyObj):
     )
     for eachObj in empPeerObj:
         l.append(ConstructUserInfo(request, eachObj.employee, surveyObj))
-    # Getting requests to whom i sent connect request
-    empPeerObj = Initiator.objects.filter(employee=request.user,
-                                          survey=surveyObj)
-    peerObj = Respondent.objects.filter(
-        initiator__in=[eachEmpPeerObj for eachEmpPeerObj in empPeerObj],
-        status=STATUS[1][0],
-        initiator__survey=surveyObj
-    )
-    for eachObj in peerObj:
-        l.append(ConstructUserInfo(request, eachObj.employee, surveyObj))
     return l
 
 
