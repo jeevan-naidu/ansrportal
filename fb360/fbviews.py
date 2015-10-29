@@ -78,7 +78,8 @@ class GiveFeedbackWizard(SessionWizardView):
                 'qst': GetCurrentYearQuestions(
                     self.request, self.request.POST.get('id'), surveyObj),
                 'ans': CHOICE_OPTIONS,
-                'sUser': self.request.POST.get('id')
+                'sUser': self.request.POST.get('id'),
+                'sUserName': helper.GetUserFullName(User.objects.get(pk=int(self.request.POST.get('id'))))
             })
         return context
 

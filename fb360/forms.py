@@ -36,7 +36,7 @@ class SurveyForm(forms.ModelForm):
             start_date__year=date.today().year,
             start_date__gte=date.today(),
             end_date__lte=date.today()
-        )
+        ).order_by('end_date')
         self.fields['survey'].empty_label = None
 
 
