@@ -164,7 +164,7 @@ def DecideAction(cUser, sUser, data, action):
                 resp.qst = Question.objects.get(pk=data['qst'])
                 resp.fb = data['survey']
                 resp.year = date.today().year
-                resp.general_fb = data['ans']
+                resp.general_fb = data['ans'].strip()
                 if action:
                     resp.submitted = True
                 resp.save()

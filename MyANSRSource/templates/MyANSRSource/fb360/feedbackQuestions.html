@@ -65,20 +65,16 @@
                             {% if eachQ.mygeneralfb.1 %}
                                 {% with eachQ.qno|stringformat:"s" as t %}
                                     {% with "choice"|add:t as choicename %}
-                                        <textarea disabled rows="8" cols="50" name="{{ choicename }}" placeholder="Whaterver comes to your mind">
+                                        <textarea disabled rows="8" cols="50" name="{{ choicename }}">{% if eachQ.mygeneralfb.0 %}{{ eachQ.mygeneralfb.0 }}{% endif %}</textarea>
                                     {% endwith %}
                                 {% endwith %}
                             {% else %}
                                 {% with eachQ.qno|stringformat:"s" as t %}
                                     {% with "choice"|add:t as choicename %}
-                                        <textarea rows="8" cols="50" name="{{ choicename }}" placeholder="Whaterver comes to your mind">
+                                        <textarea rows="8" cols="50" name="{{ choicename }}">{% if eachQ.mygeneralfb.0 %}{{ eachQ.mygeneralfb.0 }}{% endif %}</textarea>
                                     {% endwith %}
                                 {% endwith %}
                             {% endif %}
-                                    {% if eachQ.mygeneralfb.0 %}
-                                        {{ eachQ.mygeneralfb.0 }}
-                                    {% endif %}
-                                </textarea>
                          {% endif %}
                     </div>
                 </div>
