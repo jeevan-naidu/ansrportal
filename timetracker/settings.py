@@ -227,6 +227,11 @@ logger = logging.getLogger('django_auth_ldap')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
+
+# FB360 Configuration
+EMAIL_ABOUT_STATUS = ['niranj@fantain.com', 'niranjmsc@gmail.com']
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
