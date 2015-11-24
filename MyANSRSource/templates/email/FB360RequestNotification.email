@@ -1,0 +1,19 @@
+{% block subject %}FB360 Status till now{% endblock %}
+{% block plain %}
+  Hi,
+
+    <p> You have got request pending from  {{ request_from }}. Please take an action on this request ASAP.</p>
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi,</p>
+
+    <p> You have got request pending from  {{ request_from }}. Please take an action on this request ASAP.</p>
+
+  <p>Regards, </p>
+  <p> myansrsource team</p>
+{% endblock %}

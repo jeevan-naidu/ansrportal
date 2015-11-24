@@ -1,0 +1,43 @@
+{% block subject %}FB360 Status till now{% endblock %}
+{% block plain %}
+  Hi,
+
+    <p> {{ data.pending_count }} Requests are pending. </p>
+
+    <p> {{ data.approved_count }} Requests are approved. </p>
+
+    <p> {{ data.rejected_count }} Requests are rejected. </p>
+
+    <h5> List of people who are eligible but not started to accept / request feedback </h5>
+
+    {% for eachName in data.still_to_start %}
+
+        <p> {{ eachName }} </p>
+
+    {% endfor %}
+
+  Thanks,
+  myansrsource team
+
+{% endblock %}
+
+{% block html %}
+  <p>Hi,</p>
+
+    <p> {{ data.pending_count }} Requests are pending. </p>
+
+    <p> {{ data.approved_count }} Requests are approved. </p>
+
+    <p> {{ data.rejected_count }} Requests are rejected. </p>
+
+    <h5> List of people who are eligible but not started to accept / request feedback </h5>
+
+    {% for eachName in data.still_to_start %}
+
+        <p> {{ eachName }} </p>
+
+    {% endfor %}
+
+  <p>Regards, </p>
+  <p> myansrsource team</p>
+{% endblock %}
