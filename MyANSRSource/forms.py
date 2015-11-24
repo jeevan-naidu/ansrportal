@@ -359,7 +359,7 @@ class ProjectBasicInfoForm(autocomplete_light.ModelForm):
         self.fields['projectType'].widget.attrs['class'] = \
             "form-control"
         self.fields['projectType'].queryset = \
-            projectType.objects.all().order_by('description')
+            projectType.objects.filter(active=True).order_by('description')
         self.fields['bu'].queryset = \
             BusinessUnit.objects.all().order_by('name')
         self.fields['customer'].queryset = \
