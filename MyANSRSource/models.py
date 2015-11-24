@@ -381,8 +381,10 @@ class ProjectTeamMember(models.Model):
     endDate = models.DateField(verbose_name='End date on project',
                                blank=True,
                                default=timezone.now)
-    plannedEffort = models.IntegerField(default=0,
+    plannedEffort = models.DecimalField(default=0,
+                                        max_digits=12,
                                         blank=True,
+                                        decimal_places=2,
                                         verbose_name="Planned Effort")
     rate = models.IntegerField(default=100, verbose_name="%", blank=True)
     active = models.BooleanField(default=True)
