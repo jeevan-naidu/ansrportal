@@ -229,7 +229,11 @@ logger.setLevel(logging.DEBUG)
 
 
 # FB360 Configuration
-EMAIL_ABOUT_STATUS = ['niranj@fantain.com', 'niranjmsc@gmail.com']
+EMAIL_ABOUT_STATUS = [
+    'niranj@fantain.com',
+    'Samprit.Managoli@ansrsource.com',
+    'Divya.Mathew@ansrsource.com',
+    ]
 
 
 LOGGING = {
@@ -293,8 +297,7 @@ FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
 # External Project Notifiers
-EXTERNAL_PROJECT_NOTIFIERS = ['naveen@fantain.com',
-                              'niranj@fantain.com']
+EXTERNAL_PROJECT_NOTIFIERS = ['niranj@fantain.com', ]
 
 # New Joinee Notifiers
 NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
