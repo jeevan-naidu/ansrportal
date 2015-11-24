@@ -19,6 +19,9 @@ class QuestionForm(forms.ModelForm):
 
 class QuestionAdmin(admin.ModelAdmin):
     form = QuestionForm
+    list_filter = ['qst']
+    # Search capabilitiy
+    search_fields = ['qst']
     list_display = (
         'qst',
         )
@@ -74,6 +77,7 @@ class GroupAdmin(admin.ModelAdmin):
     form = GroupForm
     list_display = ('name', )
     list_filter = ('name', )
+    search_fields = ['name']
     ordering = ('name', )
 
 admin.site.register(Group, GroupAdmin)
