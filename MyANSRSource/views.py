@@ -1848,6 +1848,8 @@ def SendMail(data, toAddr, templateName):
         data['startDate'] = data['startDate'].strftime("%d-%m-%Y")
     if 'mystartdate' in data:
         data['mystartdate'] = data['mystartdate'].strftime("%d-%m-%Y")
+    if 'plannedEffort' in data:
+        data['plannedEffort'] = str(data['plannedEffort'])
     sm.content = json.dumps(data)
     sm.template_name = templateName
     sm.toAddr = json.dumps([toAddr])

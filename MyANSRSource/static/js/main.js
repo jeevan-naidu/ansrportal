@@ -83,6 +83,7 @@ app.calcCurRowChangeDate = function($tableEle) {
         plannedEffortPercentItem = row.find('.pro-planned-effort-percent'),
         plannedResult = app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem);
 
+
     plannedEffortItem.val(plannedResult.plannedEffort);
     //plannedEffortPercentItem.val(plannedResult.plannedEffortPercent);
 };
@@ -1438,7 +1439,7 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
         };
     } else {
         var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
-        plannedEffort = Math.round(plannedEffort);
+        //plannedEffort = Math.round(plannedEffort);
 
         return {
             plannedEffort: plannedEffort
