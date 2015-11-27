@@ -19,13 +19,12 @@ class QuestionForm(forms.ModelForm):
 
 class QuestionAdmin(admin.ModelAdmin):
     form = QuestionForm
-    list_filter = ['qst']
+    list_filter = ['qst', 'group']
     # Search capabilitiy
     search_fields = ['qst']
     list_display = (
         'qst',
         )
-    list_filter = ('qst',)
     ordering = ('qst', )
 
     def get_form(self, request, obj=None, **kwargs):
