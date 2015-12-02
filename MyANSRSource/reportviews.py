@@ -24,6 +24,7 @@ import numpy
 import xlsxwriter
 import os
 import string
+from decimal import *
 
 
 days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
@@ -632,13 +633,14 @@ def TeamMemberPerfomanceReport(request):
             for eachUser in users:
                 if len(eachUser['ts']):
                     totals['ptm'] += sum([eachRec['ptm']
+
                                          for eachRec in eachUser['ts']])
                     totals['total'] += sum([eachRec['total']
                                            for eachRec in eachUser['ts']])
                     totals['ptd'] += sum([eachRec['ptd']
                                          for eachRec in eachUser['ts']])
-                    totals[
-                        'MonthHours'] += sum([eachRec['MonthHours'] for eachRec in eachUser['ts']])
+                    # totals[
+                        # 'MonthHours'] = float(totals['MonthHours']) + float(sum([eachRec['MonthHours'] for eachRec in eachUser['ts']]))
                     for eachTS in eachUser['ts']:
                         if len(eachTS['dates']):
                             totals[
@@ -1627,4 +1629,4 @@ def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
             if deno == 0:
                 return 0
             else:
-                return round(effort * (num / float(deno)), 2)
+                return round(float(effort) * (num / float(deno)), 2)
