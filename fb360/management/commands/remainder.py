@@ -22,7 +22,7 @@ class Command(BaseCommand):
         ).values('employee__email', 'initiator__employee__first_name', 'initiator__employee__last_name')
 
         if len(data):
-            send_email(self, data)
+            send_ email(self, data)
 
 
 def send_email(self, data):
