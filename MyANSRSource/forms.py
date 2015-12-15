@@ -11,6 +11,7 @@ from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
 import datetime
 import calendar
+import helper
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 startDate = TimeSheetEntry.objects.all().values('wkstart').distinct()
@@ -603,10 +604,9 @@ class ProjectPerfomanceReportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
         super(ProjectPerfomanceReportForm, self).__init__(*args, **kwargs)
+        helper.get_my_project_list(currentUser)
         self.fields['project'].queryset = Project.objects.filter(
-            id__in=ProjectManager.objects.filter(
-                user=currentUser).values('project')
-        ).all().order_by('name')
+            id__in=helper.get_my_project_list(currentUser)).order_by('name')
         self.fields['project'].widget.attrs['class'] = "form-control"
 
 
@@ -626,7 +626,11 @@ class UtilizationReportForm(forms.Form):
             opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
             self.fields['bu'].choices = opt
         else:
-            bu = list(BusinessUnit.objects.filter(new_bu_head=currentUser))
+            bu = list(
+                BusinessUnit.objects.filter(
+                    id__in=Project.objects.filter(
+                        id__in=helper.get_my_project_list(currentUser).values('bu__id')
+                )).order_by('name'))
             self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
         self.fields['bu'].widget.attrs['class'] = "form-control"
         self.fields['year'].widget.attrs['class'] = "form-control"

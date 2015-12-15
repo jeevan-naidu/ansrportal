@@ -24,6 +24,7 @@ import numpy
 import xlsxwriter
 import os
 import string
+import helper
 from decimal import *
 
 
@@ -527,6 +528,7 @@ def TeamMemberPerfomanceReport(request):
                 eachUser['ts'] = TimeSheetEntry.objects.filter(
                     wkstart__gte=start,
                     wkend__lte=end,
+                    project__id__in=helper.get_my_project_list(request.user),
                     project__bu__id__in=reportbu,
                     teamMember__id=eachUser['id']
                 ).values(*valuesList).annotate(
@@ -566,6 +568,7 @@ def TeamMemberPerfomanceReport(request):
                             wkend__lt=wkStrtWeek + timedelta(days=6),
                             project__bu__id__in=reportbu,
                             teamMember__id=eachUser['id'],
+                            project__id__in=helper.get_my_project_list(request.user),
                             project__projectId=eachTS['project__projectId']
                         ).values('project__projectId').annotate(
                             monday=Sum('mondayH'),
@@ -585,6 +588,7 @@ def TeamMemberPerfomanceReport(request):
                             wkstart=wkStrtWeek,
                             wkend=wkStrtWeek + timedelta(days=6),
                             project__bu__id__in=reportbu,
+                            project__id__in=helper.get_my_project_list(request.user),
                             teamMember__id=eachUser['id'],
                             project__projectId=eachTS['project__projectId']
                         ).values('project__projectId').annotate(
@@ -607,6 +611,7 @@ def TeamMemberPerfomanceReport(request):
                         endData = TimeSheetEntry.objects.filter(
                             wkstart=wkEndWeek,
                             wkend=wkEndWeek + timedelta(days=6),
+                            project__id__in=helper.get_my_project_list(request.user),
                             project__bu__id__in=reportbu,
                             project__isnull=False,
                             teamMember__id=eachUser['id'],
@@ -709,10 +714,12 @@ def ProjectPerfomanceReport(request):
 
             eProjects = Project.objects.filter(
                 startDate__lte=endDate, endDate__gte=startDate,
+                id__in=helper.get_my_project_list(request.user),
                 internal=False, bu__id__in=reportbu, projectId__isnull=False
             ).order_by('projectId')
             iProjects = Project.objects.filter(
                 startDate__lte=endDate, endDate__gte=startDate, internal=True,
+                id__in=helper.get_my_project_list(request.user),
                 bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')
             externalData = getProjectData(request, startDate, endDate,
                                           eProjects, start, end)
