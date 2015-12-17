@@ -17,6 +17,7 @@ def get_my_project_list(requestee):
     elif acc_mgmt:
         return myansr_model.Project.objects.filter(customer__in=acc_mgmt).values('id')
     elif pm:
-        return myansr_model.ProjectManager.objects.filter(user=requestee).values('id')
+        return myansr_model.ProjectManager.objects.filter(user=requestee).values('project__id')
     else:
         return myansr_model.Project.objects.all().values_list('id')
+
