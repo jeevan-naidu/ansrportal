@@ -24,6 +24,7 @@ import numpy
 import xlsxwriter
 import os
 import string
+import helper
 from decimal import *
 
 
@@ -32,7 +33,7 @@ days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def SingleTeamMemberReport(request):
     report, newReport, minProd, maxProd, avgProd = {}, {}, {}, {}, {}
     projectH, nonProjectH = [], []
@@ -74,6 +75,7 @@ def SingleTeamMemberReport(request):
 
             report = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
+                project__id__in=helper.get_my_project_list(request.user),
                 wkstart__gte=weekStart,
                 wkend__lte=weekEnd,
             ).values(*valuesList).annotate(
@@ -191,7 +193,7 @@ def SingleTeamMemberReport(request):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def SingleProjectReport(request):
     basicData = {}
     crData, tsData, msData, taskData, topPerformer = [], [], [], [], []
@@ -464,7 +466,7 @@ def SingleProjectReport(request):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def TeamMemberPerfomanceReport(request):
     # common variable initilization
     users, totals, fresh = {}, {}, 0
@@ -527,6 +529,7 @@ def TeamMemberPerfomanceReport(request):
                 eachUser['ts'] = TimeSheetEntry.objects.filter(
                     wkstart__gte=start,
                     wkend__lte=end,
+                    project__id__in=helper.get_my_project_list(request.user),
                     project__bu__id__in=reportbu,
                     teamMember__id=eachUser['id']
                 ).values(*valuesList).annotate(
@@ -566,6 +569,7 @@ def TeamMemberPerfomanceReport(request):
                             wkend__lt=wkStrtWeek + timedelta(days=6),
                             project__bu__id__in=reportbu,
                             teamMember__id=eachUser['id'],
+                            project__id__in=helper.get_my_project_list(request.user),
                             project__projectId=eachTS['project__projectId']
                         ).values('project__projectId').annotate(
                             monday=Sum('mondayH'),
@@ -585,6 +589,7 @@ def TeamMemberPerfomanceReport(request):
                             wkstart=wkStrtWeek,
                             wkend=wkStrtWeek + timedelta(days=6),
                             project__bu__id__in=reportbu,
+                            project__id__in=helper.get_my_project_list(request.user),
                             teamMember__id=eachUser['id'],
                             project__projectId=eachTS['project__projectId']
                         ).values('project__projectId').annotate(
@@ -607,6 +612,7 @@ def TeamMemberPerfomanceReport(request):
                         endData = TimeSheetEntry.objects.filter(
                             wkstart=wkEndWeek,
                             wkend=wkEndWeek + timedelta(days=6),
+                            project__id__in=helper.get_my_project_list(request.user),
                             project__bu__id__in=reportbu,
                             project__isnull=False,
                             teamMember__id=eachUser['id'],
@@ -671,7 +677,7 @@ def TeamMemberPerfomanceReport(request):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def ProjectPerfomanceReport(request):
     fresh, eptdTotal, iptdTotal = 0, 0, 0
     data = {}
@@ -709,10 +715,12 @@ def ProjectPerfomanceReport(request):
 
             eProjects = Project.objects.filter(
                 startDate__lte=endDate, endDate__gte=startDate,
+                id__in=helper.get_my_project_list(request.user),
                 internal=False, bu__id__in=reportbu, projectId__isnull=False
             ).order_by('projectId')
             iProjects = Project.objects.filter(
                 startDate__lte=endDate, endDate__gte=startDate, internal=True,
+                id__in=helper.get_my_project_list(request.user),
                 bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')
             externalData = getProjectData(request, startDate, endDate,
                                           eProjects, start, end)
@@ -790,7 +798,7 @@ def ProjectPerfomanceReport(request):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def getProjectData(request, startDate, endDate, projects, start, end):
     report = []
     if len(projects):
@@ -830,7 +838,7 @@ def getProjectData(request, startDate, endDate, projects, start, end):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def getEffort(request, startDate, endDate, start, end, eachProject, label):
     if label == 'Billed':
         allData = TimeSheetEntry.objects.filter(
@@ -974,13 +982,13 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def getInternalData(request):
     pass
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def RevenueRecognitionReport(request):
     btg = BTGReportForm()
     data = RR(request, datetime.now().month, datetime.now().year)
@@ -996,7 +1004,7 @@ def RevenueRecognitionReport(request):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def RR(request, month, year):
     data = BTGReport.objects.filter(
         btgMonth=month,
@@ -1073,7 +1081,7 @@ def RR(request, month, year):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def getEntryData(request, cmonth, cyear, projectId, size):
     if size == 1:
         return BTGReport.objects.filter(
@@ -1090,7 +1098,7 @@ def getEntryData(request, cmonth, cyear, projectId, size):
 
 
 @login_required
-@permission_required('MyANSRSource.create_project')
+@permission_required('MyANSRSource.view_all_reports')
 def getRREffort(request, month, year, projectId):
     ts = TimeSheetEntry.objects.filter(
         wkstart__year=year,
