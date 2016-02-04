@@ -8,6 +8,7 @@ def get_my_project_list(requestee):
     :param requestee:
     :return Eligible Project's ID as list:
     """
+    
     bu_head = company_model.BusinessUnit.objects.filter(new_bu_head=requestee)
     acc_mgmt = company_model.Customer.objects.filter(Q(Crelation=requestee) | Q(Cdelivery=requestee))
     pm = myansr_model.ProjectManager.objects.filter(user=requestee)
@@ -19,5 +20,5 @@ def get_my_project_list(requestee):
     elif pm:
         return myansr_model.ProjectManager.objects.filter(user=requestee).values('project__id')
     else:
-        return myansr_model.Project.objects.all().values_list('id')
+        return []
 
