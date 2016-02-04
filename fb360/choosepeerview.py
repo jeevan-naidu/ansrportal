@@ -103,20 +103,24 @@ def GetMyPeerList(request, surveyObj):
         employee=request.user,
         survey=surveyObj
     )
+    """
     myObjAccepted = Respondent.objects.filter(~Q(status=STATUS[3][0]),
                                               respondent_type=RESPONDENT_TYPES[0][0],
                                               employee=request.user,
                                               initiator__survey=surveyObj)
-    if myObj or myObjAccepted:
+    """
+    if myObj:
         myPeerObj = Respondent.objects.filter(~Q(status=STATUS[3][0]),
                                               respondent_type=RESPONDENT_TYPES[0][0],
                                               initiator=myObj,
                                               initiator__survey=surveyObj)
-        if myPeerObj or myObjAccepted:
+        if myPeerObj:
             list1 = helper.ConstructList(request, myPeerObj)
+            """
             list2 = helper.ConstructList(request,
                                          [eachObj.initiator
                                           for eachObj in myObjAccepted])
+            """
             return list1 + list2
         else:
             return None
