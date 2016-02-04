@@ -620,7 +620,8 @@ class UtilizationReportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
         super(UtilizationReportForm, self).__init__(*args, **kwargs)
-        if currentUser.has_perm('MyANSRSource.report_superuser'):
+        #import ipdb;ipdb.set_trace()
+        if currentUser.is_superuser:
             bu = list(BusinessUnit.objects.all())
             opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
             self.fields['bu'].choices = opt

@@ -712,20 +712,39 @@ def ProjectPerfomanceReport(request):
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
                 for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
                     buName = eachData['name']
-
-            eProjects = Project.objects.filter(
-                startDate__lte=endDate, endDate__gte=startDate,
-                id__in=helper.get_my_project_list(request.user),
-                internal=False, bu__id__in=reportbu, projectId__isnull=False
-            ).order_by('projectId')
-            iProjects = Project.objects.filter(
-                startDate__lte=endDate, endDate__gte=startDate, internal=True,
-                id__in=helper.get_my_project_list(request.user),
-                bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')
-            externalData = getProjectData(request, startDate, endDate,
-                                          eProjects, start, end)
-            internalData = getProjectData(request, startDate, endDate,
+            
+            # for super user get all the projects irrespective of what project he is related to.
+            # changed: date: 4-Feb-206 -By Amol 
+            if request.user.is_superuser:
+                eProjects = Project.objects.filter(
+                    startDate__lte=endDate, endDate__gte=startDate,
+                    #id__in=helper.get_my_project_list(request.user),
+                    internal=False, bu__id__in=reportbu, projectId__isnull=False
+                ).order_by('projectId')
+                iProjects = Project.objects.filter(
+                    startDate__lte=endDate, endDate__gte=startDate, internal=True,
+                    #id__in=helper.get_my_project_list(request.user),
+                    bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')
+                externalData = getProjectData(request, startDate, endDate,
+                                              eProjects, start, end)
+                internalData = getProjectData(request, startDate, endDate,
                                           iProjects, start, end)
+            else:
+
+                eProjects = Project.objects.filter(
+                    startDate__lte=endDate, endDate__gte=startDate,
+                    id__in=helper.get_my_project_list(request.user),
+                    internal=False, bu__id__in=reportbu, projectId__isnull=False
+                ).order_by('projectId')
+                iProjects = Project.objects.filter(
+                    startDate__lte=endDate, endDate__gte=startDate, internal=True,
+                    id__in=helper.get_my_project_list(request.user),
+                    bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')
+                externalData = getProjectData(request, startDate, endDate,
+                                              eProjects, start, end)
+                internalData = getProjectData(request, startDate, endDate,
+                                          iProjects, start, end)
+
             if len(externalData):
                 eothersTotal = sum([
                     eachData['billed'] for eachData in externalData
