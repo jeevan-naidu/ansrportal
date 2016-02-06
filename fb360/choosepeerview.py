@@ -121,7 +121,7 @@ def GetMyPeerList(request, surveyObj):
                                          [eachObj.initiator
                                           for eachObj in myObjAccepted])
             """
-            return list1 + list2
+            return list1
         else:
             return None
     else:
@@ -187,13 +187,15 @@ def IsPeerRequestExist(request, eachPeer, empPeerObj):
     Handler checks the current peer has requested me
     Returns 0 -> Not Eligible or  1 -> Is Eligible
     """
+    """
     req = Respondent.objects.filter(
         employee=request.user, initiator__survey=empPeerObj.survey,
         respondent_type=RESPONDENT_TYPES[0][0]
     ).values(
         'initiator__employee'
     )
-    if eachPeer.id in [eachReq['initiator__employee'] for eachReq in req]:
+    """
+    if eachPeer.id in Respondent.objects.filter(initiator=empPeerObj).values('employee__id'):
         return 0
     else:
         return 1
