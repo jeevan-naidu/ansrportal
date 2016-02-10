@@ -75,7 +75,7 @@ def SingleTeamMemberReport(request):
 
             report = TimeSheetEntry.objects.filter(
                 teamMember=reportData.cleaned_data['member'],
-                project__id__in=helper.get_my_project_list(request.user),
+                #project__id__in=helper.get_my_project_list(request.user),
                 wkstart__gte=weekStart,
                 wkend__lte=weekEnd,
             ).values(*valuesList).annotate(
