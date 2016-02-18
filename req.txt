@@ -1,0 +1,26 @@
+Django==1.7.1
+MySQL-python==1.2.5
+Pillow==2.6.1
+PyYAML==3.11
+XlsxWriter==0.7.3
+argparse==1.2.1
+diff-match-patch==20121119
+django-auth-ldap==1.2.2
+django-autocomplete-light==2.0.3
+django-bootstrap3==4.11.0
+-e git+https://github.com/vivekfantain/django-bootstrap3-datetimepicker.git@46204a78521dd9b4a57571113cc0101f7de5bfee#egg=django_bootstrap3_datetimepicker-master
+django-datetime-widget==0.9
+django-fontawesome==0.2.2
+django-grappelli==2.6.3
+django-session-security==2.2.2
+-e git+https://github.com/digi604/django-smart-selects.git@f5f7b826a543da2e6eeac37729edff9b7b8e8a64#egg=django_smart_selects-master
+django-templated-email==0.4.9
+meld3==1.0.0
+numpy==1.9.2
+python-dateutil==2.2
+python-ldap==2.4.18
+pytz==2014.7
+six==1.8.0
+tablib==0.10.0
+uWSGI==2.0.8
+wsgiref==0.1.2

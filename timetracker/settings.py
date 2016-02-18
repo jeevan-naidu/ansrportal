@@ -179,7 +179,11 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
+<<<<<<< HEAD
         "NAME": "myansr_stag",
+=======
+        "NAME": "myansrsource",
+>>>>>>> BUILD-20160204
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
