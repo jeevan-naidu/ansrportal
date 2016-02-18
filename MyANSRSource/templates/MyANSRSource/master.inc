@@ -136,5 +136,9 @@
 		</div><!-- End of Ansr Footer -->
       	</div>
        <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
+       
+        <!--   block to be inherited for page specific JavaScript -->
+       {% block page_specific_JS %}{% endblock %}
+       
     </body>
 </html>

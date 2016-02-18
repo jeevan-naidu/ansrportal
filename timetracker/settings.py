@@ -136,7 +136,8 @@ INSTALLED_APPS = (
     'employee',
     'CompanyMaster',
     'MyANSRSource',
-    'fb360'
+    'fb360',
+    'Grievances',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -178,7 +179,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "ansrprod",
+        "NAME": "myansr_stag",
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
@@ -310,3 +311,9 @@ TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
 
 # Backup directory
 BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
+
+#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
+MEDIA_URL = '/media/'
+
+GRIEVANCES_ADMIN_EMAIL = "sanjay.kunnath@ansrsource.com"

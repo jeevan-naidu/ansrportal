@@ -1,0 +1,149 @@
+{% load grievances_template_tags %}
+{% if record_added %}
+   <!--	  Record added. Return the added record in a table row - Ajax-->
+				<tr class="warning" style="border-bottom: 1px solid #DBD9D9">
+							<td style="width: 15%">
+								<p>{{object.grievance_id}}</p>
+								
+								<br><label type="label" class="label label-info new_notification"> New </label>
+								
+							</td>
+							
+							
+							<td style="width: 50%">
+							 <!--	Grievance details - grievance, action taken, user actions, HR closure message -->
+									{% include 'grievance_details.html' %}
+							</td>
+							
+							<td style="width: 15%">
+								<p class="text-center">{{object.catagory}}</p>
+							</td>
+	
+							<td style="width: 15%">
+								{{object.created_date}}
+							</td>
+							<td>
+							  {% if object.active %}
+								 <p class="text-center"> 
+									<span id="status_{{object.grievance_id}}" > <i class="fa fa-unlock fa-lg" style="color:#66B778;"></i> </span>
+								 </p>
+							  {% else %}
+								  <p class="text-center">
+									<span> <i class="fa fa-lock fa-lg" style="color:#d9534f;"></i> </i> </span>
+								  </p>
+								  
+								  
+							  {% endif %}
+							</td>
+							
+						</tr>
+
+{% elif add %}
+
+			<!-- Ajax -->
+		 <div id="ajax_loader_add_greivance_form" class="ajax_bck"><div class="ajax_load_image"></div></div>
+		 
+		 <form id="add_greivance_form" method="post" enctype="multipart/form-data">
+		 <!--<form action="{% url 'add_grievance' %}" method="post">-->
+		  {% csrf_token %}
+		 
+			 <table border="0" style="margin:0 auto">
+			   <div style="color:red" id="AddGrievanceForm_errors"></div><br>
+						 {% for field in form.visible_fields %}
+						   <tr>
+						   <td style="padding:20px 20px 5px 5px;">{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %} <br><br></td>
+						   <td>{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
+							   {% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p><br>{% endif %}
+						   </td>
+						   </tr>
+						{% endfor %}
+						 {% if errors %}
+						   <tr>
+							{% for non_field_error in errors %}
+							 <td></td>
+							  <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
+							{% endfor %}
+							</tr>
+						 {% endif %}
+						 {% for field in form.hidden_fields %}
+							 {{field}}
+						 {% endfor %}
+						 
+						
+			 </table>
+			 <h3 class="text-center"><input type="submit" class="btn btn-danger" value="Submit"/></h3>
+		  </form>
+		   <script>
+				  $("form#add_greivance_form").submit(function(){
+						
+						 var formData = new FormData($(this)[0]);
+						 form_id = $(this)[0].id;
+						 form_element = $(this);
+						ajax_loader_element = $('#ajax_loader_add_greivance_form');
+						 
+						 swal({   title: "Are you sure?",
+							text: "You will not be able to edit this grievance after submission!",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "cancel",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								// If user clicks on ok;
+								if (isConfirm) {
+									 
+								 ShowAjaxLoader(ajax_loader_element, form_element.width(), form_element.height());
+								 $.ajax({
+									url: "/grievances/add/",
+									type: 'post',
+									data: formData,
+									success: function (data) {
+									   if (data.record_added) {
+										  $("#modal_body").html("<h5 style='color:green;'>" + data.success_msg + "</h5>");
+										  if ($("#listTableBody tr:first").length) {
+											$("#listTableBody tr:first").before(data.html_data);
+										   }
+										  else{
+											 $("#listTableBody").append(data.html_data);
+											 $("#no_grievances_alert").hide();
+										  }
+										  $("#listTableBody tr:first").hide();
+										  $("#listTableBody tr:first").fadeIn(900);
+										  
+										 }
+									   else{
+										$("#modal_body").html(data);
+									   }
+										HideAjaxLoader($('#ajax_loader_add_greivance_form'));
+										
+										reloadJS();
+									},
+									error: function(XMLHttpRequest, textStatus, errorThrown) {
+											$("#AddGrievanceForm_errors").html("Oops.. something went wrong at server end. Below are the details: " 
+												+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a snapshot of this error and send it to the administrator");
+											alert("Server error" + "-" + textStatus + "-" + errorThrown);
+											HideAjaxLoader(ajax_loader_element);
+										},
+										
+									cache: false,
+									contentType: false,
+									processData: false
+								 });
+								} 
+							   });
+						
+						 return false;
+					 });
+			  </script>
+
+ {% else %}
+  
+  None
+   
+ {% endif %}
+	
+	
+   
