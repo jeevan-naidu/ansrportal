@@ -84,7 +84,7 @@ class AddGrievanceView(View):
         else:
             context_data['form'] = form
         
-        return render(request, 'grievances.html', context_data)
+        return render(request, 'add_grievance.html', context_data)
              
 
 def RateAndCloseView(request):
@@ -134,7 +134,7 @@ def EscalateGrievanceView(request):
     
     context_data = {'errors': [], 'record_added': False, 'success_message':""}
     grievance_obj = Grievances.objects.get(grievance_id=request.POST['grievance_id'])
-    grievance_obj.escalated = True
+    grievance_obj.escalate = True
     grievance_obj.save()
     
     msg_html = render_to_string('email_templates/EscalatedByUserMessageTemplate.html', {'registered_by': request.user.first_name , 'grievance_id':grievance_obj.grievance_id, 'grievance_subject':grievance_obj.subject})

@@ -25,7 +25,7 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # 'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
@@ -179,11 +179,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-<<<<<<< HEAD
-        "NAME": "myansr_stag",
-=======
         "NAME": "myansrsource",
->>>>>>> BUILD-20160204
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
@@ -320,4 +316,4 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "sanjay.kunnath@ansrsource.com"
+GRIEVANCES_ADMIN_EMAIL = "ansr.source.test@gmail.com"
