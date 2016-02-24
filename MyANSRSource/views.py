@@ -678,7 +678,7 @@ def renderTimesheet(request, data):
     )
     billableHours = tsObj.filter(
         activity__isnull=True,
-        task__taskType='B'
+        task__taskType__in=['B','N']
     ).values('totalH')
     idleHours = tsObj.filter(
         activity__isnull=True,
