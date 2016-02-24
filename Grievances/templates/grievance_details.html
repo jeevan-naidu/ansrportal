@@ -168,7 +168,7 @@
 																										<p><b>How satisfied were you with the resolution of your grievance? </b><span style="color:red">*</span></p>
 																									{% for key, text in satisfaction_choices %}
 																											<label>
-																												<input type="radio" name="satisfaction_level" value="{{key}}" >
+																												<input type="radio" name="satisfaction_level" value="{{key}}" required>
 																												&nbsp;&nbsp;{{text}}&nbsp;&nbsp;&nbsp;&nbsp;
 																											</label>
 																									{% endfor %}
@@ -178,7 +178,7 @@
 																								<tr>
 																									<td>
 																										<p><b>Message: </b><span style="color:red">*</span></p>
-																										<textarea cols="60" maxlength="2000" name="user_closure_message" rows="10" placeholder="Enter your message here"></textarea>
+																										<textarea cols="60" maxlength="2000" name="user_closure_message" rows="10" placeholder="Enter your message here" required></textarea>
 																										<br><br>
 																									</td>
 																								</tr>
@@ -186,7 +186,8 @@
 																								<tr>
 																									<td>
 																										<input type="file" name="user_closure_message_attachment" class="filestyle" data-iconName="glyphicon glyphicon-paperclip" data-buttonBefore="true">
-																										<p>Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg</p>
+																										<p>Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg<br>
+																										Maximum allowed file size: 1MB</p>
 																									</td>
 																								</tr>
 																								

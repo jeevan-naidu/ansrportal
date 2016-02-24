@@ -44,6 +44,24 @@ $(document).ready(function(){
                 });
                 
                 
+                // File size validation
+				$('.filestyle').bind('change', function() {
+				if (this.files[0].size > 1000000) {
+					alert("File size greater than 1MB not allowed");
+                    
+					$(this).filestyle('clear');
+				}
+                
+                var fileExtension = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml'];
+                if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+                    alert("Only formats are allowed : "+fileExtension.join(', '));
+                    $(this).filestyle('clear');
+                }
+                
+                
+                
+				});
+                
                 
             
             }); // dom ready
