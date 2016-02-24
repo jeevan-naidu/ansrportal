@@ -105,6 +105,13 @@
 										  $("#modal_body").html("<h5 style='color:green;'>" + data.success_msg + "</h5>");
 										  if ($("#listTableBody tr:first").length) {
 											$("#listTableBody tr:first").before(data.html_data);
+											
+											// reload the js for file for ajax requests
+												$.getScript( "/static/js/grievances_user.js", function( data, textStatus, jqxhr ) {
+												console.log( textStatus ); // Success
+												console.log( jqxhr.status ); // 200
+												});
+											
 										   }
 										  else{
 											 $("#listTableBody").append(data.html_data);
