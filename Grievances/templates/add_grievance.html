@@ -107,10 +107,7 @@
 											$("#listTableBody tr:first").before(data.html_data);
 											
 											// reload the js for file for ajax requests
-												$.getScript( "/static/js/grievances_user.js", function( data, textStatus, jqxhr ) {
-												console.log( textStatus ); // Success
-												console.log( jqxhr.status ); // 200
-												});
+												window.location.reload();
 											
 										   }
 										  else{
