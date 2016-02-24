@@ -25,7 +25,7 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # 'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
@@ -136,7 +136,8 @@ INSTALLED_APPS = (
     'employee',
     'CompanyMaster',
     'MyANSRSource',
-    'fb360'
+    'fb360',
+    'Grievances',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -310,3 +311,9 @@ TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
 
 # Backup directory
 BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
+
+#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
+MEDIA_URL = '/media/'
+
+GRIEVANCES_ADMIN_EMAIL = "ansr.source.test@gmail.com"

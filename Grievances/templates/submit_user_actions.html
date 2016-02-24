@@ -1,0 +1,44 @@
+
+{% load grievances_template_tags %}
+{% if record_added %}
+
+<h5 style="color:green"> Thank you for your feedback. </h5>
+
+        
+        {% if object.satisfaction_level == 'satisfied' or object.satisfaction_level = 'not_sure'%}
+            <div>
+                <p><b>Satisfaction level : </b> <label type="label" class="label label-success ">{{object.get_satisfaction_level_display}}</label></p>
+            </div>
+            
+        {% endif %}
+        
+        {% if object.satisfaction_level == 'dissatisfied' or object.satisfaction_level = 'very_dissatisfied'%}
+            <div>
+                <p><b>Satisfaction level : </b><label type="label" class="label label-danger ">{{object.get_satisfaction_level_display}}</label></p>
+            </div>
+        {% endif %}
+        {% if object.user_closure_message %}<b> Message </b>: {{object.user_closure_message}}{% endif %}
+        
+        <!-- Attachments start -->
+        {% if object.user_closure_message_attachment%}<p></p><i><b>Attachment : </b></i> <p></p>
+            <a target="_blank" href="{{object.user_closure_message_attachment.url}}">
+                {% if object.user_closure_message_attachment.name|GetFileTypeFromName == 'xls' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'xlsx' %}
+                    <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                {% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'csv' %}
+                    <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                {% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'pdf' %}
+                    <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                {% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'doc' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'docx'  %}
+                    <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                {% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'jpg' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'jpeg' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'png' %}
+                    <img alt="A doc file" src="{{object.user_closure_message_attachment.url }}" height="50px" width="50px">
+                {% endif %}
+            </a>
+        {% endif %}
+        <!-- Attachments end -->
+        
+         {% if object.closure_date%}<h5><div style="float: right;"><p></p><p>-<i>{{object.closure_date}}</i></p></div></h5>{% endif %}
+         
+         <br>
+
+{% endif %}
