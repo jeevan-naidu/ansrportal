@@ -316,4 +316,4 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "ansr.source.test@gmail.com"
+GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
