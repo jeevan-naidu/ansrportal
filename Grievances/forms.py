@@ -1,11 +1,9 @@
 from models import Grievances, SATISFACTION_CHOICES, Grievances_catagory
-#
-#import ipdb;ipdb.set_trace()
-#GRIEVANCE_CATAGORIES = () + GRIEVANCE_CATAGORIES
-'jpg', 'csv','png', 'pdf', 'xlsx', 'docx', 'doc', 'jpeg'
+from django.utils.safestring import mark_safe
+
 from django import forms
 class AddGrievanceForm(forms.ModelForm):
-    grievance_attachment = forms.FileField(label='Attachment', required=False, help_text="Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg")
+    grievance_attachment = forms.FileField(label='Attachment', required=False, help_text=mark_safe("Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
     # Add Bootstrap widgets
     grievance_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
     
@@ -22,7 +20,16 @@ class AddGrievanceForm(forms.ModelForm):
         fields = ['catagory', 'subject', 'grievance', 'grievance_attachment']
         
         widgets = {
-          'grievance': forms.Textarea(attrs={'rows':12, 'cols':80}),
+          'grievance': forms.Textarea(attrs={'class': 'form-control', 'rows':8, 'cols':70}),
         }
-        
 
+    
+    def clean(self):
+        '''  Custom clean method. Validations for spaces for input fields '''
+        
+        if self.cleaned_data.get('subject', ''):
+            self.cleaned_data['subject'] = self.cleaned_data['subject'].strip()
+        if self.cleaned_data.get('grievance', ''):
+            self.cleaned_data['grievance'] = self.cleaned_data['grievance'].strip()
+        
+        return self.cleaned_data

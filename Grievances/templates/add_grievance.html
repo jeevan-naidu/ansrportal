@@ -51,9 +51,9 @@
 			   <div style="color:red" id="AddGrievanceForm_errors"></div><br>
 						 {% for field in form.visible_fields %}
 						   <tr>
-						   <td style="padding:20px 20px 5px 5px;">{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %} <br><br></td>
-						   <td>{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
-							   {% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p><br>{% endif %}
+						   <td style="padding:20px 20px 5px 5px;">{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %} <br></td>
+						   <td><br>{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
+							   {% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
 						   </td>
 						   </tr>
 						{% endfor %}
@@ -122,12 +122,11 @@
 										reloadJS();
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
-											$("#AddGrievanceForm_errors").html("Oops.. something went wrong at server end. Below are the details: " 
-												+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a snapshot of this error and send it to the administrator");
-											alert("Server error" + "-" + textStatus + "-" + errorThrown);
-											HideAjaxLoader(ajax_loader_element);
-										},
-										
+												$("#AddGrievanceForm_errors").html("Oops! Something went wrong on the server. The details are below: " 
+													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
+												HideAjaxLoader(ajax_loader_element);
+											},
+														
 									cache: false,
 									contentType: false,
 									processData: false

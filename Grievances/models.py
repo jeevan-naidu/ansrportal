@@ -7,6 +7,8 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 
+from django.core.validators import MinLengthValidator
+
 
 SATISFACTION_CHOICES = (('satisfied', 'Satisfied'), ('not_sure', 'Not Sure'), ('dissatisfied', 'Dissatisfied'), ('very_dissatisfied', 'Very Dissatisfied') )
 
@@ -47,12 +49,12 @@ class Grievances(models.Model):
     
     grievance_id = models.CharField(max_length=60, unique=True)
     catagory = models.ForeignKey(Grievances_catagory)
-    subject = models.CharField(max_length=100)
-    grievance = models.TextField(max_length=2000)
+    subject = models.CharField(max_length=100, validators=[MinLengthValidator(15)])
+    grievance = models.TextField(max_length=2000, validators=[MinLengthValidator(15)])
     
-    action_taken = models.TextField(max_length = 2000, blank=True, null=True)
-    user_closure_message = models.TextField(max_length = 2000, blank=True, null=True)
-    admin_closure_message = models.TextField(max_length = 2000, blank=True, null=True)
+    action_taken = models.TextField(max_length = 2000, blank=True, null=True, validators=[MinLengthValidator(15)])
+    user_closure_message = models.TextField(max_length = 2000, blank=True, null=True, validators=[MinLengthValidator(5)])
+    admin_closure_message = models.TextField(max_length = 2000, blank=True, null=True, validators=[MinLengthValidator(5)])
     
     satisfaction_level = models.CharField(max_length = 50, blank=True, null=True, choices=SATISFACTION_CHOICES)
     
@@ -94,7 +96,7 @@ class Grievances(models.Model):
             if database_object.escalate_to != self.escalate_to:
                 EscalateToList = self.escalate_to.replace("'","").replace('"', '').split(";")
                 msg_html = render_to_string('email_templates/EscalateToTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_id':database_object.grievance_id, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Escalation - Grievance', msg_html, settings.EMAIL_HOST_USER, EscalateToList, cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+                mail_obj = EmailMessage('Escalation - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, EscalateToList, cc=[settings.GRIEVANCES_ADMIN_EMAIL])
                 mail_obj.content_subtype = 'html'
                 email_status = mail_obj.send()
                 
@@ -106,7 +108,7 @@ class Grievances(models.Model):
                 # this means the HR has taken action on the grievance. Send mails to the HR as well as the employee and update the date
                 
                 msg_html = render_to_string('email_templates/ActionTakenTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_id':database_object.grievance_id, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Action taken - Grievance', msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+                mail_obj = EmailMessage('Action taken - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
                 mail_obj.content_subtype = 'html'
                 email_status = mail_obj.send()
                 
@@ -118,7 +120,7 @@ class Grievances(models.Model):
             elif database_object.action_taken != self.action_taken:
                 # this means the HR has edited/changed the action taken field. Send update mails to the HR as well as the employee and update the date
                 msg_html = render_to_string('email_templates/EditActionTakenTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Change in action taken - Grievance', msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+                mail_obj = EmailMessage('Change in action taken - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
                 mail_obj.content_subtype = 'html'
                 email_status = mail_obj.send()
                 if email_status < 1:
@@ -132,7 +134,7 @@ class Grievances(models.Model):
             if database_object.admin_closure_message == "" and self.admin_closure_message:
                 # this mmeans the HR has added the closure message. Send mails to HR and the user and update the date.
                 msg_html = render_to_string('email_templates/AdminClosureMessageTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Admin Clousure Message - Grievance', msg_html, settings.EMAIL_HOST_USER, [self.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+                mail_obj = EmailMessage('HR Message - Grievance  Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [self.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
                 mail_obj.content_subtype = 'html'
                 email_status = mail_obj.send()
                 if email_status < 1:
@@ -143,7 +145,7 @@ class Grievances(models.Model):
             elif database_object.admin_closure_message != self.admin_closure_message:
                 # this means HR has edited/changed the closure message. Send update mails to the HR aas well as the employee and update the date field.
                 msg_html = render_to_string('email_templates/EditAdminClosureMessageTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Change in admin clousure message - Grievance', msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+                mail_obj = EmailMessage('Change in admin message - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
                 mail_obj.content_subtype = 'html'
                 email_status = mail_obj.send()
                 if email_status < 1:
@@ -157,7 +159,7 @@ class Grievances(models.Model):
             elif database_object.active == False and self.active == True:
                 # this means the HR wants to reopen this grievance. Send mails to HR and the employee
                 msg_html = render_to_string('email_templates/OpenClosedGrievanceMessageTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Closed grievance opened', msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+                mail_obj = EmailMessage('Closed grievance opened - Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
                 mail_obj.content_subtype = 'html'
                 email_status = mail_obj.send()
                 if email_status < 1:

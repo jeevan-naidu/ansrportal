@@ -58,8 +58,17 @@
 
 
 .DivVer{
+     
+    -ms-transform: rorotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    
+    -ms-transform-origin: 241px -29px;
+    -webkit-transform-origin: 241px -29px;
+    -moz-transform-origin: 241px -29px;
+    
     transform: rotate(-90deg);
-     transform-origin: 241px -29px;
+    transform-origin: 241px -29px;
 
 }
 .HowItWorksContainer .HowitWorksContent{
@@ -90,4 +99,29 @@ label{
     border : 1px solid #ddd;
     padding:15px;
 }
+.smooth_transitions{
+    -ms-transition: transform .2s ease-in-out;
+    -webkit-transition: transform .2s ease-in-out;
+    -moz-transition: transform .2s ease-in-out;
+    transition: transform .2s ease-in-out;
+    /*padding-right:10px;*/
+}
+
+.expand1{
+    -ms-transform: rotate(91deg);
+    -webkit-transform: rotate(91deg);
+    -moz-transform: rotate(91deg);
+    transform: rotate(91deg);
+}
+
+.pad-txtGr{
+    padding-left:10px;
+}
+
+.panel-title{
+    text-decoration: none !important;
+    font-size: 12px;
+}
+
+
 /* End grievance module */

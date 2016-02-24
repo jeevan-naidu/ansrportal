@@ -22,16 +22,16 @@
 		
 <!--	fixed left section	-->
 		<div class="HowItWorksContainer how_it_works_hide">
-			<div class="DivRotate DivVer"><h3>How it works ?</h3></div>
+			<div class="DivRotate DivVer"><h3>How it works</h3></div>
 			
 			<div class="HowitWorksContent animated ">
 				<ol>
-					<li>You register a grievance</li>
-					<li>Accordingly admin takes action</li>
-					<li>If you are satisfied, you close. If not you escalate</li>
-					<li>If escalated, admin forwards it to concerned department authorities</li>
-					<li>The authorities takes action</li>
-					<li>You close the grievance</li>
+					<li>You register a grievance.</li>
+					<li>Admin takes action accordingly.</li>
+					<li>If you are satisfied with the action taken, close the grievance. If not, escalate.</li>
+					<li>Admin forwards the grievance to the concerned authority.</li>
+					<li>The authority takes action.</li>
+					<li>You close the grievance. </li>
 				</ol>
 			</div>
 		</div>
@@ -54,7 +54,7 @@
 					</h4>
 				</div>
 				<div class="modal-body" id="modal_body">
-					...
+					Loading..please wait..
 				</div>
 				
 			</div>
@@ -65,7 +65,7 @@
 <h1 class="text-center">Grievances</h1>
 
 {% if objects_list %}
-					<h5 class="text-center">(Below is the list of grievances that you registered in past)</h5>
+					<h5 class="text-center">(Below is the list of grievances that you registered in the past)</h5>
 {% endif %}
 
 
@@ -90,7 +90,7 @@
 							Grievance / Feedback / Actions
 						</th>
 						<th class="text-center">
-							Catagory
+							Category
 						</th>
 						<th class="text-center">
 							Created Date
@@ -174,7 +174,10 @@
 								<h4 class="text-center" id="no_grievances_alert">No grievances found..</h4><br><br>
 						</div>
 {% endif %}
-<h5 class="text-center">There are some things that remain unnoticed. If you don't tell us, we will never know. So, please mention it here. Your grievance will be handled with utmost sincerity and honesty.</h5>
+<h5 class="text-center">Very often, problems go unnoticed. If you don't tell us about them, we won't be able to fix them. Please share your grievances with us so that we can improve your experience at <strong>ansr</strong>source.</h5>
+
+
+
 
 {% endblock  %}
 

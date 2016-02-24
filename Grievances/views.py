@@ -10,7 +10,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 
-AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'docx', 'doc', 'jpeg']
+AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
 
 def generate_random_string():
     ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
@@ -66,7 +66,7 @@ class AddGrievanceView(View):
             # Send e-mails
             msg_html = render_to_string('email_templates/NewGrievanceTemplate.html', {'registered_by': request.user.first_name, 'grievance_id':form.grievance_id, 'grievance_subject':form.subject})
             
-            mail_obj = EmailMessage('New Grievance Registered- Test mail', msg_html, settings.EMAIL_HOST_USER, [request.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+            mail_obj = EmailMessage('New Grievance Registered- Grievance Id - ' + form.grievance_id, msg_html, settings.EMAIL_HOST_USER, [request.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
             mail_obj.content_subtype = 'html'
             email_status = mail_obj.send()
             
@@ -75,7 +75,7 @@ class AddGrievanceView(View):
                 pass
            
             
-            context_data['success_msg'] = "Your grievance is submitted successfully. A person from HR department will get back to you shortly"
+            context_data['success_msg'] = "Your grievance has been submitted successfully. A person from the HR department will get back to you shortly."
             template = render(request, 'add_grievance.html', context_data)
             context_data['html_data'] = template.content
             context_data.pop('object')   # remove non seriazable object
@@ -92,10 +92,13 @@ def RateAndCloseView(request):
     context_data = {'errors': [], 'record_added': False, 'object':"", 'success_data_template':""}
     if not request.POST.get('satisfaction_level', ''):
         context_data['errors'].append('Satisfaction Level: Please select one of the options for this field<br>')
-    if not request.POST.get('user_closure_message', ''):
+    
+    user_closure_message = request.POST.get('user_closure_message', '').strip()
+    if not user_closure_message:
         context_data['errors'].append('Message: Please enter the message<br>')
-    elif len(request.POST.get('user_closure_message', '')) > 2000:
+    elif len(user_closure_message) > 2000:
         context_data['errors'].append('Message: Ensure that this field has atmost 2000 characters <br>')
+        
     if request.FILES.get('user_closure_message_attachment', ""):
         if request.FILES['user_closure_message_attachment'].name.split(".")[-1] not in AllowedFileTypes:
             context_data['errors'].append('Attachment: File type not allowed <br>')
@@ -103,7 +106,7 @@ def RateAndCloseView(request):
     if not context_data['errors']:
         grievance_obj = Grievances.objects.get(grievance_id=request.POST['grievance_id'])
         grievance_obj.satisfaction_level = request.POST['satisfaction_level']
-        grievance_obj.user_closure_message = request.POST['user_closure_message']
+        grievance_obj.user_closure_message = request.POST['user_closure_message'].strip()
         if request.FILES.get('user_closure_message_attachment', ""):
             grievance_obj.user_closure_message_attachment = request.FILES['user_closure_message_attachment']
         grievance_obj.closure_date = datetime.datetime.now()
@@ -112,7 +115,7 @@ def RateAndCloseView(request):
         
         # Send notification mails
         msg_html = render_to_string('email_templates/GrievanceClosedByUserMessageTemplate.html', {'registered_by': request.user.first_name , 'grievance_id':grievance_obj.grievance_id, 'grievance_subject':grievance_obj.subject,'satisfaction_level':grievance_obj.satisfaction_level})
-        mail_obj = EmailMessage('Grievance Closed', msg_html, settings.EMAIL_HOST_USER, [request.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+        mail_obj = EmailMessage('Grievance Closed - Id - ' + grievance_obj.grievance_id, msg_html, settings.EMAIL_HOST_USER, [request.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
         
@@ -138,7 +141,7 @@ def EscalateGrievanceView(request):
     grievance_obj.save()
     
     msg_html = render_to_string('email_templates/EscalatedByUserMessageTemplate.html', {'registered_by': request.user.first_name , 'grievance_id':grievance_obj.grievance_id, 'grievance_subject':grievance_obj.subject})
-    mail_obj = EmailMessage('Grievance Escalation', msg_html, settings.EMAIL_HOST_USER, [request.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+    mail_obj = EmailMessage('Grievance Escalation - Id - ' + grievance_obj.grievance_id, msg_html, settings.EMAIL_HOST_USER, [request.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
     mail_obj.content_subtype = 'html'
     email_status = mail_obj.send()
     if email_status < 1:

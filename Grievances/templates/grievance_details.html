@@ -3,7 +3,12 @@
 <div class="panel-group marginTop" id="panel-{{object.id}}">
 										<div>
 											<div class="panel-heading">
-												 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-1{{object.id}}"><b class="font-15">{{object.subject | truncatechars:60}}</b></a>
+												
+												<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-1{{object.id}}">
+														<span class="smooth_transitions glyphicon glyphicon-play {{object.id}}"></span>
+														<b class="font-15">{{object.subject | truncatechars:60}}</b>
+													
+												</a>
 											</div>
 											<div id="panel-element-1{{object.id}}" class="panel-collapse collapse">
 												<div class="panel-body">
@@ -36,7 +41,10 @@
 										{% if object.action_taken %}
 												<div >
 													<div class="panel-heading">
-														 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-2{{object.id}}"><b class="font-15">Action taken</b></a>
+														
+														 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-2{{object.id}}">
+															<span class="smooth_transitions glyphicon glyphicon-play"></span>
+															<b class="font-15">Action taken</b></a>
 													</div>
 													<div id="panel-element-2{{object.id}}" class="panel-collapse collapse">
 														<div class="panel-body">
@@ -74,7 +82,10 @@
 													
 													<div>
 														<div class="panel-heading">
-															<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}"><b class="font-15">User Actions</b></a>
+															
+															<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
+																<span class="smooth_transitions glyphicon glyphicon-play"></span>
+																<b class="font-15">User Actions</b></a>
 														</div>
 														<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
 															<div class="panel-body">
@@ -125,13 +136,20 @@
 												{% else %}
 													<div>
 															<div class="panel-heading">
-																 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}"><b class="font-15">User Actions</b></a>
+																
+																 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
+																	<span class="smooth_transitions glyphicon glyphicon-play"></span>
+																	<b class="font-15">User Actions</b></a>
 															</div>
 															<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
 																<div class="panel-body">
-																	
+																	<p>
+																		<i>Was the action taken to resolve your grievance satisfactory?
+																		If you are satisfied with the action taken, please rate your experience and close the grievance.
+																		If not, please escalate the grievance.</i>
+																	</p>
 																	<ul class="nav nav-tabs">
-																		<li class="active"><a data-toggle="tab" href="#home_{{object.grievance_id}}"><b>Rate and Closure</b></a></li>
+																		<li class="active"><a data-toggle="tab" href="#home_{{object.grievance_id}}"><b>Rate and Close</b></a></li>
 																		<li><a data-toggle="tab" href="#menu1_{{object.grievance_id}}"><b>Escalate</b></a></li>
 																	</ul>
 																	
@@ -146,7 +164,8 @@
 																						<table>
 																								<tr>
 																									<td>
-																										<p><b>Satisfaction Level: </b><span style="color:red">*</span></p>
+																										<p></p>
+																										<p><b>How satisfied were you with the resolution of your grievance? </b><span style="color:red">*</span></p>
 																									{% for key, text in satisfaction_choices %}
 																											<label>
 																												<input type="radio" name="satisfaction_level" value="{{key}}" >
@@ -184,8 +203,10 @@
 																		
 																		{% if object.escalate %}
 																			
-																			<p>Your grievance has been escalated to concerned authorities. Stay cool..</p>
+																			<p>You have marked this grievance for escalation. HR will escalate it to the concerned authorities.</p>
 																			
+																		{% elif object.escalate_to %}
+																			<p>Your grievance has been escalated to the concerned authorities. Keep calm and drink lots of water.</p>
 																		{% else %}
 																					<form id="EscalationForm_{{object.grievance_id}}" class="EscalationForm ajax_loader" method="post" enctype="multipart/form-data">
 																						
@@ -195,7 +216,7 @@
 																						<table>
 																								<tr>
 																									<td>
-																										<p>If you are not happy with the actions taken for you grievance you can escalate it to the higher authorities.</p>
+																										<p>If you are not satisfied with the action taken to resolve your grievance, please escalate it to the higher authorities.</p>
 																										<input type="submit" class="btn btn-danger" value="Escalate" />
 																										<input type="hidden" name="grievance_id" value="{{object.grievance_id}}"/>
 																									</td>
@@ -220,7 +241,10 @@
 										{% if object.admin_closure_message %}		
 												<div>
 													<div class="panel-heading">
-														 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-4{{object.id}}"><b class="font-15">Admin Closure Message</b></a>
+														
+														 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-4{{object.id}}">
+															<span class="smooth_transitions glyphicon glyphicon-play"></span>
+															<b class="font-15">Admin Closure Message</b></a>
 													</div>
 													<div id="panel-element-4{{object.id}}" class="panel-collapse collapse">
 														<div class="panel-body">
@@ -256,3 +280,4 @@
 										{% endif %}
 											
 										</div>
+
