@@ -181,7 +181,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -230,7 +230,7 @@ logger.setLevel(logging.DEBUG)
 
 
 # FB360 Configuration
-EMAIL_ABOUT_STATUS = ['niranj@fantain.com', 'niranjmsc@gmail.com']
+EMAIL_ABOUT_STATUS = ['sanjay.kunnath@ansrsource.com', 'amol.pachpute@ansrsource.com']
 
 
 LOGGING = {
@@ -294,11 +294,11 @@ FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
 # External Project Notifiers
-EXTERNAL_PROJECT_NOTIFIERS = ['naveen@fantain.com',
-                              'niranj@fantain.com']
+EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com',
+                              'amol.pachpute@ansrsource.com']
 
 # New Joinee Notifiers
-NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
+NEW_JOINEE_NOTIFIERS = ['ansr.source.test@gmail.com']
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
@@ -316,4 +316,4 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
+GRIEVANCES_ADMIN_EMAIL = "amol.pachpute@ansrsource.com"
