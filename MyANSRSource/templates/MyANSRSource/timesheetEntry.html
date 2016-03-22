@@ -14,7 +14,7 @@
 	{% csrf_token %}
     <div id="timesheet-billable">
 	<legend>
-	Project Effort 
+	Project Effort
 	<span class="pull-right">
 		<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
 			<span class="glyphicon glyphicon-plus"></span>
@@ -130,7 +130,7 @@
 												<span class="b-questions set-zero">{{ tdata.value }}</span>
 												<span class="project-unit">{{ typeData.value }}</span>
 											{% else %}
-												<span class="b-questions set-zero">0</span> 
+												<span class="b-questions set-zero">0</span>
 												{% if typeData.value == None %}
 													<span class="project-unit set-q">Q</span>
 												{% else %}
@@ -224,7 +224,7 @@
 					</td>
 				{% elif data.label == 'Feedback' %}
 			       		<td>
-						{% if  data.value == None or data.value == '' %}	
+						{% if  data.value == None or data.value == '' %}
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#myModal-"|add:data.id_for_label %}
@@ -254,7 +254,7 @@
 									</div>
 								</div>
 							</div>
-						{% endwith %}	
+						{% endwith %}
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
 					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
@@ -262,10 +262,10 @@
 						{% if 'hold' in holdData.label or 'approved' in data.label %}
 							{% if holdData.value %}
 								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}		
+							{% else %}
 								<td>{{ data }}</td>
 							{% endif %}
-						{% endif %}	
+						{% endif %}
 					{% endfor %}
 					{% endif %}
                 		{% endif %}
@@ -340,15 +340,15 @@
 						{% if 'hold' in holdData.label %}
 							{% if holdData.value or prevWeekBlock %}
 								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}		
+							{% else %}
 								<td>{{ data }}</td>
 							{% endif %}
-						{% endif %}	
+						{% endif %}
 					{% endfor %}
 					{% endif %}
 				{% elif 'Feedback' in data.label %}
 			       		<td>
-						{% if  data.value == None or data.value == '' or prevWeekBlock == True %}	
+						{% if  data.value == None or data.value == '' or prevWeekBlock == True %}
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#actModal-"|add:data.id_for_label %}
@@ -377,7 +377,7 @@
 										</div>
 									</div>
 								</div>
-							</div>	
+							</div>
 						{% endwith %}
 					</td>
 				{% endif %}
@@ -430,6 +430,7 @@
             <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
         {% endif %}
 	<script>
+
  		$(document).on("click", "#submitTS", function(e) {
             swal({
               title: "Are you sure?",
@@ -444,13 +445,13 @@
             },
             function(isConfirm) {
                 if (isConfirm) {
-                  $("#timesheet").submit();		
+                  $("#timesheet").submit();
                   swal("Done!", "Your timesheet is submitted", "success");
                 }
                 else
                   swal("Stay Cool", "You can still edit your timesheet", "success");
             });
-		});			
+		});
 	</script>
  </button>
  </form>

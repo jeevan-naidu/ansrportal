@@ -2,7 +2,7 @@
 {% load permissions %}
 {% block addFormMedia %}
 
-{{ remainderForm.media }} 
+{{ remainderForm.media }}
 
 {% endblock %}
 {% load bootstrap3 %}
@@ -123,7 +123,7 @@
 					Project Management
 				</a>
 			</div>
-			<div id="ptCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="pt">
+			<div id="ptCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="pt">
 			<div class="panel-body">
                 <ul class="list-group">
                     {% if user|create_project or user|manage_project %}
@@ -205,7 +205,7 @@
                     FB 360&deg;
                 </a>
             </div>
-            <div id="pCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="peer">
+            <div id="pCollapse" class="panel-collapse collapse " role="tabpanel" aria-labelledby="peer">
             <div class="panel-body">
                 <ul class="list-group">
                     <a href="/fb360/choose-peer" class="list-group-item">Choose Peer(s)
@@ -242,7 +242,7 @@
 					Administration
 				</a>
 			</div>
-			<div id="emCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="em">
+			<div id="emCollapse" class="panel-collapse collapse " role="tabpanel" aria-labelledby="em">
 			<div class="panel-body">
 				<ul class="list-group">
 					<a href="/admin" class="list-group-item">
@@ -259,7 +259,7 @@
 					Reports Management
 				</a>
 			</div>
-			<div id="rtCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="rt">
+			<div id="rtCollapse" class="panel-collapse collapse " role="tabpanel" aria-labelledby="rt">
 			<div class="panel-body">
 				<ul class="list-group">
 					<a href="reports/single-project" class="list-group-item">
@@ -282,18 +282,18 @@
 			</div>
 		</div>
 	{% endif %}
-	
+
 	<div class="panel panel-default">
 		<div class="panel-heading" role="tab" id="rt">
 			<a href="/grievances/" >
 				Grievances
 			</a>
 		</div>
-		
+
 	</div>
-	
-	
-	
+
+
+
 		</div>
 	</div>
 	<div class="col-md-8">
@@ -350,7 +350,7 @@
                             <form id="remainderForm"  action="" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 {% bootstrap_messages %}
-                                {% bootstrap_form remainderForm layout='vertical' %} 
+                                {% bootstrap_form remainderForm layout='vertical' %}
                                 {% buttons %}
                                     <button type="submit" class="btn btn-primary
                                         col-lg-2 col-xs-12 col-md-12 pull-right">
@@ -364,7 +364,7 @@
                 </div>
             </div>
          </div>
-    </div>  
+    </div>
 	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			 <div class="modal-content">

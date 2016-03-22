@@ -89,13 +89,15 @@ app.calcCurRowChangeDate = function($tableEle) {
 };
 
 
-
+endDate=document.getElementsByName('enddate')[0].value;
 app.getTaskChapter = function(selValue, currRow) {
     if(selValue) {
         $.ajax({
             url: '/myansrsource/gettask/' + selValue + '/',
             dataType: 'json',
+            data: {endDate:endDate},
             success: function(data) {
+                len=data.flag
                 data = data.data;
                 var dataLen = data.length,
                     options = '',
@@ -105,6 +107,60 @@ app.getTaskChapter = function(selValue, currRow) {
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
+                console.log(len)
+                for(j=12;j>5;j--){
+                $(currRow[0].cells[j]).find('*').attr('disabled', false);
+               $(currRow[0].cells[j]).find("*").removeAttr("tabindex");
+                }
+                for(j=12;j>12-len;j--){
+                  switch (j){
+                    case 12:
+                    {
+                      console.log(currRow);
+                     $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                     $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                      break;
+                    }
+                    case 11:
+                    {
+                        $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                        $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+
+                      break;
+                    }
+                    case 10:
+                    {
+                    $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                    $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                    break;
+                    }
+                    case 9:
+                    {
+                      $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                      $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                      break;
+                    }
+                    case 8:
+                    {
+                      $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                      $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                      break;
+                    }
+                    case 7:
+                    {
+                        $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                        $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                      break;
+                    }
+                    case 6:
+                    {
+                    $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                    $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                      break;
+                    }
+                  }
+
+                  }
 
                 currRow.find(".b-task").html(options);
 
@@ -141,7 +197,7 @@ app.getTaskChapter = function(selValue, currRow) {
         });
     } else {
         var options = '<option value>' + '-------' + '</option>';
-        
+
         currRow.find(".b-task").html(options);
         currRow.find(".b-chapter").html(options);
     }
@@ -188,14 +244,14 @@ app.setActive = function($elements, arr) {
 };
 
 app.changeProject = function() {
-    
+
     app.billableSelectProject.on('change', function() {
         var $this = $(this),
             $row = $this.closest('tr'),
             $projectUnitsElement = $row.find('.project-unit'),
             selectedValue = Number($this.val()),
             selectedProject;
-        
+
             app.getTaskChapter(selectedValue, $row);
 
 
@@ -365,12 +421,12 @@ app.firstTimeTotal = function() {
             $chapter,
             $row,
             i;
-        
+
         for(i = 0; i < billableSelectProjectLen; i += 1) {
             $item = $(billableSelectProject[i]);
             selValue = $item.val();
             $row = $item.closest('tr');
-            
+
             app.getTaskChapter(selValue, $row);
         }
     };
@@ -717,7 +773,7 @@ app.getSum = function($elements, $outputElement) {
             rowCountElement = $table.parent().parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
-        
+
 	if(options.changeMilestone) {
             rowCountElement = $table.parent().parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
@@ -912,7 +968,7 @@ app.getSum = function($elements, $outputElement) {
                                 .end()
                                 .append('<option value>-----</option>');
                         console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
-                    } 
+                    }
                 }
 
                 if($element.hasClass('set-q')) {
@@ -923,8 +979,8 @@ app.getSum = function($elements, $outputElement) {
                         $element.text('Q');
                     }
                 }
-                
-                
+
+
             console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
 
             });
@@ -1601,29 +1657,3 @@ helper.clearArray = function(arr) {
         arr.pop();
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
