@@ -107,7 +107,6 @@ app.getTaskChapter = function(selValue, currRow) {
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
-                console.log(len)
                 for(j=12;j>5;j--){
                 $(currRow[0].cells[j]).find('*').attr('disabled', false);
                $(currRow[0].cells[j]).find("*").removeAttr("tabindex");
@@ -116,7 +115,6 @@ app.getTaskChapter = function(selValue, currRow) {
                   switch (j){
                     case 12:
                     {
-                      console.log(currRow);
                      $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                      $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
                       break;
@@ -259,7 +257,6 @@ app.changeProject = function() {
         if(selectedValue != 0) {
             selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
 
-            //console.log(selectedProject);
 
             app.curProjectUnitShort = selectedProject.project__projectType__code;
             app.curProjectUnit = selectedProject.project__projectType__description;
@@ -388,21 +385,14 @@ app.firstTimeTotal = function() {
             nonBillableTotal += cRowNonBillableTotal;
         });
 
-        //console.log(nonBillableTotal);
         grandTotal = billableHoursTotal + idleHoursTotal + nonBillableTotal;
 
-        console.log(grandTotal);
 
         // To Dom
         $totalBillableHours.text(billableHoursTotal.toFixed(2));
         $totalIdleHours.text(idleHoursTotal.toFixed(2));
         $nonBillableTotal.text(nonBillableTotal.toFixed(2));
         $grandTotal.text(grandTotal.toFixed(2));
-
-
-
-        console.log('idleHoursTotal: ' + idleHoursTotal);
-        console.log('billableHoursTotal: ' + billableHoursTotal);
 
         app.timeSheetDayTotalHours();
     }

@@ -751,24 +751,23 @@ def renderTimesheet(request, data):
                     k = u'{0}H'.format(eachDay)
                     if k in eachData:
                         d[newK] += eachData[k]
-    a1=request.GET.get('enddate','')
+    endDate1=request.GET.get('enddate',''
     date=datetime.now().date()
-    #import ipdb; ipdb.set_trace()
     if request.GET.get("week")=='prev':
-        a1=request.GET.get('enddate','')
+        endDate1=request.GET.get('enddate','')
         date=datetime.now().date()
-        if a1:
-            date = datetime(year=int(a1[4:8]), month=int(a1[2:4]), day=int(a1[0:2]))
+        if endDate1:
+            date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
             date -= timedelta(days=13)
             print date
         else:
             date=data['weekstartDate']
 
     elif request.GET.get("week")=='next':
-        a1=request.GET.get('endDate','')
+        endDate1=request.GET.get('endDate','')
         date=datetime.now().date()
-        if a1:
-            date = datetime(year=int(a1[4:8]), month=int(a1[2:4]), day=int(a1[0:2]))
+        if endDate1:
+            date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
             date += timedelta(days=1)
             print date
         else:
@@ -2145,8 +2144,8 @@ def GetTasks(request, projectid):
         for eachRec in tasks:
             eachRec['norm'] = Decimal(eachRec['norm'])
 
-        a1=request.GET.get('endDate')
-        date = datetime(year=int(a1[4:8]), month=int(a1[2:4]), day=int(a1[0:2])).date()
+        endDate1=request.GET.get('endDate')
+        date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2])).date()
         pEndDate=Project.objects.get(pk=projectid).endDate
         diff=date-pEndDate
         diff=diff.days
