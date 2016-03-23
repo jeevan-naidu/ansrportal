@@ -295,7 +295,7 @@ FEED_DELIMITER = ","
 
 # External Project Notifiers
 EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com',
-                             'amol.pachpute@ansrsource.com']
+                              'amol.pachpute@ansrsource.com']
 
 # New Joinee Notifiers
 NEW_JOINEE_NOTIFIERS = ['ansr.source.test@gmail.com']
