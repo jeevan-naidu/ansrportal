@@ -128,7 +128,7 @@ class ChapterForm(forms.ModelForm):
 
 
 # Form class to maintain timesheet records
-def TimesheetFormset(currentUser):
+def TimesheetFormset(currentUser,enddate):
     class TimeSheetEntryForm(forms.Form):
         project = forms.ModelChoiceField(
             queryset=None,
@@ -154,65 +154,79 @@ def TimesheetFormset(currentUser):
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
                                      decimal_places=2,
-                                     widget=forms.HiddenInput())
+                                     widget=forms.HiddenInput()
+                                     , required=False)
         mondayQ = forms.DecimalField(label="Questions",
                                      max_digits=12,
                                      decimal_places=2,
-                                     widget=forms.HiddenInput())
+                                     widget=forms.HiddenInput()
+                                     , required=False)
         tuesday = forms.CharField(label="Tue", required=False)
         tuesdayH = forms.DecimalField(label="Hours",
                                       max_digits=12,
                                       decimal_places=2,
-                                      widget=forms.HiddenInput())
+                                      widget=forms.HiddenInput()
+                                      , required=False)
         tuesdayQ = forms.DecimalField(label="Questions",
                                       max_digits=12,
                                       decimal_places=2,
-                                      widget=forms.HiddenInput())
+                                      widget=forms.HiddenInput()
+                                      , required=False)
         wednesday = forms.CharField(label="Wed", required=False)
         wednesdayH = forms.DecimalField(label="Hours",
                                         max_digits=12,
                                         decimal_places=2,
-                                        widget=forms.HiddenInput())
+                                        widget=forms.HiddenInput()
+                                        , required=False)
         wednesdayQ = forms.DecimalField(label="Questions",
                                         max_digits=12,
                                         decimal_places=2,
-                                        widget=forms.HiddenInput())
+                                        widget=forms.HiddenInput()
+                                        , required=False)
         thursday = forms.CharField(label="Thu", required=False)
         thursdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
                                        decimal_places=2,
-                                       widget=forms.HiddenInput())
+                                       widget=forms.HiddenInput()
+                                       , required=False)
         thursdayQ = forms.DecimalField(label="Questions",
                                        max_digits=12,
                                        decimal_places=2,
-                                       widget=forms.HiddenInput())
+                                       widget=forms.HiddenInput()
+                                       , required=False)
         friday = forms.CharField(label="Fri", required=False)
         fridayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
                                      decimal_places=2,
-                                     widget=forms.HiddenInput())
+                                     widget=forms.HiddenInput()
+                                     , required=False)
         fridayQ = forms.DecimalField(label="Questions",
                                      max_digits=12,
                                      decimal_places=2,
-                                     widget=forms.HiddenInput())
+                                     widget=forms.HiddenInput()
+                                     , required=False)
         saturday = forms.CharField(label="Sat", required=False)
         saturdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
                                        decimal_places=2,
-                                       widget=forms.HiddenInput())
+                                       widget=forms.HiddenInput()
+                                       , required=False)
         saturdayQ = forms.DecimalField(label="Questions",
                                        max_digits=12,
                                        decimal_places=2,
-                                       widget=forms.HiddenInput())
+                                       widget=forms.HiddenInput()
+                                       , required=False)
         sunday = forms.CharField(label="Sun", required=False)
         sundayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
                                      decimal_places=2,
-                                     widget=forms.HiddenInput())
+                                     widget=forms.HiddenInput()
+                                     , required=False)
         sundayQ = forms.DecimalField(label="Questions",
                                      max_digits=12,
                                      decimal_places=2,
-                                     widget=forms.HiddenInput())
+                                     widget=forms.HiddenInput()
+                                     , required=False)
         total = forms.CharField(label="Total", required=False)
         totalH = forms.DecimalField(label="Hours",
                                     max_digits=12,
@@ -236,8 +250,9 @@ def TimesheetFormset(currentUser):
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
-                closed=False,
-                endDate__gte=datetime.date.today(),
+                #closed=False,
+                endDate__gte=enddate,
+                #endDate__gte=datetime.date.today(),
                 id__in=ProjectTeamMember.objects.filter(
                     Q(member=currentUser.id) |
                     Q(project__projectManager=currentUser.id)

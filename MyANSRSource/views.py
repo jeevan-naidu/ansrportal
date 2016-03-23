@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
+from decimal import Decimal
 
 from fb360.models import Respondent
 
@@ -133,7 +134,9 @@ def Timesheet(request):
     if request.method == 'POST':
         # Getting the forms with submitted values
         hold_button = False
-        tsform = TimesheetFormset(request.user)
+        date = datetime.now().date()
+        date -= timedelta(days=7)
+        tsform = TimesheetFormset(request.user,date)
         tsFormset = formset_factory(
             tsform, extra=1, max_num=1, can_delete=True
         )
@@ -170,7 +173,7 @@ def Timesheet(request):
                     date__range=[changedStartDate, changedEndDate]
                 ).values('date')
                 weekTotalValidate = 40 - (8 * len(weekHolidays))
-                weekTotalValidate = float(weekTotalValidate)
+                weekTotalValidate = Decimal(weekTotalValidate)
                 weekTotalExtra = weekTotalValidate + 4
             else:
                 weekHolidays = []
@@ -204,22 +207,43 @@ def Timesheet(request):
                                 approved = TimeSheetEntry.objects.get(
                                     pk=v).approved
                         if k == 'mondayH':
-                            mondayTotal += float(v)
+                            if isinstance(v, Decimal):
+                                mondayTotal += Decimal(v)
+                            else:
+                                mondayTotal += Decimal(0.0)
                         elif k == 'tuesdayH':
-                            tuesdayTotal += float(v)
+                            if isinstance(v, Decimal):
+                                tuesdayTotal += Decimal(v)
+                            else:
+                                tuesdayTotal += Decimal(0.0)
                         elif k == 'wednesdayH':
-                            wednesdayTotal += float(v)
+                            if isinstance(v, Decimal):
+                                wednesdayTotal += Decimal(v)
+                            else:
+                                wednesdayTotal += Decimal(0.0)
                         elif k == 'thursdayH':
-                            thursdayTotal += float(v)
+                            if isinstance(v, Decimal):
+                                thursdayTotal += Decimal(v)
+                            else:
+                                thursdayTotal += Decimal(0.0)
                         elif k == 'fridayH':
-                            fridayTotal += float(v)
+                            if isinstance(v, Decimal):
+                                fridayTotal += Decimal(v)
+                            else:
+                                fridayTotal += Decimal(0.0)
                         elif k == 'saturdayH':
-                            saturdayTotal += float(v)
+                            if isinstance(v, Decimal):
+                                saturdayTotal += Decimal(v)
+                            else:
+                                saturdayTotal += Decimal(0.0)
                         elif k == 'sundayH':
-                            sundayTotal += float(v)
+                            if isinstance(v, Decimal):
+                                sundayTotal += Decimal(v)
+                            else:
+                                sundayTotal += Decimal(0.0)
                         elif k == 'totalH':
-                            billableTotal += float(v)
-                            weekTotal += float(v)
+                            billableTotal += Decimal(v)
+                            weekTotal += Decimal(v)
                         timesheetDict[k] = v
                         timesheetDict['approved'] = approved
                     timesheetList.append(timesheetDict.copy())
@@ -234,22 +258,22 @@ def Timesheet(request):
                         del(activity.cleaned_data['DELETE'])
                         for k, v in activity.cleaned_data.iteritems():
                             if k == 'activity_monday':
-                                mondayTotal += float(v)
+                                mondayTotal += Decimal(v)
                             elif k == 'activity_tuesday':
-                                tuesdayTotal += float(v)
+                                tuesdayTotal += Decimal(v)
                             elif k == 'activity_wednesday':
-                                wednesdayTotal += float(v)
+                                wednesdayTotal += Decimal(v)
                             elif k == 'activity_thursday':
-                                thursdayTotal += float(v)
+                                thursdayTotal += Decimal(v)
                             elif k == 'activity_friday':
-                                fridayTotal += float(v)
+                                fridayTotal += Decimal(v)
                             elif k == 'activity_saturday':
-                                saturdayTotal += float(v)
+                                saturdayTotal += Decimal(v)
                             elif k == 'activity_sunday':
-                                sundayTotal += float(v)
+                                sundayTotal += Decimal(v)
                             elif k == 'activity_total':
-                                nonbillableTotal += float(v)
-                                weekTotal += float(v)
+                                nonbillableTotal += Decimal(v)
+                                weekTotal += Decimal(v)
                             activityDict[k] = v
                         activitiesList.append(activityDict.copy())
                         activityDict.clear()
@@ -335,6 +359,12 @@ def Timesheet(request):
                         billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold':
+                            if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
+                                if v==None:
+                                    v=Decimal(0.0)
+                            if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
+                                if v==None:
+                                    v=Decimal(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
@@ -408,6 +438,12 @@ def Timesheet(request):
                         billableTS.hold = False
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold' and k != 'approved':
+                            if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
+                                if v==None:
+                                    v=Decimal(0.0)
+                            if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
+                                if v==None:
+                                    v=Decimal(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
@@ -715,7 +751,32 @@ def renderTimesheet(request, data):
                     k = u'{0}H'.format(eachDay)
                     if k in eachData:
                         d[newK] += eachData[k]
-    tsform = TimesheetFormset(request.user)
+    endDate1=request.GET.get('enddate',''
+    date=datetime.now().date()
+    if request.GET.get("week")=='prev':
+        endDate1=request.GET.get('enddate','')
+        date=datetime.now().date()
+        if endDate1:
+            date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+            date -= timedelta(days=13)
+            print date
+        else:
+            date=data['weekstartDate']
+
+    elif request.GET.get("week")=='next':
+        endDate1=request.GET.get('endDate','')
+        date=datetime.now().date()
+        if endDate1:
+            date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+            date += timedelta(days=1)
+            print date
+        else:
+            date=data['weekstartDate']
+
+    else:
+        date=data['weekstartDate']
+
+    tsform = TimesheetFormset(request.user,date)
     if len(data['tsFormList']):
         tsFormset = formset_factory(tsform,
                                     extra=data['extra'],
@@ -1111,7 +1172,8 @@ def Dashboard(request):
             workingHours = 40 - len(weekHolidays) * 8
     cp = ProjectTeamMember.objects.filter(
         member=request.user,
-        project__closed=False
+        #project__closed=False
+        project__endDate__gte=today
     ).values(
         'project__projectId',
         'project__name',
@@ -1331,7 +1393,7 @@ class TrackMilestoneWizard(SessionWizardView):
                                     amount, ErrorList())
                                 errors.append(u'Financial Milestone amount \
                                             cannot be 0')
-                    if float(projectTotal) != float(totalRate):
+                    if Decimal(projectTotal) != Decimal(totalRate):
                         errors = eachForm._errors.setdefault(
                             totalRate, ErrorList())
                         errors.append(u'Total amount must be \
@@ -1601,7 +1663,7 @@ class CreateProjectWizard(SessionWizardView):
                                                 ErrorList())
                                             errors.append(u'Financial Milestone amount \
                                                         cannot be 0')
-                                if float(projectTotal) != float(totalRate):
+                                if Decimal(projectTotal) != Decimal(totalRate):
                                     errors = eachForm._errors.setdefault(
                                         totalRate,
                                         ErrorList())
@@ -1879,7 +1941,7 @@ def saveProject(request):
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')
-            pr.totalValue = float(request.POST.get('totalValue'))
+            pr.totalValue = Decimal(request.POST.get('totalValue'))
             pr.plannedEffort = int(request.POST.get('plannedEffort'))
             pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
             pr.currentProject = request.POST.get('currentProject')
@@ -2080,10 +2142,19 @@ def GetTasks(request, projectid):
             active=True
         ).values('code', 'name', 'id', 'taskType', 'norm')
         for eachRec in tasks:
-            eachRec['norm'] = float(eachRec['norm'])
-        data = {'data': list(tasks)}
+            eachRec['norm'] = Decimal(eachRec['norm'])
+
+        endDate1=request.GET.get('endDate')
+        date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2])).date()
+        pEndDate=Project.objects.get(pk=projectid).endDate
+        diff=date-pEndDate
+        diff=diff.days
+        if diff<0:
+            diff=0
+        data = {'data': list(tasks), 'flag':diff}
     except Task.DoesNotExist:
-        data = {'data': list()}
+        diff=0
+        data = {'data': list(), 'flag':diff}
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
