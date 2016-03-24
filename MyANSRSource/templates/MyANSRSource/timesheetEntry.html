@@ -454,8 +454,9 @@
               });
         $(function() {
             $( "#saveTS" ).click(function() {
-                $( "#saveTS" ).prop('disabled');
-                $("#submitTS").prop('disabled');
+             alert("clicked");
+                $( "#saveTS" ).attr('disabled','true');
+                $("#submitTS").attr('disabled','true');
             });
         });
 
