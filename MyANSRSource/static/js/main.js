@@ -89,8 +89,9 @@ app.calcCurRowChangeDate = function($tableEle) {
 };
 
 
-endDate=document.getElementsByName('enddate')[0].value;
+
 app.getTaskChapter = function(selValue, currRow) {
+  endDate=document.getElementsByName('enddate')[0].value;
     if(selValue) {
         $.ajax({
             url: '/myansrsource/gettask/' + selValue + '/',
@@ -169,6 +170,7 @@ app.getTaskChapter = function(selValue, currRow) {
 
             error: function(data) {
                 console.log('Error: ' + data);
+                alert(data.responseText)
             }
         });
 
@@ -256,8 +258,6 @@ app.changeProject = function() {
         // get current project by id
         if(selectedValue != 0) {
             selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
-
-
             app.curProjectUnitShort = selectedProject.project__projectType__code;
             app.curProjectUnit = selectedProject.project__projectType__description;
             app.norms = selectedProject.project__maxProductivityUnits;
@@ -519,7 +519,8 @@ app.firstTimeTotal = function() {
 
     $(document).ready(function() {
         app.init();
-
+        var strtDate=document.getElementsByName('startdate')[0].value
+        var endDate=document.getElementsByName('enddate')[0].value;
         var $popover = $('.popover');
         app.norms = '0.0 / Day';
         // Manage project
@@ -678,10 +679,10 @@ app.firstTimeTotal = function() {
                     setEmptyList: null
                 }
             });
-
             $.ajax({
                 url: '/myansrsource/getprojecttype',
                 dataType: 'json',
+                data: { strtDate:strtDate},
                 success: function(data) {
                     app.projectsList = data.data;
                 },

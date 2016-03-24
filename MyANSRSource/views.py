@@ -17,7 +17,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from decimal import Decimal
+
 
 from fb360.models import Respondent
 
@@ -153,16 +153,16 @@ def Timesheet(request):
             changedEndDate = datetime.strptime(
                 request.POST.get('enddate'), '%d%m%Y'
             ).date()
-            mondayTotal = 0.0
-            tuesdayTotal = 0.0
-            wednesdayTotal = 0.0
-            thursdayTotal = 0.0
-            fridayTotal = 0.0
-            saturdayTotal = 0.0
-            sundayTotal = 0.0
-            weekTotal = 0.0
-            billableTotal = 0.0
-            nonbillableTotal = 0.0
+            mondayTotal = float(0.0)
+            tuesdayTotal = float(0.0)
+            wednesdayTotal = float(0.0)
+            thursdayTotal = float(0.0)
+            fridayTotal = float(0.0)
+            saturdayTotal = float(0.0)
+            sundayTotal = float(0.0)
+            weekTotal = float(0.0)
+            billableTotal = float(0.0)
+            nonbillableTotal = float(0.0)
             weekHolidays = []
             (timesheetList, activitiesList,
              timesheetDict, activityDict) = ([], [], {}, {})
@@ -173,7 +173,7 @@ def Timesheet(request):
                     date__range=[changedStartDate, changedEndDate]
                 ).values('date')
                 weekTotalValidate = 40 - (8 * len(weekHolidays))
-                weekTotalValidate = Decimal(weekTotalValidate)
+                weekTotalValidate = float(weekTotalValidate)
                 weekTotalExtra = weekTotalValidate + 4
             else:
                 weekHolidays = []
@@ -207,43 +207,43 @@ def Timesheet(request):
                                 approved = TimeSheetEntry.objects.get(
                                     pk=v).approved
                         if k == 'mondayH':
-                            if isinstance(v, Decimal):
-                                mondayTotal += Decimal(v)
+                            if isinstance(v, float):
+                                mondayTotal += float(v)
                             else:
-                                mondayTotal += Decimal(0.0)
+                                mondayTotal += float(0.0)
                         elif k == 'tuesdayH':
-                            if isinstance(v, Decimal):
-                                tuesdayTotal += Decimal(v)
+                            if isinstance(v, float):
+                                tuesdayTotal += float(v)
                             else:
-                                tuesdayTotal += Decimal(0.0)
+                                tuesdayTotal += float(0.0)
                         elif k == 'wednesdayH':
-                            if isinstance(v, Decimal):
-                                wednesdayTotal += Decimal(v)
+                            if isinstance(v, float):
+                                wednesdayTotal += float(v)
                             else:
-                                wednesdayTotal += Decimal(0.0)
+                                wednesdayTotal += float(0.0)
                         elif k == 'thursdayH':
-                            if isinstance(v, Decimal):
-                                thursdayTotal += Decimal(v)
+                            if isinstance(v, float):
+                                thursdayTotal += float(v)
                             else:
-                                thursdayTotal += Decimal(0.0)
+                                thursdayTotal += float(0.0)
                         elif k == 'fridayH':
-                            if isinstance(v, Decimal):
-                                fridayTotal += Decimal(v)
+                            if isinstance(v, float):
+                                fridayTotal += float(v)
                             else:
-                                fridayTotal += Decimal(0.0)
+                                fridayTotal += float(0.0)
                         elif k == 'saturdayH':
-                            if isinstance(v, Decimal):
-                                saturdayTotal += Decimal(v)
+                            if isinstance(v, float):
+                                saturdayTotal += float(v)
                             else:
-                                saturdayTotal += Decimal(0.0)
+                                saturdayTotal += float(0.0)
                         elif k == 'sundayH':
-                            if isinstance(v, Decimal):
-                                sundayTotal += Decimal(v)
+                            if isinstance(v, float):
+                                sundayTotal += float(v)
                             else:
-                                sundayTotal += Decimal(0.0)
+                                sundayTotal += float(0.0)
                         elif k == 'totalH':
-                            billableTotal += Decimal(v)
-                            weekTotal += Decimal(v)
+                            billableTotal += float(v)
+                            weekTotal += float(v)
                         timesheetDict[k] = v
                         timesheetDict['approved'] = approved
                     timesheetList.append(timesheetDict.copy())
@@ -258,22 +258,22 @@ def Timesheet(request):
                         del(activity.cleaned_data['DELETE'])
                         for k, v in activity.cleaned_data.iteritems():
                             if k == 'activity_monday':
-                                mondayTotal += Decimal(v)
+                                mondayTotal += float(v)
                             elif k == 'activity_tuesday':
-                                tuesdayTotal += Decimal(v)
+                                tuesdayTotal += float(v)
                             elif k == 'activity_wednesday':
-                                wednesdayTotal += Decimal(v)
+                                wednesdayTotal += float(v)
                             elif k == 'activity_thursday':
-                                thursdayTotal += Decimal(v)
+                                thursdayTotal += float(v)
                             elif k == 'activity_friday':
-                                fridayTotal += Decimal(v)
+                                fridayTotal += float(v)
                             elif k == 'activity_saturday':
-                                saturdayTotal += Decimal(v)
+                                saturdayTotal += float(v)
                             elif k == 'activity_sunday':
-                                sundayTotal += Decimal(v)
+                                sundayTotal += float(v)
                             elif k == 'activity_total':
-                                nonbillableTotal += Decimal(v)
-                                weekTotal += Decimal(v)
+                                nonbillableTotal += float(v)
+                                weekTotal += float(v)
                             activityDict[k] = v
                         activitiesList.append(activityDict.copy())
                         activityDict.clear()
@@ -283,7 +283,7 @@ def Timesheet(request):
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
             elif ('save' not in request.POST) and (
-                    weekTotal < weekTotalValidate):
+                    weekTotal < weekTotalValidate-0.05):
                 messages.error(request,
                                u'Your total timesheet activity for \
                                this week is below {0} hours'.format(
@@ -361,10 +361,10 @@ def Timesheet(request):
                         if k != 'hold':
                             if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
                                 if v==None:
-                                    v=Decimal(0.0)
+                                    v=float(0.0)
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
                                 if v==None:
-                                    v=Decimal(0.0)
+                                    v=float(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
@@ -440,10 +440,10 @@ def Timesheet(request):
                         if k != 'hold' and k != 'approved':
                             if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
                                 if v==None:
-                                    v=Decimal(0.0)
+                                    v=float(0.0)
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
                                 if v==None:
-                                    v=Decimal(0.0)
+                                    v=float(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
                     eachTimesheet['tsId'] = billableTS.id
@@ -706,6 +706,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
 
 
 def renderTimesheet(request, data):
+
     attendance = {}
     tsObj = TimeSheetEntry.objects.filter(
         wkstart=data['weekstartDate'],
@@ -751,7 +752,7 @@ def renderTimesheet(request, data):
                     k = u'{0}H'.format(eachDay)
                     if k in eachData:
                         d[newK] += eachData[k]
-    endDate1=request.GET.get('enddate',''
+    endDate1=request.GET.get('enddate','')
     date=datetime.now().date()
     if request.GET.get("week")=='prev':
         endDate1=request.GET.get('enddate','')
@@ -759,7 +760,6 @@ def renderTimesheet(request, data):
         if endDate1:
             date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
             date -= timedelta(days=13)
-            print date
         else:
             date=data['weekstartDate']
 
@@ -769,7 +769,6 @@ def renderTimesheet(request, data):
         if endDate1:
             date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
             date += timedelta(days=1)
-            print date
         else:
             date=data['weekstartDate']
 
@@ -1393,7 +1392,7 @@ class TrackMilestoneWizard(SessionWizardView):
                                     amount, ErrorList())
                                 errors.append(u'Financial Milestone amount \
                                             cannot be 0')
-                    if Decimal(projectTotal) != Decimal(totalRate):
+                    if float(projectTotal) != float(totalRate):
                         errors = eachForm._errors.setdefault(
                             totalRate, ErrorList())
                         errors.append(u'Total amount must be \
@@ -1663,7 +1662,7 @@ class CreateProjectWizard(SessionWizardView):
                                                 ErrorList())
                                             errors.append(u'Financial Milestone amount \
                                                         cannot be 0')
-                                if Decimal(projectTotal) != Decimal(totalRate):
+                                if float(projectTotal) != float(totalRate):
                                     errors = eachForm._errors.setdefault(
                                         totalRate,
                                         ErrorList())
@@ -1941,7 +1940,7 @@ def saveProject(request):
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')
-            pr.totalValue = Decimal(request.POST.get('totalValue'))
+            pr.totalValue = float(request.POST.get('totalValue'))
             pr.plannedEffort = int(request.POST.get('plannedEffort'))
             pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
             pr.currentProject = request.POST.get('currentProject')
@@ -2142,10 +2141,9 @@ def GetTasks(request, projectid):
             active=True
         ).values('code', 'name', 'id', 'taskType', 'norm')
         for eachRec in tasks:
-            eachRec['norm'] = Decimal(eachRec['norm'])
-
-        endDate1=request.GET.get('endDate')
-        date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2])).date()
+            eachRec['norm'] = float(eachRec['norm'])
+        a1=request.GET.get('endDate')
+        date = datetime(year=int(a1[4:8]), month=int(a1[2:4]), day=int(a1[0:2])).date()
         pEndDate=Project.objects.get(pk=projectid).endDate
         diff=date-pEndDate
         diff=diff.days
@@ -2156,7 +2154,6 @@ def GetTasks(request, projectid):
         diff=0
         data = {'data': list(), 'flag':diff}
     return HttpResponse(json.dumps(data), content_type="application/json")
-
 
 def GetHolidays(request, memberid):
     currentUser = User.objects.get(pk=memberid)
@@ -2176,12 +2173,16 @@ def GetHolidays(request, memberid):
 
 def GetProjectType(request):
     try:
+        strtDate1=request.GET.get('strtDate')
+        date1 = datetime(year=int(strtDate1[4:8]), month=int(strtDate1[2:4]), day=int(strtDate1[0:2])).date()
         typeData = ProjectTeamMember.objects.values(
             'project__id',
             'project__name',
             'project__projectType__code',
             'project__projectType__description'
-        ).filter(project__closed=False)
+        ).filter(project__endDate__gte=date1
+        #project__closed=False
+        )
         data = {'data': list(typeData)}
     except ProjectTeamMember.DoesNotExist:
         data = {'data': list()}
