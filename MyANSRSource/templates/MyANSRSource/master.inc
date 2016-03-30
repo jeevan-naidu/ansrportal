@@ -1,10 +1,10 @@
-<!DOCTYPE html>   
+<!DOCTYPE html>
 <html lang="en">
     <head>
-       {% load static from staticfiles %}                                                                                                                     
-       <meta charset="utf-8">                                                                                                                                  
-       <meta http-equiv="X-UA-Compatible" content="IE=edge">                                                                                                   
-       <meta name="viewport" content="width=device-width, initial-scale=1">                                                                                   
+       {% load static from staticfiles %}
+       <meta charset="utf-8">
+       <meta http-equiv="X-UA-Compatible" content="IE=edge">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
        <title>{% block siteTitle %}myansrsource{% endblock %}</title>
 
        {# Ansrsource Favicon #}
@@ -13,7 +13,7 @@
 
        {# Load Pace JS #}
        <script src="{% static 'js/pace.js' %}"></script>
-       
+
        {# Load the tag library #}
        {% load bootstrap3 %}
        {% load fontawesome %}
@@ -23,7 +23,7 @@
            {# The reason we are using bootstrap CDN is for report printing #}
            {# boostrap css must have media set to all, so that we can have #}
            {# same styles for both screen and printing. Unfortunately      #}
-           {# in the plugin django-boostrap3 we don't have an option       #} 
+           {# in the plugin django-boostrap3 we don't have an option       #}
            {# to change media from screen to all.                          #}
        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
        {% bootstrap_javascript %}
@@ -34,7 +34,7 @@
 
        {# Load OpenSans Google Font #}
        <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
-       
+
        {# Load Ansr CSS and JS #}
        <link rel="stylesheet" type="text/css" href="{% static 'css/site.min.css' %}" media="screen">
        <link rel="stylesheet" type="text/css" href="{% static 'css/print.css' %}" media="print">
@@ -50,13 +50,20 @@
        <script>
             $(document).ready(function() {
                 $('#calendar').fullCalendar({
+                    eventOrder:'id',
                     aspectRatio: 2.12,
                     eventLimit: true,
                     events: [
                         {% block events %}{% endblock %}
+
                     ],
+                    header:{
+                      left: 'prev, next today ',
+                      center: 'title',
+                      right: 'month, basicWeek, basicDay'
+                    },
                     eventClick: function(calEvent, jsEvent, view) {
-                        eId = Number(calEvent._id);
+                      eId = Number(calEvent._id);
                         $('#calendar').fullCalendar('removeEvents', eId);
                         if (eId === parseInt(eId, 10))
                             swal({
@@ -75,7 +82,7 @@
                               if (isConfirm) {
                                   $.ajax({
                                     dataType: "json",
-                                    url: urlVar, 
+                                    url: urlVar,
                                   });
                                   swal("Done!", "I forgot your remainder", "success");
                               }
@@ -91,7 +98,7 @@
               $('[data-toggle="tooltip"]').tooltip()
             })
        </script>
-       
+
        {% block addFormMedia %}{% endblock %}
 
        {% include 'autocomplete_light/static.html' %}
@@ -108,7 +115,7 @@
 				<div class="navbar-header">
 					{% block responsiveMenu %}{% endblock %}
 					<a class="navbar-brand">
-						<img src="{% static 'images/ansrlogo.png' %}" 
+						<img src="{% static 'images/ansrlogo.png' %}"
 						     class="img-responsive ansrLogo" />
 					</a>
 				</div> <!-- End of the Ansr Brand Logo -->
@@ -136,9 +143,9 @@
 		</div><!-- End of Ansr Footer -->
       	</div>
        <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
-       
+
         <!--   block to be inherited for page specific JavaScript -->
        {% block page_specific_JS %}{% endblock %}
-       
+
     </body>
 </html>
