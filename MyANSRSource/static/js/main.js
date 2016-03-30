@@ -519,8 +519,6 @@ app.firstTimeTotal = function() {
 
     $(document).ready(function() {
         app.init();
-        var strtDate=document.getElementsByName('startdate')[0].value
-        var endDate=document.getElementsByName('enddate')[0].value;
         var $popover = $('.popover');
         app.norms = '0.0 / Day';
         // Manage project
@@ -668,7 +666,12 @@ app.firstTimeTotal = function() {
 
         // TimeSheet
         var timesheetBillable = $('#timesheet-billable');
+        try{
+        var strtDate=document.getElementsByName('startdate')[0].value;
+        }
+        catch(error){
 
+        }
         if(timesheetBillable.length > 0) {
             timesheetBillable.dynamicForm({
                 add: '#timesheet-billable-add-btn',
