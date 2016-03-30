@@ -10,50 +10,26 @@
 {% block siteTitle %}myansrsource:Dashboard{% endblock %}
 
 {% block events %}
-	{% for eachHoliday in holidayList %}
-		{
-			start : '{{ eachHoliday.date }}',
-			title : '{{ eachHoliday.name }}',
-			color  : '#009452'
-		},
-	{% endfor %}
-	{% for eachAct in hrList %}
-		{
-			start : '{{ eachAct.date }}',
-			title : '{{ eachAct.name }}',
-			color  : '#F04C23'
-		},
-	{% endfor %}
+
 	{% for eachRem in remainders %}
 		{
-            id : {{ eachRem.id }},
+      id : {{ eachRem.id }},
 			start : '{{ eachRem.startDate }}',
 			end : '{{ eachRem.endDate }}',
 			title : '{{ eachRem.name }}',
 			color  : '#F4B961',
-            editable : true,
+    	editable : true,
 		},
 	{% endfor %}
-	{% for eachTraining in trainingList %}
+	{% for eachSwipe in swipe_display%}
 		{
-			start : '{{ eachTraining.trainingDate }}',
-			end : '{{ eachTraining.endDate }}',
-			title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}',
-			color  : '#176CED'
-		},
-	{% endfor %}
-	{% for eachMilestone in financialM %}
-		{
-			start : '{{ eachMilestone.milestoneDate }}',
-			title : '{{ eachMilestone.description }}',
-			color  : '#D6412B'
-		},
-	{% endfor %}
-	{% for eachMilestone in nonfinancialM %}
-		{
-			start : '{{ eachMilestone.milestoneDate }}',
-			title : '{{ eachMilestone.description }}',
-			color  : '#FFBA02'
+			id : '1',
+			start : '{{eachSwipe.date}}',
+			title : '{{eachSwipe.swipe}}',
+			color : '#ffffff',
+			textColor: '#000000',
+			borderColor: '#ffffff'
+
 		},
 	{% endfor %}
 {% endblock %}
@@ -205,7 +181,7 @@
                     FB 360&deg;
                 </a>
             </div>
-            <div id="pCollapse" class="panel-collapse collapse " role="tabpanel" aria-labelledby="peer">
+            <div id="pCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="peer">
             <div class="panel-body">
                 <ul class="list-group">
                     <a href="/fb360/choose-peer" class="list-group-item">Choose Peer(s)
@@ -242,7 +218,7 @@
 					Administration
 				</a>
 			</div>
-			<div id="emCollapse" class="panel-collapse collapse " role="tabpanel" aria-labelledby="em">
+			<div id="emCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="em">
 			<div class="panel-body">
 				<ul class="list-group">
 					<a href="/admin" class="list-group-item">
@@ -259,7 +235,7 @@
 					Reports Management
 				</a>
 			</div>
-			<div id="rtCollapse" class="panel-collapse collapse " role="tabpanel" aria-labelledby="rt">
+			<div id="rtCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="rt">
 			<div class="panel-body">
 				<ul class="list-group">
 					<a href="reports/single-project" class="list-group-item">
@@ -297,15 +273,16 @@
 		</div>
 	</div>
 	<div class="col-md-8">
+
 		<div id='calendar'></div>
 		<div class="col-lg-12">
-            <span class="label label-default holiday">{% fontawesome_icon 'smile-o' large=True %} Holiday</span>
-            <span class="label label-default financialM">{% fontawesome_icon 'usd' large=True %} Financial Milestone</span>
-            <span class="label label-default nonfinancialM">{% fontawesome_icon 'clock-o' large=True %} Non-Financial Milestone</span>
-            <span class="label label-default training">{% fontawesome_icon 'book' large=True %} Learning & development</span>
-            <span class="label label-default hrAct">{% fontawesome_icon 'users' large=True %} HR Activity</span>
-            <span class="label label-default remainder">My Reminder</span>
-            <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
+          <input type="checkbox" id="Holiday" checked> <span class="label label-default holiday "  >{% fontawesome_icon 'smile-o' large=True %} Holiday</span>
+            <input type="checkbox" id="Financial_milestone"><span class="label label-default financialM " >{% fontawesome_icon 'usd' large=True %} Financial Milestone</span>
+            <input type="checkbox" id="Non_financial_milestone"><span class="label label-default nonfinancialM" >{% fontawesome_icon 'clock-o' large=True %} Non-Financial Milestone</span>
+          <input type="checkbox" id="Learning_and_development">  <span class="label label-default training" >{% fontawesome_icon 'book' large=True %} Learning & development</span>
+          <input type="checkbox" id="Hr_activity"><span class="label label-default hrAct" >{% fontawesome_icon 'users' large=True %} HR Activity</span>
+            <span class="label label-default remainder" id="My_reminder">My Reminder</span>
+           <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
 		</div>
         <legend>My Projects<small></legend>
             <small><b>This week you have {{ workingHours }} working Hour(s)</b></small>
@@ -415,4 +392,73 @@
 		</div>
 	</div>
 </div>
+<script>
+$(document).ready(function() {
+	{% for eachHoliday in holidayList %}
+	$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
+
+{% endfor %}
+});
+
+	$("#Holiday").click(function(){
+		if (document.getElementById('Holiday').checked){
+			{% for eachHoliday in holidayList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
+
+		{% endfor %}
+
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',2);
+	}
+	});
+
+	$("#Financial_milestone").click(function(){
+		if (document.getElementById('Financial_milestone').checked){
+			{% for eachMilestone in financialM %}
+			$("#calendar").fullCalendar('renderEvent',{id :'3', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#D6412B'},true);
+
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',3);
+	}
+	});
+
+	$("#Non_financial_milestone").click(function(){
+		if (document.getElementById('Non_financial_milestone').checked){
+			{% for eachMilestone in nonfinancialM %}
+			$("#calendar").fullCalendar('renderEvent',{id :'4', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#FFBA02'},true);
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',4);
+	}
+	});
+
+	$("#Learning_and_development").click(function(){
+		if (document.getElementById('Learning_and_development').checked){
+			{% for eachTraining in trainingList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'5', title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}', start : '{{ eachTraining.trainingDate }}', end : '{{ eachTraining.endDate }}', color :'#176CED'},true);
+
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',5);
+	}
+	});
+
+	$("#Hr_activity").click(function(){
+		if (document.getElementById('Hr_activity').checked){
+			{% for eachAct in hrList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'6', title : '{{ eachAct.name }}', start : '{{ eachAct.date }}', color :'#F04C23'},true);
+
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',6);
+	}
+	});
+
+</script>
 {% endblock %}

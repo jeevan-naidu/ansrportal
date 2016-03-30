@@ -1182,6 +1182,20 @@ def Dashboard(request):
         'endDate',
         'plannedEffort'
     )
+
+    currYear=today.year
+    currMonth=today.month
+    currDay=today.day
+    eddte=datetime(int(currYear),int(currMonth),int(currDay))
+    attendenceDetail=employee.models.Attendance.objects.filter(
+     attdate__lte=eddte,
+     employee_id__user_id=request.user.id).values('swipe_in','swipe_out','attdate').filter(Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(attdate__isnull=False))#.exclude(swipe_in="", swipe_out="", attdate="")
+    swipe_display=[]
+    for val in attendenceDetail:
+        temp={}
+        temp['date']=val['attdate'].strftime('%Y-%m-%d')
+        temp['swipe']="In"+str(val['swipe_in'].hour)+":"+str(val['swipe_in'].minute)+"  " +"Out"+str(val['swipe_out'].hour)+":"+str(val['swipe_out'].minute)
+        swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
@@ -1219,10 +1233,10 @@ def Dashboard(request):
         'unapprovedts': unApprovedTimeSheet,
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
-        'isManager': isManager
+        'isManager': isManager,
+        'swipe_display':swipe_display
     }
     return render(request, 'MyANSRSource/landingPage.html', data)
-
 
 def checkUser(userName, password, request, form):
     try:
