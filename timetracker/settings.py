@@ -231,7 +231,7 @@ logger.setLevel(logging.DEBUG)
 
 # FB360 Configuration
 EMAIL_ABOUT_STATUS = [
-    'niranj@fantain.com',
+    'sanjay.kunnath@ansrsource.com',
     'Samprit.Managoli@ansrsource.com',
     'Divya.Mathew@ansrsource.com',
     ]
@@ -298,7 +298,7 @@ FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
 # External Project Notifiers
-EXTERNAL_PROJECT_NOTIFIERS = ['niranj@fantain.com', ]
+EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com','amol.pachpute@ansrsource.com']
 
 # New Joinee Notifiers
 NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
