@@ -138,6 +138,8 @@ INSTALLED_APPS = (
     'MyANSRSource',
     'fb360',
     'Grievances',
+    'GrievanceAdmin',
+    'pagination',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -150,14 +152,24 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
+    'pagination.middleware.PaginationMiddleware',
+    'timetracker.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
 )
-
+PAGINATION_DEFAULT_PAGINATION = 10
 # Overriding Default T_C_P with new T_C_p
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.request"
 
 )
-
+RESTRICTED_URLS = (
+                  (r'/grievances_admin/(.*)$', ),
+              )
+GRIEVANCE_ADMIN_GROUP_NAME = 'myansrsourceGrievanceAdmin'
 # Session Configuration - enable this only after we get caching working right
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -166,6 +178,7 @@ SESSION_COOKIE_AGE = 60*60
 # Settings for Django-session-security
 SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
 SESSION_SECURITY_EXPIRE_AFTER = 10*60
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
 ROOT_URLCONF = 'timetracker.urls'

@@ -106,6 +106,8 @@
        {% include 'session_security/all.html' %}
     </head>
     <body>
+{% block breadcrumb %}{% endblock %}
+
 	<!-- Ansr -->
 	<div class={% block container %}"container"{% endblock %}>
 		<!-- Ansr Logo and role based menuset -->

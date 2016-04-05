@@ -36,6 +36,7 @@ import CompanyMaster
 import employee
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
+from Grievances.models import Grievances
 
 
 from ldap import LDAPError
@@ -1236,7 +1237,13 @@ def Dashboard(request):
         'isManager': isManager,
         'swipe_display':swipe_display
     }
+    # the following added for grievance administration module
+    if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
+        grievances_count = Grievances.objects.filter(active=True).count()
+        data['grievances_count'] = grievances_count
+
     return render(request, 'MyANSRSource/landingPage.html', data)
+
 
 def checkUser(userName, password, request, form):
     try:

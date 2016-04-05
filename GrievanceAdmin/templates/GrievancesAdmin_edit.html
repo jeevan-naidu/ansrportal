@@ -1,0 +1,428 @@
+
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+
+{% block breadcrumb %}
+<div class="container-fluid pad0">
+    <div class="row">
+            <div class="col-md-12">
+                <ul class="breadcrumb">
+                    <li>
+					<a href="/admin">Admin</a>
+                    </li>
+                    <li>
+					<a href='/grievances_admin'>Grievances</a>
+                    </li>
+                    <li class="active">
+					Edit - Grievance ID :  <b>{{grievances.grievance_id}}</b>
+                    </li>
+
+                </ul>
+            </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content  %}
+<link href="/static/css/style.css" rel="stylesheet">
+{% load grievances_template_tags %}
+
+    <div class="container-fluid ">
+
+    <div class="row">
+      <!-- left column -->
+      <div class="col-md-2">
+      </div>
+
+      <!-- edit form column -->
+    <div class="col-md-8 personal-info">
+	<h3 class="text-center"><strong>Edit grievance</strong></h3><hr>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags %}
+                    <div class= "alert alert-{{ message.tags }}">
+                        <a class="panel-close close" data-dismiss="alert">x</a>
+                        <p  class=" alert alert-{{ message.tags }}">{{ message }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <form class="form-horizontal well" role="form" id="grievance_edit_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 ">Registered By:</label>
+            <div class="col-lg-10">
+               <div class="Gr-edit-Uname">{{grievances.user.first_name}}</div>
+            </div>
+          </div>
+	          <div class="form-group">
+            <label class="col-lg-2 ">Category:</label>
+             <div class="col-lg-10">
+               <div class="Gr-edit-Uname">{{grievances.catagory}}</div>
+            </div>
+          </div><hr>
+          <div class="form-group">
+            <label class="col-lg-2 ">Subject:</label>
+            <div class="col-lg-10">
+               <div class="Gr-edit-Uname">{{grievances.subject}}</div>
+            </div>
+          </div><hr>
+		  <div class="form-group">
+            <label class="col-lg-2 ">Grievance:</label>
+            <div class="col-lg-10">
+               <div class="Gr-edit-Uname">{{grievances.grievance}}
+			   <div class="">
+				   {% if grievances.grievance_attachment%} <p><strong>Attachment:</strong></p>
+				  <div class="" >
+					<!-- Attachments start -->
+                    <a target="_blank" href="{{grievances.grievance_attachment.url}}">
+                        {% if grievances.grievance_attachment.name|GetFileTypeFromName == 'xls' or grievances.grievance_attachment.name|GetFileTypeFromName == 'xlsx' %}
+                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                        {% elif grievances.grievance_attachment.name|GetFileTypeFromName == 'csv' %}
+                            <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                        {% elif grievances.grievance_attachment.name|GetFileTypeFromName == 'pdf' %}
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                        {% elif grievances.grievance_attachment.name|GetFileTypeFromName == 'doc' or grievances.grievance_attachment.name|GetFileTypeFromName == 'docx'  %}
+                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                        {% elif grievances.grievance_attachment.name|GetFileTypeFromName == 'jpg' or grievances.grievance_attachment.name|GetFileTypeFromName == 'jpeg' or grievances.grievance_attachment.name|GetFileTypeFromName == 'png' %}
+                            <img alt="A doc file" src="{{grievances.grievance_attachment.url }}" height="50px" width="50px">
+
+                        {% endif %}
+                    </a>
+                  </div>
+            {% endif %}
+            <!-- Attachments end -->
+
+			   </div>
+
+            </div>
+			</div>
+          </div><hr>
+
+		  <div class="form-group">
+            <label class="col-md-2 ">Action Taken</label>
+            <div class="col-md-10">
+                <div class="Gr-edit-Uname">
+              <textarea class="form-control" id="action_taken" name="action_taken"  rows="10" {%if grievances.active == False %} readonly   {%endif%}> {%if not grievances.action_taken == None %} {{grievances.action_taken}}{%endif%}  </textarea>
+            </div>
+            </div>
+          </div>
+
+	    <div class="form-group">
+            <label class="col-md-2 "></label>
+
+			  <div class="col-md-10">
+				<div class="row">
+				    <div class="col-md-12">
+                     <!-- Attachments start -->
+            {% if grievances.admin_action_attachment%}<p></p><i><b>Attachment : </b></i>  <p></p>
+                <a target="_blank" href="{{grievances.admin_action_attachment.url}}">
+                    {% if grievances.admin_action_attachment.name|GetFileTypeFromName == 'xls' or grievances.admin_action_attachment.name|GetFileTypeFromName == 'xlsx' %}
+                        <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                    {% elif grievances.admin_action_attachment.name|GetFileTypeFromName == 'csv' %}
+                        <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                    {% elif grievances.admin_action_attachment.name|GetFileTypeFromName == 'pdf' %}
+                        <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                    {% elif grievances.admin_action_attachment.name|GetFileTypeFromName == 'doc' or grievances.admin_action_attachment.name|GetFileTypeFromName == 'docx'  %}
+                        <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                    {% elif grievances.admin_action_attachment.name|GetFileTypeFromName == 'jpg' or grievances.admin_action_attachment.name|GetFileTypeFromName == 'jpeg' or grievances.admin_action_attachment.name|GetFileTypeFromName == 'png' %}
+                        <img alt="A doc file" src="{{grievances.admin_action_attachment.url }}" height="50px" width="50px">
+                    {% endif %}
+                </a>
+            {% endif %}
+            <!-- Attachments end -->
+					</div>
+				</div>
+				<div class="row">
+				    <div class="col-md-2">
+					  <div class="checkbox">
+						 {% if grievances.admin_action_attachment%} <label>
+							  <input type="checkbox" name = "check_admin_action_attachment" /> Clear
+						  </label>{% endif %}
+					  </div>
+					</div>
+
+					<div class="col-md-10">
+					{% if grievances.admin_action_attachment%}  <label for="admin_action_attachment">
+							Change:
+						</label> {% endif %}
+                        {%if grievances.active == True %}
+						<input type="file" id="admin_action_attachment" name="admin_action_attachment" class ="file_field" />
+						<p class="help-block">
+							Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg<br>
+							Maximum allowed file size: 1MB
+						</p>
+                        {% endif %}
+                        <div class="alert alert-danger alert-dismissable admin_action_attachment" style ="display:none">
+                            <a class="panel-close close" data-dismiss="alert">x</a>
+                            <p>Please upload Allowed file Types Only</p>
+                        </div>
+                        <div class="alert alert-danger alert-dismissable size_admin_action_attachment" style ="display:none">
+                            <a class="panel-close close" data-dismiss="alert">x</a>
+                            <p> Please upload File Size Less Than 1MB</p>
+                        </div>
+					</div>
+				</div>
+			  </div>
+          </div><hr>
+
+
+
+
+
+
+	  <div class="form-group">
+            <label class="col-lg-2 ">Satisfaction Level:</label>
+            <div class="col-lg-10">
+               <div class="Gr-edit-Uname"> {{grievances.satisfaction_level}}
+               </div>
+            </div>
+          </div><hr>
+
+		  <div class="form-group">
+            <label class="col-lg-2 ">Escalated?</label>
+            <div class="col-lg-10">
+               <div class="Gr-edit-Uname"> {%if grievances.escalate == True %} Yes {%else %} No  {% endif %}</div>
+            </div>
+          </div><hr>
+
+		  <div class="form-group">
+            <label class="col-lg-2 ">Escalated To:</label>
+            <div class="col-lg-10">
+               <div class="Gr-edit-Uname">
+				<textarea class="form-control" id="escalate_to"  rows="10" name="escalate_to" {%if grievances.active == False or grievances.escalate == False  %} readonly   {%endif%}>{%if not grievances.escalate_to == None %}{{grievances.escalate_to}}{%endif%}</textarea>
+			   </div>
+                <p class="help-block">
+						<b>In case of multiple email id's, separate them by a semicolon. Do not use single or double quotes anywhere</b>
+						</p>
+            </div>
+          </div><hr>
+
+		  <div class="form-group">
+            <label class="col-lg-2 ">User Closure Message:</label>
+            <div class="col-lg-10">
+               <div class="Gr-edit-Uname"> {{grievances.user_closure_message}}
+
+			   <div class="">
+
+				  <div class="" >
+						<!-- Attachments start -->
+                {% if grievances.user_closure_message_attachment%}<p></p><i><b>Attachment : </b></i>  <p></p>
+                    <a target="_blank" href="{{grievances.user_closure_message_attachment.url}}">
+                        {% if grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'xls' or grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'xlsx' %}
+                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                        {% elif grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'csv' %}
+                            <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                        {% elif grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'pdf' %}
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                        {% elif grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'doc' or grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'docx'  %}
+                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                        {% elif grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'jpg' or grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'jpeg' or grievances.user_closure_message_attachment.name|GetFileTypeFromName == 'png' %}
+                            <img alt="A doc file" src="{{grievances.user_closure_message_attachment.url }}" height="50px" width="50px">
+                        {% endif %}
+                    </a>
+                {% endif %}
+                <!-- Attachments end -->
+
+				  </div>
+			   </div>
+            </div>
+			</div>
+          </div><hr>
+
+	  <div class="form-group">
+            <label class="col-md-2 ">Admin Closure Message:</label>
+            <div class="col-md-10"><div class="Gr-edit-Uname">
+              <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10">{%if  not grievances.admin_closure_message == None %} {{grievances.admin_closure_message.strip}}{%endif%}
+              </textarea>
+            </div></div>
+          </div>
+
+	    <div class="form-group">
+            <label class="col-md-2 "></label>
+
+			  <div class="col-md-10">
+				<div class="row">
+				    <div class="col-md-12">
+
+                        <!-- Attachments start -->
+                    {% if grievances.admin_closure_message_attachment%}<p></p><i><b>Attachment : </b></i>  <p></p>
+                        <a target="_blank" href="{{grievances.admin_closure_message_attachment.url}}">
+                            {% if grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'xls' or grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'xlsx' %}
+                                <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                            {% elif grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'csv' %}
+                                <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                            {% elif grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'pdf' %}
+                                <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                            {% elif grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'doc' or grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'docx'  %}
+                                <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                            {% elif grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'jpg' or grievances.admin_closure_message_attachment.name|GetFileTypeFromName == 'jpeg' or grievances.admin_action_attachment.name|GetFileTypeFromName == 'png' %}
+                                <img alt="A doc file" src="{{grievances.admin_closure_message_attachment.url }}" height="50px" width="50px">
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    <!-- Attachments end -->
+					</div>
+				</div>
+				<div class="row">
+				    <div class="col-md-2">
+
+					  <div class="checkbox">
+						  {% if grievances.admin_closure_message_attachment%}<label>
+							  <input type="checkbox" name="check_admin_closure_message_attachment"/> Clear
+						  </label> {% endif %}
+					  </div>
+					</div>
+
+					<div class="col-md-10">
+					  {% if grievances.admin_action_attachment%}<label for="admin_closure_message_attachment">
+							Change:
+						</label> {% endif %}
+
+                            <input type="file" id="admin_closure_message_attachment" name="admin_closure_message_attachment" class ="file_field"/>
+                            <p class="help-block">
+                                Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg<br>
+                                Maximum allowed file size: 1MB
+                            </p>
+                        <div class="alert alert-danger alert-dismissable admin_closure_message_attachment" style ="display:none">
+                            <a class="panel-close close" data-dismiss="alert">x</a>
+                            <p> Please upload Allowed file Types Only</p>
+                        </div>
+                        <div class="alert alert-danger alert-dismissable size_admin_closure_message_attachment" style ="display:none">
+                            <a class="panel-close close" data-dismiss="alert">x</a>
+                            <p> Please upload File Size Less Than 1MB</p>
+                        </div>
+					</div>
+				</div>
+			  </div>
+          </div><hr>
+
+
+	  <div class="form-group">
+            <label class="col-lg-2 ">Status:</label>
+            <div class="col-lg-10"> <div class="Gr-edit-Uname">
+                <select name ="grievance_status" class="form-control d-item " {%if grievances.active == False %} disabled   {%endif%}>
+                    {% for value, text in grievances_choices %}
+
+                        <option value="{{ value }}" {%if grievances.grievance_status ==  value %}  selected ="selected"  {%endif%} >{{ text }}</option>
+                    {% endfor %}
+                </select>
+               </div>
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label class="col-md-2 "></label>
+            <div class="col-md-10">
+              <input type="submit" class="btn btn-primary" value="Save Changes">
+              <span></span>
+              <input type="reset" class="btn btn-default" value="Cancel">
+            </div>
+          </div>
+
+
+        <br><br><br>
+
+
+        <input type="hidden" value ={{grievances.id}} name="grievance_id"/>
+
+    </form>
+        </div>
+    <div class="col-md-2">
+
+    </div>
+
+
+      </div>
+
+</div></div>
+
+    </div><!-- End main container -->
+
+ <div class="Gr-fixed Div-fixed">
+		<div class="row">
+		  <div class="col-sm-4 col-md-4 col-lg-4 form-inline Gr-lbl-border">
+
+                     <div class="Gr-edit-fixed-bottom ">
+                         <div class="center-block"><b>User:&nbsp;&nbsp;{{grievances.user.first_name}}</b></div>
+                     </div>
+
+
+			</div>
+
+			<div class="col-sm-4 col-md-4 col-lg-4 ">
+			     <div class="col-md-12 text-center">
+			      <button type="button" id = "save_2" class="btn btn-danger">Save Changes</button>
+			    </div>
+			</div>
+
+			<div class="col-sm-4 col-md-4 col-lg-4 form-inline Gr-lbl-border">
+
+                     <div class="Gr-edit-fixed-bottom center-block">
+                         <b>Status:&nbsp;&nbsp;
+                          {% for value, text in grievances_choices %}
+                                {%if grievances.grievance_status ==  value %}
+                                    {{text}}
+                                {%endif%}
+                            {% endfor %}
+                         </b>
+
+                     </div>
+			</div>
+		</div>
+	  </div>
+
+
+
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block page_specific_JS %}
+  <script>
+    jQuery(document).ready( function (){
+        jQuery('.file_field').change(function(){
+            if (jQuery('.'+this.id).is(':visible')) {
+                jQuery('.'+this.id).hide();
+            }
+
+            if (jQuery('.size_'+this.id).is(':visible')) {
+                jQuery('.size_'+this.id).hide();
+            }
+
+            if (this.files[0].size > 1000000) {
+                    jQuery('.size_'+this.id).show();
+            }
+
+            var file_extension = jQuery(this).val().split('.').pop().toLowerCase();
+            if(jQuery.inArray(file_extension, ['jpg', 'csv', 'png','pdf', 'xls', 'xlsx', 'doc', 'docx', 'jpeg']) == -1) {
+               jQuery('.'+this.id).show();
+               jQuery(this).val('');
+            }
+
+        });
+
+        jQuery('#save_2').click(function(){
+            jQuery('#grievance_edit_form').submit();
+        });
+    })
+  </script>
+{% endblock %}
