@@ -258,23 +258,30 @@
 			</div>
 		</div>
 	{% endif %}
-			<div id="grievancesCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="grievances">
-				<div class="panel-body">
-					<ul class="list-group">
-						<a href="/grievances/" class="list-group-item">
-							Grievance</a>
-						{% if request.user|has_group:"myansrsourceGrievanceAdmin" %}
 
-						<a href="/grievances_admin/" class="list-group-item"><span class="badge">{{ grievances_count }}</span>
-							Grievance Administration
-						</a>
-           				{% endif %}
-					</ul>
-				</div>
+
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="grievances_admin">
+				<a data-toggle="collapse" data-parent="#accordion" href="#grievances" aria-expanded="false" aria-controls="collapseTwo">
+					Grievances
+				</a>
 			</div>
-	</div>
+			<div id="grievances" class="panel-collapse collapse" role="tabpanel" aria-labelledby="grievances_admin">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="/grievances/" class="list-group-item">
+						Grievance
+					</a>
+					{% if request.user|has_group:"myansrsourceGrievanceAdmin" %}
+                			<a href="/grievances_admin/" class="list-group-item" >Grievance Administration<span class="badge">{{ grievances_count }}</span>
 
+							</a>
+					{% endif %}
 
+				</ul>
+			</div>
+			</div>
+		</div>
 
 		</div>
 	</div>
