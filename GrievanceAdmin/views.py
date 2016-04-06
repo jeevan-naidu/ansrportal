@@ -202,24 +202,24 @@ class GrievanceAdminEditView(TemplateView):
                     database_object.escalate_to = " "  # because for next line if
                     # grievances.escalte_to is empty string from form, then we cant compare none type
                     # and empty string, so make 'None' to empty string
-                if database_object.escalate_to != grievances.escalate_to:
-                    EscalateToList = grievances.escalate_to.replace("'", "").replace('"', '').split(";")
-                    msg_html = render_to_string('email_templates/EscalateToTemplate.html',
+                if database_object.escalate_to != grievances.escalate_to and grievances.escalate_to is not None:
+                    EscalatetoList = grievances.escalate_to.replace("'", "").replace('"', '').split(";")
+                    msg_html = render_to_string('email_templates/EscalatetoTemplate.html',
                                                 {'registered_by': database_object.user.first_name,
                                                  'grievance_id':database_object.grievance_id,
                                                  'grievance_subject':database_object.subject})
 
                     mail_obj = EmailMessage('Escalation - Grievance Id - ' + database_object.grievance_id,
-                                            msg_html, settings.EMAIL_HOST_USER, EscalateToList,
+                                            msg_html, settings.EMAIL_HOST_USER, EscalatetoList,
                                             cc=[settings.GRIEVANCES_ADMIN_EMAIL])
 
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
 
                     if email_status < 1:
-                        messages.success(self.request, "Unable TO Inform Authorities")
+                        messages.success(self.request, "Unable to Inform Authorities")
 
-                if not database_object.action_taken and grievances.action_taken :
+                if not database_object.action_taken and grievances.action_taken and grievances.action_taken is not None:
                     # this means the HR has taken action on the grievance.
                     # Send mails to the HR as well as the employee and update the date
 
@@ -236,10 +236,11 @@ class GrievanceAdminEditView(TemplateView):
                     email_status = mail_obj.send()
 
                     if email_status < 1:
-                        messages.success(self.request, "Unable TO Inform Authorities")
-                    grievances.action_taken_date = datetime.datetime.now()
+                        messages.success(self.request, "Unable to Inform Authorities")
+                    grievances.action_taken_date = timezone.make_aware(datetime.datetime.now(),
+                                                                       timezone.get_default_timezone())
 
-                elif database_object.action_taken != grievances.action_taken:
+                elif database_object.action_taken != grievances.action_taken and grievances.action_taken is not None:
                     # this means the HR has edited/changed the action taken field.
                     # Send update mails to the HR as well as the employee and update the date
                     msg_html = render_to_string('email_templates/EditActionTakenTemplate.html',
@@ -253,16 +254,18 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
                     if email_status < 1:
-                        messages.success(self.request, "Unable TO Inform Authorities")
+                        messages.success(self.request, "Unable to Inform Authorities")
 
-                    grievances.action_taken_date = datetime.datetime.now()
+                    grievances.action_taken_date = timezone.make_aware(datetime.datetime.now(),
+                                                                       timezone.get_default_timezone())
 
                 if database_object.admin_closure_message is None:
                     database_object.admin_closure_message = " "  # because for next line if
                     # grievances.admin_closure_message is empty string coming from form, then we
                     # cant compare none type and empty string, so make 'None' to empty string
 
-                if database_object.admin_closure_message == "" and grievances.admin_closure_message:
+                if database_object.admin_closure_message == "" and grievances.admin_closure_message \
+                        and grievances.admin_closure_message is not None:
                     # this means the HR has added the closure message. Send mails to
                     # HR and the user and update the date.
                     msg_html = render_to_string('email_templates/AdminClosureMessageTemplate.html',
@@ -276,9 +279,10 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
                     if email_status < 1:
-                        messages.success(self.request, "Unable TO Inform Authorities")
+                        messages.success(self.request, "Unable to Inform Authorities")
 
-                    grievances.admin_closure_message_date = datetime.datetime.now()
+                    grievances.admin_closure_message_date = timezone.make_aware(datetime.datetime.now(),
+                                                                                timezone.get_default_timezone())
 
                 elif database_object.admin_closure_message != grievances.admin_closure_message:
                     # this means HR has edited/changed the closure message. Send update mails
@@ -295,9 +299,10 @@ class GrievanceAdminEditView(TemplateView):
                     email_status = mail_obj.send()
 
                     if email_status < 1:
-                        messages.success(self.request, "Unable TO Inform Authorities")
+                        messages.success(self.request, "Unable to Inform Authorities")
 
-                    grievances.admin_closure_message_date = datetime.datetime.now()
+                    grievances.admin_closure_message_date = timezone.make_aware(datetime.datetime.now(),
+                                                                                timezone.get_default_timezone())
 
                 elif database_object.active == False and grievances.active == True:
                     # this means the HR wants to reopen this grievance. Send mails to HR and the employee
@@ -311,7 +316,7 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
                     if email_status < 1:
-                        messages.success(self.request, "Unable TO Inform Authorities")
+                        messages.success(self.request, "Unable to Inform Authorities")
 
             grievances.save()
             messages.success(self.request, "Successfully Updated")

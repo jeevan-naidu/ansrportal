@@ -50,20 +50,13 @@
        <script>
             $(document).ready(function() {
                 $('#calendar').fullCalendar({
-                    eventOrder:'id',
                     aspectRatio: 2.12,
                     eventLimit: true,
                     events: [
                         {% block events %}{% endblock %}
-
                     ],
-                    header:{
-                      left: 'prev, next today ',
-                      center: 'title',
-                      right: 'month, basicWeek, basicDay'
-                    },
                     eventClick: function(calEvent, jsEvent, view) {
-                      eId = Number(calEvent._id);
+                        eId = Number(calEvent._id);
                         $('#calendar').fullCalendar('removeEvents', eId);
                         if (eId === parseInt(eId, 10))
                             swal({
@@ -133,6 +126,8 @@
 		<div class="row">
 		{% block content  %}{% endblock  %}
 		</div><!-- End of Ansr body -->
+
+           {% block footer %}
 		<!-- Ansr footer -->
 		<div class="row">
 			<nav class="navbar navbar-default navbar-fixed-bottom col-lg-12 col-xs-12 col-md-12" role="navigation">
@@ -143,6 +138,8 @@
 				</div>
 			</nav>
 		</div><!-- End of Ansr Footer -->
+        {% endblock %}
+
       	</div>
        <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
 
