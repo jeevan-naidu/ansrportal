@@ -155,7 +155,6 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'timetracker.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
 )
-PAGINATION_DEFAULT_PAGINATION = 10
 # Overriding Default T_C_P with new T_C_p
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
@@ -170,6 +169,7 @@ RESTRICTED_URLS = (
                   (r'/grievances_admin/(.*)$', ),
               )
 GRIEVANCE_ADMIN_GROUP_NAME = 'myansrsourceGrievanceAdmin'
+GRIEVANCE_ADMIN_MAX_UPLOAD_SIZE = 1000000
 # Session Configuration - enable this only after we get caching working right
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

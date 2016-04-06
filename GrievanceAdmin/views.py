@@ -8,6 +8,8 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from forms import FilterGrievanceForm
 from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from Grievances.models import Grievances, Grievances_catagory, SATISFACTION_CHOICES, \
     STATUS_CHOICES, STATUS_CHOICES_CLOSED
 from Grievances.views import AllowedFileTypes
@@ -127,6 +129,11 @@ class GrievanceAdminListView(ListView):
                                                          'grievances_choices': STATUS_CHOICES_CLOSED, 'form': form})
 
 
+def read_file_size(attachment):
+    blob = attachment.read()
+    return len(blob)
+
+
 class GrievanceAdminEditView(TemplateView):
     template_name = "GrievancesAdmin_edit.html"
 
@@ -161,8 +168,14 @@ class GrievanceAdminEditView(TemplateView):
                 attachment_error += 1
                 messages.warning(self.request, 'Attachment : File type not allowed.\
                  Please select a valid file type and then submit again')
+
+            elif read_file_size(request.FILES['admin_action_attachment']) > settings.GRIEVANCE_ADMIN_MAX_UPLOAD_SIZE:
+                attachment_error += 1
+                messages.warning(self.request, 'Please upload File Size Less Than 1MB')
+
             else:
                 grievances.admin_action_attachment = request.FILES['admin_action_attachment']
+
         grievances.admin_closure_message = request.POST.get('admin_closure_message').strip()
 
         if request.FILES.get('admin_closure_message_attachment', ""):
@@ -170,11 +183,136 @@ class GrievanceAdminEditView(TemplateView):
                 attachment_error += 1
                 messages.warning(self.request, 'Attachment : File type not allowed.\
                  Please select a valid file type and then submit again')
+
+            elif read_file_size(request.FILES['admin_closure_message_attachment']) >\
+                    settings.GRIEVANCE_ADMIN_MAX_UPLOAD_SIZE:
+                attachment_error += 1
+                messages.warning(self.request, 'Please upload File Size Less Than 1MB')
+
             else:
                 grievances.admin_closure_message_attachment = request.FILES['admin_closure_message_attachment']
 
         grievances.grievance_status = request.POST.get('grievance_status')
+
         if attachment_error == 0:
+            if grievances.id:
+                database_object = Grievances.objects.get(id=grievances.id)
+
+                if database_object.escalate_to is None:
+                    database_object.escalate_to = " "  # because for next line if
+                    # grievances.escalte_to is empty string from form, then we cant compare none type
+                    # and empty string, so make 'None' to empty string
+                if database_object.escalate_to != grievances.escalate_to:
+                    EscalateToList = grievances.escalate_to.replace("'", "").replace('"', '').split(";")
+                    msg_html = render_to_string('email_templates/EscalateToTemplate.html',
+                                                {'registered_by': database_object.user.first_name,
+                                                 'grievance_id':database_object.grievance_id,
+                                                 'grievance_subject':database_object.subject})
+
+                    mail_obj = EmailMessage('Escalation - Grievance Id - ' + database_object.grievance_id,
+                                            msg_html, settings.EMAIL_HOST_USER, EscalateToList,
+                                            cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+
+                    mail_obj.content_subtype = 'html'
+                    email_status = mail_obj.send()
+
+                    if email_status < 1:
+                        messages.success(self.request, "Unable TO Inform Authorities")
+
+                if not database_object.action_taken and grievances.action_taken :
+                    # this means the HR has taken action on the grievance.
+                    # Send mails to the HR as well as the employee and update the date
+
+                    msg_html = render_to_string('email_templates/ActionTakenTemplate.html',
+                                                {'registered_by': database_object.user.first_name,
+                                                 'grievance_id': database_object.grievance_id,
+                                                 'grievance_subject': database_object.subject})
+
+                    mail_obj = EmailMessage('Action taken - Grievance Id - ' + database_object.grievance_id,
+                                            msg_html, settings.EMAIL_HOST_USER, [database_object.user.email],
+                                            cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+
+                    mail_obj.content_subtype = 'html'
+                    email_status = mail_obj.send()
+
+                    if email_status < 1:
+                        messages.success(self.request, "Unable TO Inform Authorities")
+                    grievances.action_taken_date = datetime.datetime.now()
+
+                elif database_object.action_taken != grievances.action_taken:
+                    # this means the HR has edited/changed the action taken field.
+                    # Send update mails to the HR as well as the employee and update the date
+                    msg_html = render_to_string('email_templates/EditActionTakenTemplate.html',
+                                                {'registered_by': database_object.user.first_name,
+                                                 'grievance_subject': database_object.subject})
+
+                    mail_obj = EmailMessage('Change in action taken - Grievance Id - ' +
+                                            database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER,
+                                            [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+
+                    mail_obj.content_subtype = 'html'
+                    email_status = mail_obj.send()
+                    if email_status < 1:
+                        messages.success(self.request, "Unable TO Inform Authorities")
+
+                    grievances.action_taken_date = datetime.datetime.now()
+
+                if database_object.admin_closure_message is None:
+                    database_object.admin_closure_message = " "  # because for next line if
+                    # grievances.admin_closure_message is empty string coming from form, then we
+                    # cant compare none type and empty string, so make 'None' to empty string
+
+                if database_object.admin_closure_message == "" and grievances.admin_closure_message:
+                    # this means the HR has added the closure message. Send mails to
+                    # HR and the user and update the date.
+                    msg_html = render_to_string('email_templates/AdminClosureMessageTemplate.html',
+                                                {'registered_by': database_object.user.first_name,
+                                                 'grievance_subject': database_object.subject})
+
+                    mail_obj = EmailMessage('HR Message - Grievance  Id - ' + database_object.grievance_id,
+                                            msg_html, settings.EMAIL_HOST_USER, [self.user.email],
+                                            cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+
+                    mail_obj.content_subtype = 'html'
+                    email_status = mail_obj.send()
+                    if email_status < 1:
+                        messages.success(self.request, "Unable TO Inform Authorities")
+
+                    grievances.admin_closure_message_date = datetime.datetime.now()
+
+                elif database_object.admin_closure_message != grievances.admin_closure_message:
+                    # this means HR has edited/changed the closure message. Send update mails
+                    #  to the HR aas well as the employee and update the date field.
+                    msg_html = render_to_string('email_templates/EditAdminClosureMessageTemplate.html',
+                                                {'registered_by': database_object.user.first_name,
+                                                 'grievance_subject': database_object.subject})
+
+                    mail_obj = EmailMessage('Change in admin message - Grievance Id - ' + database_object.grievance_id,
+                                            msg_html, settings.EMAIL_HOST_USER, [database_object.user.email],
+                                            cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+
+                    mail_obj.content_subtype = 'html'
+                    email_status = mail_obj.send()
+
+                    if email_status < 1:
+                        messages.success(self.request, "Unable TO Inform Authorities")
+
+                    grievances.admin_closure_message_date = datetime.datetime.now()
+
+                elif database_object.active == False and grievances.active == True:
+                    # this means the HR wants to reopen this grievance. Send mails to HR and the employee
+                    msg_html = render_to_string('email_templates/OpenClosedGrievanceMessageTemplate.html', {
+                        'registered_by': database_object.user.first_name, 'grievance_subject': database_object.subject})
+
+                    mail_obj = EmailMessage('Closed grievance opened - Id - ' + database_object.grievance_id,
+                                            msg_html, settings.EMAIL_HOST_USER, [database_object.user.email],
+                                            cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+
+                    mail_obj.content_subtype = 'html'
+                    email_status = mail_obj.send()
+                    if email_status < 1:
+                        messages.success(self.request, "Unable TO Inform Authorities")
+
             grievances.save()
             messages.success(self.request, "Successfully Updated")
 

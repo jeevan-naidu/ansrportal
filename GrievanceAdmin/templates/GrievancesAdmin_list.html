@@ -18,7 +18,7 @@
 
 {% block content  %}
 
-    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/grievanceAdminStyle.css" rel="stylesheet">
 	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
@@ -138,7 +138,7 @@
 				</thead>
 				<tbody>
 
-					{%  autopaginate grievances %}
+					{%  autopaginate grievances 10 %}
                     {%   for object in grievances  %}
 					<tr class="warning">
 						<td>
@@ -232,9 +232,9 @@
     <script src="/static/js/date_validation.js"></script><!-- contains date validation -->
    <script>
 		$(document).ready( function (){
-		$('#id_user').attr('class','filter_class');
-        $('#reset_button').trigger('click');
-		var none_count = 0;
+            $('#id_user').attr('class','filter_class');
+            $('#reset_button').trigger('click');
+            var none_count = 0;
         <!-- date validation before form submit-->
         	$('#submit_button').click(function(){
         	     if($('#id_closure_date').val() != "" || $('#id_created_date').val() != "") {
@@ -277,8 +277,6 @@
                 }
 
             });
-
-
     	})
 
 
@@ -299,27 +297,27 @@
 			"click":             function() {this.closable = true; },
 			"hide.bs.dropdown":  function() {return this.closable; }
 		});
+
          $('#reset_button').click(function(){
-                $('.filter_class').each(function() {
-                     input_type = this.tagName ;
-                     if(input_type == 'INPUT')
-                     {
-                        $(this).val('')
-                     }
-                     if(input_type == 'SELECT') {
-                        $(this).prop('selectedIndex',0);
-                     }
-                     if(this.id == 'id_user-autocomplete') {
-                        if($("#id_user-deck").is(":visible") == true ) {
-                            $("#id_user-deck").hide();
-                            $('#id_user-autocomplete').show();
-                            <!--$('#id_user').val('');-->
-                           document.getElementById("id_user").options.length = 0;
-                        }
-                     }
-                });
-                <!--$('#filter_form')[0].reset();-->
+            $('.filter_class').each(function() {
+                 input_type = this.tagName ;
+                 if(input_type == 'INPUT')
+                 {
+                    $(this).val('')
+                 }
+                 if(input_type == 'SELECT') {
+                    $(this).prop('selectedIndex',0);
+                 }
+                 if(this.id == 'id_user-autocomplete') {
+                    if($("#id_user-deck").is(":visible") == true ) {
+                        $("#id_user-deck").hide();
+                        $('#id_user-autocomplete').show();
+                       document.getElementById("id_user").options.length = 0;
+                    }
+                 }
             });
+
+        });
 	</script>
 {% endblock  %}
 

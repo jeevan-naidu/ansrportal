@@ -40,7 +40,7 @@
 
 
 {% block content  %}
-<link href="/static/css/style.css" rel="stylesheet">
+<link href="/static/css/grievanceAdminStyle.css" rel="stylesheet">
 {% load grievances_template_tags %}
 
     <div class="container-fluid ">
@@ -202,18 +202,19 @@
                <div class="Gr-edit-Uname"> {%if grievances.escalate == True %} Yes {%else %} No  {% endif %}</div>
             </div>
           </div><hr>
-
-		  <div class="form-group">
-            <label class="col-lg-2 ">Escalated To:</label>
-            <div class="col-lg-10">
-               <div class="Gr-edit-Uname">
-				<textarea class="form-control" id="escalate_to"  rows="10" name="escalate_to" {%if grievances.active == False or grievances.escalate == False  %} readonly   {%endif%}>{%if not grievances.escalate_to == None %}{{grievances.escalate_to}}{%endif%}</textarea>
-			   </div>
-                <p class="help-block">
-						<b>In case of multiple email id's, separate them by a semicolon. Do not use single or double quotes anywhere</b>
-						</p>
-            </div>
-          </div><hr>
+            {%if grievances.escalate == True %}
+              <div class="form-group">
+                <label class="col-lg-2 ">Escalated To:</label>
+                <div class="col-lg-10">
+                   <div class="Gr-edit-Uname">
+                    <textarea class="form-control" id="escalate_to"  rows="10" name="escalate_to" {%if grievances.active == False or grievances.escalate == False  %} readonly   {%endif%}>{%if not grievances.escalate_to == None %}{{grievances.escalate_to}}{%endif%}</textarea>
+                   </div>
+                    <p class="help-block">
+                            <b>In case of multiple email id's, separate them by a semicolon. Do not use single or double quotes anywhere</b>
+                            </p>
+                </div>
+              </div>
+            {% endif %}<hr>
 
 		  <div class="form-group">
             <label class="col-lg-2 ">User Closure Message:</label>
@@ -250,7 +251,7 @@
 	  <div class="form-group">
             <label class="col-md-2 ">Admin Closure Message:</label>
             <div class="col-md-10"><div class="Gr-edit-Uname">
-              <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10">{%if  not grievances.admin_closure_message == None %} {{grievances.admin_closure_message.strip}}{%endif%}
+              <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10" {%if  grievances.user_closure_message == None %} readonly {%endif%}>{%if  not grievances.admin_closure_message == None %} {{grievances.admin_closure_message.strip}}{%endif%}
               </textarea>
             </div></div>
           </div>

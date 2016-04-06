@@ -1,5 +1,5 @@
 from django import template
-
+from django.contrib.auth.models import Group
 register = template.Library()
 
 
@@ -21,3 +21,12 @@ def approve_timesheet(user):
 @register.filter('manage_milestones')
 def manage_milestones(user):
     return user.has_perm('MyANSRSource.manage_milestones')
+
+
+@register.filter(name='has_group')  # added for grievance admin module
+def has_group(user, group_name):
+    try:
+        group = Group.objects.get(name=group_name)
+    except group.DoesNotExist:
+        group = None
+    return True if group in user.groups.all() else False
