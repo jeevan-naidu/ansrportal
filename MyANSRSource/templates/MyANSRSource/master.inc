@@ -50,11 +50,18 @@
        <script>
             $(document).ready(function() {
                 $('#calendar').fullCalendar({
+                    eventOrder:'id',
                     aspectRatio: 2.12,
                     eventLimit: true,
                     events: [
                         {% block events %}{% endblock %}
                     ],
+                    header:{
+                      left: 'prev, next today ',
+                      center: 'title',
+                      right: 'month, basicWeek, basicDay'
+                    },
+
                     eventClick: function(calEvent, jsEvent, view) {
                         eId = Number(calEvent._id);
                         $('#calendar').fullCalendar('removeEvents', eId);
