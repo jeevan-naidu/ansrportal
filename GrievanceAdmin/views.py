@@ -317,9 +317,9 @@ class GrievanceAdminEditView(TemplateView):
                     email_status = mail_obj.send()
                     if email_status < 1:
                         messages.success(self.request, "Unable to Inform Authorities")
-
-            grievances.save()
-            messages.success(self.request, "Successfully Updated")
+            if email_status == 1:
+                grievances.save()
+                messages.success(self.request, "Successfully Updated")
 
         return HttpResponseRedirect('/grievances_admin/edit/' + grievance_id)
 
