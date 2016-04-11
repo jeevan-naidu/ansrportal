@@ -197,6 +197,7 @@ class GrievanceAdminEditView(TemplateView):
         grievances.grievance_status = request.POST.get('grievance_status')
 
         if attachment_error == 0:
+            email_status = 0
             if grievances.id:
                 database_object = Grievances.objects.get(id=grievances.id)
 
@@ -326,10 +327,11 @@ class GrievanceAdminEditView(TemplateView):
                         pass
                         # messages.success(self.request, "Unable to Inform Authorities")
 
-            if email_status == 0:
-                logger.error(
-                    "Unable To send Mail To The Authorities For the Following Grievance: {0}".format(
-                        grievances.grievance_id))
+                if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For The Following Grievance: {0} Date time : {1} ".format(
+                            grievances.grievance_id, timezone.make_aware(datetime.datetime.now(),
+                                                                         timezone.get_default_timezone())))
 
             grievances.save()
             messages.success(self.request, "Successfully Updated")
