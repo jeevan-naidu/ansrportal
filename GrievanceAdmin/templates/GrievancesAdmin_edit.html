@@ -119,7 +119,7 @@
 		  <div class="form-group">
             <label class="col-md-2 ">Action Taken</label>
             <div class="col-md-10">
-                <div class="Gr-edit-Uname">
+                <div class="">
               <textarea class="form-control" id="action_taken" name="action_taken"  rows="10" {%if grievances.active == False %} readonly   {%endif%}> {%if not grievances.action_taken == None %} {{grievances.action_taken}}{%endif%}  </textarea>
             </div>
             </div>
@@ -206,7 +206,7 @@
               <div class="form-group">
                 <label class="col-lg-2 ">Escalated To:</label>
                 <div class="col-lg-10">
-                   <div class="Gr-edit-Uname">
+                   <div class="">
                     <textarea class="form-control" id="escalate_to"  rows="10" name="escalate_to" {%if grievances.active == False or grievances.escalate == False  %} readonly   {%endif%}>{%if not grievances.escalate_to == None %}{{grievances.escalate_to}}{%endif%}</textarea>
                    </div>
                     <p class="help-block">
@@ -250,7 +250,7 @@
 
 	  <div class="form-group">
             <label class="col-md-2 ">Admin Closure Message:</label>
-            <div class="col-md-10"><div class="Gr-edit-Uname">
+            <div class="col-md-10"><div class="">
               <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10" {%if  grievances.user_closure_message == None %} readonly {%endif%}>{%if  not grievances.admin_closure_message == None %} {{grievances.admin_closure_message.strip}}{%endif%}
               </textarea>
             </div></div>
