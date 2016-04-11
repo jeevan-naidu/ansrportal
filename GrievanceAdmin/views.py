@@ -13,6 +13,8 @@ from django.template.loader import render_to_string
 from Grievances.models import Grievances, Grievances_catagory, SATISFACTION_CHOICES, \
     STATUS_CHOICES, STATUS_CHOICES_CLOSED
 from Grievances.views import AllowedFileTypes
+import logging
+logger = logging.getLogger('MyANSRSource')
 
 
 class GrievanceAdminListView(ListView):
@@ -217,7 +219,8 @@ class GrievanceAdminEditView(TemplateView):
                     email_status = mail_obj.send()
 
                     if email_status < 1:
-                        messages.success(self.request, "Unable to Inform Authorities")
+                        pass
+                        # messages.success(self.request, "Unable to Inform Authorities")
 
                 if not database_object.action_taken and grievances.action_taken and grievances.action_taken is not None:
                     # this means the HR has taken action on the grievance.
@@ -236,7 +239,8 @@ class GrievanceAdminEditView(TemplateView):
                     email_status = mail_obj.send()
 
                     if email_status < 1:
-                        messages.success(self.request, "Unable to Inform Authorities")
+                        pass
+                        # messages.success(self.request, "Unable to Inform Authorities")
                     grievances.action_taken_date = timezone.make_aware(datetime.datetime.now(),
                                                                        timezone.get_default_timezone())
 
@@ -254,7 +258,8 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
                     if email_status < 1:
-                        messages.success(self.request, "Unable to Inform Authorities")
+                        pass
+                        # messages.success(self.request, "Unable to Inform Authorities")
 
                     grievances.action_taken_date = timezone.make_aware(datetime.datetime.now(),
                                                                        timezone.get_default_timezone())
@@ -279,7 +284,8 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
                     if email_status < 1:
-                        messages.success(self.request, "Unable to Inform Authorities")
+                        pass
+                        # messages.success(self.request, "Unable to Inform Authorities")
 
                     grievances.admin_closure_message_date = timezone.make_aware(datetime.datetime.now(),
                                                                                 timezone.get_default_timezone())
@@ -299,7 +305,8 @@ class GrievanceAdminEditView(TemplateView):
                     email_status = mail_obj.send()
 
                     if email_status < 1:
-                        messages.success(self.request, "Unable to Inform Authorities")
+                        pass
+                        # messages.success(self.request, "Unable to Inform Authorities")
 
                     grievances.admin_closure_message_date = timezone.make_aware(datetime.datetime.now(),
                                                                                 timezone.get_default_timezone())
@@ -316,10 +323,16 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
                     if email_status < 1:
-                        messages.success(self.request, "Unable to Inform Authorities")
-            if email_status == 1:
-                grievances.save()
-                messages.success(self.request, "Successfully Updated")
+                        pass
+                        # messages.success(self.request, "Unable to Inform Authorities")
+
+            if email_status == 0:
+                logger.error(
+                    "Unable To send Mail To The Authorities For the Following Grievance: {0}".format(
+                        grievances.grievance_id))
+
+            grievances.save()
+            messages.success(self.request, "Successfully Updated")
 
         return HttpResponseRedirect('/grievances_admin/edit/' + grievance_id)
 
