@@ -76,5 +76,7 @@
         max-height:250px !important;
         overflow:auto;
     }
-
+    .nowrapClass {
+        white-space: nowrap !important;
+    }
 /* for grievance admin ends here */
