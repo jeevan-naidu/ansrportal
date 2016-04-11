@@ -141,10 +141,8 @@
 					{%  autopaginate grievances 10 %}
                     {%   for object in grievances  %}
 					<tr class="warning">
-						<td>
-							<a id="modal-566651" href="#{{object.grievance_id}}"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids" data-toggle="modal"><b>{{object.grievance_id}}</b></a>
-							<a href="edit/{{object.id}}"><b>Edit</b></a>
-
+						<td class="nowrapClass">
+							<a id="modal-566651" href="#{{object.grievance_id}}"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids" data-toggle="modal"><b>{{object.grievance_id}}</b></a><a href="edit/{{object.id}}"><b>Edit</b></a>
 						</td>
 						<td>
 							{{object.user.first_name}}
@@ -234,11 +232,11 @@
    <script>
 		$(document).ready( function (){
 
-		    $( ".grievance_ids" ).hover(function() {
-                $('#'+$(this).attr('data-id')).modal({
-                       show: true
-                });
-            });
+		    <!--$( ".grievance_ids" ).hover(function() {-->
+                <!--$('#'+$(this).attr('data-id')).modal({-->
+                       <!--show: true-->
+                <!--});-->
+            <!--});-->
 
             $('#id_user').attr('class','filter_class');
             $('#reset_button').trigger('click');
