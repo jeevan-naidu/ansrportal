@@ -1,10 +1,19 @@
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
+from django.utils import timezone
+import datetime
 import re
-from django.http import Http404
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.models import Group
+import logging
+logger = logging.getLogger('MyANSRSource')
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 
 class GrievancePermissionCheckMiddleware(object):
@@ -20,5 +29,14 @@ class GrievancePermissionCheckMiddleware(object):
                 if request.user.groups.filter(name=settings.GRIEVANCE_ADMIN_GROUP_NAME).exists():
                     return None  # allow the users who is in the group
                 else:
-                    raise PermissionDenied("You Don't Have The Privilege To Access This Page")  # raise 403 error
+                    if request.user.is_authenticated():
+                        logger.error("This User is tried to"
+                                     " access grievance admin module "
+                                     "{0}  and the ip address is : {1} "
+                                     " Date Time is {2}".format(request.user,
+                                                                get_client_ip(request),
+                                                                timezone.make_aware(datetime.datetime.now(),
+                                                                                    timezone.get_default_timezone())))
+
+                    raise PermissionDenied("Sorry You Dont Have Permission To Access This Feature")  # raise 403 error
             return None  # rest of the urls,allow them
