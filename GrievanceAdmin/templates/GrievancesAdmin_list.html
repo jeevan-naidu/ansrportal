@@ -142,7 +142,7 @@
                     {%   for object in grievances  %}
 					<tr class="warning">
 						<td>
-							<a id="modal-566651" href="#{{object.grievance_id}}"  data-id ={{object.grievance_id}}  role="button" class="btn" data-toggle="modal"><b>{{object.grievance_id}}</b></a>
+							<a id="modal-566651" href="#{{object.grievance_id}}"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids" data-toggle="modal"><b>{{object.grievance_id}}</b></a>
 							<a href="edit/{{object.id}}"><b>Edit</b></a>
 
 						</td>
@@ -230,8 +230,16 @@
 
  {% block page_specific_JS %}
     <script src="/static/js/date_validation.js"></script><!-- contains date validation -->
+
    <script>
 		$(document).ready( function (){
+
+		    $( ".grievance_ids" ).hover(function() {
+                $('#'+$(this).attr('data-id')).modal({
+                       show: true
+                });
+            });
+
             $('#id_user').attr('class','filter_class');
             $('#reset_button').trigger('click');
             var none_count = 0;
@@ -318,6 +326,7 @@
             });
 
         });
+
 	</script>
 {% endblock  %}
 
