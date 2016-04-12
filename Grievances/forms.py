@@ -9,7 +9,7 @@ class AddGrievanceForm(forms.ModelForm):
     
     catagory = forms.ModelChoiceField(queryset=Grievances_catagory.objects.filter(active=True), empty_label="---------")
     # Add Bootstrap widgets
-    catagory.widget.attrs = {'class': 'form-control'}
+    catagory.widget.attrs = {'class': 'form-control', 'required':'true'}
     
     subject = forms.CharField(max_length=100)
     # Add Bootstrap widgets
