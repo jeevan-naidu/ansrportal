@@ -26,7 +26,6 @@ class GrievanceAdminListView(ListView):
         context['grievances'] = Grievances.objects.all().order_by("-created_date")
         context['users'] = User.objects.filter(is_active=True)
         context['category'] = Grievances_catagory.objects.filter(active=True)
-
         context['grievances_choices'] = STATUS_CHOICES_CLOSED
         form = FilterGrievanceForm()
         context['form'] = form
@@ -136,6 +135,14 @@ def read_file_size(attachment):
     return len(blob)
 
 
+def remove_common_elements(a, b):
+    for e in a[:]:
+        if e.strip() in b:
+            a.remove(e)
+    a = ','.join(a)
+    return a
+
+
 class GrievanceAdminEditView(TemplateView):
     template_name = "GrievancesAdmin_edit.html"
 
@@ -147,6 +154,10 @@ class GrievanceAdminEditView(TemplateView):
         else:
             context['grievances_choices'] = STATUS_CHOICES
         context['grievances_satisfaction_choices'] = SATISFACTION_CHOICES
+
+        if not context['grievances'].escalate_to is None and ';' in context['grievances'].escalate_to:
+            context['grievances'].escalate_to = context['grievances'].escalate_to.replace(';', ',')
+
         return context
 
     def post(self, request, **kwargs):
@@ -197,7 +208,7 @@ class GrievanceAdminEditView(TemplateView):
         grievances.grievance_status = request.POST.get('grievance_status')
 
         if attachment_error == 0:
-            email_status = 0
+            email_status = None
             if grievances.id:
                 database_object = Grievances.objects.get(id=grievances.id)
 
@@ -206,22 +217,25 @@ class GrievanceAdminEditView(TemplateView):
                     # grievances.escalte_to is empty string from form, then we cant compare none type
                     # and empty string, so make 'None' to empty string
                 if database_object.escalate_to != grievances.escalate_to and grievances.escalate_to is not None:
-                    EscalatetoList = grievances.escalate_to.replace("'", "").replace('"', '').split(";")
-                    msg_html = render_to_string('email_templates/EscalatetoTemplate.html',
-                                                {'registered_by': database_object.user.first_name,
-                                                 'grievance_id':database_object.grievance_id,
-                                                 'grievance_subject':database_object.subject})
+                    EscalatetoList = remove_common_elements((grievances.escalate_to.split(',')),
+                                                            (database_object.escalate_to.split(',')))
 
-                    mail_obj = EmailMessage('Escalation - Grievance Id - ' + database_object.grievance_id,
-                                            msg_html, settings.EMAIL_HOST_USER, EscalatetoList,
-                                            cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+                    EscalatetoList = EscalatetoList.replace("'", "").replace('"', '').split(",")
 
-                    mail_obj.content_subtype = 'html'
-                    email_status = mail_obj.send()
-
-                    if email_status < 1:
+                    if not EscalatetoList:  # empty EscalatetoList list
                         pass
-                        # messages.success(self.request, "Unable to Inform Authorities")
+                    else:
+                        msg_html = render_to_string('email_templates/EscalateToTemplate.html',
+                                                    {'registered_by': database_object.user.first_name,
+                                                     'grievance_id': database_object.grievance_id,
+                                                     'grievance_subject': database_object.subject})
+
+                        mail_obj = EmailMessage('Escalation - Grievance Id - ' + database_object.grievance_id,
+                                                msg_html, settings.EMAIL_HOST_USER, EscalatetoList,
+                                                cc=[settings.GRIEVANCES_ADMIN_EMAIL])
+
+                        mail_obj.content_subtype = 'html'
+                        email_status = mail_obj.send()
 
                 if not database_object.action_taken and grievances.action_taken and grievances.action_taken is not None:
                     # this means the HR has taken action on the grievance.
@@ -239,9 +253,6 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
 
-                    if email_status < 1:
-                        pass
-                        # messages.success(self.request, "Unable to Inform Authorities")
                     grievances.action_taken_date = timezone.make_aware(datetime.datetime.now(),
                                                                        timezone.get_default_timezone())
 
@@ -258,9 +269,6 @@ class GrievanceAdminEditView(TemplateView):
 
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
-                    if email_status < 1:
-                        pass
-                        # messages.success(self.request, "Unable to Inform Authorities")
 
                     grievances.action_taken_date = timezone.make_aware(datetime.datetime.now(),
                                                                        timezone.get_default_timezone())
@@ -284,9 +292,6 @@ class GrievanceAdminEditView(TemplateView):
 
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
-                    if email_status < 1:
-                        pass
-                        # messages.success(self.request, "Unable to Inform Authorities")
 
                     grievances.admin_closure_message_date = timezone.make_aware(datetime.datetime.now(),
                                                                                 timezone.get_default_timezone())
@@ -305,10 +310,6 @@ class GrievanceAdminEditView(TemplateView):
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
 
-                    if email_status < 1:
-                        pass
-                        # messages.success(self.request, "Unable to Inform Authorities")
-
                     grievances.admin_closure_message_date = timezone.make_aware(datetime.datetime.now(),
                                                                                 timezone.get_default_timezone())
 
@@ -323,13 +324,11 @@ class GrievanceAdminEditView(TemplateView):
 
                     mail_obj.content_subtype = 'html'
                     email_status = mail_obj.send()
-                    if email_status < 1:
-                        pass
-                        # messages.success(self.request, "Unable to Inform Authorities")
 
                 if email_status == 0:
                     logger.error(
-                        "Unable To send Mail To The Authorities For The Following Grievance: {0} Date time : {1} ".format(
+                        "Unable To send Mail To The Authorities For"
+                        " The Following Grievance: {0} Date time : {1} ".format(
                             grievances.grievance_id, timezone.make_aware(datetime.datetime.now(),
                                                                          timezone.get_default_timezone())))
 
