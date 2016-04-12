@@ -137,7 +137,7 @@
            {% block footer %}
 		<!-- Ansr footer -->
 		<div class="row">
-			<nav class="navbar navbar-default navbar-fixed-bottom col-lg-12 col-xs-12 col-md-12" role="navigation">
+			<nav class="navbar navbar-default navbar-fixed-bottom col-lg-12 col-xs-12 col-md-12 nav_hide" role="navigation">
 				<div class="navbar-inner navbar-content-center">
 					<span class="col-lg-6 col-xs-12 col-md-12 col-lg-offset-3 ansrFooterText">
 						<small>&copy; 2015. ansrsource. All rights reserved.</small>
