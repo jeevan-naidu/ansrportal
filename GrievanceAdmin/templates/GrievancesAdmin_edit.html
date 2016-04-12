@@ -41,6 +41,8 @@
 
 {% block content  %}
 <link href="/static/css/grievanceAdminStyle.css" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
+
 {% load grievances_template_tags %}
 
     <div class="container-fluid ">
@@ -197,7 +199,7 @@
           </div><hr>
 
 		  <div class="form-group">
-            <label class="col-lg-2 ">Escalated?</label>
+            <label class="col-lg-2 ">Escalate</label>
             <div class="col-lg-10">
                <div class="Gr-edit-Uname"> {%if grievances.escalate == True %} Yes {%else %} No  {% endif %}</div>
             </div>
@@ -206,11 +208,12 @@
               <div class="form-group">
                 <label class="col-lg-2 ">Escalated To:</label>
                 <div class="col-lg-10">
-                   <div class="">
-                    <textarea class="form-control" id="escalate_to"  rows="10" name="escalate_to" {%if grievances.active == False or grievances.escalate == False  %} readonly   {%endif%}>{%if not grievances.escalate_to == None %}{{grievances.escalate_to}}{%endif%}</textarea>
+                   <div class="" >
+                        <input type="text" data-role="tagsinput" class="form-control" id="escalate_to"   name="escalate_to" {%if grievances.active == False or grievances.escalate == False  %} readonly   {%endif%}{%if not grievances.escalate_to == None %}value ="{{grievances.escalate_to}}"{%endif%}/>
+
                    </div>
                     <p class="help-block">
-                            <b>In case of multiple email id's, separate them by a semicolon. Do not use single or double quotes anywhere</b>
+                           In case of multiple email id's, separate them by a comma. Do not use single or double quotes anywhere
                             </p>
                 </div>
               </div>
@@ -318,7 +321,7 @@
 
 	  <div class="form-group">
             <label class="col-lg-2 ">Status:</label>
-            <div class="col-lg-10"> <div class="Gr-edit-Uname">
+            <div class="col-lg-10"> <div class="">
                 <select name ="grievance_status" class="form-control d-item " {%if grievances.active == False %} disabled   {%endif%}>
                     {% for value, text in grievances_choices %}
 
@@ -398,7 +401,18 @@
 {% block footer %}{% endblock %}
 
 {% block page_specific_JS %}
+    <script src="/static/js/bootstrap-tagsinput.min.js"></script>
+    <script src="/static/js/bootstrap-tagsinput-angular.min.js"></script>
   <script>
+  <!--  the following function is to disable enter key in edit form-->
+   function stopRKey(evt) {
+          var evt = (evt) ? evt : ((event) ? event : null);
+          var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+          if ((evt.keyCode == 13) && (node.type=="text"))  {return false;}
+   }
+
+   document.onkeypress = stopRKey;
+
     jQuery(document).ready( function (){
         jQuery('.file_field').change(function(){
             if (jQuery('.'+this.id).is(':visible')) {
@@ -426,6 +440,19 @@
         jQuery('#save_2').click(function(){
             jQuery('#grievance_edit_form').submit();
         });
-    })
+
+        jQuery('.breadcrumb').click(function(){
+            var attrs = { };
+
+            $.each($("form")[0].attributes, function(idx, attr) {
+                attrs[attr.nodeName] = attr.nodeValue;
+            });
+
+
+            $("form").replaceWith(function () {
+                return $("<div>", attrs).append($(this).contents());
+            });
+        });
+    });
   </script>
 {% endblock %}
