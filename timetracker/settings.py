@@ -153,7 +153,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
     'pagination.middleware.PaginationMiddleware',
-    'timetracker.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
+    'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
 )
 # Overriding Default T_C_P with new T_C_p
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
