@@ -69,57 +69,66 @@ class GrievanceAdminListView(ListView):
 
         context_users = User.objects.filter(is_active=True)
         context_category = Grievances_catagory.objects.filter(active=True)
-        if user != '' and category != '' and status != '' and from_date != '' and to_date != '':
-            grievances = Grievances.objects.filter(user=user, catagory=category, grievance_status=status,
-                                                   created_date__range=[actual_from_date, to_from_date])  # all chosen
+        try:
+            if user != '' and category != '' and status != '' and from_date != '' and to_date != '':
+                grievances = Grievances.objects.filter(user=user, catagory=category, grievance_status=status,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # all chosen
 
-        if user != '' and category == '' and status == '' and from_date == '' and to_date == '':
-            grievances = Grievances.objects.filter(user=user)  # only user
+            if user != '' and category == '' and status == '' and from_date == '' and to_date == '':
+                grievances = Grievances.objects.filter(user=user)  # only user
 
-        if user == '' and category != '' and status == '' and from_date == '' and to_date == '':
-            grievances = Grievances.objects.filter(catagory=category)  # only category
+            if user == '' and category != '' and status == '' and from_date == '' and to_date == '':
+                grievances = Grievances.objects.filter(catagory=category)  # only category
 
-        if user == '' and category == '' and status != '' and from_date == '' and to_date == '':
-            grievances = Grievances.objects.filter(grievance_status=status)  # only status
+            if user == '' and category == '' and status != '' and from_date == '' and to_date == '':
+                grievances = Grievances.objects.filter(grievance_status=status)  # only status
 
-        if user == '' and category == '' and status == '' and from_date != '' and to_date != '':
-            grievances = Grievances.objects.filter(created_date__range=[actual_from_date, to_from_date])  # only dates
+            if user == '' and category == '' and status == '' and from_date != '' and to_date != '':
+                grievances = Grievances.objects.filter(created_date__range=[actual_from_date,
+                                                                            to_from_date])  # only dates
 
-        if user != '' and category != '' and status == '' and from_date == '' and to_date == '':
-            grievances = Grievances.objects.filter(user=user, catagory=category)  # user and category
+            if user != '' and category != '' and status == '' and from_date == '' and to_date == '':
+                grievances = Grievances.objects.filter(user=user, catagory=category)  # user and category
 
-        if user != '' and category == '' and status != '' and from_date == '' and to_date == '':
-            grievances = Grievances.objects.filter(user=user, grievance_status=status)  # user and status
+            if user != '' and category == '' and status != '' and from_date == '' and to_date == '':
+                grievances = Grievances.objects.filter(user=user, grievance_status=status)  # user and status
 
-        if user != '' and category != '' and status != '' and from_date == '' and to_date == '':
-            grievances = Grievances.objects.filter(user=user, catagory=category,
-                                                   grievance_status=status)  # user, category and status
+            if user != '' and category != '' and status != '' and from_date == '' and to_date == '':
+                grievances = Grievances.objects.filter(user=user, catagory=category,
+                                                       grievance_status=status)  # user, category and status
 
-        if user != '' and category == '' and status == '' and from_date != '' and to_date != '':
-            grievances = Grievances.objects.filter(user=user,
-                                                   created_date__range=[actual_from_date, to_from_date])  # user, date
+            if user != '' and category == '' and status == '' and from_date != '' and to_date != '':
+                grievances = Grievances.objects.filter(user=user,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # user, date
 
-        if user == '' and category != '' and status != '' and from_date == '' and to_date == '':
-            grievances = Grievances.objects.filter(catagory=category, grievance_status=status)  # category and status
+            if user == '' and category != '' and status != '' and from_date == '' and to_date == '':
+                grievances = Grievances.objects.filter(catagory=category,
+                                                       grievance_status=status)  # category and status
 
-        if user == '' and category != '' and status == '' and from_date != '' and to_date != '':
-            grievances = Grievances.objects.filter(catagory=category,
-                                                   created_date__range=[actual_from_date,
-                                                                        to_from_date])  # category, date
-        if user == '' and category == '' and status != '' and from_date != '' and to_date != '':
-            grievances = Grievances.objects.filter(grievance_status=status,
-                                                   created_date__range=[actual_from_date, to_from_date])  # status, date
+            if user == '' and category != '' and status == '' and from_date != '' and to_date != '':
+                grievances = Grievances.objects.filter(catagory=category,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # category, date
+            if user == '' and category == '' and status != '' and from_date != '' and to_date != '':
+                grievances = Grievances.objects.filter(grievance_status=status,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # status, date
 
-        if user == '' and category != '' and status != '' and from_date != '' and to_date != '':
-            grievances = Grievances.objects.filter(catagory=category, grievance_status=status,
-                                                   created_date__range=[actual_from_date,
-                                                                        to_from_date])  # category, status and date
+            if user == '' and category != '' and status != '' and from_date != '' and to_date != '':
+                grievances = Grievances.objects.filter(catagory=category, grievance_status=status,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # category, status and date
 
-        if user != '' and category == '' and status != '' and from_date != '' and to_date != '':
-            grievances = Grievances.objects.filter(user=user, grievance_status=status,
-                                                   created_date__range=[actual_from_date,
-                                                                        to_from_date])  # user, status and date
-        if grievances.count > 0:
+            if user != '' and category == '' and status != '' and from_date != '' and to_date != '':
+                grievances = Grievances.objects.filter(user=user, grievance_status=status,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # user, status and date
+        except ValueError:
+            grievances = None
+
+        if grievances and grievances.count > 0:
             self.request.session['grievance'] = grievances
 
         if 'grievance' in self.request.session:
