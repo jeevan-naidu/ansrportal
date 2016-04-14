@@ -144,9 +144,7 @@
                   </div>
               </div>
 
-
-
-	<p></p>{% if grievances.count > 0 %}
+	<p></p>{% if grievances %}
 		<div class="row">
 		<div class="col-md-12">
 
@@ -154,6 +152,9 @@
 
 				<thead>
 					<tr>
+                        <th class="TbHead">
+							Sr.No
+						</th>
 						<th class="TbHead">
 							ID
 						</th>
@@ -185,15 +186,16 @@
 
 
 					<tr class="warning">
-						<td class="nowrapClass">
-                             <a id="modal-566651" href="#modal-container-566651"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids" data-toggle="modal"><b>{{object.grievance_id}}</b></a><a href="edit/{{object.id}}"><b>Edit</b></a>
+                        <td>{{forloop.counter}}</td>
+						<td >
+                             <a id="modal-566651" href="#modal-container-566651"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids nowrapClass " data-toggle="modal"><b>{{object.grievance_id}}</b></a><a href="edit/{{object.id}}" class="nowrapClass"><b>Edit</b></a>
                             <div class="GrDetails" style = "display:none" >
-                                 <table id="{{object.id}}" class="grievance_table" style="margin : 0 auto">
+                                 <table id="{{object.id}}" class="grievance_table" >
                                     <tr>
-                                        <td><b>Grievance Id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> <td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.grievance_id}} </td>
+                                        <td ><b>Grievance Id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> <td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.grievance_id}} </td>
                                     </tr>
                                     <tr>
-                                        <td><b>category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.catagory}} </b></i>  </td>
+                                        <td ><b>category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.catagory}} </b></i>  </td>
                                     </tr>
                                     <tr>
                                         <td><b>Subject &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.subject}}</td>
@@ -236,7 +238,7 @@
 						<td>
 							{{object.user.first_name}}
 						</td>
-						<td>
+						<td class="nowrapClass">
 							{{object.catagory}}
 						</td>
 						<td>
