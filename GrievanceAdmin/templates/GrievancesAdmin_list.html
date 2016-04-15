@@ -102,6 +102,11 @@
                           <li class="dropdown pull-right">
                               <a href="#" data-toggle="dropdown" class=""><strong>Filter By &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong class="caret"></strong></a>
                               <ul class="dropdown-menu ">
+                                   <li class="divider"></li>
+                                  <li class="Gr-DropDownpad">
+                                  <h5><b>Grievance Id</b></h5>
+                                      {{form.grievance_id}}
+                                  </li >
                                   <li class="divider"></li>
                                   <li class="Gr-DropDownpad">
                                   <h5><b>User</b></h5>
@@ -152,41 +157,38 @@
 
 				<thead>
 					<tr>
-                        <th class="TbHead">
-							Sr.No
-						</th>
-						<th class="TbHead">
+
+						<th class="TbHead td-center">
 							ID
 						</th>
-						<th class="TbHead">
+						<th class="TbHead td-center">
 							User
 						</th>
-						<th class="TbHead">
+						<th class="TbHead td-center">
 							Category
 						</th>
-						<th class="TbHead">
+						<th class="TbHead td-center">
 							Subject
 						</th>
 
-						<th class="TbHead ">
+						<th class="TbHead td-center">
 							Is Escalated
 						</th>
-						<th class="TbHead">
+						<th class="TbHead td-center">
 							Status
 						</th>
-						<th class="TbHead">
+						<th class="TbHead td-center">
 							Created Date
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-                     {%  autopaginate grievances 10 %}
+                     {%  autopaginate grievances 2 %}
                         {%   for object in grievances  %}
 
 
 
 					<tr class="warning">
-                        <td>{{forloop.counter}}</td>
 						<td >
                              <a id="modal-566651" href="#modal-container-566651"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids nowrapClass " data-toggle="modal"><b>{{object.grievance_id}}</b></a><a href="edit/{{object.id}}" class="nowrapClass"><b>Edit</b></a>
                             <div class="GrDetails" style = "display:none" >
@@ -302,7 +304,7 @@
         });
 
 
-        $('#id_user').attr('class','filter_class');
+        $('#id_user ,#id_grievance_id').attr('class','filter_class');
         var none_count = 0;
         <!-- date validation before form submit-->
         $('#submit_button').click(function(){
@@ -362,7 +364,7 @@
 			"hide.bs.dropdown":  function() {return this.closable; alert("hide");; }
 		});
 
-        $('#reset_button').click(function(){ console.log("trig");
+        $('#reset_button').click(function(){
             $('.filter_class').each(function() {
                  input_type = this.tagName ;
                  if(input_type == 'INPUT')
@@ -377,6 +379,13 @@
                         $("#id_user-deck").hide();
                         $('#id_user-autocomplete').show();
                        document.getElementById("id_user").options.length = 0;
+                    }
+                 }
+                 if(this.id == 'id_grievance_id-autocomplete') {
+                    if($("#id_grievance_id-deck").is(":visible") == true ) {
+                        $("#id_grievance_id-deck").hide();
+                        $('#id_grievance_id-autocomplete').show();
+                       document.getElementById("id_grievance_id").options.length = 0;
                     }
                  }
             });
