@@ -79,4 +79,7 @@
     .nowrapClass {
         white-space: nowrap !important;
     }
+    .td-center{
+	text-align: center;
+      }
 /* for grievance admin ends here */
