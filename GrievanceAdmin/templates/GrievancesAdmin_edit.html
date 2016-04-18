@@ -1,5 +1,6 @@
 
 {% extends 'master.inc' %}
+<title>{% block siteTitle %}myansrsource Grievance Administration{% endblock %}</title>
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
@@ -83,13 +84,17 @@
           <div class="form-group">
             <label class="col-lg-2 ">Subject:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname">{{grievances.subject}}</div>
+               <div class="Gr-edit-Uname">
+                <textarea class="form-control" id="grievance_subject"  name="grievance_subject" rows="3" readonly>{{grievances.subject}}</textarea>
+
+                   </div>
             </div>
           </div><hr>
 		  <div class="form-group">
             <label class="col-lg-2 ">Grievance:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname">{{grievances.grievance}}
+               <div class="Gr-edit-Uname">
+                <textarea class="form-control" id="grievance_msg"  name="grievance_msg" rows="10" readonly>{{grievances.grievance}}</textarea>
 			   <div class="">
 				   {% if grievances.grievance_attachment%} <p><strong>Attachment:</strong></p>
 				  <div class="" >
@@ -322,7 +327,10 @@
 	  <div class="form-group">
             <label class="col-lg-2 ">Status:</label>
             <div class="col-lg-10"> <div class="">
-                <select name ="grievance_status" class="form-control d-item " {%if grievances.active == False %} disabled   {%endif%}>
+                <select {%if grievances.active == False %}  name ="grievance_status_hidden" {%else%} name ="grievance_status" {%endif%}
+
+                        class="form-control d-item "
+                        {%if grievances.active == False %} disabled   {%endif%}>
                     {% for value, text in grievances_choices %}
 
                         <option value="{{ value }}" {%if grievances.grievance_status ==  value %}  selected ="selected"  {%endif%} >{{ text }}</option>
@@ -331,8 +339,7 @@
                </div>
             </div>
           </div>
-
-
+            {%if grievances.active == False %} <input type="hidden"  value="{{ grievances.grievance_status}} " name="grievance_status">   {%endif%}
           <div class="form-group">
             <label class="col-md-2 "></label>
             <div class="col-md-10">
@@ -346,7 +353,7 @@
         <br><br><br>
 
 
-        <input type="hidden" value ={{grievances.id}} name="grievance_id"/>
+          {%if grievances.active == False %}<input type="hidden" value ={{grievances.id}} name="grievance_id"/>{%endif%}
 
     </form>
         </div>
@@ -402,7 +409,6 @@
 
 {% block page_specific_JS %}
     <script src="/static/js/bootstrap-tagsinput.min.js"></script>
-    <script src="/static/js/bootstrap-tagsinput-angular.min.js"></script>
   <script>
   <!--  the following function is to disable enter key in edit form-->
    function stopRKey(evt) {
