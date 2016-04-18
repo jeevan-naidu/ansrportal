@@ -38,6 +38,7 @@
 {% endblock %}
 
 {% block content  %}
+{% load grievances_template_tags %}
 
     <link href="/static/css/grievanceAdminStyle.css" rel="stylesheet">
 	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
@@ -211,14 +212,14 @@
                                         <td><b>Is Escalated&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
                                         <td>{%if object.escalate == True %} Yes {%else %} No  {% endif %} </td>
                                     </tr>
-                                     {%if not object.action_taken == None %}
+                                     {%if object.action_taken%}
                                          <tr>
                                             <td><b>Action Taken &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.action_taken}}</td>
                                          </tr>
                                      {%endif%}
-                                      <tr>
-                                        <td><b>Satisfaction Level &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.satisfaction_level}}</td>
-                                    </tr>
+                                     {%if object.satisfaction_level%} <tr>
+                                        <td><b>Satisfaction Level &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.satisfaction_level|satisfaction_level}}</td>
+                                    </tr>{%endif%}
                                     <tr>
                                       <td><b>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> <td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
                                         <td>
@@ -229,14 +230,14 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><b>Created Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td></td> <td> {{object.created_date}} </td>
+                                        <td><b>Created Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td> <td> {{object.created_date}} </td>
                                     </tr>
                                      {%if grievances.active == False %}
                                          <tr>
-                                            <td><b>User Closure Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td></td> <td> {{object.user_closure_message}} </td>
+                                            <td><b>User Closure Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td> <td> {{object.user_closure_message}} </td>
                                          </tr>
                                         <tr>
-                                            <td><b>Admin Closure Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td></td> <td> {{object.admin_closure_message}} </td>
+                                            <td><b>Admin Closure Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td> <td> {{object.admin_closure_message}} </td>
                                          </tr>
 
                                      {%endif%}
