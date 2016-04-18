@@ -10,6 +10,12 @@ STATUS_CHOICES_EMPTY = (('', '---------'),) + STATUS_CHOICES_CLOSED
 
 
 class FilterGrievanceForm(autocomplete_light.ModelForm):
+
+    grievance_id = forms.ModelChoiceField(queryset=Grievances.objects.all(),
+                                          widget=autocomplete_light.ChoiceWidget('GrievancesAutocompleteGrievanceAdmin'))
+
+    grievance_id.widget.attrs = {'class': 'form-control filter_class', 'placeholder': 'Enter Grievance Id'}
+
     user = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
                                   widget=autocomplete_light.ChoiceWidget('UserAutocompleteUser'))
 
@@ -39,6 +45,6 @@ class FilterGrievanceForm(autocomplete_light.ModelForm):
         model = Grievances
         fields = ['catagory', 'grievance_status', 'created_date', 'closure_date']
         fields = (
-            'user',
+            'user', 'grievance_id',
         )
 
