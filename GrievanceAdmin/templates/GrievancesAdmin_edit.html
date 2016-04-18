@@ -198,7 +198,7 @@
 	  <div class="form-group">
             <label class="col-lg-2 ">Satisfaction Level:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname"> {{grievances.satisfaction_level}}
+               <div class="Gr-edit-Uname"> {{grievances.satisfaction_level|satisfaction_level}}
                </div>
             </div>
           </div><hr>
@@ -333,7 +333,7 @@
                         {%if grievances.active == False %} disabled   {%endif%}>
                     {% for value, text in grievances_choices %}
 
-                        <option value="{{ value }}" {%if grievances.grievance_status ==  value %}  selected ="selected"  {%endif%} >{{ text }}</option>
+                        <option value="{{value}}" {%if grievances.grievance_status.strip ==  value.strip %}  selected ="selected"  {%endif%} >{{ text }}</option>
                     {% endfor %}
                 </select>
                </div>
@@ -388,13 +388,14 @@
 			<div class="col-sm-4 col-md-4 col-lg-4 form-inline Gr-lbl-border">
 
                      <div class="Gr-edit-fixed-bottom center-block">
-                         <b>Status:&nbsp;&nbsp;
-                          {% for value, text in grievances_choices %}
-                                {%if grievances.grievance_status ==  value %}
-                                    {{text}}
-                                {%endif%}
-                            {% endfor %}
-                         </b>
+                  <b>Status:&nbsp;&nbsp;
+
+                                 {% for value, text in grievances_choices %}
+                                    {%if grievances.grievance_status.strip ==  value.strip %}
+                                        {{text}}
+                                    {%endif%}
+                                {% endfor %}
+                             </b>
 
                      </div>
 			</div>
