@@ -78,7 +78,7 @@ class Grievances(models.Model):
     
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % (self.id)
+        return '%s' % (self.grievance_id)
     
     class Meta:
         verbose_name_plural = "Grievances"
