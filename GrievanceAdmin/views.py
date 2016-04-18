@@ -41,18 +41,21 @@ class GrievanceAdminListView(ListView):
 
     def post(self, request, *args, **kwargs):
         form = FilterGrievanceForm(request.POST)
+        grievances = []
         TZ = timezone.pytz.timezone(settings.TIME_ZONE)
         if 'user' not in request.POST:
             user = request.POST.get('user-autocomplete')
         else:
             user = request.POST.get('user')
 
+        if 'grievance_id' not in request.POST:
+            grievance_id = request.POST.get('grievance_id-autocomplete')
+        else:
+            grievance_id = request.POST.get('grievance_id')
+
         category = request.POST.get('catagory')
         status = request.POST.get('grievance_status')
-        if status == 'True':
-            status = True
-        elif status == 'False':
-            status = False
+
         from_date = request.POST.get('created_date')
         if from_date:
             from_date_list = from_date.split("/")
@@ -70,58 +73,132 @@ class GrievanceAdminListView(ListView):
         context_users = User.objects.filter(is_active=True)
         context_category = Grievances_catagory.objects.filter(active=True)
         try:
-            if user != '' and category != '' and status != '' and from_date != '' and to_date != '':
-                grievances = Grievances.objects.filter(user=user, catagory=category, grievance_status=status,
+            if user != '' and category != '' and status != '' and from_date != '' \
+                    and to_date != '' and grievance_id != '':
+                grievances = Grievances.objects.filter(user=user, grievance_id=grievance_id,
+                                                       catagory=category, grievance_status=status,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # all chosen
 
-            if user != '' and category == '' and status == '' and from_date == '' and to_date == '':
+            if user != '' and category == '' and status == '' and from_date == '' \
+                    and to_date == '' and grievance_id == '':
                 grievances = Grievances.objects.filter(user=user)  # only user
 
-            if user == '' and category != '' and status == '' and from_date == '' and to_date == '':
+            if user == '' and category != '' and status == '' and from_date == ''\
+                    and to_date == '' and grievance_id == '':
                 grievances = Grievances.objects.filter(catagory=category)  # only category
 
-            if user == '' and category == '' and status != '' and from_date == '' and to_date == '':
+            if user == '' and category == '' and status != '' and from_date == '' \
+                    and to_date == ''and grievance_id == '':
                 grievances = Grievances.objects.filter(grievance_status=status)  # only status
 
-            if user == '' and category == '' and status == '' and from_date != '' and to_date != '':
+            if user == '' and category == '' and status == '' and from_date != ''\
+                    and to_date != ''and grievance_id == '':
                 grievances = Grievances.objects.filter(created_date__range=[actual_from_date,
                                                                             to_from_date])  # only dates
 
-            if user != '' and category != '' and status == '' and from_date == '' and to_date == '':
-                grievances = Grievances.objects.filter(user=user, catagory=category)  # user and category
+            if user == '' and category == '' and status == '' and from_date == '' \
+                    and to_date == '' and grievance_id != '':
+                grievances = Grievances.objects.filter(pk=grievance_id)  # only grievance_id
 
-            if user != '' and category == '' and status != '' and from_date == '' and to_date == '':
+            if user != '' and category != '' and status == '' and from_date == ''\
+                    and to_date == ''and grievance_id == '':
+                grievances = Grievances.objects.filter(user=user, catagory=category)  # user and category
+            # import pdb;pdb.set_trace();
+            if user != '' and category == '' and status != '' and from_date == '' \
+                    and to_date == ''and grievance_id == '':
                 grievances = Grievances.objects.filter(user=user, grievance_status=status)  # user and status
 
-            if user != '' and category != '' and status != '' and from_date == '' and to_date == '':
+            if user != '' and category == '' and status == '' and \
+                            from_date == '' and to_date == ''and grievance_id != '':
+                grievances = Grievances.objects.filter(user=user, pk=grievance_id)  # user and grievance_id
+
+            if user != '' and category != '' and status != '' and from_date == '' \
+                    and to_date == ''and grievance_id == '':
                 grievances = Grievances.objects.filter(user=user, catagory=category,
                                                        grievance_status=status)  # user, category and status
 
-            if user != '' and category == '' and status == '' and from_date != '' and to_date != '':
+            if user != '' and category != '' and status == '' and from_date == '' \
+                    and to_date == '' and grievance_id != '':
+                grievances = Grievances.objects.filter(user=user, grievance_status=status,
+                                                       pk=grievance_id)  # user, status and grievance_id
+
+            if user == '' and category != '' and status != '' and from_date == '' \
+                    and to_date == '' and grievance_id != '':
+                grievances = Grievances.objects.filter(pk=grievance_id, catagory=category,
+                                                       grievance_status=status)  # grievance_id, category and status
+
+            if user != '' and category == '' and status != '' and from_date == '' \
+                    and to_date == '' and grievance_id != '':
+                grievances = Grievances.objects.filter(user=user, catagory=category,
+                                                       pk=grievance_id)  # user, category and grievance_id
+
+            if user != '' and category == '' and status == '' and from_date != '' \
+                    and to_date != ''and grievance_id == '':
                 grievances = Grievances.objects.filter(user=user,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # user, date
 
-            if user == '' and category != '' and status != '' and from_date == '' and to_date == '':
+            if user != '' and category == '' and status == '' and from_date != ''and to_date != ''  \
+                    and grievance_id != '':
+                grievances = Grievances.objects.filter(user=user,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date],
+                                                       pk=grievance_id)  # user, date and grievance_id
+
+            if user == '' and category != '' and status != '' and from_date == '' \
+                    and to_date == ''and grievance_id == '':
                 grievances = Grievances.objects.filter(catagory=category,
                                                        grievance_status=status)  # category and status
 
-            if user == '' and category != '' and status == '' and from_date != '' and to_date != '':
+            if user == '' and category != '' and status == '' and from_date == '' \
+                    and to_date == '' and grievance_id != '':
+                grievances = Grievances.objects.filter(catagory=category,
+                                                       pk=grievance_id)  # category and grievance_id
+
+            if user == '' and category != '' and status != '' and from_date == '' \
+                    and to_date == '' and grievance_id != '':
+                grievances = Grievances.objects.filter(grievance_status=status,
+                                                       pk=grievance_id)  # status, grievance_id
+            if user == '' and category != '' and status != '' and from_date != '' \
+                    and to_date != '' and grievance_id != '':
+                grievances = Grievances.objects.filter(grievance_status=status,
+                                                       pk=grievance_id,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date],)  # status, grievance_id,date
+
+            if user == '' and category != '' and status == '' and from_date != '' \
+                    and to_date != '' and grievance_id == '':
                 grievances = Grievances.objects.filter(catagory=category,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # category, date
-            if user == '' and category == '' and status != '' and from_date != '' and to_date != '':
+
+            if user == '' and category != '' and status == '' and from_date != '' \
+                    and to_date != '' and grievance_id != '':
+                grievances = Grievances.objects.filter(catagory=category,  pk=grievance_id,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # category,date,grievance_id
+
+            if user == '' and category == '' and status == '' and from_date != '' \
+                    and to_date != ''and grievance_id != '':
+                grievances = Grievances.objects.filter(pk=grievance_id,
+                                                       created_date__range=[actual_from_date,
+                                                                            to_from_date])  # grievance_id, date
+
+            if user == '' and category == '' and status != '' and from_date != ''\
+                    and to_date != '' and grievance_id == '':
                 grievances = Grievances.objects.filter(grievance_status=status,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # status, date
 
-            if user == '' and category != '' and status != '' and from_date != '' and to_date != '':
+            if user == '' and category != '' and status != '' and from_date != '' \
+                    and to_date != '' and grievance_id == '':
                 grievances = Grievances.objects.filter(catagory=category, grievance_status=status,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # category, status and date
 
-            if user != '' and category == '' and status != '' and from_date != '' and to_date != '':
+            if user != '' and category == '' and status != '' and from_date != '' \
+                    and to_date != ''and grievance_id == '':
                 grievances = Grievances.objects.filter(user=user, grievance_status=status,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # user, status and date
@@ -130,6 +207,9 @@ class GrievanceAdminListView(ListView):
 
         if grievances and grievances.count > 0:
             self.request.session['grievance'] = grievances
+
+        if not grievances and 'grievance' in self.request.session:
+            del self.request.session['grievance']
 
         if 'grievance' in self.request.session:
             grievances = self.request.session['grievance']
@@ -170,7 +250,7 @@ class GrievanceAdminEditView(TemplateView):
         return context
 
     def post(self, request, **kwargs):
-        grievance_id = request.POST.get('grievance_id')
+        grievance_id = self.kwargs['id']
         attachment_error = 0
         try:
             grievances = Grievances.objects.get(pk=grievance_id)
@@ -296,7 +376,7 @@ class GrievanceAdminEditView(TemplateView):
                                                  'grievance_subject': database_object.subject})
 
                     mail_obj = EmailMessage('HR Message - Grievance  Id - ' + database_object.grievance_id,
-                                            msg_html, settings.EMAIL_HOST_USER, [self.user.email],
+                                            msg_html, settings.EMAIL_HOST_USER, [self.request.user.email],
                                             cc=[settings.GRIEVANCES_ADMIN_EMAIL])
 
                     mail_obj.content_subtype = 'html'
