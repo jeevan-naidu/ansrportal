@@ -1,5 +1,6 @@
 
 {% extends 'master.inc' %}
+<title>{% block siteTitle %}myansrsource Grievance Administration{% endblock %}</title>
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
@@ -85,7 +86,8 @@
 					<b>Grievance list</b>
 				</h3>
 				<h4 class="text-center">
-					<b>( {{grievances.count}} in total )</b>
+				{% if not grievances %}<b>( 0 in total )
+                </b> {%elif grievances %} 	<b>( {{grievances.count}} in total )</b>{%endif%}
 				</h4>
 			</div>
 		</div>
@@ -153,7 +155,7 @@
 		<div class="row">
 		<div class="col-md-12">
 
-			<table class="table table-bordered table-hover nowrapClass ">
+			<table class="table table-bordered table-hover">
 
 				<thead>
 					<tr>
@@ -189,8 +191,8 @@
 
 
 					<tr class="warning">
-						<td >
-                             <a id="modal-566651" href="#modal-container-566651"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids nowrapClass " data-toggle="modal"><b>{{object.grievance_id}}</b></a><a href="edit/{{object.id}}" class="nowrapClass"><b>Edit</b></a>
+						<td class="nowrapClass">
+                             <a id="modal-566651" href="#modal-container-566651"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids  " data-toggle="modal"><b>{{object.grievance_id}}</b></a><a href="edit/{{object.id}}" class="nowrapClass"><b>Edit</b></a>
                             <div class="GrDetails" style = "display:none" >
                                  <table id="{{object.id}}" class="grievance_table" >
                                     <tr>
@@ -218,8 +220,13 @@
                                         <td><b>Satisfaction Level &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.satisfaction_level}}</td>
                                     </tr>
                                     <tr>
-                                        <td><b>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> <td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td> <td>{% for value, text in grievances_choices %}
-                                        {%if object.grievance_status ==  value %} {{ text }}  {%endif%} {%endfor%} </td>
+                                      <td><b>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> <td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                        <td>
+                                        {% for value, text in grievances_choices %}
+                                            <!--{{value}} -&#45;&#45; {{object.grievance_status }}-->
+                                                {%if object.grievance_status ==  value %}{{ text }}  {%endif%}
+                                            {%endfor%}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><b>Created Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td></td> <td> {{object.created_date}} </td>
