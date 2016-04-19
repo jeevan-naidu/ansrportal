@@ -138,16 +138,29 @@ def Timesheet(request):
     if request.method == 'POST':
         # Getting the forms with submitted values
         hold_button = False
-        date = datetime.now().date()
-        date -= timedelta(days=7)
-        tsform = TimesheetFormset(request.user,date)
+
+        # for timesheet bug which showed project not available  error message by vivek
+        tmp_date = datetime.now().date()
+        tmp_date -= timedelta(days=7)
+        endDate1 = request.GET.get('enddate', '')
+        if request.GET.get("week") == 'prev':
+            if endDate1:
+                tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+                tmp_date -= timedelta(days=13)
+
+        elif request.GET.get("week") == 'next':
+            if endDate1:
+                tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+                tmp_date += timedelta(days=1)
+        #  fix ends here
+
+        tsform = TimesheetFormset(request.user, tmp_date)
         tsFormset = formset_factory(
             tsform, extra=1, max_num=1, can_delete=True
         )
         atFormset = formset_factory(
             ActivityForm, extra=1, max_num=1, can_delete=True
         )
-        import pdb;pdb.set_trace();
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
         # User values for timsheet
