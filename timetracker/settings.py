@@ -192,9 +192,9 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansr_obfuscated",
+        "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "bala",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -300,8 +300,7 @@ LOGGING = {
 }
 
 # Attendance Feed Settings
-# FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data"
-FEED_DIR = "/home/admin1/myansr/ansr-timesheet"
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
@@ -330,4 +329,4 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "balamurugan.rs@ansrsource.com"
+GRIEVANCES_ADMIN_EMAIL = "amol.pachpute@ansrsource.com"
