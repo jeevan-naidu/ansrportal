@@ -198,7 +198,8 @@
 	  <div class="form-group">
             <label class="col-lg-2 ">Satisfaction Level:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname"> {{grievances.satisfaction_level|satisfaction_level}}
+               <div class="Gr-edit-Uname"> {%if grievances.satisfaction_level %}
+                   {{grievances.satisfaction_level|satisfaction_level}}{%else%}{{grievances.satisfaction_level}} {% endif %}
                </div>
             </div>
           </div><hr>
