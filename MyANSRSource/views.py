@@ -18,7 +18,6 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 
-from django.utils import timezone
 
 from fb360.models import Respondent
 
@@ -42,9 +41,7 @@ from Grievances.models import Grievances
 
 from ldap import LDAPError
 # views for ansr
-import pytz
-# from datetime import datetime, timedelta
-from pytz import timezone
+
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
@@ -1209,48 +1206,10 @@ def Dashboard(request):
      attdate__lte=eddte,
      employee_id__user_id=request.user.id).values('swipe_in','swipe_out','attdate').filter(Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(attdate__isnull=False))#.exclude(swipe_in="", swipe_out="", attdate="")
     swipe_display=[]
-
-    # from django.utils import timezone
     for val in attendenceDetail:
-
-
-        local_tz = pytz.timezone(settings.TIME_ZONE) # use your local timezone name here
-        # NOTE: pytz.reference.LocalTimezone() would produce wrong result here
-
-        ## You could use `tzlocal` module to get local timezone on Unix and Win32
-        # from tzlocal import get_localzone # $ pip install tzlocal
-
-        # # get local timezone
-        # local_tz = get_localzone()
-
-        def utc_to_local(utc_dt):
-            local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-            return local_tz.normalize(local_dt) # .normalize might be unnecessary
-
-        temp = {}
-        # from datetime import datetime
-        from dateutil.tz import tzutc, tzlocal
-
-        # utc = datetime.now(tzutc())
-        # print('UTC:   ' + str(utc))
-        # import pdb;pdb.set_trace();
-        # print timezone.is_aware(val['swipe_in'] )
-        # print timezone.is_aware(val['swipe_in'])
-        # val['swipe_in'] = timezone.localtime(val['swipe_in'])
-        # val['swipe_in'] = val['swipe_in'].astimezone(local_tz)
-        # val['swipe_out'] = timezone.localtime(val['swipe_out'])
-        # val['swipe_out'] = val['swipe_out'].astimezone(local_tz)
-        # val['swipe_in'] = val['swipe_in'].astimezone(tzlocal())
-        # val['swipe_out'] = val['swipe_out'].astimezone(tzlocal())
-
-        # val['swipe_in'] = val['swipe_in'].astimezone(local_tz)  #  timezone.make_aware(val['swipe_in'], local_tz)  # utc_to_local(val['swipe_in'])
-        # val['swipe_out'] = val['swipe_out'].astimezone(local_tz)  # timezone.make_aware(val['swipe_out'], local_tz)  #utc_to_local(val['swipe_out'])
-
+        temp={}
         temp['date']=val['attdate'].strftime('%Y-%m-%d')
-        temp['swipe']="In"+str(val['swipe_in'].hour)+":"+str(val['swipe_in'].minute)\
-                      + ":" +str(val['swipe_in'].minute)+" " \
-                                                       " " + "Out" +str(val['swipe_out'].hour)\
-                      +":"+str(val['swipe_out'].minute)+":"+str(val['swipe_out'].second)
+        temp['swipe']="In"+str(val['swipe_in'].hour)+":"+str(val['swipe_in'].minute)+"  " +"Out"+str(val['swipe_out'].hour)+":"+str(val['swipe_out'].minute)
         swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
