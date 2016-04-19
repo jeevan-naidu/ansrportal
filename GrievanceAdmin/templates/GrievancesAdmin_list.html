@@ -46,8 +46,7 @@
 	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
     {% load pagination_tags %}
   <div class="container-fluid">
-        <div class="row">
-			<div class="col-md-12">
+
 
 
 				<div class="modal fade " id="modal-container-566651" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -62,7 +61,7 @@
 									<b>View details</b>
 								</h4>
 							</div>
-							<div class="modal-body" id="grievance_modal_body">
+							<div class="modal-body clearfix" id="grievance_modal_body">
 							</div>
 							<div class="modal-footer">
 
@@ -74,28 +73,14 @@
 
 				</div>
 
-			</div>
-		</div>
 
 
 		<div class="row">
-			<div class="col-md-12"> {%if message%}
-				{% for message in messages %}
-                <p {% if message.tags %} class=" alert alert-{{ message.tags }}"{% endif %}>{{ message }}</p>
-                {% endfor %} {%endif%}
-				<h3 class="text-center">
-					<b>Grievance list</b>
-				</h3>
-				<h4 class="text-center">
-				{% if not grievances %}<b>( 0 in total )
-                </b> {%elif grievances %} 	<b>( {{grievances.count}} in total )</b>{%endif%}
-				</h4>
-			</div>
-		</div>
 
 
-      <div class="row">
-                  <div class="col-md-12">
+
+            <!-- Drag and drop -->
+                  <div class="pull-right" style="margin-bottom:-45px;position:relative;z-index:1">
                       <!--Don't attempt to change the class of below div,jquery depends on this to stop form from closing on opening -->
                        <div class="dropdown keep-open" id="filter_form_div">
                        <form class="form-horizontal " id="filter_form" role="form" method="post" >
@@ -149,12 +134,39 @@
                       </ul>
                  </form>
                            </div>
-                  </div>
-              </div>
+                  </div><!-- End of filter button -->
+
+
+
+
+
+			<div class="col-md-12">
+
+
+
+
+
+                {%if message%}
+				{% for message in messages %}
+                <p {% if message.tags %} class=" alert alert-{{ message.tags }}"{% endif %}>{{ message }}</p>
+                {% endfor %} {%endif%}
+				<h3 class="text-center">
+					<b>Grievance list</b>
+				</h3>
+				<h4 class="text-center">
+				{% if not grievances %}<b>( 0 in total )
+                </b> {%elif grievances %} 	<b>( {{grievances.count}} in total )</b>{%endif%}
+				</h4>
+			</div>
+		</div>
+
+
+
+
 
 	<p></p>{% if grievances %}
 		<div class="row">
-		<div class="col-md-12">
+		<div class="col-md-12 pad-zero">
 
 			<table class="table table-bordered table-hover">
 
@@ -195,53 +207,63 @@
 						<td class="nowrapClass">
                              <a id="modal-566651" href="#modal-container-566651"  data-id ={{object.grievance_id}}  role="button" class="btn grievance_ids  " data-toggle="modal"><b>{{object.grievance_id}}</b></a><a href="edit/{{object.id}}" class="nowrapClass"><b>Edit</b></a>
                             <div class="GrDetails" style = "display:none" >
-                                 <table id="{{object.id}}" class="grievance_table" >
-                                    <tr>
-                                        <td ><b>Grievance Id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> <td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.grievance_id}} </td>
-                                    </tr>
-                                    <tr>
-                                        <td ><b>category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.catagory}} </b></i>  </td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Subject &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.subject}}</td>
-                                    </tr>
-                                     <tr>
-                                        <td><b>Grievance &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.grievance}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Is Escalated&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
-                                        <td>{%if object.escalate == True %} Yes {%else %} No  {% endif %} </td>
-                                    </tr>
+
+
+                                 <div id="{{object.id}}" class="grievance_table pad-five" >
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Grievance Id</b></div>
+
+                                        <div class="col-sm-8 col-md-10"> : {{object.grievance_id}} </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2" ><b>category</b></div>
+
+                                        <div class="col-sm-8 col-md-10"> : {{object.catagory}} </b></i>  </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Subject</b></div><div class="col-sm-8 col-md-10"> : {{object.subject}}</div>
+                                    </div>
+                                     <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Grievance</b></div>  <div class="col-sm-8 col-md-10"> : {{object.grievance}}</div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Is Escalated</b></div>
+                                        <div class="col-sm-8 col-md-10">{%if object.escalate == divue %} Yes {%else %} No  {% endif %} </div>
+                                    </div>
                                      {%if object.action_taken%}
-                                         <tr>
-                                            <td><b>Action Taken &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.action_taken}}</td>
-                                         </tr>
+                                         <div class="col-sm-12">
+                                            <div class="col-sm-4 col-md-2"><b>Action Taken</b></div>  <div class="col-sm-8 col-md-10"> : {{object.action_taken}}</div>
+                                         </div>
                                      {%endif%}
-                                     {%if object.satisfaction_level%} <tr>
-                                        <td><b>Satisfaction Level &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>  <td>{{object.satisfaction_level|satisfaction_level}}</td>
-                                    </tr>{%endif%}
-                                    <tr>
-                                      <td><b>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> <td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
-                                        <td>
+                                     {%if object.satisfaction_level%} <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Satisfaction Level</b></div>  <div class="col-sm-8 col-md-10"> : {{object.satisfaction_level|satisfaction_level}}</div>
+                                    </div>{%endif%}
+                                    <div class="col-sm-12">
+                                      <div class="col-sm-4 col-md-2"><b>Status</b></div>
+                                        <div class="col-sm-8 col-md-10"> :
                                         {% for value, text in grievances_choices %}
-                                            <!--{{value}} -&#45;&#45; {{object.grievance_status }}-->
                                                 {%if object.grievance_status ==  value %}{{ text }}  {%endif%}
                                             {%endfor%}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Created Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td> <td> {{object.created_date}} </td>
-                                    </tr>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Created Date</b></div> <div class="col-sm-8 col-md-10"> :  {{object.created_date}} </div>
+                                    </div>
                                      {%if grievances.active == False %}
-                                         <tr>
-                                            <td><b>User Closure Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td> <td> {{object.user_closure_message}} </td>
-                                         </tr>
-                                        <tr>
-                                            <td><b>Admin Closure Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><td>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td> <td> {{object.admin_closure_message}} </td>
-                                         </tr>
+                                         <div class="col-sm-12">
+                                            <div class="col-sm-4 col-md-2"><b>User Closure Message</b></div> <div class="col-sm-8 col-md-10"> : {{object.user_closure_message}} </div>
+                                         </div>
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-4 col-md-2"><b>Admin Closure Message</b></div> <div class="col-sm-8 col-md-10"> : {{object.admin_closure_message}} </div>
+                                         </div>
 
                                      {%endif%}
-                                </table>
+                                </div>
+
+
+
+
+
                             </div>
 
 						</td>
