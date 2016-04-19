@@ -83,3 +83,9 @@
 	text-align: center;
       }
 /* for grievance admin ends here */
+
+
+/* Override styles */
+
+.pad-zero{padding:0px;}
+.pad-five div div{padding:5px;word-wrap:break-word;}
