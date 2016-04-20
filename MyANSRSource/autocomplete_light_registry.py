@@ -31,3 +31,16 @@ class AutocompleteBook(autocomplete_light.AutocompleteModelBase):
         return self.order_choices(choices)[0:self.limit_choices]
 
 autocomplete_light.register(Book, AutocompleteBook)
+
+
+class AutocompleteProjects(autocomplete_light.AutocompleteModelBase):
+    autocomplete_js_attributes = {'placeholder': 'Enter a Project name /Project Id'}
+
+    def choices_for_request(self):
+        q = self.request.GET.get('q', '')
+        choices = self.choices.filter(
+            Q(name__icontains=q) | Q(projectId__icontains=q)
+        )
+        return self.order_choices(choices)[0:self.limit_choices]
+
+autocomplete_light.register(Project, AutocompleteProjects)
