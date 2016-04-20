@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 from django.core.validators import MinLengthValidator
+from django.utils.safestring import mark_safe
 
 
 SATISFACTION_CHOICES = (('satisfied', 'Satisfied'), ('not_sure', 'Not Sure'), ('dissatisfied', 'Dissatisfied'), ('very_dissatisfied', 'Very Dissatisfied') )
@@ -36,22 +37,25 @@ def change_file_path(instance, filename):
 
 
 
-class Grievances_catagory(models.Model):
+class Grievances_category(models.Model):
     
-    catagory = models.CharField(max_length=200)
+    category = models.CharField(max_length=200)
     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
     
     def __unicode__(self):
         ''' return unicode strings '''
-        return '%s' % (self.catagory)
+        return '%s' % (self.category)
 
 class Grievances(models.Model):
     user = models.ForeignKey(User)
     
     grievance_id = models.CharField(max_length=60, unique=True)
-    catagory = models.ForeignKey(Grievances_catagory)
+    category = models.ForeignKey(Grievances_category)
     subject = models.CharField(max_length=100, validators=[MinLengthValidator(15)])
-    grievance = models.TextField(max_length=2000, validators=[MinLengthValidator(15)])
+    
+    # length validations are different for front-end and backend. e.g js treats new line as 1 character and python treats the same as "\n" i.e 2
+    #characters. So to be safe, we are giving length 200 characters more than what is validated in front-end(2000 characters)
+    grievance = models.TextField(max_length=2200, validators=[MinLengthValidator(15)], help_text=mark_safe("<span id='textarea_remaining'>2000 remaining</span>"))
     
     action_taken = models.TextField(max_length = 2000, blank=True, null=True, validators=[MinLengthValidator(15)])
     user_closure_message = models.TextField(max_length = 2000, blank=True, null=True, validators=[MinLengthValidator(5)])

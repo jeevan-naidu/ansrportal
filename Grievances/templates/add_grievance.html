@@ -16,7 +16,7 @@
 							</td>
 							
 							<td style="width: 15%">
-								<p class="text-center">{{object.catagory}}</p>
+								<p class="text-center">{{object.category}}</p>
 							</td>
 	
 							<td style="width: 15%">
@@ -75,6 +75,27 @@
 		  </form>
 		   <script>
 			
+			$(document).ready(function() {
+						$('#id_grievance').attr('maxlength','');
+						var text_max = 2000;
+						var text_length = $('#id_grievance').val().length;
+						var text_remaining = text_max - text_length;
+						$('#textarea_remaining').html(text_max + ' characters remaining');
+						
+						$('#id_grievance').keyup(function() {
+							text_length = $('#id_grievance').val().length;
+							text_remaining = text_max - text_length;
+							if (text_length > 2000) {
+								$('#id_grievance').val($('#id_grievance').val().slice(0,2000))
+								
+								// the length changes in the above line
+								text_length = $('#id_grievance').val().length;
+							    text_remaining = text_max - text_length;
+							}
+							$('#textarea_remaining').html(text_remaining + ' characters remaining');
+						});
+					});
+			
 				 // File size validation
 				var fileExtension = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml'];
 				$('.filestyle').bind('change', function() {
@@ -121,20 +142,7 @@
 									success: function (data) {
 									   if (data.record_added) {
 										  $("#modal_body").html("<h5 style='color:green;'>" + data.success_msg + "</h5>");
-										  if ($("#listTableBody tr:first").length) {
-											$("#listTableBody tr:first").before(data.html_data);
-											
-											// reload the js for file for ajax requests
-												window.location.reload();
-											
-										   }
-										  else{
-											 $("#listTableBody").append(data.html_data);
-											 $("#no_grievances_alert").hide();
-										  }
-										  $("#listTableBody tr:first").hide();
-										  $("#listTableBody tr:first").fadeIn(900);
-										  
+										  window.location.reload();
 										 }
 									   else{
 										$("#modal_body").html(data);
@@ -148,7 +156,7 @@
 													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
 												HideAjaxLoader(ajax_loader_element);
 											},
-														
+												
 									cache: false,
 									contentType: false,
 									processData: false
