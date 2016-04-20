@@ -38,6 +38,7 @@ class AddGrievanceView(View):
     
     
     def get(self, request):
+        
         context_data = {'add':True, 'record_added':False, 'form':None}
         form = AddGrievanceForm()
         context_data['form'] = form

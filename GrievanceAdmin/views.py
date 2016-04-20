@@ -10,7 +10,7 @@ from forms import FilterGrievanceForm
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
-from Grievances.models import Grievances, Grievances_catagory, SATISFACTION_CHOICES, \
+from Grievances.models import Grievances, Grievances_category, SATISFACTION_CHOICES, \
     STATUS_CHOICES, STATUS_CHOICES_CLOSED
 from Grievances.views import AllowedFileTypes
 import logging
@@ -25,7 +25,7 @@ class GrievanceAdminListView(ListView):
         context = super(GrievanceAdminListView, self).get_context_data(**kwargs)
         context['grievances'] = Grievances.objects.all().order_by("-created_date")
         context['users'] = User.objects.filter(is_active=True)
-        context['category'] = Grievances_catagory.objects.filter(active=True)
+        context['category'] = Grievances_category.objects.filter(active=True)
         context['grievances_choices'] = STATUS_CHOICES_CLOSED
         form = FilterGrievanceForm()
         context['form'] = form
@@ -53,7 +53,7 @@ class GrievanceAdminListView(ListView):
         else:
             grievance_id = request.POST.get('grievance_id')
 
-        category = request.POST.get('catagory')
+        category = request.POST.get('category')
         status = request.POST.get('grievance_status')
 
         from_date = request.POST.get('created_date')
@@ -71,12 +71,12 @@ class GrievanceAdminListView(ListView):
             to_from_date = to_from_date + datetime.timedelta(days=1)
 
         context_users = User.objects.filter(is_active=True)
-        context_category = Grievances_catagory.objects.filter(active=True)
+        context_category = Grievances_category.objects.filter(active=True)
         try:
             if user != '' and category != '' and status != '' and from_date != '' \
                     and to_date != '' and grievance_id != '':
                 grievances = Grievances.objects.filter(user=user, grievance_id=grievance_id,
-                                                       catagory=category, grievance_status=status,
+                                                       category=category, grievance_status=status,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # all chosen
 
@@ -86,7 +86,7 @@ class GrievanceAdminListView(ListView):
 
             if user == '' and category != '' and status == '' and from_date == ''\
                     and to_date == '' and grievance_id == '':
-                grievances = Grievances.objects.filter(catagory=category)  # only category
+                grievances = Grievances.objects.filter(category=category)  # only category
 
             if user == '' and category == '' and status != '' and from_date == '' \
                     and to_date == ''and grievance_id == '':
@@ -103,7 +103,7 @@ class GrievanceAdminListView(ListView):
 
             if user != '' and category != '' and status == '' and from_date == ''\
                     and to_date == ''and grievance_id == '':
-                grievances = Grievances.objects.filter(user=user, catagory=category)  # user and category
+                grievances = Grievances.objects.filter(user=user, category=category)  # user and category
             # import pdb;pdb.set_trace();
             if user != '' and category == '' and status != '' and from_date == '' \
                     and to_date == ''and grievance_id == '':
@@ -115,7 +115,7 @@ class GrievanceAdminListView(ListView):
 
             if user != '' and category != '' and status != '' and from_date == '' \
                     and to_date == ''and grievance_id == '':
-                grievances = Grievances.objects.filter(user=user, catagory=category,
+                grievances = Grievances.objects.filter(user=user, category=category,
                                                        grievance_status=status)  # user, category and status
 
             if user != '' and category != '' and status == '' and from_date == '' \
@@ -125,12 +125,12 @@ class GrievanceAdminListView(ListView):
 
             if user == '' and category != '' and status != '' and from_date == '' \
                     and to_date == '' and grievance_id != '':
-                grievances = Grievances.objects.filter(pk=grievance_id, catagory=category,
+                grievances = Grievances.objects.filter(pk=grievance_id, category=category,
                                                        grievance_status=status)  # grievance_id, category and status
 
             if user != '' and category == '' and status != '' and from_date == '' \
                     and to_date == '' and grievance_id != '':
-                grievances = Grievances.objects.filter(user=user, catagory=category,
+                grievances = Grievances.objects.filter(user=user, category=category,
                                                        pk=grievance_id)  # user, category and grievance_id
 
             if user != '' and category == '' and status == '' and from_date != '' \
@@ -148,12 +148,12 @@ class GrievanceAdminListView(ListView):
 
             if user == '' and category != '' and status != '' and from_date == '' \
                     and to_date == ''and grievance_id == '':
-                grievances = Grievances.objects.filter(catagory=category,
+                grievances = Grievances.objects.filter(category=category,
                                                        grievance_status=status)  # category and status
 
             if user == '' and category != '' and status == '' and from_date == '' \
                     and to_date == '' and grievance_id != '':
-                grievances = Grievances.objects.filter(catagory=category,
+                grievances = Grievances.objects.filter(category=category,
                                                        pk=grievance_id)  # category and grievance_id
 
             if user == '' and category != '' and status != '' and from_date == '' \
@@ -169,13 +169,13 @@ class GrievanceAdminListView(ListView):
 
             if user == '' and category != '' and status == '' and from_date != '' \
                     and to_date != '' and grievance_id == '':
-                grievances = Grievances.objects.filter(catagory=category,
+                grievances = Grievances.objects.filter(category=category,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # category, date
 
             if user == '' and category != '' and status == '' and from_date != '' \
                     and to_date != '' and grievance_id != '':
-                grievances = Grievances.objects.filter(catagory=category,  pk=grievance_id,
+                grievances = Grievances.objects.filter(category=category,  pk=grievance_id,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # category,date,grievance_id
 
@@ -193,7 +193,7 @@ class GrievanceAdminListView(ListView):
 
             if user == '' and category != '' and status != '' and from_date != '' \
                     and to_date != '' and grievance_id == '':
-                grievances = Grievances.objects.filter(catagory=category, grievance_status=status,
+                grievances = Grievances.objects.filter(category=category, grievance_status=status,
                                                        created_date__range=[actual_from_date,
                                                                             to_from_date])  # category, status and date
 

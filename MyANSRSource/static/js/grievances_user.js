@@ -1,7 +1,8 @@
 //JavaScript for User grievances - Front-end only
 		
 $(document).ready(function(){
-            
+			
+			
             //ajax request for registering a grievance on modal popup open
             $("#add_grievance_popup").on('shown.bs.modal', function(){
                     
@@ -25,15 +26,15 @@ $(document).ready(function(){
                         });
             
              
-            $('#add_grievance_popup').on('hidden.bs.modal', function () {
-                    $("#modal_body").html("Loading.. please wait..");
-                    
-                    if ($(".new_notification").length) {
-                        setTimeout(function(){
-                            $(".new_notification").fadeOut("slow");
-                         }, 10000);
-                    }
-                    })
+            //$('#add_grievance_popup').on('hidden.bs.modal', function () {
+            //        $("#modal_body").html("Loading.. please wait..");
+            //        
+            //        if ($(".new_notification").length) {
+            //            setTimeout(function(){
+            //                $(".new_notification").fadeOut("slow");
+            //             }, 10000);
+            //        }
+            //        })
             
                 RateAndClosureFormSubmit();
                 EscalationFormSubmit();

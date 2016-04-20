@@ -1,7 +1,7 @@
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
 from django.contrib.auth.models import User
-from Grievances.models import Grievances, Grievances_catagory,  STATUS_CHOICES_CLOSED
+from Grievances.models import Grievances, Grievances_category,  STATUS_CHOICES_CLOSED
 import autocomplete_light
 autocomplete_light.autodiscover()
 
@@ -21,9 +21,9 @@ class FilterGrievanceForm(autocomplete_light.ModelForm):
 
     user.widget.attrs = {'class': 'form-control filter_class', 'placeholder': 'Enter Employee Name'}
 
-    catagory = forms.ModelChoiceField(queryset=Grievances_catagory.objects.filter(active=True), empty_label="---------")
+    category = forms.ModelChoiceField(queryset=Grievances_category.objects.filter(active=True), empty_label="---------")
 
-    catagory.widget.attrs = {'class': 'form-control filter_class'}
+    category.widget.attrs = {'class': 'form-control filter_class'}
 
     grievance_status = forms.ChoiceField(choices=STATUS_CHOICES_EMPTY)
 
@@ -43,7 +43,7 @@ class FilterGrievanceForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = Grievances
-        fields = ['catagory', 'grievance_status', 'created_date', 'closure_date']
+        fields = ['category', 'grievance_status', 'created_date', 'closure_date']
         fields = (
             'user', 'grievance_id',
         )
