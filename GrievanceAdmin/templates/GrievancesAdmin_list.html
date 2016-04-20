@@ -221,7 +221,7 @@
                                         <div class="col-sm-8 col-md-10"> : {{object.category}} </b></i>  </div>
                                     </div>
                                     <div class="col-sm-12">
-                                        <div class="col-sm-4 col-md-2"><b>Subject</b></div><div class="col-sm-8 col-md-10"> : {{object.subject}}</div>
+                                        <div class="col-sm-4 col-md-2"><b>Subject</b></div><div class="col-sm-8 col-md-10"> : {{object.subject.strip}}</div>
                                     </div>
                                      <div class="col-sm-12">
                                         <div class="col-sm-4 col-md-2"><b>Grievance</b></div>  <div class="col-sm-8 col-md-10"> : {{object.grievance}}</div>
@@ -270,7 +270,7 @@
 						<td>
 							{{object.user.first_name}}
 						</td>
-						<td class="nowrapClass">
+						<td class="">
 							{{object.category}}
 						</td>
 						<td>
@@ -292,8 +292,8 @@
                                 {%endfor%}
                             {%endif%}
 						</td>
-						<td>
-							{{object.created_date}}
+						<td class="">
+							<span class="date-width">{{object.created_date}}</span>
 						</td>
                     </tr>
 
