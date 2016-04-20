@@ -507,7 +507,7 @@ def TeamMemberPerfomanceReport(request):
                     buName = eachData['name']
 
             # Getting eachUser information in line with selected BU
-            users = User.objects.all().values(
+            users = User.objects.filter(employee__business_unit_id=bu).values(
                 'id',
                 'first_name',
                 'last_name',
