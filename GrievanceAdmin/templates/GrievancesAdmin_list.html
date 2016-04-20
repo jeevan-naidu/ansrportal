@@ -221,14 +221,14 @@
                                         <div class="col-sm-8 col-md-10"> : {{object.category}} </b></i>  </div>
                                     </div>
                                     <div class="col-sm-12">
-                                        <div class="col-sm-4 col-md-2"><b>Subject</b></div><div class="col-sm-8 col-md-10"> : {{object.subject.strip}}</div>
+                                        <div class="col-sm-4 col-md-2"><b>Subject</b></div><div class="col-sm-8 col-md-10"> : {{object.subject}}</div>
                                     </div>
                                      <div class="col-sm-12">
                                         <div class="col-sm-4 col-md-2"><b>Grievance</b></div>  <div class="col-sm-8 col-md-10"> : {{object.grievance}}</div>
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="col-sm-4 col-md-2"><b>Is Escalated</b></div>
-                                        <div class="col-sm-8 col-md-10">{%if object.escalate == divue %} Yes {%else %} No  {% endif %} </div>
+                                        <div class="col-sm-8 col-md-10">{%if object.escalate == True %} Yes {%else %} No  {% endif %} </div>
                                     </div>
                                      {%if object.action_taken%}
                                          <div class="col-sm-12">
