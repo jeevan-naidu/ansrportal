@@ -89,7 +89,7 @@
 							Registered Date
 						</th>
 						
-						<th>Status</th>
+						<!--<th>Status</th>-->
 					</tr>
 				</thead>
 				
@@ -104,7 +104,12 @@
 							<td style="width: 15%">
 								<p>{{object.grievance_id}}</p>
 								
-								<p>{% if object.escalate %}<p><label type="label" class="label label-warning">Escalated</button></p> {% endif %}</p>
+								{% if object.grievance_status == 'new' %}<p><label type="label" class="label label-info">New</label></p> {% endif %}
+								{% if object.grievance_status == 'opened' %}<p><label type="label" class="label label-warning">Open</label></p> {% endif %}
+								{% if object.grievance_status == 'in_progress' %}<p><label type="label" class="label label-success">In Progress</label></p> {% endif %}
+								{% if object.grievance_status == 'closed' %}<p><label type="label" class="label label-danger">Closed</label></p> {% endif %}
+								
+								{% if object.escalate %}<p><label type="label" class="label label-warning">Escalated</button></p> {% endif %}
 								
 								{% if object.satisfaction_level == 'satisfied' or object.satisfaction_level = 'not_sure'%}
 									<div>
@@ -136,8 +141,10 @@
 							<td style="width: 15%">
 								<p>{{object.created_date}}</p>
 							</td>
-							<td>
-							  {% if object.active %}
+						<!--	<td>
+								{{object.grievance_status}}
+							  {% if object.active == 'new'%}
+								  
 								 <p class="text-center"> 
 									<span id="status_{{object.grievance_id}}" > <i class="fa fa-unlock fa-lg" style="color:#66B778;"></i> </span>
 								 </p>
@@ -148,7 +155,7 @@
 								  
 								  
 							  {% endif %}
-							</td>
+							</td>-->
 							
 						</tr>
 						

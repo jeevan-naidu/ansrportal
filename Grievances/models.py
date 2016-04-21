@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 
 SATISFACTION_CHOICES = (('satisfied', 'Satisfied'), ('not_sure', 'Not Sure'), ('dissatisfied', 'Dissatisfied'), ('very_dissatisfied', 'Very Dissatisfied') )
 STATUS_CHOICES = (('new', 'New'), ('opened', 'Opened'), ('in_progress', 'In Progress'))
-STATUS_CHOICES_CLOSED = (('new', 'New'), ('opened', 'Opened'), ('in_progress', 'In Progress'), ('closed', 'Closed'))
+STATUS_CHOICES_CLOSED = (('new', 'New'), ('opened', 'Open'), ('in_progress', 'In Progress'), ('closed', 'Closed'))
 
 def change_file_path(instance, filename):
     
@@ -78,7 +78,7 @@ class Grievances(models.Model):
     closure_date = models.DateTimeField(blank=True, null=True)
     
     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
-    grievance_status = models.CharField(max_length=50, blank=False, null=False, default="new", choices=STATUS_CHOICES)
+    grievance_status = models.CharField(max_length=50, blank=False, null=False, default="new", choices=STATUS_CHOICES_CLOSED)
     
     def __unicode__(self):
         """ return unicode strings """
