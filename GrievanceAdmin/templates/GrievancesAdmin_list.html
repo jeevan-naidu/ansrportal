@@ -198,7 +198,7 @@
 					</tr>
 				</thead>
 				<tbody>
-                     {%  autopaginate grievances 4 %}
+                     {%  autopaginate grievances 10 %}
                         {%   for object in grievances  %}
 
 
@@ -367,9 +367,7 @@
 
             <!-- allow form submission only if at-least one input is changed -->
             if ( none_count > 0 )  {
-            <!--$( window ).unload(function() {-->
-                <!--alert( "Bye now!");-->
-            <!--});-->
+
                 <!-- we need the following code to ensure on filter form submission the page value is always 1 to ensure the pagination to work properly-->
                  <!--window.history.pushState("object or string", "Grievance Admin", "/grievances_admin/?page=1");-->
                 $( "#filter_form" ).submit();
@@ -383,10 +381,6 @@
         });
     })
 
-    <!--$( window ).unload(function() {-->
-        <!--window.history.replaceState( {} , 'Grievance Admin', '/grievances_admin' );-->
-    <!--});-->
-
         $('.page, .next, .prev').click(function(){
             $('#reset_button').trigger('click');
             formToDiv();
@@ -397,7 +391,7 @@
 
     	$('.dropdown.keep-open').on({
 			"shown.bs.dropdown": function() {this.closable = false; $('.nav_hide').hide(); },
-			"click":             function() {console.log( this.className); this.closable = true; },
+			"click":             function() {this.closable = true; },
 			"hide.bs.dropdown":  function() {$('.nav_hide').show(); $('#reset_button').trigger('click'); return this.closable;   }
 		});
 
@@ -439,10 +433,7 @@
                 return $("<div>", attrs).append($(this).contents());
             });
         }
-<!--$('.deck').click(function(event) { console.log("user deck");-->
-          <!--$('.dropdown.keep-open').off('click');-->
 
- <!--});-->
 	</script>
 {% endblock  %}
 
