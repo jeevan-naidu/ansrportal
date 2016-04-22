@@ -390,7 +390,7 @@
     	<!-- script to prevent bootstrap filter form from closing when its clicked-->
 
     	$('.dropdown.keep-open').on({
-			"shown.bs.dropdown": function() {this.closable = false; $('.nav_hide').hide(); },
+			"shown.bs.dropdown": function() {this.closable = false; $('.nav_hide').hide();},
 			"click":             function() {this.closable = true; },
 			"hide.bs.dropdown":  function() {$('.nav_hide').show(); $('#reset_button').trigger('click'); return this.closable;   }
 		});
