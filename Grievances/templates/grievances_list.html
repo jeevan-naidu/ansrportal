@@ -14,6 +14,8 @@
   </a></li>
 {% endblock %}
 
+{% block siteTitle %}myansrsource : Grievances{% endblock %}
+
 {% block content  %}
 		
 <!--	fixed left section	-->
@@ -55,7 +57,7 @@
 </div>
 <!-- End add grievance popup -->
 
-<h2 class="text-center">myansrsource : Grievances</h2>
+<h2 class="text-center">Grievances</h2>
 
 {% if objects_list %}
 					<h5 class="text-center">( Your Grievances )</h5>
@@ -88,7 +90,9 @@
 						<th>
 							Registered Date
 						</th>
-						
+						<th>
+							Status
+						</th>
 					</tr>
 				</thead>
 				
@@ -103,12 +107,9 @@
 							<td style="width: 15%">
 								<p>{{object.grievance_id}}</p>
 								
-								{% if object.grievance_status == 'new' %}<p><label type="label" class="label label-info">New</label></p> {% endif %}
-								{% if object.grievance_status == 'opened' %}<p><label type="label" class="label label-warning">Open</label></p> {% endif %}
-								{% if object.grievance_status == 'in_progress' %}<p><label type="label" class="label label-success">In Progress</label></p> {% endif %}
-								{% if object.grievance_status == 'closed' %}<p><label type="label" class="label label-danger">Closed</label></p> {% endif %}
-								
 								{% if object.escalate %}<p><label type="label" class="label label-warning">Escalated</button></p> {% endif %}
+								
+								
 								
 								{% if object.satisfaction_level == 'satisfied' or object.satisfaction_level = 'not_sure'%}
 									<div>
@@ -125,8 +126,6 @@
 								
 							</td>
 							
-							
-							
 							<td style="width: 50%">
 								<!--	Grievance details - grievance, action taken, user actions, HR closure message -->
 									{% include 'grievance_details.html' %}
@@ -139,6 +138,13 @@
 	
 							<td style="width: 15%">
 								<p>{{object.created_date}}</p>
+							</td>
+							<td>
+								{% if object.grievance_status == 'new' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-info">New</label></p> {% endif %}
+								{% if object.grievance_status == 'opened' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-warning">Open</label></p> {% endif %}
+								{% if object.grievance_status == 'in_progress' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-success">In Progress</label></p> {% endif %}
+								{% if object.grievance_status == 'closed' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-danger">Closed</label></p> {% endif %}
+								
 							</td>
 						
 							
