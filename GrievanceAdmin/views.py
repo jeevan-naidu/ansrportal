@@ -301,6 +301,15 @@ class GrievanceAdminEditView(TemplateView):
             if grievances.id:
                 database_object = Grievances.objects.get(id=grievances.id)
 
+                if database_object.action_taken:
+                    database_object.action_taken = database_object.action_taken.strip()
+                if grievances.action_taken:
+                    grievances.action_taken = grievances.action_taken.strip()
+                if database_object.admin_closure_message:
+                    database_object.admin_closure_message = database_object.admin_closure_message.strip()
+                if grievances.admin_closure_message:
+                    grievances.admin_closure_message = grievances.admin_closure_message.strip()
+
                 if database_object.escalate_to is None:
                     database_object.escalate_to = " "  # because for next line if
                     # grievances.escalte_to is empty string from form, then we cant compare none type
@@ -310,7 +319,7 @@ class GrievanceAdminEditView(TemplateView):
                                                             (database_object.escalate_to.split(',')))
 
                     EscalatetoList = EscalatetoList.replace("'", "").replace('"', '').split(",")
-
+                    EscalatetoList = list(filter(None, EscalatetoList))
                     if not EscalatetoList:  # empty EscalatetoList list
                         pass
                     else:
@@ -350,6 +359,7 @@ class GrievanceAdminEditView(TemplateView):
                     # Send update mails to the HR as well as the employee and update the date
                     msg_html = render_to_string('email_templates/EditActionTakenTemplate.html',
                                                 {'registered_by': database_object.user.first_name,
+                                                 'grievance_id': database_object.grievance_id,
                                                  'grievance_subject': database_object.subject})
 
                     mail_obj = EmailMessage('Change in action taken - Grievance Id - ' +
@@ -373,6 +383,7 @@ class GrievanceAdminEditView(TemplateView):
                     # HR and the user and update the date.
                     msg_html = render_to_string('email_templates/AdminClosureMessageTemplate.html',
                                                 {'registered_by': database_object.user.first_name,
+                                                 'grievance_id': database_object.grievance_id,
                                                  'grievance_subject': database_object.subject})
 
                     mail_obj = EmailMessage('HR Message - Grievance  Id - ' + database_object.grievance_id,
