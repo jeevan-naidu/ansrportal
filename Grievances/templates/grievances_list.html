@@ -90,7 +90,9 @@
 						<th>
 							Registered Date
 						</th>
-						
+						<th>
+							Status
+						</th>
 					</tr>
 				</thead>
 				
@@ -122,15 +124,7 @@
 									</div>
 								{% endif %}
 								
-								
-								{% if object.grievance_status == 'new' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-info">New</label></p> {% endif %}
-								{% if object.grievance_status == 'opened' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-warning">Open</label></p> {% endif %}
-								{% if object.grievance_status == 'in_progress' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-success">In Progress</label></p> {% endif %}
-								{% if object.grievance_status == 'closed' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-danger">Closed</label></p> {% endif %}
-								
 							</td>
-							
-							
 							
 							<td style="width: 50%">
 								<!--	Grievance details - grievance, action taken, user actions, HR closure message -->
@@ -144,6 +138,13 @@
 	
 							<td style="width: 15%">
 								<p>{{object.created_date}}</p>
+							</td>
+							<td>
+								{% if object.grievance_status == 'new' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-info">New</label></p> {% endif %}
+								{% if object.grievance_status == 'opened' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-warning">Open</label></p> {% endif %}
+								{% if object.grievance_status == 'in_progress' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-success">In Progress</label></p> {% endif %}
+								{% if object.grievance_status == 'closed' %}<p id="status_{{object.grievance_id}}"><label type="label" class="label label-danger">Closed</label></p> {% endif %}
+								
 							</td>
 						
 							
