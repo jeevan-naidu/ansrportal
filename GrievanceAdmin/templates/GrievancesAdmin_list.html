@@ -198,7 +198,7 @@
 					</tr>
 				</thead>
 				<tbody>
-                     {%  autopaginate grievances 4 %}
+                     {%  autopaginate grievances 10 %}
                         {%   for object in grievances  %}
 
 
@@ -395,7 +395,7 @@
 			"hide.bs.dropdown":  function() {$('.nav_hide').show(); $('#reset_button').trigger('click'); return this.closable;   }
 		});
 
-        $('#reset_button').click(function(){ 
+        $('#reset_button').click(function(){
             $('.filter_class').each(function() {
                  input_type = this.tagName ;
                  if(input_type == 'INPUT')
