@@ -193,7 +193,7 @@
 							Status
 						</th>
 						<th class="TbHead td-center">
-							Created Date
+							Registered Date
 						</th>
 					</tr>
 				</thead>
@@ -242,7 +242,7 @@
                                       <div class="col-sm-4 col-md-2"><b>Status</b></div>
                                         <div class="col-sm-8 col-md-10"> :
                                         {% for value, text in grievances_choices %}
-                                                {%if object.grievance_status ==  value %}{{ text }}  {%endif%}
+                                                {%if object.grievance_status.strip ==  value.strip %}{{ text }}  {%endif%}
                                             {%endfor%}
                                         </div>
                                     </div>
@@ -323,7 +323,7 @@
 
    <script>
 		$(document).ready( function (){
-
+        window.history.replaceState( {} , 'Grievance Admin', '/grievances_admin/' );
 		jQuery('.breadcrumb').click(function(){
            formToDiv();
         });
@@ -367,6 +367,7 @@
 
             <!-- allow form submission only if at-least one input is changed -->
             if ( none_count > 0 )  {
+
                 <!-- we need the following code to ensure on filter form submission the page value is always 1 to ensure the pagination to work properly-->
                  window.history.pushState("object or string", "Grievance Admin", "/grievances_admin/?page=1");
                 $( "#filter_form" ).submit();
@@ -391,7 +392,7 @@
     	$('.dropdown.keep-open').on({
 			"shown.bs.dropdown": function() {this.closable = false; $('.nav_hide').hide();},
 			"click":             function() {this.closable = true; },
-			"hide.bs.dropdown":  function() {return this.closable; alert("hide");; }
+			"hide.bs.dropdown":  function() {$('.nav_hide').show(); $('#reset_button').trigger('click'); return this.closable;   }
 		});
 
         $('#reset_button').click(function(){

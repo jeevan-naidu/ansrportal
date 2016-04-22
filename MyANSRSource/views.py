@@ -1256,7 +1256,7 @@ def Dashboard(request):
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
-        grievances_count = Grievances.objects.filter(active=True).count()
+        grievances_count = Grievances.objects.all().count()
         data['grievances_count'] = grievances_count
 
     return render(request, 'MyANSRSource/landingPage.html', data)

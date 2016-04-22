@@ -228,7 +228,7 @@
 		  <div class="form-group">
             <label class="col-lg-2 ">User Closure Message:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname"> {{grievances.user_closure_message}}
+               <div class="Gr-edit-Uname"> <textarea class="form-control" id="user_closure_message"  name="admin_closure_message" rows="10" readonly>{{grievances.user_closure_message}} </textarea>
 
 			   <div class="">
 
@@ -327,16 +327,13 @@
 
 	  <div class="form-group">
             <label class="col-lg-2 ">Status:</label>
-            <div class="col-lg-10"> <div class="">
-                <select {%if grievances.active == False %}  name ="grievance_status_hidden" {%else%} name ="grievance_status" {%endif%}
-
-                        class="form-control d-item "
-                        {%if grievances.active == False %} disabled   {%endif%}>
+            <div class="col-lg-10">  <div class="Gr-edit-Uname"> {%if grievances.active == False %} Closed{%else%}
+                <select  name ="grievance_status" class="form-control d-item ">
                     {% for value, text in grievances_choices %}
-
                         <option value="{{value}}" {%if grievances.grievance_status.strip ==  value.strip %}  selected ="selected"  {%endif%} >{{ text }}</option>
                     {% endfor %}
                 </select>
+                {%endif%}
                </div>
             </div>
           </div>
