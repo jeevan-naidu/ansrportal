@@ -127,7 +127,7 @@ $(document).ready(function(){
                                 }
                                 if (data.record_added == true) {
                                     $("#RateAndClosureForm_"+form_id).parent().parent().parent().html(data.success_data_template);
-                                    $("#status_"+form_id).html('<i class="fa fa-lock fa-lg" style="color:#d9534f;"></i>');
+                                    $("#status_"+form_id).html('<label type="label" class="label label-danger">Closed</label>');
                                 }
                                 HideAjaxLoader(ajax_loader_element);
                             },
