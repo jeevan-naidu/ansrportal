@@ -216,7 +216,8 @@ class GrievanceAdminListView(ListView):
 
         return render(self.request, self.template_name, {'grievances': grievances, 'category': context_category,
                                                          'users': context_users,
-                                                         'grievances_choices': STATUS_CHOICES_CLOSED, 'form': form})
+                                                         'grievances_choices': STATUS_CHOICES_CLOSED,
+                                                         'form': FilterGrievanceForm()})
 
 
 def read_file_size(attachment):
