@@ -88,7 +88,7 @@
 
                       <ul class="nav  ">
                           <li class="dropdown pull-right">
-                              <a href="#" data-toggle="dropdown" class=""><strong>Filter By &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong class="caret"></strong></a>
+                              <a href="#" data-toggle="dropdown" class="" id="filter_button"><strong>Filter By &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong class="caret"></strong></a>
                               <ul class="dropdown-menu ">
                                    <li class="divider"></li>
                                   <li class="Gr-DropDownpad">
@@ -323,7 +323,7 @@
 
    <script>
 		$(document).ready( function (){
-
+        window.history.replaceState( {} , 'Grievance Admin', '/grievances_admin/' );
 		jQuery('.breadcrumb').click(function(){
            formToDiv();
         });
@@ -367,11 +367,11 @@
 
             <!-- allow form submission only if at-least one input is changed -->
             if ( none_count > 0 )  {
-            $( window ).unload(function() {
-                alert( "Bye now!");
-            });
+            <!--$( window ).unload(function() {-->
+                <!--alert( "Bye now!");-->
+            <!--});-->
                 <!-- we need the following code to ensure on filter form submission the page value is always 1 to ensure the pagination to work properly-->
-                 window.history.pushState("object or string", "Grievance Admin", "/grievances_admin/?page=1");
+                 <!--window.history.pushState("object or string", "Grievance Admin", "/grievances_admin/?page=1");-->
                 $( "#filter_form" ).submit();
             }
 
@@ -379,7 +379,7 @@
                 alert("Please Select At-least One Filtering Option");
                 return false
             }
-
+            $('#reset_button').trigger('click');
         });
     })
 
@@ -397,11 +397,11 @@
 
     	$('.dropdown.keep-open').on({
 			"shown.bs.dropdown": function() {this.closable = false; $('.nav_hide').hide(); },
-			"click":             function() {alert( this.className); this.closable = true; },
+			"click":             function() {console.log( this.className); this.closable = true; },
 			"hide.bs.dropdown":  function() {$('.nav_hide').show(); $('#reset_button').trigger('click'); return this.closable;   }
 		});
 
-        $('#reset_button').click(function(){
+        $('#reset_button').click(function(){ console.log("im called");
             $('.filter_class').each(function() {
                  input_type = this.tagName ;
                  if(input_type == 'INPUT')
@@ -439,10 +439,10 @@
                 return $("<div>", attrs).append($(this).contents());
             });
         }
-$('#id_user-deck').click(function() {
-            $('.dropdown.keep-open').click(function() {this.closable = false; });
+<!--$('.deck').click(function(event) { console.log("user deck");-->
+          <!--$('.dropdown.keep-open').off('click');-->
 
- });
+ <!--});-->
 	</script>
 {% endblock  %}
 
