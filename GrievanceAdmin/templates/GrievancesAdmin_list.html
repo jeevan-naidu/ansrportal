@@ -198,7 +198,7 @@
 					</tr>
 				</thead>
 				<tbody>
-                     {%  autopaginate grievances 10 %}
+                     {%  autopaginate grievances 4 %}
                         {%   for object in grievances  %}
 
 
@@ -369,7 +369,7 @@
             if ( none_count > 0 )  {
 
                 <!-- we need the following code to ensure on filter form submission the page value is always 1 to ensure the pagination to work properly-->
-                 <!--window.history.pushState("object or string", "Grievance Admin", "/grievances_admin/?page=1");-->
+                 window.history.pushState("object or string", "Grievance Admin", "/grievances_admin/?page=1");
                 $( "#filter_form" ).submit();
             }
 
