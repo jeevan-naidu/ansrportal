@@ -100,7 +100,7 @@ label{
     margin-left:15px;
 }
 .message_body{
-    border : 1px solid #ddd;
+    /*border : 1px solid #ddd;*/
     padding:15px;
 }
 .smooth_transitions{
@@ -128,6 +128,13 @@ label{
 }
 .total-greivances{
 	padding-top:15px;
+}
+.Gr-max-height{
+	max-height: 250px;
+	overflow: auto;
+}
+.Gr-PnBg{
+background-color: #fcf8e3;
 }
 
 

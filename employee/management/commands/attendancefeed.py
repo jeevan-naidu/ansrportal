@@ -167,9 +167,9 @@ def insertToDb(employee, attdate, swipe_in, swipe_out, filename, row):
         if attdate != '':
             att.attdate = attdate
             if swipe_in != '':
-                att.swipe_in = swipe_in.replace(tzinfo=get_default_timezone())
+                att.swipe_in = swipe_in
             if swipe_out != '':
-                att.swipe_out = swipe_out.replace(tzinfo=get_default_timezone())
+                att.swipe_out = swipe_out
         att.save()
 
     # To catch any validation errors if any

@@ -1,18 +1,18 @@
 
 {% load grievances_template_tags %}
 <div class="panel-group marginTop" id="panel-{{object.id}}">
-	<div>
+	<div class="panel Gr-PnBg">
 		<div class="panel-heading">
 			
 			<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-1{{object.id}}">
-					<div class="smooth_transitions glyphicon glyphicon-play {{object.id}}"></div>
+					<div class="indicator smooth_transitions glyphicon glyphicon-play {{object.id}}"></div>
 					
 					<b class="font-15">{{object.subject | truncatechars:60}}</b>
 			</a>
 		</div>
 		<div id="panel-element-1{{object.id}}" class="panel-collapse collapse">
-			<div class="panel-body">
-				<div class="message_body">
+			<div class="panel-body ">
+				<div class="message_body Gr-max-height">
 					<p><i><b class="font-15">Subject:</b> {{object.subject}}</i></p>
 					<p><i>{{object.grievance}}</i></p>
 					
@@ -39,16 +39,16 @@
 	</div>
 		
 	{% if object.action_taken %}
-			<div >
-				<div class="panel-heading">
+			<div class="panel Gr-PnBg">
+				<div class="panel-heading ">
 					
 					 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-2{{object.id}}">
-						<span class="smooth_transitions glyphicon glyphicon-play"></span>
+						<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
 						<b class="font-15">Action taken</b></a>
 				</div>
 				<div id="panel-element-2{{object.id}}" class="panel-collapse collapse">
 					<div class="panel-body">
-						<div class="message_body">
+						<div class="message_body Gr-max-height">
 							<p><i>{{object.action_taken}}</i></p>
 							
 							
@@ -80,16 +80,16 @@
 			
 			{% if object.satisfaction_level %}
 				
-				<div>
+				<div class="panel Gr-PnBg">
 					<div class="panel-heading">
 						
 						<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
-							<span class="smooth_transitions glyphicon glyphicon-play"></span>
+							<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
 							<b class="font-15">User Actions</b></a>
 					</div>
 					<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
 						<div class="panel-body">
-							<div class="message_body">
+							<div class="message_body Gr-max-height">
 								{% if object.satisfaction_level == 'satisfied' or object.satisfaction_level = 'not_sure'%}
 									<div>
 										<p><b><i>Satisfaction level :</i> </b><label type="label" class="label label-success">{{object.get_satisfaction_level_display}}</button></p>
@@ -134,11 +134,11 @@
 				</div>
 			
 			{% else %}
-				<div>
+				<div class="panel Gr-PnBg">
 						<div class="panel-heading">
 							
 							 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
-								<span class="smooth_transitions glyphicon glyphicon-play"></span>
+								<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
 								<b class="font-15">User Actions</b></a>
 						</div>
 						<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
@@ -240,17 +240,17 @@
 
 	
 	{% if object.admin_closure_message %}		
-			<div>
+			<div class="panel Gr-PnBg">
 				<div class="panel-heading">
 					
 					 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-4{{object.id}}">
-						<span class="smooth_transitions glyphicon glyphicon-play"></span>
+						<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
 						<b class="font-15">Admin Closure Message</b></a>
 				</div>
 				<div id="panel-element-4{{object.id}}" class="panel-collapse collapse">
 					<div class="panel-body">
 						
-						<div class="message_body">
+						<div class="message_body Gr-max-height">
 							<i><p>{{object.admin_closure_message}}</p></i>
 							
 							
