@@ -63,32 +63,34 @@
                     },
 
                     eventClick: function(calEvent, jsEvent, view) {
-                        //eId = Number(calEvent._id);
+                        eId = Number(calEvent._id);
                         //$('#calendar').fullCalendar('removeEvents', eId);
-                        //if (eId === parseInt(eId, 10))
-                        //    swal({
-                        //      title: "Are you sure?",
-                        //      text: "Do you want me to forget your remainder?",
-                        //      type: "warning",
-                        //      showCancelButton: true,
-                        //      confirmButtonColor: "#DD6B55",
-                        //      confirmButtonText: "Yes, Please!",
-                        //      closeOnConfirm: false,
-                        //      cancelButtonText: "No, Cancel!",
-                        //      closeOnCancel: false
-                        //    },
-                        //    function(isConfirm) {
-                        //      urlVar = "/myansrsource/remainder/delete/" + eId + "/";
-                        //      if (isConfirm) {
-                        //          $.ajax({
-                        //            dataType: "json",
-                        //            url: urlVar,
-                        //          });
-                        //          swal("Done!", "I forgot your remainder", "success");
-                        //      }
-                        //      else
-                        //          swal("Stay Cool", "I will remaind you :). Please refresh the page.", "success");
-                        //    });
+                        if (eId === parseInt(eId, 10))
+                            swal({
+                              title: "Are you sure?",
+                              text: "Do you want me to forget your remainder?",
+                              type: "warning",
+                              showCancelButton: true,
+                              confirmButtonColor: "#DD6B55",
+                              confirmButtonText: "Yes, Please!",
+                              closeOnConfirm: false,
+                              cancelButtonText: "No, Cancel!",
+                              closeOnCancel: false
+                            },
+                            function(isConfirm) {
+                              urlVar = "/myansrsource/remainder/delete/" + eId + "/";
+                              if (isConfirm) {
+                                  $.ajax({
+                                    dataType: "json",
+                                    url: urlVar,
+                                  });
+                                  swal("Done!", "Your reminder is deleted", "success");
+                                  window.location.reload();
+                              }
+                              else
+                                  swal("Stay Cool", "I will remind you :)", "success");
+                                  //window.location.reload();
+                            });
                     },
                 })
             });
