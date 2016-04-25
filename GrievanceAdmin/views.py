@@ -9,6 +9,7 @@ from django.contrib import messages
 from forms import FilterGrievanceForm
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+from django.core.validators import validate_email
 from django.template.loader import render_to_string
 from Grievances.models import Grievances, Grievances_category, SATISFACTION_CHOICES, \
     STATUS_CHOICES, STATUS_CHOICES_CLOSED
@@ -227,6 +228,10 @@ def read_file_size(attachment):
 
 def remove_common_elements(a, b):
     for e in a[:]:
+        try:
+            validate_email(e)
+        except:
+            a.remove(e)
         if e.strip() in b:
             a.remove(e)
     a = ','.join(a)
@@ -262,8 +267,7 @@ class GrievanceAdminEditView(TemplateView):
             grievances.admin_closure_message_attachment = ''
         if request.POST.get('check_admin_action_attachment'):
             grievances.admin_action_attachment = ''
-
-        grievances.escalate_to = request.POST.get('escalate_to')
+        grievances.escalate_to = (request.POST.get('escalate_to'))
         grievances.action_taken = request.POST.get('action_taken').strip()
 
         if request.FILES.get('admin_action_attachment', ""):
@@ -321,6 +325,7 @@ class GrievanceAdminEditView(TemplateView):
 
                     EscalatetoList = EscalatetoList.replace("'", "").replace('"', '').split(",")
                     EscalatetoList = list(filter(None, EscalatetoList))
+                    grievances.escalate_to = ','.join(EscalatetoList)
                     if not EscalatetoList:  # empty EscalatetoList list
                         pass
                     else:
