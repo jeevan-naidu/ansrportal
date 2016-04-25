@@ -295,7 +295,7 @@ class GrievanceAdminEditView(TemplateView):
             else:
                 grievances.admin_closure_message_attachment = request.FILES['admin_closure_message_attachment']
 
-        grievances.grievance_status = request.POST.get('grievance_status')
+        grievances.grievance_status = request.POST.get('grievance_status').strip()
 
         if attachment_error == 0:
             email_status = None
