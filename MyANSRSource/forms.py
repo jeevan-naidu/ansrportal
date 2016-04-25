@@ -12,6 +12,9 @@ from employee.models import Remainder
 import datetime
 import calendar
 import helper
+import autocomplete_light
+autocomplete_light.autodiscover()
+
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 startDate = TimeSheetEntry.objects.all().values('wkstart').distinct()
@@ -621,7 +624,9 @@ class ProjectPerfomanceReportForm(forms.Form):
         super(ProjectPerfomanceReportForm, self).__init__(*args, **kwargs)
         self.fields['project'].queryset = Project.objects.filter(
             id__in=helper.get_my_project_list(currentUser)).order_by('name')
+        self.fields['project'].widget = autocomplete_light.ChoiceWidget('ProjectAutocompleteProjects')
         self.fields['project'].widget.attrs['class'] = "form-control"
+        self.fields['project'].widget.attrs['placeholder'] = 'Enter a Project Name /Project Id'
 
 
 class UtilizationReportForm(forms.Form):

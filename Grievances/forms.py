@@ -1,4 +1,4 @@
-from models import Grievances, SATISFACTION_CHOICES, Grievances_catagory
+from models import Grievances, SATISFACTION_CHOICES, Grievances_category
 from django.utils.safestring import mark_safe
 
 from django import forms
@@ -7,20 +7,20 @@ class AddGrievanceForm(forms.ModelForm):
     # Add Bootstrap widgets
     grievance_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
     
-    catagory = forms.ModelChoiceField(queryset=Grievances_catagory.objects.filter(active=True), empty_label="---------")
+    category = forms.ModelChoiceField(queryset=Grievances_category.objects.filter(active=True), empty_label="---------")
     # Add Bootstrap widgets
-    catagory.widget.attrs = {'class': 'form-control'}
+    category.widget.attrs = {'class': 'form-control', 'required':'true'}
     
     subject = forms.CharField(max_length=100)
     # Add Bootstrap widgets
-    subject.widget.attrs = {'class': 'form-control', 'required':'true'}
+    subject.widget.attrs = {'class': 'form-control', 'required':'true', 'maxlength':'100', 'placeholder':'Max 100 characters'}
     
     class Meta:
         model = Grievances
-        fields = ['catagory', 'subject', 'grievance', 'grievance_attachment']
+        fields = ['category', 'subject', 'grievance', 'grievance_attachment']
         
         widgets = {
-          'grievance': forms.Textarea(attrs={'class': 'form-control', 'rows':8, 'cols':70, 'required':'true'}),
+          'grievance': forms.Textarea(attrs={'class': 'form-control', 'rows':8, 'cols':70, 'required':'true','placeholder':'Max 2000 characters'}),
         }
 
     

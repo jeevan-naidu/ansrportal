@@ -1,7 +1,8 @@
 //JavaScript for User grievances - Front-end only
 		
 $(document).ready(function(){
-            
+			
+			
             //ajax request for registering a grievance on modal popup open
             $("#add_grievance_popup").on('shown.bs.modal', function(){
                     
@@ -24,24 +25,28 @@ $(document).ready(function(){
                                         );
                         });
             
-             
-            $('#add_grievance_popup').on('hidden.bs.modal', function () {
-                    $("#modal_body").html("Loading.. please wait..");
-                    
-                    if ($(".new_notification").length) {
-                        setTimeout(function(){
-                            $(".new_notification").fadeOut("slow");
-                         }, 10000);
-                    }
-                    })
-            
+
                 RateAndClosureFormSubmit();
                 EscalationFormSubmit();
                 
-                
-                $(".panel-title").click(function(){
-                     $(this).find(".glyphicon").toggleClass("expand1");
-                });
+				$('.panel-group').on('hidden.bs.collapse', function(){
+					//alert($(this).attr('class').split(" ")[0]);
+					$(this).find('.panel-title').each(function(){
+						$(this).find(".glyphicon").removeClass("expand1");
+						});
+					});
+				
+				
+				$('.panel-group').on('shown.bs.collapse', function(){
+					$(this).find('.panel-title').each(function(){
+						if ($(this).attr('class') == 'panel-title') {
+							$(this).find(".glyphicon").addClass("expand1");
+						}
+						else{
+							$(this).find(".glyphicon").removeClass("expand1");
+						}
+						});
+					});
                 
                 
                 // File size validation
@@ -126,7 +131,7 @@ $(document).ready(function(){
                                 }
                                 if (data.record_added == true) {
                                     $("#RateAndClosureForm_"+form_id).parent().parent().parent().html(data.success_data_template);
-                                    $("#status_"+form_id).html('<i class="fa fa-lock fa-lg" style="color:#d9534f;"></i>');
+                                    $("#status_"+form_id).html('<label type="label" class="label label-danger">Closed</label>');
                                 }
                                 HideAjaxLoader(ajax_loader_element);
                             },

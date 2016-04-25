@@ -55,20 +55,21 @@
                     eventLimit: true,
                     events: [
                         {% block events %}{% endblock %}
-
                     ],
                     header:{
                       left: 'prev, next today ',
                       center: 'title',
                       right: 'month, basicWeek, basicDay'
                     },
+
                     eventClick: function(calEvent, jsEvent, view) {
-                      eId = Number(calEvent._id);
-                        $('#calendar').fullCalendar('removeEvents', eId);
+                        eId = Number(calEvent.reminder);
+                        //alert(calEvent.reminder)
+                        //$('#calendar').fullCalendar('removeEvents', eId);
                         if (eId === parseInt(eId, 10))
                             swal({
                               title: "Are you sure?",
-                              text: "Do you want me to forget your remainder?",
+                              text: "Do you want me to forget your reminder?",
                               type: "warning",
                               showCancelButton: true,
                               confirmButtonColor: "#DD6B55",
@@ -84,10 +85,12 @@
                                     dataType: "json",
                                     url: urlVar,
                                   });
-                                  swal("Done!", "I forgot your remainder", "success");
+                                  swal("Done!", "Your reminder is deleted", "success");
+                                  window.location.reload();
                               }
                               else
-                                  swal("Stay Cool", "I will remaind you :). Please refresh the page.", "success");
+                                  swal("Stay Cool", "I will remind you :)", "success");
+                                  //window.location.reload();
                             });
                     },
                 })
@@ -106,6 +109,8 @@
        {% include 'session_security/all.html' %}
     </head>
     <body>
+{% block breadcrumb %}{% endblock %}
+
 	<!-- Ansr -->
 	<div class={% block container %}"container"{% endblock %}>
 		<!-- Ansr Logo and role based menuset -->
@@ -131,16 +136,20 @@
 		<div class="row">
 		{% block content  %}{% endblock  %}
 		</div><!-- End of Ansr body -->
+
+           {% block footer %}
 		<!-- Ansr footer -->
 		<div class="row">
-			<nav class="navbar navbar-default navbar-fixed-bottom col-lg-12 col-xs-12 col-md-12" role="navigation">
+			<nav class="navbar navbar-default navbar-fixed-bottom col-lg-12 col-xs-12 col-md-12 nav_hide" role="navigation">
 				<div class="navbar-inner navbar-content-center">
 					<span class="col-lg-6 col-xs-12 col-md-12 col-lg-offset-3 ansrFooterText">
-						<small>&copy; 2015. ansrsource. All rights reserved.</small>
+						<small>&copy; 2016. ansrsource. All rights reserved.</small>
 					</span>
 				</div>
 			</nav>
 		</div><!-- End of Ansr Footer -->
+        {% endblock %}
+
       	</div>
        <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
 

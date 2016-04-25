@@ -36,6 +36,7 @@ import CompanyMaster
 import employee
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
+from Grievances.models import Grievances
 
 
 from ldap import LDAPError
@@ -134,9 +135,23 @@ def Timesheet(request):
     if request.method == 'POST':
         # Getting the forms with submitted values
         hold_button = False
-        date = datetime.now().date()
-        date -= timedelta(days=7)
-        tsform = TimesheetFormset(request.user,date)
+
+        # for timesheet bug which showed project not available  error message by vivek
+        tmp_date = datetime.now().date()
+        tmp_date -= timedelta(days=7)
+        endDate1 = request.GET.get('enddate', '')
+        if request.GET.get("week") == 'prev':
+            if endDate1:
+                tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+                tmp_date -= timedelta(days=13)
+
+        elif request.GET.get("week") == 'next':
+            if endDate1:
+                tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+                tmp_date += timedelta(days=1)
+        #  fix ends here
+
+        tsform = TimesheetFormset(request.user, tmp_date)
         tsFormset = formset_factory(
             tsform, extra=1, max_num=1, can_delete=True
         )
@@ -1191,10 +1206,13 @@ def Dashboard(request):
      attdate__lte=eddte,
      employee_id__user_id=request.user.id).values('swipe_in','swipe_out','attdate').filter(Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(attdate__isnull=False))#.exclude(swipe_in="", swipe_out="", attdate="")
     swipe_display=[]
+    
+    
     for val in attendenceDetail:
         temp={}
         temp['date']=val['attdate'].strftime('%Y-%m-%d')
-        temp['swipe']="In"+str(val['swipe_in'].hour)+":"+str(val['swipe_in'].minute)+"  " +"Out"+str(val['swipe_out'].hour)+":"+str(val['swipe_out'].minute)
+        temp['swipe_in']=val['swipe_in']
+        temp['swipe_out']=val['swipe_out']
         swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
@@ -1236,7 +1254,13 @@ def Dashboard(request):
         'isManager': isManager,
         'swipe_display':swipe_display
     }
+    # the following added for grievance administration module
+    if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
+        grievances_count = Grievances.objects.all().count()
+        data['grievances_count'] = grievances_count
+
     return render(request, 'MyANSRSource/landingPage.html', data)
+
 
 def checkUser(userName, password, request, form):
     try:

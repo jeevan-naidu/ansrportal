@@ -8,10 +8,12 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 from django.core.validators import MinLengthValidator
+from django.utils.safestring import mark_safe
 
 
 SATISFACTION_CHOICES = (('satisfied', 'Satisfied'), ('not_sure', 'Not Sure'), ('dissatisfied', 'Dissatisfied'), ('very_dissatisfied', 'Very Dissatisfied') )
-
+STATUS_CHOICES = (('new', 'New'), ('opened', 'Opened'), ('in_progress', 'In Progress'))
+STATUS_CHOICES_CLOSED = (('new', 'New'), ('opened', 'Open'), ('in_progress', 'In Progress'), ('closed', 'Closed'))
 
 def change_file_path(instance, filename):
     
@@ -35,22 +37,25 @@ def change_file_path(instance, filename):
 
 
 
-class Grievances_catagory(models.Model):
+class Grievances_category(models.Model):
     
-    catagory = models.CharField(max_length=200)
+    category = models.CharField(max_length=200)
     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
     
     def __unicode__(self):
         ''' return unicode strings '''
-        return '%s' % (self.catagory)
+        return '%s' % (self.category)
 
 class Grievances(models.Model):
     user = models.ForeignKey(User)
     
     grievance_id = models.CharField(max_length=60, unique=True)
-    catagory = models.ForeignKey(Grievances_catagory)
+    category = models.ForeignKey(Grievances_category)
     subject = models.CharField(max_length=100, validators=[MinLengthValidator(15)])
-    grievance = models.TextField(max_length=2000, validators=[MinLengthValidator(15)])
+    
+    # length validations are different for front-end and backend. e.g js treats new line as 1 character and python treats the same as "\n" i.e 2
+    #characters. So to be safe, we are giving length 200 characters more than what is validated in front-end(2000 characters)
+    grievance = models.TextField(max_length=2200, validators=[MinLengthValidator(15)], help_text=mark_safe("<span id='textarea_remaining'>2000 remaining</span>"))
     
     action_taken = models.TextField(max_length = 2000, blank=True, null=True, validators=[MinLengthValidator(15)])
     user_closure_message = models.TextField(max_length = 2000, blank=True, null=True, validators=[MinLengthValidator(5)])
@@ -73,101 +78,11 @@ class Grievances(models.Model):
     closure_date = models.DateTimeField(blank=True, null=True)
     
     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
-    
+    grievance_status = models.CharField(max_length=50, blank=False, null=False, default="new", choices=STATUS_CHOICES_CLOSED)
     
     def __unicode__(self):
-        ''' return unicode strings '''
-        return '%s' % (self.id)
+        """ return unicode strings """
+        return '%s' % (self.grievance_id)
     
     class Meta:
-        verbose_name_plural="Grievances"
-        
-  
-    
-    # Send mails.
-    # This method should be removed after seperate admin backend is deployed
-    def save(self, *args, **kwargs):
-        
-        if self.id:
-            database_object = Grievances.objects.get(id=self.id)
-           
-            if database_object.escalate_to is None:
-                database_object.escalate_to = "" # bcoz for next line if self.escalte_to is empty string from form, then we cant compare none type and empty string, so make 'None' to empty string
-            if database_object.escalate_to != self.escalate_to:
-                EscalateToList = self.escalate_to.replace("'","").replace('"', '').split(";")
-                msg_html = render_to_string('email_templates/EscalateToTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_id':database_object.grievance_id, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Escalation - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, EscalateToList, cc=[settings.GRIEVANCES_ADMIN_EMAIL])
-                mail_obj.content_subtype = 'html'
-                email_status = mail_obj.send()
-                
-                if email_status < 1:
-                    # TODO  - mail not sent, log this error
-                    pass
-                
-            if not database_object.action_taken and self.action_taken :
-                # this means the HR has taken action on the grievance. Send mails to the HR as well as the employee and update the date
-                
-                msg_html = render_to_string('email_templates/ActionTakenTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_id':database_object.grievance_id, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Action taken - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
-                mail_obj.content_subtype = 'html'
-                email_status = mail_obj.send()
-                
-                if email_status < 1:
-                    # TODO  - mail not sent, log this error
-                    pass
-                self.action_taken_date = datetime.datetime.now()
-                
-            elif database_object.action_taken != self.action_taken:
-                # this means the HR has edited/changed the action taken field. Send update mails to the HR as well as the employee and update the date
-                msg_html = render_to_string('email_templates/EditActionTakenTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Change in action taken - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
-                mail_obj.content_subtype = 'html'
-                email_status = mail_obj.send()
-                if email_status < 1:
-                    # TODO  - mail not sent, log this error
-                    pass
-                self.action_taken_date = datetime.datetime.now()
-            
-            if database_object.admin_closure_message is None:
-                database_object.admin_closure_message = "" # bcoz for next line if self.admin_closure_message is empty string coming from form, then we cant compare none type and empty string, so make 'None' to empty string
-            
-            if database_object.admin_closure_message == "" and self.admin_closure_message:
-                # this mmeans the HR has added the closure message. Send mails to HR and the user and update the date.
-                msg_html = render_to_string('email_templates/AdminClosureMessageTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('HR Message - Grievance  Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [self.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
-                mail_obj.content_subtype = 'html'
-                email_status = mail_obj.send()
-                if email_status < 1:
-                    # TODO  - mail not sent, log this error
-                    pass
-                self.admin_closure_message_date = datetime.datetime.now()
-              
-            elif database_object.admin_closure_message != self.admin_closure_message:
-                # this means HR has edited/changed the closure message. Send update mails to the HR aas well as the employee and update the date field.
-                msg_html = render_to_string('email_templates/EditAdminClosureMessageTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Change in admin message - Grievance Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
-                mail_obj.content_subtype = 'html'
-                email_status = mail_obj.send()
-                if email_status < 1:
-                    # TODO  - mail not sent, log this error
-                    pass
-                
-                self.admin_closure_message_date = datetime.datetime.now()
-                
-       
-                
-            elif database_object.active == False and self.active == True:
-                # this means the HR wants to reopen this grievance. Send mails to HR and the employee
-                msg_html = render_to_string('email_templates/OpenClosedGrievanceMessageTemplate.html', {'registered_by': database_object.user.first_name, 'grievance_subject':database_object.subject})
-                mail_obj = EmailMessage('Closed grievance opened - Id - ' + database_object.grievance_id, msg_html, settings.EMAIL_HOST_USER, [database_object.user.email], cc=[settings.GRIEVANCES_ADMIN_EMAIL])
-                mail_obj.content_subtype = 'html'
-                email_status = mail_obj.send()
-                if email_status < 1:
-                    # TODO  - mail not sent, log this error
-                    pass
-        
-        super(Grievances, self).save(*args, **kwargs) # Call the "real" save() method.
-    
-  
-
-    
+        verbose_name_plural = "Grievances"

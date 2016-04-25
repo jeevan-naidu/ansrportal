@@ -1,7 +1,7 @@
 {% extends 'master.inc' %}
 {% load permissions %}
 {% block addFormMedia %}
-
+{% load tz %}
 {{ remainderForm.media }}
 
 {% endblock %}
@@ -13,7 +13,7 @@
 
 	{% for eachRem in remainders %}
 		{
-      id : {{ eachRem.id }},
+      reminder : {{ eachRem.id }},
 			start : '{{ eachRem.startDate }}',
 			end : '{{ eachRem.endDate }}',
 			title : '{{ eachRem.name }}',
@@ -25,11 +25,10 @@
 		{
 			id : '1',
 			start : '{{eachSwipe.date}}',
-			title : '{{eachSwipe.swipe}}',
+			title : 'In{{eachSwipe.swipe_in|date:"H:i"}} Out{{eachSwipe.swipe_out|date:"H:i"}} ',
 			color : '#ffffff',
 			textColor: '#000000',
 			borderColor: '#ffffff'
-
 		},
 	{% endfor %}
 {% endblock %}
@@ -259,16 +258,29 @@
 		</div>
 	{% endif %}
 
-	<div class="panel panel-default">
-		<div class="panel-heading" role="tab" id="rt">
-			<a href="/grievances/" >
-				Grievances
-			</a>
+
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="grievances_admin">
+				<a data-toggle="collapse" data-parent="#accordion" href="#grievances" aria-expanded="false" aria-controls="collapseTwo">
+					Grievances
+				</a>
+			</div>
+			<div id="grievances" class="panel-collapse collapse" role="tabpanel" aria-labelledby="grievances_admin">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="/grievances/" class="list-group-item">
+						Grievance
+					</a>
+					{% if request.user|has_group:"myansrsourceGrievanceAdmin" %}
+                			<a href="/grievances_admin/" class="list-group-item" >Grievance Administration<span class="badge">{{ grievances_count }}</span>
+
+							</a>
+					{% endif %}
+
+				</ul>
+			</div>
+			</div>
 		</div>
-
-	</div>
-
-
 
 		</div>
 	</div>

@@ -38,6 +38,7 @@ class AddGrievanceView(View):
     
     
     def get(self, request):
+        
         context_data = {'add':True, 'record_added':False, 'form':None}
         form = AddGrievanceForm()
         context_data['form'] = form
@@ -111,6 +112,7 @@ def RateAndCloseView(request):
             grievance_obj.user_closure_message_attachment = request.FILES['user_closure_message_attachment']
         grievance_obj.closure_date = datetime.datetime.now()
         grievance_obj.active = False
+        grievance_obj.grievance_status = 'closed'
         grievance_obj.save()
         
         # Send notification mails
