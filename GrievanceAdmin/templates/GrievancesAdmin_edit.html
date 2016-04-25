@@ -264,7 +264,7 @@
             <label class="col-md-2 ">Admin Closure Message:</label>
             <div class="col-md-10"><div class="">
               <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10" {%if  grievances.user_closure_message == None %} readonly {%endif%}>{%if  not grievances.admin_closure_message == None %}{{grievances.admin_closure_message.strip}}{%endif%}</textarea>
-              {%if grievances.admin_closure_message_date%} <br><div class="center-block"><b>Closed By Admin On :&nbsp;&nbsp;{{grievances.admin_closure_message_date}} </b></div><br>{%endif%}
+              {%if grievances.admin_closure_message_date%} <br><div class="center-block"><b>Admin Closure Message On :&nbsp;&nbsp;{{grievances.admin_closure_message_date}} </b></div><br>{%endif%}
 
             </div></div>
           </div>
@@ -344,11 +344,11 @@
             {%if grievances.active == False %} <input type="hidden"  value="{{ grievances.grievance_status.strip}} " name="grievance_status">   {%endif%}
           <div class="form-group">
             <label class="col-md-2 "></label>
-            <div class="col-md-10">
-              <input type="submit" class="btn btn-primary" value="Save Changes">
-              <span></span>
-              <input type="reset" class="btn btn-default" value="Reset">
-            </div>
+            <!--<div class="col-md-10">-->
+              <!--<input type="submit" class="btn btn-primary" value="Save Changes">-->
+              <!--<span></span>-->
+              <!--<input type="reset" class="btn btn-default" value="Reset">-->
+            <!--</div>-->
           </div>
         <br><br><br>
           {%if grievances.active == False %}<input type="hidden" value ={{grievances.id}} name="grievance_id"/>{%endif%}
@@ -382,6 +382,7 @@
 			<div class="col-sm-4 col-md-4 col-lg-4 ">
 			     <div class="col-md-12 text-center">
 			      <button type="button" id = "save_2" class="btn btn-danger">Save Changes</button>
+                   <input type="reset" id ="reset_button" class="btn btn-default" value="Reset">
 			    </div>
 			</div>
 
@@ -447,6 +448,10 @@
         jQuery('#save_2').click(function(){
             jQuery('#grievance_edit_form').submit();
         });
+
+         jQuery('#reset_button').click(function(){
+            $('#grievance_edit_form')[0].reset();
+         });
 
         jQuery('.breadcrumb').click(function(){
             var attrs = { };
