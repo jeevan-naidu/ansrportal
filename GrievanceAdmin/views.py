@@ -226,15 +226,28 @@ def read_file_size(attachment):
     return len(blob)
 
 
+def validate_escalation_email(a):
+    for e in a[:]:
+        try:
+            validate_email(e)
+        except:
+            a.remove(e)
+    a = ','.join(a)
+    return a
+
+
 def remove_common_elements(a, b):
     for e in a[:]:
         try:
             validate_email(e)
         except:
             a.remove(e)
+        print e
         if e.strip() in b:
             a.remove(e)
+
     a = ','.join(a)
+    print a
     return a
 
 
@@ -325,7 +338,7 @@ class GrievanceAdminEditView(TemplateView):
 
                     EscalatetoList = EscalatetoList.replace("'", "").replace('"', '').split(",")
                     EscalatetoList = list(filter(None, EscalatetoList))
-                    grievances.escalate_to = ','.join(EscalatetoList)
+                    grievances.escalate_to = validate_escalation_email(request.POST.get('escalate_to').split(','))
                     if not EscalatetoList:  # empty EscalatetoList list
                         pass
                     else:
