@@ -242,12 +242,10 @@ def remove_common_elements(a, b):
             validate_email(e)
         except:
             a.remove(e)
-        print e
         if e.strip() in b:
             a.remove(e)
 
     a = ','.join(a)
-    print a
     return a
 
 
