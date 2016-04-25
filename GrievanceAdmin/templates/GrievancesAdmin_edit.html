@@ -127,7 +127,7 @@
             <label class="col-md-2 ">Action Taken</label>
             <div class="col-md-10">
                 <div>
-              <textarea class="form-control" id="action_taken" name="action_taken"  rows="10" {%if grievances.active == False %} readonly   {%endif%}> {%if not grievances.action_taken == None %} {{grievances.action_taken.strip}}{%endif%}</textarea>
+              <textarea class="form-control" id="action_taken" name="action_taken"  rows="10" {%if grievances.active == False %} readonly   {%endif%}>{%if not grievances.action_taken == None %}{{grievances.action_taken.strip}}{%endif%}</textarea>
             {%if grievances.action_taken_date%}  <br><div class="center-block"><b>Action Taken  On :&nbsp;&nbsp;{{grievances.action_taken_date}}</b></div> <br>{%endif%}
 
             </div>
@@ -263,8 +263,7 @@
 	  <div class="form-group">
             <label class="col-md-2 ">Admin Closure Message:</label>
             <div class="col-md-10"><div class="">
-              <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10" {%if  grievances.user_closure_message == None %} readonly {%endif%}>{%if  not grievances.admin_closure_message == None %} {{grievances.admin_closure_message.strip}}{%endif%}
-              </textarea>
+              <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10" {%if  grievances.user_closure_message == None %} readonly {%endif%}>{%if  not grievances.admin_closure_message == None %}{{grievances.admin_closure_message.strip}}{%endif%}</textarea>
               {%if grievances.admin_closure_message_date%} <br><div class="center-block"><b>Closed By Admin On :&nbsp;&nbsp;{{grievances.admin_closure_message_date}} </b></div><br>{%endif%}
 
             </div></div>
@@ -351,13 +350,8 @@
               <input type="reset" class="btn btn-default" value="Reset">
             </div>
           </div>
-
-
         <br><br><br>
-
-
           {%if grievances.active == False %}<input type="hidden" value ={{grievances.id}} name="grievance_id"/>{%endif%}
-
     </form>
         </div>
     <div class="col-md-2">
