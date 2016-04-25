@@ -63,12 +63,13 @@
                     },
 
                     eventClick: function(calEvent, jsEvent, view) {
-                        eId = Number(calEvent._id);
+                        eId = Number(calEvent.reminder);
+                        //alert(calEvent.reminder)
                         //$('#calendar').fullCalendar('removeEvents', eId);
                         if (eId === parseInt(eId, 10))
                             swal({
                               title: "Are you sure?",
-                              text: "Do you want me to forget your remainder?",
+                              text: "Do you want me to forget your reminder?",
                               type: "warning",
                               showCancelButton: true,
                               confirmButtonColor: "#DD6B55",
