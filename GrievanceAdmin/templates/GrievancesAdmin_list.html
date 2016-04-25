@@ -21,9 +21,7 @@
     <div class="row">
             <div class="col-md-12">
                 <ul class="breadcrumb">
-                    <li>
-					<a href="/admin">Admin</a>
-                    </li>
+
                     <li>
 					<a href='/grievances_admin'>Grievances</a>
                     </li>
@@ -215,8 +213,18 @@
 
                                         <div class="col-sm-8 col-md-10"> : {{object.grievance_id}} </div>
                                     </div>
+                                     <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Registered By</b></div>
+
+                                        <div class="col-sm-8 col-md-10"> : {{object.user.first_name}} </div>
+                                    </div>
+                                     <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Registered On </b></div>
+
+                                        <div class="col-sm-8 col-md-10"> : {{object.created_date}} </div>
+                                    </div>
                                     <div class="col-sm-12">
-                                        <div class="col-sm-4 col-md-2" ><b>category</b></div>
+                                        <div class="col-sm-4 col-md-2" ><b>Category</b></div>
 
                                         <div class="col-sm-8 col-md-10"> : {{object.category}} </b></i>  </div>
                                     </div>
@@ -246,10 +254,11 @@
                                             {%endfor%}
                                         </div>
                                     </div>
+                                      {%if object.active == False %}
                                     <div class="col-sm-12">
-                                        <div class="col-sm-4 col-md-2"><b>Created Date</b></div> <div class="col-sm-8 col-md-10"> :  {{object.created_date}} </div>
+                                        <div class="col-sm-4 col-md-2"><b>Closed On</b></div> <div class="col-sm-8 col-md-10"> :  {{object.closure_date}} </div>
                                     </div>
-                                     {%if grievances.active == False %}
+
                                          <div class="col-sm-12">
                                             <div class="col-sm-4 col-md-2"><b>User Closure Message</b></div> <div class="col-sm-8 col-md-10"> : {{object.user_closure_message}} </div>
                                          </div>
