@@ -160,6 +160,8 @@ def Timesheet(request):
         )
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
+        dbSave = False
+
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
             changedStartDate = datetime.strptime(
@@ -350,6 +352,8 @@ def Timesheet(request):
                             elif k == 'activity':
                                 nonbillableTS.activity = v
                         nonbillableTS.save()
+                        global dbSave
+                        dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
                     if eachTimesheet['tsId'] > 0:
@@ -382,6 +386,8 @@ def Timesheet(request):
                                     v=float(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
+                    global dbSave
+                    dbSave = True
                     eachTimesheet['tsId'] = billableTS.id
             else:
                 # Save Timesheet
@@ -430,6 +436,8 @@ def Timesheet(request):
                             elif k == 'activity':
                                 nonbillableTS.activity = v
                         nonbillableTS.save()
+                        global dbSave
+                        dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
                     if eachTimesheet['tsId'] > 0:
@@ -461,6 +469,8 @@ def Timesheet(request):
                                     v=float(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
+                    global dbSave
+                    dbSave = True
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
@@ -540,8 +550,16 @@ def Timesheet(request):
                 'atErrorList': atErrorList,
                 'tsFormList': tsContent,
                 'atFormList': atContent}
+        global dbSave
+        if dbSave:
+            getRelativeUrl = request.META['HTTP_REFERER']
+            getRelativeUrl = getRelativeUrl.split("/")[3:]
+            getRelativeUrl = "/".join(i for i in getRelativeUrl)
+            return HttpResponseRedirect('/' + getRelativeUrl)
+
         return renderTimesheet(request, data)
     else:
+        # GET request
         # Switch dates back and forth
         dates = switchWeeks(request)
 
