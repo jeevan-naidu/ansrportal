@@ -192,7 +192,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansrsource",
+        "NAME": "myansr_dev",
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
@@ -330,3 +330,5 @@ MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
 GRIEVANCES_ADMIN_EMAIL = "amol.pachpute@ansrsource.com"
+
+MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
