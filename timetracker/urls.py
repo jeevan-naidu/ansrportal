@@ -27,4 +27,6 @@ urlpatterns = patterns('',
                        url(r'^$', RedirectView.as_view(url='/myansrsource/')),
                        url(r'^grievances/', include('Grievances.urls')),
                        url(r'^grievances_admin/', include('GrievanceAdmin.urls')),
+                       url(r'^reports/', include('Reports.urls')),
+                       
                        ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -280,7 +280,23 @@
 				</ul>
 			</div>
 			</div>
-		</div>
+</div>
+
+
+<!-- Milestone reports section-->
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="grievances_admin">
+				
+				{% if request.user|IsMilestoneReportsAdmin %}
+						<a href="/reports/milestones/"  aria-controls="collapseTwo">
+								Milestone Reports
+						</a>
+                			
+					{% endif %}
+			</div>
+</div>
+<!-- End Milestone reports section-->
+
 
 		</div>
 	</div>

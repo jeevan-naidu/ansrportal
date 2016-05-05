@@ -1,0 +1,57 @@
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %} 
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+{% block siteTitle %}myansrsource : Milestone Reports{% endblock %}
+
+{% block content  %}
+<h3 class="text-center">Milestone Reports</h3>
+<table border="0" style="margin:0 auto">
+			   <div style="color:red" id="AddGrievanceForm_errors"></div><br>
+						 {% for field in form.visible_fields %}
+						   <tr>
+						   <td style="padding:20px 20px 5px 5px;">{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %} <br></td>
+						   <td><br>{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
+							   {% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
+						   </td>
+						   </tr>
+						{% endfor %}
+						 {% if errors %}
+						   <tr>
+							{% for non_field_error in errors %}
+							 <td></td>
+							  <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
+							{% endfor %}
+							</tr>
+						 {% endif %}
+						 {% for field in form.hidden_fields %}
+							 {{field}}
+						 {% endfor %}
+			 </table>
+
+
+<button type="submit" value="submit" class="btn btn-info pull-right">
+                    <i class="fa fa-download fa-lg"></i>
+		    <b>Get Report</b>
+                
+            </button>
+
+
+
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+{% endblock %}
