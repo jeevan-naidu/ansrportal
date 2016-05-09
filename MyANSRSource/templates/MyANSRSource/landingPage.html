@@ -284,17 +284,19 @@
 
 
 <!-- Milestone reports section-->
-<div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="grievances_admin">
-				
-				{% if request.user|IsMilestoneReportsAdmin %}
-						<a href="/reports/milestones/"  aria-controls="collapseTwo">
-								Milestone Reports
-						</a>
-                			
-					{% endif %}
-			</div>
-</div>
+{% if request.user|IsMilestoneReportsAdmin %}
+    <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="grievances_admin">
+
+
+                            <a href="/reports/milestones/"  aria-controls="collapseTwo">
+                                    Milestone Reports
+                            </a>
+
+
+                </div>
+    </div>
+{% endif %}
 <!-- End Milestone reports section-->
 
 
