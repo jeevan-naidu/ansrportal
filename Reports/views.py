@@ -18,7 +18,7 @@ class MilestoneReportsView(View):
     def get(self, request):
 
         if not request.user.groups.filter(name=settings.MILESTONE_REPORTS_ADMIN_GROUP_NAME).exists():
-            raise PermissionDenied("Sorry You Dont Have Permission To Access This Feature")
+            raise PermissionDenied("Sorry, you don't have permission to access this feature")
         
         context_data = {'form':None}
         form = MilestoneReportsForm()
@@ -28,7 +28,7 @@ class MilestoneReportsView(View):
     def post(self, request):
 
         if not request.user.groups.filter(name=settings.MILESTONE_REPORTS_ADMIN_GROUP_NAME).exists():
-            raise PermissionDenied("Sorry You Dont Have Permission To Access This Feature")
+            raise PermissionDenied("Sorry, you don't have permission to access this feature")
 
         form = MilestoneReportsForm(request.POST)
         context_data = {'form': form, 'errors': ""}
