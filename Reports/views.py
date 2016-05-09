@@ -19,7 +19,7 @@ class MilestoneReportsView(View):
 
         if not request.user.groups.filter(name=settings.MILESTONE_REPORTS_ADMIN_GROUP_NAME).exists():
             raise PermissionDenied("Sorry, you don't have permission to access this feature")
-        
+
         context_data = {'form':None}
         form = MilestoneReportsForm()
         context_data['form'] = form
@@ -116,10 +116,11 @@ class MilestoneReportsView(View):
             response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
 
             writer = csv.writer(response)
-            writer.writerow(['Project Id', 'Project Name', 'Milestone Date', 'Description', 'Amount', 'Closed Status',
-                             'Is Financial', 'Closed On', 'Updated On'])
+            writer.writerow(['Project Id', 'Project Name', "Leads/PM's", 'Milestone Date', 'Description', 'Amount',
+                             'Closed Status', 'Is Financial', 'Closed On', 'Updated On'])
             for obj in MilestoneList:
-                writer.writerow([obj.project.projectId, obj.project.name, obj.milestoneDate, obj.description,
+                leads_list = ",".join(i.first_name + " " + i.last_name for i in obj.project.projectManager.all())
+                writer.writerow([obj.project.projectId, obj.project.name, leads_list, obj.milestoneDate, obj.description,
                                  obj.amount, obj.closed, obj.financial, obj.closedon, obj.updatedOn])
             if MilestoneList:
                 return response
