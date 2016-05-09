@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'Grievances',
     'GrievanceAdmin',
     'pagination',
+    'Reports',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -332,4 +333,8 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
+
 GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
+
+MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
+

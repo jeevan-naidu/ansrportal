@@ -1,0 +1,70 @@
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %} 
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+{% block siteTitle %}myansrsource : Milestone Reports{% endblock %}
+
+{% block content  %}
+
+
+<h3 class="text-center">Milestone Reports</h3>
+
+{% if errors %}
+    <div class="alert alert-warning">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>{{ errors|safe }}</strong>
+  </div>
+{% endif %}
+
+
+<form action="/reports/milestones/" method="post" id="MilestoneReportsForm">
+{% csrf_token %}
+<table border="0" style="margin:0 auto">
+   <div style="color:red"></div>
+             {% for field in form.visible_fields %}
+               <tr>
+               <td style="padding:20px 20px 5px 5px;">{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %} <br></td>
+               <td><br>{{ field }}{% if field.help_text %}<br> {{ field.help_text }} {% endif %}
+                   {% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
+               </td>
+               </tr>
+            {% endfor %}
+ </table>
+
+<button type="submit" value="submit" class="btn btn-info pull-right">
+                    <i class="fa fa-download fa-lg"></i>
+		    <b>Get Report</b>
+                
+            </button>
+</form>
+
+
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+{% endblock %}
+
+{% block page_specific_JS %}
+<script>
+$("#MilestoneReportsForm").submit(function(){
+    $('.alert').hide();
+    return true;
+
+});
+</script>
+
+{% endblock %}
+
