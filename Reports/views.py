@@ -6,6 +6,9 @@ from django.forms.fields import DateField
 import csv
 from django.http import HttpResponse
 import datetime
+from django.core.exceptions import PermissionDenied
+from django.conf import settings
+
 date_instance = DateField()
 
 
@@ -13,6 +16,9 @@ class MilestoneReportsView(View):
     ''' MilestoneReportsView '''
 
     def get(self, request):
+
+        if not request.user.groups.filter(name=settings.MILESTONE_REPORTS_ADMIN_GROUP_NAME).exists():
+            raise PermissionDenied("Sorry You Dont Have Permission To Access This Feature")
         
         context_data = {'form':None}
         form = MilestoneReportsForm()
@@ -20,6 +26,9 @@ class MilestoneReportsView(View):
         return render(request, 'milestone_reports.html', context_data)
 
     def post(self, request):
+
+        if not request.user.groups.filter(name=settings.MILESTONE_REPORTS_ADMIN_GROUP_NAME).exists():
+            raise PermissionDenied("Sorry You Dont Have Permission To Access This Feature")
 
         form = MilestoneReportsForm(request.POST)
         context_data = {'form': form, 'errors': ""}
