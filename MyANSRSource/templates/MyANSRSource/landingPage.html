@@ -25,7 +25,7 @@
 		{
 			id : '1',
 			start : '{{eachSwipe.date}}',
-			title : '{{eachSwipe.swipe}}',
+			title : '{{eachSwipe.swipe_in}}',
 			color : '#ffffff',
 			textColor: '#000000',
 			borderColor: '#ffffff'
@@ -283,8 +283,22 @@
 			</div>
 		</div>
 
+
+
+
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="rt">
+				<a href="/leave/" >
+					Leave
+				</a>
+			</div>
+
 		</div>
-	</div>
+
+</div>
+</div>
+
+
 	<div class="col-md-8">
 
 		<div id='calendar'></div>
@@ -407,6 +421,21 @@
 </div>
 <script>
 $(document).ready(function() {
+
+//time extraction for displaying in calender
+{% for eachSwipe in swipe_display%}
+
+	//var d1 = new Date(eachSwipe.swipe_in);
+	//var d2 = new Date(eachSwipe.swipe_out);
+	//eachSwipe.swipe_in = eachSwipe.swipe_in.substr(11, 2);
+//	eachSwipe.swipe_out = eachSwipe.swipe_out.substr(11, 2);
+
+
+{% endfor%}
+
+
+
+
 	{% for eachHoliday in holidayList %}
 	$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
 

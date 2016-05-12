@@ -1,0 +1,922 @@
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+<!DOCTYPE html>
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+{% block content  %}
+
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/leave_style.css" rel="stylesheet">
+
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+    	<div class="modal-dialog">
+    		<div class="modal-content">
+    			<div class="modal-header">
+    				<h3>Leave Details</h3>
+    			</div>
+    			<div class="modal-body" id="myModaldata">
+    				<div class="container col-md-12">
+    					<div class="row">
+    						<!-- <div class="col-md-3">
+    							<p>
+    								1st col 3
+    							</p>
+    						</div>
+    						<div class="col-md-3">
+    							<p>
+    								2nd col 3
+    							</p>
+    						</div>
+    						<div class="col-md-3">
+    							<p>
+    								3rd col 3
+    							</p>
+    						</div>
+    						<div class="col-md-3">
+    							<p>
+    								4th col 3
+    							</p>
+    						</div> -->
+    					</div>
+    				</div>
+    			</div>
+    			<div class="modal-footer">
+    				<button class="btn" data-dismiss="modal">Close</button>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+
+
+    <!--  Start Apply/cancel Leave popup-->
+    <div class="row margin-correct">
+        <div class="col-md-12">
+            <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form method='POST'  id='post-form' action=".">
+                        <div class="modal-header">
+
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								Please Enter Your Leave
+							</h4>
+                        </div>
+                        <div class="modal-body" id="modal_body">
+                          loading...............
+                        </div>
+                        <div class="modal-footer">
+
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!--  End Apply/cancel leave pop-->
+
+
+
+    <div class="container Lv-themeTxtColor ">
+
+        <!--      My Leaves Start -->
+        <div class="row">
+            <div class=="col-md-12">
+                <h3 class="text-center"><b>Welcome to the leave portal</b></h3>
+            </div>
+        </div>
+<div id='message'></div>
+        <!--	Start Menu -->
+        <div class="row">
+            <div class="col-md-12 ">
+                <div class="Lv-ApLvHeader">
+                    <!--  <h3 class="text-center">
+			  h3. Lorem ipsum dolor sit amet.
+		  </h3>-->
+                    <div class="row margin-correct">
+                        <div class="col-md-6">
+                            <div class="LvMenuBtn"><b>Admin</b>
+
+
+                            </div>
+                            {% if isManager %}
+                            <div class="LvMenuBtn "><b>Approve</b>
+
+                            </div>
+                            {% endif %}
+                            <div class="LvMenuBtn LvMenuBtnActive"><b>My Leaves</b>
+                                <div class="Lv-active-caret">
+                                    <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="LvMenuBtn "><b>Calender</b>
+
+                            </div>
+
+                            <!--    <ul class="nav navbar-nav">-->
+                            <!--    <li class="dropdown">-->
+                            <!--	      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>-->
+                            <!--	     <ul class="dropdown-menu">-->
+                            <!--		     <li>-->
+                            <!--			     <a href="#">Action</a>-->
+                            <!--		     </li>-->
+                            <!--		     <li>-->
+                            <!--			     <a href="#">Another action</a>-->
+                            <!--		     </li>-->
+                            <!--		     <li>-->
+                            <!--			     <a href="#">Something else here</a>-->
+                            <!--		     </li>-->
+                            <!--		     <li class="divider">-->
+                            <!--		     </li>-->
+                            <!--		     <li>-->
+                            <!--			     <a href="#">Separated link</a>-->
+                            <!--		     </li>-->
+                            <!--	     </ul>-->
+                            <!--     </li>-->
+                            <!--    </ul>-->
+
+                        </div>
+                        <div class="col-md-6"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--	End Menu -->
+
+
+        <div class="row ">
+            <div class="col-md-12 ">
+                <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">
+                    <button class="btn btn-sm btn-danger">Apply Leave</button>
+                </a>
+                <button class="pull-right btn btn-sm btn-danger">Export</button>
+                <p></p>
+            </div>
+        </div>
+
+
+
+
+        <!--	Start content-->
+        <div class="row">
+            <div class="col-md-6 ">
+                <div class="row">
+                    <div class="col-md-12   ">
+                        <div class="LvTitle">
+                            <b>My Leaves:</b>
+                        </div>
+                    </div>
+                </div>
+                <div class="MyLeavesContainer">
+                    <br>
+
+                    <div class="row pad5" id="earned_leave">
+                        <div class="col-md-12">
+                            <div class="row Lv-Type-Selected">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Earned Leave</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar " style="width:0%">
+                                            0
+                                        </div>
+                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5" id="sick_leave">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Sick Leave</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5" id="casual_leave">
+                        <div class="col-md-12">
+                            <div class="row ">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Casual Leave</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5" id="Bereavement">
+                        <div class="col-md-12">
+                            <div class="row ">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Bereavement Leave</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5" id="comp_off">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Compensatory Off</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5" id="loss_of_pay">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Loss Off Pay</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5" id="pay_off">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Pay Off</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5" id="work_from_home">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 Pad-topX10">
+                                    <table>
+                                        <tr>
+
+                                            <td>Work From Home</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 Pad-topX10">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                            0
+
+                                        </div>
+                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad15X margin-correct">
+
+                        <div class="col-md-6  col-sm-6">
+                            <div class="row ">
+                                <div class="MyLvTot"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Total</span></div>
+                                <div class="MyLvAppr"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Applied</span></div>
+                                <div class="MyLvAppl"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Approved</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <!-- End MyLeavesContainer -->
+
+            </div>
+            <!--  End  My Leaves -->
+
+
+            <!-- Start My Transactions -->
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12 " >
+                        <div class="LvTitle form-inline">
+
+							 <b>Transactions:</b> <span id="leave_name">Earned Leave</span>
+							 <span class="pull-right">
+							  <label for="month_select">Select month&nbsp;:&nbsp;</label>
+							  <select class="Lv-Tr-SelectMonth" id="month_select">
+                  {
+								    <option>January</option>
+
+								  <option>February</option>
+									<option>March</option>
+									<option>April</option>
+									<option>May</option>
+									<option>June</option>
+                  <option>July</option>
+									<option>August</option>
+									<option>September</option>
+									<option>October</option>
+									<option>November</option>
+                  <option>December</option>
+
+							  </select>
+							  </span>
+
+                        </div>
+                        <div class="Lv-TransactionsContainer">
+                            <table class="table table-bordered table-responsive table-hover">
+                                <tr class="">
+                                    <th>No</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Days</th>
+                                </tr>
+
+                               <!-- <tr class="success">
+                                    <td>1<br>
+									  <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">
+										  Details
+									  </a>
+									</td>
+                                    <td>12 Feb '16, <br>Session-2</td>
+                                    <td>12-June-2016, <br>Session-2</td>
+                                    <td>4.5<br>
+									<a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">
+										Cancel
+									</a>
+									</td>
+                                 </tr> -->
+
+                            </table>
+
+                        </div>
+                        <!--  End Lv-TransactionsContainer-->
+
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- End My Transactions-->
+
+
+
+        </div>
+        <!--	End content-->
+
+
+    </div>
+    <!-- End Main Container-->
+
+
+<!--<script type="text/javascript" src="/static/js/leave.js"></script>-->
+
+
+
+<script>
+$(document).ready(function() {
+  $("#modal-leave-cancel").click(function(){
+    alert("working");
+  $.ajax(
+        {
+            type : "GET",
+            url : '/leave/cancel/',
+            data :{'leaveid':$('#leave_id_cancel').val()} ,
+            success : function(data)
+            {
+                alert(data);
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+              },
+            }
+          );
+          });
+
+gridLoad('earned_leave');
+
+  {% for leave in leave_summary%}
+  var leaveType='{{leave.type__leave_type}}';
+  switch(leaveType){
+    case 'earned_leave':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#earned_leave .applied').text(applied);
+      $('#earned_leave .approved').text(approved);
+      $('#earned_leave .total').text(total +' days');
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#earned_leave .applied').css({'width' : applied_perc+"%"});
+        $('#earned_leave .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#earned_leave .applied').css({'width' : "0%"});
+        $('#earned_leave .approved').css({'width' : "0%"});
+      }
+
+      break;
+    }
+    case 'sick_leave':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#sick_leave .applied').text(applied);
+      $('#sick_leave .approved').text(approved);
+      $('#sick_leave .total').text(total +' days');
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#sick_leave .applied').css({'width' : applied_perc+"%"});
+        $('#sick_leave .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#sick_leave .applied').css({'width' : "0%"});
+        $('#sick_leave .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+    case 'casual_leave':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#casual_leave .applied').text(applied);
+      $('#casual_leave .approved').text(approved);
+      $('#casual_leave .total').text(total +' days');
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#casual_leave .applied').css({'width' : applied_perc+"%"});
+        $('#casual_leave .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#casual_leave .applied').css({'width' : "0%"});
+        $('#casual_leave .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+    case 'loss_of_pay':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#loss_of_pay .applied').text(applied);
+      $('#loss_of_pay .approved').text(approved);
+      $('#loss_of_pay .total').text(total +' days');
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#loss_of_pay .applied').css({'width' : applied_perc+"%"});
+        $('#loss_of_pay .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#loss_of_pay .applied').css({'width' : "0%"});
+        $('#loss_of_pay .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+    case 'bereavement_leave':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#Bereavement .applied').text(applied);
+      $('#Bereavement .approved').text(approved);
+      $('#Bereavement .total').text(total +' days');
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#Bereavement .applied').css({'width' : applied_perc+"%"});
+        $('#Bereavement .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#Bereavement .applied').css({'width' : "0%"});
+        $('#Bereavement .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+    case 'pay_off':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#pay_off .applied').text(applied);
+      $('#pay_off .approved').text(approved);
+      $('#pay_off .total').text(total +' days');
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#pay_off .applied').css({'width' : applied_perc+"%"});
+        $('#pay_off .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#pay_off .applied').css({'width' : "0%"});
+        $('#pay_off .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+    case 'work_from_home':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#work_from_home .applied').text(applied);
+      $('#work_from_home .approved').text(approved);
+      $('#work_from_home .total').text(total +' days');
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#work_from_home .applied').css({'width' : applied_perc+"%"});
+        $('#work_from_home .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#work_from_home .applied').css({'width' : "0%"});
+        $('#work_from_home .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+    case 'comp_off_apply':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      $('#comp_off .applied').text(applied);
+      $('#comp_off .approved').text(approved);
+      $('#comp_off .total').text(total +' days');
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#comp_off .applied').css({'width' : applied_perc+"%"});
+        $('#comp_off .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#comp_off .applied').css({'width' : "0%"});
+        $('#comp_off .approved').css({'width' : "0%"});
+      }
+
+    }
+
+
+  }
+
+  {% endfor %}
+
+
+
+
+  //ajax request for registering a leave on modal popup open
+  $("#modal-container-252304").on('shown.bs.modal', function(){
+
+  $.ajax(
+        {
+            type : "GET",
+            url : '/leave/add/',
+            data :"" ,
+            success : function(data)
+            {
+                $("#modal_body").html(data);
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                HideAjaxLoader(ajax_loader_element);
+              },
+            }
+          );
+          });
+
+function removeSelection(){
+  $("#earned_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#sick_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#casual_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#Bereavement .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#loss_of_pay .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#pay_off .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#work_from_home .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#comp_off .col-md-12 .row").removeClass("Lv-Type-Selected");
+}
+
+
+
+function gridLoad(name){
+  getLeaveName = {'comp_off':"Comp Off", 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'Bereavement':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
+  leavename = getLeaveName[name];
+
+
+  $("#leave_name").text(leavename);
+  $('.table-bordered').empty()
+  $.ajax(
+        {
+            type : "GET",
+            url : '/leave/transaction/',
+            data :{'leave':name,'month':$('#month_select').val()} ,
+            success : function(data)
+            {
+                $('.table-bordered').append(data);
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+              },
+            }
+          );
+
+
+}
+
+$('#earned_leave .col-md-12 .row').click(function(){
+removeSelection()
+ $('#earned_leave .col-md-12 .row').addClass("Lv-Type-Selected");
+ gridLoad("earned_leave");
+
+});
+
+$('#sick_leave .col-md-12 .row').click(function(){
+removeSelection();
+ $('#sick_leave .col-md-12 .row').addClass("Lv-Type-Selected");
+  gridLoad("sick_leave");
+
+});
+
+  $('#casual_leave .col-md-12 .row').click(function(){
+   removeSelection();
+   $('#casual_leave .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("casual_leave");
+
+  });
+
+  $('#Bereavement .col-md-12 .row').click(function(){
+   removeSelection();
+   $('#Bereavement .col-md-12 .row').addClass("Lv-Type-Selected");
+  gridLoad("bereavement_leave");
+  });
+
+  $('#loss_of_pay .col-md-12 .row').click(function(){
+   removeSelection();
+   $('#loss_of_pay .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("loss_of_pay");
+  });
+
+  $('#pay_off .col-md-12 .row').click(function(){
+   removeSelection();
+   $('#pay_off .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("pay_off");
+  });
+
+  $('#work_from_home .col-md-12 .row').click(function(){
+    removeSelection();
+   $('#work_from_home .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("work_from_home");
+  });
+
+  $('#comp_off .col-md-12 .row').click(function(){
+    removeSelection();
+   $('#comp_off .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("comp_off");
+  });
+  $("#month_select").change(function(){
+    name = $("#leave_name").text();
+    LeaveName = {"Comp Off":'comp_off', "Work From Home":'work_from_home',"Pay Off":'pay_off',"Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave', 'Earned Leave':'earned_leave' };
+  gridLoad(LeaveName[name]);
+  });
+
+});
+
+  function ShowAjaxLoader(element, width, height){
+      element.show();
+      element.width(width).height(height);
+      return false;
+    }
+    function HideAjaxLoader(element){
+      element.fadeOut();
+      return false;
+    }
+    function CancelLeave(val, leavecount){
+    	swal({
+    		title: "Are you sure?",
+    		text: "Do you want me to cancel your leave?",
+    		type: "warning",
+    		showCancelButton: true,
+    		confirmButtonColor: "#DD6B55",
+    		confirmButtonText: "Yes, Please!",
+    		closeOnConfirm: false,
+    		cancelButtonText: "No, Cancel!",
+    		closeOnCancel: false
+    	},
+    	function(isConfirm) {
+    		if (isConfirm) {
+              $.ajax(
+                    {
+                        type : "GET",
+                        url : '/leave/cancel/',
+                        data :{'leaveid':val, 'leavecount':leavecount} ,
+                        success : function(data)
+                        {
+                            swal("Done!", "Your leave is cancel", "success");
+
+                          },
+                          error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+                          },
+                        }
+                      );
+
+
+    		}
+    		else
+    				swal("Stay Cool", "I will remaind you :). Please refresh the page.", "success");
+
+    });
+}
+function showDetails(leave_id){
+  $.ajax(
+        {
+            type : "GET",
+            url : '/leave/details/',
+            data :{'leaveid':leave_id} ,
+            success : function(data)
+            {
+              $('#detail_leave').remove()
+              $('#myModal').modal({show:true})
+              $('#myModaldata').append(data);
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+              },
+            }
+          );
+}
+</script>
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock %}
