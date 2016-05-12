@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -150,11 +150,11 @@ class Project(models.Model):
     name = models.CharField(max_length=50,
                             verbose_name="Project Name",
                             unique=True)
-    customerContact = models.ForeignKey(
-        User,
+    customerContact = models.CharField(
+        max_length=100,
         default=None,
         verbose_name="Customer Contact",
-        related_name="Cusomer Contact"
+        # related_name="Cusomer Contact"
     )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
@@ -199,7 +199,7 @@ class Project(models.Model):
     salesForceNumber = models.IntegerField(default=0,
                                            verbose_name="SF\
                                            Oppurtunity Number",
-                                           validators=[MinValueValidator(0)])
+                                           validators=[MinValueValidator(20000000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
                                         validators=[MinValueValidator(0)])
