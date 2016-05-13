@@ -59,14 +59,14 @@ class MilestoneReportsView(View):
                 MilestoneList = ProjectMilestone.objects.filter(project=request.POST['project'],
                                                                 milestoneDate__gte = from_date,
                                                                 milestoneDate__lte = to_date,
-                                                                )
+                                                                ).order_by('milestoneDate')
             elif request.POST.get('project', '') and closed != " " and financial == " ":
                 # Project - Yes, closed - either True or False, financial - any
                 MilestoneList = ProjectMilestone.objects.filter(project=request.POST['project'],
                                                                 milestoneDate__gte=from_date,
                                                                 milestoneDate__lte=to_date,
                                                                 closed=closed
-                                                                )
+                                                                ).order_by('milestoneDate')
 
             elif request.POST.get('project', '') and financial != " " and closed == " ":
                 # Project - Yes, closed - any, financial - either True or False
@@ -74,7 +74,7 @@ class MilestoneReportsView(View):
                                                                 milestoneDate__gte=from_date,
                                                                 milestoneDate__lte=to_date,
                                                                 financial=financial
-                                                                )
+                                                                ).order_by('milestoneDate')
             elif request.POST.get('project', '') and financial != " " and closed != " ":
                 # Project - Yes, closed - any, financial - either True or False
                 MilestoneList = ProjectMilestone.objects.filter(project=request.POST['project'],
@@ -82,7 +82,7 @@ class MilestoneReportsView(View):
                                                                 milestoneDate__lte=to_date,
                                                                 financial=financial,
                                                                 closed=closed
-                                                                )
+                                                                ).order_by('milestoneDate')
 
             elif not request.POST.get('project', '') and closed != " " and financial != " ":
                 # Project - Yes, closed - either True or False, financial - any
@@ -90,26 +90,26 @@ class MilestoneReportsView(View):
                                                                 milestoneDate__lte=to_date,
                                                                 financial=financial,
                                                                 closed=closed
-                                                                )
+                                                                ).order_by('milestoneDate')
 
             elif not request.POST.get('project', '') and closed != " " and financial == " ":
                 # Project - any, closed - Teither True or False, financial - any
                 MilestoneList = ProjectMilestone.objects.filter(milestoneDate__gte=from_date,
                                                                 milestoneDate__lte=to_date,
                                                                 closed=closed
-                                                                )
+                                                                ).order_by('milestoneDate')
 
             elif not request.POST.get('project', '') and financial != " " and closed == " ":
                 # Project - any, financial - either True or False, closed - any
                 MilestoneList = ProjectMilestone.objects.filter(milestoneDate__gte=from_date,
                                                                 milestoneDate__lte=to_date,
                                                                 financial=financial,
-                                                                )
+                                                                ).order_by('milestoneDate')
             elif not request.POST.get('project', '') and closed == " " and financial == " ":
                 # Project - any, financial - any, closed - any
                 MilestoneList = ProjectMilestone.objects.filter(milestoneDate__gte=from_date,
                                                                 milestoneDate__lte=to_date,
-                                                                )
+                                                                ).order_by('milestoneDate')
 
             response = HttpResponse(content_type='text/csv')
             filename = "MilestoneReports_" + request.POST['from_date'] + "_to_" + request.POST['to_date'] + ".csv"

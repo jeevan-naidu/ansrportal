@@ -443,7 +443,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['closed'].widget.attrs['class'] = "form-control"
         self.fields['signed'].widget.attrs['class'] = "form-control"
         self.fields['salesForceNumber'].widget.attrs['class'] = "form-control"
-        self.fields['salesForceNumber'].widget.attrs['min'] = "20000000"
+        self.fields['salesForceNumber'].widget.attrs['min'] = "20100000"
         self.fields['salesForceNumber'].widget.attrs['max'] = "99999999"
         self.fields['po'].widget.attrs['class'] = "form-control"
 
@@ -538,7 +538,7 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['salesForceNumber'].widget.attrs['class'] = \
             "form-control"
         self.fields['salesForceNumber'].widget.attrs['min'] = \
-            "20000000"
+            "20100000"
         self.fields['salesForceNumber'].widget.attrs['max'] = \
             "99999999"
         self.fields['plannedEffort'].widget.attrs['class'] = \

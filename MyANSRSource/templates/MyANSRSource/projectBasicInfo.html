@@ -25,17 +25,25 @@
                                         {% if field.field.required %}
                                             <span class="required">*</span>
                                         {% endif %}
-				</td>
-				<td class="col-lg-7">
-					{% if field.label == 'Planned Effort' or field.label == 'Contigency Effort' %}
-						<span class="col-lg-9">{{ field }}</span>
-						<span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
-					{% else %}
-						<span class="col-lg-9">{{ field }}</span>
-						<span class="col-lg-3"></span>
-					{% endif %}
-				</td>
-			    </tr>
+				                </td>
+                                <td class="col-lg-7">
+                                    {% if field.label == 'Planned Effort' or field.label == 'Contigency Effort' %}
+                                        <span class="col-lg-9">{{ field }}
+                                        {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
+                                        </span>
+
+                                        <span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
+
+                                    {% else %}
+                                        <span class="col-lg-9">{{ field }}
+                                        {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
+                                        </span>
+
+                                        <span class="col-lg-3"></span>
+
+                                    {% endif %}
+                                </td>
+			            </tr>
 			{% endfor %}
 		    </table>
 		</div>
