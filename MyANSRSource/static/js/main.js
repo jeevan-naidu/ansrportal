@@ -1491,7 +1491,7 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
         };
     } else {
         var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
-         plannedEffort = plannedEffort.toFixed(3);
+         plannedEffort = plannedEffort.toFixed(2);
         //plannedEffort = Math.round(plannedEffort);
 
         return {
