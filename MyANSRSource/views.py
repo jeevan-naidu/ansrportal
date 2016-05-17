@@ -1790,6 +1790,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
         }
+        import ipdb;ipdb.set_trace()
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
@@ -1982,6 +1983,7 @@ def saveProject(request):
     # you send them back to the summary page?
 
     if request.method == 'POST':
+        import ipdb;ipdb.set_trace()
         try:
             pr = Project()
             pr.name = request.POST.get('name')
@@ -2008,9 +2010,7 @@ def saveProject(request):
                 pk=int(request.POST.get('customer'))
             )
             pr.internal = pr.customer.internal
-            pr.customerContact = User.objects.get(
-                pk=int(request.POST.get('customerContact'))
-            )
+            pr.customerContact = request.POST.get('customerContact')
             pr.book = Book.objects.get(
                 pk=int(request.POST.get('book'))
             )

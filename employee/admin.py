@@ -79,7 +79,7 @@ class UserInline(admin.StackedInline):
     # Grappelli stylesheets
     classes = ('grp-collapse grp-open',)
     inline_classes = ('grp-collapse grp-closed',)
-    list_display = ('employee_assigned_id',)
+    
 
     max_num = 1
     min_num = 1
