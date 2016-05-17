@@ -2127,9 +2127,7 @@ def ViewProject(request):
             'projectId', 'customerContact'
         )[0]
         if basicInfo['customerContact']:
-            customerObj = User.objects.get(
-                pk=basicInfo['customerContact']
-            )
+            customerObj = basicInfo['customerContact']
             basicInfo['customerContact__username'] = customerObj.username
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
