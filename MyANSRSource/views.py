@@ -2008,9 +2008,7 @@ def saveProject(request):
                 pk=int(request.POST.get('customer'))
             )
             pr.internal = pr.customer.internal
-            pr.customerContact = User.objects.get(
-                pk=int(request.POST.get('customerContact'))
-            )
+            pr.customerContact = request.POST.get('customerContact')
             pr.book = Book.objects.get(
                 pk=int(request.POST.get('book'))
             )
@@ -2129,10 +2127,8 @@ def ViewProject(request):
             'projectId', 'customerContact'
         )[0]
         if basicInfo['customerContact']:
-            customerObj = User.objects.get(
-                pk=basicInfo['customerContact']
-            )
-            basicInfo['customerContact__username'] = customerObj.username
+            customerObj = basicInfo['customerContact']
+            basicInfo['customerContact__username'] = customerObj
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
             'totalValue', 'po', 'salesForceNumber'

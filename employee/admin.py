@@ -79,6 +79,7 @@ class UserInline(admin.StackedInline):
     # Grappelli stylesheets
     classes = ('grp-collapse grp-open',)
     inline_classes = ('grp-collapse grp-closed',)
+    
 
     max_num = 1
     min_num = 1
@@ -126,6 +127,16 @@ class EmployeeAdmin(OriginalUserAdmin):
                PreviousEmploymentInline, ]
     max_num = 1
     min_num = 1
+    list_display = (
+        'username',
+        'Employee_Id',
+        'email',
+        'last_name',
+        'Joining_Date',
+        'Exit_Date',
+        'is_active',
+        'is_staff',
+    )
 
     super_fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -163,6 +174,33 @@ class EmployeeAdmin(OriginalUserAdmin):
             # you to see superuser's records.
             qs = qs.exclude(is_superuser=True)
             return qs
+
+    def Employee_Id(self, user_obj):
+        ''' Get employee id from Employee table'''
+
+        try:
+            emp_id = Employee.objects.get(user__email = user_obj.email).employee_assigned_id
+        except:
+            emp_id = None
+        return emp_id
+
+    def Joining_Date(self, user_obj):
+        ''' Get employee joining date from Employee table'''
+
+        try:
+            emp_doj = Employee.objects.get(user__email=user_obj.email).joined
+        except:
+            emp_doj = None
+        return emp_doj
+
+    def Exit_Date(self, user_obj):
+        ''' Get employee exit date from Employee table'''
+
+        try:
+            emp_exit_date = Employee.objects.get(user__email=user_obj.email).exit
+        except:
+            emp_exit_date = None
+        return emp_exit_date
 
 
 class DesignationAdmin(admin.ModelAdmin):
