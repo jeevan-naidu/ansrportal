@@ -55,6 +55,14 @@
     (function() {
 
     }());
+
+    $(document).ready(function(){
+       $("#browserPrevious").click(function(){
+            history.go(-1);
+            return false;
+        });
+    });
+
 </script>
 
 {% endblock %}{% endblock %}
