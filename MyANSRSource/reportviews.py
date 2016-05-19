@@ -1480,7 +1480,7 @@ def generateDownload(request, fileName):
 @login_required
 def getDate(request, date, label):
     dateWeekDay = date.weekday()
-    if dateWeekDay:
+    if dateWeekDay >= 0 :
         if label == 'Start':
             date = date - timedelta(days=dateWeekDay)
         else:
@@ -1493,7 +1493,7 @@ def getDate(request, date, label):
 def getUnwantedValue(request, member, date, label, valuesList):
     dateWeekDay = date.weekday()
     extraData = []
-    if dateWeekDay:
+    if dateWeekDay >= 0:
         if label == 'Start':
             wkstartDate = date - timedelta(days=dateWeekDay)
             weekData = getOneWeekData(request, member, wkstartDate,
