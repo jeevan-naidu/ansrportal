@@ -37,6 +37,7 @@ import employee
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 from Grievances.models import Grievances
+from Leave.models import *
 
 
 from ldap import LDAPError
@@ -1241,6 +1242,8 @@ def Dashboard(request):
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
         grievances_count = Grievances.objects.filter(active=True).count()
         data['grievances_count'] = grievances_count
+    if request.user.groups.filter(name='myansrsourcePM').exists() or request.user.groups.filter(name='myansrsourceHR').exists() or request.user.is_superuser:
+        data['leave_count'] = LeaveApplications.objects.filter(status='open').count()
 
     return render(request, 'MyANSRSource/landingPage.html', data)
 
