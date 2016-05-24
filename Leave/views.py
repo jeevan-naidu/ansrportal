@@ -520,7 +520,7 @@ def update_leave_application(request, status):
 
         mail_obj = EmailMessage('Leave Application Status',
                                 msg_html, settings.EMAIL_HOST_USER, [leave_application.user.email],
-                                cc=[settings.LEAVE_ADMIN_EMAIL, 'rsbcse@hotmail.com'])
+                                cc=[settings.LEAVE_ADMIN_EMAIL, leave_application.apply_to.email])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
