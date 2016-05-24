@@ -136,9 +136,23 @@ def Timesheet(request):
     if request.method == 'POST':
         # Getting the forms with submitted values
         hold_button = False
-        date = datetime.now().date()
-        date -= timedelta(days=7)
-        tsform = TimesheetFormset(request.user,date)
+
+        # for timesheet bug which showed project not available  error message by vivek
+        tmp_date = datetime.now().date()
+        tmp_date -= timedelta(days=7)
+        endDate1 = request.GET.get('enddate', '')
+        if request.GET.get("week") == 'prev':
+            if endDate1:
+                tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+                tmp_date -= timedelta(days=13)
+
+        elif request.GET.get("week") == 'next':
+            if endDate1:
+                tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
+                tmp_date += timedelta(days=1)
+        #  fix ends here
+
+        tsform = TimesheetFormset(request.user, tmp_date)
         tsFormset = formset_factory(
             tsform, extra=1, max_num=1, can_delete=True
         )
@@ -147,6 +161,8 @@ def Timesheet(request):
         )
         timesheets = tsFormset(request.POST)
         activities = atFormset(request.POST, prefix='at')
+        dbSave = False
+
         # User values for timsheet
         if timesheets.is_valid() and activities.is_valid():
             changedStartDate = datetime.strptime(
@@ -337,6 +353,8 @@ def Timesheet(request):
                             elif k == 'activity':
                                 nonbillableTS.activity = v
                         nonbillableTS.save()
+                        global dbSave
+                        dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
                     if eachTimesheet['tsId'] > 0:
@@ -369,6 +387,8 @@ def Timesheet(request):
                                     v=float(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
+                    global dbSave
+                    dbSave = True
                     eachTimesheet['tsId'] = billableTS.id
             else:
                 # Save Timesheet
@@ -417,6 +437,8 @@ def Timesheet(request):
                             elif k == 'activity':
                                 nonbillableTS.activity = v
                         nonbillableTS.save()
+                        global dbSave
+                        dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
                 for eachTimesheet in timesheetList:
                     if eachTimesheet['tsId'] > 0:
@@ -448,6 +470,8 @@ def Timesheet(request):
                                     v=float(0.0)
                             setattr(billableTS, k, v)
                     billableTS.save()
+                    global dbSave
+                    dbSave = True
                     eachTimesheet['tsId'] = billableTS.id
             dates = switchWeeks(request)
             for eachtsList in timesheetList:
@@ -527,8 +551,16 @@ def Timesheet(request):
                 'atErrorList': atErrorList,
                 'tsFormList': tsContent,
                 'atFormList': atContent}
+        global dbSave
+        if dbSave:
+            getRelativeUrl = request.META['HTTP_REFERER']
+            getRelativeUrl = getRelativeUrl.split("/")[3:]
+            getRelativeUrl = "/".join(i for i in getRelativeUrl)
+            return HttpResponseRedirect('/' + getRelativeUrl)
+
         return renderTimesheet(request, data)
     else:
+        # GET request
         # Switch dates back and forth
         dates = switchWeeks(request)
 
@@ -1193,10 +1225,13 @@ def Dashboard(request):
      attdate__lte=eddte,
      employee_id__user_id=request.user.id).values('swipe_in','swipe_out','attdate').filter(Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(attdate__isnull=False))#.exclude(swipe_in="", swipe_out="", attdate="")
     swipe_display=[]
+    
+    
     for val in attendenceDetail:
         temp={}
         temp['date']=val['attdate'].strftime('%Y-%m-%d')
-        temp['swipe']="In"+str(val['swipe_in'].hour)+":"+str(val['swipe_in'].minute)+"  " +"Out"+str(val['swipe_out'].hour)+":"+str(val['swipe_out'].minute)
+        temp['swipe_in']=val['swipe_in']
+        temp['swipe_out']=val['swipe_out']
         swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
@@ -1240,7 +1275,7 @@ def Dashboard(request):
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
-        grievances_count = Grievances.objects.filter(active=True).count()
+        grievances_count = Grievances.objects.all().count()
         data['grievances_count'] = grievances_count
     if request.user.groups.filter(name='myansrsourcePM').exists() or request.user.groups.filter(name='myansrsourceHR').exists() or request.user.is_superuser:
         data['leave_count'] = LeaveApplications.objects.filter(status='open').count()
@@ -1976,9 +2011,7 @@ def saveProject(request):
                 pk=int(request.POST.get('customer'))
             )
             pr.internal = pr.customer.internal
-            pr.customerContact = User.objects.get(
-                pk=int(request.POST.get('customerContact'))
-            )
+            pr.customerContact = request.POST.get('customerContact')
             pr.book = Book.objects.get(
                 pk=int(request.POST.get('book'))
             )
@@ -2097,10 +2130,8 @@ def ViewProject(request):
             'projectId', 'customerContact'
         )[0]
         if basicInfo['customerContact']:
-            customerObj = User.objects.get(
-                pk=basicInfo['customerContact']
-            )
-            basicInfo['customerContact__username'] = customerObj.username
+            customerObj = basicInfo['customerContact']
+            basicInfo['customerContact__username'] = customerObj
         flagData = projectObj.values(
             'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
             'totalValue', 'po', 'salesForceNumber'

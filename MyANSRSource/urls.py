@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
-
+from Reports import views as milestonreporteviews
 urlpatterns = patterns(u'',
                        url(r'^getchapters/(?P<projectid>[0-9]+)/$',
                            views.GetChapters,
@@ -68,6 +68,8 @@ urlpatterns = patterns(u'',
                        url(r'^project/trackmilestone$',
                            views.WrappedTrackMilestoneView,
                            name=u'trackmilestone'),
+                       
+                       
                        url(r'^logout/$', views.Logout, name=u'logout'),
                        url(r'^$', views.index, name=u'index'),
                        )

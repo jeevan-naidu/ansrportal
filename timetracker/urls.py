@@ -28,4 +28,5 @@ urlpatterns = patterns('',
                        url(r'^grievances/', include('Grievances.urls')),
                        url(r'^grievances_admin/', include('GrievanceAdmin.urls')),
                        url(r'^leave/', include('Leave.urls')),
+                       url(r'^reports/', include('Reports.urls')),
                        ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

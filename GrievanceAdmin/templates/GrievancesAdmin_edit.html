@@ -1,5 +1,6 @@
 
 {% extends 'master.inc' %}
+<title>{% block siteTitle %}myansrsource Grievance Administration{% endblock %}</title>
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
@@ -22,9 +23,7 @@
     <div class="row">
             <div class="col-md-12">
                 <ul class="breadcrumb">
-                    <li>
-					<a href="/admin">Admin</a>
-                    </li>
+
                     <li>
 					<a href='/grievances_admin'>Grievances</a>
                     </li>
@@ -77,19 +76,25 @@
 	          <div class="form-group">
             <label class="col-lg-2 ">Category:</label>
              <div class="col-lg-10">
-               <div class="Gr-edit-Uname">{{grievances.catagory}}</div>
+               <div class="Gr-edit-Uname">{{grievances.category}}</div>
             </div>
           </div><hr>
           <div class="form-group">
             <label class="col-lg-2 ">Subject:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname">{{grievances.subject}}</div>
+               <div >
+                <textarea class="form-control" id="grievance_subject"  name="grievance_subject" rows="3" readonly>{{grievances.subject.strip}}</textarea>
+
+                   </div>
             </div>
           </div><hr>
 		  <div class="form-group">
             <label class="col-lg-2 ">Grievance:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname">{{grievances.grievance}}
+               <div >
+                <textarea class="form-control" id="grievance_msg"  name="grievance_msg" rows="10" readonly>{{grievances.grievance.strip}}</textarea>
+                   <br><div class="center-block"><b>Registered On :&nbsp;&nbsp;{{grievances.created_date}}</b></div><br>
+
 			   <div class="">
 				   {% if grievances.grievance_attachment%} <p><strong>Attachment:</strong></p>
 				  <div class="" >
@@ -121,8 +126,10 @@
 		  <div class="form-group">
             <label class="col-md-2 ">Action Taken</label>
             <div class="col-md-10">
-                <div class="">
-              <textarea class="form-control" id="action_taken" name="action_taken"  rows="10" {%if grievances.active == False %} readonly   {%endif%}> {%if not grievances.action_taken == None %} {{grievances.action_taken}}{%endif%}  </textarea>
+                <div>
+              <textarea class="form-control" id="action_taken" name="action_taken"  rows="10" {%if grievances.active == False %} readonly   {%endif%}>{%if not grievances.action_taken == None %}{{grievances.action_taken.strip}}{%endif%}</textarea>
+            {%if grievances.action_taken_date%}  <br><div class="center-block"><b>Action Taken  On :&nbsp;&nbsp;{{grievances.action_taken_date}}</b></div> <br>{%endif%}
+
             </div>
             </div>
           </div>
@@ -193,7 +200,8 @@
 	  <div class="form-group">
             <label class="col-lg-2 ">Satisfaction Level:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname"> {{grievances.satisfaction_level}}
+               <div class="Gr-edit-Uname"> {%if grievances.satisfaction_level %}
+                   {{grievances.satisfaction_level|satisfaction_level}}{%else%}{{grievances.satisfaction_level}} {% endif %}
                </div>
             </div>
           </div><hr>
@@ -222,7 +230,8 @@
 		  <div class="form-group">
             <label class="col-lg-2 ">User Closure Message:</label>
             <div class="col-lg-10">
-               <div class="Gr-edit-Uname"> {{grievances.user_closure_message}}
+               <div > <textarea class="form-control" id="user_closure_message"  name="admin_closure_message" rows="10" readonly>{{grievances.user_closure_message.strip}}</textarea>
+              {%if grievances.closure_date%}<br><div class="center-block"><b>Closed By User On :&nbsp;&nbsp;{{grievances.closure_date}} </b></div><br>{%endif%}
 
 			   <div class="">
 
@@ -254,8 +263,9 @@
 	  <div class="form-group">
             <label class="col-md-2 ">Admin Closure Message:</label>
             <div class="col-md-10"><div class="">
-              <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10" {%if  grievances.user_closure_message == None %} readonly {%endif%}>{%if  not grievances.admin_closure_message == None %} {{grievances.admin_closure_message.strip}}{%endif%}
-              </textarea>
+              <textarea class="form-control" id="admin_closure_message"  name="admin_closure_message" rows="10" {%if  grievances.user_closure_message == None %} readonly {%endif%}>{%if  not grievances.admin_closure_message == None %}{{grievances.admin_closure_message.strip}}{%endif%}</textarea>
+              {%if grievances.admin_closure_message_date%} <br><div class="center-block"><b>Admin Closure Message On :&nbsp;&nbsp;{{grievances.admin_closure_message_date}} </b></div><br>{%endif%}
+
             </div></div>
           </div>
 
@@ -321,33 +331,27 @@
 
 	  <div class="form-group">
             <label class="col-lg-2 ">Status:</label>
-            <div class="col-lg-10"> <div class="">
-                <select name ="grievance_status" class="form-control d-item " {%if grievances.active == False %} disabled   {%endif%}>
+            <div class="col-lg-10">  <div {%if grievances.active == False %} class="Gr-edit-Uname" {%else%} class ='' {%endif%}> {%if grievances.active == False %} Closed{%else%}
+                <select  name ="grievance_status" class="form-control d-item ">
                     {% for value, text in grievances_choices %}
-
-                        <option value="{{ value }}" {%if grievances.grievance_status ==  value %}  selected ="selected"  {%endif%} >{{ text }}</option>
+                        <option value="{{value}}" {%if grievances.grievance_status.strip ==  value.strip %}  selected ="selected"  {%endif%} >{{ text }}</option>
                     {% endfor %}
                 </select>
+                {%endif%}
                </div>
             </div>
           </div>
-
-
+            {%if grievances.active == False %} <input type="hidden"  value="{{ grievances.grievance_status.strip}} " name="grievance_status">   {%endif%}
           <div class="form-group">
             <label class="col-md-2 "></label>
-            <div class="col-md-10">
-              <input type="submit" class="btn btn-primary" value="Save Changes">
-              <span></span>
-              <input type="reset" class="btn btn-default" value="Cancel">
-            </div>
+            <!--<div class="col-md-10">-->
+              <!--<input type="submit" class="btn btn-primary" value="Save Changes">-->
+              <!--<span></span>-->
+              <!--<input type="reset" class="btn btn-default" value="Reset">-->
+            <!--</div>-->
           </div>
-
-
         <br><br><br>
-
-
-        <input type="hidden" value ={{grievances.id}} name="grievance_id"/>
-
+          {%if grievances.active == False %}<input type="hidden" value ={{grievances.id}} name="grievance_id"/>{%endif%}
     </form>
         </div>
     <div class="col-md-2">
@@ -366,28 +370,33 @@
 		  <div class="col-sm-4 col-md-4 col-lg-4 form-inline Gr-lbl-border">
 
                      <div class="Gr-edit-fixed-bottom ">
-                         <div class="center-block"><b>User:&nbsp;&nbsp;{{grievances.user.first_name}}</b></div>
+                         <div class="center-block"><b>Registered By:&nbsp;&nbsp;{{grievances.user.first_name}}</b></div>
+
                      </div>
 
 
 			</div>
 
+
+
 			<div class="col-sm-4 col-md-4 col-lg-4 ">
 			     <div class="col-md-12 text-center">
 			      <button type="button" id = "save_2" class="btn btn-danger">Save Changes</button>
+                   <input type="reset" id ="reset_button" class="btn btn-default" value="Reset">
 			    </div>
 			</div>
 
-			<div class="col-sm-4 col-md-4 col-lg-4 form-inline Gr-lbl-border">
+            <div class="col-sm-4 col-md-4 col-lg-4 form-inline Gr-lbl-border">
 
                      <div class="Gr-edit-fixed-bottom center-block">
-                         <b>Status:&nbsp;&nbsp;
-                          {% for value, text in grievances_choices %}
-                                {%if grievances.grievance_status ==  value %}
-                                    {{text}}
-                                {%endif%}
-                            {% endfor %}
-                         </b>
+                  <b>Status:&nbsp;&nbsp;
+
+                                 {% for value, text in grievances_choices %}
+                                    {%if grievances.grievance_status.strip ==  value.strip %}
+                                        {{text}}
+                                    {%endif%}
+                                {% endfor %}
+                             </b>
 
                      </div>
 			</div>
@@ -402,7 +411,6 @@
 
 {% block page_specific_JS %}
     <script src="/static/js/bootstrap-tagsinput.min.js"></script>
-    <script src="/static/js/bootstrap-tagsinput-angular.min.js"></script>
   <script>
   <!--  the following function is to disable enter key in edit form-->
    function stopRKey(evt) {
@@ -440,6 +448,10 @@
         jQuery('#save_2').click(function(){
             jQuery('#grievance_edit_form').submit();
         });
+
+         jQuery('#reset_button').click(function(){
+            $('#grievance_edit_form')[0].reset();
+         });
 
         jQuery('.breadcrumb').click(function(){
             var attrs = { };
