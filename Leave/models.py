@@ -10,6 +10,7 @@ OCCURRENCE_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'No
 CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'), ('applied', 'Applied'),)
 SESSION_STATUS = (('session_first', 'First Half'), ('session_second', 'Second Half'))
+BUTTON_NAME = (('success', 'approved'), ('info', 'open'), ('danger', 'rejected'), ('warning', 'cancelled'))
 
 def content_file_name(instance, filename):
     return '/'.join(['content', instance.user.username, filename])
