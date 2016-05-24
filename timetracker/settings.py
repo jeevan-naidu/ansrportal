@@ -141,6 +141,8 @@ INSTALLED_APPS = (
     'GrievanceAdmin',
     'pagination',
     'Reports',
+    'Leave',
+    'export_xls',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -155,6 +157,7 @@ MIDDLEWARE_CLASSES = (
     'session_security.middleware.SessionSecurityMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
+    'GrievanceAdmin.middleware.grievanceadminmiddleware.LeavePermissionCheckMiddleware',
 )
 # Overriding Default T_C_P with new T_C_p
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
@@ -169,7 +172,12 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 RESTRICTED_URLS = (
                   (r'/grievances_admin/(.*)$', ),
               )
+RESTRICTED_URLS = (
+                  (r'/leave/leavelist/$', ),
+                  (r'/leave/manage/$', ),
+              )
 GRIEVANCE_ADMIN_GROUP_NAME = 'myansrsourceGrievanceAdmin'
+LEAVE_ADMIN_GROUP_NAME = ['myansrsourceHR', 'myansrsourcePM',]
 GRIEVANCE_ADMIN_MAX_UPLOAD_SIZE = 1000000
 # Session Configuration - enable this only after we get caching working right
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
@@ -195,7 +203,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
