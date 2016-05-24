@@ -10,6 +10,34 @@ import json
 from datetime import date
 from validations import leaveValidation, leave_calculation, oneTimeLeaveValidation
 import employee
+import calendar
+from calendar import monthrange
+from django.shortcuts import render
+from django.contrib.auth.models import User
+# from datetime import datetime, date
+from django.utils import timezone
+from django.views.generic.list import ListView
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib import messages
+from forms import LeaveListViewForm
+from Leave.models import LeaveApplications, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME
+from CompanyMaster.models import *
+from django.contrib.auth.models import User
+import django_excel as excel
+import pyexcel.ext.xls
+from export_xls.views import export_xlwt
+import xlwt
+import datetime
+from datetime import date
+from employee.models import Employee
+import logging
+import xlwt
+from django.template.defaultfilters import slugify
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+logger = logging.getLogger('MyANSRSource')
 
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
 
@@ -202,3 +230,357 @@ class ApplyLeaveView(View):
             context_data['form'] = leave_form
 
         return render(request, 'leave_apply.html', context_data)
+
+
+def export_xlwt_overridden(filename, fields, values_list, days_list, save=False, folder=""):
+    """export_xlwt is a function based on http://reliablybroken.com/b/2009/09/outputting-excel-with-django/"""
+    filename = slugify(filename)
+    book = xlwt.Workbook(encoding='utf8')
+    sheet = book.add_sheet(filename)
+    from datetime import datetime, date
+    default_style = xlwt.Style.default_style
+    datetime_style = xlwt.easyxf(num_format_str='dd/mm/yyyy hh:mm')
+    date_style = xlwt.easyxf(num_format_str='dd/mm/yyyy')
+    for j, f in enumerate(fields):
+        sheet.write(0, j, fields[j])
+
+    for row, rowdata in enumerate(values_list):
+        for col, val in enumerate(rowdata):
+            if isinstance(val, datetime):
+                style = datetime_style
+            elif isinstance(val, date):
+                style = date_style
+            else:
+                style = default_style
+            if col == 1:
+                for k, v in LEAVE_TYPES_CHOICES:
+                    if k == val:
+                        val = v
+            if col == len(rowdata)-1:
+                if rowdata[col] in days_list:
+                    val = days_list[rowdata[col]]
+
+            sheet.write(row + 1, col, val, style=style)
+    if not save:
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=%s.xls' % filename
+        book.save(response)
+        return response
+    else:
+        dirpath = '%s/%s' % (settings.MEDIA_ROOT, folder)
+        if folder != "":
+            import os
+            if not os.path.exists(dirpath):
+                os.makedirs(dirpath)
+        filepath = '%s%s.xls' % (dirpath, filename)
+        book.save(filepath)
+        return "%s%s%s.xls" % (settings.MEDIA_URL, folder, filename)
+
+
+months_choices = []
+for i in range(1, 13):
+    months_choices.append((i, calendar.month_name[i]))
+
+
+def date_range(d1, d2):
+    return (d1 + datetime.timedelta(days=i) for i in range((d2 - d1).days + 1))
+
+
+def total_leave_days(leave_list):
+    leave_days = {}
+    if leave_list:
+        for obj in leave_list:
+                days_diff = obj.to_date - obj.from_date
+                if obj.to_session == 'session_second':
+                    leave_days[obj.id] = days_diff.days + 1
+                else:
+                    leave_days[obj.id] = days_diff.days + 0.5
+
+                if obj.leave_type != 'sabbatical':
+                    to_be_ignored = Holiday.objects.filter(date__range=[obj.from_date, obj.to_date]).count()
+                    for d in date_range(obj.from_date, obj.to_date):
+                        if d.strftime("%A") in ("Saturday", "Sunday"):
+                            to_be_ignored += 1
+
+                    current_value = leave_days.get(obj.id)
+                    leave_days[obj.id] = current_value - to_be_ignored
+    else:
+        leave_days = {}
+
+    return leave_days
+
+
+def leave_list_all():
+    current_year = datetime.datetime.now()
+    start_date = str(current_year.year)+'-'+'1'+'-'+'1'
+    end_date = str(current_year.year)+'-'+'12'+'-'+'31'
+    leave_list = LeaveApplications.objects.filter(
+                        from_date__range=[start_date, end_date])
+    return leave_list
+
+
+class LeaveListView(ListView):
+    template_name = "Admin_View_All_Leaves.html"
+    model = LeaveApplications
+    leave_days = {}
+
+    def get_context_data(self, **kwargs):
+        context = super(LeaveListView, self).get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+            if 'all' in self.kwargs:
+                context['leave_list'] = leave_list_all()
+            else:
+                context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user,
+                                                                         status='open').order_by("status", "-from_date")
+                context['users'] = User.objects.filter(user__employee__manager=self.request.user)
+
+        elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
+            if 'all' in self.kwargs:
+                context['leave_list'] = leave_list_all()
+            else:
+                context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
+                context['users'] = User.objects.filter(is_active=True)
+
+        context['APPLICATION_STATUS'] = APPLICATION_STATUS
+        context['LEAVE_TYPES_CHOICES'] = LEAVE_TYPES_CHOICES
+        context['SESSION_STATUS'] = SESSION_STATUS
+        context['BUTTON_NAME'] = BUTTON_NAME
+        context['leave_days'] = total_leave_days(context['leave_list'])
+        context['months_choices'] = months_choices
+        context['apply_to'] = Employee.objects.exclude(manager__user__first_name__isnull=True).\
+            values_list('manager__user__username', 'manager__user__id').distinct()
+        self.request.session['apply_to'] = context['apply_to']
+        # context['users'] = User.objects.filter(is_active=True)
+        self.request.session['users'] = context['users']
+        form = LeaveListViewForm()
+        context['form'] = form
+
+        if 'page' not in self.request.GET:
+            if 'leave_list' in self.request.session:
+                del self.request.session['leave_list']
+
+        if 'leave_list' in self.request.session:
+            context['leave_list'] = self.request.session['leave_list']
+        return context
+
+    def post(self, request, *args, **kwargs):
+        leave_list = []
+        selected_month = request.POST.get('month')
+        if request.POST.get('application_status'):
+            post_application_status = status = request.POST.get('application_status')
+        else:
+            post_application_status = status = ''
+        if request.POST.get('from_date'):
+            from_date = request.POST.get('from_date')
+        else:
+            from_date = ''
+
+        if request.POST.get('to_date'):
+            to_date = request.POST.get('to_date')
+        else:
+            to_date = ''
+        if request.POST.get('apply_to'):
+            apply_to = request.POST.get('apply_to')
+
+        if not request.POST.get('apply_to'):
+            apply_to = ''
+        if request.POST.get('users'):
+            employee = request.POST.get('users')
+        else:
+            employee = ''
+        form = LeaveListViewForm(request.POST)
+
+        try:
+            if status != '' and from_date != '' and to_date != '' and apply_to != '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to,
+                                                              from_date__range=[from_date, to_date], user=employee)  # all chosen
+
+            if status != '' and from_date == '' and to_date == '' and apply_to == '' and employee == '':
+                leave_list = LeaveApplications.objects.filter(status=status)  # only status
+
+            if status == '' and from_date != '' and to_date != '' and apply_to == '' and employee == '':
+                leave_list = LeaveApplications.objects.filter(from_date__range=[from_date, to_date])  # only date
+
+            if status == '' and from_date == '' and to_date == ''and apply_to != '' and employee == '':
+                leave_list = LeaveApplications.objects.filter(apply_to=apply_to)  # only apply_to
+
+            if status == '' and from_date == '' and to_date == ''and apply_to == '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(user=employee)  # only user
+
+            if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee == '':
+                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to)  # status and apply_to
+
+            if status != '' and from_date == '' and to_date == ''and apply_to == '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(status=status, user=employee)  # status and user
+
+            if status == '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(user=employee, apply_to=apply_to)  # user and apply_to
+
+            if status != '' and from_date != '' and to_date != ''and apply_to == '' and employee == '':
+                leave_list = LeaveApplications.objects.filter(status=status,
+                                                              from_date__range=[from_date, to_date])  # status, date
+
+            if status == '' and from_date != '' and to_date != ''and apply_to == '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(user=employee,
+                                                              from_date__range=[from_date, to_date])  # user, date
+
+            if status != '' and from_date != '' and to_date != ''and apply_to == '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(status=status, user=employee,
+                                                              from_date__range=[from_date, to_date])  # status,user, date
+
+            if status != '' and from_date != '' and to_date != ''and apply_to != '' and employee == '':
+                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to,
+                                                              from_date__range=[from_date, to_date])  # status,apply_to, date
+
+            if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(status=status, user=employee,
+                                                              apply_to=apply_to)  # status,user, apply_to
+
+            # if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
+            #     leave_list = LeaveApplications.objects.filter(status=status, user=employee,
+            #                                                   apply_to=apply_to)  # status,user, apply_to
+            #     print leave_list.query
+            #     print "status,user, apply_to"
+
+            if status == '' and from_date != '' and to_date != ''and apply_to != '' and employee != '':
+                leave_list = LeaveApplications.objects.filter(apply_to=apply_to, user=employee,
+                                                              from_date__range=[from_date, to_date])  # apply_to,user, date
+
+            if status == '' and from_date != '' \
+                    and to_date != '' and apply_to != '' and employee == '':
+                leave_list = LeaveApplications.objects.filter(apply_to=apply_to,
+                                                              from_date__range=[from_date, to_date])  # apply_to, date
+
+        except:
+            leave_list = None
+
+        # leave_days = leave_calculation(leave_list.from_date, leave_list.to_date, leave_list.from_session,
+        #                                leave_list.to_session, leave_list.leave_type)
+        leave_days = total_leave_days(leave_list)
+
+        if 'export' in request.POST:
+
+            if request.POST.get('from_date') == '' and request.POST.get('to_date') == '' \
+                    and request.POST.get('application_status') == '' and request.POST.get('apply_to') == '' \
+                    and request.POST.get('users') == '':
+                leave_list_export = leave_list_all()
+                leave_days = total_leave_days(leave_list_export)
+            fields = ['user__first_name', 'leave_type__leave_type', 'from_date', 'to_date',
+                      'apply_to__first_name',  'status', 'reason', 'id']
+
+            column_names = ['Employee Name ', 'Leave Type', 'From Date', 'To Date',
+                            'Applied to',  'Status', 'Reason', 'Days']
+            file_name = "Leave Report - " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+            try:
+                return export_xlwt_overridden(file_name, column_names,
+                                              leave_list_export.values_list(*fields), leave_days)
+            except Exception, e:
+                logger.error(e)
+
+        if leave_list and leave_list.count > 0:
+            self.request.session['leave_list'] = leave_list
+
+        if not leave_list and 'leave_list' in self.request.session:
+            del self.request.session['leave_list']
+
+        if 'leave_list' in self.request.session:
+            leave_list = self.request.session['leave_list']
+
+        return render(self.request, self.template_name, {'leave_list': leave_list,
+                                                         'APPLICATION_STATUS': APPLICATION_STATUS,
+                                                         'LEAVE_TYPES_CHOICES': LEAVE_TYPES_CHOICES,
+                                                         'SESSION_STATUS': SESSION_STATUS,
+                                                         'BUTTON_NAME': BUTTON_NAME, 'leave_days': leave_days,
+                                                         'month': request.POST.get('month'),
+                                                         'post_application_status': post_application_status,
+                                                         'months_choices': months_choices,
+                                                         'apply_to': self.request.session['apply_to'],
+                                                         'users':  self.request.session['users'],
+                                                         'post_apply_to': self.request.POST.get('apply_to'),
+                                                         'post_users': self.request.POST.get('users'),
+
+                                                         'form': form})
+
+
+def update_leave_application(request, status):
+    status_tmp = status.split('_')
+    remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
+    leave_application = LeaveApplications.objects.get(id=status_tmp[1])
+    leave_application.status = status_tmp[0]
+    leave_application.status_comments = remark_tmp
+    try:
+        leave_application.save()
+        msg_html = render_to_string('email_templates/leave_status.html',
+                                    {'registered_by': leave_application.user.first_name,
+                                     'status': leave_application.status,
+                                     'from_date': leave_application.from_date,
+                                     'to_date': leave_application.to_date,
+                                     'comment': leave_application.status_comments,
+                                     'action_taken_by': request.user.username})
+
+        mail_obj = EmailMessage('Leave Application Status',
+                                msg_html, settings.EMAIL_HOST_USER, [leave_application.user.email],
+                                cc=[settings.LEAVE_ADMIN_EMAIL, 'rsbcse@hotmail.com'])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        print email_status
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Leave Applicant : {0} Date time : {1} ".format(
+                         leave_application.user.first_name, timezone.make_aware(datetime.datetime.now(),
+                                                                                timezone.get_default_timezone())))
+                    return "failed"
+
+        return True
+    except Exception, e:
+        logger.error(e)
+        return False
+
+
+class LeaveManageView(LeaveListView):
+    def get_context_data(self, **kwargs):
+        context = super(LeaveManageView, self).get_context_data(**kwargs)
+        context['all'] = LeaveApplications.objects.all().order_by("status", "-from_date")
+        context['open'] = context['leave_list'].filter(status='open')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        save_failed = reject_failed = cancel_failed = save_email = reject_email = cancel_email = 0
+        save_status = False
+        if request.POST.getlist('approve'):
+            for approve_obj in request.POST.getlist('approve'):
+                save_status = update_leave_application(self.request, approve_obj)
+                if not save_status and type(save_status) is not str:
+                    save_failed += 1
+                if type(save_status) is str and save_status:
+                    save_email += 1
+        if request.POST.getlist('reject'):
+            for reject_obj in request.POST.getlist('reject'):
+                reject_status = update_leave_application(self.request, reject_obj)
+                if not reject_status and type(reject_status) is not str:
+                    reject_failed += 1
+                if type(reject_status) is str and reject_status:
+                    reject_email += 1
+        if request.POST.getlist('cancel'):
+            for cancel_obj in request.POST.getlist('cancel'):
+                cancel_status = update_leave_application(self.request, cancel_obj)
+                if not cancel_status and type(cancel_status) is not str:
+                    cancel_failed += 1
+                if type(cancel_status) is str and cancel_status:
+                    cancel_email += 1
+
+        if cancel_email > 0 or reject_email > 0 or save_email > 0:
+            messages.error(self.request, "Sorry Unable to Notify The "
+                                         "Leave Application Status Update  By Email But  Leave "
+                                         "Applications Are Processed Successfully")
+
+        if save_failed > 0 or reject_failed > 0 or cancel_failed > 0:
+            messages.error(self.request, "Sorry Unable to Process Few Leave Applications")
+        else:
+            messages.success(self.request, "Successfully Updated")
+
+        return HttpResponseRedirect("/leave/manage")
+
+
