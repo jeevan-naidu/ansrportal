@@ -2,9 +2,15 @@ from models import LeaveApplications, LEAVE_TYPES_CHOICES
 from django import forms
 from bootstrap3_datetime.widgets import DateTimePicker
 from django.utils.safestring import mark_safe
-
+from django import forms
+from django.contrib.auth.models import User
+from Leave.models import LeaveApplications,  LEAVE_TYPES_CHOICES
+from employee.models import Employee
+import autocomplete_light
+autocomplete_light.autodiscover()
 LEAVE_TYPES_CHOICES = (('', '---------'),) + LEAVE_TYPES_CHOICES
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
+
 
 def LeaveForm(leavetype, data=None):
     class ApplyLeaveForm(forms.ModelForm):
@@ -100,3 +106,45 @@ def LeaveForm(leavetype, data=None):
     else:
         form = ApplyLeaveForm()
         return form
+
+dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
+
+
+class LeaveListViewForm(autocomplete_light.ModelForm):
+
+    # user = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
+    #                               widget=autocomplete_light.ChoiceWidget('UserAutocompleteUser'))
+    #
+    # user.widget.attrs = {'class': 'form-control filter_class', 'placeholder': 'Enter Employee Name'}
+
+    # apply_to = forms.ModelChoiceField(queryset=Employee.objects.exclude(manager__user__first_name__isnull=True).
+    #                                   values_list('manager__user__username',
+    #                                               flat=True).distinct().order_by('manager__user__username'),
+    #                                   empty_label="---------")
+
+    # apply_to.widget.attrs = {'class': 'form-control filter_class'}
+
+    leave_type = forms.ChoiceField(choices=LEAVE_TYPES_CHOICES)
+
+    leave_type.widget.attrs = {'class': 'form-control filter_class'}
+
+    from_date = forms.DateField(
+        label="From",
+        widget=DateTimePicker(options=dateTimeOption),
+    )
+    from_date.widget.attrs = {'class': 'form-control filter_class'}
+
+    to_date = forms.DateField(
+        label="To",
+        widget=DateTimePicker(options=dateTimeOption),
+    )
+    to_date.widget.attrs = {'class': 'form-control filter_class'}
+
+    class Meta:
+        model = LeaveApplications
+        # fields = ['leave_type', 'from_date', 'to_date', 'status']
+        fields = ['leave_type', 'from_date', 'to_date', 'status']
+        # fields = (
+        #     'user',
+        # )
+
