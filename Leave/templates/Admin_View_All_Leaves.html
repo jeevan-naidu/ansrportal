@@ -1,45 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Bootstrap 3, from LayoutIt!</title>
-
-    <meta name="description" content="Source code generated using layoutit.com">
-    <meta name="author" content="LayoutIt!">
-
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
 
 
-</head>
-
-<body>
-
-    <!--  Start Breadcrum-->
-    <div class="container-fluid">
-        <div class="row">
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+{% block breadcrumb %}
+<div class="container-fluid pad0">
+    <div class="row">
             <div class="col-md-12">
                 <ul class="breadcrumb">
                     <li>
-                        <a href="#">Home</a> <span class="divider"></span>
+					<a href="/admin">Admin</a>
                     </li>
                     <li>
-                        <a href="#">Library</a> <span class="divider"></span>
+					<a href='/leave/'>Leave</a>
                     </li>
                     <li class="active">
-                        Data
+					List
                     </li>
+
                 </ul>
             </div>
-        </div>
     </div>
-    <!--  End Breadcrum-->
+</div>
+{% endblock %}
+
+{% block content  %}
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/leavestyle.css" rel="stylesheet">
+	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+
+{% load grievances_template_tags %}{% load permissions %} {% load pagination_tags %}
+    <!--&lt;!&ndash;  Start Breadcrum&ndash;&gt;-->
+    <!--<div class="container-fluid">-->
+        <!--<div class="row">-->
+            <!--<div class="col-md-12">-->
+                <!--<ul class="breadcrumb">-->
+                    <!--<li>-->
+                        <!--<a href="#">Home</a> <span class="divider"></span>-->
+                    <!--</li>-->
+                    <!--<li>-->
+                        <!--<a href="#">Library</a> <span class="divider"></span>-->
+                    <!--</li>-->
+                    <!--<li class="active">-->
+                        <!--Data-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--&lt;!&ndash;  End Breadcrum&ndash;&gt;-->
 
     <div class="container Lv-themeTxtColor ">
 
@@ -59,63 +81,16 @@
 							</h4>
                             </div>
                             <div class="modal-body">
-                                <table class="table  table-hover">
-                                    <tr class="warning">
-                                        <td style="width:20%">Applied By : </td>
-                                        <td>Balamurugan R.S </td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>Applies On: </td>
-                                        <td>22-March-2016 3:37 PM</td>
-                                    </tr>
-                                    <tr class="warning">
-                                        <td>Team: </td>
-                                        <td>Product Engineering</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>Applies to: </td>
-                                        <td>Sanjay Kunnath</td>
-                                    </tr>
 
-                                    <tr class="warning">
-                                        <td>Leave type : </td>
-                                        <td>Paternity Leave</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>From: </td>
-                                        <td>20-March-2016 , Session-1</td>
-                                    </tr>
-                                    <tr class="warning">
-                                        <td>To: </td>
-                                        <td>20-March-2016 , Session-1</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>No Of Days: </td>
-                                        <td>0.5</td>
-                                    </tr>
-                                    <tr class="warning">
-                                        <td>Reason: </td>
-                                        <td>I really need leave and I dont have any leave balance, but I do have paternity leaves.. availing those.</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>Attachment: </td>
-                                        <td>
-                                            <div>
-                                                <a href=""><img height="50px" alt="Bootstrap Image Preview" src="" /></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                </table>
                             </div>
                             <div class="modal-footer">
 
                                 <button type="button" class="btn btn-default" data-dismiss="modal">
 								Close
 							</button>
-                                <button type="button" class="btn btn-primary">
-								Save changes
-							</button>
+                                <!--<button type="button" class="btn btn-primary">-->
+								<!--Save changes-->
+							<!--</button>-->
                             </div>
                         </div>
 
@@ -130,7 +105,7 @@
         <!--      My Leaves Start -->
         <div class="row">
             <div class=="col-md-12">
-                <h3 class="text-center"><b>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</b></h3>
+                <!--<h3 class="text-center"><b>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</b></h3>-->
             </div>
         </div>
 
@@ -140,13 +115,16 @@
                 <div class="Lv-ApLvHeader">
 
                     <div class="row margin-correct">
-                        <div class="col-md-6">
-                            <div class="LvMenuBtn LvMenuBtnActive"><b>View</b>
+                        <div class="col-md-7">
+                            <div class="LvMenuBtn LvMenuBtnActive">
+                            <a id="view" href="{% url 'list_leave' %}"  title="view Leave Applications" class="anchor-inherit"><b>View Leave Applications</b></a>
+
                                 <div class="Lv-active-caret">
                                     <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
                                 </div>
                             </div>
-                            <div class="LvMenuBtn"><b>Approve</b>
+                            <div class="LvMenuBtn">
+                                <a id="manage" href="{% url 'manage_leave_list' %}"  title="Manage Leave Applications" class="anchor-inherit"><b>Manage Leave Applications</b></a>
                             </div>
                             <div class="LvMenuBtn "><b>Reports</b>
                             </div>
@@ -162,53 +140,88 @@
         <!-- End Menu -->
 
         <!-- Start content	-->
-
+        <form class="form-horizontal " id="filter_form" role="form" method="post" >
         <div class="row margin-top11">
-            <div class="col-md-6 col-sm-6 ">
+            {% csrf_token %}
+            <div class="col-md-12 col-sm-6 ">
 
-                <div class="form-group form-inline">
-					<label for="sel1">Select Month/Year&nbsp;:&nbsp;</label>
-					<select class="form-control" id="sel1">
-					  <option>Jan-2015</option>
-					  <option>Feb-2015</option>
-					  <option>Mar-2015</option>
-					 <option>Apr-2015</option>
-					  <option>May-2015</option>
-					  <option>June-2015</option>
-					</select>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<label for="sel1">Select status&nbsp;:&nbsp;</label>
-					<select class="form-control" id="sel1">
-						<option>All</option>
-						<option>Open</option>
-						<option>Approved</option>
-						<option>Cancelled</option>
-						<option>Rejected</option>
-					</select>
-					
-                </div>
+                    <div class="form-group form-inline short-date">
+                        <label for="from_date">From :&nbsp;</label>
+                        {{form.from_date}}
+                        <!--<select class="form-control filter_class " id="month" name="month">-->
+                            <!--<option value ="default">-&#45;&#45;&#45;&#45;</option>-->
+                            <!--{% for value, text in months_choices %}-->
+                                <!--<option value="{{value}}" {%if month|safe == value|safe %} selected {% endif %}>{{text}}-{%now "Y"%} </option>-->
+                            <!--{%endfor%}-->
+                        <!--</select>-->
+
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label for="to_date">To :&nbsp;</label>
+                        {{form.to_date}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
+                        <select class="form-control filter_class" id="application_status" name="application_status">
+                            <!--<option value ="">-&#45;&#45;&#45;&#45;</option>--><option value="" selected disabled>Select Status</option>
+s                            {% for value, text in APPLICATION_STATUS %}
+                            <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
+                            {%endfor%}
+                        </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                        {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
+                            <select class="form-control filter_class" id="apply_to" name="apply_to">
+                                <option value="" selected disabled>Applied To</option>
+                                 {% for managers in apply_to %}
+                                    <option value="{{managers.1}}" {%if post_apply_to|safe == managers.1|safe %} selected {% endif %}>{{managers.0}}</option>
+                                {% endfor %}
+                            </select>
+                        {%endif%}
+                        <select class="form-control filter_class" id="users" name="users">
+                            <option value="" selected disabled>Applied By</option>
+                             {% for user in users %}
+                                <option value="{{user.id}}"{%if post_users|safe == user.id|safe %} selected {% endif %} >{{user.username}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="export-btn">
+
+                        <input type="submit" id="submit_button" class="btn btn-primary btn-sm" value ="Search" name="filter"/>
+                        <input type="button" id="reset_button" class="btn btn-primary btn-sm" value ="Cancel" name="cancel"/>
+                        </div>
+                    </div>
+
 
 
             </div>
 
-            <div class="col-md-6 col-sm-6">
-                <div class="pull-right ">
-                    <button class="pull-right btn btn-xs btn-danger">Export</button>
-                </div>
+            <div class="col-md-1 col-sm-6">
+<!--                <div class="pull-right ">
+                    <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
+                </div>-->
 
-                <div class="pull-right ">
-                    <b>Total : 124 &nbsp;&nbsp;&nbsp;</b>
-                </div>
+
 
             </div>
         </div>
 
-        <div class="row">
+
+        {%if leave_list%}
+
+        <div class="pull-right ">
+
+
+                            <div class="pull-right ">
+                    <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
+                </div>
+
+
+                   <b>Total : {{leave_list.count}} &nbsp;&nbsp;&nbsp;</b>
+                </div>
+        {% endif %}
+        </form>
+        {% if leave_list %} <div class="row">
             <div class="col-md-12">
 
                 <table class="table table-bordered table-hover">
                     <tr class="Lv-ApproveTH ">
-                        <th>User</th>
+                        <th>Employee</th>
                         <th>Type</th>
                         <th>From</th>
                         <th>To</th>
@@ -217,73 +230,166 @@
                         <th style="width:30%">Status
                         </th>
                     </tr>
-                    <tr class="info">
+                    {%  autopaginate leave_list 5 %}
+                    {% for leave in leave_list %}
+
+                    <tr  {%for k,v in  BUTTON_NAME %}
+                                {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
                         <td>
-                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">Tinoy John</a>
+                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" class ="list_view" title="View Details">{{leave.user.first_name}} {{leave.user.last_name}}</a>
+                           <div class="GrDetails" style = "display:none" >
+                            <table class="table  table-hover view_details"  >
+                                    <tr class="warning">
+                                        <td style="width:20%">Applied By : </td>
+                                        <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td>Applies On: </td>
+                                        <td>{{leave.applied_on}}</td>
+                                    </tr>
+                                    <tr class="warning">
+                                        <td>Team: </td>
+                                        <td>{{leave.user.employee.business_unit.name}}</td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td>Applies to: </td>
+                                        <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
+                                    </tr>
+
+                                    <tr class="warning">
+                                        <td>Leave type : </td>
+                                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td>From: </td>
+                                        <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
+                                    </tr>
+                                    <tr class="warning">
+                                        <td>To: </td>
+                                        <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td>No Of Days: </td>
+                                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+                                    </tr>
+                                    <tr class="warning">
+                                        <td>Reason: </td>
+                                        <td>{{leave.reason}}</td>
+                                    </tr>
+                                <tr class="info">
+                                        <td>Status: </td>
+                                        <td>{{leave.status|title}}</td>
+                                    </tr>
+                                    <tr class="warning">
+                                        <td></td>
+                                        <td>
+                                            <div>
+                                               {% if leave.attachement%} <p><strong>Attachment:</strong></p>
+				  <div class="" >
+					<!-- Attachments start -->
+                    <a target="_blank" href="{{leave.attachement.url}}">
+                        {% if leave.attachement.name|GetFileTypeFromName == 'xls' or leave.attachement.name|GetFileTypeFromName == 'xlsx' %}
+                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                        {% elif leave.attachement.name|GetFileTypeFromName == 'csv' %}
+                            <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                        {% elif leave.attachement.name|GetFileTypeFromName == 'pdf' %}
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                        {% elif leave.attachement.name|GetFileTypeFromName == 'doc' or leave.attachement.name|GetFileTypeFromName == 'docx'  %}
+                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                        {% elif leave.attachement.name|GetFileTypeFromName == 'jpg' or leave.attachement.name|GetFileTypeFromName == 'jpeg' or leave.attachement.name|GetFileTypeFromName == 'png' %}
+                            <img alt="A doc file" src="{{grievances.grievance_attachment.url }}" height="50px" width="50px">
+
+                        {% endif %}
+                    </a>
+                  </div>
+            {% endif %}
+            <!-- Attachments end -->
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </table></div>
                         </td>
-                        <td>Chumma</td>
-                        <td>12-Mar-2016,<br> Session 1</td>
-                        <td>12-Mar-2016,<br> Session 1</td>
-                        <td>Sumney</td>
-                        <td>5.5</td>
+                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                        <td>{{leave.from_date}},<br> {%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%} </td>
+                        <td>{{leave.to_date}},<br>{%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+
+                        <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}} </td>
+                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+
                         <td>
-                            <button class="btn btn-xs btn-success">Approved</button>
-                            <button class="btn btn-xs btn-info">Open</button>
+                           {%for k,v in  BUTTON_NAME %}
+                                {%if v|safe == leave.status|safe %}
+                                    <label class="btn btn-xs btn-{{k}}" >{{v|title}}</label>
+
+                                {%endif%}
+                            {%endfor%}
+
+                            {% if leave.status_comments %}
+                                    <br><span> Reason : {{leave.status_comments}}</span>
+                            {% endif %}
                         </td>
-                    </tr>
-                    <tr class="warning">
-                        <td>
-                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">Balamurugan R.S</a>
-                        </td>
-                        <td>Chumma</td>
-                        <td>12-Mar-2016,<br> Session 1</td>
-                        <td>12-Mar-2016,<br> Session 1</td>
-                        <td>Sumney</td>
-                        <td>5.5</td>
-                        <td>
-                            <button class="btn btn-xs btn-danger">Rejected</button>
-                            <button class="btn btn-xs btn-warning">Cancelled</button>
-                            <p>Rejected Message:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante. </p>
-                        </td>
-                    </tr>
+                    </tr>{%endfor%}
+
                 </table>
 
             </div>
 
-        </div>
+        </div> {% endif %}
 
 
-	
+	{%if not leave_list %}
 	  <div class="row ">
             <div class="col-md-12">
                 <table class="table table-bordered table-hover Lv-RecordsNotFound">
                     <tr class="info">
-                        <th class="text-center">No leave applications for this month. Well.. system thinks ansrsource is too strict and does not encourage people to take leave</th>
+                        <th class="text-center">No leave applications found</th>
                     </tr>
                 </table>
 
             </div>
 
         </div>
-
-   
+    {% endif %}
 
         <!-- End content-->
-
+<div class="text-center">{%if  leave_list %} {% paginate %} </div>{% endif %}
     </div>
     <!-- End Main Container-->
+{% endblock  %}
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/scripts.js"></script>
-
+ {% block page_specific_JS %}
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/scripts.js"></script>
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/static/js/date_validation.js"></script>
     <script>
+    $(document).ready( function (){
+        <!--window.history.replaceState( {} , 'Leave List', '/leave/leavelist/' );-->
         $('input[type="checkbox"]').on('change', function() {
             $('input[type="checkbox"]').not(this).prop('checked', false);
         });
+
+        $('.list_view').click(function(){
+            var GrDetails = $(this).siblings(".GrDetails").html();
+            $(".modal-body").html(GrDetails);
+        });
+
+        $('input[name="export"]').on('click', function() {
+            $( "#filter_form" ).submit();
+        });
+
+
+         $('#submit_button').click(function(){
+              var result  =  date_validation('id_from_date','id_to_date');
+              if (result === false) return false;
+
+             var inputs = input_elements_validation('filter_class', 'leave/leavelist');
+             if (inputs === false) return false;
+
+        });
+    });
     </script>
-
-
-</body>
-
-</html>
+{%endblock%}
