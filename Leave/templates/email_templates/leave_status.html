@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Leave Application Status</title>
+</head>
+
+<body>
+
+<p>Hi {{registered_by}},</p>
+<p>You Have Applied Leave From  {{from_date}} To {{to_date}} And Your Leave Application {{status}} by {{action_taken_by}}</p>
+{% if comment %} <p> Reason : {{comment}} </p> {% endif %}
+
+<p></p><p></p>
+<p>Regards,<br>
+ HR Support<br>
+</body>
+</html>
