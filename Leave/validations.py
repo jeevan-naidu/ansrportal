@@ -199,7 +199,6 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
 #calculating leave avail by a user
 def getLeaveApproved(user, last_day = None, leaveType = None):
     ''' get all approved leaves '''
-    import ipdb; ipdb.set_trace()
 
     leavecount=0
     year = date.today().year
