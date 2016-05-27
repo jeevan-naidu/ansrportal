@@ -150,7 +150,6 @@ class ApplyLeaveView(View):
 
 
     def post(self, request):
-
         leave_form=LeaveForm(request.POST['leave'], request.POST)
         response_data = {}
         context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [] }
@@ -162,6 +161,7 @@ class ApplyLeaveView(View):
         #validations of leave
 
         if leave_form.is_valid() and not context_data['errors']:
+            duedate = date.today()
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_apply', 'comp_off_avail', 'pay_off']
             leave_selected = leave_form.cleaned_data['leave']
             user_id=request.user.id
@@ -172,8 +172,7 @@ class ApplyLeaveView(View):
                 tosession = 'session_second'
                 if leave_selected in ['comp_off_apply', 'pay_off']:
                     duedate = validate['due_date']
-                else :
-                    duedate = null
+
 
             else:
                 validate=leaveValidation(leave_form, user_id, attachment)
