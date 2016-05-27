@@ -13,7 +13,6 @@ import employee
 import calendar
 from calendar import monthrange
 from django.shortcuts import render
-from django.contrib.auth.models import User
 # from datetime import datetime, date
 from django.utils import timezone
 from django.views.generic.list import ListView
@@ -25,10 +24,7 @@ from forms import LeaveListViewForm
 from Leave.models import LeaveApplications, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME
 from CompanyMaster.models import *
 from django.contrib.auth.models import User
-import django_excel as excel
-import pyexcel.ext.xls
 from export_xls.views import export_xlwt
-import xlwt
 import datetime
 from datetime import date
 from employee.models import Employee
@@ -334,7 +330,7 @@ class LeaveListView(ListView):
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user,
                                                                          status='open').order_by("status", "-from_date")
-            context['users'] = User.objects.filter(user__employee__manager=self.request.user)
+            context['users'] = Employee.objects.filter(manager__user=self.request.user)
 
         elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
             if 'all' in self.kwargs:
