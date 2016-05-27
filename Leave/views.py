@@ -40,12 +40,9 @@ logger = logging.getLogger('MyANSRSource')
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
 
 def LeaveTransaction(request):
-    month = request.GET.get('month')
-    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    year = date.today().year
-    monthselected1 = date(year, months.index(month)+2,1)
-    monthselected2 = date(year, months.index(month)+1,1)
-    Leave_transact=LeaveApplications.objects.filter(Q(from_date__lt = monthselected1) & Q(from_date__gte = monthselected2), ~Q(status = 'cancelled'), user=request.user.id,leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date', 'to_session','due_date','status')
+    statusType = request.GET.get('type')
+    statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Applied':'open'}
+    Leave_transact=LeaveApplications.objects.filter(status = statusDict[statusType] , user=request.user.id,leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date', 'to_session','due_date','status')
     for val in range(0, len(Leave_transact)):
         count = leave_calculation(Leave_transact[val]['from_date'], Leave_transact[val]['to_date'], Leave_transact[val]['from_session'], Leave_transact[val]['to_session'], Leave_transact[val]['leave_type__leave_type'])
         Leave_transact[val]['due_date'] = count
@@ -153,6 +150,7 @@ class ApplyLeaveView(View):
 
 
     def post(self, request):
+
         leave_form=LeaveForm(request.POST['leave'], request.POST)
         response_data = {}
         context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [] }
@@ -172,6 +170,11 @@ class ApplyLeaveView(View):
                 todate = validate['todate']
                 fromsession = 'session_first'
                 tosession = 'session_second'
+                if leave_selected in ['comp_off_apply', 'pay_off']:
+                    duedate = validate['due_date']
+                else :
+                    duedate = null
+
             else:
                 validate=leaveValidation(leave_form, user_id, attachment)
                 todate = leave_form.cleaned_data['toDate']
@@ -208,9 +211,9 @@ class ApplyLeaveView(View):
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
                         leavesummry_temp.save()
                         if attachment:
-                            LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason'], atachement=attachment).saveas(user_id)
+                            LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason'], atachement=attachment, due_date= duedate).saveas(user_id)
                         else:
-                            LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason']).saveas(user_id)
+                            LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason'], due_date= duedate).saveas(user_id)
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
@@ -584,5 +587,3 @@ class LeaveManageView(LeaveListView):
             messages.success(self.request, "Successfully Updated")
 
         return HttpResponseRedirect("/leave/manage")
-
-

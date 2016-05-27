@@ -441,22 +441,14 @@
 
 							 <b>Transactions:</b> <span id="leave_name">Earned Leave</span>
 							 <span class="pull-right">
-							  <label for="month_select">Select month&nbsp;:&nbsp;</label>
+							  <label for="month_select">Select status&nbsp;:&nbsp;</label>
 							  <select class="Lv-Tr-SelectMonth" id="month_select">
                   {
-								    <option>January</option>
+                    <option>Applied</option>
 
-								  <option>February</option>
-									<option>March</option>
-									<option>April</option>
-									<option>May</option>
-									<option>June</option>
-                  <option>July</option>
-									<option>August</option>
-									<option>September</option>
-									<option>October</option>
-									<option>November</option>
-                  <option>December</option>
+                <option>Approved</option>
+                <option>Rejected</option>
+                <option>Cancelled</option>
 
 							  </select>
 							  </span>
@@ -537,6 +529,7 @@ $(document).ready(function() {
 
 gridLoad('earned_leave');
 
+  var totalcount = 0;
   {% for leave in leave_summary%}
   var leaveType='{{leave.type__leave_type}}';
   switch(leaveType){
@@ -546,6 +539,7 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
+      totalcount = totalcount + total;
       $('#earned_leave .applied').text(applied);
       $('#earned_leave .approved').text(approved);
       $('#earned_leave .total').text(total +' days');
@@ -568,6 +562,7 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
+      totalcount = totalcount + total;
       $('#sick_leave .applied').text(applied);
       $('#sick_leave .approved').text(approved);
       $('#sick_leave .total').text(total +' days');
@@ -590,6 +585,7 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
+      totalcount = totalcount + total;
       $('#casual_leave .applied').text(applied);
       $('#casual_leave .approved').text(approved);
       $('#casual_leave .total').text(total +' days');
@@ -771,7 +767,7 @@ function gridLoad(name){
         {
             type : "GET",
             url : '/leave/transaction/',
-            data :{'leave':name,'month':$('#month_select').val()} ,
+            data :{'leave':name,'type':$('#month_select').val()} ,
             success : function(data)
             {
                 $('.table-bordered').append(data);

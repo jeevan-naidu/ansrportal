@@ -238,8 +238,9 @@ app.setActive = function($elements, arr) {
 
     for(i = 0; i < $elementsLen; i += 1) {
         $element = $($elements[i]);
-
+        if(arr[i]){
         $element.find('option[value=' + arr[i] +']').attr('selected', 'selected');
+      }
     }
 };
 
