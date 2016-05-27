@@ -6,6 +6,8 @@ from CompanyMaster.models import Holiday
 from models import LeaveApplications, LeaveType, LeaveSummary
 
 def leaveValidation(leave_form, user, attachment):
+    ''' leave types which needs from and to dates'''
+
     result = {'errors' : [], 'success':[]}
     fromDate = leave_form.cleaned_data['fromDate']
     toDate = leave_form.cleaned_data['toDate']
@@ -26,6 +28,9 @@ def leaveValidation(leave_form, user, attachment):
         return result
 
 def oneTimeLeaveValidation(leave_form, user):
+    ''' leave types which needs only from date '''
+
+
     result = {'errors' : [], 'success':[], 'todate':[0]}
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
@@ -38,7 +43,7 @@ def oneTimeLeaveValidation(leave_form, user):
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveapproved == 0 and newJoineeValidation(user):
-            result['success'] = getLeaveBalance(leaveType, fromDate)
+            result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = fromDate + timedelta(days = result['success'])
         else:
             result['error'] = "sorry you don't have this type of leave"
@@ -46,6 +51,7 @@ def oneTimeLeaveValidation(leave_form, user):
         holiday = Holiday.objects.all().values('date')
         result['success'] = 1
         result['todate'] = fromDate
+        result['due_date'] = fromDate - timedelta(days = 80)
         check_date = date.today() - timedelta(days = 80)
         if check_date > fromDate:
             result['errors'] = 'leave has expired'
@@ -67,6 +73,9 @@ def oneTimeLeaveValidation(leave_form, user):
 
 
 def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
+    ''' validations for new joinees based on leave type, holidays, sabbatical'''
+
+
     result = {'errors' : [], 'success':[]}
     fromSession = leave_form.cleaned_data['from_session']
     toSession = leave_form.cleaned_data['to_session']
@@ -120,8 +129,8 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
         first_day = getStart_day_of_month(toDate)
         leave_count_start_month = leave_calculation(fromDate, last_day, fromSession, 'session_second', leaveType)
         leave_count_end_month = leave_calculation(first_day, toDate, 'session_first', toSession, leaveType)
-        leaveTotal1 = getLeaveBalance(leaveType, last_day.month)
-        leaveTotal2 = getLeaveBalance(leaveType, first_day.month)
+        leaveTotal1 = getLeaveBalance(leaveType, last_day.month, user)
+        leaveTotal2 = getLeaveBalance(leaveType, first_day.month, user)
 
         leaveapproved1 = getLeaveApproved(user, last_day, leaveType)
         leaveapproved2 = getLeaveApproved(user, first_day, leaveType)
@@ -134,7 +143,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
             result['errors'] = " leaves are not avaliable"
 
     else:
-        leaveTotal = getLeaveBalance(leaveType, fromDate.month)
+        leaveTotal = getLeaveBalance(leaveType, fromDate.month, user)
         leaveapproved = getLeaveApproved(user, toDate, leaveType)
         balanceLeave = leaveTotal - leaveapproved
         if balanceLeave >= leavecount :
@@ -162,6 +171,8 @@ def getStart_day_of_month(date):
 
 
 def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
+    ''' Calculaton for number of leaves accoeding to selected dated and sessions'''
+
     holiday = Holiday.objects.all().values('date')
     holiday_in_leave = 0
     leavecount = 0
@@ -187,6 +198,9 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
 
 #calculating leave avail by a user
 def getLeaveApproved(user, last_day = None, leaveType = None):
+    ''' get all approved leaves '''
+    import ipdb; ipdb.set_trace()
+
     leavecount=0
     year = date.today().year
     newYearDate = date(year, 1, 1)
@@ -216,19 +230,41 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
 
 
 #calculting leave awarded to user
-def getLeaveBalance(leavetype, endmonth):
+def getLeaveBalance(leavetype, endmonth, user):
+    joined_date = Employee.objects.filter(user_id=user).values('joined')
+    joined_year = joined_date[0]['joined'].year
+    joined_month = joined_date[0]['joined'].month
+    joined_day = joined_date[0]['joined'].day
+    current_year = date.today().year
     leaveTotal = 0
     leaveType=LeaveType.objects.get(leave_type=leavetype)
-    if leaveType.carry_forward == 'yearly':
-        last_year = date.today().year - 1
-        balnce_of_last_year = LeaveSummary.objects.filter(type = leaveType, year = last_year).values('balance')
-        if balnce_of_last_year:
-            leaveTotal = leaveTotal + float((balnce_of_last_year['balance']).encode('utf-8'))
-        leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
-    elif leaveType.occurrence == 'monthly':
-        leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+    if current_year == joined_year:
+        if leaveType.carry_forward == 'yearly':
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
+            if joined_day>0 and joined_day<11:
+                leaveTotal = leaveTotal + .5
+            elif joined_day>10 and joined_day<21:
+                leaveTotal = leaveTotal + 1
+            else:
+                leaveTotal = leaveTotal + 1.5
+        elif leaveType.carry_forward == 'monthly':
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
+            if joined_day>25:
+                leaveTotal = leaveTotal + .5
+        else:
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
+
+
     else:
-        leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
+        if leaveType.carry_forward == 'yearly':
+            balnce_of_last_year = LeaveSummary.objects.filter(type = leaveType, year = current_year-1).values('balance')
+            if balnce_of_last_year:
+                leaveTotal = leaveTotal + float((balnce_of_last_year['balance']).encode('utf-8'))
+                leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+            elif leaveType.occurrence == 'monthly':
+                leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+            else:
+                leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
     return leaveTotal
 
 
