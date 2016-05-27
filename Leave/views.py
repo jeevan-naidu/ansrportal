@@ -326,7 +326,7 @@ class LeaveListView(ListView):
         context = super(LeaveListView, self).get_context_data(**kwargs)
         if self.request.user.groups.filter(name='myansrsourcePM').exists():
             if 'all' in self.kwargs:
-                context['leave_list'] = leave_list_all()
+                context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user)
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user,
                                                                          status='open').order_by("status", "-from_date")
@@ -544,7 +544,10 @@ def update_leave_application(request, status):
 class LeaveManageView(LeaveListView):
     def get_context_data(self, **kwargs):
         context = super(LeaveManageView, self).get_context_data(**kwargs)
-        context['all'] = LeaveApplications.objects.all().order_by("status", "-from_date")
+        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+            context['all'] = LeaveApplications.objects.filter(apply_to=self.request.user)
+        else:
+            context['all'] = LeaveApplications.objects.all()
         context['open'] = context['leave_list'].filter(status='open')
         return context
 
