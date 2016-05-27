@@ -300,6 +300,27 @@
 <!-- End Milestone reports section-->
 
 
+<!-- Salesforce section-->
+{% if request.user|IsSalesforceAdmin %}
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="salesforce_admin">
+				<a data-toggle="collapse" data-parent="#accordion" href="#salesforce" aria-expanded="false" aria-controls="collapseTwo">
+					Salesforce
+				</a>
+			</div>
+			<div id="salesforce" class="panel-collapse collapse" role="tabpanel" aria-labelledby="salesforce_admin">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="/salesforce/upload-file" class="list-group-item">
+						Upload Salesforce Data
+					</a>
+				</ul>
+			</div>
+			</div>
+</div>
+{% endif %}
+<!-- End salesforce reports section-->
+
 		</div>
 	</div>
 	<div class="col-md-8">

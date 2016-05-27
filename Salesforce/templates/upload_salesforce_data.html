@@ -1,0 +1,45 @@
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% load grievances_template_tags %}
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+{% block siteTitle %}myansrsource : Grievances{% endblock %}
+
+{% block content  %}
+{% if errors %}
+<h5 style="color: red;">Exception Type : {{exception_type}}<br>
+Exception : {{exception}}<br>
+Line No : {{error_at_line}}
+</h5>
+{% endif %}
+
+<h5 class="text-center">Very often, problems go unnoticed. If you don't tell us about them, we won't be able to fix them. Please share your grievances with us if any, so that we can improve your experience at <strong>ansr</strong>source.</h5>
+<form action="/salesforce/upload-file/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" class="btn btn-danger">Upload</button>
+</form>
+
+
+{% endblock  %}
+
+{% block page_specific_JS %}
+		<script src='/static/js/jquery.ui.widget.js' type="text/javascript"></script>
+		<script src='/static/js/bootstrap-filestyle.min.js' type="text/javascript"></script>
+
+{% endblock %}
+
+
+
+
