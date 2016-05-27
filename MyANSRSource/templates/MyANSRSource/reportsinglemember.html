@@ -1,0 +1,161 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td> 
+                    {% endfor %}
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="click">
+                        <input type="hidden" value="generate" name="status" />
+                        {% fontawesome_icon 'line-chart' large=True %}
+                        Get Report
+                    </button></td>
+                    <td class="col-lg-1">
+                        {% if data %}
+                            <button type="submit" class="btn btn-success" name="generate">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        {% if member %}
+            <table class="table table-condensed">
+                <tr>
+                    <td class="text-center" colspan="5"><b>Individual Team Member Perfomance</b></td>
+                </tr>
+                <tr>
+                    <td><b>Member: {{ member }}</b></td>
+                    <td class="text-right"><b>From: {{ startDate }}</b></td>
+                    <td class="text-right"><b>To: {{ endDate }}</b></td>
+                    <td class="text-right"><b>Planned Hour(s): {{ pH }}</b></td>
+                    <td class="text-right"><small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Submitted
+                               {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small></td>
+                </tr>
+            </table>
+        {% endif %}
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th colspan="5"></th>
+                <th class="text-right">Avg. </th> 
+                <th class="text-right">Min. </th> 
+                <th class="text-right">Max. </th> 
+                <th class="text-right">Median </th> 
+                <th></th>
+            </tr>
+            <tr>
+                <th>Project Name</th> 
+                <th>Book</th> 
+                <th>Chapter</th> 
+                <th>Task / Activity</th> 
+                <th class="text-right">Total Hours</th> 
+                <th colspan="4" class="text-center">Productivity</th>
+                <th>Status</th> 
+            </tr>
+            </thead>
+            {% if fresh == 1 %}
+                <tr>
+                    <td colspan="11" class="text-center"><h4><small><b>Please select a member and time frame to get the report</b></small></h4></td>
+                </tr>
+            {% elif fresh == 0 %}
+                <tr>
+                    <td colspan="11" class="text-center"><h4><small><b>No reports found for this timeframe</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% for eachData in project %}
+                    <tr>
+                        {% if eachData.project__projectId == ' - ' %}
+                            <td> - </td> 
+                        {% else %}
+                            <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td> 
+                        {% endif %}
+                        <td>{{ eachData.project__book__name }}</td> 
+                        <td>{{ eachData.chapter__name }}</td> 
+                        <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
+                        <td class="text-right">{{ eachData.total }}</td> 
+                        <td class="text-right">
+                            {% for eachAvg in avgProd %}
+                                {% if eachAvg.project__projectId == eachData.project__projectId  and  eachAvg.project__book__name == eachData.project__book__name and eachAvg.chapter__name == eachData.chapter__name and eachAvg.task__name == eachData.task__name and eachAvg.hold == eachData.hold %}
+                                    {{ eachAvg.avg }}
+                                {% endif %}
+                            {% endfor  %}
+                        </td> 
+                        <td class="text-right">
+                            {% for eachMin in minProd %}
+                                {% if eachMin.project__projectId == eachData.project__projectId and eachMin.project__book__name == eachData.project__book__name and eachMin.chapter__name == eachData.chapter__name and eachMin.hold == eachData.hold and eachMin.task__name == eachData.task__name %}
+                                    {{ eachMin.min }}
+                                {% endif %}
+                            {% endfor  %}
+                        </td> 
+                        <td class="text-right">
+                            {% for eachMax in maxProd %}
+                                {% if eachMax.project__projectId == eachData.project__projectId and eachMax.project__book__name == eachData.project__book__name and eachMax.chapter__name == eachData.chapter__name and eachMax.hold == eachData.hold and eachMax.task__name == eachData.task__name %}
+                                    {{ eachMax.max }}
+                                {% endif %}
+                            {% endfor  %}
+                        </td> 
+                        <td class="text-right"></td> 
+                        {% if eachData.hold %}
+                           <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
+                        {% else %}
+                           <td>{% fontawesome_icon 'chevron-circle-down' large=True color='red' %}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td colspan="3" class="text-center"><h3><small><b>Total Project Hour(s)</b></small></h3><td>
+                        <td class="text-right"><h3><small><b>{{ grandTotal.pTotal }}</b></small></h3><td>
+                    <tr>
+                {% for eachData in nonProject %}
+                    <tr>
+                        {% if eachData.project__projectId == ' - ' %}
+                            <td> - </td> 
+                        {% else %}
+                            <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td> 
+                        {% endif %}
+                        <td>{{ eachData.project__book__name }}</td> 
+                        <td>{{ eachData.chapter__name }}</td> 
+                        <td>{{ eachData.task__name }} {{ eachData.activity__name }}</td> 
+                        <td class="text-right">{{ eachData.total }}</td> 
+                        <td class="text-right">{{ eachData.avgProd }}</td> 
+                        <td class="text-right">{{ eachData.minProd }}</td> 
+                        <td class="text-right">{{ eachData.maxProd }}</td> 
+                        <td class="text-right"></td> 
+                        {% if eachData.hold %}
+                           <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
+                        {% else %}
+                           <td>{% fontawesome_icon 'chevron-circle-down' large=True color='red' %}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td colspan="3" class="text-center"><h3><small><b>Total-Non Project Hour(s)</b></small></h3><td>
+                        <td class="text-right"><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
+                    <tr>
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}

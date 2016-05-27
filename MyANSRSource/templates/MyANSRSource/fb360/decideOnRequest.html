@@ -1,0 +1,72 @@
+{% extends 'fb360/decideActionMaster.inc' %}
+
+{% block PDecideRequest %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %} 
+            {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+            {% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
+<div class="row">
+	<div class="col-md-12">
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Requestee</th>
+                    <th>Email ID</th>
+                    {% if accept_eligible %}
+                        <th class="text-right">Decide</th>
+                    {% else %}
+                        <th class="text-right">Status</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if data %}
+                    {% for eachPeer in data %}
+                        {% if forloop.last %}
+                            <input type="hidden" name="totalValue" value="{{ forloop.counter }}" />
+                        {% endif %}
+                        <tr>
+                            <td>{{ eachPeer.name }}</td>
+                            <td>{{ eachPeer.emailid }}</td>
+                            {% if accept_eligible %}
+                                <td class="text-right">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        {% with forloop.counter|stringformat:"s" as t %}
+                                            {% with "choice"|add:t as total %}
+                                                <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="A" /> 
+                                                    <i class="fa fa-check fa-lg"></i>
+                                                </label>
+                                                <label class="btn btn-default btn-sm"><input type="radio" name="{{ total }}" value="R" /> 
+                                                    <i class="fa fa-times fa-lg"></i>
+                                                </label>
+                                            {% endwith %}
+                                            {% with "rowid"|add:t as total %}
+                                                <input type="hidden" name="{{ total }}" value="{{ eachPeer.id }}" />
+                                            {% endwith %}
+                                        {% endwith %}
+                                    </div>
+                                </td>
+                            {% else %}
+                                <td class="text-right"><h5><small>Peer Approval Date has either expired / not yet started for this survey</small></h5></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan=3 class="text-center"><h4><small><b>No Pending request found</b><small></h4></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+	</div>
+</div>
+{% endblock %}{% endblock %}
+

@@ -1,0 +1,284 @@
+
+{% load grievances_template_tags %}
+<div class="panel-group marginTop" id="panel-{{object.id}}">
+	<div class="panel Gr-PnBg">
+		<div class="panel-heading">
+			
+			<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-1{{object.id}}">
+					<div class="indicator smooth_transitions glyphicon glyphicon-play {{object.id}}"></div>
+					
+					<b class="font-15">{{object.subject | truncatechars:60}}</b>
+			</a>
+		</div>
+		<div id="panel-element-1{{object.id}}" class="panel-collapse collapse">
+			<div class="panel-body ">
+				<div class="message_body Gr-max-height">
+					<p><i><b class="font-15">Subject:</b> {{object.subject}}</i></p>
+					<p><i>{{object.grievance}}</i></p>
+					
+					<!-- Attachments start -->
+					{% if object.grievance_attachment%}<p></p><i><b>Attachment : </b></i> <p></p>
+						<a target="_blank" href="{{object.grievance_attachment.url}}">
+							{% if object.grievance_attachment.name|GetFileTypeFromName == 'xls' or object.grievance_attachment.name|GetFileTypeFromName == 'xlsx' %}
+								<img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+							{% elif object.grievance_attachment.name|GetFileTypeFromName == 'csv' %}
+								<img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+							{% elif object.grievance_attachment.name|GetFileTypeFromName == 'pdf' %}
+								<img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+							{% elif object.grievance_attachment.name|GetFileTypeFromName == 'doc' or object.grievance_attachment.name|GetFileTypeFromName == 'docx'  %}
+								<img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+							{% elif object.grievance_attachment.name|GetFileTypeFromName == 'jpg' or object.grievance_attachment.name|GetFileTypeFromName == 'jpeg' or object.grievance_attachment.name|GetFileTypeFromName == 'png' %}
+								<img alt="A doc file" src="{{object.grievance_attachment.url }}" height="50px" width="50px">
+							{% endif %}
+						</a>
+					{% endif %}
+					<!-- Attachments end -->
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	{% if object.action_taken %}
+			<div class="panel Gr-PnBg">
+				<div class="panel-heading ">
+					
+					 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-2{{object.id}}">
+						<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
+						<b class="font-15">Action taken</b></a>
+				</div>
+				<div id="panel-element-2{{object.id}}" class="panel-collapse collapse">
+					<div class="panel-body">
+						<div class="message_body Gr-max-height">
+							<p><i>{{object.action_taken}}</i></p>
+							
+							
+							<!-- Attachments start -->
+							{% if object.admin_action_attachment%}<p></p><i><b>Attachment : </b></i>  <p></p>
+								<a target="_blank" href="{{object.admin_action_attachment.url}}">
+									{% if object.admin_action_attachment.name|GetFileTypeFromName == 'xls' or object.admin_action_attachment.name|GetFileTypeFromName == 'xlsx' %}
+										<img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+									{% elif object.admin_action_attachment.name|GetFileTypeFromName == 'csv' %}
+										<img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+									{% elif object.admin_action_attachment.name|GetFileTypeFromName == 'pdf' %}
+										<img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+									{% elif object.admin_action_attachment.name|GetFileTypeFromName == 'doc' or object.admin_action_attachment.name|GetFileTypeFromName == 'docx'  %}
+										<img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+									{% elif object.admin_action_attachment.name|GetFileTypeFromName == 'jpg' or object.admin_action_attachment.name|GetFileTypeFromName == 'jpeg' or object.admin_action_attachment.name|GetFileTypeFromName == 'png' %}
+										<img alt="A doc file" src="{{object.admin_action_attachment.url }}" height="50px" width="50px">
+									{% endif %}
+								</a>
+							{% endif %}
+							<!-- Attachments end -->
+							
+							
+							{% if object.action_taken_date %}<p></p><p></p><h5><div style="float: right;">-<i>{{object.action_taken_date}}</i></div></h5>{% endif %}
+							<br>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			{% if object.satisfaction_level %}
+				
+				<div class="panel Gr-PnBg">
+					<div class="panel-heading">
+						
+						<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
+							<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
+							<b class="font-15">User Actions</b></a>
+					</div>
+					<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
+						<div class="panel-body">
+							<div class="message_body Gr-max-height">
+								{% if object.satisfaction_level == 'satisfied' or object.satisfaction_level = 'not_sure'%}
+									<div>
+										<p><b><i>Satisfaction level :</i> </b><label type="label" class="label label-success">{{object.get_satisfaction_level_display}}</button></p>
+									</div>
+									
+								{% endif %}
+								
+								{% if object.satisfaction_level == 'dissatisfied' or object.satisfaction_level = 'very_dissatisfied'%}
+									<div>
+										<p><b><i>Satisfaction level</i> : </b><label type="label" class="label label-danger ">{{object.get_satisfaction_level_display}}</label></p>
+									</div>
+								{% endif %}
+								
+								{% if object.user_closure_message %} <p><i><b>Message :</b>{{object.user_closure_message}}</i></p>{% endif %}
+								
+								
+								<!-- Attachments start -->
+								{% if object.user_closure_message_attachment%}<p></p><i><b>Attachment : </b></i>  <p></p>
+									<a target="_blank" href="{{object.user_closure_message_attachment.url}}">
+										{% if object.user_closure_message_attachment.name|GetFileTypeFromName == 'xls' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'xlsx' %}
+											<img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+										{% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'csv' %}
+											<img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+										{% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'pdf' %}
+											<img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+										{% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'doc' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'docx'  %}
+											<img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+										{% elif object.user_closure_message_attachment.name|GetFileTypeFromName == 'jpg' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'jpeg' or object.user_closure_message_attachment.name|GetFileTypeFromName == 'png' %}
+											<img alt="A doc file" src="{{object.user_closure_message_attachment.url }}" height="50px" width="50px">
+										{% endif %}
+									</a>
+								{% endif %}
+								<!-- Attachments end -->
+								
+								
+								{% if object.closure_date %}<p></p><p></p><h5><div style="float: right;">-<i>{{object.closure_date}}</i></div></h5>{% endif %}
+								<br>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+			
+			{% else %}
+				<div class="panel Gr-PnBg">
+						<div class="panel-heading">
+							
+							 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
+								<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
+								<b class="font-15">User Actions</b></a>
+						</div>
+						<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
+							<div class="panel-body">
+								<p>
+									<i>Was the action taken to resolve your grievance satisfactory?
+									If you are satisfied with the action taken, please rate your experience and close the grievance.
+									If not, please escalate the grievance.</i>
+								</p>
+								<ul class="nav nav-tabs">
+									<li class="active"><a data-toggle="tab" href="#home_{{object.grievance_id}}"><b>Rate and Close</b></a></li>
+									<li><a data-toggle="tab" href="#menu1_{{object.grievance_id}}"><b>Escalate</b></a></li>
+								</ul>
+								
+								<div class="tab-content">
+								  <div id="home_{{object.grievance_id}}" class="tab-pane fade in active borders-3-sided">
+									
+												<form id="RateAndClosureForm_{{object.grievance_id}}" class="RateAndClosureForm ajax_loader" method="post" enctype="multipart/form-data" >
+													
+													<div id="SubmitAndCLoseFormAjaxLoader_{{object.grievance_id}}" class="ajax_bck"><div class="ajax_load_image"></div></div>
+													
+													<div style="color:red" id="RateAndClosureForm_errors_{{object.grievance_id}}"></div><br>
+													<table>
+															<tr>
+																<td>
+																	<p></p>
+																	<p><b>How satisfied were you with the resolution of your grievance? </b><span style="color:red">*</span></p>
+																{% for key, text in satisfaction_choices %}
+																		<label>
+																			<input type="radio" name="satisfaction_level" value="{{key}}" required>
+																			&nbsp;&nbsp;{{text}}&nbsp;&nbsp;&nbsp;&nbsp;
+																		</label>
+																{% endfor %}
+																<br><br>
+																</td>
+															</tr>
+															<tr>
+																<td>
+																	<p><b>Message: </b><span style="color:red">*</span></p>
+																	<textarea cols="60" maxlength="2000" name="user_closure_message" rows="10" placeholder="Enter your message here" required></textarea>
+																	<br><br>
+																</td>
+															</tr>
+															
+															<tr>
+																<td>
+																	<input type="file" name="user_closure_message_attachment" class="filestyle" data-iconName="glyphicon glyphicon-paperclip" data-buttonBefore="true">
+																	<p>Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg<br>
+																	Maximum allowed file size: 1MB</p>
+																</td>
+															</tr>
+															
+															<tr>
+																<td>
+																	<input type="submit" class="btn btn-danger" value="Submit and Close Grievance" />
+																	<input type="hidden" name="grievance_id" value="{{object.grievance_id}}"/>
+																</td>
+															</tr>
+													</table>
+												</form>
+								  </div>
+								  <div id="menu1_{{object.grievance_id}}" class="tab-pane fade borders-3-sided">
+									
+									{% if object.escalate %}
+										
+										<p>You have marked this grievance for escalation. HR will escalate it to the concerned authorities.</p>
+										
+									{% elif object.escalate_to %}
+										<p>Your grievance has been escalated to the concerned authorities. Keep calm and drink lots of water.</p>
+									{% else %}
+												<form id="EscalationForm_{{object.grievance_id}}" class="EscalationForm ajax_loader" method="post" enctype="multipart/form-data">
+													
+													<div id="EscalationFormAjaxLoader_{{object.grievance_id}}" class="ajax_bck"><div class="ajax_load_image"></div></div>
+													
+													<div style="color:red" id="EscalationForm_errors_{{object.grievance_id}}"></div><br>
+													<table>
+															<tr>
+																<td>
+																	<p>If you are not satisfied with the action taken to resolve your grievance, please escalate it to the higher authorities.</p>
+																	<input type="submit" class="btn btn-danger" value="Escalate" />
+																	<input type="hidden" name="grievance_id" value="{{object.grievance_id}}"/>
+																</td>
+															</tr>
+													</table>
+												</form>
+									{% endif %}	
+								  </div>
+								 
+								</div>
+								
+								
+							
+							</div>
+						</div>
+					</div>
+			{% endif %}
+		
+	{% endif %}
+
+	
+	{% if object.admin_closure_message %}		
+			<div class="panel Gr-PnBg">
+				<div class="panel-heading">
+					
+					 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-4{{object.id}}">
+						<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
+						<b class="font-15">Admin Closure Message</b></a>
+				</div>
+				<div id="panel-element-4{{object.id}}" class="panel-collapse collapse">
+					<div class="panel-body">
+						
+						<div class="message_body Gr-max-height">
+							<i><p>{{object.admin_closure_message}}</p></i>
+							
+							
+							<!-- Attachments start -->
+								{% if object.admin_closure_message_attachment %}<p></p><i><b>Attachment : </b></i><p></p>
+									<a target="_blank" href="{{object.admin_closure_message_attachment.url}}">
+										{% if object.admin_closure_message_attachment.name|GetFileTypeFromName == 'xls' or object.admin_closure_message_attachment.name|GetFileTypeFromName == 'xlsx' %}
+											<img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+										{% elif object.admin_closure_message_attachment.name|GetFileTypeFromName == 'csv' %}
+											<img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+										{% elif object.admin_closure_message_attachment.name|GetFileTypeFromName == 'pdf' %}
+											<img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+										{% elif object.admin_closure_message_attachment.name|GetFileTypeFromName == 'doc' or object.admin_closure_message_attachment.name|GetFileTypeFromName == 'docx'  %}
+											<img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+										{% elif object.admin_closure_message_attachment.name|GetFileTypeFromName == 'jpg' or object.admin_closure_message_attachment.name|GetFileTypeFromName == 'jpeg' or object.admin_closure_message_attachment.name|GetFileTypeFromName == 'png' %}
+											<img alt="A doc file" src="{{object.admin_closure_message_attachment.url }}" height="50px" width="50px">
+										{% endif %}
+									</a>
+								{% endif %}
+								<!-- Attachments end -->
+							
+							{% if object.admin_closure_message_date%}<h5><div style="float: right;"><p></p><p>-<i>{{object.admin_closure_message_date}}</i></p></div></h5>{% endif %}
+							<br>
+						</div>
+					</div>
+				</div>
+			</div>
+	{% endif %}
+		
+	</div>
+

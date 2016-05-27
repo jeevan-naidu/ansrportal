@@ -1,0 +1,301 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load humanize %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td class="col-lg-10">{{ field }}</td> 
+                    {% endfor %}
+                    <td><button type="submit" id="submit" name="click" class="btn btn-primary">
+                        {% fontawesome_icon 'line-chart' large=True %}
+                        Get Report
+                    </button></td>
+                    <td>
+                        {% if fresh == 0 %}
+                            <button type="submit" id="generate" name="generate" class="btn btn-success">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        {% if not fresh %}
+            <table class="table table-condensed">
+                <tr>
+                    <td class="text-center"><b>Individual Project Perfomance</b></td> 
+                </tr>
+                <tr>
+                    <td class="text-center"><b>{{ basicData.code }} : {{ basicData.name }}</b></td> 
+                </tr>
+            </table>
+        {% endif %}
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Project Name</th> 
+                <th>Start Date</th> 
+                <th>End Date</th> 
+                <th>P.O.</th> 
+                <th>Contract Signed</th> 
+                <th class="text-right">Planned Effort</th> 
+                <th class="text-right">Total Value</th> 
+                <th class="text-right">Salesforce Number</th> 
+            </tr>
+            </thead>
+            {% if fresh %}
+                <tr>
+                    <td colspan="8" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>{{ basicData.code }} : {{ basicData.name }}</td> 
+                    <td>{{ basicData.startDate }}</td> 
+                    {% if red %}
+                    <td style="color: red">
+                    {% else %}
+                    <td>
+                    {% endif %}
+                        {{ basicData.endDate }}
+                    </td> 
+                    <td>{{ basicData.po }}</td> 
+                    <td>{{ basicData.signed }}</td> 
+                    <td class="text-right">{{ basicData.plannedEffort }}</td> 
+                    <td class="text-right">${{ basicData.totalValue | intcomma }}</td> 
+                    <td class="text-right">{{ basicData.salesForceNumber | intcomma }}</td> 
+                </tr>
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>CR#</th> 
+                <th>CR Date</th> 
+                <th>Reason</th> 
+                <th>Project End Date</th> 
+                <th class="text-right">Revised Effort</th> 
+                <th class="text-right">Revised Total</th> 
+            </tr>
+            </thead>
+            {% if crData %}
+                {% for eachData in crData %}
+                    <tr>
+                        <td>{{ eachData.crId }}</td> 
+                        <td>{{ eachData.updatedOn }}</td> 
+                        <td>{{ eachData.reason }}</td> 
+                        <td>{{ eachData.endDate }}</td> 
+                        <td class="text-right">{{ eachData.revisedEffort }}</td> 
+                        <td class="text-right">${{ eachData.revisedTotal | intcomma }}</td> 
+                    </tr>
+                    <tr>
+                    {% if eachData.closed %}
+                        <td colspan="8" class="text-center"><h4><small>Project Closed On : <b>{{ eachData.closedOn }}</b></small></h4></td> 
+                    {% endif %}
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>No change request logged till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Milestone Name</th> 
+                <th>Milestone Date</th> 
+                <th>Financial</th> 
+                <th class="text-right">Value</th> 
+                <th>Completed</th> 
+            </tr>
+            </thead>
+            {% if msData %}
+                {% for eachData in msData %}
+                    <tr>
+                        <td>{{ eachData.description }}</td> 
+                        <td>{{ eachData.milestoneDate }}</td> 
+                        <td>{{ eachData.financial }}</td> 
+                        <td class="text-right">${{ eachData.amount | intcomma }}</td> 
+                        <td>{{ eachData.closed }}</td> 
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center"><h4><small><b>No milestones set till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Member Name</th> 
+                <th>Role</th> 
+                <th class="text-right">Planned Effort</th> 
+                <th class="text-right">Actual Effort</th>
+                {% if not closed %} 
+                    <th class="text-right">Balance Effort</th> 
+                {% else %}
+                    <th class="text-right">Deviation</th>
+                {% endif %} 
+            </tr>
+            </thead>
+            {% if tsData %}
+                {% for eachData in tsData %}
+                    <tr>
+                        <td>{{ eachData.teamMember__first_name }} {{ eachData.teamMember__last_name }}</td> 
+                        <td>{{ eachData.designation }}</td> 
+                        <td class="text-right">{{ eachData.planned }}</td> 
+                        <td class="text-right">{{ eachData.actual }}</td> 
+                        {% if not closed %} 
+                            {% if eachData.balance >= 0 %}
+                                <td class="text-right" style="color: green">{{ eachData.balance }}</td>
+                            {% else %}
+                                <td class="text-right" style="color: red">{{ eachData.balance }}</td>
+                            {% endif %}
+                        {% else %} 
+                            {% if eachData.deviation >= 0 %}
+                                <td class="text-right" style="color: green"><b>{{ eachData.deviation }} %</b></td> 
+                            {% else %}
+                                <td class="text-right" style="color: red"><b>{{ eachData.deviation }} %</b></td> 
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td colspan=2><h4><small><b>Total  </b></small></h4></td>
+                        <td class="text-right"><h4><small><b>{{ plannedTotal }}</b></small></h4></td>
+                        <td class="text-right"><h4><small><b>{{ actualTotal }}</b></small></h4></td>
+                        {% if not closed %} 
+                            {% if balanceTotal <= 0 %}
+                                <td class="text-right"><h4><small><b style="color: red">{{ balanceTotal }}</b></small></h4></td>
+                            {% else %}
+                                <td class="text-right"><h4><small><b style="color: green">{{ balanceTotal }}</b></small></h4></td>
+                            {% endif %}
+                        {% else %} 
+                            {% if deviation < 0 %}
+                                <td class="text-right"><h4><small><b style="color: red">{{ deviation }} %</b></small></h4></td>
+                            {% else %}
+                                <td class="text-right"><h4><small><b style="color: green">{{ deviation }} %</b></small></h4></td>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="5" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th colspan=2></th> 
+                <th class="text-center" colspan=4>Productivity</th> 
+                <th></th> 
+            </tr>
+            </thead>
+            <thead>
+            <tr>
+                <th>Task Name</th> 
+                <th class="text-right">Norm</th> 
+                <th class="text-right">Min</th> 
+                <th class="text-right">Max</th> 
+                <th class="text-right">Avg</th> 
+                <th class="text-right">Median</th> 
+                <th>Top Performer</th> 
+            </tr>
+            </thead>
+            {% if taskData %}
+                {% for eachData in taskData %}
+                    <tr>
+                        <td>{{ eachData.task__name }}</td> 
+                        <td class="text-right">
+                            {% for eachTask in topPerformer %}
+                                {% if eachTask.taskName == eachData.task__name %}
+                                    {{ eachTask.norm }}
+                                {% endif %}
+                            {% endfor %}     
+                        </td> 
+                        <td class="text-right">
+                            {% for eachVal in minTaskData %}
+                                {% if eachVal.task__name == eachData.task__name %}
+                                    {{ eachVal.min }}
+                                {% endif %}
+                            {% endfor %}
+                        </td> 
+                        <td class="text-right">
+                            {% for eachVal in maxTaskData %}
+                                {% if eachVal.task__name == eachData.task__name %}
+                                    {{ eachVal.max }}
+                                {% endif %}
+                            {% endfor %}
+                        </td> 
+                        <td class="text-right">
+                            {% for eachVal in avgTaskData %}
+                                {% if eachVal.task__name == eachData.task__name %}
+                                    {{ eachVal.avg }}
+                                {% endif %}
+                            {% endfor %}
+                        </td> 
+                        <td class="text-right"></td> 
+                        <td>
+                            {% for eachTask in topPerformer %}
+                                {% if eachTask.taskName == eachData.task__name %}
+                                    {{ eachTask.top }}
+                                {% endif %}
+                            {% endfor %}     
+                        </td> 
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="7" class="text-center"><h4><small><b>Select a project to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center"><h4><small><b>No timesheet logged till now</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}

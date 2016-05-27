@@ -14,7 +14,7 @@
 	{% csrf_token %}
     <div id="timesheet-billable">
 	<legend>
-	Project Effort 
+	Project Effort
 	<span class="pull-right">
 		<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
 			<span class="glyphicon glyphicon-plus"></span>
@@ -28,7 +28,7 @@
 		{% if eachError.items|length > 0 %}
 			<div class="alert alert-danger" role="alert">
 				{% for k, v in eachError.items %}
-					{{ k }} : {{ v|striptags }}
+                <li>{{ k }} : {{ v|striptags }}</li>
 				{% endfor %}
 			</div>
 		{% endif %}
@@ -44,6 +44,33 @@
 				<td class="text-center"><b>{{ v }}</b></td>
 			{% endfor %}
 		</tr>
+		<tr>
+			<td colspan="4" class="text-right">
+				<strong>Timesheet Hours</strong>
+			</td>
+			<td class="text-center">
+                <strong class="ts-mon-total-hr">{{ tsTotal.mondayTotal }}</strong>
+			</td>
+			<td class="text-center">
+                <strong class="ts-tue-total-hr">{{ tsTotal.tuesdayTotal }}</strong>
+			</td>
+			<td class="text-center">
+                <strong class="ts-wed-total-hr">{{ tsTotal.wednesdayTotal }}</strong>
+			</td>
+			<td class="text-center">
+                <strong class="ts-thu-total-hr">{{ tsTotal.thursdayTotal }}</strong>
+			</td>
+			<td class="text-center">
+                <strong class="ts-fri-total-hr">{{ tsTotal.fridayTotal }}</strong>
+			</td>
+			<td class="text-center">
+                <strong class="ts-sat-total-hr">{{ tsTotal.saturdayTotal }}</strong>
+			</td>
+			<td class="text-center">
+                <strong class="ts-sun-total-hr">{{ tsTotal.sundayTotal }}</strong>
+			</td>
+		</tr>
+
             	<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
@@ -72,6 +99,7 @@
 		</thead>
 		<tbody>
 		{% endif %}
+
 		<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
@@ -99,14 +127,14 @@
 									{% for typeData in form.hidden_fields %}
 										{% if 'projectType' in typeData.id_for_label %}
 											{% if tdata.value > 0 %}
-												<span class="b-questions">{{ tdata.value }}</span>
+												<span class="b-questions set-zero">{{ tdata.value }}</span>
 												<span class="project-unit">{{ typeData.value }}</span>
 											{% else %}
-												<span class="b-questions">0</span> 
+												<span class="b-questions set-zero">0</span>
 												{% if typeData.value == None %}
-													<span class="project-unit">Q</span>
+													<span class="project-unit set-q">Q</span>
 												{% else %}
-													<span class="project-unit">{{ typeData.value }}</span>
+													<span class="project-unit set-q">{{ typeData.value }}</span>
 												{% endif %}
 											{% endif %}
 										{% endif %}
@@ -117,11 +145,13 @@
 							-
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-									{% if tdata.value > 0 %}
-										<span class="b-hours">{{ tdata.value }}</span>H
-									{% else %}
-										<span class="b-hours">0</span>H
-									{% endif %}
+                                    {% with dayclass=data.label|add:"-t" %}
+                                        {% if tdata.value > 0 %}
+                                            <span class="b-hours {{ dayclass }} set-zero">{{ tdata.value }}</span>H
+                                        {% else %}
+                                            <span class="b-hours {{ dayclass }} set-zero">0</span>H
+                                        {% endif %}
+                                    {% endwith %}
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
@@ -143,10 +173,10 @@
 									{% for typeData in form.hidden_fields %}
 										{% if 'projectType' in typeData.id_for_label %}
 										{% if data.value > 0 %}
-											<span class="t-questions">{{ data.value }}</span>
+											<span class="t-questions set-zero">{{ data.value }}</span>
 											<span class="project-unit">{{ typeData.value }}</span>
 										{% else %}
-											<span class="t-questions">0</span>
+											<span class="t-questions set-zero">0</span>
 											{% if typeData.value == None %}
 												<span class="project-unit">Q</span>
 											{% else %}
@@ -166,26 +196,26 @@
 									{% if Ndata.label == 'Task' %}
 									    {% if Ndata.value == 'I' %}
 										 {% if data.value > 0 %}
-										    <input type="hidden" class="r-total-idle-hours" value="{{ data.value }}" />
-										    <input type="hidden" class="r-total-billable-hours" value="0" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="{{ data.value }}" />
+										    <input type="hidden" class="r-total-billable-hours set-zero" value="0" />
 										 {% else %}
-										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="0" />
 										 {% endif %}
 									    {% else %}
 										 {% if data.value > 0 %}
-										    <input type="hidden" class="r-total-billable-hours" value="{{ data.value }}" />
-										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										    <input type="hidden" class="r-total-billable-hours set-zero" value="{{ data.value }}" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="0" />
 										 {% else %}
-										    <input type="hidden" class="r-total-billable-hours" value="0" />
-										    <input type="hidden" class="r-total-idle-hours" value="0" />
+										    <input type="hidden" class="r-total-billable-hours set-zero" value="0" />
+										    <input type="hidden" class="r-total-idle-hours set-zero" value="0" />
 										 {% endif %}
 									    {% endif %}
 									{% endif %}
 								    {% endfor %}
 									{% if data.value > 0 %}
-										<span class="t-hours">{{ data.value }}</span>H
+										<span class="t-hours set-zero">{{ data.value }}</span>H
 									{% else %}
-										<span class="t-hours">0</span>H
+										<span class="t-hours set-zero">0</span>H
 									{% endif %}
 									{{ data }}
 								{% endif %}
@@ -194,7 +224,7 @@
 					</td>
 				{% elif data.label == 'Feedback' %}
 			       		<td>
-						{% if  data.value == None or data.value == '' %}	
+						{% if  data.value == None or data.value == '' %}
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#myModal-"|add:data.id_for_label %}
@@ -224,7 +254,7 @@
 									</div>
 								</div>
 							</div>
-						{% endwith %}	
+						{% endwith %}
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
 					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
@@ -232,10 +262,10 @@
 						{% if 'hold' in holdData.label or 'approved' in data.label %}
 							{% if holdData.value %}
 								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}		
+							{% else %}
 								<td>{{ data }}</td>
 							{% endif %}
-						{% endif %}	
+						{% endif %}
 					{% endfor %}
 					{% endif %}
                 		{% endif %}
@@ -263,7 +293,7 @@
 		{% if eachError.items|length > 0 %}
 			<div class="alert alert-danger" role="alert">
 				{% for k, v in eachError.items %}
-					{{ k }} : {{ v|striptags }}
+                <li>{{ k }} : {{ v|striptags }}</li>
 				{% endfor %}
 			</div>
 		{% endif %}
@@ -308,17 +338,17 @@
 					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label %}
-							{% if holdData.value %}
+							{% if holdData.value or prevWeekBlock %}
 								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}		
+							{% else %}
 								<td>{{ data }}</td>
 							{% endif %}
-						{% endif %}	
+						{% endif %}
 					{% endfor %}
 					{% endif %}
 				{% elif 'Feedback' in data.label %}
 			       		<td>
-						{% if  data.value == None or data.value == '' %}	
+						{% if  data.value == None or data.value == '' or prevWeekBlock == True %}
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#actModal-"|add:data.id_for_label %}
@@ -347,7 +377,7 @@
 										</div>
 									</div>
 								</div>
-							</div>	
+							</div>
 						{% endwith %}
 					</td>
 				{% endif %}
@@ -370,17 +400,21 @@
                 </thead>
                 <tbody>
                 <tr>
-		    <td>Project Billable</td>
-		    <td class="total-billable-hours">{{ bTotal }}</td>
+		    <td>Billable</td>
+		    <td class="total-billable-hours text-right">{{ bTotal }}</td>
                 </tr>
                 <tr>
-                    <td>Project Idle</td>
-		    <td class="total-idle-hours">{{ idleTotal }}</td>
+                    <td>Idle</td>
+		    <td class="total-idle-hours text-right">{{ idleTotal }}</td>
                 </tr>
                 <tr>
-                    <td>Others</td>
-		    <td class="total-non-billable-hours">{{ othersTotal }}</td>
+                    <td>Non-Billable</td>
+		    <td class="total-non-billable-hours text-right">{{ othersTotal }}</td>
                 </tr>
+				<tr>
+					<td>Total</td>
+                    <td class="timesheet-grand-total text-right">{{ total }}</td>
+				</tr>
                 </tbody>
             </table>
         </div>
@@ -388,15 +422,43 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    	<button type="submit" value="save" name="save" class="btn btn-info">Save Timesheet</button>
-    	<a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
+        {% if hold_button %}
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-info" disabled="disabled">Save Timesheet</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right" disabled="disabled">Submit Timesheet</a>
+        {% else %}
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-info">Save Timesheet</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
+        {% endif %}
 	<script>
- 		$(document).on("click", "#submitTS", function(e) {		
-			bootbox.confirm("Once submitted, your timesheet will be approved by the system and cannot be modified. If you wanted to save for now and change it later, please click cancel and press the save button. Otherwise please click OK", function(result) {
-				if (result)
-					$("#timesheet").submit();		
-			});			
-		});			
+
+ 		$(document).on("click", "#submitTS", function(e) {
+            swal({
+              title: "Are you sure?",
+              text: "Once submitted, your timesheet will be approved by the system and cannot be modified. If you want to save for now and change it later, Please click 'No, Cancel' and press the save button. Otherwise Please click 'Yes, Please'",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#37950B",
+              confirmButtonText: "Yes, Please!",
+              closeOnConfirm: false,
+              cancelButtonText: "No, Cancel!",
+              closeOnCancel: false
+            },
+            function(isConfirm) {
+                if (isConfirm) {
+                  $("#timesheet").submit();
+                  swal("Done!", "Your timesheet is submitted", "success");
+                }
+                else
+                  swal("Stay Cool", "You can still edit your timesheet", "success");
+            });
+         });
+
+        $(function() {
+            $( "#saveTS" ).click(function() {
+                $( "#saveTS" ).hide();
+            });
+        });
+
 	</script>
  </button>
  </form>

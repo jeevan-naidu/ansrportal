@@ -1,0 +1,140 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td> 
+                    {% endfor %}
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="submit">
+                        {% fontawesome_icon 'line-chart' large=True %}
+                        Get Report
+                    </button></td>
+                    <td class="col-lg-1">
+                        {% if fresh == 1 %}
+                            <button type="submit" class="btn btn-success" name="generate">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        {% if data %}
+            <table class="table table-condensed">
+                <tr>
+                    <td class="text-center" colspan=3><b>Team Member Perfomance Summary</b></td>
+                </tr>
+                <tr>
+                    <td><b>
+                            BU: {{ bu }}
+                    </b></td>
+                    <td class="text-center"><b>Month: {{ month }}</b></td>
+                    <td class="text-right"><b>Year: {{ year }}</b></td>
+                </tr>
+            </table>
+        {% endif %}
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Member Name</th>
+                <th>Project Name</th> 
+                <th>Lead(s)</th> 
+                <th>Customer Name</th> 
+                <th>BU</th> 
+                <th>Start Date</th> 
+                <th>End Date</th>
+                <th class="text-right">Planned Hour(s)</th> 
+                <th class="text-right">Planned Hour(s) For Month</th> 
+                <th class="text-right">PTM Billed Hour(s)</th> 
+                <th class="text-right">Billed Hour(s) For Month</th> 
+                <th class="text-right">PTD</th> 
+            </tr>
+            </thead>
+            {% if fresh == 0 %}
+                <tr>
+                    <td colspan="11" class="text-center"><h4><small><b>Please select a member and time frame to get the report</b></small></h4></td>
+                </tr>
+            {% elif fresh == 2 %}
+                <tr>
+                    <td colspan="11" class="text-center"><h4><small><b>No reports found for this period</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% for eachTS in data %}
+                    {% if eachTS.ts %}
+                        {% for eachData in eachTS.ts %}
+                            <tr>
+                                <td>{{ eachData.fullName }}</td>
+                                <td>{{ eachData.project__projectId }} : {{ eachData.project__name }}</td>
+                                <td>
+                                    {% for eachLead in eachData.leads %}
+                                        {{ eachLead.user__username }}, 
+                                    {% endfor %}
+                                </td> 
+                                <td>{{ eachData.project__customer__name }}</td> 
+                                <td>{{ eachData.project__bu__name }}</td> 
+                                {% if eachData.dates %}
+                                    {% for eachDate in eachData.dates %}
+                                        <td>{{ eachDate.startDate }}</td>
+                                        <td>{{ eachDate.endDate }}</td>
+                                        <td class="text-right">{{ eachDate.plannedEffort }}</td>
+                                    {% endfor %}
+                                {% else %}
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-right">0</td>
+                                {% endif %}
+                                {% if eachData.MonthHours < 0 %}
+                                    <td class="text-right">0</td>
+                                {% else %}
+                                    <td class="text-right">{{ eachData.MonthHours }}</td>
+                                {% endif %}
+                                <td class="text-right">{{ eachData.ptm }}</td> 
+                                <td class="text-right">{{ eachData.total }}</td> 
+                                <td class="text-right">{{ eachData.ptd }}</td> 
+                            <tr>
+                        {% endfor %}
+                    {% else %}
+                        {% if eachTS.active %}
+                            {% if eachTS.fullName %}
+                                <tr>
+                                    <td colspan="11">{{ eachTS.fullName }} - <small><b>No timesheet submitted for this period</b></small></td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                    {% if data %}
+                        <tr>
+                            <td colspan="7" class="text-center"><b>Total</b></td>
+                            <td class="text-right"><b>{{ totals.plannedTotal }}</b></td> 
+                            <td class="text-right"><b>{{ totals.MonthHours }}</b></td>
+                            <td class="text-right"><b>{{ totals.ptm }}</b></td>
+                            <td class="text-right"><b>{{ totals.total }}</b></td>
+                            <td class="text-right"><b>{{ totals.ptd }}</b></td>
+                        </tr> 
+                {% endif %}
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}

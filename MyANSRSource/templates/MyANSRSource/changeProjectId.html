@@ -1,25 +1,21 @@
 {% extends 'changeProjectMaster.inc' %}
 
+{% load fontawesome %}
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-fourth {% block MPactiveClass %}{% endblock %}">
+    <li class="form-step one-third {% block MPactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
         <label class="form-step-label">My Projects</label>
     </li>
-    <li class="form-step one-fourth {% block CBIactiveClass %}{% endblock %}">
+    <li class="form-step one-third {% block CBIactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
         <label class="form-step-label">Change Basic Information</label>
     </li>
-    <li class="form-step one-fourth {% block CFMactiveClass %}{% endblock %}">
+    <li class="form-step one-third active">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
-        <label class="form-step-label">Change Milestones</label>
-    </li>
-    <li class="form-step one-fourth active">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
         <label class="form-step-label">Summary</label>
     </li>
 </ul>
@@ -28,7 +24,7 @@
 	<div><h4><b>Project Updated Successfully</b></h4></div>
 	<div><h5>Change Request id: <b>{{ crId }}</b></h5></div>
 <a href="modify" class="btn btn-success pull-right">
-        <span class="glyphicon glyphicon-saved"></span>
+        {% fontawesome_icon 'check' large=True %}
 	<b>Complete</b>
 </a>
 </div>

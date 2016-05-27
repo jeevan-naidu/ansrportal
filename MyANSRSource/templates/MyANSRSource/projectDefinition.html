@@ -5,10 +5,10 @@
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
-		{% for field in form %} 
-		{% if field.errors %}
-			{{ field.label }}: {{ field.errors|striptags }}
-		{% endif %}
+            {% for field in form %} 
+                {% if field.errors %}
+                <ul><li>{{ field.label }}: {{ field.errors|striptags }}</li></ul>
+                {% endif %}
 		{% endfor %}								
 	</div>
 {% endif %}
@@ -19,30 +19,24 @@
                         {% for field in form %}
                             <tr>
                                 <td class="col-lg-6">
-                                        {{ field.label }}
+                                        {% if field.label == 'New Development' %}
+                                             Project Stage
+                                        {% else %}
+                                            {{ field.label }}
+                                        {% endif %}
                                         {% if field.field.required %}
                                             <span class="required">*</span>
                                         {% endif %}
-                                        {% if field.label == 'Chapter/Subtitle' %}
-                                            <br />
-                                            <br />
-					    <span>
-						<button type="button" class="btn btn-info btn-xs" onClick="selectAll();">Click here to select all Chapters</button>	
-					    </span>
-                                            <span>
-                                                <h5>(<small>Use <b><kbd>ctrl + click<kbd></b> to select multiple chapters</small>)</h5>
-                                            </span>
-                                        {% endif %}
                                 </td>
-					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'Project Stage' %}
+					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'New Development' %}
                                 <td class="col-lg-6">
 						{% for radio in field %}
-							{% if field.label == 'Project Stage' %}
+							{% if field.label == 'New Development' %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
-								<span class="col-lg-4" style="padding-top: 10px"><small><b>{{ radio.choice_label }}</b></small></span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
 							{% else %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
-								<span class="col-lg-4" style="padding-top: 4px"><h5><b>{{ radio.choice_label }}</b></h5></span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
 							{% endif %}
 						{% endfor %}
 					{% else %}
@@ -57,55 +51,6 @@
             </div>
         </div>
 <script>
-	function selectAll() { 
-		selectBox = document.getElementById('id_Define_Project-chapters');
-		if (selectBox.type == "select-multiple") { 
-			for (var i = 0; i < selectBox.options.length; i++) { 
-				selectBox.options[i].selected = selectAll; 
-			} 
-		}
-	} 
-	function filterChapters() { 
-		var url = "/myansrsource/getchapters/"+ $("select#id_Define_Project-book").val() + "/";
-		var options = '';
-		$.getJSON(url, function(json_chapters) {
-			var chapters = json_chapters;
-			for (var i = 0; i < chapters.length; i++) {
-				options += '<option value="' + chapters[i].pk + '">' + chapters[i].fields['name'] + '</option>';
-			}
-			$("select#id_Define_Project-chapters").html(options);
-			chooseChapters($("select#id_Define_Project-book").val());
-		});
-	}
-	function chooseChapters(bookid) {
-		{% if bookId == None %}
-			$("select#id_Define_Project-chapters").val('');
-		{% else %}
-		if (bookid == {{ bookId  }}){
-			$("select#id_Define_Project-chapters").val({{ chapterId }});
-		}
-		else
-			$("select#id_Define_Project-chapters").val('');
-		{% endif %}
-	}
-	$(document).ready(
-		function() {
-			// Initializing the chapters value
-			noBook = $("#id_Define_Project-book :selected").text();
-			if(noBook == "---------") {
-				$("select#id_Define_Project-chapters").html('');
-			}
-			// To Filter the chapters based on the selected book
-			else {
-				$("select#id_Define_Project-chapters").html('');
-				filterChapters();
-			}
-			// To Filter the chapters based on the book selected on the fly
-			$("select#id_Define_Project-book").change(function() {
-				$("select#id_Define_Project-chapters").html('');
-				filterChapters();
-			});
-	});
     var app = app || {};
 
     (function() {

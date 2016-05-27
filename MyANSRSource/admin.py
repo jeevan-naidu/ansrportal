@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib import admin
 
-from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, Chapter, \
-    ProjectChangeInfo, projectType, Task, Activity
+from MyANSRSource.models import Project, ProjectManager, \
+    ProjectMilestone, Book, Chapter, \
+    projectType, Task, Activity, Report
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -23,26 +23,17 @@ class ChapterInline(admin.TabularInline):
     model = Chapter
     extra = 2
     exclude = []
-    #formset = ChapterInlineFormSet
     form = ChapterInlineFormSet
-    # class Meta:
-    #    widgets = { 'name' :  forms.TextInput(attrs = {'style' : 'width : 1024px'}),}
-    # fieldsets = (
-    #    ('Chapters', {
-    #        'classes': ('wide', 'extrapretty',),
-    #        'fields': ('name',)
-    #        }),
-    #    )
 
 
 # Admin Models for ansr
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('name', 'edition', 'author')
+    list_display = ('name', 'edition', 'author', 'isbn')
     # which fields should appear on the filter column
-    list_filter = ['name', 'edition', 'author']
+    list_filter = ['name', 'edition', 'author', 'isbn']
     # Search capabilitiy
-    search_fields = ['name', 'edition', 'author']
-    fields = ('name', 'edition', 'author')
+    search_fields = ['name', 'edition', 'author', 'isbn', 'active']
+    fields = ('name', 'edition', 'author', 'isbn', 'active')
     # Which of the fields can be edited in list mode
     # list_editable = ['']
     # Ordering of the books
@@ -53,27 +44,62 @@ class BookAdmin(admin.ModelAdmin):
 
 class ProjectMilestoneInline(admin.TabularInline):
     model = ProjectMilestone
+    extra = 0
+
+
+class ProjectManagerM2MInline(admin.TabularInline):
+    model = ProjectManager
     extra = 1
 
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
+        'projectId',
         'name',
         'startDate',
         'endDate',
         'plannedEffort',
         'contingencyEffort',
-        'projectManager',
-        'projectId',
         'totalValue')
+    fieldsets = [
+        ('Basic Information', {
+            'fields': [
+                'bu', 'projectType', 'customer', 'customerContact', 'projectId', 'name', ], },), ('Status', {
+            'fields': [
+                'currentProject', 'signed', 'internal', 'po', 'salesForceNumber', 'closed', ], }, ), ('Time and Money', {
+            'fields': [
+                'startDate', 'endDate', 'plannedEffort', 'contingencyEffort', 'totalValue', ], }, ), ]
+    inlines = (ProjectManagerM2MInline, ProjectMilestoneInline, )
+
+    def get_queryset(self, request):
+        qs = super(ProjectAdmin, self).get_queryset(request)
+        # or request.user.has_perm('MyANSRSource.view_all_projects'):
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(closed=False, projectManager=request.user)
     search_fields = (
+        'projectId',
         'name',
-        'projectManager',
-        'startDate',
-        'endDate',
-        'customer')
-    filter_fields = ('startDate', 'endDate', 'projectManager')
-    inlines = [ProjectMilestoneInline, ]
+        'customer__name',
+        'projectManager__username',)
+
+    list_filter = ('bu__name', 'startDate', 'endDate', 'book')
+    ordering = ['-updatedOn']
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return []
+        else:
+            return [
+                'internal', 'po', 'currentProject',
+                'startDate',
+                'endDate',
+                'plannedEffort',
+                'totalValue',
+                'projectId',
+                'closed',
+                ]
 
 
 class projectTypeAdmin(admin.ModelAdmin):
@@ -103,9 +129,15 @@ class ActivityAdmin(admin.ModelAdmin):
     list_display = ('name', )
 
 
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+
+
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('name', 'projectType', 'taskType', )
+    list_display = ('projectType', 'name', 'taskType', 'norm')
     filter_fields = ('projectType',)
+    ordering = ['projectType', 'name', ]
+    search_fields = ['name', ]
 
 
 class ProjectTeamMemberAdmin(admin.ModelAdmin):
@@ -113,6 +145,7 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
                     'startDate', 'plannedEffort')
 
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(Report, ReportAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(projectType, projectTypeAdmin)
 admin.site.register(Activity, ActivityAdmin)

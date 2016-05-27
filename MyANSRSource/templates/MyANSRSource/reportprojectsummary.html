@@ -1,0 +1,201 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load humanize %}
+
+{%block childcontent %}
+<div class="row">
+	<div class="col-md-12">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td> 
+                    {% endfor %}
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary">
+                        {% fontawesome_icon 'line-chart' large=True %}
+                        Get Report
+                    </button></td>
+                    <td class="col-lg-1">
+                        {% if fresh == 1 %}
+                            <button type="submit" class="btn btn-success" name="generate">
+                        {% else %}
+                            <button type="submit" class="btn btn-success" disabled>
+                        {% endif %}
+                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                Export to Excel
+                            </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        {% if month != 0 %}
+            <table class="table table-condensed">
+                <tr>
+                    <td class="text-center" colspan=3><b>Project Perfomance Summary</b></td>
+                </tr>
+                <tr>
+                    <td><b>
+                            BU: {{ bu }}
+                    </b></td>
+                    <td class="text-center"><b>Month: {{ month }}</b></td>
+                    <td class="text-right"><b>Year: {{ year }}</b></td>
+                </tr>
+            </table>
+        {% endif %}
+        <legend>External Projects</legend>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th colspan="8"></th> 
+                <th class="text-center" colspan="6">Effort</th> 
+            </tr>
+            <tr>
+                <th>Project Name</th> 
+                <th>Project Type</th> 
+                <th>BU</th> 
+                <th>Customer Name</th> 
+                <th>Lead</th> 
+                <th>Start Date</th> 
+                <th>End Date</th> 
+                <th class="text-right">Value</th> 
+                <th class="text-right">Planned</th> 
+                <th class="text-right">Billed</th> 
+                <th class="text-right">Billed PTM</th> 
+                <th class="text-right">Idle</th> 
+                <th class="text-right">Idle PTM</th> 
+                <th class="text-right">PTD</th> 
+            </tr>
+            </thead>
+            {% if data.external %}
+                {% for eachData in data.external %}
+                    <tr>
+                        <td>{{ eachData.pName }}</td> 
+                        <td>{{ eachData.type }}</td> 
+                        <td>{{ eachData.bu }}</td> 
+                        <td>{{ eachData.customer }}</td> 
+                        {% if eachData.pm %}
+                            <td> 
+                                {% for t in eachData.pm %}
+                                    {{ t }}, 
+                                {% endfor %}
+                            </td>
+                        {% else %}
+                                <td>-<td>
+                        {% endif %} 
+                        <td>{{ eachData.startDate }}</td>
+                        <td>{{ eachData.endDate }}</td> 
+                        <td class="text-right">${{ eachData.value | intcomma }}</td> 
+                        <td class="text-right">{{ eachData.pEffort }}</td>
+                        <td class="text-right">{{ eachData.billed }}</td>
+                        <td class="text-right">{{ eachData.bPTM }}</td>
+                        <td class="text-right">{{ eachData.idle }}</td>
+                        <td class="text-right">{{ eachData.iPTM }}</td>
+                        <td class="text-right">{{ eachData.ptd }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="9" class="text-center"><h4><small><b>Total</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eoTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eoTotalPTM }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eiTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eiTotalPTM }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ eptdTotal }}</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="14" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="14" class="text-center"><h4><small><b>No External Projects</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+        <legend>Internal Projects</legend>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th colspan="8"></th> 
+                <th class="text-center" colspan="6">Effort</th> 
+            </tr>
+            <tr>
+                <th>Project Name</th> 
+                <th>Project Type</th> 
+                <th>BU</th> 
+                <th>Customer Name</th> 
+                <th>Lead</th> 
+                <th>Start Date</th> 
+                <th>End Date</th> 
+                <th class="text-right">Value</th> 
+                <th class="text-right">Planned</th> 
+                <th class="text-right">Billed</th> 
+                <th class="text-right">Billed PTM</th> 
+                <th class="text-right">Idle</th> 
+                <th class="text-right">Idle PTM</th> 
+                <th class="text-right">PTD</th> 
+            </tr>
+            </thead>
+            {% if data.internal %}
+                {% for eachData in data.internal %}
+                    <tr>
+                        <td>{{ eachData.pName }}</td> 
+                        <td>{{ eachData.type }}</td> 
+                        <td>{{ eachData.bu }}</td> 
+                        <td>{{ eachData.customer }}</td> 
+                        {% if eachData.pm %}
+                            <td> 
+                                {% for t in eachData.pm %}
+                                    {{ t }}, 
+                                {% endfor %}
+                            </td>
+                        {% else %}
+                                <td>-<td>
+                        {% endif %} 
+                        <td>{{ eachData.startDate }}</td>
+                        <td>{{ eachData.endDate }}</td> 
+                        <td class="text-right">${{ eachData.value | intcomma }}</td> 
+                        <td class="text-right">{{ eachData.pEffort }}</td>
+                        <td class="text-right">{{ eachData.billed }}</td>
+                        <td class="text-right">{{ eachData.bPTM }}</td>
+                        <td class="text-right">{{ eachData.idle }}</td>
+                        <td class="text-right">{{ eachData.iPTM }}</td>
+                        <td class="text-right">{{ eachData.ptd }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="9" class="text-center"><h4><small><b>Total</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ ioTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ ioTotalPTM }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ iiTotal }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ iiTotalPTM }}</b></small></h4></td>
+                    <td class="text-right"><h4><small><b>{{ iptdTotal }}</b></small></h4></td>
+                </tr>
+            {% else %}
+                {% if fresh %}
+                    <tr>
+                        <td colspan="14" class="text-center"><h4><small><b>Select a BU, Month to get the report</b></small></h4></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="14" class="text-center"><h4><small><b>No Internal Projects</b></small></h4></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </table>
+	</div>
+</div>
+{% endblock %}

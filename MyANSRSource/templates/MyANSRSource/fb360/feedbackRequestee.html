@@ -1,0 +1,55 @@
+{% extends 'fb360/feedbackMaster.inc' %}
+
+{% block PChooseRequestee %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %} 
+            {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+            {% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
+<div class="row">
+    <div class="col-sm-12 center-block">
+        <div class="table-responsive col-lg-12">
+            <table class="table table-bordered">
+                <thead>
+                    <th class="text-center">Choose</th>
+                    <th class="text-center">Requestee</th>
+                    <th class="text-center">Remaining QA</th>
+                </thead>
+                <tbody>
+                    {% if data %}
+                        {% for eachData in data %}
+                            <tr>
+                                <td class="text-center">
+                                    {% if forloop.first %}
+                                        <input type="radio" class="center" name="id" value="{{ eachData.id }}" checked>
+                                    {% else %}
+                                        <input type="radio" class="center" name="id" value="{{ eachData.id }}">
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ eachData.name }}</td>
+                                {% if eachData.QCount >= 0 %}
+                                    <td class="text-center">{{ eachData.QCount }}</td>
+                                {% else %}
+                                    <td class="text-center">Submitted</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="text-center" colspan="3"> You have no one to give feedback </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% endblock %}

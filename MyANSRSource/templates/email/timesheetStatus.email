@@ -1,22 +1,59 @@
 {% block subject %}Timesheet report for week {{ startDate }} to {{ endDate }}{% endblock %}
 {% block plain %}
-  Project name : {{ project }}
-  -----------------------------------------------------------------------------
-  {{ teamMember }} | {{ billableHours }} | {{ status }} | {{ nonBillableHours }}
-
+<table>
+    <tr>
+        <th>Project Name</th>
+        <th>Team Member</th>
+        <th>Total Hours</th>
+        <th>Status</th>
+    </tr>
+  {% for eachTsDetail in tsDetails %}
+    <tr>
+        <td>{{ eachTsDetail.project__name }}</td>
+        <td>{{ eachTsDetail.teamMember__username }}</td>
+        <td>{{ eachTsDetail.total }}</td>
+        <td>
+            {% if eachTsDetail.approved %}
+                Approved
+            {% elif eachTsDetail.hold %}
+                Submitted - Pending Approval
+            {% else %}
+                Not Submitted
+            {% endif %}
+        </td>
+    </tr>
+  {% endfor %}
+</table>
   Thanks,
   myansrsource team
 
 {% endblock %}
 
 {% block html %}
-  <p>Project name : {{ project }}</p>
-
-  <p>
-      <dl>
-  	<dt>{{ teamMember }} | {{ billableHours }} | {{ status }} | {{ nonBillableHours }}<dt>
-      </dl>
-  </p>
+<table border="1">
+    <tr>
+        <th>Project Name</th>
+        <th>Team Member</th>
+        <th>Total Hours</th>
+        <th>Status</th>
+    </tr>
+  {% for eachTsDetail in tsDetails %}
+    <tr>
+        <td>{{ eachTsDetail.project__name }}</td>
+        <td>{{ eachTsDetail.teamMember__username }}</td>
+        <td>{{ eachTsDetail.total }}</td>
+        <td>
+            {% if eachTsDetail.approved %}
+                Approved
+            {% elif eachTsDetail.hold %}
+                Submitted - Pending approval
+            {% else %}
+                Not Submitted
+            {% endif %}
+        </td>
+    </tr>
+  {% endfor %}
+</table>
 
   <p>Thanks, </p>
   <p>myansrsource team</p>

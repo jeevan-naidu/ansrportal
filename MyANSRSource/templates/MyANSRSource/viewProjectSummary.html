@@ -1,8 +1,12 @@
 {% extends 'viewProjectMaster.inc' %}
 
+{% load fontawesome %}
+
 {% block PSactiveClass %}active{% endblock %}
 {% block viewProjectContent %}
-<legend><b>Summary</b></legend>
+<legend><b>Summary</b>
+    <span class="float-right"><h3><small><b>{{ basicInfo.projectId }} :  {{ basicInfo.name }}</b></small></h3></span>
+</legend>
 <div class="panel panel-default">
 	<div class="panel-heading overflowHidden">
 		<b>
@@ -14,30 +18,21 @@
 		<thead>
 				<th>Type</th>
 				<th>Business Unit</th>
-				<th>Name</th>
 				<th>Customer</th>
-				<th>Book</th>
-				<th>Chapters</th>
+				<th>Customer Contact</th>
+				<th>Book / Tile</th>
 				<th>Is it an internal Project?</th>
 				<th>Is this a new project?</th>
 				<th>Is this contract signed?</th>
+				<th>P.O.</th>
 		</thead>
 		<tbody>
 		<tr>
 			<td>{{ basicInfo.projectType__description }}</td>
 			<td>{{ basicInfo.bu__name }}</td>
-			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer__name }}</td>
+			<td>{{ basicInfo.customerContact__username }}</td>
 			<td>{{ basicInfo.book__name }}</td>
-			<td>
-				{% for eachChapter in chapters %}
-					{% if forloop.last %}
-						{{ eachChapter.chapters__name }}
-					{% else %}
-						{{ eachChapter.chapters__name }},
-					{% endif %}
-				{% endfor %}
-			</td>
 			<td>
 				{% if basicInfo.internal == True  %}
 					Yes
@@ -59,6 +54,7 @@
 					No
 				{% endif %}
 			</td>
+			<td>{{ flagData.po }}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -69,23 +65,21 @@
 	<div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
-				<th>Norm</th>
 				<th>Planned Effort</th>
 				<th>Contigency Effort</th>
 				<th>Start Date</th>
 				<th>End Date</th>
 				<th>Total Value</th>
-				<th>P.O.</th>
+				<th>SalesForce Number</th>
 		</thead>
 		<tbody>
 		<tr>
-			<td>{{ flagData.maxProductivityUnits }} / DAY</td>
 			<td>{{ flagData.plannedEffort }}</td>
 			<td>{{ flagData.contingencyEffort }}</td>
 			<td>{{ flagData.startDate }}</td>
 			<td>{{ flagData.endDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
-			<td>{{ flagData.po }}</td>
+			<td>{{ flagData.salesForceNumber }}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -101,19 +95,16 @@
 	<table class="table table-condensed">
 		<thead>
 			<th>Member</th>
-			<th>Role</th>
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Planned Effort</th>
 			<th>%</th>
 		</thead>
+        {% if teamMember %}
 		{% for teamData in teamMember %}
 		<tr>
 			<td>
 				{{ teamData.member__username }}
-			</td>
-			<td>
-				{{ teamData.role }}
 			</td>
 			<td>
 				{{ teamData.startDate }}
@@ -129,6 +120,9 @@
 			</td>
 		</tr>
 		{% endfor %}
+        {% else %}
+        <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
+        {% endif %}
 	</table>
 </div>
 </div>
@@ -140,11 +134,13 @@
 			<th>Description</th>
 			<th>Deadline</th>
 			<th>Amount</th>
+			<th>Type</th>
 		</thead>
+        {% if milestone %}
 		{% for milestoneData in milestone %}
 		<tr>
 			<td>
-				{{ milestoneData.Description }}
+				{{ milestoneData.description }}
 			</td>
 			<td>
 				{{ milestoneData.milestoneDate }}
@@ -152,13 +148,85 @@
 			<td>
 				{{ milestoneData.amount }}
 			</td>
+			<td>
+				{% if milestoneData.financial %}
+                    Financial 
+                {% else %}
+                    Non-Financial
+                {% endif %}
+			</td>
 		</tr>
 		{% endfor %}
+        {% else %}
+        <td colspan="3" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
+        {% endif %}
+		</table>
+</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Change History</span></b></div>
+<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+			<th>CR Date</th>
+			<th>CR Reason</th>
+			<th>Revised Total</th>
+			<th>Revised Effort</th>
+			<th>Project End Date</th>
+			<th>Signed</th>
+			<th>Closed</th>
+			<th>SalesForce Number</th>
+		</thead>
+        {% if changes %}
+		{% for eachChange in changes %}
+		<tr>
+			<td>
+				{{ eachChange.updatedOn }}
+			</td>
+			<td>
+				{{ eachChange.reason }}
+			</td>
+			<td>
+				{{ eachChange.revisedTotal }}
+			</td>
+			<td>
+				{{ eachChange.revisedEffort }}
+			</td>
+			<td>
+				{{ eachChange.endDate }}
+			</td>
+			<td>
+                {% if eachChange.signed %}
+                       Yes 
+                {% else %}
+                       No
+                {% endif %}
+			</td>
+			<td>
+                {% if eachChange.closed %}
+                       Yes 
+                {% else %}
+                       No
+                {% endif %}
+			</td>
+			<td>
+				{{ eachChange.salesForceNumber }}
+			</td>
+		</tr>
+		{% endfor %}
+        {% if closedOn %}
+        <tr>
+            <td colspan="6" class="text-center"><h4><small><b>Project Closed on {{ closedOn }}</b></small></h4></td>
+        </tr>
+        {% endif %}
+        {% else %}
+        <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
+        {% endif %}
 	</table>
 </div>
 </div>
-<a href="view-project" class="btn btn-primary pull-right">
-        <span class="glyphicon glyphicon-ok"></span>
+<a href="view-project" class="btn btn-info">
+        {% fontawesome_icon 'arrow-circle-left' large=True %}
 	<b>Choose another project</b>
 </a>
 {% endblock %}

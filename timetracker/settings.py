@@ -25,13 +25,13 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # 'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
 AUTH_LDAP_SERVER_URI = "ldap://ansr-blr-pdc.ansr.com"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
-AUTH_LDAP_BIND_PASSWORD = "P@ssword"
+AUTH_LDAP_BIND_PASSWORD = "Welcome123"
 
 
 AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
@@ -103,7 +103,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portal.ansrsource.com']
 
 # Ansr template definition
 
@@ -127,13 +127,22 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'smart_selects',
+    'django.contrib.humanize',
     'bootstrap3',  # Django Bootstrap3
     'bootstrap3_datetime',
     'session_security',  # Django session TimeOut / Security
+    'fontawesome',
+    'xlsxwriter',
     'employee',
     'CompanyMaster',
     'MyANSRSource',
+    'fb360',
+    'Grievances',
+    'GrievanceAdmin',
+    'pagination',
+    'Reports',
+    'Leave',
+    'export_xls',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -146,22 +155,33 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
+    'pagination.middleware.PaginationMiddleware',
+    'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
 )
-
 # Overriding Default T_C_P with new T_C_p
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.request"
 
 )
-
-# Session Configuration
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+RESTRICTED_URLS = (
+                  (r'/grievances_admin/(.*)$', ),
+              )
+GRIEVANCE_ADMIN_GROUP_NAME = 'myansrsourceGrievanceAdmin'
+GRIEVANCE_ADMIN_MAX_UPLOAD_SIZE = 1000000
+# Session Configuration - enable this only after we get caching working right
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 60*60
 # Settings for Django-session-security
 SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
 SESSION_SECURITY_EXPIRE_AFTER = 10*60
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
 ROOT_URLCONF = 'timetracker.urls'
@@ -187,6 +207,10 @@ DATABASES = {
 BOOTSTRAP3 = {
     'include_jquery': True,
 }
+
+# Font awesome related settings
+FONTAWESOME_CSS_URL = '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -211,7 +235,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 EMAIL_HOST = 'smtp.office365.com'
 EMAIL_HOST_USER = 'myansrsource@ansrsource.com'
-EMAIL_HOST_PASSWORD = 'P@ssword'
+EMAIL_HOST_PASSWORD = 'Welcome123'
 EMAIL_SUBJECT_PREFIX = '[myansrsource] '
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -219,6 +243,11 @@ EMAIL_USE_TLS = True
 logger = logging.getLogger('django_auth_ldap')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
+
+
+# FB360 Configuration
+EMAIL_ABOUT_STATUS = ['sanjay.kunnath@ansrsource.com', 'amol.pachpute@ansrsource.com']
+
 
 LOGGING = {
     'version': 1,
@@ -241,7 +270,7 @@ LOGGING = {
         # Log to a text file that can be rotated by logrotate
         'logfile': {
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': os.path.join(BASE_DIR, 'errorlogs')
+            'filename': os.path.join(BASE_DIR, 'logs', 'django-log')
         },
     },
     'loggers': {
@@ -273,6 +302,20 @@ LOGGING = {
 
 }
 
+# Attendance Feed Settings
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data"
+FEED_EXT = "csv"
+FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
+FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
+FEED_DELIMITER = ","
+
+# External Project Notifiers
+EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com',
+                              'amol.pachpute@ansrsource.com']
+
+# New Joinee Notifiers
+NEW_JOINEE_NOTIFIERS = ['ansr.source.test@gmail.com']
+
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
 
@@ -283,4 +326,12 @@ TEMPLATED_EMAIL_TEMPLATE_DIR = 'email/'  # Use '' for top level template dir
 TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
 
 # Backup directory
-BACKUPDIR = '.backup'
+BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
+
+#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
+MEDIA_URL = '/media/'
+
+GRIEVANCES_ADMIN_EMAIL = "amol.pachpute@ansrsource.com"
+LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"

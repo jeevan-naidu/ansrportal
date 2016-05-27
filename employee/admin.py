@@ -79,15 +79,21 @@ class UserInline(admin.StackedInline):
     # Grappelli stylesheets
     classes = ('grp-collapse grp-open',)
     inline_classes = ('grp-collapse grp-closed',)
+    
 
     max_num = 1
     min_num = 1
 
     fieldsets = (
+        ('Manager Information', {
+            'fields': ('manager', ),
+        }),
         ('Employee Identification', {
             'fields': (('middle_name',),
-                ('date_of_birth', 'gender', 'nationality'),
-                ('marital_status', 'blood_group'), 'exprience'), }),
+                       ('date_of_birthO', 'gender', 'nationality'),
+                       'date_of_birthR',
+                       ('marital_status', 'wedding_date', 'blood_group'),
+                       'exprience'), }),
         ('Contact Details', {
             'fields': (
                 ('mobile_phone', 'land_phone',
@@ -97,9 +103,7 @@ class UserInline(admin.StackedInline):
                        ('business_unit', 'location'),
                        ('category', 'idcard'),)}),
         ('Financial Information', {
-            'fields': (('bank_name', 'bank_branch'),
-                       ('bank_account', 'bank_ifsc_code',),
-                       ('PAN', 'PF_number'),
+            'fields': (('PAN', 'PF_number', 'uan'),
                        ('group_insurance_number', 'esi_number',),
                        )}),
         ('Key Dates', {
@@ -123,6 +127,16 @@ class EmployeeAdmin(OriginalUserAdmin):
                PreviousEmploymentInline, ]
     max_num = 1
     min_num = 1
+    list_display = (
+        'username',
+        'Employee_Id',
+        'email',
+        'last_name',
+        'Joining_Date',
+        'Exit_Date',
+        'is_active',
+        'is_staff',
+    )
 
     super_fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -161,14 +175,56 @@ class EmployeeAdmin(OriginalUserAdmin):
             qs = qs.exclude(is_superuser=True)
             return qs
 
+    def Employee_Id(self, user_obj):
+        ''' Get employee id from Employee table'''
+
+        try:
+            emp_id = Employee.objects.get(user__email = user_obj.email).employee_assigned_id
+        except:
+            emp_id = None
+        return emp_id
+
+    def Joining_Date(self, user_obj):
+        ''' Get employee joining date from Employee table'''
+
+        try:
+            emp_doj = Employee.objects.get(user__email=user_obj.email).joined
+        except:
+            emp_doj = None
+        return emp_doj
+
+    def Exit_Date(self, user_obj):
+        ''' Get employee exit date from Employee table'''
+
+        try:
+            emp_exit_date = Employee.objects.get(user__email=user_obj.email).exit
+        except:
+            emp_exit_date = None
+        return emp_exit_date
+
 
 class DesignationAdmin(admin.ModelAdmin):
     pass
+#    def get_queryset(self, request):
+#        return self.get_queryset(request).filter(active=True)
 
 
 class AttendanceAdmin(admin.ModelAdmin):
-    readonly_fields = ('employee', 'swipe_in', 'swipe_out')
-    list_display = ('swipe_in', 'swipe_out')
+    readonly_fields = (
+        'employee',
+        'incoming_employee_id',
+        'swipe_in',
+        'swipe_out')
+    list_display = (
+        'attdate',
+        'employee',
+        'incoming_employee_id',
+        'swipe_in',
+        'swipe_out',
+        )
+    list_filter = ('employee', 'incoming_employee_id', 'attdate',)
+    ordering = ('attdate', 'employee',)
+    date_hierarchy = 'attdate'
 
 admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(TeamMember, EmployeeAdmin)

@@ -2,6 +2,8 @@
 
 {% load bootstrap3 %}
 
+{% load fontawesome %}
+
 {% block siteTitle %}myansrsource:Login{% endblock %}
 
 {% block content %}
@@ -13,11 +15,11 @@
                 <form id="loginForm"  action="{% url 'index' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% bootstrap_messages %}
-                    {% bootstrap_form form layout='vertical' %} 
+                    {% bootstrap_form form layout='inline' %} 
                     {% buttons %}
-                        <button type="submit" class="btn btn-primary
+                        <button type="submit" class="btn btn-sm btn-primary
                             col-lg-3 col-xs-12 col-md-12 pull-right">
-        		<span class="glyphicon glyphicon-lock"></span>
+                        {% fontawesome_icon 'sign-in' large=True %}
                         Login
                         </button>
                     {% endbuttons %}

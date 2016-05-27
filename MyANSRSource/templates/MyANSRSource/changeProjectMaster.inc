@@ -10,6 +10,8 @@
 
 {% load bootstrap3 %}
 
+{% load fontawesome %}
+
 {% block siteTitle %}myansrsource:Manager{% endblock %}
 
 {% block responsiveMenu %}
@@ -24,11 +26,11 @@
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
-    <span class="glyphicon glyphicon-home"></span>
+    {% fontawesome_icon 'university' large=True %}
     Dashboard
  </a></li>
  <li class="ansrLogout"><a href="{% url 'logout' %}">
-    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
@@ -37,24 +39,19 @@
 {% endblock %}
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-fourth {% block MPactiveClass %}{% endblock %}">
+    <li class="form-step one-third {% block MPactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
         <label class="form-step-label">My Projects</label>
     </li>
-    <li class="form-step one-fourth {% block CBIactiveClass %}{% endblock %}">
+    <li class="form-step one-third {% block CBIactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
         <label class="form-step-label">Change Basic Information</label>
     </li>
-    <li class="form-step one-fourth {% block CFMactiveClass %}{% endblock %}">
+    <li class="form-step one-third {% block SactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
-        <label class="form-step-label">Change Milestones</label>
-    </li>
-    <li class="form-step one-fourth {% block SactiveClass %}{% endblock %}">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
         <label class="form-step-label">Summary</label>
     </li>
 </ul>
@@ -82,16 +79,17 @@
         {% if wizard.steps.prev %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        {% fontawesome_icon 'arrow-circle-left' large=True %}
 		        <b>Previous</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
+                        {% fontawesome_icon 'upload' large=True %}
 		    <b>Update Project</b>
                 {% else %}
 		    <b>Next</b>
-                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    {% fontawesome_icon 'arrow-circle-right' large=True %}
                 {% endif %}
             </button>
         {% endbuttons %}

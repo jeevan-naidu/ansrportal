@@ -1,16 +1,28 @@
+import logging
+logger = logging.getLogger('MyANSRSource')
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
-import employee
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 
 TASKTYPEFLAG = (
-    ('B', 'Billable'),
+    ('B', 'Revenue'),
     ('I', 'Idle'),
+    ('N', 'Non-Revenue'),
+)
+FREQUENCY = (
+    ('M', 'Monthly'),
+    ('W', 'Weekly'),
+)
+REPORTNAME = (
+    ('nonclosedprojectts', 'Non Closed Project TS'),
 )
 
-alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$',
+days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
+        'Friday', 'Saturday', 'Sunday']
+
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z-]*$',
                               'Only alphanumeric characters are allowed.')
 
 
@@ -20,13 +32,25 @@ class Book(models.Model):
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
     edition = models.CharField(max_length=30, null=True, blank=True)
+    isbn = models.IntegerField(default=None,
+                               blank=True, null=True,
+                               verbose_name="ISBN")
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
 
     def __unicode__(self):
-        return self.name
+        return u'{0}|{1}|{2}'.format(self.author, self.edition, self.name)
+
+    class Meta:
+        unique_together = ('name', 'edition', 'author', )
 
 
 class Activity(models.Model):
@@ -34,6 +58,12 @@ class Activity(models.Model):
                             verbose_name="Activity")
     code = models.CharField(max_length=1, null=False, unique=True,
                             verbose_name="Short Code", default=None)
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -52,6 +82,11 @@ class projectType(models.Model):
                             verbose_name="Unit of Work")
     description = models.CharField(max_length=100, null=False,
                                    verbose_name="Description")
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -70,6 +105,18 @@ class Task(models.Model):
                                 choices=TASKTYPEFLAG,
                                 verbose_name='Task type',
                                 default=None)
+    norm = models.DecimalField(
+        default=0.0,
+        max_digits=12,
+        decimal_places=2,
+        verbose_name="Norm",
+        validators=[MinValueValidator(0.0)]
+    )
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -79,7 +126,7 @@ class Task(models.Model):
         return self.name
 
     class Meta:
-        unique_together = (('projectType', 'code'),)
+        unique_together = (('projectType', 'code'), ('projectType', 'name'))
 
 
 class Chapter(models.Model):
@@ -100,12 +147,14 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Type"
     )
-    maxProductivityUnits = models.DecimalField(
-        default=0.0,
-        max_digits=12,
-        decimal_places=2,
-        verbose_name="Norm",
-        validators=[MinValueValidator(0.0)]
+    name = models.CharField(max_length=50,
+                            verbose_name="Project Name",
+                            unique=True)
+    customerContact = models.CharField(
+        max_length=100,
+        default=None,
+        verbose_name="Customer Contact",
+        # related_name="Cusomer Contact"
     )
     bu = models.ForeignKey(
         CompanyMaster.models.BusinessUnit,
@@ -117,12 +166,11 @@ class Project(models.Model):
         default=None,
         null=False,
     )
-    name = models.CharField(max_length=50, verbose_name="Project Name")
     currentProject = models.BooleanField(
         blank=False,
         default=True,
         null=False,
-        verbose_name="Project Stage"
+        verbose_name="New Development"
     )
     signed = models.BooleanField(
         blank=False,
@@ -139,6 +187,7 @@ class Project(models.Model):
     projectId = models.CharField(
         max_length=60,
         null=False,
+        unique=True,
         verbose_name='Project Code')
     po = models.CharField(max_length=60, null=False,
                           blank=False, default=0,
@@ -147,20 +196,27 @@ class Project(models.Model):
                                  default=timezone.now)
     endDate = models.DateField(verbose_name="Project End Date",
                                default=timezone.now)
+    salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
+                                           verbose_name="SF\
+                                           Oppurtunity Number",
+                                           validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
                                         validators=[MinValueValidator(0)])
     contingencyEffort = models.IntegerField(default=0,
+                                            blank=True,
+                                            null=True,
                                             verbose_name="Contigency Effort",
                                             validators=[MinValueValidator(0)])
-    projectManager = models.ForeignKey(User, verbose_name="Project Leader")
+    projectManager = models.ManyToManyField(User,
+                                            through='ProjectManager',
+                                            verbose_name="Project Leader")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book/Title",
                              default=None,
                              null=False
                              )
-    chapters = models.ManyToManyField(Chapter, verbose_name="Chapter/Subtitle")
     totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,
@@ -178,7 +234,7 @@ class Project(models.Model):
                                      auto_now=True)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return self.projectId + u' : ' + self.name
 
     class Meta:
         permissions = (
@@ -186,7 +242,15 @@ class Project(models.Model):
             ("manage_project", "Manage ANSR Project"),
             ("approve_timesheet", "Approve timesheets"),
             ("manage_milestones", "Manage Project Milestones"),
+            ("view_all_projects", "View all projects"),
+            ("view_all_reports", "View All Reports"),
             )
+
+
+class ProjectManager(models.Model):
+    # Creating Explicit M2M, to copy existing FK to M2M
+    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
 
 
 class TimeSheetEntry(models.Model):
@@ -284,6 +348,9 @@ class ProjectMilestone(models.Model):
         blank=False,
         verbose_name="Completed"
     )
+    closedon = models.DateTimeField(default=None, null=True, blank=True,
+                                    verbose_name="Closed On",
+                                    editable=False)
     financial = models.BooleanField(default=False,
                                     verbose_name="Financial",
                                     blank=False,
@@ -301,12 +368,11 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
     member = models.ForeignKey(User, blank=True, null=True)
-    role = models.ForeignKey(
-        employee.models.Designation,
-        verbose_name="Role",
+    datapoint = models.ForeignKey(
+        CompanyMaster.models.DataPoint,
+        verbose_name=u'Service Line',
         blank=True,
-        default=None,
-        null=True,
+        null=True
     )
     startDate = models.DateField(verbose_name='Start date on project',
                                  blank=True,
@@ -314,10 +380,13 @@ class ProjectTeamMember(models.Model):
     endDate = models.DateField(verbose_name='End date on project',
                                blank=True,
                                default=timezone.now)
-    plannedEffort = models.IntegerField(default=0,
+    plannedEffort = models.DecimalField(default=0,
+                                        max_digits=12,
                                         blank=True,
+                                        decimal_places=2,
                                         verbose_name="Planned Effort")
     rate = models.IntegerField(default=100, verbose_name="%", blank=True)
+    active = models.BooleanField(default=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -333,19 +402,29 @@ class ProjectChangeInfo(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     crId = models.CharField(default=None, blank=True, null=True,
                             max_length=100, verbose_name="Change Request ID")
-    reason = models.CharField(max_length=100, default=None, blank=True,
+    reason = models.CharField(max_length=100, default=None, blank=False,
+                              null=False,
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
+    po = models.CharField(max_length=60, null=False,
+                          blank=False, default=0,
+                          verbose_name="P.O.", validators=[alphanumeric])
     revisedEffort = models.IntegerField(default=0,
+                                        validators=[MinValueValidator(0)],
                                         verbose_name="Revised Effort")
     revisedTotal = models.DecimalField(default=0.0,
                                        max_digits=12,
+                                       validators=[MinValueValidator(0)],
                                        decimal_places=2,
                                        verbose_name="Revised amount")
+    salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
+                                           verbose_name="Sales Force \
+                                           Oppurtunity Number",
+                                           validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
-    closedOn = models.DateField(default=None, blank=True, null=True)
+    closedOn = models.DateTimeField(default=None, blank=True, null=True)
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
     # Record Entered / Updated Date
@@ -356,3 +435,67 @@ class ProjectChangeInfo(models.Model):
 
     def __unicode__(self):
         return self.crId
+
+
+class Report(models.Model):
+    name = models.CharField(max_length=50,
+                            choices=REPORTNAME,
+                            verbose_name='Report',
+                            default='nonclosedprojectts')
+    notify = models.ManyToManyField(User, verbose_name="Notifier(s)")
+    freq = models.CharField(max_length=2,
+                            choices=FREQUENCY,
+                            verbose_name='Frequency',
+                            default='W')
+    day = models.IntegerField(max_length=2,
+                              choices=[
+                                  (k, v) for k, v in enumerate(
+                                      [i for i in xrange(1, 31)])
+                              ],
+                              verbose_name='Day',
+                              default=0)
+    weekday = models.IntegerField(max_length=2,
+                                  choices=[(k, v) for k, v in enumerate(days)],
+                                  verbose_name='Weekday',
+                                  default=0)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class BTGReport(models.Model):
+    project = models.ForeignKey(Project, verbose_name="Project Name")
+    member = models.ForeignKey(User)
+    btg = models.IntegerField(default=0, verbose_name="BTG",
+                              validators=[MinValueValidator(0)])
+    btgMonth = models.IntegerField(default=1, verbose_name="BTG",
+                                   validators=[MinValueValidator(1)])
+    btgYear = models.IntegerField(default=1990, verbose_name="BTG",
+                                  validators=[MinValueValidator(1990)])
+    currMonthRR = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)])
+    currMonthIN = models.IntegerField(default=0,
+                                      validators=[MinValueValidator(0)],
+                                      verbose_name="Number Of Invoices")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return self.project
+
+
+class SendEmail(models.Model):
+    toAddr = models.CharField(default=None, null=False, max_length=1000)
+    template_name = models.CharField(default=None, null=False, max_length=100)
+    content = models.CharField(default=None, null=False, max_length=1000)
+    sent = models.BooleanField(default=False)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)

@@ -1,0 +1,91 @@
+{% extends 'fb360/feedbackMaster.inc' %}
+
+{% block PGiveFeedback %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %} 
+            {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+            {% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
+<div class="row">
+    <div class="col-sm-12 center-block">
+    {% if qst %}
+        <div><h4><small>for {{ sUserName }}</small></h4></div>
+        <input type="hidden" name="sUser" value="{{ sUser }}" />
+        <div class="btn-group pull-right" data-toggle="buttons">
+            <label class="btn btn-default btn-sm active"><input checked type="radio" name="save" value="save" /> Save </label>
+            <label class="btn btn-default btn-sm"><input type="radio" name="submit" value="submit" /> Submit </label>
+        </div>
+        {% for eachQst in qst %}
+            <legend>{{ eachQst.gName }}</legend>
+            {% for eachQ in eachQst.qst_set %}
+                {% if forloop.parentloop.last %}
+                    {% if forloop.last %}
+                        <input type="hidden" name="totalValue" value="{{ eachQ.qno }}" />
+                    {% endif %}
+                {% endif %}
+                <div class="col-lg-12">
+                    {{ eachQ.qno }}. {{ eachQ.qst }}
+                    {% with eachQ.qno|stringformat:"s" as t %}
+                        {% with "qId"|add:t as Qid %}
+                            <input type="hidden" name="{{ Qid }}" value="{{ eachQ.qstId }}" />
+                        {% endwith %}
+                        {% with "qtype"|add:t as QType %}
+                            <input type="hidden" name="{{ QType }}" value="{{ eachQ.type }}" />
+                        {% endwith %}
+                    {% endwith %}
+                    <div class="col-lg-12">
+                        {% if eachQ.type == 'M' %}
+                            {% for eachAnsr in ans %}
+                                {% with eachQ.qno|stringformat:"s" as t %}
+                                    {% with "choice"|add:t as choicename %}
+                                        {% if eachQ.myfb.1 %}
+                                            {% if eachAnsr.0 == eachQ.myfb.0 %}
+                                                <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" checked disabled='disabled' /> <small>{{ eachAnsr.1 }}</small></h4>
+                                            {% else %}
+                                                <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" disabled='disabled' /> <small>{{ eachAnsr.1 }}</small></h4>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if eachAnsr.0 == eachQ.myfb.0 %}
+                                                <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" checked /> <small>{{ eachAnsr.1 }}</small></h4>
+                                            {% else %}
+                                                <h4><input type="radio" name="{{ choicename }}" value="{{ eachAnsr.0 }}" /> <small>{{ eachAnsr.1 }}</small></h4>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                         {% else %}
+                            {% if eachQ.mygeneralfb.1 %}
+                                {% with eachQ.qno|stringformat:"s" as t %}
+                                    {% with "choice"|add:t as choicename %}
+                                        <textarea disabled rows="8" cols="50" name="{{ choicename }}">{% if eachQ.mygeneralfb.0 %}{{ eachQ.mygeneralfb.0 }}{% endif %}</textarea>
+                                    {% endwith %}
+                                {% endwith %}
+                            {% else %}
+                                {% with eachQ.qno|stringformat:"s" as t %}
+                                    {% with "choice"|add:t as choicename %}
+                                        <textarea rows="8" cols="50" name="{{ choicename }}">{% if eachQ.mygeneralfb.0 %}{{ eachQ.mygeneralfb.0 }}{% endif %}</textarea>
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endif %}
+                         {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <div>
+        </div>
+    {% else %}
+        <h3 class="text-center"><small>No Feedback Questions available </small></h3>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% endblock %}

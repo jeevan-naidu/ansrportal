@@ -8,6 +8,8 @@
 
 {% load i18n %}
 
+{% load fontawesome %}
+
 {% load bootstrap3 %}
 
 {% block siteTitle %}myansrsource:Manager{% endblock %}
@@ -24,11 +26,11 @@
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
-    <span class="glyphicon glyphicon-home"></span>
+    {% fontawesome_icon 'university' large=True %}
     Dashboard
  </a></li>
  <li class="ansrLogout"><a href="{% url 'logout' %}">
-    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}

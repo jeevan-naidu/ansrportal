@@ -1,15 +1,13 @@
 {% extends 'manageProjectTeamMaster.inc' %}
 
+{% load fontawesome %}
+
 
 {% block addForm %}
 <span class="pull-right">
 	<a id="addForm" href="javascript:;" class="btn btn-success btn-xs addForm">
-		<span class="glyphicon glyphicon-plus"></span>
+        {% fontawesome_icon 'plus' %}
 			Add Member
-	</a>
-	<a id="delete-member" class="btn btn-danger btn-xs">
-		<span class="glyphicon glyphicon-minus"></span>
-			Delete Member
 	</a>
 </span>
 {% endblock %}
@@ -17,14 +15,18 @@
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
+        <ul>
 		{% for k, v in form.errors.items %}
-			{{ v|striptags }}
+        <li>{{ v|striptags }}</li>
 		{% endfor %}
+        </ul>
+        <ul>
 		{% for field in form %} 
 		{% if field.errors %}
-			{{ field.label }}: {{ field.errors|striptags }}
+        <li>{{ field.label }}: {{ field.errors|striptags }}</li>
 		{% endif %}
-		{% endfor %}								
+		{% endfor %}
+        </ul>        
 	</div>
 {% endif %}
 	{% if forloop.first %}
@@ -59,7 +61,7 @@
 				{% endif %}
 			{% endif %}
 	      {% endfor %}
-	      {% for t in form %}
+          {% for t in form %}
 			{% if forloop.first %}
 			   	<tr>
 			{% endif %}

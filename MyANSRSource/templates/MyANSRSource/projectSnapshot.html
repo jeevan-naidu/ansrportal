@@ -1,30 +1,26 @@
 {% extends 'projectMaster.inc' %}
+{% load fontawesome %}
 
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
         <label class="form-step-label">Define Project</label>
     </li>
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
         <label class="form-step-label">Basic Information</label>
     </li>
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth active">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
-        <label class="form-step-label">Financial Milestones</label>
-    </li>
-    <li class="form-step one-fifth active">
-        <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
         <label class="form-step-label">Validate</label>
     </li>
-    <li class="form-step one-fifth">
+    <li class="form-step one-fourth">
         <span class="form-step-bor"></span>
-        <span class="form-step-no">5</span>
+        <span class="form-step-no">4</span>
         <label class="form-step-label">Complete!</label>
     </li>
 </ul>
@@ -36,7 +32,7 @@
 	<div class="panel-heading overflowHidden">
 		<b>
 			<span class="col-lg-6">Define Project</span>
-			<span class="col-lg-6 text-right">Planned Revenue Recognition : {{ revenueRec }}</span>
+			<span class="col-lg-6 text-right">Planned Revenue Recognition : {{ revenueRec|floatformat }}</span>
 		</b>
 	</div>
 	<div class="panel-body">
@@ -46,12 +42,11 @@
 				<th>Business Unit</th>
 				<th>Name</th>
 				<th>Customer</th>
+				<th>Customer Contact</th>
 				<th>Book</th>
-				<th>Chapters</th>
 				<th>Project Leader</th>
-				<th>Is it an internal Project?</th>
-				<th>Is this a new project?</th>
-				<th>Is this contract signed?</th>
+				<th>New project?</th>
+				<th>Contract signed?</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -59,23 +54,16 @@
 			<td>{{ basicInfo.bu }}</td>
 			<td>{{ basicInfo.name }}</td>
 			<td>{{ basicInfo.customer }}</td>
+			<td>{{ basicInfo.customerContact }}</td>
 			<td>{{ basicInfo.book }}</td>
 			<td>
-				{% for eachChapter in basicInfo.chapters %}
+				{% for eachManager in basicInfo.projectManager %}
 					{% if forloop.last %}
-						{{ eachChapter }}
+						{{ eachManager }}
 					{% else %}
-						{{ eachChapter }},
+						{{ eachManager }},
 					{% endif %}
 				{% endfor %}
-			</td>
-			<td>{{ basicInfo.projectManager }}</td>
-			<td>
-				{% if basicInfo.internal == True  %}
-					Yes
-				{% else %}
-					No
-				{% endif %}
 			</td>
 			<td>
 				{% if basicInfo.currentProject == True %}
@@ -91,17 +79,14 @@
 					No
 				{% endif %}
 			</td>
-			{% for rec, value in basicInfo.iteritems %}
-				{% if rec == 'projectManager' %}
-					<input type="hidden" name="{{ rec }}" value="{{ value.id }}">
-				{% else %}
-					<input type="hidden" name="{{ rec }}" value="{{ value }}">
-				{% endif %}
-			{% endfor %}
-				<input type="hidden" name="chapters" value="{{ chapterId }}">
+                {% for rec, value in basicInfo.iteritems %}
+                    <input type="hidden" name="{{ rec }}" value="{{ value }}">
+                {% endfor %}
+				<input type="hidden" name="pm" value="{{ pm }}">
 				<input type="hidden" name="book" value="{{ basicInfo.book.id }}">
 				<input type="hidden" name="bu" value="{{ basicInfo.bu.id }}">
 				<input type="hidden" name="customer" value="{{ basicInfo.customer.id }}">
+				<input type="hidden" name="customerContact" value="{{ basicInfo.customerContact}}">
 				<input type="hidden" name="projectType" value="{{ basicInfo.projectType.id }}">
 		</tr>
 		</tbody>
@@ -115,21 +100,21 @@
 		<thead>
 				<th>Norms</th>
 				<th>Planned Effort</th>
-				<th>Contigency Effort</th>
 				<th>Start Date</th>
 				<th>End Date</th>
 				<th>Total Value</th>
 				<th>P.O.</th>
+				<th>SalesForce Number</th>
 		</thead>
 		<tbody>
 		<tr>
 			<td>{{ flagData.maxProductivityUnits }}</td>
 			<td>{{ flagData.plannedEffort }}</td>
-			<td>{{ flagData.contingencyEffort }}</td>
 			<td>{{ flagData.displayStartDate }}</td>
 			<td>{{ flagData.displayEndDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
 			<td>{{ flagData.po }}</td>
+			<td>{{ flagData.salesForceNumber }}</td>
 			{% for rec, value in flagData.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
@@ -138,71 +123,12 @@
 	</table>
 	</div>
 </div>
-<div class="panel panel-default">
-	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
-<div class="panel-body">
-	<table class="table table-condensed">
-		<thead>
-			<th>Description</th>
-			<th>Deadline</th>
-			<th>Amount</th>
-			<th>Financial?</th>
-		</thead>
-				<input type="hidden" name="milestoneTotal" value="{{ milestone|length }}">
-		{% for milestoneData in milestone %}
-		<tr>
-			{% with counter=forloop.counter|stringformat:"s" %}
-			<td>
-				{% with descriptionId="description-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if descriptionId == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			<td>
-				{% with deadlineId="displayMilestoneDate-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if deadlineId == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			<td>
-				{% with amountid="amount-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if amountid == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			<td>
-				{% with financialid="financial-"|add:counter %}
-					{% for rec, value in milestoneData.iteritems %}
-						{% if financialid == rec %}
-							{{ value }}
-						{% endif %}
-					{% endfor %}
-				{% endwith %}
-			</td>
-			{% endwith %}
-			{% for rec, value in milestoneData.iteritems %}
-				<input type="hidden" name="{{ rec }}" value="{{ value }}">
-			{% endfor %}
-		</tr>
-		{% endfor %}
-	</table>
-</div>
-</div>
 <a href="cancel" class="btn btn-danger">
         <span class="glyphicon glyphicon-remove"></span>
 	<b>Cancel Project</b>
 </a>
 <button type="submit" value="submit" class="btn btn-success pull-right">
-        <span class="glyphicon glyphicon-ok"></span>
+        {% fontawesome_icon 'upload' large=True %}
 	<b>Create Project</b>
 </button>
 </form>

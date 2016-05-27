@@ -1,0 +1,145 @@
+.day-popover-button,.row-total-view{padding-left:6px;padding-right:6px}.fixed-btn-size,.overflowHidden{overflow:hidden}.shadow{background-color:#fff;box-shadow:0 0 5px rgba(0,0,0,.3);-moz-box-shadow:0 0 5px rgba(0,0,0,.3);-webkit-box-shadow:0 0 5px rgba(0,0,0,.3);-o-box-shadow:0 0 5px rgba(0,0,0,.3)}body{padding-top:70px;padding-bottom:70px;font-family:'Droid Sans',sans-serif}.required{color:red}.top-5{position:relative;top:5px}.mar-bot-15{margin-bottom:15px}.ansrLogo{max-width:225px;margin-top:-7px;margin-right:3px}.ansrMenuShadow{border-bottom:1px solid #aaa}.ansrLogout,.ansrLogoutIcon{font-weight:700;color:red}.ansrLoginForm{position:absolute;top:20%}.ansrFooterText{text-align:center;position:absolute;top:25%}.table tbody>tr>td,.table tbody>tr>th,.table tfoot>tr>td,.table tfoot>tr>th,.table thead>tr>td,.table thead>tr>th{border-top:none}.table thead>tr>th{font-size:small}.res-9-per{width:9%}.res-12-per{width:12%}.res-14-per{width:14%}.res-7-per{width:12%}.pad-bot-10{padding-bottom:10px}.sm-fw-label{width:80px;display:inline-block;margin-right:5px}.small-input{display:inline-block;width:70px}.mar-bot-5{margin-bottom:5px}.b-hours,.b-questions{display:inline-block;min-width:12px}.t-hours,.t-questions{display:inline-block;min-width:16px;font-weight:700}.b-questions,.t-danger,.t-questions{color:#C30}.b-hours,.t-hours,.t-info{color:#428bca}.bottom{margin-bottom:0;padding-bottom:0}.bor-top-n{border-top:0}.form-steps{list-style:none;margin:20px 0}.form-step{float:left;text-align:center}.one-fifth{width:20%}.one-fourth{width:25%}.one-third{width:33%}.one-sixth{width:16%}.one-half{width:50%}.form-step-bor{display:block;height:2px;background-color:#333}.form-step-no{border-radius:15px;border:1px solid #333;display:block;width:30px;height:30px;background-color:#fff;color:#333;text-align:center;line-height:30px;margin:-15px auto 5px}.form-step-label{font-weight:400}.form-step.active .form-step-no{background-color:#E6E6E6;color:#000}.form-step.active .form-step-label{font-weight:700}.center-block{float:none}.min-100{min-width:100px}.min-150{min-width:150px}.min-200{min-width:200px}.min-180{min-width:180px}.max-300{max-width:300px}.max-150{max-width:150px}.w-150{width:150px}.w-50{width:50px}.w-170{width:170px}.form-control.w-100,.w-100{width:100px}#add-team-members .autocomplete-light-widget,#add-team-members .autocomplete-light-widget input,#add-team-members .autocomplete-light-widget input:focus{width:100%}.day-popover-button{min-width:80px}.row-total-view{min-width:90px}.container-timesheet{width:96%}.holiday{background-color:#009452}.remainder{background-color:#F4B961}.financialM{background-color:#D6412B}.nonfinancialM{background-color:#FFBA02}.training{background-color:#176CED}.hrAct{background-color:#F04C23}.ansr-disabled{pointer-events:none;cursor:not-allowed;box-shadow:none;opacity:.65}.fixed-btn-size{width:10px;white-space:nowrap;display:block;text-overflow:ellipsis}input[type=radio],input[type=checkbox]{width:auto;height:auto}.table>tbody>tr>td.v-middle,.v-middle{vertical-align:middle}.center{margin-left:auto;margin-right:auto}.remove{margin-right:5px;line-height:1}.form-control.alert-danger:focus{border-color:#a94442;-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(169,68,66,.6);-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(169,68,66,.6);box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(169,68,66,.6)}.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#dd4e22;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}
+
+
+
+
+/* Start grievance module */
+
+.ajax_bck{
+	color:#000;
+    background-color: rgba(73, 71, 71, 0.5);
+    position: absolute;
+    z-index: 10;
+    
+}
+.ajax_load_image{
+    background:  url("../images/ajax-loader.gif") no-repeat center;
+    background-size: 90px 20px;
+    padding-top: 60px;
+}
+.borders-3-sided{
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    padding: 18px;
+}
+.TbHead{
+    background-color:#666363;
+    color:#fff;
+}
+
+.HowItWorksContainer{
+   
+    position: fixed;
+    top: 22.8%;
+    left: 0px;
+    bottom: 10px;
+    background-color: #d9534f;
+    height:260px;
+    width:300px;
+    color:#fff;
+    overflow: hidden;
+    transition: all 1s;
+    cursor: pointer;
+    z-index: 10;
+    
+}
+
+.how_it_works_hide{
+   left: -270px;
+}
+
+
+.DivRotate{
+    transition: transform .8s ease-in-out;
+    padding-left: 21px;
+    
+}
+
+
+.DivVer{
+     
+    -ms-transform: rorotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    
+    -ms-transform-origin: 241px -29px;
+    -webkit-transform-origin: 241px -29px;
+    -moz-transform-origin: 241px -29px;
+    
+    transform: rotate(-90deg);
+    transform-origin: 241px -29px;
+
+}
+.HowItWorksContainer .HowitWorksContent{
+    width:250px;
+}
+
+.panel-heading-custom{
+    /*padding: 0px 15px;*/
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.marginTop{
+    margin-top: -10px;
+}
+
+.font-15{
+    font-size: 14px;
+    
+}
+label{
+    font-weight: 100 !important; 
+}
+.margin-right-15{
+    margin-right:15px;
+	margin-bottom: 10px;
+}
+.margin-left-15{
+    margin-left:15px;
+}
+.message_body{
+    /*border : 1px solid #ddd;*/
+    padding:15px;
+}
+.smooth_transitions{
+    -ms-transition: transform .2s ease-in-out;
+    -webkit-transition: transform .2s ease-in-out;
+    -moz-transition: transform .2s ease-in-out;
+    transition: transform .2s ease-in-out;
+    /*padding-right:10px;*/
+}
+
+.expand1{
+    -ms-transform: rotate(91deg);
+    -webkit-transform: rotate(91deg);
+    -moz-transform: rotate(91deg);
+    transform: rotate(91deg);
+}
+
+.pad-txtGr{
+    padding-left:10px;
+}
+
+.panel-title{
+    text-decoration: none !important;
+    font-size: 12px;
+}
+.total-greivances{
+	padding-top:15px;
+}
+.Gr-max-height{
+	max-height: 250px;
+	overflow: auto;
+}
+.Gr-PnBg{
+background-color: #fcf8e3;
+}
+.table tbody>tr>td
+{
+	padding-top:22px;
+}
+
+
+/* End grievance module */

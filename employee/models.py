@@ -1,6 +1,12 @@
+import logging
+logger = logging.getLogger('MyANSRSource')
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
+from django.db.models.signals import post_save
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
 
 fs = FileSystemStorage(location='employee/emp_photo')
 
@@ -73,6 +79,12 @@ class Designation(models.Model):
         max_length=40,
         blank=False)
     billable = models.BooleanField(default=True, verbose_name='Billable')
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -105,7 +117,7 @@ class EmpAddress(models.Model):
     zipcode = models.CharField("Zip Code", max_length=10, blank=False)
 
     def __unicode__(self):
-        return '{0}, {1}, {2}, {3}, {4}'.format(
+        return u'{0}, {1}, {2}, {3}, {4}'.format(
             self.address1,
             self.address2,
             self.city,
@@ -121,6 +133,9 @@ class Employee(models.Model):
     # User model will have the usual fields.  We will have the remaining ones
     # here
     user = models.OneToOneField(User, verbose_name="User")
+    manager = models.ForeignKey('self', verbose_name="Manager",
+                                blank=True, null=True,
+                                related_name="Manager", default=None)
     status = models.BooleanField(default=True)
     '''
     ================================================
@@ -135,7 +150,11 @@ class Employee(models.Model):
         max_length=2,
         choices=GENDER_CHOICES,
         blank=False)
-    date_of_birth = models.DateField("Date of Birth", blank=False)
+    date_of_birthO = models.DateField("Official DOB", blank=False, default=None)
+    date_of_birthR = models.DateField(
+        "Alternate DOB",
+        blank=False,
+        default=None)
     # Can we make this a choice field?
     nationality = models.CharField("Nationality", max_length=30, blank=False)
     marital_status = models.CharField(
@@ -198,7 +217,7 @@ class Employee(models.Model):
         max_length=15,
         unique=True,
         blank=False)
-    #division = models.ForeignKey('CompanyMaster.Division')
+    # division = models.ForeignKey('CompanyMaster.Division')
     category = models.CharField(
         "Employment Category",
         max_length=3,
@@ -235,18 +254,25 @@ class Employee(models.Model):
         "Provident Fund Number",
         max_length=14,
         blank=True)
+    uan = models.IntegerField(
+        "Universal account number",
+        max_length=12,
+        blank=True,
+        null=True,
+        unique=True)
     bank_name = models.CharField(verbose_name="Bank Name",
-                                 max_length=70, blank=False)
+                                 max_length=70, blank=True, null=True)
     bank_branch = models.CharField(verbose_name="Branch Name",
-                                   max_length=70, blank=False)
+                                   max_length=70, blank=True, null=True)
     bank_account = models.IntegerField(
         "Account Number",
         max_length=30,
-        blank=False,
+        blank=True,
+        null=True,
         unique=True)
     bank_ifsc_code = models.CharField(
         "IFSC Code",
-        max_length=20, blank=False)
+        max_length=20, blank=True, null=True)
     group_insurance_number = models.CharField(
         "Group Insurance Number",
         max_length=30,
@@ -256,12 +282,30 @@ class Employee(models.Model):
         max_length=30,
         null=True,
         blank=True)
+    '''
+    ================================================
+    For 360 degree feedback system
+    ================================================
+    '''
 
     def __unicode__(self):
-        return '{0},{1},{2}'.format(
+        return u'{0}|{1},{2}'.format(
             self.employee_assigned_id,
             self.user.first_name,
             self.user.last_name)
+
+
+def DefaultPermission(sender, instance, **kwargs):
+    try:
+        g = Group.objects.get(name='myansrsourceUsers')
+        g.user_set.add(instance)
+    except ObjectDoesNotExist:
+        logger.error(
+            'Unable to assign group to user, group is not having a match')
+
+post_save.connect(DefaultPermission,
+                  sender=User,
+                  dispatch_uid="Add Default Permission")
 
 
 class TeamMember(User):
@@ -271,6 +315,10 @@ class TeamMember(User):
         app_label = 'auth'
         verbose_name = 'Team Member'
         verbose_name_plural = 'Team Members'
+
+post_save.connect(DefaultPermission,
+                  sender=TeamMember,
+                  dispatch_uid="Add Default Permission")
 
 
 class FamilyMember(models.Model):
@@ -290,7 +338,7 @@ class FamilyMember(models.Model):
         blank=False)
 
     def __unicode__(self):
-        return (self.name, self.dob)
+        return u'{0} - {1}'.format(self.name, self.dob)
 
 
 class Education(models.Model):
@@ -320,7 +368,7 @@ class Education(models.Model):
         blank=False)
 
     def __unicode__(self):
-        return '{0}({4})-{3} / {1} to {2}'.format(
+        return u'{0}({4})-{3} / {1} to {2}'.format(
             self.name,
             self.from_date,
             self.to_date,
@@ -364,11 +412,35 @@ class PreviousEmployment(models.Model):
             str(self.employed_from) + ' ~ ' + str(self.employed_upto)
 
 
+class Remainder(models.Model):
+    user = models.ForeignKey(Employee, default=None)
+    name = models.CharField(verbose_name="Event Name",
+                            max_length="100"
+                            )
+    startDate = models.DateField(verbose_name="Start Date",
+                                 default=timezone.now)
+    endDate = models.DateField(verbose_name="End Date",
+                               default=timezone.now)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class Attendance(models.Model):
     employee = models.ForeignKey(Employee, null=True)
-    attdate = models.DateField(null=True, blank=True)
+    attdate = models.DateField(null=True, blank=True, verbose_name='Swipe Date')
     swipe_in = models.DateTimeField(null=True, blank=True)
     swipe_out = models.DateTimeField(null=True, blank=True)
+    incoming_employee_id = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True)
 
     class Meta:
         unique_together = ('employee', 'attdate',)
+        verbose_name_plural = 'Attendance'
+        verbose_name = 'Attendance'

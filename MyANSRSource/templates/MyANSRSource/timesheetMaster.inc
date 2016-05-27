@@ -1,6 +1,7 @@
 {% extends 'master.inc' %}
 
 {% load bootstrap3 %}
+{% load fontawesome %}
 
 {% block siteTitle %}myansrsource:Timesheet Entry{% endblock %}
 
@@ -50,11 +51,11 @@
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
-    <span class="glyphicon glyphicon-home"></span>
+    {% fontawesome_icon 'university' large=True %}
     Dashboard
  </a></li>
 <li class="ansrLogout"><a href="{% url 'logout' %}">
-    <span class="glyphicon glyphicon-off ansrLogoutIcon"></span>
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
       <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}

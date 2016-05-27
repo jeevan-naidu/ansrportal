@@ -62,3 +62,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Avoid ansrsourceLogs, Client Activities 
+backup/
+logs/
+errorlogs
+client-activities/

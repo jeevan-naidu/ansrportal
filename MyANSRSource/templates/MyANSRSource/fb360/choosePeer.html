@@ -1,0 +1,71 @@
+{% extends 'fb360/peerMaster.inc' %}
+
+{% block PChoosePeer %}active{% endblock %}
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %} 
+            {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+            {% endif %}
+		{% endfor %}
+        </ul>        
+	</div>
+{% endif %}
+<div class="row">
+    <div class="col-sm-12 center-block">
+        <div class="table-responsive col-lg-12">
+            {% if request_eligible %}
+                <table class="table table-condensed">
+                    <tr>
+                        {% for field in form %}
+                            <td class="col-lg-6">
+                                {{ field }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            {% else %}
+                <h4><small><b>Peer Selection date has either expired / not yet started for this survey</b></small></h4>
+            {% endif %}
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Peer</th>
+                        <th>Email ID</th>
+                        <th class="text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if data %}
+                        {% for eachPeer in data %}
+                            {% if eachPeer.status %}
+                                <tr>
+                                    <td>{{ eachPeer.name }}</td>
+                                    <td>{{ eachPeer.emailid }}</td>
+                                    {% if eachPeer.status == 'P' %}
+                                        <td class="text-right"><span class="label label-warning">Request Sent</span></td>
+                                    {% elif eachPeer.status == 'A' %}
+                                        <td class="text-right"><span class="label label-success">Accepted</span></td>
+                                    {% else %}
+                                        <td class="text-right"><span class="label label-danger">Rejected</span></td>
+                                    {% endif %}
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan=3 class="text-center"><h4><small><b>You have no peer</b><small></h4></td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan=3 class="text-center"><h4><small><b>You have no peer</b><small></h4></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}{% endblock %}

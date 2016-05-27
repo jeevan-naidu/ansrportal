@@ -5,11 +5,13 @@
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
+        <ul>
 		{% for field in form %} 
 		{% if field.errors %}
-			{{ field.label }}: {{ field.errors|striptags }}
+        <li>{{ field.label }}: {{ field.errors|striptags }}</li>
 		{% endif %}
-		{% endfor %}								
+		{% endfor %}
+        </ul>        
 	</div>
 {% endif %}
     <div class="row">
@@ -18,7 +20,7 @@
                 <table class="table table-bordered">
                     <thead>
                         <th class="text-center">Choose</th>
-                        <th>Project Name</th>
+                        <th>Project</th>
                     </thead>
                     {% for field in form.project %}
                         <tr>
