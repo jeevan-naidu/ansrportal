@@ -175,8 +175,8 @@ s                            {% for value, text in APPLICATION_STATUS %}
                         {%endif%}
                         <select class="form-control filter_class" id="users" name="users">
                             <option value="" selected disabled>Applied By</option>
-                             {% for user in users %}
-                                <option value="{{user.id}}"{%if post_users|safe == user.id|safe %} selected {% endif %} >{{user.username}}</option>
+                             {% for employee in users %}
+                                <option value="{{employee.user.id}}"{%if post_users|safe == employee.user.id|safe %} selected {% endif %} >{{employee.user.username}}</option>
                             {% endfor %}
                         </select>
                         <div class="export-btn">
