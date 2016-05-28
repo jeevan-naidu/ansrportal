@@ -195,7 +195,6 @@ def SingleTeamMemberReport(request):
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
 def SingleProjectReport(request):
-    import ipdb;ipdb.set_trace()
     basicData = {}
     crData, tsData, msData, taskData, topPerformer = [], [], [], [], []
     minTaskData, maxTaskData, avgTaskData = [], [], []

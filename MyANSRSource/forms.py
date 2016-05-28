@@ -603,19 +603,32 @@ class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
         widget=DateTimePicker(options=dateTimeOption),
         initial=timezone.now
     )
+    project = forms.ModelChoiceField(
+        queryset=None,
+        label="Project",
+        required=True,
+    )
 
     class Meta:
         model = ProjectTeamMember
         fields = (
             'member',
         )
+        
+    
 
+    
     def __init__(self, *args, **kwargs):
         super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)
         self.fields['member'].widget.attrs['class'] = "form-control"
         self.fields['member'].required = True
         self.fields['startDate'].widget.attrs['class'] = "form-control"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
+        
+        self.fields['project'].queryset = Project.objects.all().order_by('name')
+        self.fields['project'].widget = autocomplete_light.ChoiceWidget('ProjectAutocompleteProjects')
+        self.fields['project'].widget.attrs['class'] = "form-control"
+        self.fields['project'].widget.attrs['placeholder'] = 'Enter a Project Name /Project Id'
 
 
 class ProjectPerfomanceReportForm(forms.Form):

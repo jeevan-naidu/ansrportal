@@ -6,8 +6,10 @@ from models import SalesforceData
 import csv
 import re
 import datetime
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
 
-def CheckAccessPermissions():
+def CheckAccessPermissions(request):
     if not request.user.groups.filter(name=settings.SALESFORCE_ADMIN_GROUP_NAME).exists():
             raise PermissionDenied("Sorry, you don't have permission to access this feature")
 
@@ -15,7 +17,7 @@ class UploadSalesforceDataView(View):
     """ """
 
     def get(self, request):
-
+        CheckAccessPermissions(request)
         context_data = {'add': True, 'record_added': False, 'form': None, 'salesforce_data_list':[]}
         form = UploadSalesforceDataForm()
         context_data['salesforce_data_list'] = SalesforceData.objects.all()
@@ -23,7 +25,7 @@ class UploadSalesforceDataView(View):
         return render(request, 'upload_salesforce_data.html', context_data)
 
     def post(self, request):
-        
+        CheckAccessPermissions(request)
         context_data = {'record_added': False, 'form': None, 'errors_list':[], 'errors': False, 'exception_type': None, 'exception': None, 'error_at_line': None}
         form = UploadSalesforceDataForm()
         context_data['form'] = form
