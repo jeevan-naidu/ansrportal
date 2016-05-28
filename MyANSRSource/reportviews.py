@@ -1480,9 +1480,8 @@ def generateDownload(request, fileName):
 
 @login_required
 def getDate(request, date, label):
-    import ipdb;ipdb.set_trace()
     dateWeekDay = date.weekday()
-    if dateWeekDay:
+    if dateWeekDay >= 0:
         if label == 'Start':
             date = date - timedelta(days=dateWeekDay)
         else:
@@ -1493,10 +1492,9 @@ def getDate(request, date, label):
 
 @login_required
 def getUnwantedValue(request, member, date, label, valuesList):
-    import ipdb;ipdb.set_trace()
     dateWeekDay = date.weekday()
     extraData = []
-    if dateWeekDay:
+    if dateWeekDay >= 0:
         if label == 'Start':
             wkstartDate = date - timedelta(days=dateWeekDay)
             weekData = getOneWeekData(request, member, wkstartDate,
