@@ -24,6 +24,8 @@ class SalesforceData(models.Model):
     start_date = models.DateField(verbose_name="Estimated End Date", blank=True, null=True)
     end_date = models.DateField(verbose_name="Estimated Start Date", blank=True, null=True)
     status = models.CharField(max_length=100, blank=True, null=True)
+    updated_on = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
 
     def __unicode__(self):
         """ return unicode strings """

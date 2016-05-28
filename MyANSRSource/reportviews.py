@@ -195,6 +195,7 @@ def SingleTeamMemberReport(request):
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
 def SingleProjectReport(request):
+    import ipdb;ipdb.set_trace()
     basicData = {}
     crData, tsData, msData, taskData, topPerformer = [], [], [], [], []
     minTaskData, maxTaskData, avgTaskData = [], [], []
@@ -1479,6 +1480,7 @@ def generateDownload(request, fileName):
 
 @login_required
 def getDate(request, date, label):
+    import ipdb;ipdb.set_trace()
     dateWeekDay = date.weekday()
     if dateWeekDay:
         if label == 'Start':
@@ -1491,6 +1493,7 @@ def getDate(request, date, label):
 
 @login_required
 def getUnwantedValue(request, member, date, label, valuesList):
+    import ipdb;ipdb.set_trace()
     dateWeekDay = date.weekday()
     extraData = []
     if dateWeekDay:

@@ -7,20 +7,26 @@ import csv
 import re
 import datetime
 
+def CheckAccessPermissions():
+    if not request.user.groups.filter(name=settings.SALESFORCE_ADMIN_GROUP_NAME).exists():
+            raise PermissionDenied("Sorry, you don't have permission to access this feature")
 
 class UploadSalesforceDataView(View):
     """ """
 
     def get(self, request):
 
-        context_data = {'add': True, 'record_added': False, 'form': None}
+        context_data = {'add': True, 'record_added': False, 'form': None, 'salesforce_data_list':[]}
         form = UploadSalesforceDataForm()
+        context_data['salesforce_data_list'] = SalesforceData.objects.all()
         context_data['form'] = form
         return render(request, 'upload_salesforce_data.html', context_data)
 
     def post(self, request):
         
-        context_data = {'record_added': False, 'form': None, 'errors': False, 'exception_type': None, 'exception': None, 'error_at_line': None}
+        context_data = {'record_added': False, 'form': None, 'errors_list':[], 'errors': False, 'exception_type': None, 'exception': None, 'error_at_line': None}
+        form = UploadSalesforceDataForm()
+        context_data['form'] = form
         import ipdb;ipdb.set_trace()
         data_file = request.FILES.get('salesforce_data_file', '')
         
@@ -38,11 +44,17 @@ class UploadSalesforceDataView(View):
                 if temp_var:
                     row_dict = dict(zip(headers_list, row))
                     
-                    start_date = row_dict['expected_project_start_date']
-                    start_date = datetime.datetime.strptime(start_date, '%m/%d/%Y').date()
-                    end_date = row_dict['expected_project_end_date']
-                    end_date = datetime.datetime.strptime(end_date, '%m/%d/%Y').date()
-                    
+                    start_date = row_dict.get('expected_project_start_date', None)
+                    if start_date:
+                        start_date = datetime.datetime.strptime(start_date, '%m/%d/%Y').date()
+                    else:
+                        start_date = None
+                        
+                    end_date = row_dict.get('expected_project_end_date', None)
+                    if end_date:
+                        end_date = datetime.datetime.strptime(end_date, '%m/%d/%Y').date()
+                    else:
+                        end_date = None
                     
                     try:
                         obj = SalesforceData.objects.get(opportunity_number=int(row_dict['opportunity_number']))
@@ -61,11 +73,15 @@ class UploadSalesforceDataView(View):
                     obj.status = row_dict['stage']
                     obj.save()
             except Exception as e:
-                context_data['exception_type'] = type(e)
+                import ipdb;ipdb.set_trace()
+                context_data['exception_type'] = str(type(e)) + str(e)
                 context_data['exception'] = e.args
                 context_data['errors'] = True
-                context_data['error_at_line'] = index
-        
+                context_data['errors_list'].append("\n\nLine:" + str(index+2) + "\nException: " +
+                            str(type(e)) +" "+ str(e) + " " + str(e.args))
+                context_data['error_at_line'] = index + 2
+                # return render(request, 'upload_salesforce_data.html', context_data)
+            
         return render(request, 'upload_salesforce_data.html', context_data)
             
            

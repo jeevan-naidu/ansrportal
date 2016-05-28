@@ -25,7 +25,6 @@ days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z-]*$',
                               'Only alphanumeric characters are allowed.')
 
-
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
                             verbose_name="Name")

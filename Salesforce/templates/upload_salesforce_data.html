@@ -17,19 +17,31 @@
 {% block siteTitle %}myansrsource : Grievances{% endblock %}
 
 {% block content  %}
-{% if errors %}
-<h5 style="color: red;">Exception Type : {{exception_type}}<br>
-Exception : {{exception}}<br>
-Line No : {{error_at_line}}
-</h5>
-{% endif %}
+<h2 class="text-center">Salesforce</h2>
 
-<h5 class="text-center">Very often, problems go unnoticed. If you don't tell us about them, we won't be able to fix them. Please share your grievances with us if any, so that we can improve your experience at <strong>ansr</strong>source.</h5>
-<form action="/salesforce/upload-file/" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit" class="btn btn-danger">Upload</button>
-</form>
+{% if errors_list %}
+	{% for error in errors_list %}
+		<!--<h5 style="color: red;">Exception Type : {{exception_type}}<br>
+		Exception : {{exception}}<br>
+		Line No : {{error_at_line}}
+		</h5>-->
+		<h5 style="color: red;">{{error}}</h5>
+	{% endfor %}
+
+{% endif %}
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
+		<form action="/salesforce/upload-file/" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{form.as_p}}
+			<button type="submit" class="btn btn-danger">Upload</button>
+		</form>
+		
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
 
 
 {% endblock  %}
