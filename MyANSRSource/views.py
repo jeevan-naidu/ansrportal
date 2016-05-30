@@ -1277,8 +1277,10 @@ def Dashboard(request):
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
         grievances_count = Grievances.objects.all().count()
         data['grievances_count'] = grievances_count
-    if request.user.groups.filter(name='myansrsourcePM').exists() or request.user.groups.filter(name='myansrsourceHR').exists() or request.user.is_superuser:
+    if request.user.groups.filter(name='myansrsourceHR').exists() or request.user.is_superuser:
         data['leave_count'] = LeaveApplications.objects.filter(status='open').count()
+    elif request.user.groups.filter(name='myansrsourcePM').exists():
+        data['leave_count'] = LeaveApplications.objects.filter(status='open', apply_to=request.user).count()
 
     return render(request, 'MyANSRSource/landingPage.html', data)
 
