@@ -31,7 +31,7 @@ def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
 
 
-    result = {'errors' : [], 'success':[], 'todate':[0]}
+    result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
     fromDate = leave_form.cleaned_data['fromDate']
