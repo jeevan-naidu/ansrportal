@@ -544,13 +544,17 @@ def update_leave_application(request, status):
 
 
 class LeaveManageView(LeaveListView):
+
     def get_context_data(self, **kwargs):
         context = super(LeaveManageView, self).get_context_data(**kwargs)
         if self.request.user.groups.filter(name='myansrsourcePM').exists():
             context['all'] = LeaveApplications.objects.filter(apply_to=self.request.user)
-        else:
+            context['open'] = context['leave_list'].filter(status='open', apply_to=self.request.user)
+
+        elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
             context['all'] = LeaveApplications.objects.all()
-        context['open'] = context['leave_list'].filter(status='open')
+            context['open'] = context['leave_list'].filter(status='open')
+
         return context
 
     def post(self, request, *args, **kwargs):
