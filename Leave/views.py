@@ -173,6 +173,8 @@ class ApplyLeaveView(View):
                 tosession = 'session_second'
                 if leave_selected in ['comp_off_apply', 'pay_off']:
                     duedate = validate['due_date']
+                else :
+                    duedate = null
 
 
             else:
