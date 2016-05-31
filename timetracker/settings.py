@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'GrievanceAdmin',
     'pagination',
     'Reports',
+    'Salesforce',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -337,4 +338,5 @@ MEDIA_URL = '/media/'
 GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
 
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
+SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
