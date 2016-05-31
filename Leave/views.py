@@ -14,6 +14,7 @@ import calendar
 from calendar import monthrange
 from django.shortcuts import render
 # from datetime import datetime, date
+from decimal import *
 from django.utils import timezone
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView
@@ -310,12 +311,19 @@ def total_leave_days(leave_list):
     return leave_days
 
 
-def leave_list_all():
+def leave_list_all(manager_id, hr=True):
     current_year = datetime.datetime.now()
     start_date = str(current_year.year)+'-'+'1'+'-'+'1'
     end_date = str(current_year.year)+'-'+'12'+'-'+'31'
-    leave_list = LeaveApplications.objects.filter(
+    if not manager_id:
+        leave_list = LeaveApplications.objects.filter(
                         from_date__range=[start_date, end_date])
+    elif hr:
+        leave_list = LeaveApplications.objects.filter(
+                        from_date__range=[start_date, end_date])
+    elif not hr:
+        leave_list = LeaveApplications.objects.filter(
+                        from_date__range=[start_date, end_date], apply_to=manager_id)
     return leave_list
 
 
@@ -336,7 +344,7 @@ class LeaveListView(ListView):
 
         elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
             if 'all' in self.kwargs:
-                context['leave_list'] = leave_list_all()
+                context['leave_list'] = leave_list_all(None, False)
 
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
@@ -464,7 +472,10 @@ class LeaveListView(ListView):
         if 'export' in request.POST:
             if from_date == '' and to_date == '' and status == '' and apply_to == '' \
                     and employee == '':
-                leave_list_export = leave_list_all()
+                if self.request.user.groups.filter(name='myansrsourcePM').exists():
+                    leave_list_export = leave_list_all(self.request.user, False)
+                elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
+                    leave_list_export = leave_list_all(self.request.user, True)
             else:
                 leave_list_export = leave_list
             leave_days = total_leave_days(leave_list_export)
@@ -513,6 +524,40 @@ def update_leave_application(request, status):
     leave_application = LeaveApplications.objects.get(id=status_tmp[1])
     leave_application.status = status_tmp[0]
     leave_application.status_comments = remark_tmp
+    leave_days = total_leave_days(leave_application)
+    try:
+        leave_status = LeaveSummary.objects.get(user=request.user, type=leave_application.leave_type,
+                                                year=date.today().year)
+
+    except leave_status.DoesNotExist:
+        leave_status = LeaveSummary.objects.create(user=request.user, type=leave_application.leave_type,
+                                                   year=date.today().year)
+    approved = Decimal(leave_status.approved)
+
+    if status_tmp[0] == 'approved':
+        approved += Decimal(leave_days)
+        leave_status.approved = approved
+        leave_status.approved = str(leave_status.approved)
+        leave_status.balance -= Decimal(leave_days)
+        leave_status.balance = str(leave_status.balance)
+
+    if status_tmp[0] == 'rejected':
+        leave_status.balance += (Decimal(leave_days))
+        leave_status.balance = str(leave_status.balance)
+        leave_status.applied -= Decimal(leave_days)
+        leave_status.applied = str(leave_status.applied)
+
+    if status_tmp[0] == 'cancelled':
+        approved -= Decimal(leave_days)
+        leave_status.approved = approved
+        leave_status.approved = str(leave_status.approved)
+        leave_status.applied -= Decimal(leave_days)
+        leave_status.applied = str(leave_status.applied)
+        leave_status.balance += Decimal(leave_days)
+        leave_status.balance = str(leave_status.balance)
+
+    leave_status.save()
+
     try:
         leave_application.save()
         msg_html = render_to_string('email_templates/leave_status.html',
@@ -563,25 +608,24 @@ class LeaveManageView(LeaveListView):
         if request.POST.getlist('approve'):
             for approve_obj in request.POST.getlist('approve'):
                 save_status = update_leave_application(self.request, approve_obj)
-                if not save_status and type(save_status) is not str:
+                if not save_status:
                     save_failed += 1
-                if type(save_status) is str and save_status:
+                if type(save_status) is str:
                     save_email += 1
         if request.POST.getlist('reject'):
             for reject_obj in request.POST.getlist('reject'):
                 reject_status = update_leave_application(self.request, reject_obj)
-                if not reject_status and type(reject_status) is not str:
+                if not reject_status :
                     reject_failed += 1
-                if type(reject_status) is str and reject_status:
+                if type(reject_status) is str:
                     reject_email += 1
         if request.POST.getlist('cancel'):
             for cancel_obj in request.POST.getlist('cancel'):
                 cancel_status = update_leave_application(self.request, cancel_obj)
-                if not cancel_status and type(cancel_status) is not str:
+                if not cancel_status:
                     cancel_failed += 1
-                if type(cancel_status) is str and cancel_status:
+                if type(cancel_status) is str:
                     cancel_email += 1
-
         if cancel_email > 0 or reject_email > 0 or save_email > 0:
             messages.error(self.request, "Sorry Unable to Notify The "
                                          "Leave Application Status Update  By Email But  Leave "
