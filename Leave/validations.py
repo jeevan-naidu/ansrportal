@@ -28,7 +28,6 @@ def leaveValidation(leave_form, user, attachment):
 
 def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
-    import ipdb; ipdb.set_trace()
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
@@ -40,7 +39,7 @@ def oneTimeLeaveValidation(leave_form, user):
         return result
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
-        if leaveapproved == 0 and newJoineeValidation(user):
+        if leaveapproved == 0 and not newJoineeValidation(user):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = fromDate + timedelta(days = result['success'])
         else:

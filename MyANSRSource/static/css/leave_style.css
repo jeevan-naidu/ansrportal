@@ -4,12 +4,12 @@
         .Lv-themeTxtColor {
             color: #000
         }
-        
+
         .Lv-col-md-6 {
             padding-right: 6px;
             padding-left: 6px;
         }
-        
+
         .LvMenuBtn {
             background-color: #4289A3;
             border-bottom: 2px solid transparent;
@@ -17,36 +17,36 @@
             float: left;
 	    transition: all 0.4s ease-in-out;
         }
-        
+
         .LvMenuBtn:hover {
             background-color: #5bc0de;
             border-bottom: 2px solid #F49209;
             cursor: pointer;
         }
-        
+
         .LvMenuBtnActive {
             background-color: #5bc0de;
             border-bottom: 2px solid #F49209;
         }
-        
+
         .Lv-active-caret {
             bottom: -2px;
             /*height: 3px;*/
             position: relative
         }
-        
+
         .Lvcaret {
             position: absolute;
             left: 33%;
             color: #fff;
         }
         .Lv-RecordsNotFound{
-            min-height:200px;
+            /*min-height:200px;*/
         }
 /*      End Leave module common css */
 
 /*	For Leave- My Leave tab */
-	
+
     .pad5 {
 	padding: 5px;
       }
@@ -62,7 +62,7 @@
       .padX4{
 	padding:0px 4px;
       }
-  
+
   .LvHeader {
       background-color: #464A4C;
       margin-bottom: 10px;
@@ -70,7 +70,7 @@
       padding: 5px 2px;
       color: #fff
     }
-      
+
     .MyLeavesContainer {
 	padding: 0px 5px 30px 5px;
 	background-color: #EAEEEF;
@@ -178,13 +178,13 @@
     .Lv-Tr-SelectMonth{
         color:#000;
     }
-    
+
 /*	End For Leave- My Leave tab */
 
 
 
         /*	Start Leave- Approve tab */
-        
+
         .Lv-ApLvHeader {
             /*background-color: #464A4C;*/
             background-color: #4289A3;
@@ -202,8 +202,9 @@
 	  height:15px;
 	  width:2px;
 	  border-left: 1px solid #000;
-	  margin: 0px 9px;
-	  
+	  /*margin: 0px 9px;*/
+	  margin-right:10px;
+
 	}
 	.Lv-Mg-SubActive{
 	  background-color: #464A4C;
@@ -212,11 +213,12 @@
 	  /*padding: 5px ;*/
     padding: 0px 5px;
 	  position: relative;
-	  
+	  border-radius:3px;
+
 	}
 	.Lv-Mg-SubMenu *:hover{
 	  cursor: pointer;
-	  
+
 	}
 	.Lv-Mg-SubMenu{
 	  color:#279993;
@@ -227,11 +229,13 @@
 	  height:20px;
 	  width:20px;
 	  background-color: #DB760A;
-	  bottom: 10px;
-	  right: -10px;
+	  bottom: 13px;
+	  right: -13px;
 	  color:#fff;
 	  border-radius: 50%;
-	  padding:0px 2px;
+	  padding:3px 2px;
+	  text-align:center;
+	  font-size:11px;
 	}
 	.margin-top11{
 	    /*margin-top: 11px;*/
@@ -246,25 +250,25 @@
 	  width: 100%;
 	}
 	.Lv-ApprLvSubmit{
-	   background-color: #464A4C;
+	   background-color: #E8E8E8;
             margin-bottom: 0px;
             border-radius: 3px;
             padding: 5px 14px;
             color: #fff
 	}
-	
-	
-	
 
-	
-	
+
+
+
+
+
     /* Hidding the radiobuttons & checkboxes */
 	input[type="radio"], input[type="checkbox"] {
 	    display: none;
 	}
-	
-	
-	
+
+
+
   .checkbox {
   padding-left: 20px; }
   .checkbox label {
@@ -345,7 +349,7 @@
   border-color: #5cb85c; }
 .checkbox-success input[type="checkbox"]:checked + label::after {
   color: #fff; }
-	
+
   .radio {
     padding-left: 20px;
   }
@@ -354,7 +358,7 @@
     position: relative;
     padding-left: 5px;
     }
-    
+
   .radio label::before {
     content: "";
     display: inline-block;
@@ -370,7 +374,7 @@
     -o-transition: border 0.15s ease-in-out;
     transition: border 0.15s ease-in-out;
     }
-    
+
   .radio label::after {
       display: inline-block;
       position: absolute;
@@ -410,46 +414,46 @@
       .radio input[type="radio"]:disabled + label::before {
         cursor: not-allowed;
         }
-        
+
     .radio.radio-inline {
         margin-top: 0; }
-    
+
     .radio-primary input[type="radio"] + label::after {
       background-color: #428bca; }
     .radio-primary input[type="radio"]:checked + label::before {
       border-color: #428bca; }
     .radio-primary input[type="radio"]:checked + label::after {
       background-color: #428bca; }
-    
+
     .radio-danger input[type="radio"] + label::after {
       background-color: #d9534f; }
     .radio-danger input[type="radio"]:checked + label::before {
       border-color: #d9534f; }
     .radio-danger input[type="radio"]:checked + label::after {
       background-color: #d9534f; }
-    
+
     .radio-info input[type="radio"] + label::after {
       background-color: #5bc0de; }
     .radio-info input[type="radio"]:checked + label::before {
       border-color: #5bc0de; }
     .radio-info input[type="radio"]:checked + label::after {
       background-color: #5bc0de; }
-    
+
     .radio-warning input[type="radio"] + label::after {
       background-color: #f0ad4e; }
     .radio-warning input[type="radio"]:checked + label::before {
       border-color: #f0ad4e; }
     .radio-warning input[type="radio"]:checked + label::after {
       background-color: #f0ad4e; }
-    
+
     .radio-success input[type="radio"] + label::after {
       background-color: #5cb85c; }
     .radio-success input[type="radio"]:checked + label::before {
       border-color: #5cb85c; }
     .radio-success input[type="radio"]:checked + label::after {
       background-color: #5cb85c; }
-            
-	
+
+
         /*	End  Leave- Approve tab */
 
         /* Corrections */
@@ -457,4 +461,48 @@
         .margin-correct{
           margin-left: 0px;
           margin-right: 0px;
+        }
+
+
+        /* UI Corrections */
+
+        .form-inline.short-date .input-group{max-width:150px;}
+        .form-inline.short-date .export-btn{display:inline;}
+        .mod .pagination{margin:0px;margin-bottom:100px;}
+
+        /* for approval screen */
+        .mw-100{max-width:100px;display:block;font-size:11px;}
+
+        .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
+        .radio-mod label{padding: 2px 5px;}
+        .radio-mod input:checked + label{
+                background: #616161;
+                color: white;
+                border-radius:5px;
+            }
+        .radio-mod label::after, .radio-mod label::before{display:none}
+        /* end of for approval screen */
+
+
+        /* New classes */
+
+        .requests-reports{
+        padding:0px 0px 0px 25px;
+        position:relative;
+        }
+
+        .pos-fix{
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+        }
+
+        .anchor-inherit{
+            color:inherit;
+            height:100%;
+        }
+        .anchor-inherit:hover, .anchor-inherit:focus{
+            text-decoration:none;
+            color:inherit;
         }
