@@ -162,7 +162,9 @@
                         <select class="form-control filter_class" id="application_status" name="application_status">
                             <!--<option value ="">-&#45;&#45;&#45;&#45;</option>--><option value="" selected disabled>Select Status</option>
 s                            {% for value, text in APPLICATION_STATUS %}
-                            <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
+                                {% if value != 'applied' %}
+                                    <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
+                                {% endif %}
                             {%endfor%}
                         </select>&nbsp;&nbsp;&nbsp;&nbsp;
                         {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
@@ -283,20 +285,20 @@ s                            {% for value, text in APPLICATION_STATUS %}
                                         <td></td>
                                         <td>
                                             <div>
-                                               {% if leave.attachement%} <p><strong>Attachment:</strong></p>
+                                               {% if leave.atachement%} <p><strong>Attachment:</strong></p>
 				  <div class="" >
 					<!-- Attachments start -->
-                    <a target="_blank" href="{{leave.attachement.url}}">
-                        {% if leave.attachement.name|GetFileTypeFromName == 'xls' or leave.attachement.name|GetFileTypeFromName == 'xlsx' %}
+                    <a target="_blank" href="{{leave.atachement.url}}">
+                        {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
                             <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'csv' %}
+                        {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
                             <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'pdf' %}
+                        {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
                             <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'doc' or leave.attachement.name|GetFileTypeFromName == 'docx'  %}
+                        {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
                             <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'jpg' or leave.attachement.name|GetFileTypeFromName == 'jpeg' or leave.attachement.name|GetFileTypeFromName == 'png' %}
-                            <img alt="A doc file" src="{{grievances.grievance_attachment.url }}" height="50px" width="50px">
+                        {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+                            <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
 
                         {% endif %}
                     </a>
