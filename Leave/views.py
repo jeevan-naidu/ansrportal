@@ -133,12 +133,15 @@ class ApplyLeaveView(View):
 
     def get(self, request):
         #context_data = {'add':True, 'record_added':False, 'form':None}
-        context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : []}
+        context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],'leave_type_check' : None}
         try:
             leavetype=request.GET.get('leavetype')
+            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_apply', 'comp_off_avail', 'pay_off']
             form = LeaveForm(leavetype)
             context_data['form'] = form
             leave_count = LeaveSummary.objects.filter(type__leave_type= leavetype)
+            if leavetype in onetime_leave:
+                context_data['leave_type_check'] = 'OneTime'
             if leave_count:
                 context_data['leave_count'] = leave_count[0].balance
 
@@ -172,8 +175,6 @@ class ApplyLeaveView(View):
                 tosession = 'session_second'
                 if leave_selected in ['comp_off_apply', 'pay_off']:
                     duedate = validate['due_date']
-                else :
-                    duedate = null
 
 
             else:

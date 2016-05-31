@@ -116,7 +116,7 @@
 		  </h3>-->
                     <div class="row margin-correct">
                         <div class="col-md-6">
-                            <div class="LvMenuBtn"><b>Admin</b>
+                            <!-- <div class="LvMenuBtn"><b>Admin</b>
 
 
                             </div>
@@ -124,15 +124,15 @@
                             <div class="LvMenuBtn "><b>Approve</b>
 
                             </div>
-                            {% endif %}
+                            {% endif %} -->
                             <div class="LvMenuBtn LvMenuBtnActive"><b>My Leaves</b>
                                 <div class="Lv-active-caret">
                                     <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
                                 </div>
                             </div>
-                            <div class="LvMenuBtn "><b>Calender</b>
+                            <!-- <div class="LvMenuBtn "><b>Calender</b>
 
-                            </div>
+                            </div> -->
 
                             <!--    <ul class="nav navbar-nav">-->
                             <!--    <li class="dropdown">-->
@@ -723,7 +723,7 @@ gridLoad('earned_leave');
 
   //ajax request for registering a leave on modal popup open
   $("#modal-container-252304").on('shown.bs.modal', function(){
-
+    var ajax_loader_element = $('#ajax_loader_apply_leave');
   $.ajax(
         {
             type : "GET",

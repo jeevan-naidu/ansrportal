@@ -7,7 +7,6 @@ from models import LeaveApplications, LeaveType, LeaveSummary
 
 def leaveValidation(leave_form, user, attachment):
     ''' leave types which needs from and to dates'''
-
     result = {'errors' : [], 'success':[]}
     fromDate = leave_form.cleaned_data['fromDate']
     toDate = leave_form.cleaned_data['toDate']
@@ -29,8 +28,7 @@ def leaveValidation(leave_form, user, attachment):
 
 def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
-
-
+    import ipdb; ipdb.set_trace()
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
@@ -74,7 +72,6 @@ def oneTimeLeaveValidation(leave_form, user):
 
 def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
     ''' validations for new joinees based on leave type, holidays, sabbatical'''
-
 
     result = {'errors' : [], 'success':[]}
     fromSession = leave_form.cleaned_data['from_session']
@@ -123,7 +120,6 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
 
 def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, leaveType, user, leave_form):
     result = {'errors' : [], 'success':[]}
-
     if fromDate.month != toDate.month:
         last_day = getLast_day_of_month(fromDate)
         first_day = getStart_day_of_month(toDate)
@@ -172,7 +168,6 @@ def getStart_day_of_month(date):
 
 def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
     ''' Calculaton for number of leaves accoeding to selected dated and sessions'''
-
     holiday = Holiday.objects.all().values('date')
     holiday_in_leave = 0
     leavecount = 0
@@ -182,7 +177,7 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
             if leave['date'] >= fromdate and leave['date'] <= todate and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
                 holiday_in_leave = holiday_in_leave + 1
 
-        daygenerator = (fromdate + timedelta(x + 1) for x in xrange((todate - fromdate).days+1))
+        daygenerator = (fromdate + timedelta(x + 1) for x in xrange(-1, (todate - fromdate).days))
         leavecount = sum(1 for day in daygenerator if day.weekday() < 5) - holiday_in_leave
     else:
         leavecount = (todate - fromdate).days + 1
@@ -199,7 +194,6 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
 #calculating leave avail by a user
 def getLeaveApproved(user, last_day = None, leaveType = None):
     ''' get all approved leaves '''
-
     leavecount=0
     year = date.today().year
     newYearDate = date(year, 1, 1)
@@ -208,7 +202,8 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
             leaves = LeaveApplications.objects.filter(user = user, from_date=last_day, status__in=['approved', 'open'], leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
         elif leaveType.leave_type == 'comp_off_avail':
             leaves = LeaveSummary.objects.filter(user = user, type = LeaveType.objects.get(leave_type='comp_off_avail')).values('balance')
-            leavecount = leaves[0]['balance']
+            if leaves:
+                leavecount = leaves[0]['balance']
             return leavecount
         else:
             #leavecheck = ['earned_leave', 'sick_leave', 'casual_leave', 'bereavement_leave', 'maternity_leave', 'paternity_leave' ]
