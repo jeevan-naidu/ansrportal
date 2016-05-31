@@ -28,6 +28,7 @@ def leaveValidation(leave_form, user, attachment):
 
 def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
+    holiday = Holiday.objects.all().values('date')
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
@@ -41,7 +42,7 @@ def oneTimeLeaveValidation(leave_form, user):
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveapproved == 0 and not newJoineeValidation(user):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
-            result['todate'] = fromDate + timedelta(days = result['success'])
+            result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday)
         else:
             result['error'] = "sorry you don't have this type of leave"
     else:
@@ -269,3 +270,17 @@ def newJoineeValidation(user):
         return True
     else:
         return False
+
+
+def date_by_adding_business_days(from_date, add_days,holidays):
+    business_days_to_add = add_days-1
+    current_date = from_date
+    while business_days_to_add > 0:
+        current_date += timedelta(days=1)
+        weekday = current_date.weekday()
+        if weekday >= 5: # sunday = 6
+            continue
+        if current_date in holidays:
+            continue
+        business_days_to_add -= 1
+    return current_date

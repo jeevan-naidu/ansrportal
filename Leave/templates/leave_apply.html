@@ -24,17 +24,7 @@
 					</div>
 				</div>
 			 {% endfor %}
-				{% if errors %}
-					<tr>
-				 {% for non_field_error in errors %}
-					<td></td>
-					 <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
-				 {% endfor %}
-				 </tr>
-				{% endif %}
-				{% for field in form.hidden_fields %}
-					{{field}}
-				{% endfor %}
+
 
 			{% else %}
 			<form class="form-horizontal" role="form">
@@ -58,22 +48,16 @@
 				</div>
 				{% endif %}
 			 {% endfor %}
-				{% if errors %}
-					<tr>
-				 {% for non_field_error in errors %}
-					<td></td>
-					 <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
-				 {% endfor %}
-				 </tr>
-				{% endif %}
-				{% for field in form.hidden_fields %}
-					{{field}}
-				{% endfor %}
+
 			{% endif %}
 
  <div class="form-group">
-	 <div class="col-sm-offset-2 col-sm-10">
+	 <div class="col-sm-offset-2 col-sm-6">
 		 <button type="submit" class="btn btn-success">Apply Leave</button>
+	 </div>
+
+	 <div class="col-sm-4 remaining-leave-indicator text-right">
+		 Remaining Leaves : {{leave_count}}
 	 </div>
  </div>
  {% if errors %}

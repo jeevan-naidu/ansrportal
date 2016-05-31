@@ -70,7 +70,7 @@
                         <form method='POST'  id='post-form' action=".">
                         <div class="modal-header">
 
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            <button onclick="refreshBackground()" type="button" class="close" data-dismiss="modal" aria-hidden="true">
 								x
 							</button>
 
@@ -105,6 +105,8 @@
             <div class=="col-md-12">
                 <h3 class="text-center template-header">Welcome to the leave portal</h3>
             </div>
+
+          <hr>
         </div>
 <div id='message'></div>
         <!--	Start Menu -->
@@ -119,10 +121,10 @@
 
                             <div class="LvMenuBtn LvMenuBtnActive"><b>My Leaves</b>
                                 <div class="Lv-active-caret">
-                                    <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
+                                    <!-- <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span> -->
                                 </div>
                             </div>
-                          
+
 
                             <!--    <ul class="nav navbar-nav">-->
                             <!--    <li class="dropdown">-->
@@ -179,10 +181,10 @@
 
         <!--	Start content-->
         <div class="row">
-            <div class="col-md-6 pad-right-0">
+            <div class="col-md-6 pad-right-0 pad-0">
                 <div class="row">
                     <div class="col-md-12   ">
-                        <div class="LvTitle">
+                        <div class="LvTitle"> <!-- invisible -->
                             <b>My Leaves:</b>
                         </div>
                     </div>
@@ -190,10 +192,10 @@
                 <div class="MyLeavesContainer">
                     <br>
 
-                    <div class="row pad5" id="earned_leave">
+                    <div class="row pad5 progress-bar-container" id="earned_leave">
                         <div class="col-md-12">
                             <div class="row Lv-Type-Selected">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3"> <!--Pad-topX10-->
                                     <table>
                                         <tr>
 
@@ -201,15 +203,15 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9"> <!--Pad-topX10-->
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar " style="width:0%">
-                                            0
+
                                         </div>
-                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
                                     </div>
 
                                 </div>
@@ -217,10 +219,10 @@
                         </div>
                     </div>
 
-                    <div class="row pad5" id="sick_leave">
+                    <div class="row pad5 progress-bar-container" id="sick_leave">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3">
                                     <table>
                                         <tr>
 
@@ -228,27 +230,27 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
-                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row pad5" id="casual_leave">
+                    <div class="row pad5 progress-bar-container" id="casual_leave">
                         <div class="col-md-12">
                             <div class="row ">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3">
                                     <table>
                                         <tr>
 
@@ -256,27 +258,27 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
-                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row pad5" id="Bereavement">
+                    <div class="row pad5 progress-bar-container" id="Bereavement">
                         <div class="col-md-12">
                             <div class="row ">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3">
                                     <table>
                                         <tr>
 
@@ -284,27 +286,27 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
-                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row pad5" id="comp_off">
+                    <div class="row pad5 progress-bar-container" id="comp_off">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3">
                                     <table>
                                         <tr>
 
@@ -312,14 +314,14 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                     </div>
@@ -328,10 +330,10 @@
                         </div>
                     </div>
 
-                    <div class="row pad5" id="loss_of_pay">
+                    <div class="row pad5 progress-bar-container" id="loss_of_pay">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3">
                                     <table>
                                         <tr>
 
@@ -339,14 +341,14 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                     </div>
@@ -355,10 +357,10 @@
                         </div>
                     </div>
 
-                    <div class="row pad5" id="pay_off">
+                    <div class="row pad5 progress-bar-container" id="pay_off">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3">
                                     <table>
                                         <tr>
 
@@ -366,14 +368,14 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                     </div>
@@ -382,10 +384,10 @@
                         </div>
                     </div>
 
-                    <div class="row pad5" id="work_from_home">
+                    <div class="row pad5 progress-bar-container" id="work_from_home">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-3 Pad-topX10">
+                                <div class="col-md-3">
                                     <table>
                                         <tr>
 
@@ -393,17 +395,17 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-9 Pad-topX10">
+                                <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-                                            0
+
 
                                         </div>
-                                        <div class="pull-right Lv-ProgressBar-TotalDays total">0 days</div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
 
                                     </div>
                                 </div>
@@ -413,7 +415,7 @@
 
                     <div class="row pad15X margin-correct">
 
-                        <div class="col-md-6  col-sm-6">
+                        <div class="col-sm-12">
                             <div class="row ">
                                 <div class="MyLvTot"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Total</span></div>
                                 <div class="MyLvAppr"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Applied</span></div>
@@ -432,7 +434,7 @@
 
 
             <!-- Start My Transactions -->
-            <div class="col-md-6 pad-left-0">
+            <div class="col-md-6 pad-left-0 pad-0">
                 <div class="row">
                     <div class="col-md-12 " >
                         <div class="LvTitle form-inline">
@@ -461,20 +463,6 @@
                                     <th>Days</th>
                                 </tr>
 
-                               <!-- <tr class="success">
-                                    <td>1<br>
-									  <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">
-										  Details
-									  </a>
-									</td>
-                                    <td>12 Feb '16, <br>Session-2</td>
-                                    <td>12-June-2016, <br>Session-2</td>
-                                    <td>4.5<br>
-									<a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">
-										Cancel
-									</a>
-									</td>
-                                 </tr> -->
 
                             </table>
 
@@ -498,11 +486,15 @@
     <!-- End Main Container-->
 
 
-<!--<script type="text/javascript" src="/static/js/leave.js"></script>-->
+
 
 
 
 <script>
+
+function refreshBackground() {
+        window.location.reload();
+    }
 $(document).ready(function() {
   $("#modal-leave-cancel").click(function(){
     alert("working");
@@ -538,9 +530,15 @@ gridLoad('earned_leave');
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
       totalcount = totalcount + total;
-      $('#earned_leave .applied').text(applied);
+      if(applied!=0){
+        $('#earned_leave .applied').text(applied);
+      }
+      if(approved!=0){
       $('#earned_leave .approved').text(approved);
+      }
+      if(total!=0){
       $('#earned_leave .total').text(total +' days');
+      }
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -561,9 +559,15 @@ gridLoad('earned_leave');
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
       totalcount = totalcount + total;
-      $('#sick_leave .applied').text(applied);
+      if(applied!=0){
+        $('#sick_leave .applied').text(applied);
+      }
+      if(approved!=0){
       $('#sick_leave .approved').text(approved);
+      }
+      if(total!=0){
       $('#sick_leave .total').text(total +' days');
+      }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
@@ -584,9 +588,15 @@ gridLoad('earned_leave');
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
       totalcount = totalcount + total;
-      $('#casual_leave .applied').text(applied);
+      if(applied!=0){
+        $('#casual_leave .applied').text(applied);
+      }
+      if(approved!=0){
       $('#casual_leave .approved').text(approved);
+      }
+      if(total!=0){
       $('#casual_leave .total').text(total +' days');
+      }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
@@ -606,9 +616,15 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      $('#loss_of_pay .applied').text(applied);
+      if(applied!=0){
+        $('#loss_of_pay .applied').text(applied);
+      }
+      if(approved!=0){
       $('#loss_of_pay .approved').text(approved);
+      }
+      if(total!=0){
       $('#loss_of_pay .total').text(total +' days');
+      }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
@@ -628,9 +644,15 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      $('#Bereavement .applied').text(applied);
+      if(applied!=0){
+        $('#Bereavement .applied').text(applied);
+      }
+      if(approved!=0){
       $('#Bereavement .approved').text(approved);
-      $('#Bereavement .total').text(total +' days');
+      }
+      if(total!=0){
+       $('#Bereavement .total').text(total +' days');
+      }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
@@ -650,9 +672,15 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      $('#pay_off .applied').text(applied);
+      if(applied!=0){
+        $('#pay_off .applied').text(applied);
+      }
+      if(approved!=0){
       $('#pay_off .approved').text(approved);
+      }
+      if(total!=0){
       $('#pay_off .total').text(total +' days');
+      }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
@@ -672,9 +700,15 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      $('#work_from_home .applied').text(applied);
+      if(applied!=0){
+        $('#work_from_home .applied').text(applied);
+      }
+      if(approved!=0){
       $('#work_from_home .approved').text(approved);
+      }
+      if(total!=0){
       $('#work_from_home .total').text(total +' days');
+      }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
@@ -694,9 +728,15 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      $('#comp_off .applied').text(applied);
+      if(applied!=0){
+        $('#comp_off .applied').text(applied);
+      }
+      if(approved!=0){
       $('#comp_off .approved').text(approved);
+      }
+      if(total!=0){
       $('#comp_off .total').text(total +' days');
+      }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
@@ -871,7 +911,7 @@ removeSelection();
                         success : function(data)
                         {
                             swal("Done!", "Your leave is cancel", "success");
-
+                            window.location.reload();
                           },
                           error: function(XMLHttpRequest, textStatus, errorThrown) {
                             alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "

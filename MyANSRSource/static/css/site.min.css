@@ -147,6 +147,9 @@ background-color: #fcf8e3;
 
 /* Corrections - Global */
 
+.pad-0{padding: 0px !important}
+
 .template-header{
 	font-family: 'Droid Sans';
+	margin-top: 0px;
 }
