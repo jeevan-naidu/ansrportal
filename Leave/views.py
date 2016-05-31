@@ -350,7 +350,8 @@ class LeaveListView(ListView):
 
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
-            context['users'] = User.objects.filter(is_active=True)
+            context['users'] = Employee.objects.filter(user__is_active=True)
+
         else:
             raise PermissionDenied
 
@@ -524,21 +525,32 @@ def update_leave_application(request, status):
     status_tmp = status.split('_')
     remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
     leave_application = LeaveApplications.objects.get(id=status_tmp[1])
+    # print leave_application
     leave_application.status = status_tmp[0]
     leave_application.status_comments = remark_tmp
-    leave_days = total_leave_days(leave_application)
+    leave_days = total_leave_days(LeaveApplications.objects.filter(id=status_tmp[1]))
+    leave_days = leave_days[leave_application.id]
     try:
-        leave_status = LeaveSummary.objects.get(user=request.user, type=leave_application.leave_type,
+        leave_status = LeaveSummary.objects.get(user=leave_application.user, type=leave_application.leave_type,
                                                 year=date.today().year)
 
-    except leave_status.DoesNotExist:
-        leave_status = LeaveSummary.objects.create(user=request.user, type=leave_application.leave_type,
+    except:
+        leave_status = LeaveSummary.objects.create(user=leave_application.user, type=leave_application.leave_type,
                                                    year=date.today().year)
+        leave_status.approved = 0
+        leave_status.balance = 0
+        leave_status.applied = Decimal(leave_days)
+
     approved = Decimal(leave_status.approved)
+    leave_status.approved = Decimal(leave_status.approved)
+    leave_status.balance = Decimal(leave_status.balance)
+    leave_status.applied = Decimal(leave_status.applied)
 
     if status_tmp[0] == 'approved':
         approved += Decimal(leave_days)
         leave_status.approved = approved
+        # leave_status.applied += approved
+        leave_status.applied = str(leave_status.applied)
         leave_status.approved = str(leave_status.approved)
         leave_status.balance -= Decimal(leave_days)
         leave_status.balance = str(leave_status.balance)
@@ -551,8 +563,8 @@ def update_leave_application(request, status):
 
     if status_tmp[0] == 'cancelled':
         approved -= Decimal(leave_days)
-        leave_status.approved = approved
-        leave_status.approved = str(leave_status.approved)
+        # leave_status.approved = approved
+        # leave_status.approved = str(leave_status.approved)
         leave_status.applied -= Decimal(leave_days)
         leave_status.applied = str(leave_status.applied)
         leave_status.balance += Decimal(leave_days)
@@ -609,6 +621,7 @@ class LeaveManageView(LeaveListView):
         save_status = False
         if request.POST.getlist('approve'):
             for approve_obj in request.POST.getlist('approve'):
+                print approve_obj
                 save_status = update_leave_application(self.request, approve_obj)
                 if not save_status:
                     save_failed += 1
@@ -617,7 +630,7 @@ class LeaveManageView(LeaveListView):
         if request.POST.getlist('reject'):
             for reject_obj in request.POST.getlist('reject'):
                 reject_status = update_leave_application(self.request, reject_obj)
-                if not reject_status :
+                if not reject_status:
                     reject_failed += 1
                 if type(reject_status) is str:
                     reject_email += 1
@@ -634,7 +647,7 @@ class LeaveManageView(LeaveListView):
                                          "Applications Are Processed Successfully")
 
         if save_failed > 0 or reject_failed > 0 or cancel_failed > 0:
-            messages.error(self.request, "Sorry Unable to Process Few Leave Applications")
+            messages.warning(self.request, "Sorry Unable to Process Few Leave Applications")
         else:
             messages.success(self.request, "Successfully Updated")
 
