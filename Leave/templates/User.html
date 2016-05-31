@@ -103,7 +103,7 @@
         <!--      My Leaves Start -->
         <div class="row">
             <div class=="col-md-12">
-                <h3 class="text-center"><b>Welcome to the leave portal</b></h3>
+                <h3 class="text-center template-header">Welcome to the leave portal</h3>
             </div>
         </div>
 <div id='message'></div>
@@ -116,23 +116,13 @@
 		  </h3>-->
                     <div class="row margin-correct">
                         <div class="col-md-6">
-                            <div class="LvMenuBtn"><b>Admin</b>
 
-
-                            </div>
-                            {% if isManager %}
-                            <div class="LvMenuBtn "><b>Approve</b>
-
-                            </div>
-                            {% endif %}
                             <div class="LvMenuBtn LvMenuBtnActive"><b>My Leaves</b>
                                 <div class="Lv-active-caret">
                                     <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
                                 </div>
                             </div>
-                            <div class="LvMenuBtn "><b>Calender</b>
-
-                            </div>
+                          
 
                             <!--    <ul class="nav navbar-nav">-->
                             <!--    <li class="dropdown">-->
@@ -157,7 +147,18 @@
                             <!--    </ul>-->
 
                         </div>
-                        <div class="col-md-6"></div>
+                        <div class="col-md-6 apply-export">
+
+
+                          <a href="#" class="pull-right btn btn-sm btn-danger">Export</a>
+
+                          <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details"  class="pull-right btn btn-sm btn-danger">
+                            Apply Leave
+                          </a>
+
+
+
+                        </div>
 
                     </div>
                 </div>
@@ -168,10 +169,7 @@
 
         <div class="row ">
             <div class="col-md-12 ">
-                <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details">
-                    <button class="btn btn-sm btn-danger">Apply Leave</button>
-                </a>
-                <button class="pull-right btn btn-sm btn-danger">Export</button>
+
                 <p></p>
             </div>
         </div>
@@ -181,7 +179,7 @@
 
         <!--	Start content-->
         <div class="row">
-            <div class="col-md-6 ">
+            <div class="col-md-6 pad-right-0">
                 <div class="row">
                     <div class="col-md-12   ">
                         <div class="LvTitle">
@@ -434,7 +432,7 @@
 
 
             <!-- Start My Transactions -->
-            <div class="col-md-6">
+            <div class="col-md-6 pad-left-0">
                 <div class="row">
                     <div class="col-md-12 " >
                         <div class="LvTitle form-inline">

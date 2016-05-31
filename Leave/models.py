@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from employee.models import Employee
-# Create your models here.
+
 
 
 LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'), ('loss_of_pay', 'Loss Of Pay'), ('bereavement_leave', 'Bereavement Leave'), ('maternity_leave', 'Maternity Leave'), ('paternity_leave', 'Paternity Leave'), ('comp_off_apply', 'Comp Off Apply'), ('comp_off_avail', 'Comp Off Avail'),('pay_off', 'Pay Off'), ('work_from_home', 'Work From Home'), ('sabbatical', 'Sabbatical'))
@@ -43,31 +43,6 @@ class LeaveSummary(models.Model):
     approved = models.CharField(max_length=20, verbose_name='approved leave count')
     balance = models.CharField(max_length=20, verbose_name='balance leave count')
 
-#class LeaveSummary(models.Model):
-#
-#    ''' This model contains the leave summary of the employee for each leave type on a particular date.
-#    This model row should be updated as soon as the user applies for the leave
-#    '''
-#
-#    user = models.ForeignKey(User)
-#    summary_till_date = models.DateFiled()
-#    sick_leaves_applied = models.CharField(max_length=200)
-#    sick_leaves_approved = models.CharField(max_length=200)
-#    earned_leaves_applied = models.CharField(max_length=200)
-#    earned_leaves_approved = models.CharField(max_length=200)
-#    casual_leaves_applied = models.CharField(max_length=200)
-#    casual_leaves_approved = models.CharField(max_length=200)
-#    bereavement_leaves_applied = models.CharField(max_length=200)
-#    bereavement_leaves_approved = models.CharField(max_length=200)
-#    comp_off_applied = models.CharField(max_length=200)
-#    comp_off_approved = models.CharField(max_length=200)
-#    loss_of_pay_applied = models.CharField(max_length=200)
-#    loss_of_pay_approved = models.CharField(max_length=200)
-#    maternity_leaves_applied = models.CharField(max_length=200)
-#    maternity_leaves_approved = models.CharField(max_length=200)
-#    paternity_leaves_applied = models.CharField(max_length=200)
-#    paternity_leaves_approved = models.CharField(max_length=200)
-#    active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
 
     def __unicode__(self):
        ''' return unicode strings '''
