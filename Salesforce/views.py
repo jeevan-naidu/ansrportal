@@ -36,7 +36,6 @@ class UploadSalesforceDataView(View):
         if form.is_valid():
             data_file = request.FILES.get('salesforce_data_file', '')
             
-            
             db_columns_list = ['opportunity_number', 'opportunity_name', 'business_unit', 'client_rep',
                                'account_name', 'amount', 'probability_(%)', 'expected_project_start_date',
                                'expected_project_end_date', 'estimated_close_date', 'stage']
@@ -62,27 +61,28 @@ class UploadSalesforceDataView(View):
                             end_date = datetime.datetime.strptime(end_date, '%m/%d/%Y').date()
                         else:
                             end_date = None
-                        
+                            
                         try:
-                            obj = SalesforceData.objects.get(opportunity_number=int(row_dict['opportunity_number']))
+                            obj = SalesforceData.objects.get(opportunity_number=int(row_dict.get('opportunity_number', '').strip()))
                         except:
                             obj = SalesforceData()
-                            obj.opportunity_number = int(row_dict['opportunity_number'])
+                            obj.opportunity_number = int(row_dict.get('opportunity_number', '').strip())
                         
-                        obj.opportunity_name = row_dict['opportunity_name']
-                        obj.business_unit = row_dict['business_unit']
-                        obj.customer_contact = row_dict['client_rep']
-                        obj.account_name = row_dict['account_name']
-                        obj.value = row_dict['amount']
-                        obj.probability = row_dict['probability_(%)']
+                        obj.opportunity_name = row_dict.get('opportunity_name', '').strip()
+                        obj.business_unit = row_dict.get('business_unit', '').strip()
+                        obj.customer_contact = row_dict.get('client_rep', '').strip()
+                        obj.account_name = row_dict.get('account_name', '').strip()
+                        obj.value = row_dict.get('amount', '').strip()
+                        obj.probability = row_dict.get('probability_(%)', '').strip()
                         obj.start_date = start_date
                         obj.end_date = end_date
-                        obj.status = row_dict['stage']
+                        obj.status = row_dict.get('stage', '').strip()
                         obj.save()
                 except Exception as e:
+
                     context_data['errors'] = True
                     context_data['errors_list'].append("\n\nLine:" + str(index+2) + " - Exception: " +
-                               "".join([str(arg) for arg in e.args]))
+                               str(e))
                     context_data['error_at_line'] = index + 2
                     # return render(request, 'upload_salesforce_data.html', context_data)
                 
