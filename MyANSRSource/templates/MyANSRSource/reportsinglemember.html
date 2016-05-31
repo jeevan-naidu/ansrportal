@@ -11,7 +11,7 @@
             <table class="table table-condensed">
                 <tr>
                     {% for field in form %}
-                        <th>{{ field.label }}
+                        <th style="width: 20%">{{ field.label }}
                             {% if field.field.required %}
                                 <span class="required">*</span>
                             {% endif %}
@@ -23,44 +23,47 @@
                 </tr>
                 <tr>
                     {% for field in form %}
-                        <td>{{ field }}</td> 
+                        <td style="width: 20%">{{ field }}</td> 
                     {% endfor %}
-                    <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="click">
-                        <input type="hidden" value="generate" name="status" />
-                        {% fontawesome_icon 'line-chart' large=True %}
-                        Get Report
-                    </button></td>
-                    <td class="col-lg-1">
-                        {% if data %}
-                            <button type="submit" class="btn btn-success" name="generate">
-                        {% else %}
-                            <button type="submit" class="btn btn-success" disabled>
-                        {% endif %}
-                                {% fontawesome_icon 'file-excel-o' large=True %}
-                                Export to Excel
-                            </button>
-                    </td>
                 </tr>
             </table>
+			<div class="pull-right">
+				<button type="submit" class="btn btn-primary" value="submit" name="click">
+					<input type="hidden" value="generate" name="status" />
+					{% fontawesome_icon 'line-chart' large=True %}
+					Get Report
+				</button>
+						
+				{% if data %}
+					<button type="submit" class="btn btn-success" name="generate">
+				{% else %}
+					<button type="submit" class="btn btn-success" disabled>
+				{% endif %}
+						{% fontawesome_icon 'file-excel-o' large=True %}
+						Export to Excel
+					</button>
+            </div>
         </form>
         {% if member %}
             <table class="table table-condensed">
                 <tr>
-                    <td class="text-center" colspan="5"><b>Individual Team Member Perfomance</b></td>
+                    <td class="text-center" colspan="4"><b>Individual Team Member Perfomance</b></td>
                 </tr>
 				 <tr>
-                    <td class="text-center" colspan="5"><b>Project(s): {% if for_project %}{{for_project}}{% else %}All{% endif %}</b></td>
+                    <td class="text-center" colspan="4"><b>Project(s): {% if for_project %}{{for_project}}{% else %}All{% endif %}</b></td>
                 </tr>
                 <tr>
                     <td><b>Member: {{ member }}</b></td>
                     <td class="text-right"><b>From: {{ startDate }}</b></td>
                     <td class="text-right"><b>To: {{ endDate }}</b></td>
                     <td class="text-right"><b>Planned Hour(s): {{ pH }}</b></td>
-                    <td class="text-right"><small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Submitted
-                               {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small>
-					</td>
+                   
                 </tr>
             </table>
+			<div class="pull-right">
+				 <small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Suubmitted
+                               {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small>
+			</div>
         {% endif %}
         <table class="table table-condensed">
             <thead>

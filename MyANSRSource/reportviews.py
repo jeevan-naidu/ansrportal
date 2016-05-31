@@ -38,7 +38,7 @@ def SingleTeamMemberReport(request):
     
     report, newReport, minProd, maxProd, avgProd = {}, {}, {}, {}, {}
     projectH, nonProjectH = [], []
-    member, startDate, endDate = '', '', ''
+    member, startDate, endDate , for_project = '', '', '', ''
     form = TeamMemberPerfomanceReportForm()
     grdTotal = ''
     fresh = 1
@@ -76,6 +76,7 @@ def SingleTeamMemberReport(request):
             
             # if project field exists, query for that project only else query for all
             if request.POST.get('project', ""):
+                for_project = reportData.cleaned_data['project']
                 report = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'], 
                     teamMember=reportData.cleaned_data['member'],
                     #project__id__in=helper.get_my_project_list(request.user),
@@ -217,7 +218,7 @@ def SingleTeamMemberReport(request):
                    'minProd': minProd, 'maxProd': maxProd, 'avgProd': avgProd,
                    'project': projectH, 'nonProject': nonProjectH,
                    'grandTotal': grdTotal, 'startDate': startDate,
-                   'endDate': endDate, 'member': member, 'for_project':reportData.cleaned_data['project'],
+                   'endDate': endDate, 'member': member,'for_project':for_project,
                    'pH': plannedHours})
 
 
