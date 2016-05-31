@@ -298,7 +298,7 @@ s                            {% for value, text in APPLICATION_STATUS %}
                         {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
                             <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
                         {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
-                            <img alt="A doc file" src="{{leave.leave.atachement.url }}" height="50px" width="50px">
+                            <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
 
                         {% endif %}
                     </a>
