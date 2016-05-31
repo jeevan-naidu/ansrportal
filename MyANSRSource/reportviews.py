@@ -35,6 +35,7 @@ days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
 def SingleTeamMemberReport(request):
+    
     report, newReport, minProd, maxProd, avgProd = {}, {}, {}, {}, {}
     projectH, nonProjectH = [], []
     member, startDate, endDate = '', '', ''
@@ -72,21 +73,38 @@ def SingleTeamMemberReport(request):
                 endDate__gte=weekEnd,
             ).values('plannedEffort')
             plannedHours = sum([eachRec['plannedEffort'] for eachRec in tm])
-
-            report = TimeSheetEntry.objects.filter(
-                teamMember=reportData.cleaned_data['member'],
-                #project__id__in=helper.get_my_project_list(request.user),
-                wkstart__gte=weekStart,
-                wkend__lte=weekEnd,
-            ).values(*valuesList).annotate(
-                monday=Sum('mondayH'),
-                tuesday=Sum('tuesdayH'),
-                wednesday=Sum('wednesdayH'),
-                thursday=Sum('thursdayH'),
-                friday=Sum('fridayH'),
-                saturday=Sum('saturdayH'),
-                sunday=Sum('sundayH')
-            ).order_by(*orderbyList)
+            
+            # if project field exists, query for that project only else query for all
+            if request.POST.get('project', ""):
+                report = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'], 
+                    teamMember=reportData.cleaned_data['member'],
+                    #project__id__in=helper.get_my_project_list(request.user),
+                    wkstart__gte=weekStart,
+                    wkend__lte=weekEnd,
+                ).values(*valuesList).annotate(
+                    monday=Sum('mondayH'),
+                    tuesday=Sum('tuesdayH'),
+                    wednesday=Sum('wednesdayH'),
+                    thursday=Sum('thursdayH'),
+                    friday=Sum('fridayH'),
+                    saturday=Sum('saturdayH'),
+                    sunday=Sum('sundayH')
+                ).order_by(*orderbyList)
+            else:
+                report = TimeSheetEntry.objects.filter(
+                    teamMember=reportData.cleaned_data['member'],
+                    #project__id__in=helper.get_my_project_list(request.user),
+                    wkstart__gte=weekStart,
+                    wkend__lte=weekEnd,
+                ).values(*valuesList).annotate(
+                    monday=Sum('mondayH'),
+                    tuesday=Sum('tuesdayH'),
+                    wednesday=Sum('wednesdayH'),
+                    thursday=Sum('thursdayH'),
+                    friday=Sum('fridayH'),
+                    saturday=Sum('saturdayH'),
+                    sunday=Sum('sundayH')
+                ).order_by(*orderbyList)
             for eachData in report:
                 eachData['total'] = sum([eachData[eachDay] for eachDay in days])
             if len(startWeekData) or len(endWeekData):
@@ -94,11 +112,20 @@ def SingleTeamMemberReport(request):
                                                   endWeekData, report)
             else:
                 newReport = report
-            ts = TimeSheetEntry.objects.filter(
-                teamMember=reportData.cleaned_data['member'],
-                wkstart__gte=weekStart,
-                wkend__lte=weekEnd,
-            ).values(*valuesList)
+            
+            # if project field exists, query for that project only else query for all
+            if request.POST.get('project', ""):
+                ts = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'],
+                    teamMember=reportData.cleaned_data['member'],
+                    wkstart__gte=weekStart,
+                    wkend__lte=weekEnd,
+                ).values(*valuesList)
+            else:
+                 ts = TimeSheetEntry.objects.filter(
+                    teamMember=reportData.cleaned_data['member'],
+                    wkstart__gte=weekStart,
+                    wkend__lte=weekEnd,
+                ).values(*valuesList)
             avgProd = getAvgProd(request, ts, orderbyList)
             minProd = getMinProd(request, ts, orderbyList)
             maxProd = getMaxProd(request, ts, orderbyList)
@@ -172,7 +199,9 @@ def SingleTeamMemberReport(request):
             form = TeamMemberPerfomanceReportForm(initial={
                 'startDate': reportData.cleaned_data['startDate'],
                 'endDate': reportData.cleaned_data['endDate'],
-                'member': reportData.cleaned_data['member']
+                'member': reportData.cleaned_data['member'],
+                'project':reportData.cleaned_data['project'],
+                
             })
             for eachRec in newReport:
                 if eachRec['project__name'] != ' - ':
@@ -188,7 +217,7 @@ def SingleTeamMemberReport(request):
                    'minProd': minProd, 'maxProd': maxProd, 'avgProd': avgProd,
                    'project': projectH, 'nonProject': nonProjectH,
                    'grandTotal': grdTotal, 'startDate': startDate,
-                   'endDate': endDate, 'member': member,
+                   'endDate': endDate, 'member': member, 'for_project':reportData.cleaned_data['project'],
                    'pH': plannedHours})
 
 

@@ -15,17 +15,19 @@ class SalesforceData(models.Model):
                                                        MaxValueValidator(99999999)],
                                             unique=True)
     opportunity_name = models.CharField(max_length=300)
-    business_unit = models.CharField(max_length=100)
+    business_unit = models.CharField(max_length=100, blank=True, null=True)
     customer_contact = models.CharField(max_length=100,
-                                    verbose_name="Customer Contact")
-    account_name = models.CharField(max_length=100, blank=True, null=True)
-    value = models.DecimalField(verbose_name="Project Value(in $)", max_digits=20, decimal_places=5)
-    probability = models.IntegerField()
-    start_date = models.DateField(verbose_name="Estimated End Date", blank=True, null=True)
-    end_date = models.DateField(verbose_name="Estimated Start Date", blank=True, null=True)
+                                    verbose_name="Customer Contact", blank=True, null=True)
+    account_name = models.CharField(max_length=100)
+    value = models.DecimalField(verbose_name="Project Value(in $)", max_digits=20, decimal_places=5,
+                                blank=True, null=True)
+    probability = models.IntegerField(blank=True, null=True)
+    start_date = models.DateField(verbose_name="Estimated Start Date", blank=True, null=True)
+    end_date = models.DateField(verbose_name="Estimated End Date")
     status = models.CharField(max_length=100, blank=True, null=True)
-    updated_on = models.DateTimeField(verbose_name="Updated Date",
+    updated_date = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+    created_date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         """ return unicode strings """

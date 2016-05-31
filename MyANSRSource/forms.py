@@ -606,7 +606,7 @@ class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
     project = forms.ModelChoiceField(
         queryset=None,
         label="Project",
-        required=True,
+        required=False, help_text="Leave blank for all",
     )
 
     class Meta:

@@ -15,6 +15,9 @@
                             {% if field.field.required %}
                                 <span class="required">*</span>
                             {% endif %}
+							{% if field.help_text %}
+							  ({{field.help_text}})
+							  {% endif %}
                         </th>
                     {% endfor %}
                 </tr>
@@ -45,13 +48,17 @@
                 <tr>
                     <td class="text-center" colspan="5"><b>Individual Team Member Perfomance</b></td>
                 </tr>
+				 <tr>
+                    <td class="text-center" colspan="5"><b>Project(s): {% if for_project %}{{for_project}}{% else %}All{% endif %}</b></td>
+                </tr>
                 <tr>
                     <td><b>Member: {{ member }}</b></td>
                     <td class="text-right"><b>From: {{ startDate }}</b></td>
                     <td class="text-right"><b>To: {{ endDate }}</b></td>
                     <td class="text-right"><b>Planned Hour(s): {{ pH }}</b></td>
                     <td class="text-right"><small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Submitted
-                               {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small></td>
+                               {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small>
+					</td>
                 </tr>
             </table>
         {% endif %}
