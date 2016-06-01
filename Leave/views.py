@@ -528,6 +528,7 @@ class LeaveListView(ListView):
 
 def update_leave_application(request, status):
     status_tmp = status.split('_')
+    exception = False
     remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
     leave_application = LeaveApplications.objects.get(id=status_tmp[1])
     # print leave_application
@@ -544,6 +545,7 @@ def update_leave_application(request, status):
                                                    year=date.today().year)
         leave_status.approved = 0
         leave_status.balance = 0
+        exception = True
         leave_status.applied = Decimal(leave_days)
 
     approved = Decimal(leave_status.approved)
@@ -553,7 +555,10 @@ def update_leave_application(request, status):
 
     if status_tmp[0] == 'approved':
         approved += Decimal(leave_days)
-        leave_status.approved = approved
+        if exception:
+            leave_status.approved = approved
+        else:
+            leave_status.approved += approved
         # leave_status.applied += approved
         leave_status.applied = str(leave_status.applied)
         leave_status.approved = str(leave_status.approved)
