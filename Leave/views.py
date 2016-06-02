@@ -260,7 +260,7 @@ def export_xlwt_overridden(filename, fields, values_list, days_list, save=False,
                 style = date_style
             else:
                 style = default_style
-            if col == 1:
+            if col == 2:
                 for k, v in LEAVE_TYPES_CHOICES:
                     if k == val:
                         val = v
@@ -403,6 +403,10 @@ class LeaveListView(ListView):
 
         if not request.POST.get('apply_to'):
             apply_to = ''
+
+        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+            apply_to = self.request.user
+
         if request.POST.get('users'):
             employee = request.POST.get('users')
         else:
@@ -488,11 +492,14 @@ class LeaveListView(ListView):
                 leave_list_export = leave_list
             leave_days = total_leave_days(leave_list_export)
 
-            fields = ['user__first_name', 'leave_type__leave_type', 'from_date', 'to_date',
+            fields = ['user__employee__employee_assigned_id', 'user__first_name', 'leave_type__leave_type',
+                      'from_date', 'to_date', 'applied_on', 'modified_on',
                       'apply_to__first_name',  'status', 'reason', 'id']
 
-            column_names = ['Employee Name ', 'Leave Type', 'From Date', 'To Date',
+            column_names = ['Employee Id', 'Employee Name ', 'Leave Type', 'From Date',
+                            'To Date', 'Applied Date', 'Action Taken On',
                             'Applied to',  'Status', 'Reason', 'Days']
+
             file_name = "Leave Report - " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
 
             try:
