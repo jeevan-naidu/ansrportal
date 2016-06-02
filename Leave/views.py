@@ -384,6 +384,7 @@ class LeaveListView(ListView):
 
     def post(self, request, *args, **kwargs):
         leave_list = []
+        apply_to = ''
         selected_month = request.POST.get('month')
         if request.POST.get('application_status'):
             post_application_status = status = request.POST.get('application_status')
@@ -401,10 +402,7 @@ class LeaveListView(ListView):
         if request.POST.get('apply_to'):
             apply_to = request.POST.get('apply_to')
 
-        if not request.POST.get('apply_to'):
-            apply_to = ''
-
-        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+        if not request.POST.get('apply_to') and self.request.user.groups.filter(name='myansrsourcePM').exists():
             apply_to = self.request.user
 
         if request.POST.get('users'):
