@@ -15,6 +15,7 @@ from calendar import monthrange
 from django.shortcuts import render
 # from datetime import datetime, date
 from decimal import *
+from datetime import date,timedelta
 from django.utils import timezone
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView
@@ -358,24 +359,29 @@ def date_range(d1, d2):
 
 def total_leave_days(leave_list):
     leave_days = {}
+    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_avail', 'comp_off_earned']
+    holiday = Holiday.objects.all().values('date')
+    holiday_in_leave = 0
     if leave_list:
         for obj in leave_list:
-                days_diff = obj.to_date - obj.from_date
-                if obj.to_session == 'session_second':
-                    leave_days[obj.id] = days_diff.days + 1
-                else:
-                    leave_days[obj.id] = days_diff.days + 0.5
 
-                if obj.leave_type != 'sabbatical':
-                    to_be_ignored = Holiday.objects.filter(date__range=[obj.from_date, obj.to_date]).count()
-                    for d in date_range(obj.from_date, obj.to_date):
-                        if d.strftime("%A") in ("Saturday", "Sunday"):
-                            to_be_ignored += 1
+            if obj.leave_type not in leave_allowed_on_holiday:
+                for leave in holiday:
+                    if leave['date'] >= obj.from_date and leave['date'] <= obj.to_date and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
+                        holiday_in_leave = holiday_in_leave + 1
 
-                    current_value = leave_days.get(obj.id)
-                    leave_days[obj.id] = current_value - to_be_ignored
-    else:
-        leave_days = {}
+                daygenerator = (obj.from_date + timedelta(x + 1) for x in xrange(-1, (obj.to_date - obj.from_date).days))
+                leavecount = sum(1 for day in daygenerator if day.weekday() < 5) - holiday_in_leave
+                leave_days[obj.id] = leavecount
+            else:
+                leavecount = (obj.to_date - obj.from_date).days + 1
+                leave_days[obj.id] = leavecount
+            if obj.from_session=='session_second' and obj.from_date.strftime("%A") not in ("Saturday", "Sunday"):
+                leavecount=leavecount-.5
+                leave_days[obj.id] = leavecount
+            elif obj.to_session == 'session_first' and obj.to_date.strftime("%A") not in ("Saturday", "Sunday"):
+                leavecount=leavecount-.5
+                leave_days[obj.id] = leavecount
 
     return leave_days
 
@@ -428,6 +434,7 @@ class LeaveListView(ListView):
         context['SESSION_STATUS'] = SESSION_STATUS
         context['BUTTON_NAME'] = BUTTON_NAME
         context['leave_days'] = total_leave_days(context['leave_list'])
+
         context['months_choices'] = months_choices
         context['apply_to'] = Employee.objects.exclude(manager__user__first_name__isnull=True).\
             values_list('manager__user__username', 'manager__user__id').distinct()
@@ -540,7 +547,9 @@ class LeaveListView(ListView):
 
         # leave_days = leave_calculation(leave_list.from_date, leave_list.to_date, leave_list.from_session,
         #                                leave_list.to_session, leave_list.leave_type)
+
         leave_days = total_leave_days(leave_list)
+
 
         if 'export' in request.POST:
             if from_date == '' and to_date == '' and status == '' and apply_to == '' \
@@ -552,6 +561,7 @@ class LeaveListView(ListView):
             else:
                 leave_list_export = leave_list
             leave_days = total_leave_days(leave_list_export)
+
 
             fields = ['user__employee__employee_assigned_id', 'user__first_name', 'leave_type__leave_type',
                       'from_date', 'to_date', 'applied_on', 'modified_on',
@@ -605,6 +615,7 @@ def update_leave_application(request, status):
     # print leave_application
     leave_application.status = status_tmp[0]
     leave_application.status_comments = remark_tmp
+    leave_application.status_action_by = request.user
     leave_days = total_leave_days(LeaveApplications.objects.filter(id=status_tmp[1]))
     leave_days = leave_days[leave_application.id]
     try:
