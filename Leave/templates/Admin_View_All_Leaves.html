@@ -365,21 +365,29 @@ s                            {% for value, text in APPLICATION_STATUS %}
     <script src="/static/js/date_validation.js"></script>
     <script>
     $(document).ready( function (){
-        <!--window.history.replaceState( {} , 'Leave List', '/leave/leavelist/' );-->
-        $('input[type="checkbox"]').on('change', function() {
-            $('input[type="checkbox"]').not(this).prop('checked', false);
-        });
 
-        $('.list_view').click(function(){
-            var GrDetails = $(this).siblings(".GrDetails").html();
-            $(".modal-body").html(GrDetails);
-        });
+            var url = window.location.href ;
+            url = url.split('/');
 
-        $('input[name="export"]').on('click', function() {
-            $( "#filter_form" ).submit();
-        });
+            if(url[4] == 'leavelist' && (url[5] == '' || url[5].indexOf("?page") >= 0 )) {
+                window.history.replaceState( {} , 'Leave List', '/leave/leavelist/' );
+            }
+            else if(url[4] == 'leavelist' && url[5] == 'all' && ( url[6] == '' ||  url[6] != '') ) {
+                window.history.replaceState( {} , 'Leave List', '/leave/leavelist/all' );
+            }
 
+            $('input[type="checkbox"]').on('change', function() {
+                $('input[type="checkbox"]').not(this).prop('checked', false);
+            });
 
+            $('.list_view').click(function(){
+                var GrDetails = $(this).siblings(".GrDetails").html();
+                $(".modal-body").html(GrDetails);
+            });
+
+            $('input[name="export"]').on('click', function() {
+                $( "#filter_form" ).submit();
+            });
 
     });
     $('#submit_button').click(function(){

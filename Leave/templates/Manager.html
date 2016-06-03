@@ -441,6 +441,12 @@
 
     <script>
     jQuery(document).ready( function (){
+
+            var url = window.location.href ;
+            url = url.split('/');
+            if(url[4] == 'manage') {
+                window.history.replaceState( {} , 'Leave List', '/leave/manage/' );
+            }
         <!--jQuery('input[type="checkbox"]').on('change', function() {-->
             <!--jQuery('input[type="checkbox"]').not(this).prop('checked', false);-->
         <!--});-->

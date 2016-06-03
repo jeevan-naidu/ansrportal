@@ -322,7 +322,7 @@ def export_xlwt_overridden(filename, fields, values_list, days_list, save=False,
                 style = date_style
             else:
                 style = default_style
-            if col == 1:
+            if col == 2:
                 for k, v in LEAVE_TYPES_CHOICES:
                     if k == val:
                         val = v
@@ -446,6 +446,7 @@ class LeaveListView(ListView):
 
     def post(self, request, *args, **kwargs):
         leave_list = []
+        apply_to = ''
         selected_month = request.POST.get('month')
         if request.POST.get('application_status'):
             post_application_status = status = request.POST.get('application_status')
@@ -463,8 +464,9 @@ class LeaveListView(ListView):
         if request.POST.get('apply_to'):
             apply_to = request.POST.get('apply_to')
 
-        if not request.POST.get('apply_to'):
-            apply_to = ''
+        if not request.POST.get('apply_to') and self.request.user.groups.filter(name='myansrsourcePM').exists():
+            apply_to = self.request.user
+
         if request.POST.get('users'):
             employee = request.POST.get('users')
         else:
@@ -550,11 +552,14 @@ class LeaveListView(ListView):
                 leave_list_export = leave_list
             leave_days = total_leave_days(leave_list_export)
 
-            fields = ['user__first_name', 'leave_type__leave_type', 'from_date', 'to_date',
+            fields = ['user__employee__employee_assigned_id', 'user__first_name', 'leave_type__leave_type',
+                      'from_date', 'to_date', 'applied_on', 'modified_on',
                       'apply_to__first_name',  'status', 'reason', 'id']
 
-            column_names = ['Employee Name ', 'Leave Type', 'From Date', 'To Date',
+            column_names = ['Employee Id', 'Employee Name ', 'Leave Type', 'From Date',
+                            'To Date', 'Applied Date', 'Action Taken On',
                             'Applied to',  'Status', 'Reason', 'Days']
+
             file_name = "Leave Report - " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
 
             try:
@@ -590,6 +595,7 @@ class LeaveListView(ListView):
 
 def update_leave_application(request, status):
     status_tmp = status.split('_')
+    exception = False
     remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
     leave_application = LeaveApplications.objects.get(id=status_tmp[1])
     # print leave_application
@@ -606,6 +612,7 @@ def update_leave_application(request, status):
                                                    year=date.today().year)
         leave_status.approved = 0
         leave_status.balance = 0
+        exception = True
         leave_status.applied = Decimal(leave_days)
 
     approved = Decimal(leave_status.approved)
@@ -615,7 +622,10 @@ def update_leave_application(request, status):
 
     if status_tmp[0] == 'approved':
         approved += Decimal(leave_days)
-        leave_status.approved = approved
+        if exception:
+            leave_status.approved = approved
+        else:
+            leave_status.approved += approved
         # leave_status.applied += approved
         leave_status.applied = str(leave_status.applied)
         leave_status.approved = str(leave_status.approved)
