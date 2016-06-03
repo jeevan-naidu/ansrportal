@@ -274,7 +274,7 @@ s                            {% for value, text in APPLICATION_STATUS %}
                                         <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
                                     </tr>
                                     <tr class="warning">
-                                        <td>Reason: </td>
+                                        <td>Remarks: </td>
                                         <td>{{leave.reason}}</td>
                                     </tr>
                                 <tr class="info">
