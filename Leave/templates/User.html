@@ -20,6 +20,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/leave_style.css" rel="stylesheet">
 
+    <div id="ajax_loader_cancel_leave" class="ajax_bck"><div class="ajax_load_image"></div></div>
     <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
     	<div class="modal-dialog">
     		<div class="modal-content">
@@ -70,7 +71,7 @@
                         <form method='POST'  id='post-form' action=".">
                         <div class="modal-header">
 
-                            <button onclick="refreshBackground()" type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
 								x
 							</button>
 
@@ -78,12 +79,12 @@
 								Please Enter Your Leave
 							</h4>
                         </div>
-                        <div class="modal-body" id="modal_body">
+                        <div class="modal-body min-height-300" id="modal_body">
                           loading...............
                         </div>
                         <div class="modal-footer">
 
-
+                          <p class="text-left manager-name">Manager : {{manager}}</p>
 
                         </div>
                     </div>
@@ -196,12 +197,10 @@
                         <div class="col-md-12">
                             <div class="row Lv-Type-Selected">
                                 <div class="col-md-3"> <!--Pad-topX10-->
-                                    <table>
-                                        <tr>
 
-                                            <td>Earned Leave</td>
-                                        </tr>
-                                    </table>
+
+                                            Earned Leave
+
                                 </div>
                                 <div class="col-md-9"> <!--Pad-topX10-->
                                     <div class="progress Lv-progress">
@@ -223,12 +222,10 @@
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <table>
-                                        <tr>
 
-                                            <td>Sick Leave</td>
-                                        </tr>
-                                    </table>
+
+                                            Sick Leave
+
                                 </div>
                                 <div class="col-md-9">
                                     <div class="progress Lv-progress">
@@ -251,12 +248,10 @@
                         <div class="col-md-12">
                             <div class="row ">
                                 <div class="col-md-3">
-                                    <table>
-                                        <tr>
 
-                                            <td>Casual Leave</td>
-                                        </tr>
-                                    </table>
+
+                                            Casual Leave
+
                                 </div>
                                 <div class="col-md-9">
                                     <div class="progress Lv-progress">
@@ -279,12 +274,91 @@
                         <div class="col-md-12">
                             <div class="row ">
                                 <div class="col-md-3">
-                                    <table>
-                                        <tr>
 
-                                            <td>Bereavement Leave</td>
-                                        </tr>
-                                    </table>
+
+                                          Bereavement
+
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                      {% if gender %}
+                      {% else %}
+                    <div class="row pad5 progress-bar-container" id="child_care">
+                        <div class="col-md-12">
+                            <div class="row ">
+                                <div class="col-md-3">
+                                    {% if male %}
+                                    Paternity
+                                    {% else %}
+
+                                          Maternity
+                                          {%endif%}
+
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {%endif%}
+                    <div class="row pad5 progress-bar-container" id="comp_off">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+
+
+                                            Comp Off earned
+
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pad5 progress-bar-container" id="comp_off_apply">
+                        <div class="col-md-12">
+                            <div class="row ">
+                                <div class="col-md-3">
+
+
+                                          Comp Off Avail
+
                                 </div>
                                 <div class="col-md-9">
                                     <div class="progress Lv-progress">
@@ -303,43 +377,11 @@
                         </div>
                     </div>
 
-                    <div class="row pad5 progress-bar-container" id="comp_off">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <table>
-                                        <tr>
-
-                                            <td>Compensatory Off</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="progress Lv-progress">
-                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-
-
-                                        </div>
-                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="row pad5 progress-bar-container" id="loss_of_pay">
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <table>
-                                        <tr>
-
-                                            <td>Loss Off Pay</td>
-                                        </tr>
-                                    </table>
+                                            Loss Off Pay
                                 </div>
                                 <div class="col-md-9">
                                     <div class="progress Lv-progress">
@@ -361,22 +403,13 @@
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <table>
-                                        <tr>
-
-                                            <td>Pay Off</td>
-                                        </tr>
-                                    </table>
+                                            Pay Off
                                 </div>
                                 <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-
-
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-
-
                                         </div>
                                     </div>
                                 </div>
@@ -388,25 +421,15 @@
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <table>
-                                        <tr>
-
-                                            <td>Work From Home</td>
-                                        </tr>
-                                    </table>
+                                            Work From Home
                                 </div>
                                 <div class="col-md-9">
                                     <div class="progress Lv-progress">
                                         <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
-
-
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
-
-
                                         </div>
                                         <div class="Lv-ProgressBar-TotalDays total"></div>
-
                                     </div>
                                 </div>
                             </div>
@@ -417,7 +440,7 @@
 
                         <div class="col-sm-12">
                             <div class="row ">
-                                <div class="MyLvTot"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Total</span></div>
+                                <div class="MyLvTot"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Balance</span></div>
                                 <div class="MyLvAppr"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Applied</span></div>
                                 <div class="MyLvAppl"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Approved</span></div>
                             </div>
@@ -444,7 +467,7 @@
 							  <label for="month_select">Select status&nbsp;:&nbsp;</label>
 							  <select class="Lv-Tr-SelectMonth" id="month_select">
                   {
-                    <option>Applied</option>
+                    <option>Open</option>
 
                 <option>Approved</option>
                 <option>Rejected</option>
@@ -496,32 +519,42 @@ function refreshBackground() {
         window.location.reload();
     }
 $(document).ready(function() {
-  $("#modal-leave-cancel").click(function(){
-    alert("working");
-  $.ajax(
-        {
-            type : "GET",
-            url : '/leave/cancel/',
-            data :{'leaveid':$('#leave_id_cancel').val()} ,
-            success : function(data)
-            {
-                alert(data);
-
-              },
-              error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
-                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-
-              },
-            }
-          );
-          });
+  // $("#modal-leave-cancel").click(function(){
+  //   alert("working");
+  // $.ajax(
+  //       {
+  //           type : "GET",
+  //           url : '/leave/cancel/',
+  //           data :{'leaveid':$('#leave_id_cancel').val()} ,
+  //           success : function(data)
+  //           {
+  //               alert(data);
+  //
+  //             },
+  //             error: function(XMLHttpRequest, textStatus, errorThrown) {
+  //               alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+  //               + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+  //
+  //             },
+  //           }
+  //         );
+  //         });
 
 gridLoad('earned_leave');
 
   var totalcount = 0;
   {% for leave in leave_summary%}
   var leaveType='{{leave.type__leave_type}}';
+  {% if male %}
+  if(leaveType=="maternity_leave"){
+    leaveType='None'
+  }
+
+  {% else %}
+  if(leaveType=="paternity_leave"){
+    leaveType='None'
+  }
+  {% endif %}
   switch(leaveType){
     case 'earned_leave':
     {
@@ -552,6 +585,7 @@ gridLoad('earned_leave');
 
       break;
     }
+
     case 'sick_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -581,6 +615,7 @@ gridLoad('earned_leave');
       }
       break;
     }
+
     case 'casual_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -610,6 +645,7 @@ gridLoad('earned_leave');
       }
       break;
     }
+
     case 'loss_of_pay':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -638,6 +674,7 @@ gridLoad('earned_leave');
       }
       break;
     }
+
     case 'bereavement_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -666,6 +703,7 @@ gridLoad('earned_leave');
       }
       break;
     }
+
     case 'pay_off':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -694,6 +732,7 @@ gridLoad('earned_leave');
       }
       break;
     }
+
     case 'work_from_home':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -722,7 +761,37 @@ gridLoad('earned_leave');
       }
       break;
     }
-    case 'comp_off_apply':
+
+    case 'comp_off_avail':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      if(applied!=0){
+        $('#comp_off_apply .applied').text(applied);
+      }
+      if(approved!=0){
+      $('#comp_off_apply .approved').text(approved);
+      }
+      if(total!=0){
+      $('#comp_off_apply .total').text(total +' days');
+      }
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#comp_off_apply .applied').css({'width' : applied_perc+"%"});
+        $('#comp_off_apply .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#comp_off_apply .applied').css({'width' : "0%"});
+        $('#comp_off_apply .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+
+    case 'comp_off_earned':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
@@ -748,9 +817,67 @@ gridLoad('earned_leave');
         $('#comp_off .applied').css({'width' : "0%"});
         $('#comp_off .approved').css({'width' : "0%"});
       }
-
+      break;
     }
 
+    case 'paternity_leave':
+    {
+      // console.log(leaveType)
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      if(applied!=0){
+        $('#child_care .applied').text(applied);
+      }
+      if(approved!=0){
+      $('#child_care .approved').text(approved);
+      }
+      if(total!=0){
+      $('#child_care .total').text(total +' days');
+      }
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#child_care .applied').css({'width' : applied_perc+"%"});
+        $('#child_care .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#child_care .applied').css({'width' : "0%"});
+        $('#child_care .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+
+    case 'maternity_leave':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      if(applied!=0){
+        $('#child_care .applied').text(applied);
+      }
+      if(approved!=0){
+      $('#child_care .approved').text(approved);
+      }
+      if(total!=0){
+      $('#child_care .total').text(total +' days');
+      }
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#child_care .applied').css({'width' : applied_perc+"%"});
+        $('#child_care .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#child_care .applied').css({'width' : "0%"});
+        $('#child_care .approved').css({'width' : "0%"});
+      }
+      break;
+    }
 
   }
 
@@ -771,6 +898,7 @@ gridLoad('earned_leave');
             {
                 $("#modal_body").html(data);
 
+
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
                 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -783,6 +911,7 @@ gridLoad('earned_leave');
 
 function removeSelection(){
   $("#earned_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#child_care .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#sick_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#casual_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#Bereavement .col-md-12 .row").removeClass("Lv-Type-Selected");
@@ -790,17 +919,18 @@ function removeSelection(){
   $("#pay_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#work_from_home .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#comp_off_apply .col-md-12 .row").removeClass("Lv-Type-Selected");
+
 }
 
 
 
 function gridLoad(name){
-  getLeaveName = {'comp_off':"Comp Off", 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'Bereavement':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
+  getLeaveName = {'comp_off_avail':"Comp Off avail",'paternity_leave':'Paternity','maternity_leave':'Maternity', 'comp_off_earned':'Comp Off Earned', 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'bereavement_leave':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
   leavename = getLeaveName[name];
-
-
+  console.log(name)
   $("#leave_name").text(leavename);
-  $('.table-bordered').empty()
+  $('.table-bordered').empty();
   $.ajax(
         {
             type : "GET",
@@ -855,6 +985,18 @@ removeSelection();
    gridLoad("loss_of_pay");
   });
 
+  $('#comp_off_apply .col-md-12 .row').click(function(){
+   removeSelection();
+   $('#comp_off_apply .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("comp_off_avail");
+  });
+
+  $('#comp_off .col-md-12 .row').click(function(){
+   removeSelection();
+   $('#comp_off .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("comp_off_earned");
+  });
+
   $('#pay_off .col-md-12 .row').click(function(){
    removeSelection();
    $('#pay_off .col-md-12 .row').addClass("Lv-Type-Selected");
@@ -867,14 +1009,23 @@ removeSelection();
    gridLoad("work_from_home");
   });
 
-  $('#comp_off .col-md-12 .row').click(function(){
-    removeSelection();
-   $('#comp_off .col-md-12 .row').addClass("Lv-Type-Selected");
-   gridLoad("comp_off");
-  });
+
+
+$('#child_care .col-md-12 .row').click(function(){
+  removeSelection();
+ $('#child_care .col-md-12 .row').addClass("Lv-Type-Selected");
+ {% if male %}
+ gridLoad("paternity_leave");
+
+ {% else %}
+  gridLoad("maternity_leave");
+ {% endif %}
+
+});
+
   $("#month_select").change(function(){
     name = $("#leave_name").text();
-    LeaveName = {"Comp Off":'comp_off', "Work From Home":'work_from_home',"Pay Off":'pay_off',"Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave', 'Earned Leave':'earned_leave' };
+    LeaveName = {"Comp Off avail":'comp_off_avail','Maternity Leave':'maternity_leave','Paternity Leave':'paternity_leave', 'Comp Off Earned ':'comp_off_earned', "Work From Home":'work_from_home',"Pay Off":'pay_off',"Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave', 'Earned Leave':'earned_leave' };
   gridLoad(LeaveName[name]);
   });
 
@@ -889,6 +1040,9 @@ removeSelection();
       element.fadeOut();
       return false;
     }
+
+var ajax_loader_element = $('#ajax_loader_cancel_leave');
+
     function CancelLeave(val, leavecount){
     	swal({
     		title: "Are you sure?",
@@ -897,12 +1051,13 @@ removeSelection();
     		showCancelButton: true,
     		confirmButtonColor: "#DD6B55",
     		confirmButtonText: "Yes, Please!",
-    		closeOnConfirm: false,
+    		closeOnConfirm: true,
     		cancelButtonText: "No, Cancel!",
-    		closeOnCancel: false
+    		closeOnCancel: true
     	},
     	function(isConfirm) {
     		if (isConfirm) {
+           ShowAjaxLoader(ajax_loader_element, 1200, 1200);
               $.ajax(
                     {
                         type : "GET",
@@ -910,13 +1065,16 @@ removeSelection();
                         data :{'leaveid':val, 'leavecount':leavecount} ,
                         success : function(data)
                         {
+
                             swal("Done!", "Your leave is cancel", "success");
+
                             window.location.reload();
+                            HideAjaxLoader(ajax_loader_element);
                           },
                           error: function(XMLHttpRequest, textStatus, errorThrown) {
                             alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                             + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-
+                              HideAjaxLoader(ajax_loader_element);
                           },
                         }
                       );
@@ -924,10 +1082,15 @@ removeSelection();
 
     		}
     		else
-    				swal("Stay Cool", "I will remaind you :). Please refresh the page.", "success");
+    				swal("Please click ok", "We have canceled your operation :). Thank You.", "success");
 
     });
 }
+
+
+
+
+
 function showDetails(leave_id){
   $.ajax(
         {
@@ -950,6 +1113,44 @@ function showDetails(leave_id){
           );
 }
 </script>
+
+<script type="text/javascript">
+
+// Height change for right side column
+
+leave_height = function(){
+  lv_height = $('.MyLeavesContainer').css('height');
+  $('.Lv-TransactionsContainer').css('height', lv_height);
+}
+
+$(window).load(function(){
+  leave_height();
+
+  $(window).resize(function(){
+    leave_height();
+  })
+  $('.progress-bar-container div .row').click(function(){
+    leave_height();
+  })
+
+})
+
+</script>
+
+
+<!-- Start In-Page Styles -->
+
+<style>
+
+.table-hover>tbody>tr:hover{background-color: #DADADA}
+.table-hover>tbody>tr.success:hover>td, .table-hover>tbody>tr.success:hover>th, .table-hover>tbody>tr:hover>.success, .table-hover>tbody>tr>td.success:hover, .table-hover>tbody>tr>th.success:hover{background-color: #DADADA}
+.table>tbody>tr.success>td, .table>tbody>tr.success>th, .table>tbody>tr>td.success, .table>tbody>tr>th.success, .table>tfoot>tr.success>td, .table>tfoot>tr.success>th, .table>tfoot>tr>td.success, .table>tfoot>tr>th.success, .table>thead>tr.success>td, .table>thead>tr.success>th, .table>thead>tr>td.success, .table>thead>tr>th.success{background-color:#DADADA}
+.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+    border: 1px solid #B7B7B7;
+}
+
+</style>
+
 <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>

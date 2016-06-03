@@ -72,7 +72,6 @@ def oneTimeLeaveValidation(leave_form, user):
 
 def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
     ''' validations for new joinees based on leave type, holidays, sabbatical'''
-
     result = {'errors' : [], 'success':[]}
     fromSession = leave_form.cleaned_data['from_session']
     toSession = leave_form.cleaned_data['to_session']
@@ -84,12 +83,20 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
         return result
     approvedLeave_newjoinee = getLeaveApproved(user)
     if leaveType_selected == 'sabbatical' :
-        if leavecount  < 180 and leavecount>=30:
+        joined_date = Employee.objects.filter(user_id=user).values('joined')
+        if leavecount  < 180 and leavecount>=30 and joined_date[0]['joined'] < fromDate:
             result['success'] = leavecount
             return result
-        else :
-            result['errors'] = 'for sabbatical minimum 1 month required'
+        elif leavecount<30 :
+            result['errors'] = 'for sabbatical maximum 180 days required'
             return result
+        elif leavecount>180 :
+            result['errors'] = 'for sabbatical minimum 30 days required'
+            return result
+        else :
+            result['errors'] = 'You are not allowed to take leave for this time period'
+            return result
+
 
 
     elif leaveType_selected == 'loss_of_pay' or leaveType_selected == 'work_from_home':
@@ -171,7 +178,7 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
     holiday = Holiday.objects.all().values('date')
     holiday_in_leave = 0
     leavecount = 0
-    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_avail', 'comp_off_apply']
+    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_avail', 'comp_off_earned']
     if leaveType not in leave_allowed_on_holiday:
         for leave in holiday:
             if leave['date'] >= fromdate and leave['date'] <= todate and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
@@ -198,7 +205,7 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
     year = date.today().year
     newYearDate = date(year, 1, 1)
     if last_day and leaveType:
-        if leaveType.leave_type in ['comp_off_apply', 'pay_off']:
+        if leaveType.leave_type in ['comp_off_earned', 'pay_off']:
             leaves = LeaveApplications.objects.filter(user = user, from_date=last_day, status__in=['approved', 'open'], leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
         elif leaveType.leave_type == 'comp_off_avail':
             leaves = LeaveSummary.objects.filter(user = user, type = LeaveType.objects.get(leave_type='comp_off_avail')).values('balance')

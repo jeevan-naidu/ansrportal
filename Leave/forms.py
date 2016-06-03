@@ -85,7 +85,7 @@ def LeaveForm(leavetype, data=None):
               'to_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
             }
 
-    onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_apply', 'comp_off_avail', 'pay_off']
+    onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
     regular_leave = ['earned_leave', 'sick_leave', 'casual_leave', 'loss_of_pay', 'work_from_home', 'sabbatical']
 
 
@@ -147,4 +147,3 @@ class LeaveListViewForm(autocomplete_light.ModelForm):
         # fields = (
         #     'user',
         # )
-

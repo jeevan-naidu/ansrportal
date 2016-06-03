@@ -5,10 +5,10 @@ from employee.models import Employee
 
 
 
-LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'), ('loss_of_pay', 'Loss Of Pay'), ('bereavement_leave', 'Bereavement Leave'), ('maternity_leave', 'Maternity Leave'), ('paternity_leave', 'Paternity Leave'), ('comp_off_apply', 'Comp Off Apply'), ('comp_off_avail', 'Comp Off Avail'),('pay_off', 'Pay Off'), ('work_from_home', 'Work From Home'), ('sabbatical', 'Sabbatical'))
+LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'), ('loss_of_pay', 'Loss Of Pay'), ('bereavement_leave', 'Bereavement Leave'), ('maternity_leave', 'Maternity Leave'), ('paternity_leave', 'Paternity Leave'), ('comp_off_earned', 'Comp Off Earned'), ('comp_off_avail', 'Comp Off Avail'),('pay_off', 'Pay Off'), ('work_from_home', 'Work From Home'), ('sabbatical', 'Sabbatical'))
 OCCURRENCE_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
-APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'), ('applied', 'Applied'),)
+APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'))
 SESSION_STATUS = (('session_first', 'First Half'), ('session_second', 'Second Half'))
 BUTTON_NAME = (('success', 'approved'), ('info', 'open'), ('danger', 'rejected'), ('warning', 'cancelled'))
 
@@ -61,9 +61,9 @@ class LeaveApplications(models.Model):
     user = models.ForeignKey(User, db_index=True, verbose_name='User', related_name='user') #- i
     leave_type = models.ForeignKey(LeaveType, db_index=True, verbose_name='Leave Type') #- i
     from_date = models.DateField(verbose_name='Leave from Date')
-    from_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='Leave From session')
+    from_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='From session')
     to_date = models.DateField(verbose_name='Leave to Date')
-    to_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='Leave To session')
+    to_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='To session')
     apply_to = models.ForeignKey(User, db_index=True, verbose_name='Manager', related_name='manager') #- i
     reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
     status = models.CharField(max_length=100, choices=APPLICATION_STATUS, verbose_name='Status Of Leave')
