@@ -93,24 +93,27 @@ function date_validation(from,to)
         var frm_check_index  = $('#'+from).val().indexOf("/");
         if(frm_check_index != -1) {
             var frm_date = $('#'+from).val().split("/");
+//            converted_frm_date = new Date (frm_date[0],frm_date[1],frm_date[2]);
         }
         else {
             var frm_date = $('#'+from).val().split("-");
+//            converted_frm_date = new Date (frm_date[2],frm_date[1],frm_date[0]);
             is_different = true;
         }
 
-        var converted_frm_date = new Date (frm_date[2],frm_date[1]-1,frm_date[0]);
+        converted_frm_date = new Date (frm_date[0],frm_date[1],frm_date[2]);
 
         var to_check_index  = $('#'+to).val().indexOf("/");
         if(to_check_index != -1) {
             var id_closure_date = $('#'+to).val().split("/");
+            converted_id_closure_date = new Date (id_closure_date[0],id_closure_date[1],id_closure_date[2]);
         }
-        else  var id_closure_date = $('#'+to).val().split("-");
-
-        var converted_id_closure_date = new Date (id_closure_date[2],id_closure_date[1]-1,id_closure_date[0]);
-
+        else {
+            var id_closure_date = $('#'+to).val().split("-");
+            converted_id_closure_date = new Date (id_closure_date[0],id_closure_date[1],id_closure_date[2]);
+        }
         if(converted_frm_date > converted_id_closure_date) {
-            alert("Ending date Cannot Be Greater Than From Date ");
+            alert("From date Cannot Be Greater Than To Date ");
             return false
         }
         var from_date = $('#'+from).val() ;
