@@ -613,6 +613,8 @@ def update_leave_application(request, status):
         remark_tmp = ''
     leave_application = LeaveApplications.objects.get(id=status_tmp[1])
     # print leave_application
+    import ipdb
+    ipdb.set_trace()
     leave_application.status = status_tmp[0]
     leave_application.status_comments = remark_tmp
     leave_application.status_action_by = request.user
