@@ -367,7 +367,7 @@ def total_leave_days(leave_list):
     if leave_list:
         for obj in leave_list:
 
-            if obj.leave_type not in leave_allowed_on_holiday:
+            if obj.leave_type.leave_type not in leave_allowed_on_holiday:
                 for leave in holiday:
                     if leave['date'] >= obj.from_date and leave['date'] <= obj.to_date and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
                         holiday_in_leave = holiday_in_leave + 1
