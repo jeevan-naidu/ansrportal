@@ -1,5 +1,7 @@
 
 {% extends 'master.inc' %}
+<title>{% block siteTitle %}myansrsource Manage Leave Applications{% endblock %}</title>
+
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
@@ -329,13 +331,13 @@
                             </div>
                             <div class="modal-body"><!-- Content goes here -->
 
-                                <textarea  style="width:100%" rows="3" cols ="70" id ="remark_{{leave.id}}" name="remark_{{leave.id}}" placeholder="enter remarks"></textarea>
-
+                                <textarea  style="width:100%" rows="3" cols ="70" id ="remark_{{leave.id}}" name="remark_{{leave.id}}" class = "remarks" placeholder="enter remarks"></textarea>
+                                <span id="textarea_remaining">2000 characters remaining</span>
                             </div>
                             <div class="modal-footer">
 
-                                <button type="button" class="btn btn-default" data-dismiss="modal">
-								Close
+                                <button type="button" class="btn btn-default" data-dismiss="modal" >
+								Submit
 							</button>
                                 <!--<button type="button" class="btn btn-primary">-->
 								<!--Save changes-->
@@ -442,6 +444,26 @@
     <script>
     jQuery(document).ready( function (){
 
+
+    	$('.remarks').attr('maxlength','');
+						var text_max = 500;
+						var text_length = $('.remarks').val().length;
+						var text_remaining = text_max - text_length;
+						$('#textarea_remaining').html(text_max + ' characters remaining');
+
+						$('.remarks').keyup(function() {
+							text_length = $(this).val().length;
+							text_remaining = text_max - text_length;
+							if (text_length > 500) {
+								$(this).val($(this).val().slice(0,500))
+
+								// the length changes in the above line
+								text_length = $(this).val().length;
+							    text_remaining = text_max - text_length;
+							}
+							$('#textarea_remaining').html(text_remaining + ' characters remaining');
+						});
+
             var url = window.location.href ;
             url = url.split('/');
             if(url[4] == 'manage') {
@@ -459,6 +481,7 @@
            $("#remark__"+class_name[1]).show();
            e.preventDefault();
         });
+
         jQuery('.approve_all , .reject_all').click(function(e){
             if(this.className == 'approve_all') {
                 $('.reject_all,.reject ,.cancel').prop('checked', false);
