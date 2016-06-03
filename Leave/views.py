@@ -8,7 +8,7 @@ from models import *
 from django.db.models import Q
 import json
 from datetime import date
-from validations import leaveValidation, leave_calculation, oneTimeLeaveValidation
+from validations import leaveValidation, leave_calculation, oneTimeLeaveValidation, newJoineeValidation
 import employee
 import calendar
 from calendar import monthrange
@@ -35,20 +35,22 @@ from django.template.defaultfilters import slugify
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
-
+from django.core.mail import EmailMessage
 logger = logging.getLogger('MyANSRSource')
 
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
+leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
+leaveSessionDictionary = dict(SESSION_STATUS)
 
 def LeaveTransaction(request):
     statusType = request.GET.get('type')
-    statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Applied':'open'}
+    statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Open':'open'}
     Leave_transact=LeaveApplications.objects.filter(status = statusDict[statusType] , user=request.user.id,leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date', 'to_session','due_date','status')
     for val in range(0, len(Leave_transact)):
         count = leave_calculation(Leave_transact[val]['from_date'], Leave_transact[val]['to_date'], Leave_transact[val]['from_session'], Leave_transact[val]['to_session'], Leave_transact[val]['leave_type__leave_type'])
         Leave_transact[val]['due_date'] = count
     count = 0
-    data1 = "<tr class=""><th>No</th><th>From</th><th>To</th><th>Days</th></tr>"
+    data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:
         count=count+1
         data1 =data1+ '<tr class="success"><td>{0}<br><a \
@@ -58,9 +60,9 @@ def LeaveTransaction(request):
         count,
         leave['id'],
         leave['from_date'],
-        leave['from_session'],
+        leaveSessionDictionary[leave['from_session']],
         leave['to_date'],
-        leave['to_session'],
+        leaveSessionDictionary[leave['to_session']],
         leave['due_date'],
         )
         if leave['status'] == 'open':
@@ -77,19 +79,34 @@ def LeaveCancel(request):
     leavecount = request.GET.get('leavecount')
     leave = LeaveApplications.objects.get(id = leave_id)
     leaveSummary = LeaveSummary.objects.get(type=leave.leave_type, user=user_id)
-    leaveSummary.balance = float(leaveSummary.balance) + float(leavecount)
-    leaveSummary.applied = float(leaveSummary.applied) - float(leavecount)
-    leaveSummary.save()
+    leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home']
+    onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
+    if leave.leave_type.leave_type in leaveWithoutBalance:
+        leaveSummary.applied = float(leaveSummary.applied) - float(leavecount)
+        leaveSummary.save()
+    elif leave.leave_type.leave_type in onetimeLeave:
+        leaveSummary.balance = float(leavecount)
+        leaveSummary.applied = 0
+        leaveSummary.save()
+    else:
+        leaveSummary.balance = float(leaveSummary.balance) + float(leavecount)
+        leaveSummary.applied = float(leaveSummary.applied) - float(leavecount)
+        leaveSummary.save()
+
     leave.status = 'cancelled'
+    leave.status_action_on = date.today()
+    leave.status_action_by = User.objects.get(id=user_id)
+    leave.status_comments = "Leave cancelled by user"
     leave.update()
+    manager = managerCheck(user_id)
+    mailTrigger(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session, leave.to_session, leave.reason, 'cancel')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
 
+
 def LeaveDetails(request):
     leave_id = request.GET.get('leaveid')
-    leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
-    leaveSessionDictionary = dict(SESSION_STATUS)
     leave = LeaveApplications.objects.get(id = leave_id)
     data = '<div id="detail_leave"><table class="table" id=""><thead><tr><th><b>PROPERTY<b></th><th><b>DETAILS<b></th></tr></thead>\
   <tbody><tr><th scope="row">Leave Type</th><td>{0}</td></tr>\
@@ -107,11 +124,11 @@ def LeaveDetails(request):
   leaveSessionDictionary[leave.from_session],
   leave.to_date,
   leaveSessionDictionary[leave.to_session],
-  leave.apply_to,
+  leave.apply_to.first_name,
   leave.reason,
   leave.status,
   leave.status_action_on,
-  leave.status_action_by,
+  leave.status_action_by.first_name,
   leave.atachement
   )
     json_data = json.dumps(data)
@@ -119,12 +136,18 @@ def LeaveDetails(request):
 
 # Create your views here.
 def Dashboard(request):
-    myReportee = employee.models.Employee.objects.filter(manager=request.user.employee)
-    isManager = 0
-    if myReportee:
-        isManager = 1
-    leave_summary=LeaveSummary.objects.filter(user=request.user.id).values('type__leave_type', 'applied', 'approved', 'balance')
-    context={'leave_summary':leave_summary, 'isManager':isManager }
+    user_id = request.user.id
+    leave_summary=LeaveSummary.objects.filter(user=user_id).values('type__leave_type', 'applied', 'approved', 'balance')
+    gender = Employee.objects.filter(user_id = user_id).values('gender')
+    newuser = newJoineeValidation(user_id)
+    genderFlag = True
+    genderMale = False
+    if not newuser:
+        genderFlag =False
+    if gender[0]['gender']=='M':
+        genderMale =True
+    manager = managerCheck(request.user.id)
+    context={'leave_summary':leave_summary,'gender':genderFlag,'male':genderMale, 'manager':manager.first_name }
     return render(request, 'User.html', context)
 
 
@@ -137,13 +160,14 @@ class ApplyLeaveView(View):
         context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],'leave_type_check' : None}
         try:
             leavetype=request.GET.get('leavetype')
-            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_apply', 'comp_off_avail', 'pay_off']
+            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
+            count_not_required = ['comp_off_earned','pay_off','work_from_home','loss_of_pay']
             form = LeaveForm(leavetype)
             context_data['form'] = form
-            leave_count = LeaveSummary.objects.filter(type__leave_type= leavetype)
+            leave_count = LeaveSummary.objects.filter(type__leave_type= leavetype, user_id= request.user.id)
             if leavetype in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
-            if leave_count:
+            if leavetype not in count_not_required and leave_count:
                 context_data['leave_count'] = leave_count[0].balance
 
             return render(request, 'leave_apply.html', context_data)
@@ -169,29 +193,37 @@ class ApplyLeaveView(View):
         if leave_form.is_valid() and not context_data['errors']:
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
-            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_apply', 'comp_off_avail', 'pay_off']
+            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
             user_id=request.user.id
+            reason=leave_form.cleaned_data['Reason']
+            manager = managerCheck(user_id)
             if leave_selected in onetime_leave:
                 validate = oneTimeLeaveValidation(leave_form, user_id)
+                fromdate = leave_form.cleaned_data['fromDate']
                 todate = validate['todate']
                 fromsession = 'session_first'
                 tosession = 'session_second'
-                if leave_selected in ['comp_off_apply', 'pay_off']:
+                if leave_selected in ['comp_off_earned', 'pay_off']:
                     duedate = validate['due_date']
 
 
             else:
                 validate=leaveValidation(leave_form, user_id, attachment)
+                fromdate = leave_form.cleaned_data['fromDate']
                 todate = leave_form.cleaned_data['toDate']
                 fromsession = leave_form.cleaned_data['from_session']
                 tosession = leave_form.cleaned_data['to_session']
 
-            if validate['errors']:
+            if not manager:
+                context_data['errors'].append('you are not assigned to any manager. please contact HR ')
+                context_data['form'] = leave_form
+            elif validate['errors']:
                 context_data['errors'].append(validate['errors'])
                 context_data['form'] = leave_form
             else:
+
                 leavecount = validate['success']
                 leaveType=LeaveType.objects.get(leave_type= leave_form.cleaned_data['leave'])
 
@@ -207,20 +239,25 @@ class ApplyLeaveView(View):
                     leavesummry_temp.balance = float(leavesummry_temp.balance) - leavecount
                     leavesummry_temp.save()
                     if attachment:
-                        LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason'], atachement=attachment).saveas(user_id)
+                        leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession, reason=reason, atachement=attachment).saveas(user_id)
+                        mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                     else:
-                        LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason']).saveas(user_id)
+                        leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession, reason=reason).saveas(user_id)
+                        mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
                 else:
-                    if leave_form.cleaned_data['leave'] in ['comp_off_apply','work_from_home','pay_off','loss_of_pay']:
+                    if leave_form.cleaned_data['leave'] in ['comp_off_earned','work_from_home','pay_off','loss_of_pay']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
                         leavesummry_temp.save()
                         if attachment:
-                            LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason'], atachement=attachment, due_date= duedate).saveas(user_id)
+                            leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
+                            mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                         else:
-                            LeaveApplications(leave_type=leaveType, from_date=leave_form.cleaned_data['fromDate'], to_date=todate, from_session=fromsession, to_session=tosession, reason=leave_form.cleaned_data['Reason'], due_date= duedate).saveas(user_id)
+                            leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession, reason=reason, due_date= duedate).saveas(user_id)
+                            mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
@@ -238,6 +275,31 @@ class ApplyLeaveView(View):
             context_data['form'] = leave_form
 
         return render(request, 'leave_apply.html', context_data)
+
+def mailTrigger(user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, flag):
+    fromdate = str(fromdate)+' Session: '+leaveSessionDictionary[fromsession]
+    todate = str(todate)+' Session: '+leaveSessionDictionary[tosession]
+    if flag == 'save':
+        msg_html = render_to_string('email_templates/apply_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected], 'fromdate':fromdate, 'todate':todate})
+
+        mail_obj = EmailMessage('New Leave applied - Leave Type - ' + leaveTypeDictionary[leave_selected], msg_html, settings.EMAIL_HOST_USER, [user.email], cc=['vivek.pradhan@ansrsource.com','shalini.bhagat@ansrsource.com'])
+    elif flag == 'cancel':
+        msg_html = render_to_string('email_templates/cancel_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected], 'fromdate':fromdate, 'todate':todate})
+
+        mail_obj = EmailMessage('Leave canceled - Leave Type - ' + leaveTypeDictionary[leave_selected], msg_html, settings.EMAIL_HOST_USER, [user.email], cc=['vivek.pradhan@ansrsource.com','shalini.bhagat@ansrsource.com'])
+
+    mail_obj.content_subtype = 'html'
+    email_status = mail_obj.send()
+
+    if email_status < 1:
+        # TODO  - mail not sent, log this error
+        pass
+
+def managerCheck(user):
+    manager_id = Employee.objects.filter(user_id=user).values('manager_id')
+    manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
+    if manager:
+        return User.objects.get(id=manager[0]['user_id'])
 
 
 def export_xlwt_overridden(filename, fields, values_list, days_list, save=False, folder=""):

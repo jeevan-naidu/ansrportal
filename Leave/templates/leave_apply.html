@@ -12,7 +12,7 @@
 		 <form id="modal-container-252304" class="form-horizontal" method="post" enctype="multipart/form-data">
 
 		  {% csrf_token %}
-			<div id='ajax_loader_apply_leave'></div>
+			<!-- <div id='ajax_loader_apply_leave'></div> -->
 			<div style="color:red" id="LeaveForm_errors"></div><br>
 			{% if leave_type_check %}
 			<form class="form-horizontal" role="form">
@@ -57,7 +57,9 @@
 	 </div>
 
 	 <div class="col-sm-4 remaining-leave-indicator text-right">
+		 {% if leave_count %}
 		 Remaining Leaves : {{leave_count}}
+		 {% endif %}
 	 </div>
  </div>
  {% if errors %}
@@ -138,13 +140,15 @@
 				$('.filestyle').bind('change', function() {
 				if (this.files[0].size > 1000000) {
 					alert("File size greater than 1MB not allowed");
-					$(this).filestyle('clear');
+					// $(this).filestyle('clear');
+					$('.filestyle').val('')
 				}
 				else
 				{
 					if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
                     alert("Allowed file types : "+fileExtension.join(', '));
-                    $(this).filestyle('clear');
+                    //$(this).filestyle('clear');
+										$('.filestyle').val('')
                 }
 				}
 
@@ -177,28 +181,17 @@
 									type: 'post',
 									data: formData,
 									success: function (data) {
+
 									   if (data.record_added) {
+
 										  $("#modal_body").html("<h5 style='color:green;'>" + data.success_msg + "</h5>");
-										  if ($("#listTableBody tr:first").length) {
-											$("#listTableBody tr:first").before(data.html_data);
-
-											// reload the js for file for ajax requests
-												window.location.reload();
-												window.opener.location.reload();
-
-										   }
-										  else{
-											 $("#listTableBody").append(data.html_data);
-											 $("#no_grievances_alert").hide();
-										  }
-										  $("#listTableBody tr:first").hide();
-										  $("#listTableBody tr:first").fadeIn(900);
+											window.location.reload()
 
 										 }
 									   else{
 										$("#modal_body").html(data);
 									   }
-										//HideAjaxLoader($('#ajax_loader_apply_leave'));
+										HideAjaxLoader($('#ajax_loader_apply_leave'));
 
 										// reloadJS();
 									},
@@ -221,13 +214,11 @@
 					 $(function () {
 							 $('#id_toDate_pickers').datetimepicker({
 								 format: 'YYYY-MM-DD',
-								 "autoclose" : true,
-
-
+								 autoclose: true
 							 });
 							 $('#id_fromDate_pickers').datetimepicker({
-								 format: 'YYYY-MM-DD'
-
+								 format: 'YYYY-MM-DD',
+								 autoclose: true
 							 });
 
 

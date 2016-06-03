@@ -183,7 +183,7 @@
       background-color: #DADADA;
       /* margin: -5px -10px; */
       color: #444;
-      /* font-weight: 700; */
+       font-weight: 700;
       /* border-left: 3px solid #1D92E5; */
       border-left: 5px solid #CECECE;
       color: #696969;
@@ -503,4 +503,11 @@
           color: red;
           font-weight: 900;
           line-height: 30px;
+        }
+
+        .min-height-300{min-height: 300px;}
+        .manager-name {
+            color: #0E576D;
+            font-size: 18px;
+            font-weight: 500;
         }
