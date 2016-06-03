@@ -10,21 +10,26 @@ def leaveValidation(leave_form, user, attachment):
     result = {'errors' : [], 'success':[]}
     fromDate = leave_form.cleaned_data['fromDate']
     toDate = leave_form.cleaned_data['toDate']
+    fromSession = leave_form.cleaned_data['from_session']
+    tosession = leave_form.cleaned_data['to_session']
     if fromDate <= toDate :
-        leave_between_applied_date = leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)), status__in=['approved', 'open'],user=user)
-        if leave_between_applied_date:
-            result['errors'] = "You are having leave in this time period"
+        if fromDate == toDate and fromSession== 'session_second' and tosession== 'session_first':
+            result['errors'] = "Please correct session"
             return result
+        leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)), status__in=['approved', 'open'],user=user)
+        if len(leave_between_applied_date)>1 or leaveCheckBetweenAppliedLied(leave_between_applied_date, leave_form):
+            result['errors'] = "You are having leave in this time period"
         result_temp = validation_leave_type(leave_form, user, fromDate, toDate, attachment)
+
         if result_temp['success']:
             result['success'] = result_temp['success']
-            return result
+
         else:
-            result['errors'] = result_temp['errors']
-            return result
+            result['errors'].append(result_temp['errors'])
+
     else:
         result['errors'] = "from date should be lesser than to date"
-        return result
+    return result
 
 def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
@@ -33,11 +38,6 @@ def oneTimeLeaveValidation(leave_form, user):
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
     fromDate = leave_form.cleaned_data['fromDate']
-    toDate = leave_form.cleaned_data['fromDate']
-    leave_between_applied_date = leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)), status__in=['approved', 'open'],user=user)
-    if leave_between_applied_date:
-        result['errors'] = "You are having leave in this time period"
-        return result
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveapproved == 0 and not newJoineeValidation(user):
@@ -65,6 +65,13 @@ def oneTimeLeaveValidation(leave_form, user):
                     flag = True
             if not flag:
                 result['errors'] = 'weekend and holiday only allowed for compoff and payoff'
+
+        toDate = result['todate']
+        leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),
+         status__in=['approved', 'open'],user=user)
+        if leave_between_applied_date:
+            result['errors'] = "You are having leave in this time period"
+            return result
     return result
 
 
@@ -291,3 +298,26 @@ def date_by_adding_business_days(from_date, add_days,holidays):
             continue
         business_days_to_add -= 1
     return current_date
+
+
+def leaveCheckBetweenAppliedLied(leavelist, leave_form):
+    if leavelist:
+        leave = leavelist[0]
+        leave_fromdate = leave.from_date
+        leave_todate = leave.to_date
+        leave_fromsession = leave.from_session
+        leave_tosession = leave.to_session
+        fromdate = leave_form.cleaned_data['fromDate']
+        todate = leave_form.cleaned_data['toDate']
+        fromSession = leave_form.cleaned_data['from_session']
+        tosession = leave_form.cleaned_data['to_session']
+        if fromdate == leave_todate:
+            if leave_tosession == 'session_first' and fromSession == 'session_second':
+                return False
+            elif todate == leave_fromdate:
+                if tosession == 'session_first' and leave_fromsession == 'session_second':
+                    return False
+        else:
+            return True
+    else:
+        return False

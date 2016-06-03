@@ -264,7 +264,7 @@ class ApplyLeaveView(View):
                         context_data['errors'].append( 'Sorry you are not having this type of leave ')
                         context_data['form'] = leave_form
 
-                    return render(request, 'leave_apply.html', context_data)
+                    # return render(request, 'leave_apply.html', context_data)
                 context_data['success_msg'] = "Your leave has been submitted successfully."
                 template = render(request, 'leave_apply.html', context_data)
                 context_data['html_data'] = template.content
