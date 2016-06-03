@@ -569,10 +569,14 @@ def update_leave_application(request, status):
         if is_com_off.leave_type == 'comp_off_avail':
             leave_status.applied -= Decimal(leave_days)
             leave_status.approved += Decimal(leave_days)
+            leave_status.applied = str(leave_status.applied)
+            leave_status.approved = str(leave_status.approved)
             com_off_apply = LeaveType.objects.get(leave_type='com_off_apply')
             com_off_apply.balance += Decimal(leave_days)
+            com_off_apply.balance = str(com_off_apply.balance)
             com_off_apply.save()
         else:
+            leave_status.applied -= Decimal(leave_days)
             leave_status.applied = str(leave_status.applied)
             leave_status.approved = str(leave_status.approved)
             leave_status.balance -= Decimal(leave_days)
