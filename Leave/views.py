@@ -179,7 +179,6 @@ class ApplyLeaveView(View):
 
 
     def post(self, request):
-        import ipdb; ipdb.set_trace()
         leave_form=LeaveForm(request.POST['leave'], request.POST)
         response_data = {}
         context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None }
@@ -269,7 +268,7 @@ class ApplyLeaveView(View):
                     # return render(request, 'leave_apply.html', context_data)
                 if context_data['errors']:
                     return render(request, 'leave_apply.html', context_data)
-                else:                    
+                else:
                     context_data['success_msg'] = "Your leave has been submitted successfully."
                     template = render(request, 'leave_apply.html', context_data)
                     context_data['html_data'] = template.content
@@ -616,8 +615,7 @@ def update_leave_application(request, status):
         remark_tmp = ''
     leave_application = LeaveApplications.objects.get(id=status_tmp[1])
     # print leave_application
-    import ipdb
-    ipdb.set_trace()
+
     leave_application.status = status_tmp[0]
     leave_application.status_comments = remark_tmp
     leave_application.status_action_by = request.user
