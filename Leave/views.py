@@ -409,7 +409,8 @@ class LeaveListView(ListView):
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user,
                                                                          status='open').order_by("status", "-from_date")
-            context['users'] = Employee.objects.filter(manager__user=self.request.user)
+            context['users'] = Employee.objects.filter\
+                (manager__user=self.request.user).order_by('manager__user__username')
 
         elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
             if 'all' in self.kwargs:
@@ -417,7 +418,7 @@ class LeaveListView(ListView):
 
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
-            context['users'] = Employee.objects.filter(user__is_active=True)
+            context['users'] = Employee.objects.filter(user__is_active=True).order_by('manager__user__username')
 
         else:
             raise PermissionDenied
@@ -596,7 +597,10 @@ class LeaveListView(ListView):
 def update_leave_application(request, status):
     status_tmp = status.split('_')
     exception = False
-    remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
+    if request.POST.get('remark_'+status_tmp[1]):
+        remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
+    else:
+        remark_tmp = ''
     leave_application = LeaveApplications.objects.get(id=status_tmp[1])
     # print leave_application
     leave_application.status = status_tmp[0]
@@ -610,17 +614,16 @@ def update_leave_application(request, status):
     except:
         leave_status = LeaveSummary.objects.create(user=leave_application.user, type=leave_application.leave_type,
                                                    year=date.today().year)
+
         leave_status.approved = 0
         leave_status.balance = 0
         leave_status.applied = Decimal(leave_days)
-
     approved = Decimal(leave_status.approved)
     leave_status.approved = Decimal(leave_status.approved)
     leave_status.balance = Decimal(leave_status.balance)
     leave_status.applied = Decimal(leave_status.applied)
-
+    is_com_off = LeaveType.objects.get(pk=leave_status.type.id)
     if status_tmp[0] == 'approved':
-        is_com_off = LeaveType.objects.get(leave_type=leave_status.leave_type)
         if is_com_off.leave_type == 'comp_off_avail':
             com_off_apply = LeaveType.objects.get(leave_type='com_off_apply')
             com_off_apply.balance += Decimal(leave_days)
@@ -655,7 +658,7 @@ def update_leave_application(request, status):
 
         mail_obj = EmailMessage('Leave Application Status',
                                 msg_html, settings.EMAIL_HOST_USER, [leave_application.user.email],
-                                cc=[settings.LEAVE_ADMIN_EMAIL, leave_application.apply_to.email])
+                                cc=[leave_application.apply_to.email])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
