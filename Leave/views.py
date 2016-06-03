@@ -179,6 +179,7 @@ class ApplyLeaveView(View):
 
 
     def post(self, request):
+        import ipdb; ipdb.set_trace()
         leave_form=LeaveForm(request.POST['leave'], request.POST)
         response_data = {}
         context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None }
@@ -266,11 +267,13 @@ class ApplyLeaveView(View):
                         context_data['form'] = leave_form
 
                     # return render(request, 'leave_apply.html', context_data)
-                context_data['success_msg'] = "Your leave has been submitted successfully."
-                template = render(request, 'leave_apply.html', context_data)
-                context_data['html_data'] = template.content
-
-                return JsonResponse(context_data)
+                if context_data['errors']:
+                    return render(request, 'leave_apply.html', context_data)
+                else:                    
+                    context_data['success_msg'] = "Your leave has been submitted successfully."
+                    template = render(request, 'leave_apply.html', context_data)
+                    context_data['html_data'] = template.content
+                    return JsonResponse(context_data)
 
         else:
             context_data['form'] = leave_form
@@ -359,7 +362,7 @@ def date_range(d1, d2):
 
 def total_leave_days(leave_list):
     leave_days = {}
-    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_avail', 'comp_off_earned']
+    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_earned']
     holiday = Holiday.objects.all().values('date')
     holiday_in_leave = 0
     if leave_list:
