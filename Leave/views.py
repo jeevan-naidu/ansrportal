@@ -41,6 +41,7 @@ logger = logging.getLogger('MyANSRSource')
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
 leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
 leaveSessionDictionary = dict(SESSION_STATUS)
+leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home']
 
 def LeaveTransaction(request):
     statusType = request.GET.get('type')
@@ -79,7 +80,6 @@ def LeaveCancel(request):
     leavecount = request.GET.get('leavecount')
     leave = LeaveApplications.objects.get(id = leave_id)
     leaveSummary = LeaveSummary.objects.get(type=leave.leave_type, user=user_id)
-    leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home']
     onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
     if leave.leave_type.leave_type in leaveWithoutBalance:
         leaveSummary.applied = float(leaveSummary.applied) - float(leavecount)
@@ -612,7 +612,6 @@ def update_leave_application(request, status):
                                                    year=date.today().year)
         leave_status.approved = 0
         leave_status.balance = 0
-        exception = True
         leave_status.applied = Decimal(leave_days)
 
     approved = Decimal(leave_status.approved)
@@ -621,43 +620,26 @@ def update_leave_application(request, status):
     leave_status.applied = Decimal(leave_status.applied)
 
     if status_tmp[0] == 'approved':
-        approved += Decimal(leave_days)
-        if exception:
-            leave_status.approved = approved
-        else:
-            leave_status.approved += approved
-        # leave_status.applied += approved
         is_com_off = LeaveType.objects.get(leave_type=leave_status.leave_type)
         if is_com_off.leave_type == 'comp_off_avail':
-            leave_status.applied -= Decimal(leave_days)
-            leave_status.approved += Decimal(leave_days)
-            leave_status.applied = str(leave_status.applied)
-            leave_status.approved = str(leave_status.approved)
             com_off_apply = LeaveType.objects.get(leave_type='com_off_apply')
             com_off_apply.balance += Decimal(leave_days)
             com_off_apply.balance = str(com_off_apply.balance)
             com_off_apply.save()
         else:
-            leave_status.applied -= Decimal(leave_days)
-            leave_status.applied = str(leave_status.applied)
-            leave_status.approved = str(leave_status.approved)
             leave_status.balance -= Decimal(leave_days)
             leave_status.balance = str(leave_status.balance)
+        leave_status.applied -= Decimal(leave_days)
+        leave_status.approved += Decimal(leave_days)
+        leave_status.applied = str(leave_status.applied)
+        leave_status.approved = str(leave_status.approved)
 
-    if status_tmp[0] == 'rejected':
-        leave_status.balance += (Decimal(leave_days))
-        leave_status.balance = str(leave_status.balance)
+    if status_tmp[0] == 'cancelled' or status_tmp[0] == 'rejected':
         leave_status.applied -= Decimal(leave_days)
         leave_status.applied = str(leave_status.applied)
-
-    if status_tmp[0] == 'cancelled':
-        approved -= Decimal(leave_days)
-        # leave_status.approved = approved
-        # leave_status.approved = str(leave_status.approved)
-        leave_status.applied -= Decimal(leave_days)
-        leave_status.applied = str(leave_status.applied)
-        leave_status.balance += Decimal(leave_days)
-        leave_status.balance = str(leave_status.balance)
+        if is_com_off not in leaveWithoutBalance:
+            leave_status.balance += Decimal(leave_days)
+            leave_status.balance = str(leave_status.balance)
 
     leave_status.save()
 
