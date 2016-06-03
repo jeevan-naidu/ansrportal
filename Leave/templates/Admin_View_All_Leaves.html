@@ -1,9 +1,10 @@
 
 {% extends 'master.inc' %}
+<title>{% block siteTitle %}myansrsource Leave List View{% endblock %}</title>
+
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
@@ -245,7 +246,7 @@ s                            {% for value, text in APPLICATION_STATUS %}
                                         <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
                                     </tr>
                                     <tr class="info">
-                                        <td>Applies On: </td>
+                                        <td>Applied On: </td>
                                         <td>{{leave.applied_on}}</td>
                                     </tr>
                                     <tr class="warning">
@@ -253,7 +254,7 @@ s                            {% for value, text in APPLICATION_STATUS %}
                                         <td>{{leave.user.employee.business_unit.name}}</td>
                                     </tr>
                                     <tr class="info">
-                                        <td>Applies to: </td>
+                                        <td>Applied to: </td>
                                         <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
                                     </tr>
 
