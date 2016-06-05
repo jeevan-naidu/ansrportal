@@ -1023,7 +1023,10 @@ $('#child_care .col-md-12 .row').click(function(){
 
   $("#month_select").change(function(){
     name = $("#leave_name").text();
-    LeaveName = {'Sabbatical':'sabbatical', "Comp Off avail":'comp_off_avail','Maternity Leave':'maternity_leave','Paternity Leave':'paternity_leave', 'Comp Off Earned ':'comp_off_earned', "Work From Home":'work_from_home',"Pay Off":'pay_off',"Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave', 'Earned Leave':'earned_leave' };
+    LeaveName = {'Sabbatical':'sabbatical', "Comp Off avail":'comp_off_avail','Maternity Leave':'maternity_leave',
+    'Paternity':'paternity_leave', 'Comp Off Earned':'comp_off_earned', "Work From Home":'work_from_home',"Pay Off":'pay_off',
+    "Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave',
+    'Earned Leave':'earned_leave' };
   gridLoad(LeaveName[name]);
   });
 

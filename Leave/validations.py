@@ -335,7 +335,7 @@ def compOffAvailibilityCheck(fromDate, user):
     leaves = LeaveApplications.objects.filter(leave_type__leave_type ='comp_off_earned',
     active =True,
     from_date__lt =fromDate,
-    user = user).order_by('from_date')
+    user = user, status = 'approved').order_by('from_date')
     if leaves:
         leaves[0].active= False
         leaves[0].update()

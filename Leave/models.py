@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from employee.models import Employee
-
+import datetime, os
 
 
 LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'), ('loss_of_pay', 'Loss Of Pay'), ('bereavement_leave', 'Bereavement Leave'), ('maternity_leave', 'Maternity Leave'), ('paternity_leave', 'Paternity Leave'), ('comp_off_earned', 'Comp Off Earned'), ('comp_off_avail', 'Comp Off Avail'),('pay_off', 'Pay Off'), ('work_from_home', 'Work From Home'), ('sabbatical', 'Sabbatical'))
@@ -12,8 +12,27 @@ APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', '
 SESSION_STATUS = (('session_first', 'First Half'), ('session_second', 'Second Half'))
 BUTTON_NAME = (('success', 'approved'), ('info', 'open'), ('danger', 'rejected'), ('warning', 'cancelled'))
 
+# def content_file_name(instance, filename):
+#     return '/'.join(['content', instance.user.username, filename])
+
 def content_file_name(instance, filename):
-    return '/'.join(['content', instance.user.username, filename])
+    ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
+    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-) '''
+
+    import random
+    import string
+
+    # random_str length will be 16 which will be combination of (4 digits + 4 characters + 4 digits + 4 characters)
+    random_str =  "".join([random.choice(string.uppercase) for i in range(0,4)]) + "".join([random.choice(string.digits) for i in range(0,4)]) + \
+                    "".join([random.choice(string.lowercase) for i in range(0,4)]) + "".join([random.choice(string.digits) for i in range(0,4)])
+
+    # return string seperated by hyphen eg:
+    random_str =  random_str[:4] + "-" + random_str[4:8] + "-" + random_str[8:12] + "-" + random_str[12:]
+    filetype = filename.split(".")[-1].lower()
+    filename = random_str +"." +  filetype
+    path = "leaves/uploads/" + str(datetime.datetime.now().year) + "/" + str(datetime.datetime.now().month) + "/" + str(datetime.datetime.now().day) + "/"
+    os_path = os.path.join(path, filename)
+    return os_path
 
 class LeaveType(models.Model):
     ''' This model contains :

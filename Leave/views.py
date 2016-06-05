@@ -111,6 +111,10 @@ def LeaveCancel(request):
 def LeaveDetails(request):
     leave_id = request.GET.get('leaveid')
     leave = LeaveApplications.objects.get(id = leave_id)
+    if leave.atachement:
+        atachmentURL = leave.atachement.url
+    else:
+        atachmentURL = ''
     data = '<div id="detail_leave"><table class="table" id=""><thead><tr><th><b>PROPERTY<b></th><th><b>DETAILS<b></th></tr></thead>\
   <tbody><tr><th scope="row">Leave Type</th><td>{0}</td></tr>\
   <tr><th scope="row">From date and session</th><td>{1},{2}</td></tr>\
@@ -120,7 +124,7 @@ def LeaveDetails(request):
   <tr><th scope="row">status</th><td>{7}</td></tr>\
   <tr><th scope="row">status action on</th><td>{8}</td></tr>\
   <tr><th scope="row">status action by</th><td>{9}</td></tr>\
-  <tr><th scope="row">Attachment</th><td>{10}</td></tr>\
+  <tr><th scope="row">Attachment</th><td><a href="{10}">{11}</a></td></tr>\
   </tbody></table></div>'.format(
   leaveTypeDictionary[leave.leave_type.leave_type],
   leave.from_date,
@@ -132,7 +136,8 @@ def LeaveDetails(request):
   leave.status,
   leave.status_action_on,
   leave.status_action_by.first_name,
-  leave.atachement
+  atachmentURL,
+  atachmentURL
   )
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
@@ -150,7 +155,11 @@ def Dashboard(request):
     if gender[0]['gender']=='M':
         genderMale =True
     manager = managerCheck(request.user.id)
-    context={'leave_summary':leave_summary,'gender':genderFlag,'male':genderMale, 'manager':manager.first_name }
+    if manager:
+        mangerfirstname = manager.first_name
+    else:
+        mangerfirstname = ''
+    context={'leave_summary':leave_summary,'gender':genderFlag,'male':genderMale, 'manager': mangerfirstname }
     return render(request, 'User.html', context)
 
 
@@ -235,7 +244,7 @@ class ApplyLeaveView(View):
                     leavesummry_temp = leavesummry[0]
                 else:
                     user = User.objects.get(id=user_id)
-                    leavesummry_temp = LeaveSummary.objects.create(user=user, type=leaveType,
+                    leavesummry_temp = LeaveSummary.objects.create(user=user, type=leaveType, applied=0, approved=0, balance=0,
                                                                year=date.today().year)
 
                 if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
@@ -246,30 +255,34 @@ class ApplyLeaveView(View):
 
                     leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
                     leavesummry_temp.balance = float(leavesummry_temp.balance) - leavecount
-                    leavesummry_temp.save()
+
                     if attachment:
-                        leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
+                         LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          reason=reason, atachement=attachment).saveas(user_id)
-                        mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                         leavesummry_temp.save()
+                         mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                     else:
-                        leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
+                         LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          reason=reason).saveas(user_id)
-                        mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                         leavesummry_temp.save()
+                         mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
                 else:
                     if leave_form.cleaned_data['leave'] in ['comp_off_earned','work_from_home','pay_off','loss_of_pay']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
-                        leavesummry_temp.save()
+
                         if attachment:
-                            leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
+                             LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
-                            mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                             leavesummry_temp.save()
+                             mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                         else:
-                            leave = LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
+                             LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              reason=reason, due_date= duedate).saveas(user_id)
-                            mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                             leavesummry_temp.save()
+                             mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'

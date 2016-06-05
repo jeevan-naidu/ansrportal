@@ -102,6 +102,7 @@
 															 {
 																	 $("#modal_body").html(data);
 
+
 															 },
 															 error: function(XMLHttpRequest, textStatus, errorThrown) {
 															 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -183,8 +184,9 @@
 									success: function (data) {
 
 									   if (data.record_added) {
-
-										  $("#modal_body").html("<h5 style='color:green;'>" + data.success_msg + "</h5>");
+											 swal("Done!", data.success_msg, "success");
+										  // $("#modal_body").html("<h5 style='color:green;'>" + data.success_msg + "</h5>");
+											$("#modal_body").html('');
 											window.location.reload()
 
 										 }
