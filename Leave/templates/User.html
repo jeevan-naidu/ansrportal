@@ -30,26 +30,7 @@
     			<div class="modal-body" id="myModaldata">
     				<div class="container col-md-12">
     					<div class="row">
-    						<!-- <div class="col-md-3">
-    							<p>
-    								1st col 3
-    							</p>
-    						</div>
-    						<div class="col-md-3">
-    							<p>
-    								2nd col 3
-    							</p>
-    						</div>
-    						<div class="col-md-3">
-    							<p>
-    								3rd col 3
-    							</p>
-    						</div>
-    						<div class="col-md-3">
-    							<p>
-    								4th col 3
-    							</p>
-    						</div> -->
+
     					</div>
     				</div>
     			</div>
@@ -126,28 +107,6 @@
                                 </div>
                             </div>
 
-
-                            <!--    <ul class="nav navbar-nav">-->
-                            <!--    <li class="dropdown">-->
-                            <!--	      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>-->
-                            <!--	     <ul class="dropdown-menu">-->
-                            <!--		     <li>-->
-                            <!--			     <a href="#">Action</a>-->
-                            <!--		     </li>-->
-                            <!--		     <li>-->
-                            <!--			     <a href="#">Another action</a>-->
-                            <!--		     </li>-->
-                            <!--		     <li>-->
-                            <!--			     <a href="#">Something else here</a>-->
-                            <!--		     </li>-->
-                            <!--		     <li class="divider">-->
-                            <!--		     </li>-->
-                            <!--		     <li>-->
-                            <!--			     <a href="#">Separated link</a>-->
-                            <!--		     </li>-->
-                            <!--	     </ul>-->
-                            <!--     </li>-->
-                            <!--    </ul>-->
 
                         </div>
                         <div class="col-md-6 apply-export">
@@ -399,6 +358,29 @@
                         </div>
                     </div>
 
+                    <div class="row pad5 progress-bar-container" id="sabbatical">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                            Sabbatical
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="row pad5 progress-bar-container" id="pay_off">
                         <div class="col-md-12">
                             <div class="row">
@@ -519,26 +501,6 @@ function refreshBackground() {
         window.location.reload();
     }
 $(document).ready(function() {
-  // $("#modal-leave-cancel").click(function(){
-  //   alert("working");
-  // $.ajax(
-  //       {
-  //           type : "GET",
-  //           url : '/leave/cancel/',
-  //           data :{'leaveid':$('#leave_id_cancel').val()} ,
-  //           success : function(data)
-  //           {
-  //               alert(data);
-  //
-  //             },
-  //             error: function(XMLHttpRequest, textStatus, errorThrown) {
-  //               alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
-  //               + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-  //
-  //             },
-  //           }
-  //         );
-  //         });
 
 gridLoad('earned_leave');
 
@@ -700,6 +662,35 @@ gridLoad('earned_leave');
       else{
         $('#Bereavement .applied').css({'width' : "0%"});
         $('#Bereavement .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+
+    case 'sabbatical':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      if(applied!=0){
+        $('#sabbatical .applied').text(applied);
+      }
+      if(approved!=0){
+      $('#sabbatical .approved').text(approved);
+      }
+      if(total!=0){
+       $('#sabbatical .total').text(total +' days');
+      }
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#sabbatical .applied').css({'width' : applied_perc+"%"});
+        $('#sabbatical .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#sabbatical .applied').css({'width' : "0%"});
+        $('#sabbatical .approved').css({'width' : "0%"});
       }
       break;
     }
@@ -920,13 +911,15 @@ function removeSelection(){
   $("#work_from_home .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off_apply .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#sabbatical .col-md-12 .row").removeClass("Lv-Type-Selected");
+
 
 }
 
 
 
 function gridLoad(name){
-  getLeaveName = {'comp_off_avail':"Comp Off avail",'paternity_leave':'Paternity','maternity_leave':'Maternity', 'comp_off_earned':'Comp Off Earned', 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'bereavement_leave':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
+  getLeaveName = {'sabbatical':'Sabbatical', 'comp_off_avail':"Comp Off avail",'paternity_leave':'Paternity','maternity_leave':'Maternity', 'comp_off_earned':'Comp Off Earned', 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'bereavement_leave':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
   leavename = getLeaveName[name];
   console.log(name)
   $("#leave_name").text(leavename);
@@ -1009,6 +1002,11 @@ removeSelection();
    gridLoad("work_from_home");
   });
 
+  $('#sabbatical .col-md-12 .row').click(function(){
+    removeSelection();
+   $('#sabbatical .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("sabbatical");
+  });
 
 
 $('#child_care .col-md-12 .row').click(function(){
@@ -1025,7 +1023,7 @@ $('#child_care .col-md-12 .row').click(function(){
 
   $("#month_select").change(function(){
     name = $("#leave_name").text();
-    LeaveName = {"Comp Off avail":'comp_off_avail','Maternity Leave':'maternity_leave','Paternity Leave':'paternity_leave', 'Comp Off Earned ':'comp_off_earned', "Work From Home":'work_from_home',"Pay Off":'pay_off',"Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave', 'Earned Leave':'earned_leave' };
+    LeaveName = {'Sabbatical':'sabbatical', "Comp Off avail":'comp_off_avail','Maternity Leave':'maternity_leave','Paternity Leave':'paternity_leave', 'Comp Off Earned ':'comp_off_earned', "Work From Home":'work_from_home',"Pay Off":'pay_off',"Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave', 'Earned Leave':'earned_leave' };
   gridLoad(LeaveName[name]);
   });
 

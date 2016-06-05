@@ -40,7 +40,7 @@ def oneTimeLeaveValidation(leave_form, user):
     fromDate = leave_form.cleaned_data['fromDate']
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
-        if leaveapproved == 0 and not newJoineeValidation(user):
+        if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday)
         else:
@@ -54,9 +54,7 @@ def oneTimeLeaveValidation(leave_form, user):
         if check_date > fromDate:
             result['errors'] = 'leave has expired'
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
-        if leaveType_selected == 'comp_off_avail' and leaveapproved ==0:
-            result['errors'] = 'sorry there is no comp off avaliable'
-        elif leaveType_selected != 'comp_off_avail' and leaveapproved ==1:
+        if leaveType_selected != 'comp_off_avail' and leaveapproved ==1:
             result['errors'] = 'sorry you already applied for comp off/pay off'
         elif fromDate.strftime("%A") not in ("Saturday", "Sunday") and leaveType_selected != 'comp_off_avail':
             flag = False
@@ -110,7 +108,7 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
         result['success'] = leavecount
         return result
 
-    elif newJoineeValidation(user) and leavecount + approvedLeave_newjoinee > 2 :
+    elif newJoineeValidation(user, fromDate) and leavecount + approvedLeave_newjoinee > 2 :
         result['errors'] = "you are not allow to take more than 2 leave"
         return result
 
@@ -213,7 +211,8 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
     newYearDate = date(year, 1, 1)
     if last_day and leaveType:
         if leaveType.leave_type in ['comp_off_earned', 'pay_off']:
-            leaves = LeaveApplications.objects.filter(user = user, from_date=last_day, status__in=['approved', 'open'], leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
+            leaves = LeaveApplications.objects.filter(user = user, from_date=last_day, status__in=['approved', 'open'],
+            leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
         elif leaveType.leave_type == 'comp_off_avail':
             leaves = LeaveSummary.objects.filter(user = user, type = LeaveType.objects.get(leave_type='comp_off_avail')).values('balance')
             if leaves:
@@ -221,7 +220,8 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
             return leavecount
         else:
             #leavecheck = ['earned_leave', 'sick_leave', 'casual_leave', 'bereavement_leave', 'maternity_leave', 'paternity_leave' ]
-            leaves = LeaveApplications.objects.filter(user = user, from_date__lte=last_day, from_date__gte=newYearDate, status__in=['approved', 'open'], leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
+            leaves = LeaveApplications.objects.filter(user = user, from_date__lte=last_day, from_date__gte=newYearDate,
+             status__in=['approved', 'open'], leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
         for leave in leaves:
             if leave['to_date'] > last_day:
                 leavecount = leavecount + leave_calculation(leave['from_date'], last_day, leave['from_session'], leave['to_session'], leaveType)
@@ -229,7 +229,8 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
             else:
                 leavecount = leavecount + leave_calculation(leave['from_date'], leave['to_date'], leave['from_session'], leave['to_session'], leaveType)
     else:
-        leaves = LeaveApplications.objects.filter(user = user,status__in=['approved', 'open'], leave_type__in = LeaveType.objects.filter(leave_type__in=['earned_leave', 'sick_leave', 'casual_leave', 'bereavement_leave','maternity_leave', 'paternity_leave']) ).values('from_date', 'to_date', 'from_session', 'to_session', 'leave_type__leave_type')
+        leaves = LeaveApplications.objects.filter(user = user,status__in=['approved', 'open'],
+         leave_type__in = LeaveType.objects.filter(leave_type__in=['earned_leave', 'sick_leave', 'casual_leave', 'bereavement_leave','maternity_leave', 'paternity_leave']) ).values('from_date', 'to_date', 'from_session', 'to_session', 'leave_type__leave_type')
         for leave in leaves:
             leavecount = leavecount + leave_calculation(leave['from_date'], leave['to_date'], leave['from_session'], leave['to_session'], leave['leave_type__leave_type'])
     return leavecount
@@ -276,10 +277,13 @@ def getLeaveBalance(leavetype, endmonth, user):
     return leaveTotal
 
 
-def newJoineeValidation(user):
+def newJoineeValidation(user, from_date = None):
     joined_date = Employee.objects.filter(user_id=user).values('joined')
-    today = date.today()
-    days_of_joined = (today - joined_date[0]['joined']).days
+    if from_date:
+        check_date = from_date
+    else:
+        check_date = date.today()
+    days_of_joined = (check_date - joined_date[0]['joined']).days
     if days_of_joined<80:
         return True
     else:
@@ -314,10 +318,26 @@ def leaveCheckBetweenAppliedLied(leavelist, leave_form):
         if fromdate == leave_todate:
             if leave_tosession == 'session_first' and fromSession == 'session_second':
                 return False
-            elif todate == leave_fromdate:
-                if tosession == 'session_first' and leave_fromsession == 'session_second':
-                    return False
+            else:
+                return True
+        elif todate == leave_fromdate:
+            if tosession == 'session_first' and leave_fromsession == 'session_second':
+                return False
+            else:
+                return True
         else:
             return True
     else:
         return False
+
+
+def compOffAvailibilityCheck(fromDate, user):
+    leaves = LeaveApplications.objects.filter(leave_type__leave_type ='comp_off_earned',
+    active =True,
+    from_date__lt =fromDate,
+    user = user).order_by('from_date')
+    if leaves:
+        leaves[0].active= False
+        leaves[0].update()
+        return False
+    return True
