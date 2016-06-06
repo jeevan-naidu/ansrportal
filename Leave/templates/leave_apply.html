@@ -18,7 +18,11 @@
 			<form class="form-horizontal" role="form">
 					{% for field in form.visible_fields %}
 					<div class="form-group">
+
+
 					<label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
+
+
 					<div class="col-sm-10">{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
 						{% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
 					</div>
@@ -34,10 +38,12 @@
 				<div class="form-group">
 				{% endif %}
 
+
 					<label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
+
 					{% if  forloop.counter == 3 or forloop.counter == 5 or forloop.counter == 2 or forloop.counter == 4 %}
 	 				<div class="col-sm-4">
-		 				{%else%}
+		 				{% else %}
 						<div class="col-sm-10">
 						{% endif %}
 						{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
@@ -50,12 +56,13 @@
 			 {% endfor %}
 
 			{% endif %}
-
+{% if leave %}
  <div class="form-group">
 	 <div class="col-sm-offset-2 col-sm-6">
 		 <button type="submit" class="btn btn-success">Apply Leave</button>
 	 </div>
-
+{% else %}
+{% endif %}
 	 <div class="col-sm-4 remaining-leave-indicator text-right">
 		 {% if leave_count %}
 		 Remaining Leaves : {{leave_count}}

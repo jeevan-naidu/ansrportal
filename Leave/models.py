@@ -83,9 +83,9 @@ class LeaveApplications(models.Model):
     user = models.ForeignKey(User, db_index=True, verbose_name='User', related_name='user') #- i
     leave_type = models.ForeignKey(LeaveType, db_index=True, verbose_name='Leave Type') #- i
     from_date = models.DateField(verbose_name='Leave from Date')
-    from_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='From session')
+    from_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='')
     to_date = models.DateField(verbose_name='Leave to Date')
-    to_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='To session')
+    to_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='')
     apply_to = models.ForeignKey(User, db_index=True, verbose_name='Manager', related_name='manager') #- i
     reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
     status = models.CharField(max_length=100, choices=APPLICATION_STATUS, verbose_name='Status Of Leave')

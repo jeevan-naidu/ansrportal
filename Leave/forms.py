@@ -4,11 +4,12 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from django.utils.safestring import mark_safe
 from django import forms
 from django.contrib.auth.models import User
-from Leave.models import LeaveApplications,  LEAVE_TYPES_CHOICES
+from Leave.models import LeaveApplications,  LEAVE_TYPES_CHOICES, SESSION_STATUS
 from employee.models import Employee
 import autocomplete_light
 autocomplete_light.autodiscover()
 LEAVE_TYPES_CHOICES = (('', '---------'),) + LEAVE_TYPES_CHOICES
+SESSION_STATUS_CHOICES =(('', 'SELECT SESSION'),)+ SESSION_STATUS
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 
@@ -73,6 +74,11 @@ def LeaveForm(leavetype, data=None):
         )
         toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
 
+        from_session= forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
+        from_session.widget.attrs = {'class': 'form-control', 'required':'false'}
+
+        to_session= forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
+        to_session.widget.attrs = {'class': 'form-control', 'required':'false'}
 
         class Meta:
             model = LeaveApplications
@@ -81,8 +87,8 @@ def LeaveForm(leavetype, data=None):
             widgets = {
               'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
               #'leave':forms.Select(attrs={'class': 'form-control', 'required':'true'}),
-              'from_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
-              'to_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
+            #   'from_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
+            #   'to_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
             }
 
     onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']

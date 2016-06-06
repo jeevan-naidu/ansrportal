@@ -171,7 +171,8 @@ class ApplyLeaveView(View):
 
     def get(self, request):
         #context_data = {'add':True, 'record_added':False, 'form':None}
-        context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],'leave_type_check' : None}
+        context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],
+        'leave_type_check' : None, 'leave':None}
         try:
             leavetype=request.GET.get('leavetype')
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
@@ -179,8 +180,11 @@ class ApplyLeaveView(View):
             form = LeaveForm(leavetype)
             context_data['form'] = form
             leave_count = LeaveSummary.objects.filter(leave_type__leave_type= leavetype, user_id= request.user.id)
+            if leavetype:
+                context_data['leave'] = 'data'
             if leavetype in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
+
             if leavetype not in count_not_required and leave_count:
                 context_data['leave_count'] = leave_count[0].balance
 
