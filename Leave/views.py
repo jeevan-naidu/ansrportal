@@ -103,7 +103,7 @@ def LeaveCancel(request):
     leave.status_comments = "Leave cancelled by user"
     leave.update()
     manager = managerCheck(user_id)
-    mailTrigger(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+    # mailTrigger(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
     leave.to_session, leave.reason, 'cancel')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
@@ -263,12 +263,12 @@ class ApplyLeaveView(View):
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id)
                          leavesummry_temp.save()
-                         mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                        #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                     else:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason).saveas(user_id)
                          leavesummry_temp.save()
-                         mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                        #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
@@ -280,12 +280,12 @@ class ApplyLeaveView(View):
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
-                             mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                            #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                         else:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
-                             mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                            #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
