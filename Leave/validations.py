@@ -40,7 +40,6 @@ def oneTimeLeaveValidation(leave_form, user):
     fromDate = leave_form.cleaned_data['fromDate']
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
-        import ipdb; ipdb.set_trace()
         if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday)
@@ -271,10 +270,10 @@ def getLeaveBalance(leavetype, endmonth, user):
             if balnce_of_last_year:
                 leaveTotal = leaveTotal + float((balnce_of_last_year['balance']).encode('utf-8'))
                 leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
-            elif leaveType.occurrence == 'monthly':
-                leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
-            else:
-                leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
+        elif leaveType.carry_forward == 'monthly':
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+        else:
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
     return leaveTotal
 
 
