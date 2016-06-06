@@ -14,11 +14,11 @@ def leaveValidation(leave_form, user, attachment):
     tosession = leave_form.cleaned_data['to_session']
     if fromDate <= toDate :
         if fromDate == toDate and fromSession== 'session_second' and tosession== 'session_first':
-            result['errors'] = "Please correct session"
+            result['errors'].append("Please correct session")
             return result
         leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)), status__in=['approved', 'open'],user=user)
         if len(leave_between_applied_date)>1 or leaveCheckBetweenAppliedLied(leave_between_applied_date, leave_form):
-            result['errors'] = "You are having leave in this time period"
+            result['errors'].append('You are having leave in this time period')
         result_temp = validation_leave_type(leave_form, user, fromDate, toDate, attachment)
 
         if result_temp['success']:
@@ -28,7 +28,7 @@ def leaveValidation(leave_form, user, attachment):
             result['errors'].append(result_temp['errors'])
 
     else:
-        result['errors'] = "from date should be lesser than to date"
+        result['errors'].append("<br>from date should be lesser than to date")
     return result
 
 def oneTimeLeaveValidation(leave_form, user):
@@ -40,11 +40,12 @@ def oneTimeLeaveValidation(leave_form, user):
     fromDate = leave_form.cleaned_data['fromDate']
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
+        import ipdb; ipdb.set_trace()
         if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday)
         else:
-            result['error'] = "sorry you don't have this type of leave"
+            result['error'].append("<br>sorry you don't have this type of leave")
     else:
         holiday = Holiday.objects.all().values('date')
         result['success'] = 1
@@ -52,23 +53,23 @@ def oneTimeLeaveValidation(leave_form, user):
         result['due_date'] = fromDate - timedelta(days = 80)
         check_date = date.today() - timedelta(days = 80)
         if check_date > fromDate:
-            result['errors'] = 'leave has expired'
+            result['errors'].append('<br>leave has expired')
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveType_selected != 'comp_off_avail' and leaveapproved ==1:
-            result['errors'] = 'sorry you already applied for comp off/pay off'
+            result['errors'].append('<br>sorry you already applied for comp off/pay off')
         elif fromDate.strftime("%A") not in ("Saturday", "Sunday") and leaveType_selected != 'comp_off_avail':
             flag = False
             for dates in holiday:
                 if fromDate == dates['date']:
                     flag = True
             if not flag:
-                result['errors'] = 'weekend and holiday only allowed for compoff and payoff'
+                result['errors'].append('<br>weekend and holiday only allowed for compoff and payoff')
 
         toDate = result['todate']
         leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),
          status__in=['approved', 'open'],user=user)
         if leave_between_applied_date:
-            result['errors'] = "You are having leave in this time period"
+            result['errors'].append( "<br>You are having leave in this time period")
             return result
     return result
 

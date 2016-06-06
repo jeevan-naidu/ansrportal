@@ -232,7 +232,8 @@ class ApplyLeaveView(View):
                 context_data['errors'].append('you are not assigned to any manager. please contact HR ')
                 context_data['form'] = leave_form
             elif validate['errors']:
-                context_data['errors'].append(validate['errors'])
+                for error in validate['errors']:
+                    context_data['errors'].append(error)
                 context_data['form'] = leave_form
             else:
 
