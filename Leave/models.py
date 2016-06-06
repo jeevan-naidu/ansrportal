@@ -57,7 +57,7 @@ class LeaveType(models.Model):
 class LeaveSummary(models.Model):
     user = models.ForeignKey(User, verbose_name='User')
     year = models.CharField(max_length=10, verbose_name='Current Year')
-    leave_type = models.ForeignKey(LeaveType, verbose_name='Leave Type')
+    # leave_type = models.ForeignKey(LeaveType, verbose_name='Leave Type')
     applied = models.CharField(max_length=20, verbose_name='applied leave count')
     approved = models.CharField(max_length=20, verbose_name='approved leave count')
     balance = models.CharField(max_length=20, verbose_name='balance leave count')
@@ -67,8 +67,8 @@ class LeaveSummary(models.Model):
        ''' return unicode strings '''
        return '%s' % (self.user.username)
 
-    class Meta:
-        unique_together = ('user', 'leave_type')
+    # class Meta:
+    #     unique_together = ('user', 'leave_type')
 
 class LeaveApplications(models.Model):
 
