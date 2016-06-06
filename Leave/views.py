@@ -49,11 +49,11 @@ def LeaveTransaction(request):
     statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Open':'open'}
     Leave_transact=LeaveApplications.objects.filter(status = statusDict[statusType] , user=request.user.id,
     leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
-    'to_session','due_date','status')
-    for val in range(0, len(Leave_transact)):
-        count = leave_calculation(Leave_transact[val]['from_date'], Leave_transact[val]['to_date'], Leave_transact[val]['from_session'],
-         Leave_transact[val]['to_session'], Leave_transact[val]['leave_type__leave_type'])
-        Leave_transact[val]['due_date'] = count
+    'to_session','days_count','status')
+    # for val in range(0, len(Leave_transact)):
+    #     count = leave_calculation(Leave_transact[val]['from_date'], Leave_transact[val]['to_date'], Leave_transact[val]['from_session'],
+    #      Leave_transact[val]['to_session'], Leave_transact[val]['leave_type__leave_type'])
+    #     Leave_transact[val]['due_date'] = count
     count = 0
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:
@@ -68,11 +68,11 @@ def LeaveTransaction(request):
         leaveSessionDictionary[leave['from_session']],
         leave['to_date'],
         leaveSessionDictionary[leave['to_session']],
-        leave['due_date'],
+        leave['days_count'],
         )
         if leave['status'] == 'open':
             data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >cancel</a></div>\
-            </td></tr>'.format(leave['id'],leave['due_date'],)
+            </td></tr>'.format(leave['id'],leave['days_count'],)
         else:
             data1 = data1 + '</div></td></tr>'
     json_data = json.dumps(data1)

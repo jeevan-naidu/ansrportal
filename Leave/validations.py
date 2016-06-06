@@ -42,7 +42,7 @@ def oneTimeLeaveValidation(leave_form, user):
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
-            result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday)
+            result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
         else:
             result['error'].append("<br>sorry you don't have this type of leave")
     else:
@@ -290,16 +290,17 @@ def newJoineeValidation(user, from_date = None):
         return False
 
 
-def date_by_adding_business_days(from_date, add_days,holidays):
+def date_by_adding_business_days(from_date, add_days,holidays, leaveType_selected):
     business_days_to_add = add_days-1
     current_date = from_date
     while business_days_to_add > 0:
         current_date += timedelta(days=1)
         weekday = current_date.weekday()
-        if weekday >= 5: # sunday = 6
-            continue
-        if current_date in holidays:
-            continue
+        if leaveType_selected != 'maternity_leave':
+            if weekday >= 5: # sunday = 6
+                continue
+            if current_date in holidays:
+                continue
         business_days_to_add -= 1
     return current_date
 
