@@ -57,7 +57,7 @@ class LeaveType(models.Model):
 class LeaveSummary(models.Model):
     user = models.ForeignKey(User, verbose_name='User')
     year = models.CharField(max_length=10, verbose_name='Current Year')
-    type = models.ForeignKey(LeaveType, verbose_name='Leave Type')
+    leave_type = models.ForeignKey(LeaveType, verbose_name='Leave Type')
     applied = models.CharField(max_length=20, verbose_name='applied leave count')
     approved = models.CharField(max_length=20, verbose_name='approved leave count')
     balance = models.CharField(max_length=20, verbose_name='balance leave count')
@@ -66,6 +66,9 @@ class LeaveSummary(models.Model):
     def __unicode__(self):
        ''' return unicode strings '''
        return '%s' % (self.user.username)
+
+    class Meta:
+        unique_together = ('user', 'leave_type')
 
 class LeaveApplications(models.Model):
 
@@ -90,6 +93,7 @@ class LeaveApplications(models.Model):
     status_action_on = models.DateField(auto_now=True, verbose_name='Date of Change')
     status_comments = models.CharField(max_length=500, verbose_name='Status change comment')
     due_date = models.DateField(verbose_name='application of comp off', null=True)#for comp off date
+    days_count = models.CharField(max_length=10, verbose_name='Leave Count')
     atachement = models.FileField(upload_to=content_file_name, blank=True, null=True, verbose_name='Attachment')
     applied_on = models.DateField(auto_now_add=True, verbose_name='Leave Applied Date')
     modified_on = models.DateField(auto_now=True, verbose_name='Modified Date')

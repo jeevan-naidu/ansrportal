@@ -64,12 +64,12 @@ def oneTimeLeaveValidation(leave_form, user):
             if not flag:
                 result['errors'].append('<br>weekend and holiday only allowed for compoff and payoff')
 
-        toDate = result['todate']
-        leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),
-         status__in=['approved', 'open'],user=user)
-        if leave_between_applied_date:
-            result['errors'].append( "<br>You are having leave in this time period")
-            return result
+    toDate = result['todate']
+    leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),
+    status__in=['approved', 'open'],user=user)
+    if leave_between_applied_date:
+        result['errors'].append( "You are having leave in this time period")
+
     return result
 
 
@@ -214,7 +214,7 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
             leaves = LeaveApplications.objects.filter(user = user, from_date=last_day, status__in=['approved', 'open'],
             leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
         elif leaveType.leave_type == 'comp_off_avail':
-            leaves = LeaveSummary.objects.filter(user = user, type = LeaveType.objects.get(leave_type='comp_off_avail')).values('balance')
+            leaves = LeaveSummary.objects.filter(user = user, leave_type = LeaveType.objects.get(leave_type='comp_off_avail')).values('balance')
             if leaves:
                 leavecount = leaves[0]['balance']
             return leavecount
@@ -266,10 +266,10 @@ def getLeaveBalance(leavetype, endmonth, user):
 
     else:
         if leaveType.carry_forward == 'yearly':
-            balnce_of_last_year = LeaveSummary.objects.filter(type = leaveType, year = current_year-1).values('balance')
+            balnce_of_last_year = LeaveSummary.objects.filter(leave_type = leaveType, year = current_year-1).values('balance')
             if balnce_of_last_year:
                 leaveTotal = leaveTotal + float((balnce_of_last_year['balance']).encode('utf-8'))
-                leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
         elif leaveType.carry_forward == 'monthly':
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
         else:

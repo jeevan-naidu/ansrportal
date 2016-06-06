@@ -48,7 +48,8 @@ def LeaveTransaction(request):
     statusType = request.GET.get('type')
     statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Open':'open'}
     Leave_transact=LeaveApplications.objects.filter(status = statusDict[statusType] , user=request.user.id,
-    leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date', 'to_session','due_date','status')
+    leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
+    'to_session','due_date','status')
     for val in range(0, len(Leave_transact)):
         count = leave_calculation(Leave_transact[val]['from_date'], Leave_transact[val]['to_date'], Leave_transact[val]['from_session'],
          Leave_transact[val]['to_session'], Leave_transact[val]['leave_type__leave_type'])
@@ -82,7 +83,7 @@ def LeaveCancel(request):
     leave_id = request.GET.get('leaveid')
     leavecount = request.GET.get('leavecount')
     leave = LeaveApplications.objects.get(id = leave_id)
-    leaveSummary = LeaveSummary.objects.get(type=leave.leave_type, user=user_id)
+    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=user_id)
     onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
     if leave.leave_type.leave_type in leaveWithoutBalance:
         leaveSummary.applied = float(leaveSummary.applied) - float(leavecount)
@@ -102,7 +103,8 @@ def LeaveCancel(request):
     leave.status_comments = "Leave cancelled by user"
     leave.update()
     manager = managerCheck(user_id)
-    mailTrigger(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session, leave.to_session, leave.reason, 'cancel')
+    mailTrigger(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+    leave.to_session, leave.reason, 'cancel')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
@@ -145,7 +147,7 @@ def LeaveDetails(request):
 # Create your views here.
 def Dashboard(request):
     user_id = request.user.id
-    leave_summary=LeaveSummary.objects.filter(user=user_id).values('type__leave_type', 'applied', 'approved', 'balance')
+    leave_summary=LeaveSummary.objects.filter(user=user_id).values('leave_type__leave_type', 'applied', 'approved', 'balance')
     gender = Employee.objects.filter(user_id = user_id).values('gender')
     newuser = newJoineeValidation(user_id)
     genderFlag = True
@@ -176,7 +178,7 @@ class ApplyLeaveView(View):
             count_not_required = ['comp_off_earned','pay_off','work_from_home','loss_of_pay']
             form = LeaveForm(leavetype)
             context_data['form'] = form
-            leave_count = LeaveSummary.objects.filter(type__leave_type= leavetype, user_id= request.user.id)
+            leave_count = LeaveSummary.objects.filter(leave_type__leave_type= leavetype, user_id= request.user.id)
             if leavetype in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
             if leavetype not in count_not_required and leave_count:
@@ -240,12 +242,12 @@ class ApplyLeaveView(View):
                 leavecount = validate['success']
                 leaveType=LeaveType.objects.get(leave_type= leave_form.cleaned_data['leave'])
 
-                leavesummry = LeaveSummary.objects.filter(type=leaveType, user=user_id)
+                leavesummry = LeaveSummary.objects.filter(leave_type=leaveType, user=user_id)
                 if leavesummry:
                     leavesummry_temp = leavesummry[0]
                 else:
                     user = User.objects.get(id=user_id)
-                    leavesummry_temp = LeaveSummary.objects.create(user=user, type=leaveType, applied=0, approved=0, balance=0,
+                    leavesummry_temp = LeaveSummary.objects.create(user=user, leave_type=leaveType, applied=0, approved=0, balance=0,
                                                                year=date.today().year)
 
                 if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
@@ -259,12 +261,12 @@ class ApplyLeaveView(View):
 
                     if attachment:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         reason=reason, atachement=attachment).saveas(user_id)
+                         days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id)
                          leavesummry_temp.save()
                          mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                     else:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         reason=reason).saveas(user_id)
+                         days_count=leavecount, reason=reason).saveas(user_id)
                          leavesummry_temp.save()
                          mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
@@ -276,12 +278,12 @@ class ApplyLeaveView(View):
 
                         if attachment:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                             reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
+                             days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
                              mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                         else:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                             reason=reason, due_date= duedate).saveas(user_id)
+                             days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
                              mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
@@ -652,11 +654,11 @@ def update_leave_application(request, status):
     leave_days = total_leave_days(LeaveApplications.objects.filter(id=status_tmp[1]))
     leave_days = leave_days[leave_application.id]
     try:
-        leave_status = LeaveSummary.objects.get(user=leave_application.user, type=leave_application.leave_type,
+        leave_status = LeaveSummary.objects.get(user=leave_application.user, leave_type=leave_application.leave_type,
                                                 year=date.today().year)
 
     except:
-        leave_status = LeaveSummary.objects.create(user=leave_application.user, type=leave_application.leave_type,
+        leave_status = LeaveSummary.objects.create(user=leave_application.user, leave_type=leave_application.leave_type,
                                                    year=date.today().year)
 
         leave_status.approved = 0
@@ -666,10 +668,10 @@ def update_leave_application(request, status):
     leave_status.approved = Decimal(leave_status.approved)
     leave_status.balance = Decimal(leave_status.balance)
     leave_status.applied = Decimal(leave_status.applied)
-    is_com_off = LeaveType.objects.get(pk=leave_status.type.id)
+    is_com_off = LeaveType.objects.get(pk=leave_status.leave_type.id)
     if status_tmp[0] == 'approved':
         if is_com_off.leave_type == 'comp_off_earned':
-            com_off_apply = LeaveSummary.objects.get(type__leave_type='comp_off_avail',user=leave_application.user.id)
+            com_off_apply = LeaveSummary.objects.get(leave_type__leave_type='comp_off_avail',user=leave_application.user.id)
             com_off_apply.balance =Decimal(com_off_apply.balance) + Decimal(leave_days)
             # com_off_apply.balance = str(com_off_apply.balance)
             com_off_apply.save()

@@ -374,6 +374,7 @@
 
 
                                         </div>
+                                        <div class="Lv-ProgressBar-TotalDays total"></div>
                                     </div>
                                 </div>
                             </div>
@@ -411,7 +412,7 @@
                                         </div>
                                         <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
                                         </div>
-                                        <div class="Lv-ProgressBar-TotalDays total"></div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -506,7 +507,7 @@ gridLoad('earned_leave');
 
   var totalcount = 0;
   {% for leave in leave_summary%}
-  var leaveType='{{leave.type__leave_type}}';
+  var leaveType='{{leave.leave_type__leave_type}}';
   {% if male %}
   if(leaveType=="maternity_leave"){
     leaveType='None'
