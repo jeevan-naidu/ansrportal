@@ -251,14 +251,14 @@ def getLeaveBalance(leavetype, endmonth, user):
         if leaveType.carry_forward == 'yearly':
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
             if joined_day>0 and joined_day<11:
-                leaveTotal = leaveTotal + .5
+                leaveTotal = leaveTotal + 1.5
             elif joined_day>10 and joined_day<21:
                 leaveTotal = leaveTotal + 1
             else:
-                leaveTotal = leaveTotal + 1.5
+                leaveTotal = leaveTotal + 0.5
         elif leaveType.carry_forward == 'monthly':
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
-            if joined_day>25:
+            if joined_day<5:
                 leaveTotal = leaveTotal + .5
         else:
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
