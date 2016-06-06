@@ -104,7 +104,7 @@ def LeaveCancel(request):
     leave.update()
     manager = managerCheck(user_id)
     # mailTrigger(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
-    leave.to_session, leave.reason, 'cancel')
+    #leave.to_session, leave.reason, 'cancel')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
