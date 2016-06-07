@@ -33,7 +33,6 @@ def leaveValidation(leave_form, user, attachment):
 
 def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
-    import ipdb; ipdb.set_trace()
     holiday = Holiday.objects.all().values('date')
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
     leaveType_selected = leave_form.cleaned_data['leave']
@@ -45,7 +44,7 @@ def oneTimeLeaveValidation(leave_form, user):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
         else:
-            result['error'].append("sorry you don't have this type of leave")
+            result['errors'].append("sorry you don't have this type of leave")
     else:
         holiday = Holiday.objects.all().values('date')
         result['success'] = 1
