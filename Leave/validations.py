@@ -183,7 +183,7 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
     holiday = Holiday.objects.all().values('date')
     holiday_in_leave = 0
     leavecount = 0
-    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_earned']
+    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_earned', 'maternity_leave']
     if leaveType not in leave_allowed_on_holiday:
         for leave in holiday:
             if leave['date'] >= fromdate and leave['date'] <= todate and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):

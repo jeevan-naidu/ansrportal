@@ -198,7 +198,7 @@ class ApplyLeaveView(View):
     def post(self, request):
         leave_form=LeaveForm(request.POST['leave'], request.POST)
         response_data = {}
-        context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None }
+        context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None, 'leave':'formdata' }
 
 
         attachment = request.FILES.get('leave_attachment', "")
