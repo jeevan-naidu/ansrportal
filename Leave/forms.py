@@ -153,3 +153,8 @@ class LeaveListViewForm(autocomplete_light.ModelForm):
         # fields = (
         #     'user',
         # )
+
+
+class UploadLeaveBalanceForm(forms.Form):
+    leave_balance_file = forms.FileField(required=True, help_text="Please use semicolon delimited csv only")
+    leave_balance_file.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}

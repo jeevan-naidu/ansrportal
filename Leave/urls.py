@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url
 from views import *
 from django.contrib.auth.decorators import login_required
 from Leave import views
+from upload_leave_balance import UploadLeaveBalanceView
 urlpatterns = patterns(u'',
                        url(r'^$', login_required(Dashboard), name=u'Leave_dashboard'),
                        url(r'^add/$', login_required(ApplyLeaveView.as_view()), name=u'leave_list'),
@@ -13,4 +14,5 @@ urlpatterns = patterns(u'',
                            name=u'list_leave_all'),
                        url(r'^manage/$', login_required(LeaveManageView.as_view(template_name='Manager.html')),
                            name=u'manage_leave_list'),
+                       url(r'^upload-leave-balance/$', login_required(UploadLeaveBalanceView.as_view()), name=u'Upload_Leave_Balance'),
                        )
