@@ -46,7 +46,7 @@ class UploadLeaveBalanceView(View):
             
             columns_list = ['emp_id', 'name', 'bereavement_leave', 'casual_leave',
              'earned_leave', 'loss_of_pay', 'maternity_leave',
-             'paternity_leave', 'pay_off', 'sick_leave', 'work_from_home']
+             'paternity_leave', 'pay_off', 'sick_leave', 'work_from_home', 'comp_off_earned', 'comp_off_avail']
             
             reader  = csv.reader(data_file , delimiter = ';')
             headers_list = reader.next()
@@ -65,12 +65,15 @@ class UploadLeaveBalanceView(View):
                             print "Emp id not found: " + str(emp_id)
                         
                         if user_obj:
-                            for i in range(2,11):
+                            for i in range(2,13):
                                 leave_type_obj = LeaveType.objects.get(leave_type=columns_list[i])
                                 obj, created = LeaveSummary.objects.get_or_create(user=user_obj, leave_type=leave_type_obj)
-                                value = str(row_dict[columns_list[i]])
+                                value = str(row_dict.get(columns_list[i], "0"))
+                                if not value:
+                                    value = "0"
                                 if "-" in value:
                                     value = value.split("-")[1]
+                                
                                 obj.balance = value
                                 obj.applied = "0"
                                 obj.approved = "0"
