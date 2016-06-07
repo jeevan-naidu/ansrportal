@@ -66,8 +66,10 @@ def oneTimeLeaveValidation(leave_form, user):
         elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in holiday:
             result['errors'].append('please select week days')
 
-
-    toDate = result['todate']
+    if result['todate'] != [0]:
+        toDate = result['todate']
+    else:
+        toDate = fromDate
     leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),
     status__in=['approved', 'open'],user=user)
     if leave_between_applied_date:
