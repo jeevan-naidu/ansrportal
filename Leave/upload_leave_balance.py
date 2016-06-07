@@ -72,6 +72,9 @@ class UploadLeaveBalanceView(View):
                                 if "-" in value:
                                     value = value.split("-")[1]
                                 obj.balance = value
+                                obj.applied = "0"
+                                obj.approved = "0"
+                                obj.year = "2016"
                                 obj.save()
 
                 except Exception as e:
