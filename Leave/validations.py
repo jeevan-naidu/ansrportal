@@ -33,6 +33,7 @@ def leaveValidation(leave_form, user, attachment):
 
 def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
+    import ipdb; ipdb.set_trace()
     holiday = Holiday.objects.all().values('date')
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
     leaveType_selected = leave_form.cleaned_data['leave']
@@ -44,7 +45,7 @@ def oneTimeLeaveValidation(leave_form, user):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
         else:
-            result['error'].append("<br>sorry you don't have this type of leave")
+            result['error'].append("sorry you don't have this type of leave")
     else:
         holiday = Holiday.objects.all().values('date')
         result['success'] = 1
@@ -52,17 +53,20 @@ def oneTimeLeaveValidation(leave_form, user):
         result['due_date'] = fromDate - timedelta(days = 80)
         check_date = date.today() - timedelta(days = 80)
         if check_date > fromDate:
-            result['errors'].append('<br>leave has expired')
+            result['errors'].append('leave has expired')
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveType_selected != 'comp_off_avail' and leaveapproved ==1:
-            result['errors'].append('<br>sorry you already applied for comp off/pay off')
+            result['errors'].append('sorry you already applied for comp off/pay off')
         elif fromDate.strftime("%A") not in ("Saturday", "Sunday") and leaveType_selected != 'comp_off_avail':
             flag = False
             for dates in holiday:
                 if fromDate == dates['date']:
                     flag = True
             if not flag:
-                result['errors'].append('<br>weekend and holiday only allowed for compoff and payoff')
+                result['errors'].append('weekend and holiday only allowed for compoff and payoff')
+        elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in holiday:
+            result['errors'].append('please select week days')
+
 
     toDate = result['todate']
     leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),

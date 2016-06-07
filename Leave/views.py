@@ -397,7 +397,7 @@ def date_range(d1, d2):
 
 def total_leave_days(leave_list):
     leave_days = {}
-    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_earned']
+    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_earned', 'maternity_leave']
     holiday = Holiday.objects.all().values('date')
     holiday_in_leave = 0
     if leave_list:
