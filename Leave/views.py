@@ -400,30 +400,9 @@ def date_range(d1, d2):
 
 def total_leave_days(leave_list):
     leave_days = {}
-    leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_earned', 'maternity_leave']
-    holiday = Holiday.objects.all().values('date')
-    holiday_in_leave = 0
     if leave_list:
         for obj in leave_list:
-
-            if obj.leave_type.leave_type not in leave_allowed_on_holiday:
-                for leave in holiday:
-                    if leave['date'] >= obj.from_date and leave['date'] <= obj.to_date and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
-                        holiday_in_leave = holiday_in_leave + 1
-
-                daygenerator = (obj.from_date + timedelta(x + 1) for x in xrange(-1, (obj.to_date - obj.from_date).days))
-                leavecount = sum(1 for day in daygenerator if day.weekday() < 5) - holiday_in_leave
-                leave_days[obj.id] = leavecount
-            else:
-                leavecount = (obj.to_date - obj.from_date).days + 1
-                leave_days[obj.id] = leavecount
-            if obj.from_session=='session_second' and obj.from_date.strftime("%A") not in ("Saturday", "Sunday"):
-                leavecount=leavecount-.5
-                leave_days[obj.id] = leavecount
-            elif obj.to_session == 'session_first' and obj.to_date.strftime("%A") not in ("Saturday", "Sunday"):
-                leavecount=leavecount-.5
-                leave_days[obj.id] = leavecount
-
+            leave_days[obj.id] = obj.days_count
     return leave_days
 
 
