@@ -28,7 +28,7 @@ def leaveValidation(leave_form, user, attachment):
             result['errors'].append(result_temp['errors'])
 
     else:
-        result['errors'].append("<br>from date should be lesser than to date")
+        result['errors'].append("from date should be lesser than to date")
     return result
 
 def oneTimeLeaveValidation(leave_form, user):
@@ -189,19 +189,25 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
     holiday_in_leave = 0
     leavecount = 0
     leave_allowed_on_holiday = ['sabbatical', 'pay_off', 'comp_off_earned', 'maternity_leave']
+    leavecount_dummy = 0
     if leaveType not in leave_allowed_on_holiday:
         for leave in holiday:
             if leave['date'] >= fromdate and leave['date'] <= todate and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
                 holiday_in_leave = holiday_in_leave + 1
+            if fromsession=='session_second' and fromdate == leave['date'] and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
+                leavecount_dummy=leavecount+.5
+            if tosession == 'session_first' and todate == leave['date'] and leave['date'].strftime("%A") not in ("Saturday", "Sunday"):
+                leavecount_dummy=leavecount+.5
 
         daygenerator = (fromdate + timedelta(x + 1) for x in xrange(-1, (todate - fromdate).days))
         leavecount = sum(1 for day in daygenerator if day.weekday() < 5) - holiday_in_leave
     else:
         leavecount = (todate - fromdate).days + 1
-    if fromsession=='session_second' and fromdate.strftime("%A") not in ("Saturday", "Sunday"):
+    if fromsession=='session_second' and fromdate.strftime("%A") not in ("Saturday", "Sunday") :
         leavecount=leavecount-.5
-    elif tosession == 'session_first' and todate.strftime("%A") not in ("Saturday", "Sunday"):
+    if tosession == 'session_first' and todate.strftime("%A") not in ("Saturday", "Sunday"):
         leavecount=leavecount-.5
+    leavecount=leavecount + leavecount_dummy
     return leavecount
 
 

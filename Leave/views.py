@@ -205,12 +205,13 @@ class ApplyLeaveView(View):
         if attachment:
             if request.FILES['leave_attachment'].name.split(".")[-1] not in AllowedFileTypes:
                 context_data['errors'].append('Attachment : File type not allowed. Please select a valid file type and then submit again')
-
         #validations of leave
 
         if leave_form.is_valid() and not context_data['errors']:
+
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
+            context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id)[0].balance
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
@@ -299,6 +300,7 @@ class ApplyLeaveView(View):
 
                     # return render(request, 'leave_apply.html', context_data)
                 if context_data['errors']:
+
                     return render(request, 'leave_apply.html', context_data)
                 else:
                     context_data['success_msg'] = "Your leave has been submitted successfully."
@@ -307,6 +309,7 @@ class ApplyLeaveView(View):
                     return JsonResponse(context_data)
 
         else:
+
             context_data['form'] = leave_form
 
         return render(request, 'leave_apply.html', context_data)
