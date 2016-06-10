@@ -139,11 +139,11 @@
                                       <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
 
                                   </div>
-                                  <div class="pull-left requests-reports invisible">
+                                  <div class="pull-left requests-reports hidden">
                                       <b><a id="modal-252334-" href="/leave/leavelist/all" role="button"  title="View Details" class="btn">All Requests</a></b>
                                       <span class="Lv-Mg-NotifyCount"> {{all.count}}</span>
                                   </div>
-                                  <div class="pull-left requests-reports invisible">
+                                  <div class="pull-left requests-reports hidden">
                                       <b><a id="modal-252334--" href="#modal-container-252304--" role="button" data-toggle="modal" title="View Details">Reports</a></b>
                                   </div>
                                   <div class="pull-left requests-reports">
@@ -151,7 +151,7 @@
                               </div>
 
                               <div class="col-md-6 col-sm-6">
-                                  <form class="pull-right form-inline">
+                                  <form class="pull-right form-inline approve-reject">
                                        {%if  leave_list  %}  <div class="checkbox checkbox-success">
                                           <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
                                           <label for="approve_all">
@@ -164,33 +164,12 @@
                                               Reject All
                                           </label>
                                       </div> {% endif %}
-                                      <p></p>
                                   </form>
                               </div>
 </div>
 
 
-                    <!-- <div class="row margin-correct">
-                        <div class="col-md-7">
-                            <div class="LvMenuBtn">
-                            <a id="view" href="{% url 'list_leave' %}"  title="view Leave Applications" class="anchor-inherit"><b>View Leave Applications</b></a>
 
-                                <div class="Lv-active-caret">
-                                    <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                            <div class="LvMenuBtn">
-                                <a id="manage" href="{% url 'manage_leave_list' %}"  title="Manage Leave Applications" class="anchor-inherit"><b>Manage Leave Applications</b></a>
-                            </div>
-                            <div class="LvMenuBtn">
-                                <a id="my_leave" href="{% url 'Leave_dashboard' %}"  title="My Leave Applications" class="anchor-inherit"><b>My Leaves </b></a>
-                            </div>
-                            <div class="LvMenuBtn "><b>Reports</b>
-                            </div>
-                        </div>
-                        <div class="col-md-6 Lv-col-md-6"></div>
-
-                    </div> -->
                 </div>
                 <hr>
             </div>
@@ -205,7 +184,7 @@
         <form method="post">
  {% csrf_token %}
         <div class=""><!-- row -->
-            <div class="col-md-12">
+            <div class="">
                 {%if  leave_list  %}
                 <table class="table table-bordered table-hover">
                     <tr class="Lv-ApproveTH ">

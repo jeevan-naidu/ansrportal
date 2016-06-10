@@ -72,9 +72,11 @@
     }
 
     .MyLeavesContainer {
-	padding: 0px 25px 30px;
+	padding: 30px 25px 30px;
   background-color: #D3F0F5;
+  background-color: #D3F5D6;
 	margin-bottom: 5px;
+  margin-top: -1px;
     }
     .MyLeavesContainer .row:not(:last-child){
       cursor: pointer;
@@ -146,7 +148,7 @@
       overflow-x: hidden;
       color: #000;
       font-size: 12px;
-      padding: 20px 25px 0;
+      padding: 0;
       /*border: 1px solid #9C7B7B;*/
     }
     .LvTranAppr {
@@ -214,10 +216,11 @@
             /*border-radius: 3px;*/
             /*padding: 5px 14px;*/
             padding: 0px 10px;
-            color: #fff
+            /*color: #fff*/
         }
 	.Lv-ApproveTH >th{
 	  background-color: #464A4C;
+    background-color: #9AB3BF;
 	  color: #fff;
 	}
 	.Lv-Pipe{
@@ -252,7 +255,7 @@
         right: 0px;
         color: #fff;
         padding: 0px 2px;
-        line-height: 35px;
+        line-height: 30px;
         text-align: center;
 	}
 	.margin-top11{
@@ -496,7 +499,12 @@
                 .mw-100{max-width:100px;display:block;font-size:11px;}
 
                 .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
-                .radio-mod label{padding: 2px 5px;}
+                .radio-mod label{
+                  padding: 2px 5px;
+                  background: #A9A2A2;
+                  color: #ECE0E0;;
+                  border-radius: 3px;
+                }
                 .radio-mod input:checked + label{
                         background: #616161;
                         color: white;
@@ -551,16 +559,18 @@
           margin-right: 0px;
         }
 
+        .mb-0{margin-bottom: 0px;}
+
 
         .pad-left-0{padding-left: 0px !important}
         .pad-right-0{padding-right: 0px !important}
 
         /*.apply-export{padding-top: 9px;}*/
-        .apply-export .btn{border: none;background: #1C5F77}
-        .apply-export .btn:hover{background: #114456}
+        .apply-export .btn{border: none;}
+        /*.apply-export .btn:hover{background: #114456}*/
         .apply-export a.btn:nth-child(2){margin-right: 10px;}
 
-        .progress-bar-container{margin:0px -30px 5px;}
+        .progress-bar-container{margin:0px -30px 0px;font-size: 12px;}
         .progress-bar{
           -webkit-box-shadow: inset 0 0 0 rgba(0,0,0,.15);
           box-shadow: inset 0 0px 0 rgba(0,0,0,.15);
@@ -586,7 +596,7 @@
         /* Corrections -2  */
 
         .LvMenuBtn{display: none}
-        body.pace-done{padding-top: 50px;}
+        body.pace-done{padding-top: 75px;}
         .ansrLogo{max-width: 175px !important}
         .template-header{margin-top: 0px;}
 
@@ -594,3 +604,20 @@
 
         .template-header + hr{margin-bottom: 10px;}
         .Lv-ApLvHeader + hr{margin-top: 10px}
+
+        /* Corrections -3 */
+
+        .Transactions-header{width: 100%;background: #D3F5D6;line-height: 40px;padding: 0px 15px}
+        .Transactions-header label{margin-bottom: 0px;}
+        .no-border th, .no-border td{border: 1px solid #FFF}
+        .leave-data-container{padding: 15px;}
+
+        .approve-reject{margin-top: 5px;}
+        .export-btn-2{margin-top: 4px;}
+        .anchor-inherit.btn {padding: 4px 12px}
+        .breadcrumb{margin-top: -25px;}
+
+
+        /* Header Nav */
+
+        .ansrMenuShadow{border: 0px;background: #fff;box-shadow:0px 1px 3px rgba(0, 0, 0, 0.3)}

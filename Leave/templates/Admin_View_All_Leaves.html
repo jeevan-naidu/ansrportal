@@ -43,25 +43,7 @@
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
 
 {% load grievances_template_tags %}{% load permissions %} {% load pagination_tags %}
-    <!--&lt;!&ndash;  Start Breadcrum&ndash;&gt;-->
-    <!--<div class="container-fluid">-->
-        <!--<div class="row">-->
-            <!--<div class="col-md-12">-->
-                <!--<ul class="breadcrumb">-->
-                    <!--<li>-->
-                        <!--<a href="#">Home</a> <span class="divider"></span>-->
-                    <!--</li>-->
-                    <!--<li>-->
-                        <!--<a href="#">Library</a> <span class="divider"></span>-->
-                    <!--</li>-->
-                    <!--<li class="active">-->
-                        <!--Data-->
-                    <!--</li>-->
-                <!--</ul>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-    <!--&lt;!&ndash;  End Breadcrum&ndash;&gt;-->
+
 
     <div class="container Lv-themeTxtColor ">
 
@@ -119,34 +101,106 @@
 
 
         <!--	Start Menu -->
-        <div class="row hidden">
+        <div class="row">
             <div class="col-md-12">
                 <div class="Lv-ApLvHeader">
 
-                    <!-- <div class="row margin-correct">
-                        <div class="col-md-7">
-                            <div class="LvMenuBtn LvMenuBtnActive">
-                            <a id="view" href="{% url 'list_leave' %}"  title="view Leave Applications" class="anchor-inherit"><b>View Leave Applications</b></a>
 
-                                <div class="Lv-active-caret">
-                                    <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                            <div class="LvMenuBtn">
-                                <a id="manage" href="{% url 'manage_leave_list' %}"  title="Manage Leave Applications" class="anchor-inherit"><b>Manage Leave Applications</b></a>
-                            </div>
-                            <div class="LvMenuBtn "><b>Reports</b>
-                            </div>
-                            <div class="LvMenuBtn "><b>Calender</b>
-                            </div>
-                        </div>
-                        <div class="col-md-6 Lv-col-md-6"></div>
 
-                    </div> -->
+                  <!-- Start content	-->
+                  <form class="form-horizontal " id="filter_form" role="form" method="post" >
+                  <div class="row margin-top11">
+                      {% csrf_token %}
+                      <div class="col-md-12 col-sm-6 ">
+
+                              <div class="form-group form-inline short-date mb-0">
+                                  <label for="from_date">From :&nbsp;</label>
+                                  {{form.from_date}}
+                                  <!--<select class="form-control filter_class " id="month" name="month">-->
+                                      <!--<option value ="default">-&#45;&#45;&#45;&#45;</option>-->
+                                      <!--{% for value, text in months_choices %}-->
+                                          <!--<option value="{{value}}" {%if month|safe == value|safe %} selected {% endif %}>{{text}}-{%now "Y"%} </option>-->
+                                      <!--{%endfor%}-->
+                                  <!--</select>-->
+
+                                  &nbsp;&nbsp;
+                                  <label for="to_date">To :&nbsp;</label>
+                                  {{form.to_date}}
+                                  &nbsp;&nbsp;
+                                  <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
+                                  <select class="form-control filter_class input-sm" id="application_status" name="application_status">
+                                      <!--<option value ="">-&#45;&#45;&#45;&#45;</option>--><option value="" selected disabled>Select Status</option>
+          s                            {% for value, text in APPLICATION_STATUS %}
+                                          {% if value != 'applied' %}
+                                              <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
+                                          {% endif %}
+                                      {%endfor%}
+                                  </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                                  {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
+                                      <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
+                                          <option value="" selected disabled>Applied To</option>
+                                           {% for managers in apply_to %}
+                                              <option value="{{managers.1}}" {%if post_apply_to|safe == managers.1|safe %} selected {% endif %}>{{managers.0}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  {%endif%}
+                                  <select class="form-control filter_class input-sm" id="users" name="users">
+                                      <option value="" selected disabled>Applied By</option>
+                                       {% for employee in users %}
+                                          <option value="{{employee.user.id}}"{%if post_users|safe == employee.user.id|safe %} selected {% endif %} >{{employee.user.username}}</option>
+                                      {% endfor %}
+                                  </select>
+                                  <div class="export-btn">
+
+                                  <input type="submit" id="submit_button" class="btn btn-primary btn-sm" value ="Search" name="filter"/>
+                                  <input type="reset" id="reset_button" class="btn btn-danger btn-sm" value ="Cancel" name="cancel"/>
+                                  </div>
+
+
+                                      {%if leave_list%}
+
+                                      <div class="pull-right export-btn-2">
+
+
+
+                                                  <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
+
+
+
+                                                 <b>Total : {{leave_list.count}} &nbsp;&nbsp;&nbsp;</b>
+                                              </div>
+                                      {% endif %}
+
+
+
+
+                              </div>
+
+
+
+
+
+                      </div>
+
+                      <div class="col-md-1 col-sm-6">
+          <!--                <div class="pull-right ">
+                              <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
+                          </div>-->
+
+
+
+                      </div>
+                  </div>
+
+
+                  </form>
+
+
 
 
 
                 </div><!-- end of Lv-ApLvHeader -->
+                <hr>
 
 
 
@@ -158,85 +212,7 @@
         </div>
         <!-- End Menu -->
 
-        <!-- Start content	-->
-        <form class="form-horizontal " id="filter_form" role="form" method="post" >
-        <div class="row margin-top11">
-            {% csrf_token %}
-            <div class="col-md-12 col-sm-6 ">
 
-                    <div class="form-group form-inline short-date">
-                        <label for="from_date">From :&nbsp;</label>
-                        {{form.from_date}}
-                        <!--<select class="form-control filter_class " id="month" name="month">-->
-                            <!--<option value ="default">-&#45;&#45;&#45;&#45;</option>-->
-                            <!--{% for value, text in months_choices %}-->
-                                <!--<option value="{{value}}" {%if month|safe == value|safe %} selected {% endif %}>{{text}}-{%now "Y"%} </option>-->
-                            <!--{%endfor%}-->
-                        <!--</select>-->
-
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <label for="to_date">To :&nbsp;</label>
-                        {{form.to_date}}
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
-                        <select class="form-control filter_class input-sm" id="application_status" name="application_status">
-                            <!--<option value ="">-&#45;&#45;&#45;&#45;</option>--><option value="" selected disabled>Select Status</option>
-s                            {% for value, text in APPLICATION_STATUS %}
-                                {% if value != 'applied' %}
-                                    <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
-                                {% endif %}
-                            {%endfor%}
-                        </select>&nbsp;&nbsp;&nbsp;&nbsp;
-                        {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
-                            <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
-                                <option value="" selected disabled>Applied To</option>
-                                 {% for managers in apply_to %}
-                                    <option value="{{managers.1}}" {%if post_apply_to|safe == managers.1|safe %} selected {% endif %}>{{managers.0}}</option>
-                                {% endfor %}
-                            </select>
-                        {%endif%}
-                        <select class="form-control filter_class input-sm" id="users" name="users">
-                            <option value="" selected disabled>Applied By</option>
-                             {% for employee in users %}
-                                <option value="{{employee.user.id}}"{%if post_users|safe == employee.user.id|safe %} selected {% endif %} >{{employee.user.username}}</option>
-                            {% endfor %}
-                        </select>
-                        <div class="export-btn">
-
-                        <input type="submit" id="submit_button" class="btn btn-primary btn-sm" value ="Search" name="filter"/>
-                        <input type="reset" id="reset_button" class="btn btn-danger btn-sm" value ="Cancel" name="cancel"/>
-                        </div>
-                    </div>
-
-
-
-            </div>
-
-            <div class="col-md-1 col-sm-6">
-<!--                <div class="pull-right ">
-                    <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
-                </div>-->
-
-
-
-            </div>
-        </div>
-
-
-        {%if leave_list%}
-
-        <div class="pull-right ">
-
-
-                            <div class="pull-right ">
-                    <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
-                </div>
-
-
-                   <b>Total : {{leave_list.count}} &nbsp;&nbsp;&nbsp;</b>
-                </div>
-        {% endif %}
-        </form>
         {% if leave_list %} <div class="row">
             <div class="col-md-12">
 
