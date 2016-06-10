@@ -257,7 +257,7 @@
 	}
 	.margin-top11{
 	    /*margin-top: 11px;*/
-      margin: 10px 0px;
+      margin: 0px 0px;
 	}
 	.margin-0-auto{
 	  margin: 0 auto;
@@ -591,3 +591,6 @@
         .template-header{margin-top: 0px;}
 
         .LvTitle{display: none}
+
+        .template-header + hr{margin-bottom: 10px;}
+        .Lv-ApLvHeader + hr{margin-top: 10px}

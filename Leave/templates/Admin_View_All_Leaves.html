@@ -123,27 +123,37 @@
             <div class="col-md-12">
                 <div class="Lv-ApLvHeader">
 
-                    <div class="row margin-correct">
+                    <!-- <div class="row margin-correct">
                         <div class="col-md-7">
                             <div class="LvMenuBtn LvMenuBtnActive">
                             <a id="view" href="{% url 'list_leave' %}"  title="view Leave Applications" class="anchor-inherit"><b>View Leave Applications</b></a>
 
-                                <!-- <div class="Lv-active-caret">
+                                <div class="Lv-active-caret">
                                     <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
-                                </div> -->
+                                </div>
                             </div>
-                            <!-- <div class="LvMenuBtn">
+                            <div class="LvMenuBtn">
                                 <a id="manage" href="{% url 'manage_leave_list' %}"  title="Manage Leave Applications" class="anchor-inherit"><b>Manage Leave Applications</b></a>
                             </div>
                             <div class="LvMenuBtn "><b>Reports</b>
                             </div>
                             <div class="LvMenuBtn "><b>Calender</b>
-                            </div> -->
+                            </div>
                         </div>
                         <div class="col-md-6 Lv-col-md-6"></div>
 
-                    </div>
-                </div>
+                    </div> -->
+
+
+
+                </div><!-- end of Lv-ApLvHeader -->
+
+
+
+
+
+
+
             </div>
         </div>
         <!-- End Menu -->
@@ -169,7 +179,7 @@
                         {{form.to_date}}
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
-                        <select class="form-control filter_class" id="application_status" name="application_status">
+                        <select class="form-control filter_class input-sm" id="application_status" name="application_status">
                             <!--<option value ="">-&#45;&#45;&#45;&#45;</option>--><option value="" selected disabled>Select Status</option>
 s                            {% for value, text in APPLICATION_STATUS %}
                                 {% if value != 'applied' %}
@@ -178,14 +188,14 @@ s                            {% for value, text in APPLICATION_STATUS %}
                             {%endfor%}
                         </select>&nbsp;&nbsp;&nbsp;&nbsp;
                         {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
-                            <select class="form-control filter_class" id="apply_to" name="apply_to">
+                            <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
                                 <option value="" selected disabled>Applied To</option>
                                  {% for managers in apply_to %}
                                     <option value="{{managers.1}}" {%if post_apply_to|safe == managers.1|safe %} selected {% endif %}>{{managers.0}}</option>
                                 {% endfor %}
                             </select>
                         {%endif%}
-                        <select class="form-control filter_class" id="users" name="users">
+                        <select class="form-control filter_class input-sm" id="users" name="users">
                             <option value="" selected disabled>Applied By</option>
                              {% for employee in users %}
                                 <option value="{{employee.user.id}}"{%if post_users|safe == employee.user.id|safe %} selected {% endif %} >{{employee.user.username}}</option>
@@ -193,8 +203,8 @@ s                            {% for value, text in APPLICATION_STATUS %}
                         </select>
                         <div class="export-btn">
 
-                        <input type="submit" id="submit_button" class="btn btn-primary" value ="Search" name="filter"/>
-                        <input type="reset" id="reset_button" class="btn btn-danger pull-right" value ="Cancel" name="cancel"/>
+                        <input type="submit" id="submit_button" class="btn btn-primary btn-sm" value ="Search" name="filter"/>
+                        <input type="reset" id="reset_button" class="btn btn-danger btn-sm" value ="Cancel" name="cancel"/>
                         </div>
                     </div>
 
