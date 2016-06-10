@@ -19,7 +19,7 @@
 {% block breadcrumb %}
 <div class="container-fluid pad0">
     <div class="row">
-            <div class="col-md-12">
+            <div class="">
                 <ul class="breadcrumb">
                     <li>
 					<a href="/admin">Admin</a>
@@ -38,7 +38,7 @@
 {% endblock %}
 
 {% block content  %}
-    <link href="/static/css/leavestyle.css" rel="stylesheet">
+    <link href="/static/css/leave_style.css" rel="stylesheet">
 	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
 
@@ -64,6 +64,21 @@
     <!--&lt;!&ndash;  End Breadcrum&ndash;&gt;-->
 
     <div class="container Lv-themeTxtColor ">
+
+
+
+
+      <div class="row">
+          <div class="col-md-12">
+              <h3 class="text-center template-header">All Leaves</h3>
+              <hr>
+          </div>
+
+        <hr>
+      </div>
+
+
+
 
         <!--  Start Leave details popup-->
         <div class="row">
@@ -119,9 +134,9 @@
                             <div class="LvMenuBtn LvMenuBtnActive">
                             <a id="view" href="{% url 'list_leave' %}"  title="view Leave Applications" class="anchor-inherit"><b>View Leave Applications</b></a>
 
-                                <div class="Lv-active-caret">
+                                <!-- <div class="Lv-active-caret">
                                     <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
-                                </div>
+                                </div> -->
                             </div>
                             <!-- <div class="LvMenuBtn">
                                 <a id="manage" href="{% url 'manage_leave_list' %}"  title="Manage Leave Applications" class="anchor-inherit"><b>Manage Leave Applications</b></a>
@@ -184,8 +199,8 @@ s                            {% for value, text in APPLICATION_STATUS %}
                         </select>
                         <div class="export-btn">
 
-                        <input type="submit" id="submit_button" class="btn btn-primary btn-sm" value ="Search" name="filter"/>
-                        <input type="reset" id="reset_button" class="btn btn-primary btn-sm" value ="Cancel" name="cancel"/>
+                        <input type="submit" id="submit_button" class="btn btn-primary" value ="Search" name="filter"/>
+                        <input type="reset" id="reset_button" class="btn btn-danger pull-right" value ="Cancel" name="cancel"/>
                         </div>
                     </div>
 

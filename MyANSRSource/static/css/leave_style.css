@@ -41,7 +41,7 @@
             color: #fff;
         }
         .Lv-RecordsNotFound{
-            min-height:200px;
+            /*min-height:200px;*/
         }
 /*      End Leave module common css */
 
@@ -230,9 +230,8 @@
 	.Lv-Mg-SubActive{
 	  background-color: #464A4C;
 	  color: #fff;
-	  /*height: 31px;*/
-	  /*padding: 5px ;*/
     padding: 0px 5px;
+    padding-right: 25px;
 	  position: relative;
 
 	}
@@ -245,15 +244,16 @@
 	  transition: all 3s ease-in-out 0.5s;
 	}
 	.Lv-Mg-NotifyCount{
-	  position: absolute;
-	  height:20px;
-	  width:20px;
-	  background-color: #DB760A;
-	  bottom: 10px;
-	  right: -10px;
-	  color:#fff;
-	  border-radius: 50%;
-	  padding:0px 2px;
+        position: absolute;
+        width: 30px;
+        background-color: #3C3F42;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        color: #fff;
+        padding: 0px 2px;
+        line-height: 35px;
+        text-align: center;
 	}
 	.margin-top11{
 	    /*margin-top: 11px;*/
@@ -474,6 +474,76 @@
 
         /*	End  Leave- Approve tab */
 
+
+
+/* Styles copied from leavestyle.css */
+
+                /* Corrections */
+
+                .margin-correct{
+                  margin-left: 0px;
+                  margin-right: 0px;
+                }
+
+
+                /* UI Corrections */
+
+                .form-inline.short-date .input-group{max-width:150px;}
+                .form-inline.short-date .export-btn{display:inline;}
+                .mod .pagination{margin:0px;margin-bottom:100px;}
+
+                /* for approval screen */
+                .mw-100{max-width:100px;display:block;font-size:11px;}
+
+                .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
+                .radio-mod label{padding: 2px 5px;}
+                .radio-mod input:checked + label{
+                        background: #616161;
+                        color: white;
+                        border-radius:5px;
+                    }
+                .radio-mod label::after, .radio-mod label::before{display:none}
+                /* end of for approval screen */
+
+
+                /* New classes */
+
+                .requests-reports{
+                padding:0px 0px 0px 25px;
+                position:relative;
+                }
+
+                .pos-fix{
+                    position: fixed;
+                    bottom: 0px;
+                    left: 0px;
+                    right: 0px;
+                }
+
+                .anchor-inherit{
+                    color:inherit;
+                    height:100%;
+                }
+                .anchor-inherit:hover, .anchor-inherit:focus{
+                    text-decoration:none;
+                    color:inherit;
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /* Corrections */
 
         .margin-correct{
@@ -511,3 +581,11 @@
             font-size: 18px;
             font-weight: 500;
         }
+
+
+        /* Corrections -2  */
+
+        .LvMenuBtn{display: none}
+        body.pace-done{padding-top: 50px;}
+        .ansrLogo{max-width: 175px !important}
+        .template-header{margin-top: 0px;}
