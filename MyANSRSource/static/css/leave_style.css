@@ -75,6 +75,7 @@
 	padding: 30px 25px 30px;
   background-color: #D3F0F5;
   background-color: #D3F5D6;
+  background-color: #EBF5FB;
 	margin-bottom: 5px;
   margin-top: -1px;
     }
@@ -220,7 +221,7 @@
         }
 	.Lv-ApproveTH >th{
 	  background-color: #464A4C;
-    background-color: #9AB3BF;
+    background-color: #91ACB9;
 	  color: #fff;
 	}
 	.Lv-Pipe{
@@ -607,7 +608,7 @@
 
         /* Corrections -3 */
 
-        .Transactions-header{width: 100%;background: #D3F5D6;line-height: 40px;padding: 0px 15px}
+        .Transactions-header{width: 100%;background: #D3F5D6; background: #EBF5FB;line-height: 40px;padding: 0px 15px}
         .Transactions-header label{margin-bottom: 0px;}
         .no-border th, .no-border td{border: 1px solid #FFF}
         .leave-data-container{padding: 15px;}
@@ -621,3 +622,4 @@
         /* Header Nav */
 
         .ansrMenuShadow{border: 0px;background: #fff;box-shadow:0px 1px 3px rgba(0, 0, 0, 0.3)}
+        .table>tbody>tr.info>td{background: #EBF5FB}
