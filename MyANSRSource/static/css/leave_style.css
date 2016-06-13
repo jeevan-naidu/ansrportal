@@ -272,11 +272,13 @@
 	  width: 100%;
 	}
 	.Lv-ApprLvSubmit{
-	   background-color: #464A4C;
-            margin-bottom: 0px;
-            border-radius: 3px;
-            padding: 5px 14px;
-            color: #fff
+    background-color: #CDE2EF;
+    /* background-color: #D8EBF7; */
+    margin-bottom: 20px;
+    padding: 10px 14px;
+    color: #fff;
+    border: 1px solid #DDDDDD;
+    border-top: 0px;
 	}
 
 
@@ -509,7 +511,7 @@
                 .radio-mod input:checked + label{
                         background: #616161;
                         color: white;
-                        border-radius:5px;
+                        border-radius:3px;
                     }
                 .radio-mod label::after, .radio-mod label::before{display:none}
                 /* end of for approval screen */

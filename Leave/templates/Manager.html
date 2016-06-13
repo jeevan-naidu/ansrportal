@@ -186,7 +186,7 @@
         <div class=""><!-- row -->
             <div class="">
                 {%if  leave_list  %}
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover mb-0">
                     <tr class="Lv-ApproveTH ">
                         <th>User</th>
                         <th>Type</th>
@@ -373,6 +373,18 @@
                 </table>
 {% endif %}
 
+
+
+    <!-- Insertion A -->{%if  leave_list  %}
+                    <div class="Lv-ApprLvSubmit">
+                        <div class="margin-0-auto text-right">
+                            <button type="submit" class="btn btn-danger">Submit</button>
+
+                        </div>
+
+                    </div>{% endif %}
+
+
 			</div> {%if  leave_list  %}<div class="col-sm-12 text-center mod"> {% paginate %} </div>{% endif %}
 
             <div class="row">
@@ -383,15 +395,6 @@
                         </tr>{% endif %}
                     </table>
 
-
-    <!-- Insertion A -->{%if  leave_list  %}
-                    <div class="Lv-ApprLvSubmit pos-fix">
-                        <div class="margin-0-auto text-center">
-                            <button type="submit" class="btn btn-danger">Submit</button>
-
-                        </div>
-
-                    </div>{% endif %}
     <!-- Insertion B -->
 
 
@@ -434,7 +437,7 @@
 
 
 
-{% block footer %}{% endblock %}
+
 {% block page_specific_JS %}
 
     <script src="/static/js/jquery.min.js"></script>
