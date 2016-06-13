@@ -10,7 +10,7 @@
     background-color: rgba(73, 71, 71, 0.5);
     position: absolute;
     z-index: 10;
-    
+
 }
 .ajax_load_image{
     background:  url("../images/ajax-loader.gif") no-repeat center;
@@ -29,7 +29,7 @@
 }
 
 .HowItWorksContainer{
-   
+
     position: fixed;
     top: 22.8%;
     left: 0px;
@@ -42,7 +42,7 @@
     transition: all 1s;
     cursor: pointer;
     z-index: 10;
-    
+
 }
 
 .how_it_works_hide{
@@ -53,20 +53,20 @@
 .DivRotate{
     transition: transform .8s ease-in-out;
     padding-left: 21px;
-    
+
 }
 
 
 .DivVer{
-     
+
     -ms-transform: rorotate(-90deg);
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
-    
+
     -ms-transform-origin: 241px -29px;
     -webkit-transform-origin: 241px -29px;
     -moz-transform-origin: 241px -29px;
-    
+
     transform: rotate(-90deg);
     transform-origin: 241px -29px;
 
@@ -87,10 +87,10 @@
 
 .font-15{
     font-size: 14px;
-    
+
 }
 label{
-    font-weight: 100 !important; 
+    font-weight: 100 !important;
 }
 .margin-right-15{
     margin-right:15px;
@@ -143,3 +143,28 @@ background-color: #fcf8e3;
 
 
 /* End grievance module */
+
+/* Book-my-room  Styles */
+
+.room-booking-content{padding: 20px 15px;}
+.nav-btns{margin-top: 7px;}
+.nav-btns p{line-height: 36px;margin-right: 30px;margin-bottom: 0px;}
+.time-panel{margin-bottom: 25px;}
+.time-slots div span:first-child{margin-right: 40px;}
+.selectors div input[type="checkbox"]{margin-left: 14px;}
+.selectors div input[type="checkbox"]:first-child{margin-left: 0px;}
+.selectors label{margin-left: 5px;}
+.selectors span:first-child label{margin-left: 0px;}
+.selectors input[type="checkbox"]+label{
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background-color: red;
+	border-radius: 50%;
+	cursor: pointer;
+}
+.selectors input[type="checkbox"]:checked+label{background-color: yellow}
+.selectors input[type="checkbox"]:disabled+label{background-color: grey}
+.checkbox-removed input[type="checkbox"]{display: none}
+
+.room-and-time{margin-bottom: 15px;}
