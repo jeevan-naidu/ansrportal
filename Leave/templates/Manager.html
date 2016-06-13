@@ -121,19 +121,16 @@
         <!--  End Leave details pop-->
 
         <!--      My Leaves Start -->
-        <div class="row">
-            <div class=="col-md-12">
-                <!--<h3 class="text-center"><b>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</b></h3>-->
-            </div>
-        </div>
+
+    <form method="post">
 
         <!--	Start Menu -->
         <div class="row">
             <div class="col-md-12">
                 <div class="Lv-ApLvHeader">
 
-<div class="row">
-                              <div class="col-md-6 col-sm-6 Lv-Mg-SubMenu">
+                            <div class="row">
+                              <div class="col-sm-4 Lv-Mg-SubMenu">
                                   <div class="pull-left Lv-Mg-SubActive">
                                       <b><a id="open_requests" href="{% url 'manage_leave_list' %}"  title="Open Requests" class="anchor-inherit btn"><b>Open Requests</b></a></b>
                                       <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
@@ -150,21 +147,36 @@
                                   </div>
                               </div>
 
-                              <div class="col-md-6 col-sm-6">
-                                  <form class="pull-right form-inline approve-reject">
+                              <div class="col-sm-4 pull-right">
+
+
+              <!-- Insertion A -->{%if  leave_list  %}
+
+                                  <div class="margin-0-auto text-right pull-right">
+                                      <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+
+                                  </div>{% endif %}
+
+
+                                  <div class="form-inline approve-reject pull-right">
                                        {%if  leave_list  %}  <div class="checkbox checkbox-success">
                                           <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
-                                          <label for="approve_all">
+                                          <label for="approve_all" class="lh-16">
                                              Approve All
                                           </label>
                                       </div>&nbsp;&nbsp;&nbsp;
                                       <div class="checkbox checkbox-danger">
                                           <input id="reject_all" type="checkbox" name="reject_all" class="reject_all" >
-                                          <label for="reject_all">
+                                          <label for="reject_all" class="lh-16">
                                               Reject All
                                           </label>
                                       </div> {% endif %}
-                                  </form>
+                                  </div>
+
+
+
+
+
                               </div>
 </div>
 
@@ -181,7 +193,6 @@
 
 
 
-        <form method="post">
  {% csrf_token %}
         <div class=""><!-- row -->
             <div class="">
@@ -378,7 +389,7 @@
     <!-- Insertion A -->{%if  leave_list  %}
                     <div class="Lv-ApprLvSubmit">
                         <div class="margin-0-auto text-right">
-                            <button type="submit" class="btn btn-danger">Submit</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Submit</button>
 
                         </div>
 

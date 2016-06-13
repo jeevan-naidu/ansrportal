@@ -615,11 +615,21 @@
         .no-border th, .no-border td{border: 1px solid #FFF}
         .leave-data-container{padding: 15px;}
 
-        .approve-reject{margin-top: 5px;}
+        .approve-reject{
+          margin-right: 25px;
+          border-right: 1px solid #DDD;
+          padding-right: 25px;
+          margin-top: 0px;
+          padding-top: 5px;
+          padding-bottom: 4px;
+        }
         .export-btn-2{margin-top: 4px;}
         .anchor-inherit.btn {padding: 4px 12px}
         .breadcrumb{margin-top: -25px;}
 
+        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{border:0px; border-bottom: 1px solid #ddd}
+
+        .lh-16{line-height: 16px;}
 
         /* Header Nav */
 
