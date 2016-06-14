@@ -153,7 +153,8 @@ background-color: #fcf8e3;
 .nav-btns p{line-height: 36px;margin-right: 30px;margin-bottom: 0px;}
 .btn-blue{background-color: #61A3DC; color: #FFF}
 .time-panel{margin-bottom: 25px;}
-.time-slots div span:first-child{margin-right: 40px;}
+.time-slots div span{width: 40px;display: inline-block;font-size: 10px;}
+.time-slots div span:first-child{margin-right: 14px;}
 .selectors div input[type="checkbox"]{margin-left: 14px;}
 .selectors div input[type="checkbox"]:first-child{margin-left: 0px;}
 .selectors label{margin-left: 5px;margin-bottom: 0px;}
@@ -173,7 +174,7 @@ background-color: #fcf8e3;
 
 .room-and-time{
 		margin-bottom: 15px;
-    border: 1px solid #E4E4E4;
+    border: 1px solid #EFEFEF;
     border-radius: 3px;
     padding-top: 4px;
 	}
@@ -181,3 +182,4 @@ background-color: #fcf8e3;
 .bookings h4{padding-left: 15px;}
 .booking{margin-top: 10px;}
 #submit-section{}
+.booker{color: red; font-weight: 900}
