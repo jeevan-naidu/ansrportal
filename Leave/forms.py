@@ -138,13 +138,13 @@ class LeaveListViewForm(autocomplete_light.ModelForm):
         label="From",
         widget=DateTimePicker(options=dateTimeOption),
     )
-    from_date.widget.attrs = {'class': 'form-control filter_class'}
+    from_date.widget.attrs = {'class': 'form-control filter_class input-sm'}
 
     to_date = forms.DateField(
         label="To",
         widget=DateTimePicker(options=dateTimeOption),
     )
-    to_date.widget.attrs = {'class': 'form-control filter_class'}
+    to_date.widget.attrs = {'class': 'form-control filter_class input-sm'}
 
     class Meta:
         model = LeaveApplications

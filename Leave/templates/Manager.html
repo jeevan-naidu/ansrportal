@@ -20,7 +20,7 @@
 {% block breadcrumb %}
 <div class="container-fluid pad0">
     <div class="row">
-            <div class="col-md-12">
+            <div class="">
                 <ul class="breadcrumb">
                     <li>
 					<a href="{% url 'Leave_dashboard' %}">Home</a>
@@ -41,7 +41,7 @@
 {% block content  %}
 
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/leavestyle.css" rel="stylesheet">
+    <link href="/static/css/leave_style.css" rel="stylesheet">
 	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
 
@@ -71,9 +71,24 @@
 
     <div class="container Lv-themeTxtColor ">
 
+
+
+
+      <div class="row">
+          <div class="col-md-12">
+              <h3 class="text-center template-header">Manage Leaves</h3>
+                      <hr>
+          </div>
+
+      </div>
+
+
+
+
+
+
         <!--  Start Leave details popup-->
-        <div class="row">
-            <div class="col-md-12">
+
                 <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -102,91 +117,87 @@
 
                 </div>
 
-            </div>
-        </div>
+
         <!--  End Leave details pop-->
 
         <!--      My Leaves Start -->
-        <div class="row">
-            <div class=="col-md-12">
-                <!--<h3 class="text-center"><b>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</b></h3>-->
-            </div>
-        </div>
+
+    <form method="post">
 
         <!--	Start Menu -->
         <div class="row">
             <div class="col-md-12">
                 <div class="Lv-ApLvHeader">
 
-                    <div class="row margin-correct">
-                        <div class="col-md-7">
-                            <!-- <div class="LvMenuBtn">
-                            <a id="view" href="{% url 'list_leave' %}"  title="view Leave Applications" class="anchor-inherit"><b>View Leave Applications</b></a>
+                            <div class="row">
+                              <div class="col-sm-4 Lv-Mg-SubMenu">
+                                  <div class="pull-left Lv-Mg-SubActive">
+                                      <b><a id="open_requests" href="{% url 'manage_leave_list' %}"  title="Open Requests" class="anchor-inherit btn"><b>Open Requests</b></a></b>
+                                      <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
 
-                                <div class="Lv-active-caret">
-                                    <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span>
-                                </div>
-                            </div> -->
-                            <div class="LvMenuBtn">
-                                <a id="manage" href="{% url 'manage_leave_list' %}"  title="Manage Leave Applications" class="anchor-inherit"><b>Manage Leave Applications</b></a>
-                            </div>
-                            <!-- <div class="LvMenuBtn">
-                                <a id="my_leave" href="{% url 'Leave_dashboard' %}"  title="My Leave Applications" class="anchor-inherit"><b>My Leaves </b></a>
-                            </div>
-                            <div class="LvMenuBtn "><b>Reports</b>
-                            </div>
-                        </div>
-                        <div class="col-md-6 Lv-col-md-6"></div> -->
+                                  </div>
+                                  <div class="pull-left requests-reports hidden">
+                                      <b><a id="modal-252334-" href="/leave/leavelist/all" role="button"  title="View Details" class="btn">All Requests</a></b>
+                                      <span class="Lv-Mg-NotifyCount"> {{all.count}}</span>
+                                  </div>
+                                  <div class="pull-left requests-reports hidden">
+                                      <b><a id="modal-252334--" href="#modal-container-252304--" role="button" data-toggle="modal" title="View Details">Reports</a></b>
+                                  </div>
+                                  <div class="pull-left requests-reports">
+                                  </div>
+                              </div>
 
-                    </div>
+                              <div class="col-sm-4 pull-right">
+
+
+              <!-- Insertion A -->{%if  leave_list  %}
+
+                                  <div class="margin-0-auto text-right pull-right">
+                                      <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+
+                                  </div>{% endif %}
+
+
+                                  <div class="form-inline approve-reject pull-right">
+                                       {%if  leave_list  %}  <div class="checkbox checkbox-success">
+                                          <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
+                                          <label for="approve_all" class="lh-16">
+                                             Approve All
+                                          </label>
+                                      </div>&nbsp;&nbsp;&nbsp;
+                                      <div class="checkbox checkbox-danger">
+                                          <input id="reject_all" type="checkbox" name="reject_all" class="reject_all" >
+                                          <label for="reject_all" class="lh-16">
+                                              Reject All
+                                          </label>
+                                      </div> {% endif %}
+                                  </div>
+
+
+
+
+
+                              </div>
+</div>
+
+
+
                 </div>
+                <hr>
             </div>
         </div>
         <!-- End Menu -->
 
         <!-- Start content	-->
 
-        <div class="row margin-top11">
-            <div class="col-md-6 col-sm-6 Lv-Mg-SubMenu">
-                <div class="pull-left Lv-Mg-SubActive">
-                    <b><a id="open_requests" href="{% url 'manage_leave_list' %}"  title="Open Requests" class="anchor-inherit"><b>Open Requests</b></a></b>
-                    <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
 
-                </div>
-                <div class="pull-left requests-reports">
-                    <b><a id="modal-252334-" href="/leave/leavelist/all" role="button"  title="View Details">All Requests</a></b>
-                    <span class="Lv-Mg-NotifyCount"> {{all.count}}</span>
-                </div>
-                <div class="pull-left requests-reports invisible">
-                    <b><a id="modal-252334--" href="#modal-container-252304--" role="button" data-toggle="modal" title="View Details">Reports</a></b>
-                </div>
-                <div class="pull-left requests-reports">
-                </div>
-            </div>
 
-            <div class="col-md-6 col-sm-6">
-                <form class="pull-right form-inline">
-                     {%if  leave_list  %}  <div class="checkbox checkbox-success">
-                        <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
-                        <label for="approve_all">
-                           Approve All
-                        </label>
-                    </div>&nbsp;&nbsp;&nbsp;
-                    <div class="checkbox checkbox-danger">
-                        <input id="reject_all" type="checkbox" name="reject_all" class="reject_all" >
-                        <label for="reject_all">
-                            Reject All
-                        </label>
-                    </div> {% endif %}
-                    <p></p>
-                </form>
-            </div>
-        </div><form method="post">
+
  {% csrf_token %}
-        <div class="row">
-            <div class="col-md-12">
+        <div class=""><!-- row -->
+            <div class="">
                 {%if  leave_list  %}
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover mb-0">
                     <tr class="Lv-ApproveTH ">
                         <th>User</th>
                         <th>Type</th>
@@ -313,7 +324,7 @@
                                 <div class="col-md-4 pull-right">
                                     <div>
                                         <a id="test-trigger" href="#test-modal_{{leave.id}}" role="button" data-toggle="modal" title="View Details">
-                                            <button id ="" class="btn btn-info btn-xs remark"> Remarks  </button>
+                                            <button id ="" class="btn btn-info btn-xs remark">Remarks</button>
                                         </a>
                                     </div>
                                         <!--<div style = "display:none" id ="remark__{{leave.id}}">-->
@@ -329,10 +340,12 @@
 								<b> Remarks</b>
 							</h4>
                             </div>
-                            <div class="modal-body-data"><!-- Content goes here -->
+                            <div class="modal-body"><!-- Content goes here -->
 
-                                <textarea  style="width:100%" rows="3" cols ="70" id ="remark_{{leave.id}}" name="remark_{{leave.id}}" class = "remarks" placeholder="enter remarks"></textarea>
+                                <textarea style="min-height:200px;width:100%;"  id ="remark_{{leave.id}}" name="remark_{{leave.id}}" class = "remarks" placeholder="enter remarks"></textarea>
                                 <span id="textarea_remaining">2000 characters remaining</span>
+
+
                             </div>
                             <div class="modal-footer">
 
@@ -373,9 +386,21 @@
                 </table>
 {% endif %}
 
+
+
+    <!-- Insertion A -->{%if  leave_list  %}
+                    <div class="Lv-ApprLvSubmit">
+                        <div class="margin-0-auto text-right">
+                            <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+
+                        </div>
+
+                    </div>{% endif %}
+
+
 			</div> {%if  leave_list  %}<div class="col-sm-12 text-center mod"> {% paginate %} </div>{% endif %}
 
-            <div class="row ">
+            <div class="row">
                 <div class="col-md-12">
                     <table class="table table-bordered table-hover Lv-RecordsNotFound">
                         {%if not leave_list  %}<tr class="info">
@@ -383,15 +408,6 @@
                         </tr>{% endif %}
                     </table>
 
-
-    <!-- Insertion A -->{%if  leave_list  %}
-                    <div class="Lv-ApprLvSubmit pos-fix">
-                        <div class="margin-0-auto text-center">
-                            <button type="submit" class="btn btn-danger">Submit</button>
-
-                        </div>
-
-                    </div>{% endif %}
     <!-- Insertion B -->
 
 
@@ -434,7 +450,7 @@
 
 
 
-{% block footer %}{% endblock %}
+
 {% block page_specific_JS %}
 
     <script src="/static/js/jquery.min.js"></script>

@@ -41,7 +41,7 @@
             color: #fff;
         }
         .Lv-RecordsNotFound{
-            min-height:200px;
+            /*min-height:200px;*/
         }
 /*      End Leave module common css */
 
@@ -72,11 +72,12 @@
     }
 
     .MyLeavesContainer {
-	padding: 0px 25px 30px;
-	background-color: #EAEEEF;
-  background-color: #F3F3F3;
-  /*background-color: #fff;*/
+	padding: 30px 25px 30px;
+  background-color: #D3F0F5;
+  background-color: #D3F5D6;
+  background-color: #EBF5FB;
 	margin-bottom: 5px;
+  margin-top: -1px;
     }
     .MyLeavesContainer .row:not(:last-child){
       cursor: pointer;
@@ -139,16 +140,17 @@
 	color: #000;
     }
     .Lv-TransactionsContainer {
-	height: 521px;
-	width: 100%;
-	background-color: #EAEEEF;
-  background-color: #E0E0E0;
-  background-color: #DADADA;
-	overflow-y: auto;
-	overflow-x: hidden;
-	color: #000;
-	font-size: 12px;
-  padding: 20px 25px 0;
+      height: 521px;
+      width: 100%;
+      background-color: #EAEEEF;
+      background-color: #E0E0E0;
+      background-color: #FFFFFF;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #000;
+      font-size: 12px;
+      padding: 0;
+      /*border: 1px solid #9C7B7B;*/
     }
     .LvTranAppr {
 	background-color: #4E965B;
@@ -181,11 +183,12 @@
     .Lv-Type-Selected{
       background-color: #E0E0E0;
       background-color: #DADADA;
+      background: #FFF;
       /* margin: -5px -10px; */
       color: #444;
        font-weight: 700;
       /* border-left: 3px solid #1D92E5; */
-      border-left: 5px solid #CECECE;
+      border-left: 5px solid #7DB0B9;
       color: #696969;
     }
 
@@ -214,10 +217,11 @@
             /*border-radius: 3px;*/
             /*padding: 5px 14px;*/
             padding: 0px 10px;
-            color: #fff
+            /*color: #fff*/
         }
 	.Lv-ApproveTH >th{
 	  background-color: #464A4C;
+    background-color: #91ACB9;
 	  color: #fff;
 	}
 	.Lv-Pipe{
@@ -228,11 +232,10 @@
 
 	}
 	.Lv-Mg-SubActive{
-	  background-color: #464A4C;
+	  background-color: #3A677D;
 	  color: #fff;
-	  /*height: 31px;*/
-	  /*padding: 5px ;*/
     padding: 0px 5px;
+    padding-right: 25px;
 	  position: relative;
 
 	}
@@ -245,19 +248,20 @@
 	  transition: all 3s ease-in-out 0.5s;
 	}
 	.Lv-Mg-NotifyCount{
-	  position: absolute;
-	  height:20px;
-	  width:20px;
-	  background-color: #DB760A;
-	  bottom: 10px;
-	  right: -10px;
-	  color:#fff;
-	  border-radius: 50%;
-	  padding:0px 2px;
+        position: absolute;
+        width: 30px;
+        background-color: #3C3F42;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        color: #fff;
+        padding: 0px 2px;
+        line-height: 30px;
+        text-align: center;
 	}
 	.margin-top11{
 	    /*margin-top: 11px;*/
-      margin: 10px 0px;
+      margin: 0px 0px;
 	}
 	.margin-0-auto{
 	  margin: 0 auto;
@@ -268,11 +272,13 @@
 	  width: 100%;
 	}
 	.Lv-ApprLvSubmit{
-	   background-color: #464A4C;
-            margin-bottom: 0px;
-            border-radius: 3px;
-            padding: 5px 14px;
-            color: #fff
+    background-color: #CDE2EF;
+    /* background-color: #D8EBF7; */
+    margin-bottom: 20px;
+    padding: 10px 14px;
+    color: #fff;
+    border: 1px solid #DDDDDD;
+    border-top: 0px;
 	}
 
 
@@ -474,6 +480,81 @@
 
         /*	End  Leave- Approve tab */
 
+
+
+/* Styles copied from leavestyle.css */
+
+                /* Corrections */
+
+                .margin-correct{
+                  margin-left: 0px;
+                  margin-right: 0px;
+                }
+
+
+                /* UI Corrections */
+
+                .form-inline.short-date .input-group{max-width:150px;}
+                .form-inline.short-date .export-btn{display:inline;}
+                .mod .pagination{margin:0px;margin-bottom:100px;}
+
+                /* for approval screen */
+                .mw-100{max-width:100px;display:block;font-size:11px;}
+
+                .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
+                .radio-mod label{
+                  padding: 2px 5px;
+                  background: #A9A2A2;
+                  color: #ECE0E0;;
+                  border-radius: 3px;
+                }
+                .radio-mod input:checked + label{
+                        background: #616161;
+                        color: white;
+                        border-radius:3px;
+                    }
+                .radio-mod label::after, .radio-mod label::before{display:none}
+                /* end of for approval screen */
+
+
+                /* New classes */
+
+                .requests-reports{
+                padding:0px 0px 0px 25px;
+                position:relative;
+                }
+
+                .pos-fix{
+                    position: fixed;
+                    bottom: 0px;
+                    left: 0px;
+                    right: 0px;
+                }
+
+                .anchor-inherit{
+                    color:inherit;
+                    height:100%;
+                }
+                .anchor-inherit:hover, .anchor-inherit:focus{
+                    text-decoration:none;
+                    color:inherit;
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /* Corrections */
 
         .margin-correct{
@@ -481,16 +562,18 @@
           margin-right: 0px;
         }
 
+        .mb-0{margin-bottom: 0px;}
+
 
         .pad-left-0{padding-left: 0px !important}
         .pad-right-0{padding-right: 0px !important}
 
-        .apply-export{padding-top: 9px;}
-        .apply-export .btn{border: none;background: #1C5F77}
-        .apply-export .btn:hover{background: #114456}
+        /*.apply-export{padding-top: 9px;}*/
+        .apply-export .btn{border: none;}
+        /*.apply-export .btn:hover{background: #114456}*/
         .apply-export a.btn:nth-child(2){margin-right: 10px;}
 
-        .progress-bar-container{margin:0px -30px 5px;}
+        .progress-bar-container{margin:0px -30px 0px;font-size: 12px;}
         .progress-bar{
           -webkit-box-shadow: inset 0 0 0 rgba(0,0,0,.15);
           box-shadow: inset 0 0px 0 rgba(0,0,0,.15);
@@ -511,3 +594,44 @@
             font-size: 18px;
             font-weight: 500;
         }
+
+
+        /* Corrections -2  */
+
+        .LvMenuBtn{display: none}
+        body.pace-done{padding-top: 75px;}
+        .ansrLogo{max-width: 175px !important}
+        .template-header{margin-top: 0px;}
+
+        .LvTitle{display: none}
+
+        .template-header + hr{margin-bottom: 10px;}
+        .Lv-ApLvHeader + hr{margin-top: 10px}
+
+        /* Corrections -3 */
+
+        .Transactions-header{width: 100%;background: #D3F5D6; background: #EBF5FB;line-height: 40px;padding: 0px 15px}
+        .Transactions-header label{margin-bottom: 0px;}
+        .no-border th, .no-border td{border: 1px solid #FFF}
+        .leave-data-container{padding: 15px;}
+
+        .approve-reject{
+          margin-right: 25px;
+          border-right: 1px solid #DDD;
+          padding-right: 25px;
+          margin-top: 0px;
+          padding-top: 5px;
+          padding-bottom: 4px;
+        }
+        .export-btn-2{margin-top: 4px;}
+        .anchor-inherit.btn {padding: 4px 12px}
+        .breadcrumb{margin-top: -25px;}
+
+        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{border:0px; border-bottom: 1px solid #ddd}
+
+        .lh-16{line-height: 16px;}
+
+        /* Header Nav */
+
+        .ansrMenuShadow{border: 0px;background: #fff;box-shadow:0px 1px 3px rgba(0, 0, 0, 0.3)}
+        .table>tbody>tr.info>td{background: #EBF5FB}
