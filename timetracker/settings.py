@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'pagination',
     'Reports',
     'Salesforce',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -194,7 +195,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansrsource",
+        "NAME": "myansr_dev",
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
