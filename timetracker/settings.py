@@ -141,13 +141,14 @@ INSTALLED_APPS = (
     'CompanyMaster',
     'MyANSRSource',
     'fb360',
+    'djcelery',
     'Grievances',
     'GrievanceAdmin',
     'pagination',
     'Reports',
     'Leave',
     'export_xls',
-    'djcelery',
+
     # 'djcelery_email',
     # 'post_office'
 )
