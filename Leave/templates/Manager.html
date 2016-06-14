@@ -324,7 +324,7 @@
                                 <div class="col-md-4 pull-right">
                                     <div>
                                         <a id="test-trigger" href="#test-modal_{{leave.id}}" role="button" data-toggle="modal" title="View Details">
-                                            <button id ="" class="btn btn-info btn-xs remark"> Remarks  </button>
+                                            <button id ="" class="btn btn-info btn-xs remark">Remarks</button>
                                         </a>
                                     </div>
                                         <!--<div style = "display:none" id ="remark__{{leave.id}}">-->
@@ -340,10 +340,12 @@
 								<b> Remarks</b>
 							</h4>
                             </div>
-                            <div class="modal-body-data"><!-- Content goes here -->
+                            <div class="modal-body"><!-- Content goes here -->
 
-                                <textarea  style="width:100%" rows="3" cols ="70" id ="remark_{{leave.id}}" name="remark_{{leave.id}}" class = "remarks" placeholder="enter remarks"></textarea>
+                                <textarea style="min-height:200px;width:100%;"  id ="remark_{{leave.id}}" name="remark_{{leave.id}}" class = "remarks" placeholder="enter remarks"></textarea>
                                 <span id="textarea_remaining">2000 characters remaining</span>
+
+
                             </div>
                             <div class="modal-footer">
 
