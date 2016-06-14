@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'pagination',
     'Reports',
     'Salesforce',
+    'BookMyRoom',
 )
 
 MIDDLEWARE_CLASSES = (
