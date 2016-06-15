@@ -136,6 +136,14 @@
 	float: left;
 	text-align: center;
     }
+    .MyLvTotl {
+	padding: 5px 8px;
+	color: #999;
+	margin: 10px 0px 0px 10px;
+	float: left;
+	text-align: center;
+    }
+    .MyLvTotl span.total-count{font-weight: 900;color: #333;}
     .Lv-TxtWhite {
 	color: #000;
     }
@@ -190,6 +198,7 @@
       /* border-left: 3px solid #1D92E5; */
       border-left: 5px solid #7DB0B9;
       color: #696969;
+      line-height: 20px;
     }
 
 
@@ -202,6 +211,8 @@
     .Lv-Tr-SelectMonth{
         color:#000;
     }
+
+    span.total-leave-count{color: #333}
 
 /*	End For Leave- My Leave tab */
 
