@@ -294,7 +294,7 @@
                         <td>{{leave.from_date}},<br> {%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
                         <td>{{leave.to_date}},<br>{%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%}</td>
                          <td>{{leave.apply_to}}</td>
-                        <td>{{leave.reason}}</td>
+                        <td><span style="display:block;max-width:130px;">{{leave.reason}}</span></td>
                         <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
                         <td>
                             <div class="checkbox checkbox-success radio-mod btn-xs">
