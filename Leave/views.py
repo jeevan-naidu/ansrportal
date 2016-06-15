@@ -422,7 +422,7 @@ class LeaveListView(ListView):
 
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
-            context['users'] = Employee.objects.filter(user__is_active=True).order_by('manager__user__username')
+            context['users'] = Employee.objects.filter(user__is_active=True).order_by('user__username')
 
         else:
             raise PermissionDenied
@@ -435,7 +435,7 @@ class LeaveListView(ListView):
 
         context['months_choices'] = months_choices
         context['apply_to'] = Employee.objects.exclude(manager__user__first_name__isnull=True).\
-            values_list('manager__user__username', 'manager__user__id').distinct()
+            values_list('manager__user__username', 'manager__user__id').distinct().order_by('manager__user__username')
         self.request.session['apply_to'] = context['apply_to']
         # context['users'] = User.objects.filter(is_active=True)
         self.request.session['users'] = context['users']
@@ -478,14 +478,17 @@ class LeaveListView(ListView):
         else:
             employee = ''
         form = LeaveListViewForm(request.POST)
-
+        if status == 'all':
+            status_list = ['open','approved', 'rejected', 'cancelled']
+        else:
+            status_list =[status]
         try:
             if status != '' and from_date != '' and to_date != '' and apply_to != '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to,
                                                               from_date__range=[from_date, to_date], user=employee)  # all chosen
 
             if status != '' and from_date == '' and to_date == '' and apply_to == '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status)  # only status
+                leave_list = LeaveApplications.objects.filter(status__in=status_list)  # only status
 
             if status == '' and from_date != '' and to_date != '' and apply_to == '' and employee == '':
                 leave_list = LeaveApplications.objects.filter(from_date__range=[from_date, to_date])  # only date
@@ -497,16 +500,16 @@ class LeaveListView(ListView):
                 leave_list = LeaveApplications.objects.filter(user=employee)  # only user
 
             if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to)  # status and apply_to
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to)  # status and apply_to
 
             if status != '' and from_date == '' and to_date == ''and apply_to == '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, user=employee)  # status and user
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee)  # status and user
 
             if status == '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
                 leave_list = LeaveApplications.objects.filter(user=employee, apply_to=apply_to)  # user and apply_to
 
             if status != '' and from_date != '' and to_date != ''and apply_to == '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list,
                                                               from_date__range=[from_date, to_date])  # status, date
 
             if status == '' and from_date != '' and to_date != ''and apply_to == '' and employee != '':
@@ -514,15 +517,15 @@ class LeaveListView(ListView):
                                                               from_date__range=[from_date, to_date])  # user, date
 
             if status != '' and from_date != '' and to_date != ''and apply_to == '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, user=employee,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee,
                                                               from_date__range=[from_date, to_date])  # status,user, date
 
             if status != '' and from_date != '' and to_date != ''and apply_to != '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to,
                                                               from_date__range=[from_date, to_date])  # status,apply_to, date
 
             if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, user=employee,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee,
                                                               apply_to=apply_to)  # status,user, apply_to
 
             # if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
@@ -685,7 +688,6 @@ class LeaveManageView(LeaveListView):
         save_status = False
         if request.POST.getlist('approve'):
             for approve_obj in request.POST.getlist('approve'):
-                print approve_obj
                 save_status = update_leave_application(self.request, approve_obj)
                 if not save_status:
                     save_failed += 1

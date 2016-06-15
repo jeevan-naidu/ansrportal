@@ -314,15 +314,16 @@
 			<div class="panel-body">
 				<ul class="list-group">
 					<a href="{% url 'Leave_dashboard' %}" class="list-group-item">
-						Leave Dashboard
+						Dashboard
 					</a>
 					{% if request.user|has_group:"myansrsourceHR"  or request.user|has_group:"myansrsourcePM" or request.user.is_superuser %}
-                			<a href="{% url 'list_leave' %}"  class="list-group-item" >View Leave Applications<span class="badge">{{ leave_count }}</span>
+					<a href="{% url 'manage_leave_list' %}"  class="list-group-item" >Manage Requests<span class="badge">{{ leave_count }}</span>
+
+					</a>
+                			<a href="{% url 'list_leave' %}"  class="list-group-item" >View Requests
 
 							</a>
-							<a href="{% url 'manage_leave_list' %}"  class="list-group-item" >Manage Leave Applications
 
-							</a>
 					{% endif %}
 
 				</ul>

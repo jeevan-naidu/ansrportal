@@ -16,13 +16,13 @@
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
-{% block breadcrumb %}
+<!-- {% block breadcrumb %}
 <div class="container-fluid pad0">
     <div class="row">
             <div class="">
                 <ul class="breadcrumb">
                     <li>
-					<a href="/admin">Admin</a>
+					<a href="{% url 'Leave_dashboard' %}">Home</a>
                     </li>
                     <li>
 					<a href='/leave/'>Leave</a>
@@ -35,7 +35,7 @@
             </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %} -->
 
 {% block content  %}
     <link href="/static/css/leave_style.css" rel="stylesheet">
@@ -52,7 +52,7 @@
 
       <div class="row">
           <div class="col-md-12">
-              <h3 class="text-center template-header">All Leaves</h3>
+              <h3 class="text-center template-header">All Transaction</h3>
               <hr>
           </div>
 
@@ -129,23 +129,25 @@
                                   &nbsp;&nbsp;
                                   <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
                                   <select class="form-control filter_class input-sm" id="application_status" name="application_status">
-                                      <!--<option value ="">-&#45;&#45;&#45;&#45;</option>--><option value="" selected disabled>Select Status</option>
+
+                                    <option value ="all">All</option>
           s                            {% for value, text in APPLICATION_STATUS %}
                                           {% if value != 'applied' %}
                                               <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
                                           {% endif %}
                                       {%endfor%}
+
                                   </select>&nbsp;&nbsp;&nbsp;&nbsp;
                                   {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
                                       <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
-                                          <option value="" selected disabled>Applied To</option>
+                                          <option value="" selected >Applied To</option>
                                            {% for managers in apply_to %}
                                               <option value="{{managers.1}}" {%if post_apply_to|safe == managers.1|safe %} selected {% endif %}>{{managers.0}}</option>
                                           {% endfor %}
                                       </select>
                                   {%endif%}
                                   <select class="form-control filter_class input-sm" id="users" name="users">
-                                      <option value="" selected disabled>Applied By</option>
+                                      <option value="" selected >Applied By</option>
                                        {% for employee in users %}
                                           <option value="{{employee.user.id}}"{%if post_users|safe == employee.user.id|safe %} selected {% endif %} >{{employee.user.username}}</option>
                                       {% endfor %}
@@ -227,7 +229,7 @@
                         <th style="width:30%">Status
                         </th>
                     </tr>
-                    {%  autopaginate leave_list 5 %}
+                    {%  autopaginate leave_list 10 %}
                     {% for leave in leave_list %}
 
                     <tr  {%for k,v in  BUTTON_NAME %}
