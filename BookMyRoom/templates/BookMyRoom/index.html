@@ -308,16 +308,13 @@
 </div><!--end of container-->
 
 
-<script>
+<!-- <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" /> -->
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<!-- <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script> -->
 
-$(document).ready(function(){
-  $('#reset-btn').click(function(){
-    $('input[type="checkbox"]').attr('checked', false)
-  })
-})//end of document.ready
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
 
-
-</script>
 
 
 
@@ -327,4 +324,27 @@ $(document).ready(function(){
 
 {% block page_specific_JS %}
 <!-- mention page specific js here -->
+
+
+<script>
+
+$(document).ready(function(){
+  $('#reset-btn').click(function(){
+    $('input[type="checkbox"]').attr('checked', false)
+  })
+
+
+      $('#id_from_date_pickers').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+      });
+
+
+
+
+})//end of document.ready
+
+
+</script>
+
 {% endblock %}
