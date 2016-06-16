@@ -17,7 +17,7 @@
 {% block content  %}
 
 
-
+    <link href="/static/css/site.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/leave_style.css" rel="stylesheet">
 
@@ -110,7 +110,7 @@
                         <div class="col-md-6 apply-export">
 
 
-                          <a href="#" class="pull-right btn btn-sm btn-danger">Export</a>
+                          <!-- <a href="#" class="pull-right btn btn-sm btn-danger">Export</a> -->
 
                           <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details"  class="pull-right btn btn-sm btn-danger">
                             Apply Leave
@@ -153,7 +153,7 @@
                                 <div class="col-md-4"> <!--Pad-topX10-->
 
 
-                                            Earned <span class="total-leave-count">(38)</span>
+                                            Earned <span class="total-leave-count-earned">(38)</span>
 
                                 </div>
                                 <div class="col-md-8"> <!--Pad-topX10-->
@@ -178,7 +178,7 @@
                                 <div class="col-md-4">
 
 
-                                            Sick <span class="total-leave-count">(7)</span>
+                                            Sick <span class="total-leave-count-sick">(7)</span>
 
                                 </div>
                                 <div class="col-md-8">
@@ -204,7 +204,7 @@
                                 <div class="col-md-4">
 
 
-                                            Casual <span class="total-leave-count">(124)</span>
+                                            Casual <span class="total-leave-count-casual">(124)</span>
 
                                 </div>
                                 <div class="col-md-8">
@@ -533,7 +533,8 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      totalcount = totalcount + total;
+      totalcount = applied + approved + total;
+      $('.total-leave-count-earned').text("("+totalcount+")");
       if(applied!=0){
         $('#earned_leave .applied').text(applied);
       }
@@ -563,7 +564,8 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      totalcount = totalcount + total;
+      totalcount = applied + approved + total;
+      $('.total-leave-count-sick').text("("+totalcount+")");
       if(applied!=0){
         $('#sick_leave .applied').text(applied);
       }
@@ -593,7 +595,8 @@ gridLoad('earned_leave');
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
-      totalcount = totalcount + total;
+      totalcount = applied + approved + total;
+      $('.total-leave-count-casual').text("("+totalcount+")");
       if(applied!=0){
         $('#casual_leave .applied').text(applied);
       }
@@ -822,7 +825,6 @@ gridLoad('earned_leave');
 
     case 'paternity_leave':
     {
-      // console.log(leaveType)
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
@@ -930,7 +932,6 @@ function removeSelection(){
 function gridLoad(name){
   getLeaveName = {'sabbatical':'Sabbatical', 'comp_off_avail':"Comp Off avail",'paternity_leave':'Paternity','maternity_leave':'Maternity', 'comp_off_earned':'Comp Off Earned', 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'bereavement_leave':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
   leavename = getLeaveName[name];
-  console.log(name)
   $("#leave_name").text(leavename);
   $('.table-bordered').empty();
   $.ajax(

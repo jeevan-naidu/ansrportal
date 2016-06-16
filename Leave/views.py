@@ -71,7 +71,7 @@ def LeaveTransaction(request):
         leave['days_count'],
         )
         if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail':
-            data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >cancel</a></div>\
+            data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
         else:
             data1 = data1 + '</div></td></tr>'
@@ -117,16 +117,18 @@ def LeaveDetails(request):
         atachmentURL = leave.atachement.url
     else:
         atachmentURL = ''
-    data = '<div id="detail_leave"><table class="table" id=""><thead><tr><th><b>PROPERTY<b></th><th><b>DETAILS<b></th></tr></thead>\
+    data = '<div id="detail_leave"><table class="table" id="">\
+  <thead><tr><th><b>PROPERTY<b></th><th><b>DETAILS<b></th></tr></thead>\
   <tbody><tr><th scope="row">Leave Type</th><td>{0}</td></tr>\
-  <tr><th scope="row">From date and session</th><td>{1},{2}</td></tr>\
-  <tr><th scope="row">To date and session</th><td>{3},{4}</td></tr>\
-  <tr><th scope="row">manager</th><td>{5}</td></tr>\
-  <tr><th scope="row">reason</th><td>{6}</td></tr>\
-  <tr><th scope="row">status</th><td>{7}</td></tr>\
-  <tr><th scope="row">status action on</th><td>{8}</td></tr>\
-  <tr><th scope="row">status action by</th><td>{9}</td></tr>\
-  <tr><th scope="row">Attachment</th><td><a href="{10}">{11}</a></td></tr>\
+  <tr><th scope="row">From date</th><td>{1},{2}</td></tr>\
+  <tr><th scope="row">To date</th><td>{3},{4}</td></tr>\
+  <tr><th scope="row">Count</th><td>{14}</td></tr>\
+  <tr><th scope="row">Manager</th><td>{5} {6}</td></tr>\
+  <tr><th scope="row">Reason</th><td>{7}</td></tr>\
+  <tr><th scope="row">Status</th><td>{8}</td></tr>\
+  <tr><th scope="row">Status action on</th><td>{9}</td></tr>\
+  <tr><th scope="row">Status action by</th><td>{10} {11}</td></tr>\
+  <tr><th scope="row">Attachment</th><td><a href="{12}">{13}</a></td></tr>\
   </tbody></table></div>'.format(
   leaveTypeDictionary[leave.leave_type.leave_type],
   leave.from_date,
@@ -134,12 +136,15 @@ def LeaveDetails(request):
   leave.to_date,
   leaveSessionDictionary[leave.to_session],
   leave.apply_to.first_name,
+  leave.apply_to.last_name,
   leave.reason,
   leave.status,
   leave.status_action_on,
   leave.status_action_by.first_name,
+  leave.status_action_by.last_name,
   atachmentURL,
-  atachmentURL
+  atachmentURL,
+  leave.days_count,
   )
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type="application/json")
