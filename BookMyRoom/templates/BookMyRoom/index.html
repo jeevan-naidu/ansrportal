@@ -109,7 +109,9 @@ $(document).ready(function(){
               $('#bookings_date_pickers').datepicker({
 								 format: 'yyyy-mm-dd',
 								 autoclose: true
-							 });
+							 }).on('changeDate', function(e) {
+                  console.log('a date has beed selected');
+                });
 
 
 })//end of document.ready
