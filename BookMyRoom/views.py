@@ -28,4 +28,8 @@ def GetBookingsView(request):
     context_data['html_data'] = template.content
     context_data.pop('rooms_list')
     return JsonResponse(context_data)
+
+def BookMeetingRoomView(request):
+    
+    pass
     
