@@ -302,15 +302,18 @@ def newJoineeValidation(user, from_date = None):
 
 
 def date_by_adding_business_days(from_date, add_days,holidays, leaveType_selected):
-    business_days_to_add = add_days-1
     current_date = from_date
+    if current_date in [holiday['date'] for holiday in holidays]:
+        business_days_to_add = add_days
+    else:
+        business_days_to_add = add_days-1
     while business_days_to_add > 0:
         current_date += timedelta(days=1)
         weekday = current_date.weekday()
         if leaveType_selected != 'maternity_leave':
-            if weekday >= 5: # sunday = 6
+            if weekday >= 5:
                 continue
-            if current_date in holidays:
+            if current_date in [holiday['date'] for holiday in holidays]:
                 continue
         business_days_to_add -= 1
     return current_date
