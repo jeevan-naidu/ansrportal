@@ -47,7 +47,6 @@
     <div class="room-and-time clearfix">
         <div class="col-sm-3">{{room_obj.room_name}}</div>
         <div class="col-sm-9 selectors">
-          
           {% for block in TimingsList %}
           <div class="col-sm-2 checkbox-removed">
             {% for time in block %}
@@ -63,6 +62,7 @@
         </div>
     </div><!--end of room-and-time-->
     {% endfor %}
+		
      <input type="submit" class="btn btn-success pull-right" value="Submit" />
 </form>
 
@@ -76,33 +76,132 @@
 <hr>
 
 <div class="row bookings margin-0">
-<h4>Your Bookings</h4>
-
-  <div class="col-sm-12 booking">
-    <div class="col-sm-4">King's Landing</div>
-    <div class="col-sm-4">12th June, 9:30 - 12:30</div>
-    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
-  </div>
-
-  <div class="col-sm-12 booking">
-    <div class="col-sm-4">Hyperbolic time chamber</div>
-    <div class="col-sm-4">25th July, 10:00 - 11:00</div>
-    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
-  </div>
-
-  <div class="col-sm-12 booking">
-    <div class="col-sm-4">Room of spirit and time</div>
-    <div class="col-sm-4">2nd June, 8:30 - 9:30</div>
-    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
-  </div>
+	<h4>Your Bookings</h4>
+	{% for obj in bookings_list %}
+		<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
+			<div class="col-sm-4">{{obj.room.get_location_display}}</div>
+			<div class="col-sm-4">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
+			<div class="col-sm-4"><button class="CancelBooking" class="btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Cancel</button></div>
+		</div>
+	{% endfor %}
 </div>
 
 <hr>
 
-<div id="submit-section" class="col-sm-12">
+<!--<div id="submit-section" class="col-sm-12">
   <p class="pull-left booker">V L Nagaraj - Media Team</p>
  
-</div>
+</div>-->
 
 </div><!--end of panel-->
 
+<script>
+	$(document).ready(function(){
+		 $('#reset-btn').click(function(){
+				$('input[type="checkbox"]').attr('checked', false);
+			});
+		});
+
+        $("#BookMeetingForm").submit(function(){
+                
+            var formData = new FormData($(this)[0]);
+						alert(formData);
+						var for_date = $('#id_for_date').val();
+						formData.append('for_date', for_date);
+            //form_id = $(this)[0].grievance_id.value;
+            //form_element = $(this);
+            //ajax_loader_element = $("#SubmitAndCLoseFormAjaxLoader_" + form_id);
+            
+            swal({   title: "Are you sure you want to book these rooms?",
+                text: "You will not be able to edit this after submission!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Submit it!",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: true,
+                closeOnCancel: true
+                },
+                function(isConfirm){
+                    // If user clicks on ok;
+                    if (isConfirm) {
+                        //ShowAjaxLoader(ajax_loader_element, form_element.width(), form_element.height());
+                        $.ajax({
+                            url: '/bookings/',
+                            type: 'POST',
+                            data: formData,
+                            success: function (data) {
+                                if (data.errors) {
+                                    $("#server_errors").html(data.errors);
+                                }
+                                if (data.record_added == true) {
+                                    alert("success");
+                                }
+                                //HideAjaxLoader(ajax_loader_element);
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            },
+                            cache: false,
+                            contentType: false,
+                            processData: false
+                        });
+                    
+                    } 
+                    
+                    
+                   });
+                    
+            return false;
+        });
+				
+				$(".CancelBooking").click(function(){
+   
+            cancel_id = $(this).attr('data-value');
+						alert(cancel_id);
+						
+            swal({   title: "Are you sure you want to book these rooms?",
+                text: "You will not be able to edit this after submission!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Submit it!",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: true,
+                closeOnCancel: true
+                },
+                function(isConfirm){
+                    // If user clicks on ok;
+                    if (isConfirm) {
+                        //ShowAjaxLoader(ajax_loader_element, form_element.width(), form_element.height());
+                        $.ajax({
+                            url: '/bookings/cancel/',
+                            type: 'POST',
+                            data: {'cancel_id':cancel_id},
+                            success: function (data) {
+                                
+                                if (data.record_updated == true) {
+                                    alert("success");
+                                }
+																if (data.user_mismatch == true) {
+                                    alert("User mismatch.You cannot cancel others' bookings");
+                                }
+                                //HideAjaxLoader(ajax_loader_element);
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            },
+                            cache: false,
+                            contentType: false,
+                            processData: false
+                        });
+                    
+                    } 
+                    
+                    
+                   });
+                    
+            return false;
+        });
+
+</script>

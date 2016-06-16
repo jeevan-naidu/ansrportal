@@ -29,14 +29,14 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <form class="navbar-form navbar-left" role="search">
           <div class="input-group date form-group" id="bookings_date_pickers">
-              <input class="form-control filter_class input-sm" id="id_from_date" name="from_date" type="text">
+              <input class="form-control filter_class input-sm" id="id_for_date" name="for_date" type="text">
               <span class="input-group-addon">
                   <span class="glyphicon-calendar glyphicon"></span>
               </span>
           </div>
-          <button class="btn btn-primary btn-sm">Karle 0</button>
-          <button class="btn btn-default btn-blue btn-sm">Karle 1</button>
-          <button class="btn btn-default btn-blue btn-sm">BTP</button>
+          <button type="button" class="btn btn-default btn-sm location" flag='1' id="karle_ground_floor">Karle 0</button>
+          <button type="button" class="btn btn-default btn-sm location" flag='0' id="karle_second_floor">Karle 2</button>
+          <button type="button" class="btn btn-default btn-sm location" flag='0' id="btp">BTP</button>
         </form>
 
 <div class="nav-btns">
@@ -49,7 +49,7 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-
+<div style="color:red" id="server_errors"></div>
 <div id="BookRoomAndViewDetailsContainer">
 <!--  This div will be pupulated using ajax. Ajax request will render template BookMeetingform.html and will update this section with it.
 This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
@@ -76,22 +76,68 @@ This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
 <script>
 
 $(document).ready(function(){
+    
+      // Datepicker function
+    $('#bookings_date_pickers').datepicker({
+                       format: 'yyyy-mm-dd',
+                       autoclose: true
+                   }).on('changeDate', function(e) {
+        
+        var location = "";
+        var for_date = $('#id_for_date').val();
+        
+        $('.location').each(function(){
+            if($(this).attr('flag') == '1')
+            {
+                location = $(this).attr('id');
+            }
+            });
+        UpdateBookingDetails(for_date, location);
+        
+      });
+    
+    //initialize to today's date
+    $('#bookings_date_pickers').datepicker('update', new Date());
+
+    
   $('#reset-btn').click(function(){
     $('input[type="checkbox"]').attr('checked', false);
   });
+  
+  
+  
+  $(".location").click(function(){
+    $('.location').css('background-color','#fff');
+    $('.location').attr('flag','0');
+    $(this).css('background-color','#337ab7');
+    $(this).attr('flag', '1');
+    
+    var for_date = $('#id_for_date').val();
+    var location = $(this).attr('id');
+    UpdateBookingDetails(for_date, location);
+    });
 
-  UpdateBookingDetails();
+    var for_date = $('#id_for_date').val();
+    var location = 'karle_ground_floor';
+  UpdateBookingDetails(for_date, location);
 
-  function UpdateBookingDetails(){
+  function UpdateBookingDetails(for_date, location){
 
      $.ajax(
               {
                   type : "GET",
                   url : '/bookings/details/',
-                  data :"" ,
+                  data :{'for_date':for_date, 'location':location},
                   success : function(data)
                   {
-                      $("#BookRoomAndViewDetailsContainer").html(data.html_data);
+                    if (data.errors)
+                    {
+                      $("#server_errors").html(data.errors);
+                    }
+                    else{
+                        $("#server_errors").html("");
+                        $("#BookRoomAndViewDetailsContainer").html(data.html_data);
+                    }
                   },
                   error: function(XMLHttpRequest, textStatus, errorThrown) {
                   $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -104,14 +150,6 @@ $(document).ready(function(){
 
   }
 
-  // Datepicker function
-
-              $('#bookings_date_pickers').datepicker({
-								 format: 'yyyy-mm-dd',
-								 autoclose: true
-							 }).on('changeDate', function(e) {
-                  console.log('a date has beed selected');
-                });
 
 
 })//end of document.ready
