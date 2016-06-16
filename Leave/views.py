@@ -36,7 +36,7 @@ from django.template.defaultfilters import slugify
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
-from django.core.mail import EmailMessage
+from tasks import EmailSendTask, ManagerEmailSendTask
 logger = logging.getLogger('MyANSRSource')
 
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
@@ -103,8 +103,8 @@ def LeaveCancel(request):
     leave.status_comments = "Leave cancelled by user"
     leave.update()
     manager = managerCheck(user_id)
-    # mailTrigger(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
-    #leave.to_session, leave.reason, 'cancel')
+    EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+     leave.to_session, leave.reason, 'cancel')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
@@ -268,12 +268,12 @@ class ApplyLeaveView(View):
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id)
                          leavesummry_temp.save()
-                        #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                     else:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason).saveas(user_id)
                          leavesummry_temp.save()
-                        #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
@@ -285,12 +285,12 @@ class ApplyLeaveView(View):
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
-                            #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
                         else:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
-                            #  mailTrigger(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
@@ -314,28 +314,6 @@ class ApplyLeaveView(View):
 
         return render(request, 'leave_apply.html', context_data)
 
-def mailTrigger(user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, flag):
-    fromdate = str(fromdate)+' Session: '+leaveSessionDictionary[fromsession]
-    todate = str(todate)+' Session: '+leaveSessionDictionary[tosession]
-    if flag == 'save':
-        msg_html = render_to_string('email_templates/apply_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected],
-         'fromdate':fromdate, 'todate':todate})
-
-        mail_obj = EmailMessage('New Leave applied - Leave Type - ' + leaveTypeDictionary[leave_selected], msg_html, settings.EMAIL_HOST_USER, [user.email],
-        cc=['vivek.pradhan@ansrsource.com','shalini.bhagat@ansrsource.com'])
-    elif flag == 'cancel':
-        msg_html = render_to_string('email_templates/cancel_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected],
-        'fromdate':fromdate, 'todate':todate})
-
-        mail_obj = EmailMessage('Leave canceled - Leave Type - ' + leaveTypeDictionary[leave_selected], msg_html, settings.EMAIL_HOST_USER, [user.email],
-         cc=['vivek.pradhan@ansrsource.com','shalini.bhagat@ansrsource.com'])
-
-    mail_obj.content_subtype = 'html'
-    email_status = mail_obj.send()
-
-    if email_status < 1:
-        # TODO  - mail not sent, log this error
-        pass
 
 def managerCheck(user):
     manager_id = Employee.objects.filter(user_id=user).values('manager_id')
@@ -444,7 +422,7 @@ class LeaveListView(ListView):
 
             else:
                 context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
-            context['users'] = Employee.objects.filter(user__is_active=True).order_by('manager__user__username')
+            context['users'] = Employee.objects.filter(user__is_active=True).order_by('user__username')
 
         else:
             raise PermissionDenied
@@ -457,7 +435,7 @@ class LeaveListView(ListView):
 
         context['months_choices'] = months_choices
         context['apply_to'] = Employee.objects.exclude(manager__user__first_name__isnull=True).\
-            values_list('manager__user__username', 'manager__user__id').distinct()
+            values_list('manager__user__username', 'manager__user__id').distinct().order_by('manager__user__username')
         self.request.session['apply_to'] = context['apply_to']
         # context['users'] = User.objects.filter(is_active=True)
         self.request.session['users'] = context['users']
@@ -500,14 +478,17 @@ class LeaveListView(ListView):
         else:
             employee = ''
         form = LeaveListViewForm(request.POST)
-
+        if status == 'all':
+            status_list = ['open','approved', 'rejected', 'cancelled']
+        else:
+            status_list =[status]
         try:
             if status != '' and from_date != '' and to_date != '' and apply_to != '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to,
                                                               from_date__range=[from_date, to_date], user=employee)  # all chosen
 
             if status != '' and from_date == '' and to_date == '' and apply_to == '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status)  # only status
+                leave_list = LeaveApplications.objects.filter(status__in=status_list)  # only status
 
             if status == '' and from_date != '' and to_date != '' and apply_to == '' and employee == '':
                 leave_list = LeaveApplications.objects.filter(from_date__range=[from_date, to_date])  # only date
@@ -519,16 +500,16 @@ class LeaveListView(ListView):
                 leave_list = LeaveApplications.objects.filter(user=employee)  # only user
 
             if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to)  # status and apply_to
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to)  # status and apply_to
 
             if status != '' and from_date == '' and to_date == ''and apply_to == '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, user=employee)  # status and user
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee)  # status and user
 
             if status == '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
                 leave_list = LeaveApplications.objects.filter(user=employee, apply_to=apply_to)  # user and apply_to
 
             if status != '' and from_date != '' and to_date != ''and apply_to == '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list,
                                                               from_date__range=[from_date, to_date])  # status, date
 
             if status == '' and from_date != '' and to_date != ''and apply_to == '' and employee != '':
@@ -536,15 +517,15 @@ class LeaveListView(ListView):
                                                               from_date__range=[from_date, to_date])  # user, date
 
             if status != '' and from_date != '' and to_date != ''and apply_to == '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, user=employee,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee,
                                                               from_date__range=[from_date, to_date])  # status,user, date
 
             if status != '' and from_date != '' and to_date != ''and apply_to != '' and employee == '':
-                leave_list = LeaveApplications.objects.filter(status=status, apply_to=apply_to,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to,
                                                               from_date__range=[from_date, to_date])  # status,apply_to, date
 
             if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
-                leave_list = LeaveApplications.objects.filter(status=status, user=employee,
+                leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee,
                                                               apply_to=apply_to)  # status,user, apply_to
 
             # if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
@@ -680,28 +661,8 @@ def update_leave_application(request, status):
 
     try:
         leave_application.save()
-        msg_html = render_to_string('email_templates/leave_status.html',
-                                    {'registered_by': leave_application.user.first_name,
-                                     'status': leave_application.status,
-                                     'from_date': leave_application.from_date,
-                                     'to_date': leave_application.to_date,
-                                     'comment': leave_application.status_comments,
-                                     'action_taken_by': request.user.username})
 
-        mail_obj = EmailMessage('Leave Application Status',
-                                msg_html, settings.EMAIL_HOST_USER, [leave_application.user.email],
-                                cc=[leave_application.apply_to.email])
-
-        mail_obj.content_subtype = 'html'
-        email_status = mail_obj.send()
-        if email_status == 0:
-                    logger.error(
-                        "Unable To send Mail To The Authorities For"
-                        "The Following Leave Applicant : {0} Date time : {1} ".format(
-                         leave_application.user.first_name, timezone.make_aware(datetime.datetime.now(),
-                                                                                timezone.get_default_timezone())))
-                    return "failed"
-
+        ManagerEmailSendTask.delay(leave_application.user, leave_application.status, leave_application.from_date, leave_application.to_date, leave_application.status_comments, request.user.username)
         return True
     except Exception, e:
         logger.error(e)
@@ -727,7 +688,6 @@ class LeaveManageView(LeaveListView):
         save_status = False
         if request.POST.getlist('approve'):
             for approve_obj in request.POST.getlist('approve'):
-                print approve_obj
                 save_status = update_leave_application(self.request, approve_obj)
                 if not save_status:
                     save_failed += 1

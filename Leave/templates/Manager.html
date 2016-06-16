@@ -17,7 +17,7 @@
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
-{% block breadcrumb %}
+<!-- {% block breadcrumb %}
 <div class="container-fluid pad0">
     <div class="row">
             <div class="">
@@ -36,7 +36,7 @@
             </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %} -->
 
 {% block content  %}
 
@@ -209,7 +209,7 @@
                         <th>Action</th>
                     </tr>
 
-                    {%  autopaginate leave_list 5 %}
+                    {%  autopaginate leave_list 10 %}
                     {% for leave in leave_list %}
                     <tr {%for k,v in  BUTTON_NAME %}
                                 {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>

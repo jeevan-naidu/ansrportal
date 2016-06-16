@@ -17,6 +17,10 @@ import ldap
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 from django_auth_ldap.config import NestedActiveDirectoryGroupType
 
+# setup celery
+import djcelery
+djcelery.setup_loader()
+
 AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
     ldap.OPT_REFERRALS: False,
@@ -137,12 +141,16 @@ INSTALLED_APPS = (
     'CompanyMaster',
     'MyANSRSource',
     'fb360',
+    'djcelery',
     'Grievances',
     'GrievanceAdmin',
     'pagination',
     'Reports',
     'Leave',
     'export_xls',
+
+    # 'djcelery_email',
+    # 'post_office'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -335,3 +343,10 @@ MEDIA_URL = '/media/'
 GRIEVANCES_ADMIN_EMAIL = "amol.pachpute@ansrsource.com"
 LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
+
+#Broker Settings
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = 'root'
+BROKER_PASSWORD = 'root'
+BROKER_VHOST = "ansrvhost"
