@@ -12,7 +12,7 @@
 
 
 
-  <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -34,10 +34,9 @@
                   <span class="glyphicon-calendar glyphicon"></span>
               </span>
           </div>
-          <button class="btn btn-default btn-blue btn-sm">Karle 0</button>
-          <button class="btn btn-primary btn-sm">Karle 2</button>
+          <button class="btn btn-primary btn-sm">Karle 0</button>
+          <button class="btn btn-default btn-blue btn-sm">Karle 1</button>
           <button class="btn btn-default btn-blue btn-sm">BTP</button>
-
         </form>
 
 <div class="nav-btns">
@@ -48,278 +47,20 @@
 
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
-  </nav>
+</nav>
 
-  <div class="panel panel-default clearfix room-booking-content">
-
-    <div class="time-panel clearfix">
-
-      <div class="col-sm-3"></div>
-      <div class="col-sm-9 time-slots">
-
-        <div class="col-sm-2">
-            <span>8:00</span>
-            <span>9:00</span>
-        </div>
-
-        <div class="col-sm-2">
-            <span>10:00</span>
-            <span>11:00</span>
-        </div>
-        <div class="col-sm-2">
-            <span>12:00</span>
-            <span>13:00</span>
-        </div>
-        <div class="col-sm-2">
-            <span>14:00</span>
-            <span>15:00</span>
-        </div>
-        <div class="col-sm-2">
-            <span>16:00</span>
-            <span>17:00</span>
-        </div>
-        <div class="col-sm-2">
-            <span>18:00</span>
-            <span>19:00</span>
-        </div>
-
-      </div>
-
-    </div><!--end of time-panel-->
+  
+<div id="BookRoomAndViewDetailsContainer">
+<!--  This div will be pupulated using ajax. Ajax request will render template BookMeetingform.html and will update this section with it.
+This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
 
 
-<div class="rooms-and-time clearfix">
-
-    <div class="room-and-time clearfix">
-        <div class="col-sm-3">Platform 9 and 3/4</div>
-        <div class="col-sm-9 selectors">
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one" /><label for="one"></label></span>
-            <span><input type="checkbox" id="two" /><label for="two"></label></span>
-            <span><input type="checkbox" id="three" /><label for="three"></label></span>
-            <span><input type="checkbox" id="four" /><label for="four"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one2" /><label for="one2"></label></span>
-            <span><input type="checkbox" id="two2" disabled /><label for="two2"></label></span>
-            <span><input type="checkbox" id="three2" /><label for="three2"></label></span>
-            <span><input type="checkbox" id="four2" /><label for="four2"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one3" /><label for="one3"></label></span>
-            <span><input type="checkbox" id="two3" /><label for="two3"></label></span>
-            <span><input type="checkbox" id="three3" /><label for="three3"></label></span>
-            <span><input type="checkbox" id="four3" /><label for="four3"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one4" /><label for="one4"></label></span>
-            <span><input type="checkbox" id="two4" /><label for="two4"></label></span>
-            <span><input type="checkbox" id="three4" /><label for="three4"></label></span>
-            <span><input type="checkbox" id="four4" /><label for="four4"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one5" /><label for="one5"></label></span>
-            <span><input type="checkbox" id="two5" /><label for="two5"></label></span>
-            <span><input type="checkbox" id="three5" /><label for="three5"></label></span>
-            <span><input type="checkbox" id="four5" /><label for="four5"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one6" /><label for="one6"></label></span>
-            <span><input type="checkbox" id="two6" /><label for="two6"></label></span>
-            <span><input type="checkbox" id="three6" /><label for="three6"></label></span>
-            <span><input type="checkbox" id="four6" /><label for="four6"></label></span>
-          </div>
-        </div>
-
-    </div><!--end of room-and-time-->
-
-
-    <div class="room-and-time clearfix">
-        <div class="col-sm-3">Hyperbolic Time Chamber</div>
-        <div class="col-sm-9 selectors">
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one0" /><label for="one0"></label></span>
-            <span><input type="checkbox" id="two0" /><label for="two0"></label></span>
-            <span><input type="checkbox" id="three0" /><label for="three0"></label></span>
-            <span><input type="checkbox" id="four0" /><label for="four0"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one22" /><label for="one22"></label></span>
-            <span><input type="checkbox" id="two22" disabled /><label for="two22"></label></span>
-            <span><input type="checkbox" id="three22" /><label for="three22"></label></span>
-            <span><input type="checkbox" id="four22" /><label for="four22"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one32" disabled /><label for="one32"></label></span>
-            <span><input type="checkbox" id="two32" disabled /><label for="two32"></label></span>
-            <span><input type="checkbox" id="three32" disabled /><label for="three32"></label></span>
-            <span><input type="checkbox" id="four32" disabled /><label for="four32"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one42" /><label for="one42"></label></span>
-            <span><input type="checkbox" id="two42" /><label for="two42"></label></span>
-            <span><input type="checkbox" id="three42" disabled /><label for="three42"></label></span>
-            <span><input type="checkbox" id="four42" disabled /><label for="four42"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one52" /><label for="one52"></label></span>
-            <span><input type="checkbox" id="two52" /><label for="two52"></label></span>
-            <span><input type="checkbox" id="three52" /><label for="three52"></label></span>
-            <span><input type="checkbox" id="four52" /><label for="four52"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one62" /><label for="one62"></label></span>
-            <span><input type="checkbox" id="two62" /><label for="two62"></label></span>
-            <span><input type="checkbox" id="three62" /><label for="three62"></label></span>
-            <span><input type="checkbox" id="four62" /><label for="four62"></label></span>
-          </div>
-        </div>
-
-    </div><!--end of room-and-time-->
-
-
-    <div class="room-and-time clearfix">
-        <div class="col-sm-3">King's Landing</div>
-        <div class="col-sm-9 selectors">
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one" /><label for="one"></label></span>
-            <span><input type="checkbox" id="two" /><label for="two"></label></span>
-            <span><input type="checkbox" id="three" /><label for="three"></label></span>
-            <span><input type="checkbox" id="four" /><label for="four"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one2" /><label for="one2"></label></span>
-            <span><input type="checkbox" id="two2" disabled /><label for="two2"></label></span>
-            <span><input type="checkbox" id="three2" /><label for="three2"></label></span>
-            <span><input type="checkbox" id="four2" /><label for="four2"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one3" /><label for="one3"></label></span>
-            <span><input type="checkbox" id="two3" /><label for="two3"></label></span>
-            <span><input type="checkbox" id="three3" /><label for="three3"></label></span>
-            <span><input type="checkbox" id="four3" /><label for="four3"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one4" /><label for="one4"></label></span>
-            <span><input type="checkbox" id="two4" /><label for="two4"></label></span>
-            <span><input type="checkbox" id="three4" /><label for="three4"></label></span>
-            <span><input type="checkbox" id="four4" /><label for="four4"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one5" /><label for="one5"></label></span>
-            <span><input type="checkbox" id="two5" /><label for="two5"></label></span>
-            <span><input type="checkbox" id="three5" /><label for="three5"></label></span>
-            <span><input type="checkbox" id="four5" /><label for="four5"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one" /><label for="one"></label></span>
-            <span><input type="checkbox" id="two" /><label for="two"></label></span>
-            <span><input type="checkbox" id="three" /><label for="three"></label></span>
-            <span><input type="checkbox" id="four" /><label for="four"></label></span>
-          </div>
-        </div>
-
-    </div><!--end of room-and-time-->
-
-
-    <div class="room-and-time clearfix">
-        <div class="col-sm-3">1984</div>
-        <div class="col-sm-9 selectors">
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one0" /><label for="one0"></label></span>
-            <span><input type="checkbox" id="two0" /><label for="two0"></label></span>
-            <span><input type="checkbox" id="three0" /><label for="three0"></label></span>
-            <span><input type="checkbox" id="four0" /><label for="four0"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one22" /><label for="one22"></label></span>
-            <span><input type="checkbox" id="two22" disabled /><label for="two22"></label></span>
-            <span><input type="checkbox" id="three22" /><label for="three22"></label></span>
-            <span><input type="checkbox" id="four22" /><label for="four22"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one32" disabled /><label for="one32"></label></span>
-            <span><input type="checkbox" id="two32" disabled /><label for="two32"></label></span>
-            <span><input type="checkbox" id="three32" disabled /><label for="three32"></label></span>
-            <span><input type="checkbox" id="four32" disabled /><label for="four32"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one42" /><label for="one42"></label></span>
-            <span><input type="checkbox" id="two42" /><label for="two42"></label></span>
-            <span><input type="checkbox" id="three42" disabled /><label for="three42"></label></span>
-            <span><input type="checkbox" id="four42" disabled /><label for="four42"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one52" /><label for="one52"></label></span>
-            <span><input type="checkbox" id="two52" /><label for="two52"></label></span>
-            <span><input type="checkbox" id="three52" /><label for="three52"></label></span>
-            <span><input type="checkbox" id="four52" /><label for="four52"></label></span>
-          </div>
-          <div class="col-sm-2 checkbox-removed">
-            <span><input type="checkbox" id="one62" /><label for="one62"></label></span>
-            <span><input type="checkbox" id="two62" /><label for="two62"></label></span>
-            <span><input type="checkbox" id="three62" /><label for="three62"></label></span>
-            <span><input type="checkbox" id="four62" /><label for="four62"></label></span>
-          </div>
-        </div>
-
-    </div><!--end of room-and-time-->
-
-
-
-</div><!--end of rooms-and-time-->
-
-
-<hr>
-
-<div class="row bookings margin-0">
-<h4>Your Bookings</h4>
-
-  <div class="col-sm-12 booking">
-    <div class="col-sm-4">King's Landing</div>
-    <div class="col-sm-4">12th June, 9:30 - 12:30</div>
-    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
-  </div>
-
-  <div class="col-sm-12 booking">
-    <div class="col-sm-4">Hyperbolic time chamber</div>
-    <div class="col-sm-4">25th July, 10:00 - 11:00</div>
-    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
-  </div>
-
-  <div class="col-sm-12 booking">
-    <div class="col-sm-4">Room of spirit and time</div>
-    <div class="col-sm-4">2nd June, 8:30 - 9:30</div>
-    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
-  </div>
+  
 </div>
-
-<hr>
-
-<div id="submit-section" class="col-sm-12">
-  <p class="pull-left booker">V L Nagaraj - Media Team</p>
-  <input type="submit" class="btn btn-success pull-right" value="Submit" />
-</div>
-
-</div><!--end of panel-->
 
 </div><!--row-->
 
 </div><!--end of container-->
-
-
-<script>
-
-$(document).ready(function(){
-  $('#reset-btn').click(function(){
-    $('input[type="checkbox"]').attr('checked', false)
-  })
-})//end of document.ready
-
-
-</script>
-
-
 
 {% endblock %}
 
@@ -327,4 +68,42 @@ $(document).ready(function(){
 
 {% block page_specific_JS %}
 <!-- mention page specific js here -->
+<script>
+
+$(document).ready(function(){
+  $('#reset-btn').click(function(){
+    $('input[type="checkbox"]').attr('checked', false);
+  });
+  
+  UpdateBookingDetails();
+  
+  function UpdateBookingDetails(){
+    
+     $.ajax(
+              {
+                  type : "GET",
+                  url : '/bookings/details/',
+                  data :"" ,
+                  success : function(data)
+                  {
+                      $("#BookRoomAndViewDetailsContainer").html(data.html_data);
+                  },
+                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: " 
+                      + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                  //HideAjaxLoader(ajax_loader_element);
+                  },
+              }
+          );
+      
+            
+  }
+  
+  
+})//end of document.ready
+
+
+</script>
+
+
 {% endblock %}
