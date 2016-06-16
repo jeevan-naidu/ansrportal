@@ -1,0 +1,105 @@
+  
+  {% load book_my_room_template_tags %}
+  <div class="panel panel-default clearfix room-booking-content">
+
+    <div class="time-panel clearfix">
+
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9 time-slots">
+
+        <div class="col-sm-2">
+            <span>8:00</span>
+            <span>9:00</span>
+        </div>
+
+        <div class="col-sm-2">
+            <span>10:00</span>
+            <span>11:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>12:00</span>
+            <span>13:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>14:00</span>
+            <span>15:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>16:00</span>
+            <span>17:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>18:00</span>
+            <span>19:00</span>
+        </div>
+
+      </div>
+
+    </div><!--end of time-panel-->
+
+
+<div class="rooms-and-time clearfix">
+
+
+  {% for room_obj in rooms_list %}
+    <div class="room-and-time clearfix">
+        <div class="col-sm-3">{{room_obj.room_name}}</div>
+        <div class="col-sm-9 selectors">
+          
+          {% for block in TimingsList %}
+          <div class="col-sm-2 checkbox-removed">
+            {% for time in block %}
+              {% if for_date|Concat:time|IsBooked:room_obj %}
+                <span><input type="checkbox" id="two2" disabled /><label for="two2"></label></span>
+              {% else %}
+                <span><input type="checkbox" id="one{{room_obj}}{{time}}" data-value='{{time}}' /><label for="one{{room_obj}}{{time}}"></label></span>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% endfor %}
+
+        </div>
+
+    </div><!--end of room-and-time-->
+    {% endfor %}
+
+
+
+
+
+</div><!--end of rooms-and-time-->
+
+
+<hr>
+
+<div class="row bookings margin-0">
+<h4>Your Bookings</h4>
+
+  <div class="col-sm-12 booking">
+    <div class="col-sm-4">King's Landing</div>
+    <div class="col-sm-4">12th June, 9:30 - 12:30</div>
+    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
+  </div>
+
+  <div class="col-sm-12 booking">
+    <div class="col-sm-4">Hyperbolic time chamber</div>
+    <div class="col-sm-4">25th July, 10:00 - 11:00</div>
+    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
+  </div>
+
+  <div class="col-sm-12 booking">
+    <div class="col-sm-4">Room of spirit and time</div>
+    <div class="col-sm-4">2nd June, 8:30 - 9:30</div>
+    <div class="col-sm-4"><button class="btn btn-danger btn-sm pull-right">cancel</button></div>
+  </div>
+</div>
+
+<hr>
+
+<div id="submit-section" class="col-sm-12">
+  <p class="pull-left booker">V L Nagaraj - Media Team</p>
+  <input type="submit" class="btn btn-success pull-right" value="Submit" />
+</div>
+
+</div><!--end of panel-->
+
