@@ -2,6 +2,7 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
+{% block siteTitle %}myansrsource:Leave{% endblock %}
 <!DOCTYPE html>
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
@@ -420,7 +421,7 @@
                                 <div class="MyLvTot"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Balance</span></div>
                                 <div class="MyLvAppr"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Applied</span></div>
                                 <div class="MyLvAppl"><span class="glyphicon glyphicon-stop"></span><span class="Lv-TxtWhite">&nbsp;Approved</span></div>
-                                <div class="MyLvTotl"><span class="total-count">( )</span><span class="Lv-TxtWhite">&nbsp;Total</span></div>
+                                <div class="MyLvTotl"><span class="total-count"></span><span class="Lv-TxtWhite">&nbsp;<b>(Total)</b></span></div>
                             </div>
                         </div>
 
