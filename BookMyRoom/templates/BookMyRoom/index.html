@@ -28,7 +28,7 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <form class="navbar-form navbar-left" role="search">
-          <div class="input-group date form-group" id="id_from_date_pickers">
+          <div class="input-group date form-group" id="bookings_date_pickers">
               <input class="form-control filter_class input-sm" id="id_from_date" name="from_date" type="text">
               <span class="input-group-addon">
                   <span class="glyphicon-calendar glyphicon"></span>
@@ -49,13 +49,13 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-  
+
 <div id="BookRoomAndViewDetailsContainer">
 <!--  This div will be pupulated using ajax. Ajax request will render template BookMeetingform.html and will update this section with it.
 This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
 
 
-  
+
 </div>
 
 </div><!--row-->
@@ -68,17 +68,22 @@ This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
 
 {% block page_specific_JS %}
 <!-- mention page specific js here -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+
+
 <script>
 
 $(document).ready(function(){
   $('#reset-btn').click(function(){
     $('input[type="checkbox"]').attr('checked', false);
   });
-  
+
   UpdateBookingDetails();
-  
+
   function UpdateBookingDetails(){
-    
+
      $.ajax(
               {
                   type : "GET",
@@ -89,21 +94,32 @@ $(document).ready(function(){
                       $("#BookRoomAndViewDetailsContainer").html(data.html_data);
                   },
                   error: function(XMLHttpRequest, textStatus, errorThrown) {
-                  $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: " 
+                  $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                       + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
                   //HideAjaxLoader(ajax_loader_element);
                   },
               }
           );
-      
-            
+
+
   }
-  
-  
+
+  // Datepicker function
+
+              $('#bookings_date_pickers').datepicker({
+								 format: 'yyyy-mm-dd',
+								 autoclose: true
+							 }).on('changeDate', function(e) {
+                  console.log('a date has beed selected');
+                });
+
+
 })//end of document.ready
 
 
 </script>
+
+
 
 
 {% endblock %}

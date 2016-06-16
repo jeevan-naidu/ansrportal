@@ -52,9 +52,9 @@
           <div class="col-sm-2 checkbox-removed">
             {% for time in block %}
               {% if for_date|Concat:time|IsBooked:room_obj %}
-                <span><input type="checkbox" id="two2" disabled /><label for="two2"></label></span>
+                <span><input type="checkbox" name="BookingTime" id="two2" disabled /><label for="two2"></label></span>
               {% else %}
-                <span><input type="checkbox" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}" /><label for="one{{room_obj}}{{time}}"></label></span>
+                <span><input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}" /><label for="one{{room_obj}}{{time}}"></label></span>
               {% endif %}
             {% endfor %}
           </div>
