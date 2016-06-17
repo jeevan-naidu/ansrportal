@@ -120,8 +120,8 @@
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Submit it!",
                 cancelButtonText: "Cancel",
-                closeOnConfirm: true,
-                closeOnCancel: true
+                closeOnConfirm: false,
+                closeOnCancel: false
                 },
                 function(isConfirm){
                     // If user clicks on ok;
@@ -133,17 +133,13 @@
                             data: formData,
                             success: function (data) {
                                 if (data.errors) {
-																	alert(data.errors);
-                                  $("#server_errors").html(data.errors);
+																	swal(data.errors);
                                 }
                                 if (data.record_added == true) {
-                                  alert("Meeting Room Booked!");
+                                  swal("Booked!");
 																	$("#BookRoomAndViewDetailsContainer").html("");
 																	setTimeout(function(){ window.location.reload(); }, 1000);
-																		
-																		
                                 }
-                                //HideAjaxLoader(ajax_loader_element);
                             },
                             error: function(XMLHttpRequest, textStatus, errorThrown) {
 															$("#server_errors").html(errorThrown);
@@ -172,8 +168,8 @@
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Release it!",
                 cancelButtonText: "Cancel",
-                closeOnConfirm: true,
-                closeOnCancel: true
+                closeOnConfirm: false,
+                closeOnCancel: false
                 },
                 function(isConfirm){
                     // If user clicks on ok;
@@ -186,15 +182,13 @@
                             success: function (data) {
                                 
                                 if (data.record_updated == true) {
-                                    alert("Room Released!");
-																		$("#BookRoomAndViewDetailsContainer").html("");
-																		setTimeout(function(){ window.location.reload(); }, 1000);
-																		
+																	swal("Room Released");
+																	$("#BookRoomAndViewDetailsContainer").html("");
+																	setTimeout(function(){ window.location.reload(); }, 1000);
                                 }
 																if (data.user_mismatch == true) {
-                                    alert("User mismatch.You cannot cancel others' bookings");
+                                    swal("Malicious activity.You cannot cancel other users bookings.");
                                 }
-                                //HideAjaxLoader(ajax_loader_element);
                             },
                             error: function(XMLHttpRequest, textStatus, errorThrown) {
                                 alert(errorThrown);
