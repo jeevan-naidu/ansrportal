@@ -81,7 +81,9 @@
 		<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
 			<div class="col-sm-4">{{obj.room.get_location_display}}</div>
 			<div class="col-sm-4">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
-			<div class="col-sm-4"><button class="CancelBooking" class="btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Cancel</button></div>
+			<div class="col-sm-4">
+        <button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Cancel</button>
+      </div>
 		</div>
 	{% endfor %}
 </div>
@@ -135,7 +137,11 @@
                                     $("#server_errors").html(data.errors);
                                 }
                                 if (data.record_added == true) {
-                                    alert("success");
+                                  swal("Here's a message!");
+																		$("#BookRoomAndViewDetailsContainer").html("");
+																		setTimeout(function(){ window.location.reload(); }, 3000);
+																		
+																		
                                 }
                                 //HideAjaxLoader(ajax_loader_element);
                             },
@@ -160,8 +166,8 @@
             cancel_id = $(this).attr('data-value');
 						alert(cancel_id);
 						
-            swal({   title: "Are you sure you want to book these rooms?",
-                text: "You will not be able to edit this after submission!",
+            swal({   title: "Are you sure you want to cancel this?",
+                text: "",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
@@ -177,11 +183,15 @@
                         $.ajax({
                             url: '/bookings/cancel/',
                             type: 'POST',
-                            data: {'cancel_id':cancel_id},
+                             data: {'cancel_id':cancel_id},
                             success: function (data) {
                                 
                                 if (data.record_updated == true) {
-                                    alert("success");
+																	
+                                    swal("Here's a message!");
+																		$("#BookRoomAndViewDetailsContainer").html("");
+																		setTimeout(function(){ window.location.reload(); }, 3000);
+																		
                                 }
 																if (data.user_mismatch == true) {
                                     alert("User mismatch.You cannot cancel others' bookings");
@@ -191,9 +201,7 @@
                             error: function(XMLHttpRequest, textStatus, errorThrown) {
                                 alert(errorThrown);
                             },
-                            cache: false,
-                            contentType: false,
-                            processData: false
+                            
                         });
                     
                     } 

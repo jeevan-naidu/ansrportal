@@ -71,7 +71,7 @@ def GetBookingsView(request):
         utcnow_datetime_obj = timezone.make_aware(current_date_time_obj, timezone.get_current_timezone())
         bookings_list = MeetingRoomBooking.objects.filter(booked_by=request.user,
                                                           from_time__gte=utcnow_datetime_obj,
-                                                          active=True)
+                                                          active=True).order_by('from_time')
         context_data['bookings_list'] = bookings_list
         context_data['success_msg'] = "Booked"
         template = render(request, 'BookMyRoom/BookRoomAndViewDetails.html', context_data)
@@ -84,15 +84,15 @@ def CancelBooking(request):
     
     import ipdb;ipdb.set_trace()
     booking_id = request.POST.get('cancel_id', '')
-    context_date = {'record_updated':False, 'user_mismatch':False}
+    context_data = {'record_updated':False, 'user_mismatch':False}
    
     booking_obj = MeetingRoomBooking.objects.get(id=int(booking_id))
     if booking_obj.booked_by == request.user:
         booking_obj.active = False
         booking_obj.save()
-        context_date['record_updated'] = True
+        context_data['record_updated'] = True
     else:
-        context_date['user_mismatch'] = True
+        context_data['user_mismatch'] = True
     
     return JsonResponse(context_data)
     
