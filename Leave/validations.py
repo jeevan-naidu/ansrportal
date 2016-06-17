@@ -63,7 +63,7 @@ def oneTimeLeaveValidation(leave_form, user):
                     flag = True
             if not flag:
                 result['errors'].append('weekend and holiday only allowed for compoff and payoff')
-        elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in holiday:
+        elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in [holiday1['date'] for holiday1 in holiday]:
             result['errors'].append('please select week days')
 
     if result['todate'] != [0]:
