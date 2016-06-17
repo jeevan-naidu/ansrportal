@@ -88,20 +88,24 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
     leavecount = leave_calculation(fromDate, toDate, fromSession, toSession, leaveType_selected)
+    joined_date = Employee.objects.filter(user_id=user).values('joined')
     if leavecount <=0:
         result['errors'] = 'You are taking leave on holiday'
         return result
+    elif joined_date[0]['joined'] > fromDate:
+        result['errors'] = 'Date is in past of your joining date'
+        return result
     approvedLeave_newjoinee = getLeaveApproved(user)
     if leaveType_selected == 'sabbatical' :
-        joined_date = Employee.objects.filter(user_id=user).values('joined')
+
         if leavecount  < 180 and leavecount>=30 and joined_date[0]['joined'] < fromDate:
             result['success'] = leavecount
             return result
         elif leavecount<30 :
-            result['errors'] = 'for sabbatical maximum 180 days required'
+            result['errors'] = 'for sabbatical minimum 30 days required'
             return result
         elif leavecount>180 :
-            result['errors'] = 'for sabbatical minimum 30 days required'
+            result['errors'] = 'Leave are not avaliable'
             return result
         else :
             result['errors'] = 'You are not allowed to take leave for this time period'
@@ -109,7 +113,7 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
 
 
 
-    elif leaveType_selected == 'loss_of_pay' or leaveType_selected == 'work_from_home':
+    elif leaveType_selected == 'loss_of_pay' or leaveType_selected == 'work_from_home' :
         result['success'] = leavecount
         return result
 

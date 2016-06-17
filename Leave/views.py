@@ -666,8 +666,7 @@ def update_leave_application(request, status):
 
     try:
         leave_application.save()
-
-        ManagerEmailSendTask.delay(leave_application.user, leave_application.status, leave_application.from_date, leave_application.to_date, leave_application.status_comments, request.user.username)
+        ManagerEmailSendTask.delay(leave_application.user, leave_application.status, leave_application.from_date, leave_application.to_date, leave_application.status_comments, request.user)
         return True
     except Exception, e:
         logger.error(e)
