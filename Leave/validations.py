@@ -63,7 +63,7 @@ def oneTimeLeaveValidation(leave_form, user):
                     flag = True
             if not flag:
                 result['errors'].append('weekend and holiday only allowed for compoff and payoff')
-        elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in holiday:
+        elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in [holiday1['date'] for holiday1 in holiday]:
             result['errors'].append('please select week days')
 
     if result['todate'] != [0]:
@@ -88,20 +88,24 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
     leavecount = leave_calculation(fromDate, toDate, fromSession, toSession, leaveType_selected)
+    joined_date = Employee.objects.filter(user_id=user).values('joined')
     if leavecount <=0:
         result['errors'] = 'You are taking leave on holiday'
         return result
+    elif joined_date[0]['joined'] > fromDate:
+        result['errors'] = 'Date is in past of your joining date'
+        return result
     approvedLeave_newjoinee = getLeaveApproved(user)
     if leaveType_selected == 'sabbatical' :
-        joined_date = Employee.objects.filter(user_id=user).values('joined')
+
         if leavecount  < 180 and leavecount>=30 and joined_date[0]['joined'] < fromDate:
             result['success'] = leavecount
             return result
         elif leavecount<30 :
-            result['errors'] = 'for sabbatical maximum 180 days required'
+            result['errors'] = 'for sabbatical minimum 30 days required'
             return result
         elif leavecount>180 :
-            result['errors'] = 'for sabbatical minimum 30 days required'
+            result['errors'] = 'Leave are not avaliable'
             return result
         else :
             result['errors'] = 'You are not allowed to take leave for this time period'
@@ -109,7 +113,7 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
 
 
 
-    elif leaveType_selected == 'loss_of_pay' or leaveType_selected == 'work_from_home':
+    elif leaveType_selected == 'loss_of_pay' or leaveType_selected == 'work_from_home' :
         result['success'] = leavecount
         return result
 
@@ -260,20 +264,21 @@ def getLeaveBalance(leavetype, endmonth, user):
     leaveType=LeaveType.objects.get(leave_type=leavetype)
     if current_year == joined_year:
         if leaveType.carry_forward == 'yearly':
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month-1)
+
             if endmonth != joined_month:
                 day_worked = 30 - joined_day
                 if day_worked>=28:
                     leaveTotal = leaveTotal + 1.5
-                elif day_worked>20:
+                elif day_worked>=20:
                     leaveTotal = leaveTotal + 1
-                elif day_worked>10:
+                elif day_worked>=10:
                     leaveTotal = leaveTotal + 0.5
         elif leaveType.carry_forward == 'monthly':
             day_worked = 30 - joined_day
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month-1)
             if endmonth != joined_month:
-                if day_worked>=5:
+                if day_worked>=25:
                     leaveTotal = leaveTotal + .5
         else:
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))

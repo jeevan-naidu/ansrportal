@@ -119,16 +119,16 @@ def LeaveDetails(request):
         atachmentURL = ''
     data = '<div id="detail_leave"><table class="table" id="">\
   <thead><tr><th><b>PROPERTY<b></th><th><b>DETAILS<b></th></tr></thead>\
-  <tbody><tr><th scope="row">Leave Type</th><td>{0}</td></tr>\
-  <tr><th scope="row">From date</th><td>{1},{2}</td></tr>\
-  <tr><th scope="row">To date</th><td>{3},{4}</td></tr>\
-  <tr><th scope="row">Count</th><td>{14}</td></tr>\
-  <tr><th scope="row">Manager</th><td>{5} {6}</td></tr>\
-  <tr><th scope="row">Reason</th><td>{7}</td></tr>\
-  <tr><th scope="row">Status</th><td>{8}</td></tr>\
-  <tr><th scope="row">Status action on</th><td>{9}</td></tr>\
-  <tr><th scope="row">Status action by</th><td>{10} {11}</td></tr>\
-  <tr><th scope="row">Attachment</th><td><a href="{12}">{13}</a></td></tr>\
+  <tbody><tr><th scope="row">Leave Type : </th><td>{0}</td></tr>\
+  <tr><th scope="row">From date : </th><td>{1},{2}</td></tr>\
+  <tr><th scope="row">To date : </th><td>{3},{4}</td></tr>\
+  <tr><th scope="row">Count : </th><td>{14}</td></tr>\
+  <tr><th scope="row">Manager : </th><td>{5} {6}</td></tr>\
+  <tr><th scope="row">Reason : </th><td>{7}</td></tr>\
+  <tr><th scope="row">Status : </th><td>{8}</td></tr>\
+  <tr><th scope="row">Status action on : </th><td>{9}</td></tr>\
+  <tr><th scope="row">Status action by : </th><td>{10} {11}</td></tr>\
+  <tr><th scope="row">Attachment : </th><td><a href="{12}">{13}</a></td></tr>\
   </tbody></table></div>'.format(
   leaveTypeDictionary[leave.leave_type.leave_type],
   leave.from_date,
@@ -666,8 +666,7 @@ def update_leave_application(request, status):
 
     try:
         leave_application.save()
-
-        ManagerEmailSendTask.delay(leave_application.user, leave_application.status, leave_application.from_date, leave_application.to_date, leave_application.status_comments, request.user.username)
+        ManagerEmailSendTask.delay(leave_application.user, leave_application.status, leave_application.from_date, leave_application.to_date, leave_application.status_comments, request.user)
         return True
     except Exception, e:
         logger.error(e)

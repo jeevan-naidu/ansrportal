@@ -218,48 +218,48 @@
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-100 list_view">Details</a>
                                <div class="GrDetails" style = "display:none" >
                             <table class="table  table-hover view_details"  >
-                                    <tr class="warning">
-                                        <td style="width:20%">Applied By : </td>
+                                    <tr class="">
+                                        <td style="width:20%"><b>Applied By : </b></td>
                                         <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
                                     </tr>
-                                    <tr class="info">
-                                        <td>Applies On: </td>
+                                    <tr class="">
+                                        <td><b>Applies On: </b></td>
                                         <td>{{leave.applied_on}}</td>
                                     </tr>
-                                    <tr class="warning">
-                                        <td>Team: </td>
+                                    <tr class="">
+                                        <td><b>Team: </b></td>
                                         <td>{{leave.user.employee.business_unit.name}}</td>
                                     </tr>
-                                    <tr class="info">
-                                        <td>Applies to: </td>
+                                    <tr class="">
+                                        <td><b>Applies to: </b></td>
                                         <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
                                     </tr>
 
-                                    <tr class="warning">
-                                        <td>Leave type : </td>
+                                    <tr class="">
+                                        <td><b>Leave type : </b></td>
                                         <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
                                     </tr>
-                                    <tr class="info">
-                                        <td>From: </td>
+                                    <tr class="">
+                                        <td><b>From: </b></td>
                                         <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
                                     </tr>
-                                    <tr class="warning">
-                                        <td>To: </td>
+                                    <tr class="">
+                                        <td><b>To: </b></td>
                                         <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
                                     </tr>
-                                    <tr class="info">
-                                        <td>No Of Days: </td>
+                                    <tr class="">
+                                        <td><b>No Of Days: </b></td>
                                         <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
                                     </tr>
-                                    <tr class="warning">
-                                        <td>Reason: </td>
+                                    <tr class="">
+                                        <td><b>Reason: </b></td>
                                         <td>{{leave.reason}}</td>
                                     </tr>
-                                <tr class="info">
-                                        <td>Status: </td>
+                                <tr class="">
+                                        <td><b>Status: </b></td>
                                         <td>{{leave.status|title}}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr class="">
                                         <td></td>
                                         <td>
                                             <div>
@@ -584,6 +584,9 @@
 
                 <!--</div>-->
 
+<style type="text/css">
+.table tbody>tr>td{padding-top: 10px;}
+</style>
 
 
 </body>

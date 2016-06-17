@@ -238,48 +238,48 @@
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" class ="list_view" title="View Details">{{leave.user.first_name}} {{leave.user.last_name}}</a>
                            <div class="GrDetails" style = "display:none" >
                             <table class="table  table-hover view_details"  >
-                                    <tr class="warning">
+                                    <tr class="">
                                         <td style="width:20%">Applied By : </td>
                                         <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
                                     </tr>
-                                    <tr class="info">
+                                    <tr class="">
                                         <td>Applied On: </td>
                                         <td>{{leave.applied_on}}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr class="">
                                         <td>Team: </td>
                                         <td>{{leave.user.employee.business_unit.name}}</td>
                                     </tr>
-                                    <tr class="info">
+                                    <tr class="">
                                         <td>Applied to: </td>
                                         <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
                                     </tr>
 
-                                    <tr class="warning">
+                                    <tr class="">
                                         <td>Leave type : </td>
                                         <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
                                     </tr>
-                                    <tr class="info">
+                                    <tr class="">
                                         <td>From: </td>
                                         <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr class="">
                                         <td>To: </td>
                                         <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
                                     </tr>
-                                    <tr class="info">
+                                    <tr class="">
                                         <td>No Of Days: </td>
                                         <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr class="">
                                         <td>Remarks: </td>
                                         <td>{{leave.reason}}</td>
                                     </tr>
-                                <tr class="info">
+                                    <tr class="">
                                         <td>Status: </td>
                                         <td>{{leave.status|title}}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr class="">
                                         <td></td>
                                         <td>
                                             <div>
