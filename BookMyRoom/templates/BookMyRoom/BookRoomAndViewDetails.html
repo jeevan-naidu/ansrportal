@@ -51,7 +51,15 @@
           <div class="col-sm-2 checkbox-removed">
             {% for time in block %}
               {% if for_date|Concat:time|IsBooked:room_obj %}
-                <span><input type="checkbox" name="BookingTime" id="two2" disabled /><label for="two2"></label></span>
+                <span>
+									<input type="checkbox" name="BookingTime" id="two2" disabled />
+									<label for="two2"></label>
+									<div class="booked-by">
+                    <h4>Booked By</h4>
+                    <p>Sanjay Kunnath</p>
+                  </div>
+								</span>
+								
               {% else %}
                 <span><input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}" /><label for="one{{room_obj}}{{time}}"></label></span>
               {% endif %}
@@ -64,6 +72,7 @@
     {% endfor %}
 		
      <input type="submit" class="btn btn-success pull-right" value="Submit" />
+		  <button id="reset-btn" type="reset" class="btn btn-danger pull-right">Reset</button
 </form>
 
 
@@ -121,7 +130,7 @@
                 confirmButtonText: "Yes, Submit it!",
                 cancelButtonText: "Cancel",
                 closeOnConfirm: false,
-                closeOnCancel: false
+                closeOnCancel: true
                 },
                 function(isConfirm){
                     // If user clicks on ok;
@@ -137,8 +146,12 @@
                                 }
                                 if (data.record_added == true) {
                                   swal("Booked!");
-																	$("#BookRoomAndViewDetailsContainer").html("");
-																	setTimeout(function(){ window.location.reload(); }, 1000);
+																	$(".container").slideUp();
+																	
+																	setTimeout(function(){
+																		$("#BookRoomAndViewDetailsContainer").html("");
+																		window.location.reload();
+																		}, 1000);
                                 }
                             },
                             error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -169,7 +182,7 @@
                 confirmButtonText: "Yes, Release it!",
                 cancelButtonText: "Cancel",
                 closeOnConfirm: false,
-                closeOnCancel: false
+                closeOnCancel: true
                 },
                 function(isConfirm){
                     // If user clicks on ok;
@@ -183,8 +196,11 @@
                                 
                                 if (data.record_updated == true) {
 																	swal("Room Released");
-																	$("#BookRoomAndViewDetailsContainer").html("");
-																	setTimeout(function(){ window.location.reload(); }, 1000);
+																	$(".container").slideUp();
+																	setTimeout(function(){
+																		$("#BookRoomAndViewDetailsContainer").html("");
+																		window.location.reload();
+																		}, 1000);
                                 }
 																if (data.user_mismatch == true) {
                                     swal("Malicious activity.You cannot cancel other users bookings.");
