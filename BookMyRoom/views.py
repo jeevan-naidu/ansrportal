@@ -26,11 +26,14 @@ class BookMeetingRoomView(View):
     def post(self, request):
         
         context_data = {'add' : True, 'record_added' : False, 'success_msg' : None,
-                        'html_data' : None, 'errors' : [], 'for_date':'' }
+                        'html_data' : None, 'errors' : '', 'for_date':'' }
         if not request.POST.get('for_date'):
-            context_data['errors'].append("\nPlease select date")
+            context_data['errors'] += "\nPlease select date"
         else:
             for_date = request.POST.get('for_date')
+        bookings_list = request.POST.getlist('BookingTime')
+        if not bookings_list:
+            context_data['errors'] += "\nNo room selected."
         if not context_data['errors']:
             for element in request.POST.getlist('BookingTime'):
                 data_list = element.split("/")
@@ -82,7 +85,6 @@ def GetBookingsView(request):
 
 def CancelBooking(request):
     
-    import ipdb;ipdb.set_trace()
     booking_id = request.POST.get('cancel_id', '')
     context_data = {'record_updated':False, 'user_mismatch':False}
    

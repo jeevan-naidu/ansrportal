@@ -79,10 +79,10 @@
 	<h4>Your Bookings</h4>
 	{% for obj in bookings_list %}
 		<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
-			<div class="col-sm-4">{{obj.room.get_location_display}}</div>
+			<div class="col-sm-4">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
 			<div class="col-sm-4">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
 			<div class="col-sm-4">
-        <button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Cancel</button>
+        <button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>
       </div>
 		</div>
 	{% endfor %}
@@ -107,7 +107,6 @@
         $("#BookMeetingForm").submit(function(){
                 
             var formData = new FormData($(this)[0]);
-						alert(formData);
 						var for_date = $('#id_for_date').val();
 						formData.append('for_date', for_date);
             //form_id = $(this)[0].grievance_id.value;
@@ -115,7 +114,7 @@
             //ajax_loader_element = $("#SubmitAndCLoseFormAjaxLoader_" + form_id);
             
             swal({   title: "Are you sure you want to book these rooms?",
-                text: "You will not be able to edit this after submission!",
+                text: "",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
@@ -134,19 +133,20 @@
                             data: formData,
                             success: function (data) {
                                 if (data.errors) {
-                                    $("#server_errors").html(data.errors);
+																	alert(data.errors);
+                                  $("#server_errors").html(data.errors);
                                 }
                                 if (data.record_added == true) {
-                                  swal("Here's a message!");
-																		$("#BookRoomAndViewDetailsContainer").html("");
-																		setTimeout(function(){ window.location.reload(); }, 3000);
+                                  alert("Meeting Room Booked!");
+																	$("#BookRoomAndViewDetailsContainer").html("");
+																	setTimeout(function(){ window.location.reload(); }, 1000);
 																		
 																		
                                 }
                                 //HideAjaxLoader(ajax_loader_element);
                             },
                             error: function(XMLHttpRequest, textStatus, errorThrown) {
-                                alert(errorThrown);
+															$("#server_errors").html(errorThrown);
                             },
                             cache: false,
                             contentType: false,
@@ -164,14 +164,13 @@
 				$(".CancelBooking").click(function(){
    
             cancel_id = $(this).attr('data-value');
-						alert(cancel_id);
 						
-            swal({   title: "Are you sure you want to cancel this?",
+            swal({   title: "Are you sure you want to release this room?",
                 text: "",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, Submit it!",
+                confirmButtonText: "Yes, Release it!",
                 cancelButtonText: "Cancel",
                 closeOnConfirm: true,
                 closeOnCancel: true
@@ -187,10 +186,9 @@
                             success: function (data) {
                                 
                                 if (data.record_updated == true) {
-																	
-                                    swal("Here's a message!");
+                                    alert("Room Released!");
 																		$("#BookRoomAndViewDetailsContainer").html("");
-																		setTimeout(function(){ window.location.reload(); }, 3000);
+																		setTimeout(function(){ window.location.reload(); }, 1000);
 																		
                                 }
 																if (data.user_mismatch == true) {

@@ -1,6 +1,6 @@
 {% extends 'master.inc' %}
 {% load bootstrap3 %}
-
+{% block siteTitle %}myansrsource:Book Meeting Room{% endblock%}
 {% block content %}
 <!-- write your html inside this block -->
 
@@ -34,14 +34,13 @@
                   <span class="glyphicon-calendar glyphicon"></span>
               </span>
           </div>
-          <button type="button" class="btn btn-default btn-sm location" flag='1' id="karle_ground_floor">Karle 0</button>
+          <button type="button" class="btn btn-primary btn-sm location" flag='1' id="karle_ground_floor">Karle 0</button>
           <button type="button" class="btn btn-default btn-sm location" flag='0' id="karle_second_floor">Karle 2</button>
           <button type="button" class="btn btn-default btn-sm location" flag='0' id="btp">BTP</button>
         </div>
 
 <div class="nav-btns">
         <button id="reset-btn" class="btn btn-danger btn-sm pull-right">Reset</button>
-        <p class="pull-right">Your time is : <b>9:00 - 12:30</b></p>
 </div>
 
 
@@ -107,10 +106,22 @@ $(document).ready(function(){
   
   
   $(".location").click(function(){
-    $('.location').css('background-color','#fff');
+    
     $('.location').attr('flag','0');
-    $(this).css('background-color','#337ab7');
     $(this).attr('flag', '1');
+    
+    $('.location').each(function(){
+            if($(this).attr('flag') == '1')
+            {
+                $(this).removeClass('btn-default btn-primary');
+                $(this).addClass('btn-primary');
+            }
+            else{
+                $(this).removeClass('btn-default btn-primary');
+                $(this).addClass('btn-default');
+            }
+        });
+    
     
     var for_date = $('#id_for_date').val();
     var location = $(this).attr('id');
