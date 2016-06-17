@@ -153,7 +153,7 @@
       background-color: #EAEEEF;
       background-color: #E0E0E0;
       background-color: #FFFFFF;
-      overflow-y: auto;
+      overflow-y: hidden;
       overflow-x: hidden;
       color: #000;
       font-size: 12px;
@@ -624,7 +624,7 @@
         .Transactions-header{width: 100%;background: #D3F5D6; background: #EBF5FB;line-height: 40px;padding: 0px 15px}
         .Transactions-header label{margin-bottom: 0px;}
         .no-border th, .no-border td{border: 1px solid #FFF}
-        .leave-data-container{padding: 15px;}
+        .leave-data-container{padding: 15px;overflow-y: auto;height: 100%;}
 
         .approve-reject{
           margin-right: 25px;
