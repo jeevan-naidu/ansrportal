@@ -158,6 +158,7 @@ background-color: #fcf8e3;
 .selectors div input[type="checkbox"]{margin-left: 14px;}
 .selectors div input[type="checkbox"]:first-child{margin-left: 0px;}
 .selectors label{margin-left: 5px;margin-bottom: 0px;}
+.selectors span{position: relative}
 .selectors span:first-child label{margin-left: 0px;}
 .selectors input[type="checkbox"]+label{
 	display: inline-block;
@@ -169,8 +170,41 @@ background-color: #fcf8e3;
 	border: 1px solid #999;
 }
 .selectors input[type="checkbox"]:checked+label{background-color: yellow;background-color: #78CA5E;border-color: #78CA5E}
-.selectors input[type="checkbox"]:disabled+label{background-color: #BF6868;cursor: default;border-color: #BF6868}
+.selectors input[type="checkbox"]:disabled+label{background-color: #999;cursor: default;border-color: #999}
 .checkbox-removed input[type="checkbox"]{display: none}
+
+.booked-by{
+	position: absolute;
+  border: 1px solid #D4D4D4;
+  bottom: 30px;
+  left: -25px;
+  min-width: 150px;
+  text-align: center;
+  border-radius: 7px;
+	display: none;
+}
+.booked-by h4{
+	background: #eee;
+	background: #fff;
+	background: #efefef;
+	border-bottom: 1px solid #D4D4D4;
+  font-size: 13px;
+  line-height: 30px;
+  margin: 0px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+	color: #757575;
+}
+.booked-by p{
+	background: #fff;
+	margin: 0px;
+	border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+	font-size: 14px;
+	line-height: 40px;
+	color: #454545;
+}
+span:hover .booked-by{display: block}
 
 .room-and-time{
 		margin-bottom: 15px;
@@ -183,3 +217,5 @@ background-color: #fcf8e3;
 .booking{margin-top: 10px;}
 #submit-section{}
 .booker{color: red; font-weight: 900}
+
+#reset-btn{margin-right: 15px;}

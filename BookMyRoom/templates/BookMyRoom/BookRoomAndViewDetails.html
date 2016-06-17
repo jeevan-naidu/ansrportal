@@ -1,5 +1,4 @@
-  
-  {% load book_my_room_template_tags %}
+ {% load book_my_room_template_tags %}
   <div class="panel panel-default clearfix room-booking-content">
 
     <div class="time-panel clearfix">
@@ -51,7 +50,15 @@
           <div class="col-sm-2 checkbox-removed">
             {% for time in block %}
               {% if for_date|Concat:time|IsBooked:room_obj %}
-                <span><input type="checkbox" name="BookingTime" id="two2" disabled /><label for="two2"></label></span>
+                <span>
+                  <input type="checkbox" name="BookingTime" id="two2" disabled />
+                  <label for="two2"></label>
+                  <div class="booked-by">
+                    <h4>Booked By</h4>
+                    <p>Sanjay Kunnath</p>
+                  </div>
+                </span>
+
               {% else %}
                 <span><input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}" /><label for="one{{room_obj}}{{time}}"></label></span>
               {% endif %}
@@ -62,8 +69,9 @@
         </div>
     </div><!--end of room-and-time-->
     {% endfor %}
-		
-     <input type="submit" class="btn btn-success pull-right" value="Submit" />
+
+    <input type="submit" class="btn btn-success pull-right" value="Submit" />
+    <button id="reset-btn" type="reset" class="btn btn-danger pull-right">Reset</button>
 </form>
 
 
@@ -92,8 +100,8 @@
 
 <!--<div id="submit-section" class="col-sm-12">
   <p class="pull-left booker">V L Nagaraj - Media Team</p>
- 
-</div>-->
+
+</dv>-->
 
 </div><!--end of panel-->
 
@@ -105,15 +113,15 @@
 		});
 
         $("#BookMeetingForm").submit(function(){
-                
-            var formData = new FormData($(this)[0]);
+
+    Data = new FormData($(this)[0]);
 						var for_date = $('#id_for_date').val();
 						formData.append('for_date', for_date);
             //form_id = $(this)[0].grievance_id.value;
             //form_element = $(this);
             //ajax_loader_element = $("#SubmitAndCLoseFormAjaxLoader_" + form_id);
-            
-            swal({   title: "Are you sure you want to book these rooms?",
+
+            swal({   you sure you want to book these rooms?",
                 text: "",
                 type: "warning",
                 showCancelButton: true,
@@ -140,10 +148,9 @@
                                   alert("Meeting Room Booked!");
 																	$("#BookRoomAndViewDetailsContainer").html("");
 																	setTimeout(function(){ window.location.reload(); }, 1000);
-																		
-																		
-                                }
-                                //HideAjaxLoader(ajax_loader_element);
+
+
+                                HideAjaxLoader(ajax_loader_element);
                             },
                             error: function(XMLHttpRequest, textStatus, errorThrown) {
 															$("#server_errors").html(errorThrown);
@@ -152,23 +159,15 @@
                             contentType: false,
                             processData: false
                         });
-                    
-                    } 
-                    
-                    
+
+                    }
+
+
                    });
-                    
-            return false;
-        });
-				
-				$(".CancelBooking").click(function(){
-   
-            cancel_id = $(this).attr('data-value');
-						
-            swal({   title: "Are you sure you want to release this room?",
-                text: "",
-                type: "warning",
-                showCancelButton: true,
+
+            return f			$(".CancelBooking")c  $(this).attr('data-valual({   title: "Are you sure you want toease this room?",
+                text: "",              type: "warning",
+                showCatton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Release it!",
                 cancelButtonText: "Cancel",
@@ -184,29 +183,28 @@
                             type: 'POST',
                              data: {'cancel_id':cancel_id},
                             success: function (data) {
-                                
+
                                 if (data.record_updated == true) {
                                     alert("Room Released!");
-																		$("#BookRoomAndViewDetailsContainer").html("");
-																		setTimeout(function(){ window.location.reload(); }, 1000);
-																		
+																		$("#BookRoomAndV																		setTimeout(function(){ window.location.reload(); }, 1000);
+
                                 }
 																if (data.user_mismatch == true) {
                                     alert("User mismatch.You cannot cancel others' bookings");
-                                }
+
                                 //HideAjaxLoader(ajax_loader_element);
                             },
                             error: function(XMLHttpRequest, textStatus, errorThrown) {
                                 alert(errorThrown);
                             },
-                            
+
                         });
-                    
-                    } 
-                    
-                    
+
+                    }
+
+
                    });
-                    
+
             return false;
         });
 
