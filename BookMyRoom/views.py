@@ -25,7 +25,6 @@ class BookMeetingRoomView(View):
     
     def post(self, request):
         
-        import ipdb;ipdb.set_trace()
         context_data = {'add' : True, 'record_added' : False, 'success_msg' : None,
                         'html_data' : None, 'errors' : '', 'for_date':'' }
         if not request.POST.get('for_date'):
