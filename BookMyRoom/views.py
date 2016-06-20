@@ -25,6 +25,7 @@ class BookMeetingRoomView(View):
     
     def post(self, request):
         
+        import ipdb;ipdb.set_trace()
         context_data = {'add' : True, 'record_added' : False, 'success_msg' : None,
                         'html_data' : None, 'errors' : '', 'for_date':'' }
         if not request.POST.get('for_date'):
@@ -45,19 +46,19 @@ class BookMeetingRoomView(View):
                 
                 from_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(from_time), '%Y-%m-%d/%H:%M')
                 to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
-                booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj,
+                try:
+                    booking_obj = MeetingRoomBooking.objects.get(room=room_obj, from_time=from_time_obj, to_time=to_time_obj, status='booked')
+                    context_data['errors'] = "This room is already booked. This is a rare case scenario in which two users\
+                    try to access database at a time.<br> Conflicts: <br>For room: " + room_obj.room_name+ ", <br>Time: " + \
+                    str(from_time) + ". <br>Please refresh this page and submit again."
+                except:
+                    booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked', 
                                                 from_time=from_time_obj, to_time=to_time_obj)
-                booking_obj.save()
-                context_data['record_added'] = True
-                context_data['success_msg'] = "Booked"
+                    booking_obj.save()
+                    context_data['record_added'] = True
+                    context_data['success_msg'] = "Booked"
         return JsonResponse(context_data)
-                
-                                
-      
-    
 
-
-    
 
 def GetBookingsView(request):
     
@@ -74,7 +75,7 @@ def GetBookingsView(request):
         utcnow_datetime_obj = timezone.make_aware(current_date_time_obj, timezone.get_current_timezone())
         bookings_list = MeetingRoomBooking.objects.filter(booked_by=request.user,
                                                           from_time__gte=utcnow_datetime_obj,
-                                                          active=True).order_by('from_time')
+                                                          status='booked').order_by('from_time')
         context_data['bookings_list'] = bookings_list
         context_data['success_msg'] = "Booked"
         template = render(request, 'BookMyRoom/BookRoomAndViewDetails.html', context_data)
@@ -90,7 +91,7 @@ def CancelBooking(request):
    
     booking_obj = MeetingRoomBooking.objects.get(id=int(booking_id))
     if booking_obj.booked_by == request.user:
-        booking_obj.active = False
+        booking_obj.status = 'cancelled'
         booking_obj.save()
         context_data['record_updated'] = True
     else:

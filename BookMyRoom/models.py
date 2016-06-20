@@ -4,11 +4,12 @@ from CompanyMaster.models import OfficeLocation
 # Create your models here.
 
 LOCATION_CHOICES = (('karle_ground_floor', 'Karle-Ground Floor'), ('karle_second_floor', 'Karle-Second Floor'), ('btp', 'BTP'))
+BOOKING_STATUS = (('booked', 'Booked'), ('cancelled', 'Cancelled'))
 
 class RoomDetail(models.Model):
     
     room_name = models.CharField(max_length=100)
-    location = models.room = models.CharField(max_length = 100, choices=LOCATION_CHOICES)
+    location =  models.CharField(max_length = 100, choices=LOCATION_CHOICES)
     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
     
     def __unicode__(self):
@@ -23,7 +24,10 @@ class MeetingRoomBooking(models.Model):
     room = models.ForeignKey(RoomDetail)
     from_time = models.DateTimeField()
     to_time = models.DateTimeField()
-    active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
+    status = models.CharField(max_length = 100, choices=BOOKING_STATUS)
+    # active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(verbose_name="last", auto_now=True)
     
     def __unicode__(self):
         ''' return unicode strings '''

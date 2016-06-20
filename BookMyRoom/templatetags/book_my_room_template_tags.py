@@ -24,7 +24,7 @@ def IsBooked(for_date_time_period, room_obj):
     for_date_obj = datetime.datetime.strptime(for_date + "," + time_period.split("-")[0],  "%Y-%m-%d,%H:%M")
     utc_datetime_obj = timezone.make_aware(for_date_obj, timezone.get_current_timezone())
     utc_datetime_obj = utc_datetime_obj.astimezone(pytz.utc)
-    obj_list = MeetingRoomBooking.objects.filter(from_time=utc_datetime_obj, room=room_obj, active=True)
+    obj_list = MeetingRoomBooking.objects.filter(from_time=utc_datetime_obj, room=room_obj, status='booked')
     
     return True if obj_list else False
 
@@ -38,7 +38,7 @@ def BookedBy(for_date_time_period, room_obj):
     for_date_obj = datetime.datetime.strptime(for_date + "," + time_period.split("-")[0],  "%Y-%m-%d,%H:%M")
     utc_datetime_obj = timezone.make_aware(for_date_obj, timezone.get_current_timezone())
     utc_datetime_obj = utc_datetime_obj.astimezone(pytz.utc)
-    obj_list = MeetingRoomBooking.objects.filter(from_time=utc_datetime_obj, room=room_obj, active=True)
+    obj_list = MeetingRoomBooking.objects.filter(from_time=utc_datetime_obj, room=room_obj, status='booked')
     if obj_list:
         obj = obj_list[0]
         return str(obj.booked_by.username)

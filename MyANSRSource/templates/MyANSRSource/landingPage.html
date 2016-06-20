@@ -45,11 +45,9 @@
 	<div class="col-md-12">
 		<legend class="overflowHidden text-center">
 			<span class="top-5"><small>Welcome <b>{{ firstname }}</b>, Quo Vadis?</small></span>
-		{% if user|approve_timesheet  %}
-		<button type="button" class="btn btn-info mar-bot-15 pull-right disabled" data-toggle="modal" data-target="#myStatus">My Work Status</button>
-		{% else %}
-		<button type="button" class="btn btn-info mar-bot-15 pull-right" data-toggle="modal" data-target="#myStatus">My Work Status</button>
-		{% endif %}
+		<a href="/bookings/">
+		<button type="button" class="btn btn-info mar-bot-15 pull-right">Book Meeting Room</button>
+		</a>
 		</legend>
 	</div>
 </div>
