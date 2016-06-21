@@ -219,3 +219,27 @@ span:hover .booked-by{display: block}
 .booker{color: red; font-weight: 900}
 
 #reset-btn{margin-right: 15px;}
+
+/* Pulsate */
+
+.pulsate{
+    -webkit-animation: mymove 2s infinite;
+    animation: mymove 2s infinite;
+	margin-top: 10px;
+    margin-right: 10px;
+	/*box-shadow: 0px 0px 5px #000;*/
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes mymove {
+    0%   {box-shadow:0px 0px 0px #8E1212}
+    50%  {box-shadow:0px 0px 10px #8E1212}
+    100% {box-shadow:0px 0px 0px #8E1212}
+}
+
+/* Standard syntax */
+@keyframes mymove {
+    0%   {box-shadow:0px 0px 0px #8E1212}
+    50%  {box-shadow:0px 0px 10px #8E1212}
+    100% {box-shadow:0px 0px 0px #8E1212}
+}
