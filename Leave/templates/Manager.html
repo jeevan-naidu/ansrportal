@@ -218,70 +218,76 @@
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-100 list_view">Details</a>
                                <div class="GrDetails" style = "display:none" >
                             <table class="table  table-hover view_details"  >
-                                    <tr class="warning">
-                                        <td style="width:20%">Applied By : </td>
+                                    <tr >
+                                        <td >Applied By : </td>
                                         <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
                                     </tr>
-                                    <tr class="info">
+                                    <tr>
                                         <td>Applies On: </td>
                                         <td>{{leave.applied_on}}</td>
                                     </tr>
-                                    <tr class="warning">
-                                        <td>Team: </td>
-                                        <td>{{leave.user.employee.business_unit.name}}</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>Applies to: </td>
-                                        <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
-                                    </tr>
-
-                                    <tr class="warning">
-                                        <td>Leave type : </td>
+                                    <tr >
+                                        <td>Leave Type : </td>
                                         <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
                                     </tr>
-                                    <tr class="info">
+
+
+
+                                    <tr >
                                         <td>From: </td>
                                         <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr >
                                         <td>To: </td>
                                         <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
                                     </tr>
-                                    <tr class="info">
+                                    <tr >
                                         <td>No Of Days: </td>
                                         <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr >
                                         <td>Reason: </td>
                                         <td>{{leave.reason}}</td>
                                     </tr>
-                                <tr class="info">
+                                    <tr >
+                                        <td>Manager: </td>
+                                        <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
+                                    </tr>
+                                <tr >
                                         <td>Status: </td>
                                         <td>{{leave.status|title}}</td>
                                     </tr>
-                                    <tr class="warning">
+                                    <tr >
+                                            <td>Status Action On: </td>
+                                            <td>{{leave.status_action_on}}</td>
+                                        </tr>
+                                        <tr >
+                                                <td>Status Action By: </td>
+                                                <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
+                                            </tr>
+                                    <tr >
                                         <td></td>
                                         <td>
                                             <div>
-                                               {% if leave.attachement%} <p><strong>Attachment:</strong></p>
-				  <div class="" >
-					<!-- Attachments start -->
-                    <a target="_blank" href="{{leave.attachement.url}}">
-                        {% if leave.attachement.name|GetFileTypeFromName == 'xls' or leave.attachement.name|GetFileTypeFromName == 'xlsx' %}
-                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'csv' %}
-                            <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'pdf' %}
-                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'doc' or leave.attachement.name|GetFileTypeFromName == 'docx'  %}
-                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'jpg' or leave.attachement.name|GetFileTypeFromName == 'jpeg' or leave.attachement.name|GetFileTypeFromName == 'png' %}
-                            <img alt="A doc file" src="{{leave.attachement.url }}" height="50px" width="50px">
+                                              {% if leave.atachement%} <p><strong>Attachment:</strong></p>
+         <div class="" >
+         <!-- Attachments start -->
+                   <a target="_blank" href="{{leave.atachement.url}}">
+                       {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
+                           <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
+                           <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
+                           <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
+                           <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+                           <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
 
-                        {% endif %}
-                    </a>
-                  </div>
-            {% endif %}
+                       {% endif %}
+                   </a>
+                 </div>
+           {% endif %}
             <!-- Attachments end -->
                                             </div>
                                         </td>
@@ -323,12 +329,12 @@
 
                                 <div class="col-md-4 pull-right">
                                     <div>
-                                        <a id="test-trigger" href="#test-modal_{{leave.id}}" role="button" data-toggle="modal" title="View Details">
+                                        <a id="test-trigger" href="#test-modal-{{leave.id}}" role="button" data-toggle="modal" title="View Details">
                                             <button id ="" class="btn btn-info btn-xs remark">Remarks</button>
                                         </a>
                                     </div>
                                         <!--<div style = "display:none" id ="remark__{{leave.id}}">-->
-                                             <div class="modal fade" id="test-modal_{{leave.id}}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal fade" id="test-modal-{{leave.id}}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -340,7 +346,7 @@
 								<b> Remarks</b>
 							</h4>
                             </div>
-                            <div class="modal-body"><!-- Content goes here -->
+                            <div class=""><!-- Content goes here -->
 
                                 <textarea style="min-height:200px;width:100%;"  id ="remark_{{leave.id}}" name="remark_{{leave.id}}" class = "remarks" placeholder="enter remarks"></textarea>
                                 <span id="textarea_remaining">2000 characters remaining</span>
@@ -362,22 +368,28 @@
 
                 </div>
                                         <!--</div>-->
-                                    <div>{% if leave.attachement %}
-                                          <a target="_blank" href="{{leave.attachement.url}}">
-                        {% if leave.attachement.name|GetFileTypeFromName == 'xls' or leave.attachement.name|GetFileTypeFromName == 'xlsx' %}
-                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'csv' %}
-                            <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'pdf' %}
-                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'doc' or leave.attachement.name|GetFileTypeFromName == 'docx'  %}
-                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
-                        {% elif leave.attachement.name|GetFileTypeFromName == 'jpg' or leave.attachement.name|GetFileTypeFromName == 'jpeg' or leave.attachement.name|GetFileTypeFromName == 'png' %}
-                            <img alt="A doc file" src="{{leave.attachement.url }}" height="50px" width="50px">
+                                        <div>
+                                          {% if leave.atachement%}
+     <div class="" >
+     <!-- Attachments start -->
+               <a target="_blank" href="{{leave.atachement.url}}">
+                   {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
+                       <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
+                       <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
+                       <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
+                       <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+                       <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
 
-                        {% endif %}
-                    </a>{% endif %}
-                                    </div>
+                   {% endif %}
+               </a>
+             </div>
+       {% endif %}
+        <!-- Attachments end -->
+                                        </div>
 
                                 </div>
                         </td>
@@ -539,57 +551,6 @@
     </script>
 {% endblock %}
 
-
-
-
-
-
-
-
-
-
-
-
-<!-- Test modal -->
-
-                <!--<div class="modal fade" id="test-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
-                    <!--<div class="modal-dialog modal-lg">-->
-                        <!--<div class="modal-content">-->
-                            <!--<div class="modal-header">-->
-
-                                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">-->
-								<!--x-->
-							<!--</button>-->
-                                <!--<h4 class="modal-title text-center" id="myModalLabel">-->
-								<!--<b> Remarks</b>-->
-							<!--</h4>-->
-                            <!--</div>-->
-                            <!--<div class="modal-body">&lt;!&ndash; Content goes here &ndash;&gt;-->
-
-                                <!--<textarea  style="width:100%" rows="3" cols ="70" id ="remark_{{leave.id}}" name="remark_{{leave.id}}" placeholder="enter remarks"></textarea>-->
-
-                            <!--</div>-->
-                            <!--<div class="modal-footer">-->
-
-                                <!--<button type="button" class="btn btn-default" data-dismiss="modal">-->
-								<!--Close-->
-							<!--</button>-->
-                                <!--&lt;!&ndash;<button type="button" class="btn btn-primary">&ndash;&gt;-->
-								<!--&lt;!&ndash;Save changes&ndash;&gt;-->
-							<!--&lt;!&ndash;</button>&ndash;&gt;-->
-                            <!--</div>-->
-                        <!--</div>-->
-
-                    <!--</div>-->
-
-                <!--</div>-->
-
-
-
 </body>
 
 </html>
-
-
-<!--
-button_leave.id-->

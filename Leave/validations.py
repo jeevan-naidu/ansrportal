@@ -18,7 +18,7 @@ def leaveValidation(leave_form, user, attachment):
             return result
         leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)), status__in=['approved', 'open'],user=user)
         if len(leave_between_applied_date)>1 or leaveCheckBetweenAppliedLied(leave_between_applied_date, leave_form):
-            result['errors'].append('You are having leave in this time period')
+            result['errors'].append('You have already applied for leave in this time period')
         result_temp = validation_leave_type(leave_form, user, fromDate, toDate, attachment)
 
         if result_temp['success']:
@@ -43,8 +43,11 @@ def oneTimeLeaveValidation(leave_form, user):
         if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
+        elif leaveType_selected in ['paternity_leave', 'bereavement_leave'] and leaveapproved == 0:
+            result['success'] = getLeaveBalance(leaveType, fromDate, user)
+            result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
         else:
-            result['errors'].append("sorry you don't have this type of leave")
+            result['errors'].append("Leaves are not available")
     else:
         holiday = Holiday.objects.all().values('date')
         result['success'] = 1
@@ -52,7 +55,7 @@ def oneTimeLeaveValidation(leave_form, user):
         result['due_date'] = fromDate - timedelta(days = 80)
         check_date = date.today() - timedelta(days = 80)
         if check_date > fromDate:
-            result['errors'].append('leave has expired')
+            result['errors'].append('Leave has expired')
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveType_selected != 'comp_off_avail' and leaveapproved ==1:
             result['errors'].append('sorry you already applied for comp off/pay off')
@@ -64,7 +67,7 @@ def oneTimeLeaveValidation(leave_form, user):
             if not flag:
                 result['errors'].append('weekend and holiday only allowed for compoff and payoff')
         elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in [holiday1['date'] for holiday1 in holiday]:
-            result['errors'].append('please select week days')
+            result['errors'].append('Leave applied on days of Holiday')
 
     if result['todate'] != [0]:
         toDate = result['todate']
@@ -73,7 +76,7 @@ def oneTimeLeaveValidation(leave_form, user):
     leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),
     status__in=['approved', 'open'],user=user)
     if leave_between_applied_date:
-        result['errors'].append( "You are having leave in this time period")
+        result['errors'].append( "You have already applied for leave in this time period")
 
     return result
 
@@ -90,10 +93,10 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
     leavecount = leave_calculation(fromDate, toDate, fromSession, toSession, leaveType_selected)
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     if leavecount <=0:
-        result['errors'] = 'You are taking leave on holiday'
+        result['errors'] = 'Leave applied on days of Holiday'
         return result
     elif joined_date[0]['joined'] > fromDate:
-        result['errors'] = 'Date is in past of your joining date'
+        result['errors'] = 'You cannot apply for leave for the period before your date of Joining'
         return result
     approvedLeave_newjoinee = getLeaveApproved(user)
     if leaveType_selected == 'sabbatical' :
@@ -102,7 +105,7 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
             result['success'] = leavecount
             return result
         elif leavecount<30 :
-            result['errors'] = 'for sabbatical minimum 30 days required'
+            result['errors'] = 'Sabbatical leave cannot be applied for less than 30 calendar days'
             return result
         elif leavecount>180 :
             result['errors'] = 'Leave are not avaliable'
@@ -118,12 +121,12 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
         return result
 
     elif newJoineeValidation(user, fromDate) and leavecount + approvedLeave_newjoinee > 2 :
-        result['errors'] = "you are not allow to take more than 2 leave"
+        result['errors'] = "You are not allowed to take more than 2 days of leave during first 90 days from you DOJ"
         return result
 
     else:
         if leaveType_selected == 'sick_leave' and leavecount > 2 and not attachment:
-            result['errors'] = "we need attachment for more than 2 sick leave"
+            result['errors'] = "Please attach the medical certificate"
             return result
 
         else:
@@ -157,7 +160,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
             result['success'] = 'success'
 
         else :
-            result['errors'] = " leaves are not avaliable"
+            result['errors'] = " Leaves are not avaliable"
 
     else:
         leaveTotal = getLeaveBalance(leaveType, fromDate.month, user)
@@ -166,7 +169,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
         if balanceLeave >= leavecount :
             result['success'] = 'success'
         else :
-            result['errors'] = " leaves are not avaliable"
+            result['errors'] = " Leaves are not avaliable"
 
     return result
 

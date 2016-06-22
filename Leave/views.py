@@ -104,7 +104,7 @@ def LeaveCancel(request):
     leave.update()
     manager = managerCheck(user_id)
     EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
-     leave.to_session, leave.reason, 'cancel')
+     leave.to_session, leave.days_count, leave.reason, 'cancel')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
@@ -113,41 +113,8 @@ def LeaveCancel(request):
 def LeaveDetails(request):
     leave_id = request.GET.get('leaveid')
     leave = LeaveApplications.objects.get(id = leave_id)
-    if leave.atachement:
-        atachmentURL = leave.atachement.url
-    else:
-        atachmentURL = ''
-    data = '<div id="detail_leave"><table class="table" id="">\
-  <thead><tr><th><b>PROPERTY<b></th><th><b>DETAILS<b></th></tr></thead>\
-  <tbody><tr><th scope="row">Leave Type</th><td>{0}</td></tr>\
-  <tr><th scope="row">From date</th><td>{1},{2}</td></tr>\
-  <tr><th scope="row">To date</th><td>{3},{4}</td></tr>\
-  <tr><th scope="row">Count</th><td>{14}</td></tr>\
-  <tr><th scope="row">Manager</th><td>{5} {6}</td></tr>\
-  <tr><th scope="row">Reason</th><td>{7}</td></tr>\
-  <tr><th scope="row">Status</th><td>{8}</td></tr>\
-  <tr><th scope="row">Status action on</th><td>{9}</td></tr>\
-  <tr><th scope="row">Status action by</th><td>{10} {11}</td></tr>\
-  <tr><th scope="row">Attachment</th><td><a href="{12}">{13}</a></td></tr>\
-  </tbody></table></div>'.format(
-  leaveTypeDictionary[leave.leave_type.leave_type],
-  leave.from_date,
-  leaveSessionDictionary[leave.from_session],
-  leave.to_date,
-  leaveSessionDictionary[leave.to_session],
-  leave.apply_to.first_name,
-  leave.apply_to.last_name,
-  leave.reason,
-  leave.status,
-  leave.status_action_on,
-  leave.status_action_by.first_name,
-  leave.status_action_by.last_name,
-  atachmentURL,
-  atachmentURL,
-  leave.days_count,
-  )
-    json_data = json.dumps(data)
-    return HttpResponse(json_data, content_type="application/json")
+    return render(request, 'leave_details.html', {'leave':leave, 'LEAVE_TYPES_CHOICES': LEAVE_TYPES_CHOICES,'SESSION_STATUS': SESSION_STATUS,})
+
 
 # Create your views here.
 def Dashboard(request):
@@ -262,7 +229,7 @@ class ApplyLeaveView(View):
 
                 if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
                     if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate, user_id):
-                        context_data['errors'].append( 'for this time period there is no comp off ')
+                        context_data['errors'].append( 'For this time period there is no comp off ')
                         context_data['form'] = leave_form
                         return render(request, 'leave_apply.html', context_data)
 
@@ -273,12 +240,12 @@ class ApplyLeaveView(View):
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
                     else:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason).saveas(user_id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
@@ -290,17 +257,17 @@ class ApplyLeaveView(View):
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
                         else:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, reason, 'save')
+                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
-                        context_data['errors'].append( 'Sorry you are not having this type of leave ')
+                        context_data['errors'].append( 'Leaves are not available')
                         context_data['form'] = leave_form
 
                     # return render(request, 'leave_apply.html', context_data)
@@ -666,7 +633,8 @@ def update_leave_application(request, status):
 
     try:
         leave_application.save()
-        ManagerEmailSendTask.delay(leave_application.user, leave_application.status, leave_application.from_date, leave_application.to_date, leave_application.status_comments, request.user)
+        ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
+        leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
         return True
     except Exception, e:
         logger.error(e)

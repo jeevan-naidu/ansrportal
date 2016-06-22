@@ -112,7 +112,7 @@
 
                           <!-- <a href="#" class="pull-right btn btn-sm btn-danger">Export</a> -->
 
-                          <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details"  class="pull-right btn btn-sm btn-danger">
+                          <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="Apply Leave"  class="pull-right btn btn-sm btn-danger">
                             Apply Leave
                           </a>
 
@@ -1110,7 +1110,7 @@ function showDetails(leave_id){
             data :{'leaveid':leave_id} ,
             success : function(data)
             {
-              $('#detail_leave').remove()
+              $('.LeaveDetails').remove()
               $('#myModal').modal({show:true})
               $('#myModaldata').append(data);
 

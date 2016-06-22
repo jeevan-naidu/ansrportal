@@ -2,15 +2,20 @@
 
 <html>
 <head>
-    <title>Leave Application Status</title>
+    <title>Page Title</title>
 </head>
 
 <body>
 
-<p>Hi {{registered_by}},</p>
-<p>You Have Applied Leave From  {{from_date}} To {{to_date}} And Your Leave Application {{status}} by {{action_taken_by}}</p>
-{% if comment %} <p> Reason : {{comment}} </p> {% endif %}
+<p>Hi, {{registered_by}}</p>
 
+<p>You have apllied leave on the ansrsource portal.</p>
+<p>Leave Type : {{leaveType}} </p>
+<p>From Date : {{from_date}}</p>
+<p>To Date : {{to_date}}</p>
+<p>No. of days : {{count}}<p>
+{% if reason %} <p> Reason : {{reason}} </p> {% endif %}
+<p>{{status}} by {{action_taken_by}}</p>
 <p></p><p></p>
 <p>Regards,<br>
  HR Support<br>

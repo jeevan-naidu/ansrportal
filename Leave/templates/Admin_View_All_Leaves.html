@@ -130,13 +130,14 @@
                                   <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
                                   <select class="form-control filter_class input-sm" id="application_status" name="application_status">
 
-                                    <option value ="all">All</option>
-          s                            {% for value, text in APPLICATION_STATUS %}
+
+                                      {% for value, text in APPLICATION_STATUS %}
                                           {% if value != 'applied' %}
                                               <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
                                           {% endif %}
                                       {%endfor%}
 
+<option value ="all">All</option>
                                   </select>&nbsp;&nbsp;&nbsp;&nbsp;
                                   {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
                                       <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
@@ -236,78 +237,84 @@
                                 {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
                         <td>
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" class ="list_view" title="View Details">{{leave.user.first_name}} {{leave.user.last_name}}</a>
-                           <div class="GrDetails" style = "display:none" >
-                            <table class="table  table-hover view_details"  >
-                                    <tr class="warning">
-                                        <td style="width:20%">Applied By : </td>
-                                        <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>Applied On: </td>
-                                        <td>{{leave.applied_on}}</td>
-                                    </tr>
-                                    <tr class="warning">
-                                        <td>Team: </td>
-                                        <td>{{leave.user.employee.business_unit.name}}</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>Applied to: </td>
-                                        <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
-                                    </tr>
+                            <div class="GrDetails" style = "display:none" >
+                         <table class="table  table-hover view_details"  >
+                                 <tr >
+                                     <td >Applied By : </td>
+                                     <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
+                                 </tr>
+                                 <tr>
+                                     <td>Applies On: </td>
+                                     <td>{{leave.applied_on}}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>Leave Type : </td>
+                                     <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                                 </tr>
 
-                                    <tr class="warning">
-                                        <td>Leave type : </td>
-                                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>From: </td>
-                                        <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
-                                    </tr>
-                                    <tr class="warning">
-                                        <td>To: </td>
-                                        <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>No Of Days: </td>
-                                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
-                                    </tr>
-                                    <tr class="warning">
-                                        <td>Remarks: </td>
-                                        <td>{{leave.reason}}</td>
-                                    </tr>
-                                <tr class="info">
-                                        <td>Status: </td>
-                                        <td>{{leave.status|title}}</td>
-                                    </tr>
-                                    <tr class="warning">
-                                        <td></td>
-                                        <td>
-                                            <div>
-                                               {% if leave.atachement%} <p><strong>Attachment:</strong></p>
-				  <div class="" >
-					<!-- Attachments start -->
-                    <a target="_blank" href="{{leave.atachement.url}}">
-                        {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
-                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
-                        {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
-                            <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
-                        {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
-                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
-                        {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
-                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
-                        {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
-                            <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
 
-                        {% endif %}
-                    </a>
-                  </div>
-            {% endif %}
-            <!-- Attachments end -->
-                                            </div>
-                                        </td>
-                                    </tr>
 
-                                </table></div>
+                                 <tr >
+                                     <td>From: </td>
+                                     <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>To: </td>
+                                     <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+                                 </tr>
+                                 <tr >
+                                     <td>No Of Days: </td>
+                                     <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>Reason: </td>
+                                     <td>{{leave.reason}}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>Manager: </td>
+                                     <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
+                                 </tr>
+                             <tr >
+                                     <td>Status: </td>
+                                     <td>{{leave.status|title}}</td>
+                                 </tr>
+                                 <tr >
+                                         <td>Status Action On: </td>
+                                         <td>{{leave.status_action_on}}</td>
+                                     </tr>
+                                     <tr >
+                                             <td>Status Action By: </td>
+                                             <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
+                                         </tr>
+                                 <tr >
+                                     <td></td>
+                                     <td>
+                                         <div>
+                                           {% if leave.atachement%} <p><strong>Attachment:</strong></p>
+      <div class="" >
+      <!-- Attachments start -->
+                <a target="_blank" href="{{leave.atachement.url}}">
+                    {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
+                        <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
+                        <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
+                        <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
+                        <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+                        <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
+
+                    {% endif %}
+                </a>
+              </div>
+        {% endif %}
+         <!-- Attachments end -->
+                                         </div>
+                                     </td>
+                                 </tr>
+
+                             </table></div>
                         </td>
                         <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
                         <td>{{leave.from_date}},<br> {%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%} </td>
