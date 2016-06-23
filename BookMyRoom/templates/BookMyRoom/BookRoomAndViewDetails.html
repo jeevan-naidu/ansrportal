@@ -114,24 +114,33 @@
 		});
 
         $("#BookMeetingForm").submit(function(){
-                
+               
             var formData = new FormData($(this)[0]);
 						var for_date = $('#id_for_date').val();
 						formData.append('for_date', for_date);
 						if ($("input[name=BookingTime]:checked").length <= 0){
-							swal({text:"Please select at least one room ", type:'warning'});
+							swal({title:"", text:"Please select at least one room ", type:'warning'});
 							return false;
 						}
 						
-						swal({
+								swal({
 										title: 'Confirmation needed',
-										text: "Are you sure you want to booke these rooms?",
+										text: "Are you sure you want to book these rooms?",
 										showCancelButton: true,
 										confirmButtonText: 'Yes, Submit!',
-										showLoaderOnConfirm: true,
-										preConfirm: function(isConfirm) {
-											return new Promise(function(resolve, reject) {
-														if (isConfirm) {
+										closeOnConfirm: false,
+										closeOnCancel: true
+										},
+                function(isConfirm){
+                    // If user clicks on ok;
+                    if (isConfirm) {
+											 $('.showSweetAlert .sa-button-container button.confirm').html('');
+											 $('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
+											 $('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
+											 
+											 //$('.showSweetAlert p, .showSweetAlert button, .showSweetAlert h2').css('display','none');
+													
+											//initiate
 														$.ajax({
 																url: '/bookings/',
 																type: 'POST',
@@ -145,7 +154,14 @@
 																		});
 																		}
 																		if (data.record_added == true) {
-																			resolve();
+																			
+																			swal({
+																				title:'Booked!',
+																				type:"success",
+																				text:"page will refresh automatically",
+																				showConfirmButton: false
+																				});
+																			
 																			$(".container").slideUp();
 																			setTimeout(function(){
 																				$("#BookRoomAndViewDetailsContainer").html("");
@@ -165,18 +181,64 @@
 																processData: false
 														});
 												
-												} 
-											});
-										},
-										allowOutsideClick: true
-									}).then(function() {
-										swal({
-											type: 'success',
-											title: 'Meeting Room Booked!',
-											html: "Page will refresh automatically"
-										});
-									});
-						              
+												}  
+                   });
+						
+
+						//swal({
+						//				title: 'Confirmation needed',
+						//				text: "Are you sure you want to booke these rooms?",
+						//				showCancelButton: true,
+						//				confirmButtonText: 'Yes, Submit!',
+						//				showLoaderOnConfirm: true,
+						//				preConfirm: function(isConfirm) {
+						//					return new Promise(function(resolve, reject) {
+						//								if (isConfirm) {
+						//								$.ajax({
+						//										url: '/bookings/',
+						//										type: 'POST',
+						//										data: formData,
+						//										success: function (data) {
+						//												if (data.errors) {
+						//													swal({
+						//													type: 'error',
+						//													title: 'Server Error!',
+						//													html: data.errors
+						//												});
+						//												}
+						//												if (data.record_added == true) {
+						//													resolve();
+						//													$(".container").slideUp();
+						//													setTimeout(function(){
+						//														$("#BookRoomAndViewDetailsContainer").html("");
+						//														window.location.reload();
+						//														}, 2000);
+						//												}
+						//										},
+						//										error: function(XMLHttpRequest, textStatus, errorThrown) {
+						//											swal({
+						//													type: 'error',
+						//													title: 'Server Error!',
+						//													html: errorThrown
+						//												});
+						//										},
+						//										cache: false,
+						//										contentType: false,
+						//										processData: false
+						//								});
+						//						
+						//						} 
+						//					});
+						//				},
+						//				allowOutsideClick: true
+						//			}).then(function() {
+						//				swal({
+						//					type: 'success',
+						//					title: 'Meeting Room Booked!',
+						//					html: "Page will refresh automatically"
+						//				});
+						//			});
+						//              
             return false;
         });
 				
@@ -185,24 +247,36 @@
    
             cancel_id = $(this).attr('data-value');
 						
-						swal({
-										title: 'Confirmation needed',
-										text: "Are you sure you want to release these rooms?",
-										type: 'warning',
-										showCancelButton: true,
-										confirmButtonText: 'Yes, Release it!',
-										showLoaderOnConfirm: true,
-										preConfirm: function(isConfirm) {
-											return new Promise(function(resolve, reject) {
-														if (isConfirm) {
+						swal({   title: "Are you sure you want to release this?",
+                text: "You will not be able to edit this grievance after submission!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Submit it!",
+                cancelButtonText: "cancel",
+                closeOnConfirm: false,
+                closeOnCancel: true
+                },
+                function(isConfirm){
+                    // If user clicks on ok;
+										$('.showSweetAlert .sa-button-container button.confirm').html('');
+										$('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
+										$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
+										
+                    if (isConfirm) {
 														$.ajax({
 																url: '/bookings/cancel/',
 																type: 'POST',
 																 data: {'cancel_id':cancel_id},
 																success: function (data) {
 																		if (data.record_updated == true) {
-																			resolve();
-																			$(".container").slideUp();
+																			swal({
+																				title:"Released!",
+																				type:'success',
+																				text:"page will refresh automatically",
+																				showConfirmButton: false
+																				});
+																			
 																			setTimeout(function(){
 																				$("#BookRoomAndViewDetailsContainer").html("");
 																				window.location.reload();
@@ -223,16 +297,69 @@
 														});
 												
 												} 
-											});
-										},
-										allowOutsideClick: true
-									}).then(function() {
-										swal({
-											type: 'success',
-											title: 'Meeting Room Released!',
-											html: "Page will refresh automatically"
-										});
-									});
+                   });
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						//swal({
+						//				title: 'Confirmation needed',
+						//				text: "Are you sure you want to release these rooms?",
+						//				type: 'warning',
+						//				showCancelButton: true,
+						//				confirmButtonText: 'Yes, Release it!',
+						//				showLoaderOnConfirm: true,
+						//				preConfirm: function(isConfirm) {
+						//					return new Promise(function(resolve, reject) {
+						//								if (isConfirm) {
+						//								$.ajax({
+						//										url: '/bookings/cancel/',
+						//										type: 'POST',
+						//										 data: {'cancel_id':cancel_id},
+						//										success: function (data) {
+						//												if (data.record_updated == true) {
+						//													resolve();
+						//													$(".container").slideUp();
+						//													setTimeout(function(){
+						//														$("#BookRoomAndViewDetailsContainer").html("");
+						//														window.location.reload();
+						//														}, 2000);
+						//												}
+						//												if (data.user_mismatch == true) {
+						//														swal('Error', "Malicious activity.You cannot cancel other users bookings.");
+						//												}
+						//										},
+						//										error: function(XMLHttpRequest, textStatus, errorThrown) {
+						//												swal({
+						//													type: 'error',
+						//													title: 'Server Error!',
+						//													html: errorThrown
+						//												});
+						//										},
+						//										
+						//								});
+						//						
+						//						} 
+						//					});
+						//				},
+						//				allowOutsideClick: true
+						//			}).then(function() {
+						//				swal({
+						//					type: 'success',
+						//					title: 'Meeting Room Released!',
+						//					html: "Page will refresh automatically"
+						//				});
+						//			});
                     
             return false;
         });
