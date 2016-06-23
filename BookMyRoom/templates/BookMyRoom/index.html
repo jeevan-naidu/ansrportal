@@ -1,0 +1,189 @@
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% block siteTitle %}myansrsource:Book Meeting Room{% endblock%}
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+
+{% block content %}
+<!-- write your html inside this block -->
+
+       
+<div class="container">
+
+<h3 class="text-center">Book a Meeting Room</h3>
+
+<div class="row">
+
+
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <!-- <a class="navbar-brand" href="#">Brand</a> -->
+      </div><!-- end of button for mobile toggle -->
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <div class="navbar-form navbar-left" role="search">
+          <div class="input-group date form-group" id="bookings_date_pickers">
+              <input class="form-control filter_class input-sm" id="id_for_date" name="for_date" type="text">
+              <span class="input-group-addon">
+                  <span class="glyphicon-calendar glyphicon"></span>
+              </span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm location" flag='1' id="karle_ground_floor">Karle-Level 0</button>
+          <button type="button" class="btn btn-default btn-sm location" flag='0' id="karle_second_floor">Karle-Level 2</button>
+          <button type="button" class="btn btn-default btn-sm location" flag='0' id="btp">BTP</button>
+        </div>
+
+<!-- <div class="nav-btns">
+        <button id="reset-btn" class="btn btn-danger btn-sm pull-right">Reset</button>
+</div> -->
+
+
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div style="color:red" id="server_errors"></div>
+<div id="BookRoomAndViewDetailsContainer">
+<!--  This div will be pupulated using ajax. Ajax request will render template BookMeetingform.html and will update this section with it.
+This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
+
+
+
+</div>
+
+</div><!--row-->
+
+</div><!--end of container-->
+
+{% endblock %}
+
+
+
+{% block page_specific_JS %}
+<!-- mention page specific js here -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+
+
+<script>
+
+$(document).ready(function(){
+
+      // Datepicker function
+    $('#bookings_date_pickers').datepicker({
+                       format: 'yyyy-mm-dd',
+                       autoclose: true
+                   }).on('changeDate', function(e) {
+
+        var location = "";
+        var for_date = $('#id_for_date').val();
+
+        $('.location').each(function(){
+            if($(this).attr('flag') == '1')
+            {
+                location = $(this).attr('id');
+            }
+            });
+        UpdateBookingDetails(for_date, location);
+
+      });
+
+    //initialize to today's date
+    $('#bookings_date_pickers').datepicker('update', new Date());
+
+
+  $('#reset-btn').click(function(){
+    $('input[type="checkbox"]').attr('checked', false);
+  });
+
+
+
+  $(".location").click(function(){
+
+    $('.location').attr('flag','0');
+    $(this).attr('flag', '1');
+
+    $('.location').each(function(){
+            if($(this).attr('flag') == '1')
+            {
+                $(this).removeClass('btn-default btn-primary');
+                $(this).addClass('btn-primary');
+            }
+            else{
+                $(this).removeClass('btn-default btn-primary');
+                $(this).addClass('btn-default');
+            }
+        });
+
+
+    var for_date = $('#id_for_date').val();
+    var location = $(this).attr('id');
+    UpdateBookingDetails(for_date, location);
+    });
+
+    var for_date = $('#id_for_date').val();
+    var location = 'karle_ground_floor';
+  UpdateBookingDetails(for_date, location);
+
+  function UpdateBookingDetails(for_date, location){
+
+     $.ajax(
+              {
+                  type : "GET",
+                  url : '/bookings/details/',
+                  data :{'for_date':for_date, 'location':location},
+                  success : function(data)
+                  {
+                    if (data.errors)
+                    {
+                      $("#server_errors").html(data.errors);
+                    }
+                    else{
+                        $("#server_errors").html("");
+                        $("#BookRoomAndViewDetailsContainer").html(data.html_data);
+                    }
+                  },
+                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                      + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                  //HideAjaxLoader(ajax_loader_element);
+                  },
+              }
+          );
+
+
+  }
+
+
+
+})//end of document.ready
+
+
+</script>
+
+
+
+
+{% endblock %}

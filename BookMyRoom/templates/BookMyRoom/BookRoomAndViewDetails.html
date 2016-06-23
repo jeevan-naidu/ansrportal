@@ -1,0 +1,265 @@
+  
+  {% load book_my_room_template_tags %}
+  <div class="panel panel-default clearfix room-booking-content">
+
+    <div class="time-panel clearfix">
+
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9 time-slots">
+
+        <div class="col-sm-2">
+            <span>8:00</span>
+            <span>9:00</span>
+        </div>
+
+        <div class="col-sm-2">
+            <span>10:00</span>
+            <span>11:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>12:00</span>
+            <span>13:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>14:00</span>
+            <span>15:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>16:00</span>
+            <span>17:00</span>
+        </div>
+        <div class="col-sm-2">
+            <span>18:00</span>
+            <span>19:00</span>
+        </div>
+
+      </div>
+
+    </div><!--end of time-panel-->
+
+
+<div class="rooms-and-time clearfix">
+
+<form id="BookMeetingForm" method="post" enctype="multipart/form-data">
+		 <!--<form action="{% url 'add_grievance' %}" method="post">-->
+		  {% csrf_token %}
+  {% for room_obj in rooms_list %}
+    <div class="room-and-time clearfix">
+        <div class="col-sm-3">{{room_obj.room_name}}</div>
+        <div class="col-sm-9 selectors">
+          {% for block in TimingsList %}
+          <div class="col-sm-2 checkbox-removed">
+            {% for time in block %}
+              {% if for_date|Concat:time|IsBooked:room_obj %}
+                <span>
+									<input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
+									<label for="{{room_obj.id}}-{{time}}"></label>
+									<div class="booked-by">
+                    <h4>Booked By</h4>
+                    <p>{{for_date|Concat:time|BookedBy:room_obj}}</p>
+                  </div>
+								</span>
+								
+              {% else %}
+                <span><input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/><label for="one{{room_obj}}{{time}}"></label></span>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% endfor %}
+
+        </div>
+    </div><!--end of room-and-time-->
+    {% endfor %}
+		
+     <input type="submit" class="btn btn-success pull-right" value="Submit" />
+		  <button id="reset-btn" type="reset" class="btn btn-danger pull-right">Reset</button
+</form>
+
+
+
+
+
+</div><!--end of rooms-and-time-->
+
+
+<hr>
+
+<div class="row bookings margin-0">
+	<span><h4>Your Bookings</h4></span><span><h5>(Only future bookings are displayed here)</h5></span>
+	{% if bookings_list %}
+		{% for obj in bookings_list %}
+			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
+				<div class="col-sm-4">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
+				<div class="col-sm-4">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
+				<div class="col-sm-4">
+					<button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>
+				</div>
+			</div>
+		{% endfor %}
+		{% else %}
+			<div class="col-sm-12 booking">
+				<h5>No bookings found...</h5>
+			</div>
+		
+		{% endif %}
+</div>
+
+<hr>
+
+<!--<div id="submit-section" class="col-sm-12">
+  <p class="pull-left booker">V L Nagaraj - Media Team</p>
+ 
+</div>-->
+
+</div><!--end of panel-->
+
+<script>
+	$(document).ready(function(){
+		 $('#reset-btn').click(function(){
+				$('input[type="checkbox"]').attr('checked', false);
+			});
+		});
+
+        $("#BookMeetingForm").submit(function(){
+               
+            var formData = new FormData($(this)[0]);
+						var for_date = $('#id_for_date').val();
+						var confirmation_text = "";
+						formData.append('for_date', for_date);
+						if ($("input[name=BookingTime]:checked").length <= 0){
+							swal({title:"", text:"Sorry! You haven't selected any meeting room.", type:'warning'});
+							return false;
+						}
+						else if($("input[name=BookingTime]:checked").length == 1){
+							confirmation_text = "Are you sure you want to book this room?";
+						}
+						else{
+							confirmation_text = "Are you sure you want to book these rooms?";
+						}
+						
+								swal({
+										title: '',
+										text: confirmation_text,
+										type: "warning",
+										showCancelButton: true,
+										confirmButtonText: 'Yes!',
+										confirmButtonColor: "#00BCD4",
+										closeOnConfirm: false,
+										closeOnCancel: true
+										},
+                function(isConfirm){
+                    // If user clicks on ok;
+                    if (isConfirm) {
+											 $('.showSweetAlert .sa-button-container button.confirm').html('');
+											 $('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
+											 //$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
+
+														$.ajax({
+																url: '/bookings/',
+																type: 'POST',
+																data: formData,
+																success: function (data) {
+																		if (data.errors) {
+																			//$('.showSweetAlert .sa-button-container button.confirm').attr('disabled','false');
+																			swal({
+																			type: 'error',
+																			title: 'Server Error!',
+																			text: data.errors,
+																			html: true,
+																		});
+																		}
+																		if (data.record_added == true) {
+																			
+																			swal({
+																				title:'Yay! Booking successful!',
+																				type:"success",
+																				text:"The page will refresh automatically.",
+																				showConfirmButton: false
+																				});
+																			
+																			$(".container").slideUp();
+																			setTimeout(function(){
+																				$("#BookRoomAndViewDetailsContainer").html("");
+																				window.location.reload();
+																				}, 2000);
+																		}
+																},
+																error: function(XMLHttpRequest, textStatus, errorThrown) {
+																	swal({
+																			type: 'error',
+																			title: 'Server Error!',
+																			html: errorThrown
+																		});
+																},
+																cache: false,
+																contentType: false,
+																processData: false
+														});
+												
+												}  
+                   });  
+            return false;
+        });
+				
+				
+				$(".CancelBooking").click(function(){
+   
+            var cancel_id = $(this).attr('data-value');
+						
+						swal({   title: "",
+                text: "Are you sure you want to release this meeting room?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#00BCD4",
+                confirmButtonText: "Yes!",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: true
+                },
+                function(isConfirm){
+                    // If user clicks on ok;
+										
+                    if (isConfirm) {
+											$('.showSweetAlert .sa-button-container button.confirm').html('');
+										$('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
+										$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
+											
+														$.ajax({
+																url: '/bookings/cancel/',
+																type: 'POST',
+																 data: {'cancel_id':cancel_id},
+																success: function (data) {
+																		if (data.record_updated == true) {
+																			swal({
+																				title:"Meeting room released!!",
+																				type:'success',
+																				text:"The page will refresh automatically",
+																				showConfirmButton: false
+																				});
+																			
+																			setTimeout(function(){
+																				$("#BookRoomAndViewDetailsContainer").html("");
+																				window.location.reload();
+																				}, 2000);
+																		}
+																		if (data.user_mismatch == true) {
+																				swal('Error', "Malicious activity.You cannot cancel other users bookings.");
+																		}
+																},
+																error: function(XMLHttpRequest, textStatus, errorThrown) {
+																		swal({
+																			type: 'error',
+																			title: 'Server Error!',
+																			html: errorThrown
+																		});
+																},
+																
+														});
+												
+												} 
+                   });
+                    
+            return false;
+        });
+
+</script>

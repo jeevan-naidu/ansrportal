@@ -10,7 +10,7 @@
     background-color: rgba(73, 71, 71, 0.5);
     position: absolute;
     z-index: 10;
-    
+
 }
 .ajax_load_image{
     background:  url("../images/ajax-loader.gif") no-repeat center;
@@ -29,7 +29,7 @@
 }
 
 .HowItWorksContainer{
-   
+
     position: fixed;
     top: 22.8%;
     left: 0px;
@@ -42,7 +42,7 @@
     transition: all 1s;
     cursor: pointer;
     z-index: 10;
-    
+
 }
 
 .how_it_works_hide{
@@ -53,20 +53,20 @@
 .DivRotate{
     transition: transform .8s ease-in-out;
     padding-left: 21px;
-    
+
 }
 
 
 .DivVer{
-     
+
     -ms-transform: rorotate(-90deg);
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
-    
+
     -ms-transform-origin: 241px -29px;
     -webkit-transform-origin: 241px -29px;
     -moz-transform-origin: 241px -29px;
-    
+
     transform: rotate(-90deg);
     transform-origin: 241px -29px;
 
@@ -87,10 +87,10 @@
 
 .font-15{
     font-size: 14px;
-    
+
 }
 label{
-    font-weight: 100 !important; 
+    font-weight: 100 !important;
 }
 .margin-right-15{
     margin-right:15px;
@@ -143,3 +143,103 @@ background-color: #fcf8e3;
 
 
 /* End grievance module */
+
+/* Book-my-room  Styles */
+
+.margin-0{margin: 0px;}
+
+.room-booking-content{padding: 20px 15px;}
+.nav-btns{margin-top: 9px;}
+.nav-btns p{line-height: 36px;margin-right: 30px;margin-bottom: 0px;}
+.btn-blue{background-color: #61A3DC; color: #FFF}
+.time-panel{margin-bottom: 25px;}
+.time-slots div span{width: 40px;display: inline-block;font-size: 10px;}
+.time-slots div span:first-child{margin-right: 14px;}
+.selectors div input[type="checkbox"]{margin-left: 14px;}
+.selectors div input[type="checkbox"]:first-child{margin-left: 0px;}
+.selectors label{margin-left: 5px;margin-bottom: 0px;}
+.selectors span{position: relative}
+.selectors span:first-child label{margin-left: 0px;}
+.selectors input[type="checkbox"]+label{
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background-color: #F1F1F1;
+	border-radius: 50%;
+	cursor: pointer;
+	border: 1px solid #999;
+}
+.selectors input[type="checkbox"]:checked+label{background-color: yellow;background-color: #78CA5E;border-color: #78CA5E}
+.selectors input[type="checkbox"]:disabled+label{background-color: #999;cursor: default;border-color: #999}
+.checkbox-removed input[type="checkbox"]{display: none}
+
+.booked-by{
+	position: absolute;
+  border: 1px solid #D4D4D4;
+  bottom: 30px;
+  left: -25px;
+  min-width: 150px;
+  text-align: center;
+  border-radius: 7px;
+	display: none;
+}
+.booked-by h4{
+	background: #eee;
+	background: #fff;
+	background: #efefef;
+	border-bottom: 1px solid #D4D4D4;
+  font-size: 13px;
+  line-height: 30px;
+  margin: 0px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+	color: #757575;
+}
+.booked-by p{
+	background: #fff;
+	margin: 0px;
+	border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+	font-size: 14px;
+	line-height: 40px;
+	color: #454545;
+}
+span:hover .booked-by{display: block}
+
+.room-and-time{
+		margin-bottom: 15px;
+    border: 1px solid #EFEFEF;
+    border-radius: 3px;
+    padding-top: 4px;
+	}
+.bookings{margin-bottom: 20px;}
+.bookings h4{padding-left: 15px;}
+.booking{margin-top: 10px;}
+#submit-section{}
+.booker{color: red; font-weight: 900}
+
+#reset-btn{margin-right: 15px;}
+
+/* Pulsate */
+
+.pulsate{
+    -webkit-animation: mymove 2s infinite;
+    animation: mymove 2s infinite;
+	margin-top: 10px;
+    margin-right: 10px;
+	/*box-shadow: 0px 0px 5px #000;*/
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes mymove {
+    0%   {box-shadow:0px 0px 0px #8E1212}
+    50%  {box-shadow:0px 0px 10px #8E1212}
+    100% {box-shadow:0px 0px 0px #8E1212}
+}
+
+/* Standard syntax */
+@keyframes mymove {
+    0%   {box-shadow:0px 0px 0px #8E1212}
+    50%  {box-shadow:0px 0px 10px #8E1212}
+    100% {box-shadow:0px 0px 0px #8E1212}
+}

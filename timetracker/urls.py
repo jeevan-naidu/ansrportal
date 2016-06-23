@@ -5,6 +5,7 @@ from django.views.generic.base import RedirectView
 from MyANSRSource import apps
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 
 autocomplete_light.autodiscover()
 admin.autodiscover()
@@ -29,5 +30,6 @@ urlpatterns = patterns('',
                        url(r'^grievances_admin/', include('GrievanceAdmin.urls')),
                        url(r'^reports/', include('Reports.urls')),
                        url(r'^salesforce/', include('Salesforce.urls')),
-                       
+                       url(r'^bookings/', include('BookMyRoom.urls')),
+
                        ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
