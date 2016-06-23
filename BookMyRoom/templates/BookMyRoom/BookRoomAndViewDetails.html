@@ -85,16 +85,23 @@
 <hr>
 
 <div class="row bookings margin-0">
-	<h4>Your Bookings</h4>
-	{% for obj in bookings_list %}
-		<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
-			<div class="col-sm-4">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
-			<div class="col-sm-4">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
-			<div class="col-sm-4">
-        <button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>
-      </div>
-		</div>
-	{% endfor %}
+	<span><h4>Your Bookings</h4></span><span><h5>(Only future bookings are displayed here)</h5></span>
+	{% if bookings_list %}
+		{% for obj in bookings_list %}
+			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
+				<div class="col-sm-4">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
+				<div class="col-sm-4">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
+				<div class="col-sm-4">
+					<button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>
+				</div>
+			</div>
+		{% endfor %}
+		{% else %}
+			<div class="col-sm-12 booking">
+				<h5>No bookings found...</h5>
+			</div>
+		
+		{% endif %}
 </div>
 
 <hr>
