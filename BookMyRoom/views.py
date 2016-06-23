@@ -47,9 +47,9 @@ class BookMeetingRoomView(View):
                 to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
                 try:
                     booking_obj = MeetingRoomBooking.objects.get(room=room_obj, from_time=from_time_obj, to_time=to_time_obj, status='booked')
-                    context_data['errors'] = "This room is already booked. This is a rare case scenario in which two users\
-                    try to access database at a time.<br> Conflicts: <br>For room: " + room_obj.room_name+ ", <br>Time: " + \
-                    str(from_time) + ". <br>Please refresh this page and submit again."
+                    
+                    context_data['errors'] = "Oops! :( Looks like someone else clicked\
+                    <b>Submit</b> just before you did. Better luck next time."
                 except:
                     booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked', 
                                                 from_time=from_time_obj, to_time=to_time_obj)
