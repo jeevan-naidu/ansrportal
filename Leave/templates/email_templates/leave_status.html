@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Page Title</title>
+</head>
+
+<body>
+
+<p>Hi, {{registered_by}}</p>
+
+<p>You have apllied leave on the ansrsource portal.</p>
+<p>Leave Type : {{leaveType}} </p>
+<p>From Date : {{from_date}}</p>
+<p>To Date : {{to_date}}</p>
+<p>No. of days : {{count}}<p>
+{% if reason %} <p> Reason : {{reason}} </p> {% endif %}
+<p>{{status}} by {{action_taken_by}}</p>
+<p></p><p></p>
+<p>Regards,<br>
+ HR Support<br>
+</body>
+</html>

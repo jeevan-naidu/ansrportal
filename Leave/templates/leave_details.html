@@ -1,0 +1,83 @@
+
+{% load grievances_template_tags %}
+
+
+ <div class="LeaveDetails" >
+<table class=" table table-hover view_details" >
+     <tr >
+         <td >Applied By : </td>
+         <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
+     </tr>
+     <tr>
+         <td>Applies On: </td>
+         <td>{{leave.applied_on}}</td>
+     </tr>
+     <tr >
+         <td>Leave Type : </td>
+         <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+     </tr>
+
+
+
+     <tr >
+         <td>From: </td>
+         <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
+     </tr>
+     <tr >
+         <td>To: </td>
+         <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+     </tr>
+     <tr >
+         <td>No Of Days: </td>
+         <td>{{leave.days_count}}</td>
+     </tr>
+     <tr >
+         <td>Reason: </td>
+         <td>{{leave.reason}}</td>
+     </tr>
+     <tr >
+         <td>Manager: </td>
+         <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
+     </tr>
+ <tr >
+         <td>Status: </td>
+         <td>{{leave.status|title}}</td>
+     </tr>
+     <tr >
+             <td>Status Action On: </td>
+             <td>{{leave.status_action_on}} </td>
+         </tr>
+         <tr >
+                 <td>Status Action By: </td>
+                 <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
+             </tr>
+             <tr >
+                 <td></td>
+                 <td>
+                     <div>
+                       {% if leave.atachement%} <p><strong>Attachment:</strong></p>
+        <div class="" >
+        <!-- Attachments start -->
+        <a target="_blank" href="{{leave.atachement.url}}">
+        {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
+        <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+        {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
+        <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+        {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
+        <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+        {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
+        <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+        {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+        <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
+
+        {% endif %}
+        </a>
+        </div>
+        {% endif %}
+        <!-- Attachments end -->
+                     </div>
+                 </td>
+             </tr>
+
+ </table>
+</div>

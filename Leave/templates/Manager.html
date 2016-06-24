@@ -1,0 +1,556 @@
+
+{% extends 'master.inc' %}
+<title>{% block siteTitle %}myansrsource Manage Leave Applications{% endblock %}</title>
+
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+<!-- {% block breadcrumb %}
+<div class="container-fluid pad0">
+    <div class="row">
+            <div class="">
+                <ul class="breadcrumb">
+                    <li>
+					<a href="{% url 'Leave_dashboard' %}">Home</a>
+                    </li>
+                    <li>
+					<a href="{% url 'list_leave' %}">Leave</a>
+                    </li>
+                    <li class="active">
+					List
+                    </li>
+
+                </ul>
+            </div>
+    </div>
+</div>
+{% endblock %} -->
+
+{% block content  %}
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/leave_style.css" rel="stylesheet">
+	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+
+
+</head>
+
+<body>
+{% load grievances_template_tags %}
+{% load permissions %} {% load pagination_tags %}
+    <!--  Start messages-->
+    <div class="container-fluid">
+        <div class="row">
+
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags %}
+                        <div class= "alert alert-{{ message.tags }}">
+                            <a class="panel-close close" data-dismiss="alert">x</a>
+                            <p >{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <!--  End messages-->
+
+    <div class="container Lv-themeTxtColor ">
+
+
+
+
+      <div class="row">
+          <div class="col-md-12">
+              <h3 class="text-center template-header">Manage Leaves</h3>
+                      <hr>
+          </div>
+
+      </div>
+
+
+
+
+
+
+        <!--  Start Leave details popup-->
+
+                <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+                                <h4 class="modal-title text-center" id="myModalLabel">
+								<b> Leave Details</b>
+							</h4>
+                            </div>
+                            <div class="modal-body">
+
+                            </div>
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+								Close
+							</button>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+        <!--  End Leave details pop-->
+
+        <!--      My Leaves Start -->
+
+    <form method="post">
+
+        <!--	Start Menu -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="Lv-ApLvHeader">
+
+                            <div class="row">
+                              <div class="col-sm-4 Lv-Mg-SubMenu">
+                                  <div class="pull-left Lv-Mg-SubActive">
+                                      <b><a id="open_requests" href="{% url 'manage_leave_list' %}"  title="Open Requests" class="anchor-inherit btn"><b>Open Requests</b></a></b>
+                                      <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
+
+                                  </div>
+                                  <div class="pull-left requests-reports hidden">
+                                      <b><a id="modal-252334-" href="/leave/leavelist/all" role="button"  title="View Details" class="btn">All Requests</a></b>
+                                      <span class="Lv-Mg-NotifyCount"> {{all.count}}</span>
+                                  </div>
+                                  <div class="pull-left requests-reports hidden">
+                                      <b><a id="modal-252334--" href="#modal-container-252304--" role="button" data-toggle="modal" title="View Details">Reports</a></b>
+                                  </div>
+                                  <div class="pull-left requests-reports">
+                                  </div>
+                              </div>
+
+                              <div class="col-sm-4 pull-right">
+
+
+              <!-- Insertion A -->{%if  leave_list  %}
+
+                                  <div class="margin-0-auto text-right pull-right">
+                                      <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+
+                                  </div>{% endif %}
+
+
+                                  <div class="form-inline approve-reject pull-right">
+                                       {%if  leave_list  %}  <div class="checkbox checkbox-success">
+                                          <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
+                                          <label for="approve_all" class="lh-16">
+                                             Approve All
+                                          </label>
+                                      </div>&nbsp;&nbsp;&nbsp;
+                                      <div class="checkbox checkbox-danger">
+                                          <input id="reject_all" type="checkbox" name="reject_all" class="reject_all" >
+                                          <label for="reject_all" class="lh-16">
+                                              Reject All
+                                          </label>
+                                      </div> {% endif %}
+                                  </div>
+
+
+
+
+
+                              </div>
+</div>
+
+
+
+                </div>
+                <hr>
+            </div>
+        </div>
+        <!-- End Menu -->
+
+        <!-- Start content	-->
+
+
+
+
+ {% csrf_token %}
+        <div class=""><!-- row -->
+            <div class="">
+                {%if  leave_list  %}
+                <table class="table table-bordered table-hover mb-0">
+                    <tr class="Lv-ApproveTH ">
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Applied To</th>
+                        <th>Reason</th>
+                        <th>Days</th>
+                        <th>Action</th>
+                    </tr>
+
+                    {%  autopaginate leave_list 10 %}
+                    {% for leave in leave_list %}
+                    <tr {%for k,v in  BUTTON_NAME %}
+                                {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
+                        <td>
+                            {{leave.user.first_name}} {{leave.user.last_name}}
+                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-100 list_view">Details</a>
+                               <div class="GrDetails" style = "display:none" >
+                            <table class="table  table-hover view_details"  >
+                                    <tr >
+                                        <td >Applied By : </td>
+                                        <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Applies On: </td>
+                                        <td>{{leave.applied_on}}</td>
+                                    </tr>
+                                    <tr >
+                                        <td>Leave Type : </td>
+                                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                                    </tr>
+
+
+
+                                    <tr >
+                                        <td>From: </td>
+                                        <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
+                                    </tr>
+                                    <tr >
+                                        <td>To: </td>
+                                        <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+                                    </tr>
+                                    <tr >
+                                        <td>No Of Days: </td>
+                                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+                                    </tr>
+                                    <tr >
+                                        <td>Reason: </td>
+                                        <td>{{leave.reason}}</td>
+                                    </tr>
+                                    <tr >
+                                        <td>Manager: </td>
+                                        <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
+                                    </tr>
+                                <tr >
+                                        <td>Status: </td>
+                                        <td>{{leave.status|title}}</td>
+                                    </tr>
+                                    <tr >
+                                            <td>Status Action On: </td>
+                                            <td>{{leave.status_action_on}}</td>
+                                        </tr>
+                                        <tr >
+                                                <td>Status Action By: </td>
+                                                <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
+                                            </tr>
+                                    <tr >
+                                        <td></td>
+                                        <td>
+                                            <div>
+                                              {% if leave.atachement%} <p><strong>Attachment:</strong></p>
+         <div class="" >
+         <!-- Attachments start -->
+                   <a target="_blank" href="{{leave.atachement.url}}">
+                       {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
+                           <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
+                           <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
+                           <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
+                           <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                       {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+                           <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
+
+                       {% endif %}
+                   </a>
+                 </div>
+           {% endif %}
+            <!-- Attachments end -->
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </table></div>
+                            <!--<div><h5>Posted On: <br>13-Jan-2016 3:27pm</h5></div>-->
+                        </td>
+                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                        <td>{{leave.from_date}},<br> {%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
+                        <td>{{leave.to_date}},<br>{%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%}</td>
+                         <td>{{leave.apply_to}}</td>
+                        <td><span style="display:block;max-width:130px;">{{leave.reason}}</span></td>
+                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+                        <td>
+                            <div class="checkbox checkbox-success radio-mod btn-xs">
+                                <input id="approve{{leave.id}}" type="checkbox" name="approve" class="approve" value="approved_{{leave.id}}">
+                                <label for="approve{{leave.id}}">
+                                Approve
+                                </label>
+                            </div>
+                            <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                <input id="reject{{leave.id}}" type="checkbox" name="reject" class="reject" value="rejected_{{leave.id}}">
+                                <label for="reject{{leave.id}}">
+                                Reject
+                                </label>
+                            </div>
+
+
+                            {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
+                                <div class="checkbox checkbox-warning radio-mod btn-xs">
+                                    <input id="cancel{{leave.id}}" type="checkbox" name="cancel" class="cancel" value="cancelled_{{leave.id}}">
+                                    <label for="cancel{{leave.id}}">
+                                    Cancel
+                                    </label>
+                                </div>
+
+                            {% endif %}
+
+                                <div class="col-md-4 pull-right">
+                                    <div>
+                                        <a id="test-trigger" href="#test-modal-{{leave.id}}" role="button" data-toggle="modal" title="View Details">
+                                            <button id ="" class="btn btn-info btn-xs remark">Remarks</button>
+                                        </a>
+                                    </div>
+                                        <!--<div style = "display:none" id ="remark__{{leave.id}}">-->
+                <div class="modal fade" id="test-modal-{{leave.id}}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+                                <h4 class="modal-title text-center" id="myModalLabel--">
+								<b> Remarks</b>
+							</h4>
+                            </div>
+                            <div class=""><!-- Content goes here -->
+
+                                <textarea style="min-height:200px;width:100%;"  id ="remark_{{leave.id}}" name="remark_{{leave.id}}" class = "remarks" placeholder="enter remarks"></textarea>
+                                <span id="textarea_remaining">2000 characters remaining</span>
+
+
+                            </div>
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal" >
+								Submit
+							</button>
+                                <!--<button type="button" class="btn btn-primary">-->
+								<!--Save changes-->
+							<!--</button>-->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                                        <!--</div>-->
+                                        <div>
+                                          {% if leave.atachement%}
+     <div class="" >
+     <!-- Attachments start -->
+               <a target="_blank" href="{{leave.atachement.url}}">
+                   {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
+                       <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
+                       <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
+                       <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
+                       <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                   {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+                       <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
+
+                   {% endif %}
+               </a>
+             </div>
+       {% endif %}
+        <!-- Attachments end -->
+                                        </div>
+
+                                </div>
+                        </td>
+                    </tr>
+             {% endfor%}<!-- end of tr-warning -->
+                </table>
+{% endif %}
+
+
+
+    <!-- Insertion A -->{%if  leave_list  %}
+                    <div class="Lv-ApprLvSubmit">
+                        <div class="margin-0-auto text-right">
+                            <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+
+                        </div>
+
+                    </div>{% endif %}
+
+
+			</div> {%if  leave_list  %}<div class="col-sm-12 text-center mod"> {% paginate %} </div>{% endif %}
+
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered table-hover Lv-RecordsNotFound">
+                        {%if not leave_list  %}<tr class="info">
+                            <th class="text-center">No leave applications to approve</th>
+                        </tr>{% endif %}
+                    </table>
+
+    <!-- Insertion B -->
+
+
+                </div>
+
+            </div>
+        </div>
+
+
+       </form>
+
+
+
+
+        <!-- End content-->
+
+
+
+    <!--  Start Breadcrum-->
+    <div class="container-fluid">  <!--  Lv-Mg-Submitfixed -->
+        <div class="row">
+            <div class="col-md-12">
+            </div>
+        </div>
+    </div>
+    <!--  End Breadcrum-->
+
+
+
+
+
+    </div>  <!-- End of themeTxtColor -->
+{% endblock %}
+
+
+
+
+
+    <!-- End Main Container-->
+
+
+
+
+{% block page_specific_JS %}
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/scripts.js"></script>
+
+    <script>
+    jQuery(document).ready( function (){
+
+
+    	$('.remarks').attr('maxlength','');
+						var text_max = 500;
+						var text_length = $('.remarks').val().length;
+						var text_remaining = text_max - text_length;
+						$('#textarea_remaining').html(text_max + ' characters remaining');
+
+						$('.remarks').keyup(function() {
+							text_length = $(this).val().length;
+							text_remaining = text_max - text_length;
+							if (text_length > 500) {
+								$(this).val($(this).val().slice(0,500))
+
+								// the length changes in the above line
+								text_length = $(this).val().length;
+							    text_remaining = text_max - text_length;
+							}
+							$('#textarea_remaining').html(text_remaining + ' characters remaining');
+						});
+
+            var url = window.location.href ;
+            url = url.split('/');
+            if(url[4] == 'manage') {
+                window.history.replaceState( {} , 'Leave List', '/leave/manage/' );
+            }
+        <!--jQuery('input[type="checkbox"]').on('change', function() {-->
+            <!--jQuery('input[type="checkbox"]').not(this).prop('checked', false);-->
+        <!--});-->
+        jQuery('.list_view').click(function(){
+            var GrDetails = $(this).siblings(".GrDetails").html();
+            jQuery(".modal-body").html(GrDetails);
+        });
+         jQuery('.remark').click(function(e){
+            var class_name = this.id.split('_');
+           $("#remark__"+class_name[1]).show();
+           e.preventDefault();
+        });
+
+        jQuery('.approve_all , .reject_all').click(function(e){
+            if(this.className == 'approve_all') {
+                $('.reject_all,.reject ,.cancel').prop('checked', false);
+            }
+            else if (this.className == 'reject_all') {
+                $('.approve_all,.approve ,.cancel').prop('checked', false);
+            }
+            var class_name = this.className.split('_');
+            if($('#'+this.id).prop('checked')) {
+                $('.'+class_name[0]).prop('checked', true);
+            }
+            else {
+                $('.'+class_name[0]).prop('checked', false);
+            }
+
+        });
+        jQuery('.approve , .reject ,.cancel').click(function(e){
+            var class_name = this.value.split('_');
+            if(this.className == 'approve') {
+                $('#reject'+class_name[1]).prop('checked', false);
+                $('#cancel'+class_name[1]).prop('checked', false);
+                $('.reject_all').prop('checked', false);
+            }
+            else if (this.className == 'reject') {
+                $('#approve'+class_name[1]).prop('checked', false);
+                $('#cancel'+class_name[1]).prop('checked', false);
+                $('.approve_all').prop('checked', false);
+            }
+            else if (this.className == 'cancel') {
+                $('#approve'+class_name[1]).prop('checked', false);
+                $('#reject'+class_name[1]).prop('checked', false);
+                $('.approve_all').prop('checked', false);
+                $('.reject_all').prop('checked', false);
+            }
+
+
+        });
+    });
+    </script>
+{% endblock %}
+
+</body>
+
+</html>
