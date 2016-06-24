@@ -11,11 +11,12 @@ from django.utils import timezone
 import logging
 logger = logging.getLogger('MyANSRSource')
 
+leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
+leaveSessionDictionary = dict(SESSION_STATUS)
 
 class EmailSendTask(Task):
     def run(self, user, manager, leave_selected, fromdate, todate, fromsession, tosession, count, reason, flag):
-        leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
-        leaveSessionDictionary = dict(SESSION_STATUS)
+
         fromdate = str(fromdate)+' Session: '+leaveSessionDictionary[fromsession]
         todate = str(todate)+' Session: '+leaveSessionDictionary[tosession]
         if flag == 'save':
