@@ -233,6 +233,7 @@
 	.Lv-ApproveTH >th{
 	  background-color: #464A4C;
     background-color: #91ACB9;
+    background-color: rgba(112,192,197, 1);
 	  color: #fff;
 	}
 	.Lv-Pipe{
@@ -285,12 +286,16 @@
 	.Lv-ApprLvSubmit{
     background-color: #CDE2EF;
     /* background-color: #D8EBF7; */
+    background-color: #FAFDFF;
+    background-color: #E7F0F7;
     margin-bottom: 20px;
     padding: 10px 14px;
     color: #fff;
-    border: 1px solid #DDDDDD;
+    border: 1px solid #70C0C5;
     border-top: 0px;
 	}
+
+  .table.ansrgreen{border-color: #70C0C5}
 
 
 
@@ -515,14 +520,20 @@
                 .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
                 .radio-mod label{
                   padding: 2px 5px;
-                  background: #A9A2A2;
-                  color: #ECE0E0;;
+                  color: #9C6969;
+                  color: #FFFFFF;
+                  background-color: #D8C5BF;
+                  /* border-color: #F59B7B; */
                   border-radius: 3px;
+                  border: 1px solid #9C6969;
+                  border: 1px solid #CE9797;
                 }
                 .radio-mod input:checked + label{
                         background: #616161;
+                        background: #9C6969;
                         color: white;
                         border-radius:3px;
+                        border: 1px solid #9C6969;
                     }
                 .radio-mod label::after, .radio-mod label::before{display:none}
                 /* end of for approval screen */
@@ -550,6 +561,8 @@
                     text-decoration:none;
                     color:inherit;
                 }
+
+                a.mod, a.mod:hover, a.mod:focus, a.mod:visited{outline: none !important;text-decoration: none !important;}
 
 
 
@@ -619,6 +632,8 @@
         .template-header + hr{margin-bottom: 10px;}
         .Lv-ApLvHeader + hr{margin-top: 10px}
 
+        .Lv-Type-Selected .Lv-ProgressBar-TotalDays{line-height: 15.7px}
+
         /* Corrections -3 */
 
         .Transactions-header{width: 100%;background: #D3F5D6; background: #EBF5FB;line-height: 40px;padding: 0px 15px}
@@ -638,11 +653,26 @@
         .anchor-inherit.btn {padding: 4px 12px}
         .breadcrumb{margin-top: -25px;}
 
-        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{border:0px; border-bottom: 1px solid #ddd}
+        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{border:0px; border-top: 1px solid #E8E8E8}
 
         .lh-16{line-height: 16px;}
+
+        /* Correction -4 */
+
+        .ansr-orange-mod{
+          color: #9C6969;
+          background-color: #FFDDD1;
+          border-color: #FFDDD1;
+        }
+        .table-hover.ansrgreen>tbody>tr:hover>td{background: #FAFDFF}
+        .btn-ansr-orange{background: #ee5f2d}
 
         /* Header Nav */
 
         .ansrMenuShadow{border: 0px;background: #fff;box-shadow:0px 1px 3px rgba(0, 0, 0, 0.3)}
-        .table>tbody>tr.info>td{background: #EBF5FB}
+        .table>tbody>tr.info>td{
+          color: #214761;
+          color: #102B3E;
+          background: #FAFDFF;
+        }
+        .table>tbody>tr.info>td:first-child>a{color: #C76B4F;font-size: 14px;}
