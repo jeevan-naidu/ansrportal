@@ -38,6 +38,9 @@ def oneTimeLeaveValidation(leave_form, user):
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
     fromDate = leave_form.cleaned_data['fromDate']
+    joined_date = Employee.objects.filter(user_id=user).values('joined')
+    if joined_date[0]['joined'] > fromDate:
+        result['errors'].append('You cannot apply for leave for the period before your date of Joining')
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, fromDate, leaveType)
         if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
