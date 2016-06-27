@@ -1,3 +1,5 @@
+# Empty CSS file for your own CSS
+
  /*      Start Leave module common css */
         .Lv-themeTxtColor {
             color: #000
@@ -134,7 +136,6 @@
 	float: left;
 	text-align: center;
     }
-
     .MyLvTotl {
 	padding: 5px 8px;
 	color: #999;
@@ -143,7 +144,6 @@
 	text-align: center;
     }
     .MyLvTotl span.total-count{font-weight: 900;color: #333;}
-
     .Lv-TxtWhite {
 	color: #000;
     }
@@ -153,7 +153,7 @@
       background-color: #EAEEEF;
       background-color: #E0E0E0;
       background-color: #FFFFFF;
-      overflow-y: auto;
+      overflow-y: hidden;
       overflow-x: hidden;
       color: #000;
       font-size: 12px;
@@ -624,7 +624,6 @@
         .Transactions-header{width: 100%;background: #D3F5D6; background: #EBF5FB;line-height: 40px;padding: 0px 15px}
         .Transactions-header label{margin-bottom: 0px;}
         .no-border th, .no-border td{border: 1px solid #FFF}
-
         .leave-data-container{padding: 15px;overflow-y: auto;height: 100%;}
 
         .approve-reject{

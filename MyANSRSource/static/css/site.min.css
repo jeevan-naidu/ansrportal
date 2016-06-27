@@ -144,6 +144,18 @@ background-color: #fcf8e3;
 
 /* End grievance module */
 
+
+/* Corrections - Global */
+
+.pad-0{padding: 0px !important}
+
+.template-header{
+	font-family: 'Droid Sans';
+	margin-top: 0px;
+}
+
+
+
 /* Book-my-room  Styles */
 
 .margin-0{margin: 0px;}
