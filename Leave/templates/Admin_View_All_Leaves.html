@@ -326,7 +326,7 @@
                         <td>
                            {%for k,v in  BUTTON_NAME %}
                                 {%if v|safe == leave.status|safe %}
-                                    <label class="btn btn-xs btn-{{k}}" >{{v|title}}</label>
+                                    <label class="btn-xs btn-{{k}}" >{{v|title}}</label>
 
                                 {%endif%}
                             {%endfor%}
