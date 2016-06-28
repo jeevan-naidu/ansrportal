@@ -153,7 +153,7 @@
               <!-- Insertion A -->{%if  leave_list  %}
 
                                   <div class="margin-0-auto text-right pull-right">
-                                      <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+                                      <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange">Submit</button>
 
                                   </div>{% endif %}
 
@@ -197,7 +197,7 @@
         <div class=""><!-- row -->
             <div class="">
                 {%if  leave_list  %}
-                <table class="table table-bordered table-hover mb-0">
+                <table class="table table-bordered table-hover mb-0 ansrgreen">
                     <tr class="Lv-ApproveTH ">
                         <th>User</th>
                         <th>Type</th>
@@ -214,8 +214,8 @@
                     <tr {%for k,v in  BUTTON_NAME %}
                                 {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
                         <td>
-                            {{leave.user.first_name}} {{leave.user.last_name}}
-                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-100 list_view">Details</a>
+                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">{{leave.user.first_name}} {{leave.user.last_name}}</a>
+                            <!-- Details -->
                                <div class="GrDetails" style = "display:none" >
                             <table class="table  table-hover view_details"  >
                                     <tr >
@@ -305,7 +305,7 @@
                         <td>
                             <div class="checkbox checkbox-success radio-mod btn-xs">
                                 <input id="approve{{leave.id}}" type="checkbox" name="approve" class="approve" value="approved_{{leave.id}}">
-                                <label for="approve{{leave.id}}">
+                                <label for="approve{{leave.id}}" class="ansr-orange-mod">
                                 Approve
                                 </label>
                             </div>
@@ -403,7 +403,7 @@
     <!-- Insertion A -->{%if  leave_list  %}
                     <div class="Lv-ApprLvSubmit">
                         <div class="margin-0-auto text-right">
-                            <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+                            <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange">Submit</button>
 
                         </div>
 
