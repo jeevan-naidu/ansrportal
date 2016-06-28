@@ -1,5 +1,4 @@
-  
-  {% load book_my_room_template_tags %}
+ {% load book_my_room_template_tags %}
   <div class="panel panel-default clearfix room-booking-content">
 
     <div class="time-panel clearfix">
@@ -59,7 +58,7 @@
                     <p>{{for_date|Concat:time|BookedBy:room_obj}}</p>
                   </div>
 								</span>
-								
+
               {% else %}
                 <span><input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/><label for="one{{room_obj}}{{time}}"></label></span>
               {% endif %}
@@ -70,9 +69,19 @@
         </div>
     </div><!--end of room-and-time-->
     {% endfor %}
-		
-     <input type="submit" class="btn btn-success pull-right" value="Submit" />
-		  <button id="reset-btn" type="reset" class="btn btn-danger pull-right">Reset</button
+
+
+<div style="margin-top:30px;">
+      <div id="legend" class="col-sm-6">
+        <p class="pull-left"><span></span>Unselected</p>
+        <p class="pull-left blocked"><span></span>Already Booked</p>
+        <p class="pull-left booked"><span></span>Selected</p>
+      </div>
+
+     <input type="submit" class="btn btn-sm btn-success pull-right" value="Submit" />
+		  <button id="reset-btn" type="reset" class="btn btn-sm btn-danger pull-right">Reset</button>
+</div>
+
 </form>
 
 
@@ -100,7 +109,7 @@
 			<div class="col-sm-12 booking">
 				<h5>No bookings found...</h5>
 			</div>
-		
+
 		{% endif %}
 </div>
 
@@ -108,7 +117,7 @@
 
 <!--<div id="submit-section" class="col-sm-12">
   <p class="pull-left booker">V L Nagaraj - Media Team</p>
- 
+
 </div>-->
 
 </div><!--end of panel-->
@@ -121,7 +130,7 @@
 		});
 
         $("#BookMeetingForm").submit(function(){
-               
+
             var formData = new FormData($(this)[0]);
 						var for_date = $('#id_for_date').val();
 						var confirmation_text = "";
@@ -136,7 +145,7 @@
 						else{
 							confirmation_text = "Are you sure you want to book these rooms?";
 						}
-						
+
 								swal({
 										title: '',
 										text: confirmation_text,
@@ -169,14 +178,14 @@
 																		});
 																		}
 																		if (data.record_added == true) {
-																			
+
 																			swal({
 																				title:'Yay! Booking successful!',
 																				type:"success",
 																				text:"The page will refresh automatically.",
 																				showConfirmButton: false
 																				});
-																			
+
 																			$(".container").slideUp();
 																			setTimeout(function(){
 																				$("#BookRoomAndViewDetailsContainer").html("");
@@ -195,17 +204,17 @@
 																contentType: false,
 																processData: false
 														});
-												
-												}  
-                   });  
+
+												}
+                   });
             return false;
         });
-				
-				
+
+
 				$(".CancelBooking").click(function(){
-   
+
             var cancel_id = $(this).attr('data-value');
-						
+
 						swal({   title: "",
                 text: "Are you sure you want to release this meeting room?",
                 type: "warning",
@@ -218,12 +227,12 @@
                 },
                 function(isConfirm){
                     // If user clicks on ok;
-										
+
                     if (isConfirm) {
 											$('.showSweetAlert .sa-button-container button.confirm').html('');
 										$('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
 										$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
-											
+
 														$.ajax({
 																url: '/bookings/cancel/',
 																type: 'POST',
@@ -236,7 +245,7 @@
 																				text:"The page will refresh automatically",
 																				showConfirmButton: false
 																				});
-																			
+
 																			setTimeout(function(){
 																				$("#BookRoomAndViewDetailsContainer").html("");
 																				window.location.reload();
@@ -253,12 +262,12 @@
 																			html: errorThrown
 																		});
 																},
-																
+
 														});
-												
-												} 
+
+												}
                    });
-                    
+
             return false;
         });
 
