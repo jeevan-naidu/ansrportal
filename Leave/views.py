@@ -83,7 +83,7 @@ def LeaveCancel(request):
     leave_id = request.GET.get('leaveid')
     leavecount = request.GET.get('leavecount')
     leave = LeaveApplications.objects.get(id = leave_id)
-    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=user_id)
+    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=user_id, year = date.today().year)
     onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
     if leave.leave_type.leave_type in leaveWithoutBalance:
         leaveSummary.applied = float(leaveSummary.applied) - float(leavecount)
@@ -119,7 +119,7 @@ def LeaveDetails(request):
 # Create your views here.
 def Dashboard(request):
     user_id = request.user.id
-    leave_summary=LeaveSummary.objects.filter(user=user_id).values('leave_type__leave_type', 'applied', 'approved', 'balance')
+    leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
     gender = Employee.objects.filter(user_id = user_id).values('gender')
     newuser = newJoineeValidation(user_id)
     genderFlag = True
@@ -151,7 +151,7 @@ class ApplyLeaveView(View):
             count_not_required = ['comp_off_earned','pay_off','work_from_home','loss_of_pay']
             form = LeaveForm(leavetype)
             context_data['form'] = form
-            leave_count = LeaveSummary.objects.filter(leave_type__leave_type= leavetype, user_id= request.user.id)
+            leave_count = LeaveSummary.objects.filter(leave_type__leave_type= leavetype, user_id= request.user.id, year = date.today().year)
             if leavetype:
                 context_data['leave'] = 'data'
             if leavetype in onetime_leave:
@@ -183,7 +183,7 @@ class ApplyLeaveView(View):
 
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
-            context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id)[0].balance
+            context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id, year = date.today().year)[0].balance
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
@@ -219,7 +219,7 @@ class ApplyLeaveView(View):
                 leavecount = validate['success']
                 leaveType=LeaveType.objects.get(leave_type= leave_form.cleaned_data['leave'])
 
-                leavesummry = LeaveSummary.objects.filter(leave_type=leaveType, user=user_id)
+                leavesummry = LeaveSummary.objects.filter(leave_type=leaveType, user=user_id, year = date.today().year)
                 if leavesummry:
                     leavesummry_temp = leavesummry[0]
                 else:
@@ -610,7 +610,7 @@ def update_leave_application(request, status):
     is_com_off = LeaveType.objects.get(pk=leave_status.leave_type.id)
     if status_tmp[0] == 'approved':
         if is_com_off.leave_type == 'comp_off_earned':
-            com_off_apply = LeaveSummary.objects.get(leave_type__leave_type='comp_off_avail',user=leave_application.user.id)
+            com_off_apply = LeaveSummary.objects.get(leave_type__leave_type='comp_off_avail',user=leave_application.user.id, year = date.today().year)
             com_off_apply.balance =Decimal(com_off_apply.balance) + Decimal(leave_days)
             # com_off_apply.balance = str(com_off_apply.balance)
             com_off_apply.save()

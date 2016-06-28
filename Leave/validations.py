@@ -235,7 +235,7 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
             leaves = LeaveApplications.objects.filter(user = user, from_date=last_day, status__in=['approved', 'open'],
             leave_type = leaveType).values('from_date', 'to_date', 'from_session', 'to_session')
         elif leaveType.leave_type == 'comp_off_avail':
-            leaves = LeaveSummary.objects.filter(user = user, leave_type = LeaveType.objects.get(leave_type='comp_off_avail')).values('balance')
+            leaves = LeaveSummary.objects.filter(user = user, leave_type = LeaveType.objects.get(leave_type='comp_off_avail'),  year = date.today().year).values('balance')
             if leaves:
                 leavecount = leaves[0]['balance']
             return leavecount
