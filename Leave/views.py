@@ -46,14 +46,18 @@ leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_h
 
 def LeaveTransaction(request):
     statusType = request.GET.get('type')
+    user_id = request.GET.get('user_id')
+    loggedInUser = request.user.id
     statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Open':'open'}
-    Leave_transact=LeaveApplications.objects.filter(status = statusDict[statusType] , user=request.user.id,
-    leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
-    'to_session','days_count','status')
-    # for val in range(0, len(Leave_transact)):
-    #     count = leave_calculation(Leave_transact[val]['from_date'], Leave_transact[val]['to_date'], Leave_transact[val]['from_session'],
-    #      Leave_transact[val]['to_session'], Leave_transact[val]['leave_type__leave_type'])
-    #     Leave_transact[val]['due_date'] = count
+    if statusType == 'All':
+        Leave_transact=LeaveApplications.objects.filter(user=user_id,
+        leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
+        'to_session','days_count','status')
+    else:
+        Leave_transact=LeaveApplications.objects.filter(status = statusDict[statusType] , user=user_id,
+        leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
+        'to_session','days_count','status')
+
     count = 0
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:
@@ -70,7 +74,7 @@ def LeaveTransaction(request):
         leaveSessionDictionary[leave['to_session']],
         leave['days_count'],
         )
-        if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail':
+        if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and loggedInUser==user_id:
             data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
         else:
@@ -117,24 +121,78 @@ def LeaveDetails(request):
 
 
 # Create your views here.
-def Dashboard(request):
-    user_id = request.user.id
-    leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
-    gender = Employee.objects.filter(user_id = user_id).values('gender')
-    newuser = newJoineeValidation(user_id)
-    genderFlag = True
-    genderMale = False
-    if not newuser:
-        genderFlag =False
-    if gender[0]['gender']=='M':
-        genderMale =True
-    manager = managerCheck(request.user.id)
-    if manager:
-        mangerfirstname = manager.first_name
-    else:
-        mangerfirstname = ''
-    context={'leave_summary':leave_summary,'gender':genderFlag,'male':genderMale, 'manager': mangerfirstname }
-    return render(request, 'User.html', context)
+class Dashboard(View):
+    def get(self, request):
+        user_id = request.user.id
+        leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
+        employeeDetail = Employee.objects.get(user_id = user_id)
+        userDetail = User.objects.get(id = user_id)
+        newuser = newJoineeValidation(user_id)
+        genderFlag = True
+        genderMale = False
+        if not newuser:
+            genderFlag =False
+        if employeeDetail.gender=='M':
+            genderMale =True
+        manager = managerCheck(request.user.id)
+        if manager:
+            mangerfirstname = manager.first_name + " "+manager.last_name
+        else:
+            mangerfirstname = ''
+        emp = Employee.objects.get(user_id = user_id)
+        userlist = Employee.objects.filter(manager_id= emp.employee_assigned_id).values('user_id')
+        if userlist:
+            managerFlag = True
+        else:
+            managerFlag = False
+        context={'leave_summary':leave_summary,
+        'gender':genderFlag,
+        'male':genderMale,
+        'manager': mangerfirstname,
+         'form':UserListViewForm(),
+         'userfullname':userDetail.first_name+" "+userDetail.last_name,
+         'employeeId':employeeDetail.employee_assigned_id,
+         'userid':user_id,
+         'managerFlag':managerFlag }
+        return render(request, 'User.html', context)
+
+    def post(self, request):
+        userForm = UserListViewForm(request.POST)
+        user_id = userForm['user'].value()
+        if not user_id:
+            user_id = request.user.id
+        leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
+        employeeDetail = Employee.objects.get(user_id = user_id)
+        userDetail = User.objects.get(id = user_id)
+        newuser = newJoineeValidation(user_id)
+        genderFlag = True
+        genderMale = False
+        if not newuser:
+            genderFlag =False
+        if employeeDetail.gender=='M':
+            genderMale =True
+        manager = managerCheck(request.user.id)
+        if manager:
+            mangerfirstname = manager.first_name + " "+manager.last_name
+        else:
+            mangerfirstname = ''
+        emp = Employee.objects.get(user_id = request.user.id)
+        userlist = Employee.objects.filter(manager_id= emp.employee_assigned_id).values('user_id')
+        if userlist:
+            managerFlag = True
+        else:
+            managerFlag = False
+        context={'leave_summary':leave_summary,
+        'gender':genderFlag,
+        'male':genderMale,
+        'manager': mangerfirstname,
+         'form':UserListViewForm(),
+         'userfullname':userDetail.first_name+" "+userDetail.last_name,
+         'employeeId':employeeDetail.employee_assigned_id,
+         'userid':user_id,
+         'managerFlag':managerFlag }
+        return render(request, 'User.html', context)
+
 
 
 class ApplyLeaveView(View):

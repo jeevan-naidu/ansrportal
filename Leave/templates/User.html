@@ -95,17 +95,27 @@
         <!--	Start Menu -->
         <div class="row">
             <div class="col-md-12 ">
+
                 <div class="Lv-ApLvHeader">
                     <div class="row margin-correct">
+
                         <div class="col-md-6">
+                          {%if managerFlag%}
+                          <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+                              {% csrf_token %}
+                              {% bootstrap_messages %}
 
-                            <div class="LvMenuBtn LvMenuBtnActive"><b>My Leaves</b>
-                                <div class="Lv-active-caret">
-                                    <!-- <span class="glyphicon glyphicon-triangle-top Lvcaret" aria-hidden="true"></span> -->
-                                </div>
-                            </div>
+                                      {% for field in form %}
+                                          {{ field }}
+                                      {% endfor %}
 
 
+                          <button type="submit" class="btn btn-primary btn-sm" value="submit" name="click">
+                            <input type="hidden" value="generate" name="status" class="input-sm" />
+                            Reportee Dashboard
+                          </button>
+                        </form>
+                        {% endif %}
                         </div>
                         <div class="col-md-6 apply-export">
 
@@ -145,6 +155,9 @@
                     </div>
                 </div>
                 <div class="MyLeavesContainer">
+
+                  <h4>{{userfullname}} - {{employeeId}}</h4>
+
                     <br>
 
                     <div class="row pad5 progress-bar-container" id="earned_leave">
@@ -453,6 +466,7 @@
                            <label for="month_select">Select status&nbsp;:&nbsp;</label>
                            <select class="Lv-Tr-SelectMonth" id="month_select">
                              {
+                               <option>All</option>
                                <option>Open</option>
 
                            <option>Approved</option>
@@ -938,7 +952,7 @@ function gridLoad(name){
         {
             type : "GET",
             url : '/leave/transaction/',
-            data :{'leave':name,'type':$('#month_select').val()} ,
+            data :{'leave':name,'type':$('#month_select').val(),user_id:{{userid}}} ,
             success : function(data)
             {
                 $('.table-bordered').append(data);

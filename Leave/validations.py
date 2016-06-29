@@ -117,15 +117,24 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
             result['errors'] = 'You are not allowed to take leave for this time period'
             return result
 
-
-
-    elif leaveType_selected == 'loss_of_pay' or leaveType_selected == 'work_from_home' :
+    elif leaveType_selected == 'loss_of_pay' :
         result['success'] = leavecount
         return result
+
+    elif leaveType_selected == 'work_from_home' :
+        if newJoineeValidation(user, fromDate):
+            result['errors'] = "You are not allowed to take work from home during first 90 days from you DOJ"
+            return result
+
+        else:
+            result['success'] = leavecount
+            return result
 
     elif newJoineeValidation(user, fromDate) and leavecount + approvedLeave_newjoinee > 2 :
         result['errors'] = "You are not allowed to take more than 2 days of leave during first 90 days from you DOJ"
         return result
+
+
 
     else:
         if leaveType_selected == 'sick_leave' and leavecount > 2 and not attachment:
@@ -251,7 +260,7 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
                 leavecount = leavecount + leave_calculation(leave['from_date'], leave['to_date'], leave['from_session'], leave['to_session'], leaveType)
     else:
         leaves = LeaveApplications.objects.filter(user = user,status__in=['approved', 'open'],
-         leave_type__in = LeaveType.objects.filter(leave_type__in=['earned_leave', 'sick_leave', 'casual_leave', 'bereavement_leave','maternity_leave', 'paternity_leave']) ).values('from_date', 'to_date', 'from_session', 'to_session', 'leave_type__leave_type')
+         leave_type__in = LeaveType.objects.filter(leave_type__in=['earned_leave', 'sick_leave', 'casual_leave']) ).values('from_date', 'to_date', 'from_session', 'to_session', 'leave_type__leave_type')
         for leave in leaves:
             leavecount = leavecount + leave_calculation(leave['from_date'], leave['to_date'], leave['from_session'], leave['to_session'], leave['leave_type__leave_type'])
     return leavecount
