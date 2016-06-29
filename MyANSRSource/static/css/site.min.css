@@ -211,10 +211,11 @@ background-color: #fcf8e3;
 	background: #fff;
 	margin: 0px;
 	border-bottom-left-radius: 7px;
-  border-bottom-right-radius: 7px;
+	border-bottom-right-radius: 7px;
 	font-size: 14px;
-	line-height: 40px;
+	line-height: 20px;
 	color: #454545;
+	padding: 5px;
 }
 span:hover .booked-by{display: block}
 
