@@ -74,7 +74,7 @@ def LeaveTransaction(request):
         leaveSessionDictionary[leave['to_session']],
         leave['days_count'],
         )
-        if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and loggedInUser==user_id:
+        if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and int(loggedInUser) == int(user_id):
             data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
         else:
