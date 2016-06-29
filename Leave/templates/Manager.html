@@ -199,14 +199,14 @@
                 {%if  leave_list  %}
                 <table class="table table-bordered table-hover mb-0 ansrgreen">
                     <tr class="Lv-ApproveTH ">
-                        <th>User</th>
+                        <th>Employee</th>
                         <th>Type</th>
                         <th>From</th>
                         <th>To</th>
                         <th>Applied To</th>
                         <th>Reason</th>
                         <th>Days</th>
-                        <th>Action</th>
+                        <th class="text-center">Action</th>
                     </tr>
 
                     {%  autopaginate leave_list 10 %}
@@ -329,7 +329,7 @@
 
                                 <div class="col-md-4 pull-right">
                                     <div>
-                                        <a id="test-trigger" href="#test-modal-{{leave.id}}" role="button" data-toggle="modal" title="View Details">
+                                        <a id="test-trigger" href="#test-modal-{{leave.id}}" role="button" data-toggle="modal" title="">
                                             <button id ="" class="btn btn-info btn-xs remark">Remarks</button>
                                         </a>
                                     </div>

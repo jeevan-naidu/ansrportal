@@ -682,6 +682,8 @@
           color: #214761;
           color: #102B3E;
           background: #FAFDFF;
+          font-family: 'Droid Sans',sans-serif;;
+          font-size: 13px;
         }
         .table>tbody>tr.info:hover>td{background: #FAFDFF;}
         .table>tbody>tr.info>td:first-child>a{color: #C76B4F;font-size: 14px;}
