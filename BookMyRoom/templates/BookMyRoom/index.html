@@ -146,8 +146,15 @@ $(document).ready(function(){
     });
 
     var for_date = $('#id_for_date').val();
-    var location = 'karle_ground_floor';
-  UpdateBookingDetails(for_date, location);
+    var location = '{{ request.session.for_location }}'
+    if (location == ''){
+        location = 'karle_ground_floor';
+        UpdateBookingDetails(for_date, location)
+    }
+    else{
+        $('#'+location).trigger('click');
+    }
+
 
   function UpdateBookingDetails(for_date, location){
 
