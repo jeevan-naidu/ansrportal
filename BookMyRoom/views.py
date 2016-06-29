@@ -23,6 +23,8 @@ class BookMeetingRoomView(View):
     def get(self, request):
         if 'for_location' not in request.session:
             request.session['for_location'] = ''
+        if 'for_date' not in request.session:
+            request.session['for_date'] = ''
         return render(request, 'BookMyRoom/index.html', locals())
     
     def post(self, request):
@@ -70,6 +72,8 @@ def GetBookingsView(request):
     location = request.GET.get('location', '')
     if location:
         request.session['for_location'] = location
+    if context_data['for_date']:
+        request.session['for_date'] = request.GET.get('for_date', '')
 
     context_data['location'] = location
     context_data['rooms_list'] = RoomDetail.objects.filter(active=True, location=location)

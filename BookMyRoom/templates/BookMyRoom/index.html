@@ -112,9 +112,15 @@ $(document).ready(function(){
 
       });
 
-    //initialize to today's date
-    $('#bookings_date_pickers').datepicker('update', new Date());
 
+
+    //initialize to today's date
+    var date_str = '{{ request.session.for_date }}'
+    var date_obj = new Date();
+    if(date_str != ''){
+        date_obj = new Date(date_str);
+    }
+    $("#bookings_date_pickers").datepicker("update", date_obj);
 
   $('#reset-btn').click(function(){
     $('input[type="checkbox"]').attr('checked', false);
