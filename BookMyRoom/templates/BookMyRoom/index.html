@@ -64,6 +64,8 @@
 </nav>
 
 <div style="color:red" id="server_errors"></div>
+
+<div id="BookingsAjaxLoader" class="ajax_bck"><div class="ajax_load_image"></div></div>
 <div id="BookRoomAndViewDetailsContainer">
 <!--  This div will be pupulated using ajax. Ajax request will render template BookMeetingform.html and will update this section with it.
 This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
@@ -149,6 +151,9 @@ $(document).ready(function(){
 
   function UpdateBookingDetails(for_date, location){
 
+      var for_element = $('#BookRoomAndViewDetailsContainer')
+      ShowAjaxLoader($('#BookingsAjaxLoader'), for_element.width(), for_element.height());
+
      $.ajax(
               {
                   type : "GET",
@@ -164,6 +169,7 @@ $(document).ready(function(){
                         $("#server_errors").html("");
                         $("#BookRoomAndViewDetailsContainer").html(data.html_data);
                     }
+{#                      HideAjaxLoader($('#BookingsAjaxLoader'), for_element.width(), for_element.height());#}
                   },
                   error: function(XMLHttpRequest, textStatus, errorThrown) {
                   $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -175,6 +181,8 @@ $(document).ready(function(){
 
 
   }
+
+
 
 
 

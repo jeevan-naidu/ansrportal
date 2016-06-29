@@ -49,19 +49,29 @@
           {% for block in TimingsList %}
           <div class="col-sm-2 checkbox-removed">
             {% for time in block %}
-              {% if for_date|Concat:time|IsBooked:room_obj %}
-                <span>
-									<input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
-									<label for="{{room_obj.id}}-{{time}}"></label>
-									<div class="booked-by">
-                    <h4>Booked By</h4>
-                    <p>{{for_date|Concat:time|BookedBy:room_obj}}</p>
-                  </div>
-								</span>
 
+          {% with  res_obj=for_date|Concat:time|BookedBy:room_obj %}
+              {% if res_obj %}
+                <span>
+                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
+                        {% if res_obj.booked_by == request.user %}
+                            <label for="{{room_obj.id}}-{{time}}" class="user-selected" data="{{ res_obj }}"></label>
+                        {% else  %}
+                            <label for="{{room_obj.id}}-{{time}}" data="{{ res_obj }}"></label>
+                        {% endif %}
+                    <div class="booked-by">
+                        <h4>Booked By</h4>
+                        <p>{{res_obj.booked_by.first_name}} {{res_obj.booked_by.last_name}}</p>
+                    </div>
+                </span>
               {% else %}
-                <span><input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/><label for="one{{room_obj}}{{time}}"></label></span>
+                <span>
+                    <input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/>
+                    <label for="one{{room_obj}}{{time}}"></label>
+                </span>
               {% endif %}
+            {% endwith %}
+
             {% endfor %}
           </div>
           {% endfor %}
@@ -70,17 +80,17 @@
     </div><!--end of room-and-time-->
     {% endfor %}
 
-
 <div style="margin-top:30px;">
-      <div id="legend" class="col-sm-6">
-        <p class="pull-left"><span></span>Unselected</p>
+      <div id="legend" class="col-sm-8">
+        <p class="pull-left"><span></span>Available</p>
         <p class="pull-left blocked"><span></span>Already Booked</p>
+        <p class="pull-left user-booked"><span></span>Already booked by you</p>
         <p class="pull-left booked"><span></span>Selected</p>
-        <p class="pull-left user-booked"><span></span>User Selected</p>
+
       </div>
 
      <input type="submit" class="btn btn-sm btn-success pull-right" value="Submit" />
-		  <button id="reset-btn" type="reset" class="btn btn-sm btn-danger pull-right">Reset</button>
+        <button id="reset-btn" type="reset" class="btn btn-sm btn-danger pull-right">Reset</button>
 </div>
 
 </form>

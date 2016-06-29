@@ -66,6 +66,10 @@ def GetBookingsView(request):
     
     context_data['for_date'] = request.GET.get('for_date', '')
     location = request.GET.get('location', '')
+    # if request.session['for_location']:
+    #     pass
+    # else:
+    #     request.session['for_location'] = location
     context_data['rooms_list'] = RoomDetail.objects.filter(active=True, location=location)
     if not context_data['for_date']:
         context_data['errors'] = 'Please select date'
