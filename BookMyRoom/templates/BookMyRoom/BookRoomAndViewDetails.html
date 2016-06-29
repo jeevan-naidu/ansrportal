@@ -1,4 +1,5 @@
  {% load book_my_room_template_tags %}
+ <div id="BookingsAjaxLoader" class="ajax_bck"><div class="ajax_load_image"></div></div>
   <div class="panel panel-default clearfix room-booking-content">
 
     <div class="time-panel clearfix">
@@ -105,7 +106,7 @@
 <hr>
 
 <div class="row bookings margin-0">
-	<span><h4>Your Bookings</h4></span><span><h5>(Only future bookings are displayed here)</h5></span>
+	<h4>Your Bookings <small> (Only future bookings are displayed here)</small></h4>
 	{% if bookings_list %}
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
@@ -124,7 +125,6 @@
 		{% endif %}
 </div>
 
-<hr>
 
 <!--<div id="submit-section" class="col-sm-12">
   <p class="pull-left booker">V L Nagaraj - Media Team</p>

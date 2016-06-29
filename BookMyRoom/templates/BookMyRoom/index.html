@@ -18,7 +18,7 @@
 {% block content %}
 <!-- write your html inside this block -->
 
-       
+
 <div class="container">
 
 <h3 class="text-center">Book a Meeting Room</h3>
@@ -65,8 +65,8 @@
 
 <div style="color:red" id="server_errors"></div>
 
-<div id="BookingsAjaxLoader" class="ajax_bck"><div class="ajax_load_image"></div></div>
-<div id="BookRoomAndViewDetailsContainer">
+
+<div id="BookRoomAndViewDetailsContainer" class="pos-rel">
 <!--  This div will be pupulated using ajax. Ajax request will render template BookMeetingform.html and will update this section with it.
 This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
 
@@ -169,7 +169,8 @@ $(document).ready(function(){
                         $("#server_errors").html("");
                         $("#BookRoomAndViewDetailsContainer").html(data.html_data);
                     }
-{#                      HideAjaxLoader($('#BookingsAjaxLoader'), for_element.width(), for_element.height());#}
+                    $('#BookingsAjaxLoader').fadeOut();
+// {#                      HideAjaxLoader($('#BookingsAjaxLoader'), for_element.width(), for_element.height());#}
                   },
                   error: function(XMLHttpRequest, textStatus, errorThrown) {
                   $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
