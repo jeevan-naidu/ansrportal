@@ -169,7 +169,7 @@ background-color: #fcf8e3;
 	cursor: pointer;
 	border: 1px solid #999;
 }
-.selectors input[type="checkbox"]:checked+label{background-color: yellow;background-color: #78CA5E;border-color: #78CA5E}
+.selectors input[type="checkbox"]:checked+label{background-color: yellow;background-color: #78CA5E;border-color: #265F14}
 .selectors input[type="checkbox"]:disabled+label{background-color: #999;cursor: default;border-color: #999}
 .checkbox-removed input[type="checkbox"]{display: none}
 
@@ -233,7 +233,8 @@ span:hover .booked-by{display: block}
 }
 #legend p{margin-right: 30px;}
 #legend p.blocked span{background-color: #999;border-color: #999;}
-#legend p.booked span{background-color: #78CA5E;border-color: #78CA5E;}
+#legend p.booked span{background-color: #78CA5E;border-color: #265F14;}
+#legend p.user-booked span, .user-selected{background-color: #468034 !important;border-color: #468034 !important;}
 
 /* Pulsate */
 
