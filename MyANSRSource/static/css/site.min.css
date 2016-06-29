@@ -5,17 +5,29 @@
 
 /* Start grievance module */
 
+.pos-rel{position: relative}
+
 .ajax_bck{
-	color:#000;
+		color:#000;
     background-color: rgba(73, 71, 71, 0.5);
     position: absolute;
     z-index: 10;
-
+		left: 0px;
+		right: 0px;
+		top: 0px;
+		bottom: 0px;
+		border-radius: 4px;
 }
 .ajax_load_image{
-    background:  url("../images/ajax-loader.gif") no-repeat center;
-    background-size: 90px 20px;
-    padding-top: 60px;
+	background: url("../images/ajax-loader.gif") no-repeat center;
+	background-size: 90px 20px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 100px;
+	height: 20px;
+	margin-top: -10px;
+	margin-left: -50px;
 }
 .borders-3-sided{
     border-bottom: 1px solid #ddd;
@@ -169,7 +181,7 @@ background-color: #fcf8e3;
 	cursor: pointer;
 	border: 1px solid #999;
 }
-.selectors input[type="checkbox"]:checked+label{background-color: yellow;background-color: #78CA5E;border-color: #78CA5E}
+.selectors input[type="checkbox"]:checked+label{background-color: yellow;background-color: #fdba11;border-color: #fdba11}
 .selectors input[type="checkbox"]:disabled+label{background-color: #999;cursor: default;border-color: #999}
 .checkbox-removed input[type="checkbox"]{display: none}
 
@@ -199,10 +211,11 @@ background-color: #fcf8e3;
 	background: #fff;
 	margin: 0px;
 	border-bottom-left-radius: 7px;
-  border-bottom-right-radius: 7px;
+	border-bottom-right-radius: 7px;
 	font-size: 14px;
-	line-height: 40px;
+	line-height: 20px;
 	color: #454545;
+	padding: 5px;
 }
 span:hover .booked-by{display: block}
 
@@ -219,6 +232,22 @@ span:hover .booked-by{display: block}
 .booker{color: red; font-weight: 900}
 
 #reset-btn{margin-right: 15px;}
+
+#legend span{
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background-color: #F1F1F1;
+	border-radius: 50%;
+	border: 1px solid #999;
+	position: relative;
+	top: 5px;
+	left: -6px;
+}
+#legend p{margin-right: 30px;}
+#legend p.blocked span{background-color: #999;border-color: #999;}
+#legend p.booked span{background-color: #fdba11;border-color: #fdba11;}
+#legend p.user-booked span, .user-selected{background-color: #70c0c5 !important;border-color: #70c0c5 !important;}
 
 /* Pulsate */
 

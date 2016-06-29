@@ -238,7 +238,7 @@ app.setActive = function($elements, arr) {
 
     for(i = 0; i < $elementsLen; i += 1) {
         $element = $($elements[i]);
-        
+
         if (arr[i]){
             $element.find('option[value=' + arr[i] +']').attr('selected', 'selected');
         }
@@ -1656,3 +1656,14 @@ helper.clearArray = function(arr) {
         arr.pop();
     }
 };
+
+
+function ShowAjaxLoader(element, width, height){
+    element.show();
+    // element.width(width).height(height);
+    return false;
+}
+function HideAjaxLoader(element){
+    element.fadeOut();
+    return false;
+}

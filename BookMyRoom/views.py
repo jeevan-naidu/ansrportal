@@ -21,7 +21,11 @@ class BookMeetingRoomView(View):
     ''' add or edit grievances '''
     
     def get(self, request):
-        return render(request, 'BookMyRoom/index.html')
+        if 'for_location' not in request.session:
+            request.session['for_location'] = ''
+        if 'for_date' not in request.session:
+            request.session['for_date'] = ''
+        return render(request, 'BookMyRoom/index.html', locals())
     
     def post(self, request):
         
@@ -62,10 +66,16 @@ class BookMeetingRoomView(View):
 def GetBookingsView(request):
     
     context_data = {'html_data': '', 'rooms_list': [], 'bookings_list': [],
-                    'TimingsList': TimingsList, 'for_date': '', 'errors': '', 'bookings_list': ''}
-    
+                    'TimingsList': TimingsList, 'for_date': '', 'errors': '', 'bookings_list': '',
+                    'location':''}
     context_data['for_date'] = request.GET.get('for_date', '')
     location = request.GET.get('location', '')
+    if location:
+        request.session['for_location'] = location
+    if context_data['for_date']:
+        request.session['for_date'] = request.GET.get('for_date', '')
+
+    context_data['location'] = location
     context_data['rooms_list'] = RoomDetail.objects.filter(active=True, location=location)
     if not context_data['for_date']:
         context_data['errors'] = 'Please select date'

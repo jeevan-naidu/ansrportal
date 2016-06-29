@@ -17,6 +17,10 @@ import ldap
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 from django_auth_ldap.config import NestedActiveDirectoryGroupType
 
+# setup celery
+#import djcelery
+#djcelery.setup_loader()
+
 AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
     ldap.OPT_REFERRALS: False,
@@ -137,6 +141,7 @@ INSTALLED_APPS = (
     'CompanyMaster',
     'MyANSRSource',
     'fb360',
+    #'djcelery',
     'Grievances',
     'GrievanceAdmin',
     'pagination',

@@ -1,5 +1,5 @@
-  
-  {% load book_my_room_template_tags %}
+ {% load book_my_room_template_tags %}
+ <div id="BookingsAjaxLoader" class="ajax_bck"><div class="ajax_load_image"></div></div>
   <div class="panel panel-default clearfix room-booking-content">
 
     <div class="time-panel clearfix">
@@ -50,19 +50,29 @@
           {% for block in TimingsList %}
           <div class="col-sm-2 checkbox-removed">
             {% for time in block %}
-              {% if for_date|Concat:time|IsBooked:room_obj %}
+
+          {% with  res_obj=for_date|Concat:time|BookedBy:room_obj %}
+              {% if res_obj %}
                 <span>
-									<input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
-									<label for="{{room_obj.id}}-{{time}}"></label>
-									<div class="booked-by">
-                    <h4>Booked By</h4>
-                    <p>{{for_date|Concat:time|BookedBy:room_obj}}</p>
-                  </div>
-								</span>
-								
+                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
+                        {% if res_obj.booked_by == request.user %}
+                            <label for="{{room_obj.id}}-{{time}}" class="user-selected" data="{{ res_obj }}"></label>
+                        {% else  %}
+                            <label for="{{room_obj.id}}-{{time}}" data="{{ res_obj }}"></label>
+                        {% endif %}
+                    <div class="booked-by">
+                        <h4>Booked By</h4>
+                        <p>{{res_obj.booked_by.first_name}} {{res_obj.booked_by.last_name}}</p>
+                    </div>
+                </span>
               {% else %}
-                <span><input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/><label for="one{{room_obj}}{{time}}"></label></span>
+                <span>
+                    <input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/>
+                    <label for="one{{room_obj}}{{time}}"></label>
+                </span>
               {% endif %}
+            {% endwith %}
+
             {% endfor %}
           </div>
           {% endfor %}
@@ -70,9 +80,20 @@
         </div>
     </div><!--end of room-and-time-->
     {% endfor %}
-		
-     <input type="submit" class="btn btn-success pull-right" value="Submit" />
-		  <button id="reset-btn" type="reset" class="btn btn-danger pull-right">Reset</button
+
+<div style="margin-top:30px;">
+      <div id="legend" class="col-sm-8">
+        <p class="pull-left"><span></span>Available</p>
+        <p class="pull-left blocked"><span></span>Booked</p>
+        <p class="pull-left user-booked"><span></span>Your Bookings</p>
+        <p class="pull-left booked"><span></span>Selected</p>
+
+      </div>
+
+     <input type="submit" class="btn btn-sm btn-success pull-right" value="Submit" />
+        <button id="reset-btn" type="reset" class="btn btn-sm btn-danger pull-right">Reset</button>
+</div>
+
 </form>
 
 
@@ -85,7 +106,7 @@
 <hr>
 
 <div class="row bookings margin-0">
-	<span><h4>Your Bookings</h4></span><span><h5>(Only future bookings are displayed here)</h5></span>
+	<h4>Your Bookings <small> (Only future bookings are displayed here)</small></h4>
 	{% if bookings_list %}
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
@@ -100,15 +121,14 @@
 			<div class="col-sm-12 booking">
 				<h5>No bookings found...</h5>
 			</div>
-		
+
 		{% endif %}
 </div>
 
-<hr>
 
 <!--<div id="submit-section" class="col-sm-12">
   <p class="pull-left booker">V L Nagaraj - Media Team</p>
- 
+
 </div>-->
 
 </div><!--end of panel-->
@@ -121,7 +141,7 @@
 		});
 
         $("#BookMeetingForm").submit(function(){
-               
+
             var formData = new FormData($(this)[0]);
 						var for_date = $('#id_for_date').val();
 						var confirmation_text = "";
@@ -136,7 +156,7 @@
 						else{
 							confirmation_text = "Are you sure you want to book these rooms?";
 						}
-						
+
 								swal({
 										title: '',
 										text: confirmation_text,
@@ -169,14 +189,14 @@
 																		});
 																		}
 																		if (data.record_added == true) {
-																			
+
 																			swal({
 																				title:'Yay! Booking successful!',
 																				type:"success",
 																				text:"The page will refresh automatically.",
 																				showConfirmButton: false
 																				});
-																			
+
 																			$(".container").slideUp();
 																			setTimeout(function(){
 																				$("#BookRoomAndViewDetailsContainer").html("");
@@ -195,17 +215,17 @@
 																contentType: false,
 																processData: false
 														});
-												
-												}  
-                   });  
+
+												}
+                   });
             return false;
         });
-				
-				
+
+
 				$(".CancelBooking").click(function(){
-   
+
             var cancel_id = $(this).attr('data-value');
-						
+
 						swal({   title: "",
                 text: "Are you sure you want to release this meeting room?",
                 type: "warning",
@@ -218,12 +238,12 @@
                 },
                 function(isConfirm){
                     // If user clicks on ok;
-										
+
                     if (isConfirm) {
 											$('.showSweetAlert .sa-button-container button.confirm').html('');
 										$('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
 										$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
-											
+
 														$.ajax({
 																url: '/bookings/cancel/',
 																type: 'POST',
@@ -236,7 +256,7 @@
 																				text:"The page will refresh automatically",
 																				showConfirmButton: false
 																				});
-																			
+
 																			setTimeout(function(){
 																				$("#BookRoomAndViewDetailsContainer").html("");
 																				window.location.reload();
@@ -253,12 +273,12 @@
 																			html: errorThrown
 																		});
 																},
-																
+
 														});
-												
-												} 
+
+												}
                    });
-                    
+
             return false;
         });
 
