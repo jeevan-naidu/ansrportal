@@ -326,7 +326,7 @@ def newJoineeValidation(user, from_date = None):
 
 def date_by_adding_business_days(from_date, add_days,holidays, leaveType_selected):
     current_date = from_date
-    if current_date in [holiday['date'] for holiday in holidays]:
+    if current_date in [holiday['date'] for holiday in holidays] or current_date.weekday()>=5:
         business_days_to_add = add_days
     else:
         business_days_to_add = add_days-1
