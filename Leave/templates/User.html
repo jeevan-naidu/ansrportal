@@ -705,7 +705,7 @@ gridLoad('earned_leave');
       $('#sabbatical .approved').text(approved);
       }
       if(total!=0){
-       $('#sabbatical .total').text(total +' days');
+       $('#sabbatical .total').text("");
       }
 
       if(applied || approved || total){
@@ -734,7 +734,7 @@ gridLoad('earned_leave');
       $('#pay_off .approved').text(approved);
       }
       if(total!=0){
-      $('#pay_off .total').text("");
+      $('#pay_off .total').text(total +' days');
       }
 
       if(applied || approved || total){
