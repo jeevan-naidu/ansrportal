@@ -108,6 +108,20 @@
 																	 $("#modal_body").html(data);
 
 
+																	 $(function () {
+																			 $('#id_toDate_pickers').datepicker({
+																				 format: 'yyyy-mm-dd',
+																				 autoclose: true
+																			 }).datepicker("setDate", "0");
+																			 $('#id_fromDate_pickers').datepicker({
+																				 format: 'yyyy-mm-dd',
+																				 autoclose: true
+																			 }).datepicker("setDate", "0");
+																		 });
+
+
+
+
 															 },
 															 error: function(XMLHttpRequest, textStatus, errorThrown) {
 															 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -127,6 +141,19 @@
 																					success : function(data)
 																					{
 																							$("#modal_body").html(data);
+
+
+																							$(function () {
+					 																			 $('#id_toDate_pickers').datepicker({
+					 																				 format: 'yyyy-mm-dd',
+					 																				 autoclose: true
+					 																			 }).datepicker("setDate", "0");
+					 																			 $('#id_fromDate_pickers').datepicker({
+					 																				 format: 'yyyy-mm-dd',
+					 																				 autoclose: true
+					 																			 }).datepicker("setDate", "0");
+					 																		 });
+
 
 																					},
 																					error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -219,11 +246,11 @@
 							 $('#id_toDate_pickers').datepicker({
 								 format: 'yyyy-mm-dd',
 								 autoclose: true
-							 }).datepicker("setDate", "0");
+							 });
 							 $('#id_fromDate_pickers').datepicker({
 								 format: 'yyyy-mm-dd',
 								 autoclose: true
-							 }).datepicker("setDate", "0");
+							 });
 
 
 	});
