@@ -42,7 +42,7 @@ def oneTimeLeaveValidation(leave_form, user):
     if joined_date[0]['joined'] > fromDate:
         result['errors'].append('You cannot apply for leave for the period before your date of Joining')
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
-        leaveapproved = getLeaveApproved(user, fromDate, leaveType)
+        leaveapproved = getLeaveApproved(user, getLast_day_of_month(fromDate), leaveType)
         if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
@@ -59,7 +59,7 @@ def oneTimeLeaveValidation(leave_form, user):
         check_date = date.today() - timedelta(days = int(leaveType.apply_within_days))
         if check_date > fromDate:
             result['errors'].append('Leave has expired')
-        leaveapproved = getLeaveApproved(user, fromDate, leaveType)
+        leaveapproved = getLeaveApproved(user, getLast_day_of_month(fromDate), leaveType)
         if leaveType_selected != 'comp_off_avail' and leaveapproved ==1:
             result['errors'].append('sorry you already applied for comp off/pay off')
         elif fromDate.strftime("%A") not in ("Saturday", "Sunday") and leaveType_selected != 'comp_off_avail':
@@ -164,8 +164,8 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
         leaveTotal1 = getLeaveBalance(leaveType, last_day.month, user)
         leaveTotal2 = getLeaveBalance(leaveType, first_day.month, user)
 
-        leaveapproved1 = getLeaveApproved(user, last_day, leaveType)
-        leaveapproved2 = getLeaveApproved(user, first_day, leaveType)
+        leaveapproved1 = getLeaveApproved(user, getLast_day_of_month(last_day), leaveType)
+        leaveapproved2 = getLeaveApproved(user, getLast_day_of_month(first_day), leaveType)
         balanceLeave1 = leaveTotal1 - leaveapproved1
         balanceLeave2 = leaveTotal2 - leaveapproved2
         if balanceLeave1 >= leave_count_start_month and balanceLeave2 >= leave_count_end_month:
@@ -176,7 +176,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
 
     else:
         leaveTotal = getLeaveBalance(leaveType, fromDate.month, user)
-        leaveapproved = getLeaveApproved(user, toDate, leaveType)
+        leaveapproved = getLeaveApproved(user, getLast_day_of_month(toDate), leaveType)
         balanceLeave = leaveTotal - leaveapproved
         if balanceLeave >= leavecount :
             result['success'] = 'success'
