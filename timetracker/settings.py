@@ -18,8 +18,8 @@ from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 from django_auth_ldap.config import NestedActiveDirectoryGroupType
 
 # setup celery
-#import djcelery
-#djcelery.setup_loader()
+import djcelery
+djcelery.setup_loader()
 
 AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_X_TLS_REQUIRE_CERT: False,
@@ -147,6 +147,10 @@ INSTALLED_APPS = (
     'Reports',
     'Salesforce',
     'BookMyRoom',
+    'Leave',
+    'export_xls',
+    'djcelery',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -339,9 +343,19 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-
 GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
 
+LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
+
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
+
+
+#Broker Settings
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = 'root'
+BROKER_PASSWORD = 'Welcome#2677'
+BROKER_VHOST = "ansrvhost"
 

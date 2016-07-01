@@ -1,3 +1,4 @@
+# Empty CSS file for your own CSS
 
  /*      Start Leave module common css */
         .Lv-themeTxtColor {
@@ -12,7 +13,7 @@
         .LvMenuBtn {
             background-color: #4289A3;
             border-bottom: 2px solid transparent;
-            padding: 15px 10px 10px 10px;
+            padding: 10px 10px 5px 10px;
             float: left;
 	    transition: all 0.4s ease-in-out;
         }
@@ -25,7 +26,7 @@
 
         .LvMenuBtnActive {
             background-color: #5bc0de;
-            /*border-bottom: 2px solid #F49209;*/
+            border-bottom: 2px solid #F49209;
         }
 
         .Lv-active-caret {
@@ -71,24 +72,17 @@
     }
 
     .MyLeavesContainer {
-	padding: 30px 25px 30px;
-  background-color: #D3F0F5;
-  background-color: #D3F5D6;
-  background-color: #EBF5FB;
+	padding: 0px 5px 30px 5px;
+	background-color: #EAEEEF;
 	margin-bottom: 5px;
-  margin-top: -1px;
     }
     .MyLeavesContainer .row:not(:last-child){
       cursor: pointer;
     }
     .LvTitle {
-      background-color: #464A4C;
-      background-color: #E0E0E0;
-      color: #fff;
-      color: #1d1d1d;
-      padding: 8px 25px;
-      padding: 15px 25px;
-      border-bottom: 1px solid #CECECE;
+	background-color: #464A4C;
+	color: #fff;
+	padding: 8px 15px;
     }
     .pad15X {
 	padding: 15px 0px
@@ -101,13 +95,13 @@
     .Lv-progress {
 	background-color: #4BA5E5;
 	border-radius: 0px;
-	margin-bottom: 0px;
+	margin-bottom: 6px;
     }
     .Lv-progress-bar {
-	height: 100%;
+	height: 70%;
 	position: relative;
-	/*top: 3px;*/
-	/*line-height: 100%;*/  /* Curious case */
+	top: 3px;
+	line-height: 100%;
     }
     .MyLvBtn {
 	padding: 5px 8px;
@@ -135,29 +129,17 @@
 	float: left;
 	text-align: center;
     }
-    .MyLvTotl {
-	padding: 5px 8px;
-	color: #999;
-	margin: 10px 0px 0px 10px;
-	float: left;
-	text-align: center;
-    }
-    .MyLvTotl span.total-count{font-weight: 900;color: #333;}
     .Lv-TxtWhite {
 	color: #000;
     }
     .Lv-TransactionsContainer {
-      height: 521px;
-      width: 100%;
-      background-color: #EAEEEF;
-      background-color: #E0E0E0;
-      background-color: #FFFFFF;
-      overflow-y: hidden;
-      overflow-x: hidden;
-      color: #000;
-      font-size: 12px;
-      padding: 0;
-      /*border: 1px solid #9C7B7B;*/
+	height: 521px;
+	width: 100%;
+	background-color: #EAEEEF;
+	overflow-y: auto;
+	overflow-x: hidden;
+	color: #000;
+	font-size: 12px;
     }
     .LvTranAppr {
 	background-color: #4E965B;
@@ -180,27 +162,13 @@
     .Pad-topX10{
           padding-top: 5px;
     }
-    /*.Lv-Type-Selected{
+    .Lv-Type-Selected{
       background-color: #7C7A7A;
       margin: -5px -10px;
       color: #fff;
       font-weight: 700;
       border-left: 3px solid #1D92E5;
-    }*/
-    .Lv-Type-Selected{
-      background-color: #E0E0E0;
-      background-color: #DADADA;
-      background: #FFF;
-      /* margin: -5px -10px; */
-      color: #444;
-       font-weight: 700;
-      /* border-left: 3px solid #1D92E5; */
-      border-left: 5px solid #7DB0B9;
-      color: #696969;
-      line-height: 20px;
     }
-
-
     .Lv-ProgressBar-TotalDays{
       padding: 3px;
       font-weight: 100;
@@ -211,8 +179,6 @@
         color:#000;
     }
 
-    span.total-leave-count{color: #333}
-
 /*	End For Leave- My Leave tab */
 
 
@@ -222,32 +188,32 @@
         .Lv-ApLvHeader {
             /*background-color: #464A4C;*/
             background-color: #4289A3;
-            background-color: #ffffff;
             margin-bottom: 10px;
-            /*border-radius: 3px;*/
+            border-radius: 3px;
             /*padding: 5px 14px;*/
-            padding: 0px 10px;
-            /*color: #fff*/
+            padding: 5px 10px;
+            color: #fff
         }
 	.Lv-ApproveTH >th{
 	  background-color: #464A4C;
-    background-color: #91ACB9;
-    background-color: rgba(112,192,197, 1);
 	  color: #fff;
 	}
 	.Lv-Pipe{
 	  height:15px;
 	  width:2px;
 	  border-left: 1px solid #000;
-	  margin: 0px 9px;
+	  /*margin: 0px 9px;*/
+	  margin-right:10px;
 
 	}
 	.Lv-Mg-SubActive{
-	  background-color: #3A677D;
+	  background-color: #464A4C;
 	  color: #fff;
+	  /*height: 31px;*/
+	  /*padding: 5px ;*/
     padding: 0px 5px;
-    padding-right: 25px;
 	  position: relative;
+	  border-radius:3px;
 
 	}
 	.Lv-Mg-SubMenu *:hover{
@@ -259,20 +225,21 @@
 	  transition: all 3s ease-in-out 0.5s;
 	}
 	.Lv-Mg-NotifyCount{
-        position: absolute;
-        width: 30px;
-        background-color: #3C3F42;
-        top: 0px;
-        bottom: 0px;
-        right: 0px;
-        color: #fff;
-        padding: 0px 2px;
-        line-height: 30px;
-        text-align: center;
+	  position: absolute;
+	  height:20px;
+	  width:20px;
+	  background-color: #DB760A;
+	  bottom: 13px;
+	  right: -13px;
+	  color:#fff;
+	  border-radius: 50%;
+	  padding:3px 2px;
+	  text-align:center;
+	  font-size:11px;
 	}
 	.margin-top11{
 	    /*margin-top: 11px;*/
-      margin: 0px 0px;
+      margin: 10px 0px;
 	}
 	.margin-0-auto{
 	  margin: 0 auto;
@@ -283,18 +250,12 @@
 	  width: 100%;
 	}
 	.Lv-ApprLvSubmit{
-    background-color: #CDE2EF;
-    /* background-color: #D8EBF7; */
-    background-color: #FAFDFF;
-    background-color: #E7F0F7;
-    margin-bottom: 20px;
-    padding: 10px 14px;
-    color: #fff;
-    border: 1px solid #E7F0F7;
-    border-top: 0px;
+	   background-color: #E8E8E8;
+            margin-bottom: 0px;
+            border-radius: 3px;
+            padding: 5px 14px;
+            color: #fff
 	}
-
-  .table.ansrgreen{border-color: #E7F0F7}
 
 
 
@@ -495,96 +456,6 @@
 
         /*	End  Leave- Approve tab */
 
-
-
-/* Styles copied from leavestyle.css */
-
-                /* Corrections */
-
-                .margin-correct{
-                  margin-left: 0px;
-                  margin-right: 0px;
-                }
-
-
-                /* UI Corrections */
-
-                .form-inline.short-date .input-group{max-width:150px;}
-                .form-inline.short-date .export-btn{display:inline;}
-                .mod .pagination{margin:0px;margin-bottom:100px;}
-
-                /* for approval screen */
-                .mw-120{
-                  max-width: 120px;
-                  display: block;
-                  font-size: 11px;
-                  padding-left: 15px;
-                }
-
-                .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
-                .radio-mod label{
-                  padding: 2px 5px;
-                  color: #70C0C5;
-                  background-color: #D8C5BF;
-                  background-color: #fff;
-                  /* border-color: #F59B7B; */
-                  border-radius: 3px;
-                  border: 1px solid #9C6969;
-                  border: 1px solid #CE9797;
-                  border:1px solid #70C0C5;
-                }
-                .radio-mod input:checked + label{
-                        background: #616161;
-                        background: #9C6969;
-                        background: #70C0C5;
-                        color: white;
-                        border-radius:3px;
-                        border: 1px solid #70C0C5;
-                    }
-                .radio-mod label::after, .radio-mod label::before{display:none}
-                /* end of for approval screen */
-
-
-                /* New classes */
-
-                .requests-reports{
-                padding:0px 0px 0px 25px;
-                position:relative;
-                }
-
-                .pos-fix{
-                    position: fixed;
-                    bottom: 0px;
-                    left: 0px;
-                    right: 0px;
-                }
-
-                .anchor-inherit{
-                    color:inherit;
-                    height:100%;
-                }
-                .anchor-inherit:hover, .anchor-inherit:focus{
-                    text-decoration:none;
-                    color:inherit;
-                }
-
-                a.mod, a.mod:hover, a.mod:focus, a.mod:visited{outline: none !important;text-decoration: none !important;}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /* Corrections */
 
         .margin-correct{
@@ -592,97 +463,46 @@
           margin-right: 0px;
         }
 
-        .mb-0{margin-bottom: 0px;}
+
+        /* UI Corrections */
+
+        .form-inline.short-date .input-group{max-width:150px;}
+        .form-inline.short-date .export-btn{display:inline;}
+        .mod .pagination{margin:0px;margin-bottom:100px;}
+
+        /* for approval screen */
+        .mw-100{max-width:100px;display:block;font-size:11px;}
+
+        .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
+        .radio-mod label{padding: 2px 5px;}
+        .radio-mod input:checked + label{
+                background: #616161;
+                color: white;
+                border-radius:5px;
+            }
+        .radio-mod label::after, .radio-mod label::before{display:none}
+        /* end of for approval screen */
 
 
-        .pad-left-0{padding-left: 0px !important}
-        .pad-right-0{padding-right: 0px !important}
+        /* New classes */
 
-        /*.apply-export{padding-top: 9px;}*/
-        /*.apply-export .btn{border: none;}*/
-        /*.apply-export .btn:hover{background: #114456}*/
-        .apply-export a.btn:nth-child(2){margin-right: 10px;}
-
-        .progress-bar-container{margin:0px -30px 0px;font-size: 12px;}
-        .progress-bar{
-          -webkit-box-shadow: inset 0 0 0 rgba(0,0,0,.15);
-          box-shadow: inset 0 0px 0 rgba(0,0,0,.15);
+        .requests-reports{
+        padding:0px 0px 0px 25px;
+        position:relative;
         }
 
-        .Lv-ProgressBar-TotalDays{text-align: center}
-        .background-white{background-color: #fff}
-        .progress-bar-container div .row{padding: 5px;}
-        .remaining-leave-indicator{
-          color: red;
-          font-weight: 900;
-          line-height: 30px;
+        .pos-fix{
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
         }
 
-        .min-height-300{min-height: 300px;}
-        .manager-name {
-            color: #0E576D;
-            font-size: 18px;
-            font-weight: 500;
+        .anchor-inherit{
+            color:inherit;
+            height:100%;
         }
-
-
-        /* Corrections -2  */
-
-        .LvMenuBtn{display: none}
-        body.pace-done{padding-top: 75px;}
-        .ansrLogo{max-width: 175px !important}
-        .template-header{margin-top: 0px;}
-
-        .LvTitle{display: none}
-
-        .template-header + hr{margin-bottom: 10px;}
-        .Lv-ApLvHeader + hr{margin-top: 10px}
-
-        .Lv-Type-Selected .Lv-ProgressBar-TotalDays{line-height: 15.7px}
-
-        /* Corrections -3 */
-
-        .Transactions-header{width: 100%;background: #D3F5D6; background: #EBF5FB;line-height: 40px;padding: 0px 15px}
-        .Transactions-header label{margin-bottom: 0px;}
-        .no-border th, .no-border td{border: 1px solid #FFF}
-        .leave-data-container{padding: 15px;overflow-y: auto;height: 100%;}
-
-        .approve-reject{
-          margin-right: 25px;
-          border-right: 1px solid #DDD;
-          padding-right: 25px;
-          margin-top: 0px;
-          padding-top: 5px;
-          padding-bottom: 4px;
+        .anchor-inherit:hover, .anchor-inherit:focus{
+            text-decoration:none;
+            color:inherit;
         }
-        .export-btn-2{margin-top: 0px;}
-        .anchor-inherit.btn {padding: 4px 12px}
-        .breadcrumb{margin-top: -25px;}
-
-        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{border:0px; border-top: 1px solid #E8E8E8}
-
-        .lh-16{line-height: 16px;}
-
-        /* Correction -4 */
-
-        .ansr-orange-mod{
-          color: #9C6969;
-          background-color: #FFDDD1;
-          border-color: #FFDDD1;
-        }
-        .table-hover.ansrgreen>tbody>tr:hover>td{background: #FAFDFF}
-        .btn-ansr-orange{background: #ee5f2d;border: 1px solid #ee5f2d;}
-        .btn-ansr-orange:hover, .btn-ansr-orange:focus{background: #D84614;border: 1px solid #ee5f2d;}
-
-        /* Header Nav */
-
-        .ansrMenuShadow{border: 0px;background: #fff;box-shadow:0px 1px 3px rgba(0, 0, 0, 0.3)}
-        .table>tbody>tr.info>td{
-          color: #214761;
-          color: #102B3E;
-          background: #FAFDFF;
-          font-family: 'Droid Sans',sans-serif;;
-          font-size: 13px;
-        }
-        .table>tbody>tr.info:hover>td{background: #FAFDFF;}
-        .table>tbody>tr.info>td:first-child>a{color: #C76B4F;font-size: 14px;}

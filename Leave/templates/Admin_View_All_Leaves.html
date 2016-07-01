@@ -1,0 +1,407 @@
+
+{% extends 'master.inc' %}
+<title>{% block siteTitle %}myansrsource:Leave List View{% endblock %}</title>
+
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+<!-- {% block breadcrumb %}
+<div class="container-fluid pad0">
+    <div class="row">
+            <div class="">
+                <ul class="breadcrumb">
+                    <li>
+					<a href="{% url 'Leave_dashboard' %}">Home</a>
+                    </li>
+                    <li>
+					<a href='/leave/'>Leave</a>
+                    </li>
+                    <li class="active">
+					List
+                    </li>
+
+                </ul>
+            </div>
+    </div>
+</div>
+{% endblock %} -->
+
+{% block content  %}
+    <link href="/static/css/leave_style.css" rel="stylesheet">
+	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+
+{% load grievances_template_tags %}{% load permissions %} {% load pagination_tags %}
+
+
+    <div class="container Lv-themeTxtColor ">
+
+
+
+
+      <div class="row">
+          <div class="col-md-12">
+              <h3 class="text-center template-header">All Transaction</h3>
+              <hr>
+          </div>
+
+        <hr>
+      </div>
+
+
+
+
+        <!--  Start Leave details popup-->
+
+                <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+                                <h4 class="modal-title text-center" id="myModalLabel">
+								<b>Leave Details</b>
+							</h4>
+                            </div>
+                            <div class="modal-body">
+
+                            </div>
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+								Close
+							</button>
+                                <!--<button type="button" class="btn btn-primary">-->
+								<!--Save changes-->
+							<!--</button>-->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+        <!--  End Leave details pop-->
+
+        <!--      My Leaves Start -->
+
+
+        <!--	Start Menu -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="Lv-ApLvHeader">
+
+
+
+                  <!-- Start content	-->
+                  <form class="form-horizontal " id="filter_form" role="form" method="post" >
+                  <div class="row margin-top11">
+                      {% csrf_token %}
+                      <div class="col-md-12 col-sm-6 ">
+
+                              <div class="form-group form-inline short-date mb-0">
+                                  <label for="from_date">From :&nbsp;</label>
+                                  {{form.from_date}}
+                                  <!--<select class="form-control filter_class " id="month" name="month">-->
+                                      <!--<option value ="default">-&#45;&#45;&#45;&#45;</option>-->
+                                      <!--{% for value, text in months_choices %}-->
+                                          <!--<option value="{{value}}" {%if month|safe == value|safe %} selected {% endif %}>{{text}}-{%now "Y"%} </option>-->
+                                      <!--{%endfor%}-->
+                                  <!--</select>-->
+
+                                  &nbsp;&nbsp;
+                                  <label for="to_date">To :&nbsp;</label>
+                                  {{form.to_date}}
+                                  &nbsp;&nbsp;
+                                  <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
+                                  <select class="form-control filter_class input-sm" id="application_status" name="application_status">
+
+                                    <option value ="all">All</option>
+                                      {% for value, text in APPLICATION_STATUS %}
+                                          {% if value != 'applied' %}
+                                              <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
+                                          {% endif %}
+                                      {%endfor%}
+
+
+                                  </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                                  {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
+                                      <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
+                                          <option value="" selected >Applied To</option>
+                                           {% for managers in apply_to %}
+                                              <option value="{{managers.1}}" {%if post_apply_to|safe == managers.1|safe %} selected {% endif %}>{{managers.0}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  {%endif%}
+                                  <select class="form-control filter_class input-sm" id="users" name="users">
+                                      <option value="" selected >Applied By</option>
+                                       {% for employee in users %}
+                                          <option value="{{employee.user.id}}"{%if post_users|safe == employee.user.id|safe %} selected {% endif %} >{{employee.user.username}}</option>
+                                      {% endfor %}
+                                  </select>
+                                  <div class="export-btn">
+
+                                  <input type="submit" id="submit_button" class="btn btn-primary btn-sm btn-ansr-orange" value ="Search" name="filter"/>
+                                  <input type="reset" id="reset_button" class="btn btn-danger btn-sm btn-ansr-orange" value ="Reset" name="cancel"/>
+                                  </div>
+
+
+                                      {%if leave_list%}
+
+                                      <div class="pull-right export-btn-2">
+
+
+
+                                                  <input type="submit" class="pull-right btn btn-sm btn-danger btn-ansr-orange" value = "Export" name="export"/>
+
+
+
+                                                 <b style="line-height:30px;">Total : {{leave_list.count}} &nbsp;&nbsp;&nbsp;</b>
+                                              </div>
+                                      {% endif %}
+
+
+
+
+                              </div>
+
+
+
+
+
+                      </div>
+
+                      <div class="col-md-1 col-sm-6">
+          <!--                <div class="pull-right ">
+                              <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
+                          </div>-->
+
+
+
+                      </div>
+                  </div>
+
+
+                  </form>
+
+
+
+
+
+                </div><!-- end of Lv-ApLvHeader -->
+                <hr>
+
+
+
+
+
+
+
+            </div>
+        </div>
+        <!-- End Menu -->
+
+
+        {% if leave_list %} <div class="row">
+            <div class="col-md-12">
+
+                <table class="table table-bordered table-hover ansrgreen">
+                    <tr class="Lv-ApproveTH ">
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Applied To</th>
+                        <th>Days</th>
+                        <th style="width:30%">Status
+                        </th>
+                    </tr>
+                    {%  autopaginate leave_list 10 %}
+                    {% for leave in leave_list %}
+
+                    <tr  {%for k,v in  BUTTON_NAME %}
+                                {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
+                        <td>
+                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" class ="list_view mod" title="View Details">{{leave.user.first_name}} {{leave.user.last_name}}</a>
+                            <div class="GrDetails" style = "display:none" >
+                         <table class="table  table-hover view_details"  >
+                                 <tr >
+                                     <td >Applied By : </td>
+                                     <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
+                                 </tr>
+                                 <tr>
+                                     <td>Applies On: </td>
+                                     <td>{{leave.applied_on}}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>Leave Type : </td>
+                                     <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                                 </tr>
+
+
+
+                                 <tr >
+                                     <td>From: </td>
+                                     <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>To: </td>
+                                     <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+                                 </tr>
+                                 <tr >
+                                     <td>No Of Days: </td>
+                                     <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>Reason: </td>
+                                     <td>{{leave.reason}}</td>
+                                 </tr>
+                                 <tr >
+                                     <td>Manager: </td>
+                                     <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
+                                 </tr>
+                             <tr >
+                                     <td>Status: </td>
+                                     <td>{{leave.status|title}}</td>
+                                 </tr>
+                                 <tr >
+                                         <td>Status Action On: </td>
+                                         <td>{{leave.status_action_on}}</td>
+                                     </tr>
+                                     <tr >
+                                             <td>Status Action By: </td>
+                                             <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
+                                         </tr>
+                                 <tr >
+                                     <td></td>
+                                     <td>
+                                         <div>
+                                           {% if leave.atachement%} <p><strong>Attachment:</strong></p>
+      <div class="" >
+      <!-- Attachments start -->
+                <a target="_blank" href="{{leave.atachement.url}}">
+                    {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
+                        <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
+                        <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
+                        <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
+                        <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                    {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
+                        <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
+
+                    {% endif %}
+                </a>
+              </div>
+        {% endif %}
+         <!-- Attachments end -->
+                                         </div>
+                                     </td>
+                                 </tr>
+
+                             </table></div>
+                        </td>
+                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                        <td>{{leave.from_date}},<br> {%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%} </td>
+                        <td>{{leave.to_date}},<br>{%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+
+                        <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}} </td>
+                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+
+                        <td>
+                           {%for k,v in  BUTTON_NAME %}
+                                {%if v|safe == leave.status|safe %}
+                                    <label class="btn-xs btn-{{k}}" >{{v|title}}</label>
+
+                                {%endif%}
+                            {%endfor%}
+
+                            {% if leave.status_comments %}
+                                    <br><span> Reason : {{leave.status_comments}}</span>
+                            {% endif %}
+                        </td>
+                    </tr>{%endfor%}
+
+                </table>
+
+            </div>
+
+        </div> {% endif %}
+
+
+	{%if not leave_list %}
+	  <div class="row ">
+            <div class="col-md-12">
+                <table class="table table-bordered table-hover Lv-RecordsNotFound">
+                    <tr class="info">
+                        <th class="text-center">No leave applications found</th>
+                    </tr>
+                </table>
+
+            </div>
+
+        </div>
+    {% endif %}
+
+        <!-- End content-->
+<div class="text-center">{%if  leave_list %} {% paginate %} </div>{% endif %}
+    </div>
+    <!-- End Main Container-->
+{% endblock  %}
+
+ {% block page_specific_JS %}
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/static/js/date_validation.js"></script>
+    <script>
+    $(document).ready( function (){
+
+            var url = window.location.href ;
+            url = url.split('/');
+
+            if(url[4] == 'leavelist' && (url[5] == '' || url[5].indexOf("?page") >= 0 )) {
+                window.history.replaceState( {} , 'Leave List', '/leave/leavelist/' );
+            }
+            else if(url[4] == 'leavelist' && url[5] == 'all' && ( url[6] == '' ||  url[6] != '') ) {
+                window.history.replaceState( {} , 'Leave List', '/leave/leavelist/all' );
+            }
+
+            $('input[type="checkbox"]').on('change', function() {
+                $('input[type="checkbox"]').not(this).prop('checked', false);
+            });
+
+            $('.list_view').click(function(){
+                var GrDetails = $(this).siblings(".GrDetails").html();
+                $(".modal-body").html(GrDetails);
+            });
+
+            $('input[name="export"]').on('click', function() {
+                $( "#filter_form" ).submit();
+            });
+
+    });
+    $('#submit_button').click(function(){
+              var result  =  date_validation('id_from_date','id_to_date');
+              if (result === false) return false;
+
+             var inputs = input_elements_validation('filter_class', 'leave/leavelist');
+             if (inputs === false) return false;
+
+        });
+    </script>
+{%endblock%}

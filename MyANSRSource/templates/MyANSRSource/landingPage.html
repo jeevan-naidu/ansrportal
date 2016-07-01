@@ -298,6 +298,7 @@
 <!-- End Milestone reports section-->
 
 
+
 <!-- Salesforce section-->
 {% if request.user|IsSalesforceAdmin %}
 <div class="panel panel-default">
@@ -319,8 +320,41 @@
 {% endif %}
 <!-- End salesforce reports section-->
 
+
+
+
+
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="leave_module">
+				<a data-toggle="collapse" data-parent="#accordion" href="#leave_list" aria-expanded="false" aria-controls="collapseTwo">
+					Leave
+				</a>
+			</div>
+			<div id="leave_list" class="panel-collapse collapse" role="tabpanel" aria-labelledby="leave_module">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="{% url 'Leave_dashboard' %}" class="list-group-item">
+						Dashboard
+					</a>
+					{% if request.user|has_group:"myansrsourceHR"  or request.user|has_group:"myansrsourcePM" or request.user.is_superuser %}
+					<a href="{% url 'manage_leave_list' %}"  class="list-group-item" >Manage Requests<span class="badge">{{ leave_count }}</span>
+
+					</a>
+                			<a href="{% url 'list_leave' %}"  class="list-group-item" >View Requests
+
+							</a>
+
+					{% endif %}
+
+				</ul>
+			</div>
+			</div>
 		</div>
-	</div>
+
+</div>
+</div>
+
+
 	<div class="col-md-8">
 
 		<div id='calendar'></div>
@@ -443,6 +477,21 @@
 </div>
 <script>
 $(document).ready(function() {
+
+//time extraction for displaying in calender
+{% for eachSwipe in swipe_display%}
+
+	//var d1 = new Date(eachSwipe.swipe_in);
+	//var d2 = new Date(eachSwipe.swipe_out);
+	//eachSwipe.swipe_in = eachSwipe.swipe_in.substr(11, 2);
+//	eachSwipe.swipe_out = eachSwipe.swipe_out.substr(11, 2);
+
+
+{% endfor%}
+
+
+
+
 	{% for eachHoliday in holidayList %}
 	$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
 
