@@ -118,14 +118,12 @@ class MilestoneReportsView(View):
 
             writer = csv.writer(response)
             writer.writerow(['Project Id', 'Project Name', "Leads/PM's", 'Milestone Date', 'Description', 'Amount',
-                             'Closed Status', 'Is Financial', 'Closed On', 'Updated On'])
+                             'Closed Status', 'Is Financial', 'Customer Contact', 'Closed On', 'Updated On'])
             for obj in MilestoneList:
-                
-                utcnow_datetime_obj = timezone.make_aware(current_date_time_obj, timezone.get_current_timezone())
                 
                 leads_list = ",".join(i.first_name + " " + i.last_name for i in obj.project.projectManager.all())
                 writer.writerow([obj.project.projectId, obj.project.name, leads_list, obj.milestoneDate, obj.description,
-                                 obj.amount, obj.closed, obj.financial, obj.closedon, obj.updatedOn])
+                                 obj.amount, obj.closed, obj.financial, obj.project.customerContact, obj.closedon, obj.updatedOn])
             if MilestoneList:
                 return response
             else:

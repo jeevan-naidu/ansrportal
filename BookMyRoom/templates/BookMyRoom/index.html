@@ -18,7 +18,7 @@
 {% block content %}
 <!-- write your html inside this block -->
 
-       
+
 <div class="container">
 
 <h3 class="text-center">Book a Meeting Room</h3>
@@ -64,7 +64,9 @@
 </nav>
 
 <div style="color:red" id="server_errors"></div>
-<div id="BookRoomAndViewDetailsContainer">
+
+
+<div id="BookRoomAndViewDetailsContainer" class="pos-rel">
 <!--  This div will be pupulated using ajax. Ajax request will render template BookMeetingform.html and will update this section with it.
 This section updates on click of 3 buttons : Karle 0, karle 2 and BTP -->
 
@@ -110,9 +112,15 @@ $(document).ready(function(){
 
       });
 
-    //initialize to today's date
-    $('#bookings_date_pickers').datepicker('update', new Date());
 
+
+    //initialize to today's date
+    var date_str = '{{ request.session.for_date }}'
+    var date_obj = new Date();
+    if(date_str != ''){
+        date_obj = new Date(date_str);
+    }
+    $("#bookings_date_pickers").datepicker("update", date_obj);
 
   $('#reset-btn').click(function(){
     $('input[type="checkbox"]').attr('checked', false);
@@ -144,10 +152,21 @@ $(document).ready(function(){
     });
 
     var for_date = $('#id_for_date').val();
-    var location = 'karle_ground_floor';
-  UpdateBookingDetails(for_date, location);
+    var location = '{{ request.session.for_location }}'
+    if (location == ''){
+        location = 'karle_ground_floor';
+        UpdateBookingDetails(for_date, location)
+    }
+    else{
+        $('#'+location).trigger('click');
+    }
+
 
   function UpdateBookingDetails(for_date, location){
+
+      var for_element = $('#BookRoomAndViewDetailsContainer')
+      $('#BookingsAjaxLoader').show();
+      // ShowAjaxLoader($('#BookingsAjaxLoader'), for_element.width(), for_element.height());
 
      $.ajax(
               {
@@ -164,8 +183,11 @@ $(document).ready(function(){
                         $("#server_errors").html("");
                         $("#BookRoomAndViewDetailsContainer").html(data.html_data);
                     }
+                    $('#BookingsAjaxLoader').fadeOut();
+// {#                      HideAjaxLoader($('#BookingsAjaxLoader'), for_element.width(), for_element.height());#}
                   },
                   error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    $('#BookingsAjaxLoader').fadeOut();
                   $("#BookRoomAndViewDetailsContainer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                       + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
                   //HideAjaxLoader(ajax_loader_element);
@@ -175,6 +197,8 @@ $(document).ready(function(){
 
 
   }
+
+
 
 
 

@@ -1655,3 +1655,14 @@ helper.clearArray = function(arr) {
         arr.pop();
     }
 };
+
+
+// function ShowAjaxLoader(element, width, height){
+//     element.show();
+//     // element.width(width).height(height);
+//     return false;
+// }
+// function HideAjaxLoader(element){
+//     element.fadeOut();
+//     return false;
+// }

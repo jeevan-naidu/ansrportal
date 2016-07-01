@@ -141,7 +141,6 @@ INSTALLED_APPS = (
     'CompanyMaster',
     'MyANSRSource',
     'fb360',
-    'djcelery',
     'Grievances',
     'GrievanceAdmin',
     'pagination',
@@ -150,6 +149,8 @@ INSTALLED_APPS = (
     'BookMyRoom',
     'Leave',
     'export_xls',
+    'djcelery',
+
 )
 
 MIDDLEWARE_CLASSES = (

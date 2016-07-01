@@ -41,7 +41,8 @@ def BookedBy(for_date_time_period, room_obj):
     obj_list = MeetingRoomBooking.objects.filter(from_time=utc_datetime_obj, room=room_obj, status='booked')
     if obj_list:
         obj = obj_list[0]
-        return str(obj.booked_by.username)
+        return obj
+        # return str(obj.booked_by.first_name) + " " + str(obj.booked_by.last_name)
     else:
         return None
 
