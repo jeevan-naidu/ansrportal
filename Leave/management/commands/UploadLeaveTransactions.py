@@ -20,6 +20,7 @@ FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
+
 class Command(BaseCommand):
     help = 'Upload Leave summary.'
 
