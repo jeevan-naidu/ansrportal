@@ -12,7 +12,9 @@ def get_my_project_list(requestee):
     bu_head = company_model.BusinessUnit.objects.filter(new_bu_head=requestee)
     acc_mgmt = company_model.Customer.objects.filter(Q(Crelation=requestee) | Q(Cdelivery=requestee))
     pm = myansr_model.ProjectManager.objects.filter(user=requestee)
-
+    
+    if requestee.is_superuser:
+        return myansr_model.Project.objects.all().values('id')
     if bu_head:
         return myansr_model.Project.objects.filter(bu__in=bu_head).values('id')
     elif acc_mgmt:
