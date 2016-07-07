@@ -8,6 +8,10 @@ from models import LeaveApplications, LeaveType, LeaveSummary
 def leaveValidation(leave_form, user, attachment):
     ''' leave types which needs from and to dates'''
     result = {'errors' : [], 'success':[]}
+    lateLeaveApplication = lateLeaveCheck(leave_form)
+    if lateLeaveApplication['error']:
+        result['errors'].append( lateLeaveApplication['error'])
+
     fromDate = leave_form.cleaned_data['fromDate']
     toDate = leave_form.cleaned_data['toDate']
     fromSession = leave_form.cleaned_data['from_session']
@@ -35,6 +39,12 @@ def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
     holiday = Holiday.objects.all().values('date')
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
+
+    #one time code for stoping past entries
+    lateLeaveApplication = lateLeaveCheck(leave_form)
+    if lateLeaveApplication['error']:
+        result['errors'].append( lateLeaveApplication['error'])
+
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
     fromDate = leave_form.cleaned_data['fromDate']
@@ -343,6 +353,7 @@ def date_by_adding_business_days(from_date, add_days,holidays, leaveType_selecte
 
 
 def leaveCheckBetweenAppliedLied(leavelist, leave_form):
+    flag = False
     if leavelist:
         leave = leavelist[0]
         leave_fromdate = leave.from_date
@@ -352,21 +363,24 @@ def leaveCheckBetweenAppliedLied(leavelist, leave_form):
         fromdate = leave_form.cleaned_data['fromDate']
         todate = leave_form.cleaned_data['toDate']
         fromSession = leave_form.cleaned_data['from_session']
-        tosession = leave_form.cleaned_data['to_session']
+        toSession = leave_form.cleaned_data['to_session']
         if fromdate == leave_todate:
             if leave_tosession == 'session_first' and fromSession == 'session_second':
-                return False
+                flag = False
+            elif leave_fromsession == 'session_second' and toSession == 'session_first':
+                flag = False
             else:
-                return True
+                flag = True
         elif todate == leave_fromdate:
-            if tosession == 'session_first' and leave_fromsession == 'session_second':
-                return False
+            if leave_tosession == 'session_first' and fromSession == 'session_second':
+                flag = False
+            elif leave_fromsession == 'session_second' and toSession == 'session_first':
+                flag = False
             else:
-                return True
+                flag = True
         else:
-            return True
-    else:
-        return False
+            flag = True
+        return flag
 
 
 def compOffAvailibilityCheck(fromDate, user):
@@ -379,3 +393,13 @@ def compOffAvailibilityCheck(fromDate, user):
         leaves[0].update()
         return False
     return True
+
+#60 days check
+def lateLeaveCheck(leave_form):
+    context ={'error':None}
+    fromdate = leave_form.cleaned_data['fromDate']
+    if fromdate< date(2016,7,1):
+        context['error'] = 'you are applying for past date'
+    if date.today().day - fromdate.day > 60:
+        context['error'] = '60 back limit failing'
+    return context
