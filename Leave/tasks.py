@@ -72,6 +72,34 @@ class ManagerEmailSendTask(Task):
         else:
             logger.debug('send successful')
 
+class LateLeaveEmailSendTask(Task):
+    def run(self, user, employee_assigned_id, fromdate, fromSession, todate, toSession, leaveType_selected, leavecount):
+        fromdate = str(fromdate)+' Session: '+leaveSessionDictionary[fromSession]
+        todate = str(todate)+' Session: '+leaveSessionDictionary[toSession]
+        msg_html = render_to_string('email_templates/late_leave_apply.html',
+                                    {'registered_by': user.first_name + " "+user.last_name,
+                                    'employee_assigned_id': employee_assigned_id,
+                                     'leaveType': leaveTypeDictionary[leaveType_selected],
+                                     'fromdate': fromdate,
+                                     'fromSession': fromSession,
+                                     'todate': todate,
+                                     'toSession': toSession,
+                                     'leavecount':leavecount})
+
+        mail_obj = EmailMessage('New Leave applied before 1st July',
+                                msg_html, settings.EMAIL_HOST_USER, ['vivek.pradhan@ansrsource.com'])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Leave Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
 
 tasks.register(EmailSendTask)
 tasks.register(ManagerEmailSendTask)
+tasks.register(LateLeaveEmailSendTask)

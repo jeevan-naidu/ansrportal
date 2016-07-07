@@ -4,11 +4,12 @@ from employee.models import Employee
 from django.contrib.auth.models import User
 from CompanyMaster.models import Holiday
 from models import LeaveApplications, LeaveType, LeaveSummary
+from tasks import LateLeaveEmailSendTask
 
 def leaveValidation(leave_form, user, attachment):
     ''' leave types which needs from and to dates'''
     result = {'errors' : [], 'success':[]}
-    lateLeaveApplication = lateLeaveCheck(leave_form)
+    lateLeaveApplication = lateLeaveCheck(leave_form, user)
     if lateLeaveApplication['error']:
         result['errors'].append( lateLeaveApplication['error'])
 
@@ -41,7 +42,7 @@ def oneTimeLeaveValidation(leave_form, user):
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
 
     #one time code for stoping past entries
-    lateLeaveApplication = lateLeaveCheck(leave_form)
+    lateLeaveApplication = lateLeaveCheck(leave_form, user)
     if lateLeaveApplication['error']:
         result['errors'].append( lateLeaveApplication['error'])
 
@@ -395,11 +396,21 @@ def compOffAvailibilityCheck(fromDate, user):
     return True
 
 #60 days check
-def lateLeaveCheck(leave_form):
+def lateLeaveCheck(leave_form, user):
     context ={'error':None}
     fromdate = leave_form.cleaned_data['fromDate']
+
+
     if fromdate< date(2016,7,1):
         context['error'] = 'you are applying for past date'
+        fromSession = leave_form.cleaned_data['from_session']
+        todate = leave_form.cleaned_data['toDate']
+        toSession = leave_form.cleaned_data['to_session']
+        leaveType_selected = leave_form.cleaned_data['leave']
+        leavecount = leave_calculation(fromdate, todate, fromSession, toSession, leaveType_selected)
+        emp_id = Employee.objects.get(user_id=user)
+        LateLeaveEmailSendTask.delay(User.objects.get(id=user), emp_id.employee_assigned_id, fromdate, fromSession, todate, toSession, leaveType_selected, leavecount)
+
     if date.today().day - fromdate.day > 60:
         context['error'] = '60 back limit failing'
     return context
