@@ -68,7 +68,7 @@ class LeaveSummary(models.Model):
        return '%s' % (self.user.username)
 
     class Meta:
-        unique_together = ('user', 'leave_type')
+        unique_together = ('user', 'leave_type', 'year')
 
 class LeaveApplications(models.Model):
 
