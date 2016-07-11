@@ -16,49 +16,45 @@
 {% endfor %}
 
 <script>
-$(document).ready(function() {
-    a = new Timer("#timerText");
-
-     function  InitiateTimer() {
-		  a.set(15, 00);
-		  a.run();
-		}
+	a = new Timer("#timerText");
+	a.set(00, 10);
+	a.run();
+	
+	setInterval(function(){
+		var room_name = $('#room_name_title').text();
+		var room_id = $('#selected_room_id').attr('value');
+		UpdateBookingDetails(room_id, room_name);
+		a.reset();
+		a.stop();
+		a.set(00, 10);
+		a.run();
+		}, 10000);
 
     $('#rooms_list>li>a').click(function () {
-        a.stop();
-        var room_id = $(this).attr('id')
+        var room_id = $(this).attr('id');
         var room_name = $(this).text();
-        UpdateBookingDetails();
+		a.reset();
+		a.stop();
+		a.set(00, 10);
+		a.run();
+        UpdateBookingDetails(room_id, room_name);
 	});
+	
+	
+	
 
-    var MyInterval = setTimeout(function(){
-        room_id = $('#selected_room_id').attr('value');
-        room_name = $('#room_name_title').text();
-        UpdateBookingDetails();
-        alert();
-    }, 10000);
-
-
-
-
-	function UpdateBookingDetails() {
-
-{#        clearInterval(MyInterval);#}
-        room_id = $('#selected_room_id').attr('value');
-        room_name = $('#room_name_title').text();
-
+	function UpdateBookingDetails(room_id, room_name) {
+        //console.log('refeshing..');
 		$.ajax({
-				url: 'http://127.0.0.1:8000/bookings/get-bookings-details/',
+				url: 'http://172.16.34.16:8000/bookings/get-bookings-details/',
 				type: 'GET',
 				cache: false,
                 data: {'room_id':room_id},
 				success: function (data) {
 						if (data.html_data) {
-                            $('#room_name_title').html(room_name);
 							$('#container').html(data.html_data);
                             $('#selected_room_id').attr('value', room_id);
-                            MyInterval;
-                            InitiateTimer();
+							$('#room_name_title').text(room_name);
 						}
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -66,72 +62,58 @@ $(document).ready(function() {
 				},
 		});
 	}
-
-
-
-    function Timer(element) {
-
+	
+	
+	
+	function Timer(element) {
 	  var minutes, seconds, finalTimeInSeconds, displayMinutes, displaySeconds, interval = 1000, self = this, timeLeftToNextSecond = 1000;
-
 	  this.set = function(inputMinutes, inputSeconds) {
-
 		finalTimeInSeconds = inputMinutes * 60 + inputSeconds;
 		minutes = (Math.floor(finalTimeInSeconds / 60));
 		seconds = finalTimeInSeconds % 60;
-
 		this.print();
 	  }
-
 	  this.add = function(inputMinutes, inputSeconds) {
-
 		finalTimeInSeconds += inputMinutes * 60 + inputSeconds;
 		finalTimeInSeconds = (finalTimeInSeconds < 0) ? 0 : finalTimeInSeconds;
 		minutes = (Math.floor(finalTimeInSeconds / 60));
 		seconds = finalTimeInSeconds % 60;
-
 		this.print();
 	  }
-
 	  this.subtract = function(inputMinutes, inputSeconds) {
-
 		finalTimeInSeconds -= inputMinutes * 60 + inputSeconds;
 		finalTimeInSeconds = (finalTimeInSeconds < 0) ? 0 : finalTimeInSeconds;
 		minutes = (Math.floor(finalTimeInSeconds / 60));
 		seconds = finalTimeInSeconds % 60;
-
 		this.print();
 	  }
-
 	  this.reset = function() {
-
 		this.set(0, 0);
 	  }
-
 	  this.print = function() {
-
 		displayMinutes = (minutes.toString().length == 1) ? "0" + minutes : minutes; //ternary operator: adds a zero to the beggining
 		displaySeconds = (seconds.toString().length == 1) ? "0" + seconds : seconds; //of the number if it has only one caracter.
-
 		$(element).text(displayMinutes + ":" + displaySeconds);
 	  }
-
 	  this.run = function() {
-
 		ac = setInterval(function() {
-
 		  secondStarted = new Date;
 		  self.subtract(0, 1);
 		  interval = 1000;
 		}, interval);
 	  }
-
 	  this.stop = function() {
-
-		clearInterval(this.ac);
-
+		clearInterval(ac);
 	  }
-
 } // Timer function end
 
-}); // dom ready end
+	
+	
+	
+	
+	
+	
+
+
+
 </script>
