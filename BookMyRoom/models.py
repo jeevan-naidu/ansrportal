@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from CompanyMaster.models import OfficeLocation
 # Create your models here.
 
+#LOCATION_CHOICES is also used in the android app. If changed, android app will also need changes
 LOCATION_CHOICES = (('karle_ground_floor', 'Karle-Ground Floor'), ('karle_second_floor', 'Karle-Second Floor'), ('btp', 'BTP'))
+
 BOOKING_STATUS = (('booked', 'Booked'), ('cancelled', 'Cancelled'))
 
 class RoomDetail(models.Model):

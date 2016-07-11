@@ -1,0 +1,19 @@
+
+{% load book_my_room_template_tags %}
+<div class="col-sm-12">
+    {% for obj in bookings_details %}
+        {% if obj.1 == 'Vacant' %}
+            <div class="row bookings">
+                <div class="col-xs-2 time">{{ obj.0 }}</div>
+                <div class="col-xs-10 booker">Vacant</div>
+            </div>
+        {% else %}
+            <div class="row bookings booked">
+                <div class="col-xs-2 time">{{ obj.0 }}</div>
+                <div class="col-xs-10 booker">{{ obj.1 }}</div>
+        </div>
+        {% endif  %}
+
+    {% endfor %}
+</div>
+
