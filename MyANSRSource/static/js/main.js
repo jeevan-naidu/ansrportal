@@ -238,9 +238,9 @@ app.setActive = function($elements, arr) {
 
     for(i = 0; i < $elementsLen; i += 1) {
         $element = $($elements[i]);
-        if (arr[i]){
-            $element.find('option[value=' + arr[i] +']').attr('selected', 'selected');
-        }
+        if(arr[i]){
+        $element.find('option[value=' + arr[i] +']').attr('selected', 'selected');
+      }
     }
 };
 
@@ -1100,16 +1100,16 @@ app.getSum = function($elements, $outputElement) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input"></label></div>';
+                // var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
+                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
+                // popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input"></label></div>';
 
-                $dayPopoverBtn.popover({
-                    trigger: 'click',
-                    html: true,
-                    placement: 'bottom',
-                    content: popoverCon
-                });
+                // $dayPopoverBtn.popover({
+                //     trigger: 'click',
+                //     html: true,
+                //     placement: 'bottom',
+                //     content: popoverCon
+                // });
 
 
                var primaryCb = function(e) {
@@ -1124,7 +1124,7 @@ app.getSum = function($elements, $outputElement) {
                         $totalHours             = $curRow.find('.t-hours'),
                         $totalQuestionsHidden   = $curRow.find('.t-questions-hidden'),
                         $totalHoursHidden       = $curRow.find('.t-hours-hidden'),
-                        curRowQuestionsLen      = $curRowQuestions.length,
+                        curRowQuestionsLen      = $curRowHours.length,
                         $curQuestionsView       = $curDayBtn.find('.b-questions'),
                         $curHoursView           = $curDayBtn.find('.b-hours'),
                         $curQuestionsHidden     = $curDayBtn.find('.b-questions-hidden'),
@@ -1173,7 +1173,15 @@ app.getSum = function($elements, $outputElement) {
 
                     viewToInput();
 
+                    //written by vivek
+                    var hiddenField =function(){
+
+                    }
+
+
+
                     var calculateTotal = function() {
+
                         var questionsTemp = 0,
                             hoursTemp = 0,
                             curQuestions,
@@ -1186,7 +1194,6 @@ app.getSum = function($elements, $outputElement) {
                             $curTotalBillableHoursHidden    = $curRow.find('.r-total-billable-hours');
 
                         console.log('curTaskType: ' + curTaskType);
-
                         if(curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
                         } else {
@@ -1194,9 +1201,9 @@ app.getSum = function($elements, $outputElement) {
                         }
 
                         for(i = 0; i < curRowQuestionsLen; i += 1) {
+
                             curQuestions = Number($($curRowQuestions[i]).text());
                             curHours     = Number($($curRowHours[i]).text());
-
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
 
@@ -1206,12 +1213,12 @@ app.getSum = function($elements, $outputElement) {
                                 curTotalBillableHours += curHours;
                             }
                         }
-
+                        var a1 = 20;
                         $totalQuestions.text(questionsTemp.toFixed(2));
                         $totalHours.text(hoursTemp.toFixed(2));
-
                         $totalQuestionsHidden.val(questionsTemp.toFixed(2));
-                        $totalHoursHidden.val(hoursTemp.toFixed(2));
+                        debugger;
+                        $totalHoursHidden.val(a1.toFixed(2));
 
                         // Idle and billable hours
                         $curTotalIdleHoursHidden.val(curTotalIdleHours.toFixed(2));
@@ -1285,9 +1292,12 @@ app.getSum = function($elements, $outputElement) {
                         click: inputToView
                     }, calculateTotal);
                 };
-
-                $dayPopoverBtn.on('shown.bs.popover', primaryCb);
-
+                // debugger;
+                // $dayPopoverBtn.on('shown.bs.popover', primaryCb);
+                 $('tr .billableData').blur(function(){
+                this.calculateTotal;
+                primaryCb;
+                });
                 $bTask.on({
                     change: primaryCb
                 });
@@ -1655,14 +1665,3 @@ helper.clearArray = function(arr) {
         arr.pop();
     }
 };
-
-
-// function ShowAjaxLoader(element, width, height){
-//     element.show();
-//     // element.width(width).height(height);
-//     return false;
-// }
-// function HideAjaxLoader(element){
-//     element.fadeOut();
-//     return false;
-// }
