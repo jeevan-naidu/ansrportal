@@ -61,7 +61,7 @@ def insertToDb1(data_file):
         if user_obj.user:
             for i in range(2,3):
                 leave_type_obj = LeaveType.objects.get(leave_type=columns_list[i])
-                obj, created = LeaveSummary.objects.get_or_create(user=user_obj.user, leave_type=leave_type_obj, year=2015)
+                obj, created = LeaveSummary.objects.get_or_create(user=user_obj.user, leave_type=leave_type_obj, year="2015")
                 value = data_file[i]
                 if not value:
                     value = "0.0"
