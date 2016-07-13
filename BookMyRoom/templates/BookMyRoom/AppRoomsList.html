@@ -46,7 +46,7 @@
 	function UpdateBookingDetails(room_id, room_name) {
         //console.log('refeshing..');
 		$.ajax({
-				url: 'http://172.16.34.16:8000/bookings/get-bookings-details/',
+				url: 'http://stage.ansr.com/bookings/get-bookings-details/',
 				type: 'GET',
 				cache: false,
                 data: {'room_id':room_id},
