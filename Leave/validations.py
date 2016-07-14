@@ -14,7 +14,7 @@ def leaveValidation(leave_form, user, attachment):
     tosession = leave_form.cleaned_data['to_session']
     if fromDate <= toDate :
         if fromDate == toDate and fromSession== 'session_second' and tosession== 'session_first':
-            result['errors'].append("Please correct session")
+            result['errors'].append("Please enter the correct session details.")
             return result
         leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)), status__in=['approved', 'open'],user=user)
         if len(leave_between_applied_date)>1 or leaveCheckBetweenAppliedLied(leave_between_applied_date, leave_form):
@@ -28,7 +28,7 @@ def leaveValidation(leave_form, user, attachment):
             result['errors'].append(result_temp['errors'])
 
     else:
-        result['errors'].append("from date should be lesser than to date")
+        result['errors'].append("The From date should be before the To date. ")
     return result
 
 def oneTimeLeaveValidation(leave_form, user):
@@ -40,7 +40,7 @@ def oneTimeLeaveValidation(leave_form, user):
     fromDate = leave_form.cleaned_data['fromDate']
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     if joined_date[0]['joined'] > fromDate:
-        result['errors'].append('You cannot apply for leave for the period before your date of Joining')
+        result['errors'].append('You cannot apply for leave for the period before your date of joining')
     if leaveType_selected in ['maternity_leave', 'paternity_leave', 'bereavement_leave']:
         leaveapproved = getLeaveApproved(user, getLast_day_of_month(fromDate), leaveType)
         if leaveapproved == 0 and not newJoineeValidation(user, fromDate):
@@ -50,7 +50,7 @@ def oneTimeLeaveValidation(leave_form, user):
             result['success'] = getLeaveBalance(leaveType, fromDate, user)
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
         else:
-            result['errors'].append("Leaves are not available")
+            result['errors'].append("You do not have the necessary leave balance to avail of this leave.")
     else:
         holiday = Holiday.objects.all().values('date')
         result['success'] = 1
@@ -68,9 +68,9 @@ def oneTimeLeaveValidation(leave_form, user):
                 if fromDate == dates['date']:
                     flag = True
             if not flag:
-                result['errors'].append('weekend and holiday only allowed for compoff and payoff')
+                result['errors'].append('You can only earn comp offs and payoffs for working on weekends or holidays. ')
         elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in [holiday1['date'] for holiday1 in holiday]:
-            result['errors'].append('Leave applied on days of Holiday')
+            result['errors'].append('You have applied for leave on a holiday.')
 
     if result['todate'] != [0]:
         toDate = result['todate']
@@ -96,10 +96,10 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
     leavecount = leave_calculation(fromDate, toDate, fromSession, toSession, leaveType_selected)
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     if leavecount <=0:
-        result['errors'] = 'Leave applied on days of Holiday'
+        result['errors'] = 'You have applied for leave on a holiday.'
         return result
     elif joined_date[0]['joined'] > fromDate:
-        result['errors'] = 'You cannot apply for leave for the period before your date of Joining'
+        result['errors'] = 'You cannot apply for leave for the period before your date of joining'
         return result
     approvedLeave_newjoinee = getLeaveApproved(user)
     if leaveType_selected == 'sabbatical' :
@@ -108,10 +108,10 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
             result['success'] = leavecount
             return result
         elif leavecount<30 :
-            result['errors'] = 'Sabbatical leave cannot be applied for less than 30 calendar days'
+            result['errors'] = 'You cannot apply for sabbatical leave for fewer than 30 calendar days.'
             return result
         elif leavecount>180 :
-            result['errors'] = 'Leave are not avaliable'
+            result['errors'] = 'You do not have the necessary leave balance to avail of this leave.'
             return result
         else :
             result['errors'] = 'You are not allowed to take leave for this time period'
@@ -131,14 +131,14 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
             return result
 
     elif newJoineeValidation(user, fromDate) and leavecount + approvedLeave_newjoinee > 2 :
-        result['errors'] = "You are not allowed to take more than 2 days of leave during first 90 days from you DOJ"
+        result['errors'] = "You are not allowed to take more than two days of leave during first 90 days from your date of joining."
         return result
 
 
 
     else:
         if leaveType_selected == 'sick_leave' and leavecount > 2 and not attachment:
-            result['errors'] = "Please attach the medical certificate"
+            result['errors'] = "Please attach the necessary medical certificate."
             return result
 
         else:
@@ -172,7 +172,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
             result['success'] = 'success'
 
         else :
-            result['errors'] = " Leaves are not avaliable"
+            result['errors'] = " You do not have the necessary leave balance to avail of this leave."
 
     else:
         leaveTotal = getLeaveBalance(leaveType, fromDate.month, user)
@@ -181,7 +181,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
         if balanceLeave >= leavecount :
             result['success'] = 'success'
         else :
-            result['errors'] = " Leaves are not avaliable"
+            result['errors'] = " You do not have the necessary leave balance to avail of this leave."
 
     return result
 

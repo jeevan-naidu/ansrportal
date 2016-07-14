@@ -86,7 +86,7 @@
         <!--      My Leaves Start -->
         <div class="row">
             <div class="col-md-12">
-                <h3 class="text-center template-header">Welcome to the leave portal</h3>
+                <h3 class="text-center template-header">Welcome to the <b>ansr</b>source leave portal</h3>
                           <hr>
             </div>
 
@@ -1071,13 +1071,13 @@ var ajax_loader_element = $('#ajax_loader_cancel_leave');
     function CancelLeave(val, leavecount){
     	swal({
     		title: "Are you sure?",
-    		text: "Do you want me to cancel your leave?",
+    		text: "Do you want to cancel your leave?",
     		type: "warning",
     		showCancelButton: true,
     		confirmButtonColor: "#DD6B55",
-    		confirmButtonText: "Yes, Please!",
+    		confirmButtonText: "Yes, cancel.",
     		closeOnConfirm: true,
-    		cancelButtonText: "No, Cancel!",
+    		cancelButtonText: "No, return to previous page.",
     		closeOnCancel: true
     	},
     	function(isConfirm) {
@@ -1091,7 +1091,7 @@ var ajax_loader_element = $('#ajax_loader_cancel_leave');
                         success : function(data)
                         {
 
-                            swal("Done!", "Your leave is cancel", "success");
+                            swal("Done!", "Your leave is cancelled", "success");
 
                             window.location.reload();
                             HideAjaxLoader(ajax_loader_element);
