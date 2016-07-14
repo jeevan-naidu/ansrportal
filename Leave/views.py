@@ -241,7 +241,11 @@ class ApplyLeaveView(View):
 
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
-            context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id, year = date.today().year)[0].balance
+            try:
+                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id, year = date.today().year)[0].balance
+            except:
+                context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
+                context_data['form'] = leave_form
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
@@ -325,7 +329,7 @@ class ApplyLeaveView(View):
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
-                        context_data['errors'].append( 'Leaves are not available')
+                        context_data['errors'].append( 'You do not have the necessary leave balance to avail of this leave.')
                         context_data['form'] = leave_form
 
                     # return render(request, 'leave_apply.html', context_data)
@@ -333,7 +337,7 @@ class ApplyLeaveView(View):
 
                     return render(request, 'leave_apply.html', context_data)
                 else:
-                    context_data['success_msg'] = "Your leave has been submitted successfully."
+                    context_data['success_msg'] = "Your leave application has been submitted successfully."
                     template = render(request, 'leave_apply.html', context_data)
                     context_data['html_data'] = template.content
                     return JsonResponse(context_data)
