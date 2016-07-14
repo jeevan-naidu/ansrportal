@@ -68,7 +68,7 @@ def oneTimeLeaveValidation(leave_form, user):
                 if fromDate == dates['date']:
                     flag = True
             if not flag:
-                result['errors'].append('You can only earn comp offs and payoffs for working on weekends or holidays. ')
+                result['errors'].append('You can only earn comp offs and payoffs for working on weekends or holidays. ')
         elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in [holiday1['date'] for holiday1 in holiday]:
             result['errors'].append('You have applied for leave on a holiday.')
 
