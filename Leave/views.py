@@ -241,7 +241,11 @@ class ApplyLeaveView(View):
 
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
-            context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id, year = date.today().year)[0].balance
+            try:
+                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id, year = date.today().year)[0].balance
+            except:
+                context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
+                context_data['form'] = leave_form
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
