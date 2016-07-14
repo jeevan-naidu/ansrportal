@@ -9,13 +9,15 @@
 
 <p>Hi, {{registered_by}}</p>
 
-<p>You have applied for leave on the ansrsource portal.</p>
+<p>Your leave application has been {{status}}.</p>
 <p>Leave Type : {{leaveType}} </p>
 <p>From Date : {{from_date}}</p>
 <p>To Date : {{to_date}}</p>
 <p>No. of days : {{count}}<p>
 {% if reason %} <p> Reason : {{reason}} </p> {% endif %}
-<p>{{status}} by {{action_taken_by}}</p>
+<p>{% if status == 'rejected' %}Rejected by {{action_taken_by}}{% endif %}
+{% if status == 'approved' %}Approved by {{action_taken_by}}{% endif %}
+{% if status == 'cancelled' %}Cancelled by {{action_taken_by}}{% endif %} </p>
 <p></p><p></p>
 <p>Regards,<br>
  HR Support<br>

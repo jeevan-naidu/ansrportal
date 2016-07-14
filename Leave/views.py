@@ -329,7 +329,7 @@ class ApplyLeaveView(View):
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
-                        context_data['errors'].append( 'Leaves are not available')
+                        context_data['errors'].append( 'You do not have the necessary leave balance to avail of this leave.')
                         context_data['form'] = leave_form
 
                     # return render(request, 'leave_apply.html', context_data)
@@ -337,7 +337,7 @@ class ApplyLeaveView(View):
 
                     return render(request, 'leave_apply.html', context_data)
                 else:
-                    context_data['success_msg'] = "Your leave has been submitted successfully."
+                    context_data['success_msg'] = "Your leave application has been submitted successfully."
                     template = render(request, 'leave_apply.html', context_data)
                     context_data['html_data'] = template.content
                     return JsonResponse(context_data)
