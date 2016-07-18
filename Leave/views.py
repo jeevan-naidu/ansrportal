@@ -37,6 +37,8 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
 from tasks import EmailSendTask, ManagerEmailSendTask
+from django.conf import settings
+
 logger = logging.getLogger('MyANSRSource')
 
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
@@ -159,8 +161,13 @@ class Dashboard(View):
     def post(self, request):
         userForm = UserListViewForm(request.POST)
         user_id = userForm['user'].value()
+        LeaveAdmin = True
         if not user_id:
             user_id = request.user.id
+            LeaveAdmin = False
+        elif self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or int(user_id) == int(request.user.id):
+            LeaveAdmin = False
+
         leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
@@ -191,7 +198,8 @@ class Dashboard(View):
          'userfullname':userDetail.first_name+" "+userDetail.last_name,
          'employeeId':employeeDetail.employee_assigned_id,
          'userid':user_id,
-         'managerFlag':managerFlag }
+         'managerFlag':managerFlag,
+         'LeaveAdmin':LeaveAdmin }
         return render(request, 'User.html', context)
 
 
@@ -437,13 +445,23 @@ def leave_list_all(manager_id, hr=True):
 
 
 class LeaveListView(ListView):
+
     template_name = "Admin_View_All_Leaves.html"
     model = LeaveApplications
     leave_days = {}
 
     def get_context_data(self, **kwargs):
         context = super(LeaveListView, self).get_context_data(**kwargs)
-        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+
+        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
+            if 'all' in self.kwargs:
+                context['leave_list'] = leave_list_all(None, False)
+
+            else:
+                context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
+            context['users'] = Employee.objects.filter(user__is_active=True).order_by('user__username')
+
+        elif self.request.user.groups.filter(name='myansrsourcePM').exists():
             if 'all' in self.kwargs:
                 context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user)
             else:
@@ -451,14 +469,6 @@ class LeaveListView(ListView):
                                                                          status='open').order_by("status", "-from_date")
             context['users'] = Employee.objects.filter\
                 (manager__user=self.request.user).order_by('manager__user__username')
-
-        elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
-            if 'all' in self.kwargs:
-                context['leave_list'] = leave_list_all(None, False)
-
-            else:
-                context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
-            context['users'] = Employee.objects.filter(user__is_active=True).order_by('user__username')
 
         else:
             raise PermissionDenied
@@ -591,10 +601,11 @@ class LeaveListView(ListView):
         if 'export' in request.POST:
             if from_date == '' and to_date == '' and status == '' and apply_to == '' \
                     and employee == '':
-                if self.request.user.groups.filter(name='myansrsourcePM').exists():
-                    leave_list_export = leave_list_all(self.request.user, False)
-                elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
+                if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
                     leave_list_export = leave_list_all(self.request.user, True)
+                elif self.request.user.groups.filter(name='myansrsourcePM').exists():
+                    leave_list_export = leave_list_all(self.request.user, False)
+
             else:
                 leave_list_export = leave_list
             leave_days = total_leave_days(leave_list_export)
@@ -706,16 +717,15 @@ def update_leave_application(request, status):
 
 
 class LeaveManageView(LeaveListView):
-
     def get_context_data(self, **kwargs):
         context = super(LeaveManageView, self).get_context_data(**kwargs)
-        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
+            context['all'] = LeaveApplications.objects.all()
+            context['open'] = context['leave_list'].filter(status='open')
+        elif self.request.user.groups.filter(name='myansrsourcePM').exists():
             context['all'] = LeaveApplications.objects.filter(apply_to=self.request.user)
             context['open'] = context['leave_list'].filter(status='open', apply_to=self.request.user)
 
-        elif self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
-            context['all'] = LeaveApplications.objects.all()
-            context['open'] = context['leave_list'].filter(status='open')
 
         return context
 
