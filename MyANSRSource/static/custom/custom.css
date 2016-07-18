@@ -1,0 +1,130 @@
+/* Insert Your Custom CSS Here */
+
+
+/* Bootstrap extensions */
+
+.no-pad-left{padding-left: 0px;}
+.no-pad-right{padding-right: 0px;}
+.mgbt-0{margin-bottom: 0px !important}
+.pos-rel{position: relative;}
+.overflow-hide{overflow: hidden;}
+
+
+/* Overrides */
+
+.vd_mega-menu-wrapper .vd_mega-menu>.mega-ul>li.one-icon .mega-link:hover, .vd_mega-menu-wrapper .vd_mega-menu>.mega-ul>li.one-icon .mega-link.open{background-color: #f89c2c !important;color: #fff}
+
+.vd_navbar{background-color: #7D7D7D}
+
+.vd_title-section{padding-bottom: 9px}
+
+.vd_panel-header h4{font-weight: 100}
+.vd_panel-header h4 span{font-weight: 900}
+
+.vd_panel-menu .menu:hover, .vd_panel-menu .menu.active, .vd_panel-menu .text-menu:hover, .vd_panel-menu .text-menu.active{color: #FFE9CF}
+
+.vd_title-section .vd_panel-menu{top: -15px;}
+
+
+.form-wizard.condensed .nav>li.active>a, .form-wizard.condensed .nav>li.active>a:hover, .form-wizard.condensed .nav>li.active>a:focus{background: #404040}
+
+.form-wizard.condensed .nav>li>a{background-color: #717171}
+.form-wizard.condensed li h3{margin-bottom: 3px;font-size: 16px;color: #FFE9CF;text-align: left;}/*#F1C289*/
+.form-wizard.condensed li.active h3{color: #F7C17F;}
+.form-wizard.condensed li p{margin-bottom: 3px;font-size: 11px;color: #FFFFFF;text-align: left;font-weight: 100}
+.form-wizard.condensed li p.unread{font-weight: 900}
+.form-wizard .tab-content{margin-top: 0px;padding: 25px;}
+.tab-content-color{background-color: #fff }/*#e3e3e3*/
+
+
+
+.remove-navbar .vd_top-nav .vd_panel-menu .remove-navbar-button, .remove-header .vd_top-nav .vd_panel-menu .remove-header-button, .fullscreen .vd_top-nav .vd_panel-menu .fullscreen-button, .vd_top-nav .vd_panel-menu [data-action^="toggle-navbar-right"], .vd_top-nav .vd_panel-menu [data-action^="toggle-navbar-left"], .nav-left-medium .vd_top-nav .vd_panel-menu [data-action^="nav-left-medium"], .nav-left-small .vd_top-nav .vd_panel-menu [data-action^="nav-left-small"], .nav-right-medium .vd_top-nav .vd_panel-menu [data-action^="nav-right-medium"], .nav-right-small .vd_top-nav .vd_panel-menu [data-action^="nav-right-small"], .submenu .vd_top-nav .vd_panel-menu [data-action^="submenu"]{color: #F89C2C}
+.vd_mega-menu-content{border-top: 3px solid #F89C2C;}
+.vd_mega-menu-content:before{border-color: transparent transparent #F89C2C;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px;
+    content: "";
+    display: block;
+    height: 0;
+    opacity: 1;
+    width: 0;
+    position: absolute;
+    top: -12px;
+}
+
+
+/* Text-section */
+
+.text-section-content{border-top: 2px solid #717171;}
+.text-section-content .tab-content{padding: 0px;margin-bottom: 0px !important;height: 100%;}
+.text-section-content .tab-content .tab-pane{height: 100%}
+.text-section-content .tab-content .tab-pane.padded{padding: 25px;}
+.text-section-content p{line-height: 20px;}
+.text-section-content .read-more{font-size: 11px;}
+
+.announcements p{color: #6D6D6D}
+.announcements h4 span{
+    float: right;
+    margin-right: 5px;
+    background: #D65757;
+    border-radius: 50%;
+    width: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: #fff;
+    margin-top: -10px;
+    font-size: 13px;
+}
+.announcements h4.hr-message span{background: #5790D6}
+.team-pic-left{
+	width: 250px;
+    float: left;
+    margin-right: 25px;
+}
+
+
+
+/* Calendar */
+
+.panel-bd-top{border: none;}
+.fc .fc-header-title h2{
+	color: #F89C2C;
+    font-size: 25px;
+    margin: 0px 0 25px 15px;
+}
+
+/* Height CSS */
+
+.over-y{overflow-y: auto;}
+.caroufredsel_wrapper{min-height: 300px;}
+
+/* Iframe */
+
+iframe{    
+    width: 100%;
+    height: 664px;
+    overflow: hidden;
+    border: 0px;
+    outline: 0px;
+    position: relative;
+    margin-bottom: -8px;
+    padding: 0px;
+}
+.screen{
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	z-index: 2;
+	background: rgba(0, 0, 0, 0.48);
+	text-align: center;
+	font-size: 36px;
+	color: #fff;
+	line-height: 600px;
+}
+
+
+
+

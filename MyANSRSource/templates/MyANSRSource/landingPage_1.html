@@ -1,0 +1,568 @@
+{% extends 'master.inc' %}
+{% load permissions %}
+{% block addFormMedia %}
+{% load tz %}
+{{ remainderForm.media }}
+
+{% endblock %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% block siteTitle %}myansrsource:Dashboard{% endblock %}
+
+{% block events %}
+
+	{% for eachRem in remainders %}
+		{
+      reminder : {{ eachRem.id }},
+			start : '{{ eachRem.startDate }}',
+			end : '{{ eachRem.endDate }}',
+			title : '{{ eachRem.name }}',
+			color  : '#F4B961',
+    	editable : true,
+		},
+	{% endfor %}
+	{% for eachSwipe in swipe_display%}
+		{
+			id : '1',
+			start : '{{eachSwipe.date}}',
+			title : 'In{{eachSwipe.swipe_in|date:"H:i"}} Out{{eachSwipe.swipe_out|date:"H:i"}} ',
+			color : '#ffffff',
+			textColor: '#000000',
+			borderColor: '#ffffff'
+		},
+	{% endfor %}
+{% endblock %}
+
+{% block ansrMenu %}
+<li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+	<span class="ansrLogout">Logout</span>
+</a></li>
+{% endblock %}
+
+{%block content %}
+<div class="row">
+	<div class="col-md-12">
+		<legend class="overflowHidden text-center">
+			<span class="top-5"><small>Welcome <b>{{ firstname }}</b>, Quo Vadis?</small></span>
+		<a href="/bookings/">
+		<button type="button" class="btn btn-info mar-bot-15 pull-right pulsate">Book a Meeting Room</button>
+		</a>
+		</legend>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-4">
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="ts">
+				<a data-toggle="collapse" data-parent="#accordion" href="#tsCollapse" aria-expanded="true" aria-controls="collapseOne">
+					Timesheet Management
+				</a>
+			</div>
+			<div id="tsCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="ts">
+			<div class="panel-body">
+				<ul class="list-group">
+					{% if TSProjectsCount > 0 %}
+						<a href="timesheet/entry" class="list-group-item">Enter Your Timesheet
+							<span class="badge">{{ TSProjectsCount }}</span>
+						</a>
+					{% else %}
+						<div class="list-group-item">Enter Your Timesheet
+							<span class="badge">0</span>
+						</div>
+					{% endif %}
+					{% if user|approve_timesheet %}
+						{% if unapprovedts > 0 %}
+							<a href="timesheet/approve" class="list-group-item">
+								<span class="badge">{{ unapprovedts }}</span>
+								Approve Timesheet
+							</a>
+						{% else %}
+							<div class="list-group-item">
+								<span class="badge">0</span>
+								Approve Timesheet
+							</div>
+						{% endif %}
+					{% endif %}
+				</ul>
+			</div>
+			</div>
+		</div>
+
+
+		{% if user|manage_project or user|create_project %}
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="pt">
+				<a data-toggle="collapse" data-parent="#accordion" href="#ptCollapse" aria-expanded="false" aria-controls="collapseTwo">
+					Project Management
+				</a>
+			</div>
+			<div id="ptCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="pt">
+			<div class="panel-body">
+                <ul class="list-group">
+                    {% if user|create_project or user|manage_project %}
+                    <a href="project/add" class="list-group-item" testid="createproject">Create Project</a>
+                    {% endif %}
+                    {% if user|manage_project %}
+                        {% if activeProjects > 0 %}
+                            <a href="project/modify" class="list-group-item">
+                                <span class="badge">{{ activeProjects }}</span>
+                                Manage Project / Enter Change Request
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                Manage Project / Enter Change Request
+                            </a>
+                        {% endif %}
+                        {% if myProjects > 0 %}
+                            <a href="project/view-project" class="list-group-item">
+                                <span class="badge">{{ myProjects }}</span>
+                                View Project
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                View Project
+                            </a>
+                        {% endif %}
+                        {% if activeProjects > 0 %}
+                            <a href="project/manage-projectleader" class="list-group-item">
+                                <span class="badge">{{ activeProjects }}</span>
+                                Manage Project Leader
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                Manage Project Leader
+                            </a>
+                        {% endif %}
+                        {% if activeProjects > 0 %}
+                            <a href="project/manage-team" class="list-group-item">
+                                <span class="badge">{{ activeProjects }}</span>
+                                Manage Team
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item">
+                                <span class="badge">0</span>
+                                Manage Team
+                            </a>
+                        {% endif %}
+                    {% endif %}
+
+
+            {% if user|manage_milestones %}
+			{% if activeProjects > 0 %}
+				<a href="project/trackmilestone" class="list-group-item">
+					<span class="badge">{{ activeProjects }}</span>
+					Manage Milestone(s)
+				</a>
+			{% else %}
+				<a href="#" class="list-group-item">
+					<span class="badge">0</span>
+					Manage Milestone(s)
+				</a>
+			{% endif %}
+				<!-- <a href="project/balance-to-go" class="list-group-item">
+				    Balance To Go
+				</a>
+				<a href="project/invoice" class="list-group-item">
+				    Invoice
+                </a> -->
+            {% endif %}
+				</ul>
+			</div>
+			</div>
+        </div>
+            {%  endif %}
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="peer">
+                <a data-toggle="collapse" data-parent="#accordion" href="#pCollapse" aria-expanded="true" aria-controls="collapseFive">
+                    FB 360&deg;
+                </a>
+            </div>
+            <div id="pCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="peer">
+            <div class="panel-body">
+                <ul class="list-group">
+                    <a href="/fb360/choose-peer" class="list-group-item">Choose Peer(s)
+                    </a>
+                    {% if isManager %}
+                        <a href="/fb360/choose-reportee" class="list-group-item">
+                            Choose Reportee(s)
+                        </a>
+                    {% endif %}
+                    <a href="/fb360/choose-additional-manager" class="list-group-item">Choose Additional Manager(s)
+                    </a>
+                    {% if myPeerReqCount %}
+                        <a href="/fb360/request-action" class="list-group-item">
+                            <span class="badge">{{ myPeerReqCount }}</span>
+                            Manage Request(s)
+                        </a>
+                    {% else %}
+                        <a href="#" class="list-group-item">
+                            <span class="badge">{{ myPeerReqCount }}</span>
+                            Manage Request(s)
+                        </a>
+                    {% endif %}
+                    <a href="/fb360/give-feedback" class="list-group-item">
+                        Feedback
+                    </a>
+                </ul>
+            </div>
+            </div>
+        </div>
+        {% if user|manage_project or user|create_project %}
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="em">
+				<a data-toggle="collapse" data-parent="#accordion" href="#emCollapse" aria-expanded="false" aria-controls="collapseThree">
+					Administration
+				</a>
+			</div>
+			<div id="emCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="em">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="/admin" class="list-group-item">
+						<span class="badge">{{ totalemp }}</span>
+						Manage Employee(s)
+					</a>
+				</ul>
+			</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="rt">
+				<a data-toggle="collapse" data-parent="#accordion" href="#rtCollapse" aria-expanded="false" aria-controls="collapseFour">
+					Reports Management
+				</a>
+			</div>
+			<div id="rtCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="rt">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="reports/single-project" class="list-group-item">
+						Individual Project Performance
+					</a>
+					<a href="reports/project-perfomance" class="list-group-item">
+					    Project Performance Summary
+					</a>
+					<a href="reports/single-member" class="list-group-item">
+					    Individual Team-Member Performance
+					</a>
+					<a href="reports/member-perfomance" class="list-group-item">
+					    Team-Member Performance Summary
+                    </a>
+					<!-- <a href="reports/revenue-recognition" class="list-group-item">
+					    Revenue Recognition
+                    </a> -->
+				</ul>
+			</div>
+			</div>
+		</div>
+	{% endif %}
+
+
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="grievances_admin">
+				<a data-toggle="collapse" data-parent="#accordion" href="#grievances" aria-expanded="false" aria-controls="collapseTwo">
+					Grievances
+				</a>
+			</div>
+			<div id="grievances" class="panel-collapse collapse" role="tabpanel" aria-labelledby="grievances_admin">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="/grievances/" class="list-group-item">
+						Grievance
+					</a>
+					{% if request.user|has_group:"myansrsourceGrievanceAdmin" %}
+                			<a href="/grievances_admin/" class="list-group-item" >Grievance Administration<span class="badge">{{ grievances_count }}</span>
+
+							</a>
+					{% endif %}
+
+				</ul>
+			</div>
+			</div>
+</div>
+
+
+<!-- Milestone reports section-->
+{% if request.user|IsMilestoneReportsAdmin %}
+    <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="grievances_admin">
+
+
+                            <a href="/reports/milestones/"  aria-controls="collapseTwo">
+                                    Milestone Reports
+                            </a>
+
+
+                </div>
+    </div>
+{% endif %}
+<!-- End Milestone reports section-->
+
+
+
+<!-- Salesforce section-->
+{% if request.user|IsSalesforceAdmin %}
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="salesforce_admin">
+				<a data-toggle="collapse" data-parent="#accordion" href="#salesforce" aria-expanded="false" aria-controls="collapseTwo">
+					Salesforce
+				</a>
+			</div>
+			<div id="salesforce" class="panel-collapse collapse" role="tabpanel" aria-labelledby="salesforce_admin">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="/salesforce/upload-file" class="list-group-item">
+						Upload Salesforce Data
+					</a>
+				</ul>
+			</div>
+			</div>
+</div>
+{% endif %}
+<!-- End salesforce reports section-->
+
+
+
+
+
+<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="leave_module">
+				<a data-toggle="collapse" data-parent="#accordion" href="#leave_list" aria-expanded="false" aria-controls="collapseTwo">
+					Leave
+				</a>
+			</div>
+			<div id="leave_list" class="panel-collapse collapse" role="tabpanel" aria-labelledby="leave_module">
+			<div class="panel-body">
+				<ul class="list-group">
+					<a href="{% url 'Leave_dashboard' %}" class="list-group-item">
+						Dashboard
+					</a>
+					{% if request.user|has_group:"myansrsourceHR"  or request.user|has_group:"myansrsourcePM" or request.user.is_superuser %}
+					<a href="{% url 'manage_leave_list' %}"  class="list-group-item" >Manage Requests<span class="badge">{{ leave_count }}</span>
+
+					</a>
+                			<a href="{% url 'list_leave' %}"  class="list-group-item" >View Requests
+
+							</a>
+
+					{% endif %}
+
+				</ul>
+			</div>
+			</div>
+		</div>
+
+</div>
+</div>
+
+
+	<div class="col-md-8">
+
+		<div id='calendar'></div>
+		<div class="col-lg-12">
+          <input type="checkbox" id="Holiday" checked> <span class="label label-default holiday "  >{% fontawesome_icon 'smile-o' large=True %} Holiday</span>
+            <input type="checkbox" id="Financial_milestone"><span class="label label-default financialM " >{% fontawesome_icon 'usd' large=True %} Financial Milestone</span>
+            <input type="checkbox" id="Non_financial_milestone"><span class="label label-default nonfinancialM" >{% fontawesome_icon 'clock-o' large=True %} Non-Financial Milestone</span>
+          <input type="checkbox" id="Learning_and_development">  <span class="label label-default training" >{% fontawesome_icon 'book' large=True %} Learning & development</span>
+          <input type="checkbox" id="Hr_activity"><span class="label label-default hrAct" >{% fontawesome_icon 'users' large=True %} HR Activity</span>
+            <span class="label label-default remainder" id="My_reminder">My Reminder</span>
+           <span class="pull-right" data-toggle="modal" data-target="#myRemainder"><h5><small><a href="#">Add Reminder</a></small></h5></span>
+		</div>
+        <legend>My Projects<small></legend>
+            <small><b>This week you have {{ workingHours }} working Hour(s)</b></small>
+        <table class="table table-striped">
+            <thead>
+                <th>Project ID</th>
+                <th>Project Name</th>
+                <th>Book / Title</th>
+                <th>Edition</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Hour(s) this week</th>
+            </thead>
+            <tbody>
+                {% for eachRec in cp %}
+                <tr>
+                    <td>{{ eachRec.project__projectId }}</td>
+                    <td>{{ eachRec.project__name }}</td>
+                    <td>{{ eachRec.project__book__name }}</td>
+                    <td>{{ eachRec.project__book__edition }}</td>
+                    <td>{{ eachRec.startDate }}</td>
+                    <td>{{ eachRec.endDate }}</td>
+                    <td>{{ eachProjectHours }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+	</div>
+	<div class="modal fade" id="myRemainder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			 <div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+                    <h4 class="modal-title" id="myModalLabel"><b>Personalize Calendar</b></h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-condensed">
+						<tbody>
+                            <form id="remainderForm"  action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {% bootstrap_messages %}
+                                {% bootstrap_form remainderForm layout='vertical' %}
+                                {% buttons %}
+                                    <button type="submit" class="btn btn-primary
+                                        col-lg-2 col-xs-12 col-md-12 pull-right">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    Add
+                                    </button>
+                                {% endbuttons %}
+                            </form>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+         </div>
+    </div>
+	<div class="modal fade" id="myStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			 <div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel"><b>My Work Status</b>
+						<small>"You are involved in <b>{{ billableProjects }}</b> billable Project(s)"</small>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-condensed">
+						<thead>
+						<tr>
+							<th>On-Going Project(s)</th>
+							<th>About to complete by</th>
+						<tr>
+						</thead>
+						{% for eachProject in currentProjects %}
+						<tr>
+							<td>{{ eachProject.project__name }}</td>
+							<td><b>{{ eachProject.yearDiff }}</b> <small>years</small> &nbsp;&nbsp;&nbsp;
+						            <b>{{ eachProject.monthDiff }}</b> <small>months</small> &nbsp;&nbsp;&nbsp;
+							    <b>{{ eachProject.dayDiff }}</b> <small>days</small></td>
+						</tr>
+						{% endfor %}
+					</table>
+					<table class="table table-condensed">
+						<thead>
+						<tr>
+							<th>Future Project(s)</th>
+							<th>About to start in</th>
+						<tr>
+						</thead>
+						{% for eachProject in futureProjects %}
+						<tr>
+							<td>{{ eachProject.project__name }}</td>
+							<td><b>{{ eachProject.yearDiff }}</b> <small>years</small> &nbsp;&nbsp;&nbsp;
+						            <b>{{ eachProject.monthDiff }}</b> <small>months</small> &nbsp;&nbsp;&nbsp;
+							    <b>{{ eachProject.dayDiff }}</b> <small>days</small></td>
+						</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+
+//time extraction for displaying in calender
+{% for eachSwipe in swipe_display%}
+
+	//var d1 = new Date(eachSwipe.swipe_in);
+	//var d2 = new Date(eachSwipe.swipe_out);
+	//eachSwipe.swipe_in = eachSwipe.swipe_in.substr(11, 2);
+//	eachSwipe.swipe_out = eachSwipe.swipe_out.substr(11, 2);
+
+
+{% endfor%}
+
+
+
+
+	{% for eachHoliday in holidayList %}
+	$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
+
+{% endfor %}
+});
+
+	$("#Holiday").click(function(){
+		if (document.getElementById('Holiday').checked){
+			{% for eachHoliday in holidayList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
+
+		{% endfor %}
+
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',2);
+	}
+	});
+
+	$("#Financial_milestone").click(function(){
+		if (document.getElementById('Financial_milestone').checked){
+			{% for eachMilestone in financialM %}
+			$("#calendar").fullCalendar('renderEvent',{id :'3', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#D6412B'},true);
+
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',3);
+	}
+	});
+
+	$("#Non_financial_milestone").click(function(){
+		if (document.getElementById('Non_financial_milestone').checked){
+			{% for eachMilestone in nonfinancialM %}
+			$("#calendar").fullCalendar('renderEvent',{id :'4', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#FFBA02'},true);
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',4);
+	}
+	});
+
+	$("#Learning_and_development").click(function(){
+		if (document.getElementById('Learning_and_development').checked){
+			{% for eachTraining in trainingList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'5', title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}', start : '{{ eachTraining.trainingDate }}', end : '{{ eachTraining.endDate }}', color :'#176CED'},true);
+
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',5);
+	}
+	});
+
+	$("#Hr_activity").click(function(){
+		if (document.getElementById('Hr_activity').checked){
+			{% for eachAct in hrList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'6', title : '{{ eachAct.name }}', start : '{{ eachAct.date }}', color :'#F04C23'},true);
+
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',6);
+	}
+	});
+
+</script>
+{% endblock %}
