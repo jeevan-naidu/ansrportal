@@ -171,7 +171,8 @@ class Dashboard(View):
             genderFlag =False
         if employeeDetail.gender=='M':
             genderMale =True
-        manager = managerCheck(request.user.id)
+
+        manager = managerCheck(user_id)
         if manager:
             mangerfirstname = manager.first_name + " "+manager.last_name
         else:
@@ -198,18 +199,17 @@ class Dashboard(View):
 class ApplyLeaveView(View):
     ''' add or edit leave '''
 
-
     def get(self, request):
-        #context_data = {'add':True, 'record_added':False, 'form':None}
         context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],
         'leave_type_check' : None, 'leave':None}
         try:
             leavetype=request.GET.get('leavetype')
+            user_id = request.GET.get('user_id')
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
             count_not_required = ['comp_off_earned','pay_off','work_from_home','loss_of_pay']
-            form = LeaveForm(leavetype)
+            form = LeaveForm(leavetype, user_id)
             context_data['form'] = form
-            leave_count = LeaveSummary.objects.filter(leave_type__leave_type= leavetype, user_id= request.user.id, year = date.today().year)
+            leave_count = LeaveSummary.objects.filter(leave_type__leave_type= leavetype, user_id= user_id, year = date.today().year)
             if leavetype:
                 context_data['leave'] = 'data'
             if leavetype in onetime_leave:
@@ -220,13 +220,16 @@ class ApplyLeaveView(View):
 
             return render(request, 'leave_apply.html', context_data)
         except:
-            form = LeaveForm('None')
+            form = LeaveForm('None', request.user.id)
             context_data['form'] = form
             return render(request, 'leave_apply.html', context_data)
 
 
     def post(self, request):
-        leave_form=LeaveForm(request.POST['leave'], request.POST)
+        user_id = request.POST['name']
+        if not user_id:
+            user_id =request.user.id
+        leave_form=LeaveForm(request.POST['leave'], user_id, request.POST)
         response_data = {}
         context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None, 'leave':'formdata' }
 
@@ -242,14 +245,13 @@ class ApplyLeaveView(View):
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
             try:
-                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= request.user.id, year = date.today().year)[0].balance
+                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= user_id, year = date.today().year)[0].balance
             except:
                 context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
                 context_data['form'] = leave_form
             onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
-            user_id=request.user.id
             reason=leave_form.cleaned_data['Reason']
             manager = managerCheck(user_id)
             if leave_selected in onetime_leave:
@@ -300,12 +302,12 @@ class ApplyLeaveView(View):
 
                     if attachment:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id)
+                         days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
                          EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
                     else:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         days_count=leavecount, reason=reason).saveas(user_id)
+                         days_count=leavecount, reason=reason).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
                          EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 
@@ -317,12 +319,12 @@ class ApplyLeaveView(View):
 
                         if attachment:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                             days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id)
+                             days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id, request.user.id)
                              leavesummry_temp.save()
                              EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
                         else:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                             days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id)
+                             days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id, request.user.id)
                              leavesummry_temp.save()
                              EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 

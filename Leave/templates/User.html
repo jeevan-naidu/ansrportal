@@ -909,7 +909,7 @@ gridLoad('earned_leave');
         {
             type : "GET",
             url : '/leave/add/',
-            data :"" ,
+            data :{'user_id':{{userid}}} ,
             success : function(data)
             {
                 $("#modal_body").html(data);

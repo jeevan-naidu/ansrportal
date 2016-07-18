@@ -103,14 +103,14 @@ class LeaveApplications(models.Model):
       ''' return unicode strings '''
       return '%s' % (self.user.username)
 
-    def saveas(self, user, *args, **kwargs):
+    def saveas(self, user, applied_by, *args, **kwargs):
         manager_id = Employee.objects.filter(user_id=user).values('manager_id')
         manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
         manager_d = User.objects.get(id=manager[0]['user_id'])
         self.user = User.objects.get(id=user)
         self.apply_to = manager_d
         self.status = 'open'
-        self.status_action_by = User.objects.get(id=user)
+        self.status_action_by = User.objects.get(id=applied_by)
         self.status_comments = "submitted"
         super(LeaveApplications, self).save(*args, **kwargs)
 
