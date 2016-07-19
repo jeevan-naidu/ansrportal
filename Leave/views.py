@@ -465,8 +465,8 @@ class LeaveListView(ListView):
             if 'all' in self.kwargs:
                 context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user)
             else:
-                context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user,
-                                                                         status='open').order_by("status", "-from_date")
+                context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user
+                                                                        ).order_by("status", "-from_date")
             context['users'] = Employee.objects.filter\
                 (manager__user=self.request.user).order_by('manager__user__username')
 
