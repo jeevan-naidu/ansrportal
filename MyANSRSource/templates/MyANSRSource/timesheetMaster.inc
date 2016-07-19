@@ -1,4 +1,4 @@
-{% extends 'master.inc' %}
+{% extends 'master.html' %}
 
 {% load bootstrap3 %}
 {% load fontawesome %}

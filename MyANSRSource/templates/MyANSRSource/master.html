@@ -12,6 +12,7 @@
 <!-- End of Data -->
 
 <head>
+    {% load static from staticfiles %}
     <meta charset="utf-8" />
     <title>Portal Dashboard Prototype</title>
     <meta name="keywords" content="HTML5 Template, CSS3, All Purpose Admin Template, " />
@@ -20,6 +21,28 @@
 
     <!-- Set the viewport width to device width for mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+    {# Load Pace JS #}
+       <script src="{% static 'js/pace.js' %}"></script>
+
+    {# Load Bootstrap CSS and JS #}
+           {# We can initialize boostrap css as bootstrap javascript       #}
+           {# The reason we are using bootstrap CDN is for report printing #}
+           {# boostrap css must have media set to all, so that we can have #}
+           {# same styles for both screen and printing. Unfortunately      #}
+           {# in the plugin django-boostrap3 we don't have an option       #}
+           {# to change media from screen to all.                          #}
+       <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+       {% bootstrap_javascript %}
+
+       {# Load SweetAlert CSS and JS #}
+       <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.0.1/sweetalert.min.css" media="screen">
+       <script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.0.1/sweetalert.min.js"></script>
+
+
+
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/images/ico/apple-touch-icon-144-precomposed.png">
@@ -72,10 +95,6 @@
 
     <!-- for specific page responsive in style css -->
 
-    <!-- Custom CSS -->
-    <link href="/static/custom/custom.css" rel="stylesheet" type="text/css">
-
-
     <!-- Head SCRIPTS -->
     <script type="text/javascript" src="/static/js/modernizr.js"></script>
     <script type="text/javascript" src="/static/js/mobile-detect.min.js"></script>
@@ -86,6 +105,17 @@
       <script type="text/javascript" src="/static/js/html5shiv.js"></script>
       <script type="text/javascript" src="/static/js/respond.min.js"></script>
     <![endif]-->
+
+     <!-- Custom CSS -->
+    <link href="/static/custom/custom.css" rel="stylesheet" type="text/css">
+
+    {# Load Ansr CSS and JS #}
+       <link rel="stylesheet" type="text/css" href="{% static 'css/site.min.css' %}" media="screen">
+       <link rel="stylesheet" type="text/css" href="{% static 'css/print.css' %}" media="print">
+
+  {# Load Font-Awesome CSS #}
+   {% fontawesome_stylesheet %}
+
 
 </head>
 
@@ -98,7 +128,7 @@
                     <div class="vd_top-nav vd_nav-width  ">
                         <div class="vd_panel-header">
                             <div class="logo">
-                                <a href="index.html"><img alt="logo" src="/static/images/ansrlogo.png"></a>
+                                <a href="/myansrsource"><img alt="logo" src="/static/images/ansrlogo.png"></a>
                             </div>
                             <!-- logo -->
                             <div class="vd_panel-menu  hidden-sm hidden-xs" data-intro="<strong>Minimize Left Navigation</strong><br/>Toggle navigation size to medium or small size. You can set both button or one button only. See full option at documentation." data-step=1>
@@ -209,7 +239,7 @@
                                                                         <div class="menu-text">Lock</div>
                                                                     </a>
                                                                 </li>
-                                                                <li>
+                                                                <li>javascript:void(0);
                                                                     <a href="#">
                                                                         <div class="menu-icon"><i class=" fa fa-sign-out"></i></div>
                                                                         <div class="menu-text">Sign Out</div>
@@ -363,14 +393,14 @@
                                     <div class="child-menu" data-action="click-target">
                                         <ul>
                                             <li>
-                                                <a href="index.html">
+                                                <a href="/myansrsource/timesheet/entry">
                                                     <span class="menu-text">Enter Your Timesheet</span>
                                                 </a>
                                             </li>
 
                                             {% if user|approve_timesheet %}
                                                  <li>
-                                                        <a href="index-ecommerce.html">
+                                                        <a href="/myansrsource/timesheet/approve">
                                                             <span class="menu-text">Approve Timesheet</span>
                                                         </a>
                                                  </li>
@@ -394,7 +424,7 @@
                                             <ul>
                                                 {% if user|create_project or user|manage_project %}
                                                 <li>
-                                                    <a href="skin-clean-minimalist.html">
+                                                    <a href="/myansrsource/project/add">
                                                         <span class="menu-text">Create Project</span>
                                                     </a>
                                                 </li>
@@ -402,28 +432,28 @@
 
                                             {% if user|manage_project %}
                                                 <li>
-                                                    <a href="skin-nav-medium-profile-dark.html">
+                                                    <a href="/myansrsource/project/modify">
                                                         <span class="menu-text">Manage Project/Enter Change Request</span>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="skin-clean-minimalist.html">
+                                                    <a href="/myansrsource/project/view-project">
                                                         <span class="menu-text">View Project</span>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="skin-nav-medium-profile-dark.html">
+                                                    <a href="/myansrsource/project/manage-projectleader">
                                                         <span class="menu-text">Manage Project Leader</span>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="skin-clean-minimalist.html">
+                                                    <a href="/myansrsource/project/manage-team">
                                                         <span class="menu-text">Manage Team</span>
                                                     </a>
                                                 </li>
                                                 {% if user|manage_milestones %}
                                                     <li>
-                                                        <a href="skin-nav-medium-profile-dark.html">
+                                                        <a href="/myansrsource/project/trackmilestone">
                                                             <span class="menu-text">Manage Milestone(s)</span>
                                                         </a>
                                                     </li>
@@ -445,31 +475,31 @@
                                     <div class="child-menu" data-action="click-target">
                                         <ul>
                                             <li>
-                                                <a href="layouts-simple.html">
+                                                <a href="/myansrsource/fb360/choose-peer">
                                                     <span class="menu-text">Choose Peer(s)</span>
                                                 </a>
                                             </li>
 
                                             {% if isManager %}
                                                 <li>
-                                                    <a href="layouts-simple.html">
+                                                    <a href="/myansrsource/fb360/choose-reportee">
                                                         <span class="menu-text">Choose Reportee(s)</span>
                                                     </a>
                                                 </li>
                                             {% endif %}
 
                                             <li>
-                                                <a href="layouts-simple-medium-profile.html">
+                                                <a href="/myansrsource/fb360/choose-additional-manager">
                                                     <span class="menu-text">Choose Additional Manager(s)</span>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="layouts-double-sidenav.html">
+                                                <a href="/myansrsource/fb360/request-action">
                                                     <span class="menu-text">Manage Request(s)</span>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="layouts-hide-rightnav.html">
+                                                <a href="/myansrsource/fb360/give-feedback">
                                                     <span class="menu-text">Feedback</span>
                                                 </a>
                                             </li>
@@ -488,7 +518,7 @@
                                         <div class="child-menu" data-action="click-target">
                                             <ul>
                                                 <li>
-                                                    <a href="layouts-simple.html">
+                                                    <a href="/myansrsource/admin">
                                                         <span class="menu-text">
                                                             Manage Employee(s)
                                                             <span class="badge vd_bg-yellow">{{ totalemp }}</span>
@@ -507,22 +537,22 @@
                                         <div class="child-menu" data-action="click-target">
                                             <ul>
                                                 <li>
-                                                    <a href="forms-elements.html">
+                                                    <a href="/myansrsource/reports/single-project">
                                                         <span class="menu-text">Individual Project Performance</span>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="forms-layouts.html">
+                                                    <a href="/myansrsource/reports/project-perfomance">
                                                         <span class="menu-text">Project Performance Summary</span>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="forms-wizard.html">
+                                                    <a href="/myansrsource/reports/single-member">
                                                         <span class="menu-text">Individual Team-Member Performance</span>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="forms-validation.html">
+                                                    <a href="/myansrsource/reports/member-perfomance">
                                                         <span class="menu-text">Team-Member Performance Summary</span>
                                                     </a>
                                                 </li>
@@ -540,13 +570,13 @@
                                     <div class="child-menu" data-action="click-target">
                                         <ul>
                                             <li>
-                                                <a href="forms-elements.html">
+                                                <a href="/grievances/">
                                                     <span class="menu-text">Grievance</span>
                                                 </a>
                                             </li>
                                             {% if request.user|has_group:"myansrsourceGrievanceAdmin" %}
                                             <li>
-                                                <a href="forms-inline-editing.html">
+                                                <a href="/grievances_admin/">
                                                     <span class="menu-text">Grievance Administration</span>
                                                     <span class="menu-badge"><span class="badge vd_bg-yellow">{{ grievances_count }}</span></span>
                                                 </a>
@@ -625,7 +655,6 @@
                                         </ul>
                                     </div>
                                 </li>
-
 
                             </ul>
                             <!-- Head menu search form ends -->
@@ -787,7 +816,14 @@
                 <!-- Middle Content Start -->
 
                 <div class="vd_content-wrapper">
-                    {%block content %}{% endblock %}
+
+                <div class="vd_container">
+                    <div class="vd_content clearfix">
+                        <div class="vd_content-section">
+                            {%block content %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
 
                 </div>
                 <!-- .vd_content-wrapper -->
@@ -835,6 +871,12 @@
     <!--[if lt IE 9]>
  <script type="text/javascript" src="/static/js/excanvas.js"></script>
 <![endif]-->
+
+       <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
+
+        <!--   block to be inherited for page specific JavaScript -->
+       {% block page_specific_JS %}{% endblock %}
+
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src='/static/plugins/jquery-ui/jquery-ui.custom.min.js'></script>
     <script type="text/javascript" src="/static/plugins/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>

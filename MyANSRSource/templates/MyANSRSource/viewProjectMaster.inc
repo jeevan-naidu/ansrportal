@@ -1,4 +1,4 @@
-{% extends 'master.inc' %}
+{% extends 'master.html' %}
 
 {% block addFormMedia %}
 
