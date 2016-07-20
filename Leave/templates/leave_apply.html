@@ -255,4 +255,8 @@
 
 	});
 
+	$('#id_fromDate_pickers').datepicker()
+	    .on("input change", function (e) {
+				$("#id_toDate_pickers").datepicker("update", e.target.value);
+	});
 			  </script>
