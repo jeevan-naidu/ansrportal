@@ -516,7 +516,9 @@ class LeaveListView(ListView):
         if request.POST.get('apply_to'):
             apply_to = request.POST.get('apply_to')
 
-        if not request.POST.get('apply_to') and self.request.user.groups.filter(name='myansrsourcePM').exists():
+        if not request.POST.get('apply_to') and self.request.user.groups.filter(name=settings.LEAVE_ADMIN_GROUP).exists():
+            apply_to = ''
+        elif not request.POST.get('apply_to') and self.request.user.groups.filter(name='myansrsourcePM').exists():
             apply_to = self.request.user
 
         if request.POST.get('users'):
