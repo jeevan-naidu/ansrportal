@@ -458,7 +458,7 @@ class LeaveListView(ListView):
                 context['leave_list'] = leave_list_all(None, False)
 
             else:
-                context['leave_list'] = LeaveApplications.objects.filter(status='open').order_by("-from_date")
+                context['leave_list'] = LeaveApplications.objects.filter().order_by("-from_date")
             context['users'] = Employee.objects.filter(user__is_active=True).order_by('user__username')
 
         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
