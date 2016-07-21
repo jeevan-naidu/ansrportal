@@ -116,6 +116,10 @@
   {# Load Font-Awesome CSS #}
    {% fontawesome_stylesheet %}
 
+    {% block addFormMedia %}{% endblock %}
+
+
+
 
 </head>
 
@@ -173,16 +177,17 @@
                             <div class="col-sm-7 col-xs-12">
                                 <div class="vd_mega-menu-wrapper">
                                     <div class="vd_mega-menu pull-right">
-                                        <ul class="mega-ul">
 
+                                        {% if user.is_authenticated %}
+                                        <ul class="mega-ul">
                                             <li id="top-menu-profile" class="profile mega-li">
                                                 <a href="#" class="mega-link" data-action="click-trigger">
                                                     <span class="mega-image">
-                <img src="/static/images/avatar/avatar.jpg" alt="example image" />
-            </span>
+                                                        <img src="/static/images/avatar/avatar.jpg" alt="example image" />
+                                                    </span>
                                                     <span class="mega-name">
-                Caroline <i class="fa fa-caret-down fa-fw"></i>
-            </span>
+                                                        {{ request.user.first_name }} <i class="fa fa-caret-down fa-fw"></i>
+                                                    </span>
                                                 </a>
                                                 <div class="vd_mega-menu-content  width-xs-2  left-xs left-sm" data-action="click-target">
                                                     <div class="child-menu">
@@ -211,8 +216,7 @@
                                                                 </li>
                                                                 <li>
                                                                     <a href="#">
-                                                                        <div class="menu-icon"><i class=" fa fa-tasks
-"></i></div>
+                                                                        <div class="menu-icon"><i class=" fa fa-tasks"></i></div>
                                                                         <div class="menu-text"> Tasks</div>
                                                                         <div class="menu-badge">
                                                                             <div class="badge vd_bg-red">5</div>
@@ -220,44 +224,22 @@
                                                                     </a>
                                                                 </li>
                                                                 <li class="line"></li>
-                                                                <li>
-                                                                    <a href="#">
-                                                                        <div class="menu-icon"><i class=" fa fa-lock
-"></i></div>
-                                                                        <div class="menu-text">Privacy</div>
-                                                                    </a>
-                                                                </li>
+
                                                                 <li>
                                                                     <a href="#">
                                                                         <div class="menu-icon"><i class=" fa fa-cogs"></i></div>
                                                                         <div class="menu-text">Settings</div>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
-                                                                    <a href="#">
-                                                                        <div class="menu-icon"><i class="  fa fa-key"></i></div>
-                                                                        <div class="menu-text">Lock</div>
-                                                                    </a>
-                                                                </li>
-                                                                <li>javascript:void(0);
                                                                     <a href="#">
                                                                         <div class="menu-icon"><i class=" fa fa-sign-out"></i></div>
                                                                         <div class="menu-text">Sign Out</div>
                                                                     </a>
                                                                 </li>
                                                                 <li class="line"></li>
-                                                                <li>
-                                                                    <a href="#">
-                                                                        <div class="menu-icon"><i class=" fa fa-question-circle"></i></div>
-                                                                        <div class="menu-text">Help</div>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a href="#">
-                                                                        <div class="menu-icon"><i class=" glyphicon glyphicon-bullhorn"></i></div>
-                                                                        <div class="menu-text">Report a Problem</div>
-                                                                    </a>
-                                                                </li>
+
                                                             </ul>
                                                         </div>
                                                     </div>
@@ -279,7 +261,13 @@
 
                                             </li>
                                         </ul>
+                                        {% else %}
+                                            Login
+                                        {% endif %}
                                         <!-- Head menu search form ends -->
+
+
+
                                     </div>
                                 </div>
                             </div>
@@ -710,108 +698,7 @@
                         </div>
 
                     </div>
-                    <div class="navbar-menu clearfix">
-                        <!-- Right Side Menu -->
-                        <div class="content-list content-image content-chat">
-                            <ul class="list-wrapper no-bd-btm pd-lr-10">
-                                <li class="group-heading vd_bg-black-20">FAVORITE</li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar.jpg" alt="example image"></div>
-                                        <div class="menu-text">Jessylin
-                                            <div class="menu-info">
-                                                <span class="menu-date">Administrator </span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="badge status vd_bg-green">&nbsp;</span></div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar-2.jpg" alt="example image"></div>
-                                        <div class="menu-text">Rodney Mc.Cardo
-                                            <div class="menu-info">
-                                                <span class="menu-date">Designer </span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="badge status vd_bg-grey">&nbsp;</span></div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar-3.jpg" alt="example image"></div>
-                                        <div class="menu-text">Theresia Minoque
-                                            <div class="menu-info">
-                                                <span class="menu-date">Engineering </span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="badge status vd_bg-green">&nbsp;</span></div>
-                                    </a>
-                                </li>
-                                <li class="group-heading vd_bg-black-20">FRIENDS</li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar-4.jpg" alt="example image"></div>
-                                        <div class="menu-text">Greg Grog
-                                            <div class="menu-info">
-                                                <span class="menu-date">Developer </span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="badge status vd_bg-grey">&nbsp;</span></div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar-5.jpg" alt="example image"></div>
-                                        <div class="menu-text">Stefanie Imburgh
-                                            <div class="menu-info">
-                                                <span class="menu-date">Dancer</span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="vd_grey font-sm"><i class="fa fa-mobile"></i></span></div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar-6.jpg" alt="example image"></div>
-                                        <div class="menu-text">Matt Demon
-                                            <div class="menu-info">
-                                                <span class="menu-date">Musician </span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="vd_grey font-sm"><i class="fa fa-mobile"></i></span></div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar-7.jpg" alt="example image"></div>
-                                        <div class="menu-text">Jeniffer Anastasia
-                                            <div class="menu-info">
-                                                <span class="menu-date">Senior Developer </span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="badge status vd_bg-green">&nbsp;</span></div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <div class="menu-icon"><img src="/static/images/avatar/avatar-8.jpg" alt="example image"></div>
-                                        <div class="menu-text">Daniel Dreamon
-                                            <div class="menu-info">
-                                                <span class="menu-date">Sales Executive </span>
-                                            </div>
-                                        </div>
-                                        <div class="menu-badge"><span class="badge status vd_bg-green">&nbsp;</span></div>
-                                    </a>
-                                </li>
 
-                            </ul>
-                        </div>
-
-
-                    </div>
-                    <div class="navbar-spacing clearfix">
-                    </div>
                 </div>
                 <!-- Middle Content Start -->
 
@@ -842,7 +729,7 @@
                     <div class="row">
                         <div class=" col-xs-12">
                             <div class="copyright">
-                                Copyright &copy;2014 Venmond Inc. All Rights Reserved
+                                Copyright &copy;2016 ansrsource. All Rights Reserved
                             </div>
                         </div>
                     </div>
@@ -910,6 +797,11 @@
     <!-- Question Mark -->
 
     <script type="text/javascript" src='/static/plugins/introjs/js/intro.min.js'></script>
+
+
+     {% include 'autocomplete_light/static.html' %}
+
+    {% include 'session_security/all.html' %}
 
     <!-- Scripts for plugins -->
     <script type="text/javascript">

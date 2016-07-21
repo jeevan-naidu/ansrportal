@@ -1,19 +1,9 @@
-{% extends 'master.inc' %}
+{% extends 'master.html' %}
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
 {% block siteTitle %}myansrsource:Leave{% endblock %}
-<!DOCTYPE html>
-{% block ansrMenu %}
- <li><a href="/myansrsource/dashboard">
-    {% fontawesome_icon 'university' large=True %}
-    Dashboard
- </a></li>
- <li class="ansrLogout"><a href="{% url 'logout' %}">
-    {% fontawesome_icon 'sign-out' large=True color='red' %}
-    <span class="ansrLogout">Logout</span>
-  </a></li>
-{% endblock %}
+
 {% block content  %}
 
 
