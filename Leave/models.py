@@ -87,9 +87,10 @@ class LeaveApplications(models.Model):
     to_date = models.DateField(verbose_name='Leave to Date')
     to_session = models.CharField(max_length=20, choices=SESSION_STATUS, verbose_name='')
     apply_to = models.ForeignKey(User, db_index=True, verbose_name='Manager', related_name='manager') #- i
+    apply_by = models.ForeignKey(User, verbose_name='Leaved applied by ', related_name='applied_by_user')
     reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
     status = models.CharField(max_length=100, choices=APPLICATION_STATUS, verbose_name='Status Of Leave')
-    status_action_by = models.ForeignKey(User, verbose_name='Change By User', related_name='applied_by')
+    status_action_by = models.ForeignKey(User, verbose_name='Change By User', related_name='action_by')
     status_action_on = models.DateField(auto_now=True, verbose_name='Date of Change')
     status_comments = models.CharField(max_length=500, verbose_name='Status change comment')
     due_date = models.DateField(verbose_name='application of comp off', null=True)#for comp off date
@@ -110,6 +111,7 @@ class LeaveApplications(models.Model):
         self.user = User.objects.get(id=user)
         self.apply_to = manager_d
         self.status = 'open'
+        self.apply_by = User.objects.get(id=applied_by)
         self.status_action_by = User.objects.get(id=applied_by)
         self.status_comments = "submitted"
         super(LeaveApplications, self).save(*args, **kwargs)
