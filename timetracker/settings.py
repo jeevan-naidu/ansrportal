@@ -351,6 +351,8 @@ MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
+LEAVE_ADMIN_GROUP = 'LeaveAdmin'
+
 
 #Broker Settings
 BROKER_HOST = "localhost"
