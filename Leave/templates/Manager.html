@@ -210,7 +210,7 @@
                     </tr>
 
                     {%  autopaginate leave_list 10 %}
-                    {% for leave in leave_list %}
+                    {% for leave in open %}
                     <tr {%for k,v in  BUTTON_NAME %}
                                 {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
                         <td>
