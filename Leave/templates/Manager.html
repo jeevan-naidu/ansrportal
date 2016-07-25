@@ -209,7 +209,7 @@
                         <th class="text-center">Action</th>
                     </tr>
 
-                    {%  autopaginate leave_list 10 %}
+                    {%  autopaginate open 10 %}
                     {% for leave in open %}
                     <tr {%for k,v in  BUTTON_NAME %}
                                 {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
