@@ -22,14 +22,15 @@ class UserListViewForm(autocomplete_light.ModelForm):
         model = User
         fields = ['user']
 
-def LeaveForm(leavetype, data=None):
+def LeaveForm(leavetype, user, data=None):
     class ApplyLeaveForm(forms.ModelForm):
         leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= '............')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
+        name = forms.CharField(initial = user, widget=forms.HiddenInput())
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave']
+            fields = ['leave','name']
 
     class ApplyLeaveForm1(forms.ModelForm):
         leave_attachment = forms.FileField(label='Attachment', required=False, help_text=mark_safe("Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.<br>Maximum allowed file size: 1MB"))
@@ -48,11 +49,11 @@ def LeaveForm(leavetype, data=None):
             widget=DateTimePicker(options=dateTimeOption),
         )
         fromDate.widget.attrs = {'class': 'form-control filter_class', 'required':'true'}
-
+        name = forms.CharField(initial = user, widget=forms.HiddenInput())
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave', 'fromDate', 'Reason', 'leave_attachment']
+            fields = ['leave', 'fromDate', 'Reason', 'leave_attachment','name']
             widgets = {
               'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
             }
@@ -89,10 +90,12 @@ def LeaveForm(leavetype, data=None):
         to_session= forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
         to_session.widget.attrs = {'class': 'form-control', 'required':'false'}
 
+        name = forms.CharField(initial = user, widget=forms.HiddenInput())
+
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session','Reason', 'leave_attachment']
+            fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session','Reason', 'leave_attachment','name']
             widgets = {
               'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
               #'leave':forms.Select(attrs={'class': 'form-control', 'required':'true'}),
@@ -102,7 +105,6 @@ def LeaveForm(leavetype, data=None):
 
     onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off']
     regular_leave = ['earned_leave', 'sick_leave', 'casual_leave', 'loss_of_pay', 'work_from_home', 'sabbatical']
-
 
     if leavetype in onetime_leave:
         if data:

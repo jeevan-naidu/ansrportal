@@ -9,7 +9,7 @@ class AutocompleteUserSearch(autocomplete_light.AutocompleteModelBase):
     def choices_for_request(self):
         user = self.request.user.id
         emp = Employee.objects.get(user_id = user)
-        if self.request.user.groups.filter(name='myansrsourceHR').exists() or self.request.user.is_superuser:
+        if self.request.user.groups.filter(name='LeaveAdmin').exists() or self.request.user.is_superuser:
             userlist = Employee.objects.filter().values('user_id')
         else:
             userlist = Employee.objects.filter(Q(manager_id= emp.employee_assigned_id) | Q(employee_assigned_id= emp.employee_assigned_id) ).values('user_id')
