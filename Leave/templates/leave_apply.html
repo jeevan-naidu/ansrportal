@@ -95,14 +95,15 @@
 });
 			 $('#id_leave').change(function(){
 				 var ajax_loader_element = $('#ajax_loader_apply_leave');
-				 var selectedLeave = $('#id_leave option:selected').val()
+				 var selectedLeave = $('#id_leave option:selected').val();
+				 var user_id= $('#id_name').val();
 				 if(selectedLeave == 'maternity_leave' || selectedLeave == 'paternity_leave' || selectedLeave == 'bereavement_leave' || selectedLeave == 'comp_off_apply' || selectedLeave == 'comp_off_avail')
 				 {
 					 $.ajax(
 													 {
 															 type : "GET",
 															 url : '/leave/add/',
-															 data :{leavetype: selectedLeave} ,
+															 data :{'leavetype': selectedLeave, 'user_id':user_id} ,
 															 success : function(data)
 															 {
 																	 $("#modal_body").html(data);
@@ -137,7 +138,7 @@
 																			{
 																					type : "GET",
 																					url : '/leave/add/',
-																					data :{leavetype: selectedLeave} ,
+																					data :{'leavetype': selectedLeave, 'user_id':user_id} ,
 																					success : function(data)
 																					{
 																							$("#modal_body").html(data);
@@ -217,8 +218,7 @@
 									   if (data.record_added) {
 											 swal("Done!", data.success_msg, "success");
 											$("#modal_body").html('');
-											window.location.reload()
-
+											window.location.reload();
 										 }
 									   else{
 										$("#modal_body").html(data);
@@ -255,4 +255,11 @@
 
 	});
 
+	$('#id_fromDate_pickers').datepicker()
+	    .on("input change", function (e) {
+				if(e.target.value){
+					$("#id_toDate_pickers").datepicker("update", e.target.value);
+				}
+
+	});
 			  </script>
