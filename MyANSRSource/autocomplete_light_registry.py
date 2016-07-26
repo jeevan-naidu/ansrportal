@@ -10,7 +10,7 @@ class AutocompleteUser(autocomplete_light.AutocompleteModelBase):
     def choices_for_request(self):
         q = self.request.GET.get('q', '')
         choices = self.choices.filter(
-            Q(is_superuser=False)
+            Q(is_active=True)
         )
 
         choices = choices.filter(email__icontains=q)
