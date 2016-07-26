@@ -17,7 +17,7 @@
 
 <script>
 	a = new Timer("#timerText");
-	a.set(00, 10);
+	a.set(02, 00);
 	a.run();
 
 	setInterval(function(){
@@ -26,15 +26,15 @@
 		UpdateBookingDetails(room_id, room_name);
 		a.reset();
 		a.stop();
-		a.set(00, 10);
+		a.set(02, 00);
 		a.run();
-		}, 10000);
+		}, 120000);
     $('#rooms_list>li>a').click(function () {
         var room_id = $(this).attr('id');
         var room_name = $(this).text();
 		a.reset();
 		a.stop();
-		a.set(00, 10);
+		a.set(02, 00);
 		a.run();
         UpdateBookingDetails(room_id, room_name);
 	});
@@ -44,7 +44,7 @@
 	function UpdateBookingDetails(room_id, room_name) {
         //console.log('refeshing..');
 		$.ajax({
-				url: 'http://stage.ansr.com/bookings/get-bookings-details/',
+				url: 'http://portal.ansrsource.com/bookings/get-bookings-details/',
 				type: 'GET',
 				cache: false,
                 data: {'room_id':room_id},
