@@ -91,6 +91,8 @@ def LeaveCancel(request):
     leave = LeaveApplications.objects.get(id = leave_id)
     leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=user_id, year = date.today().year)
     onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
+
+
     if leave.leave_type.leave_type in leaveWithoutBalance:
         leaveSummary.applied = float(leaveSummary.applied) - float(leavecount)
         leaveSummary.save()
@@ -125,13 +127,22 @@ def LeaveDetails(request):
 # Create your views here.
 class Dashboard(View):
     def get(self, request):
+        genderFlag = True
+        genderMale = False
+        LeaveAdmin = False
+        userCheck = False
         user_id = request.user.id
         leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
-        genderFlag = True
-        genderMale = False
+
+        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
+            LeaveAdmin = True
+
+        if user_id:
+            userCheck =True
+
         if not newuser:
             genderFlag =False
         if employeeDetail.gender=='M':
@@ -155,19 +166,23 @@ class Dashboard(View):
          'userfullname':userDetail.first_name+" "+userDetail.last_name,
          'employeeId':employeeDetail.employee_assigned_id,
          'userid':user_id,
-         'managerFlag':managerFlag }
+         'managerFlag':managerFlag,
+         'LeaveAdmin':LeaveAdmin,
+         'userCheck':userCheck }
         return render(request, 'User.html', context)
 
     def post(self, request):
         userForm = UserListViewForm(request.POST)
         user_id = userForm['user'].value()
-        LeaveAdmin = True
+        LeaveAdmin = False
+        userCheck = False
         if not user_id:
             user_id = request.user.id
-            LeaveAdmin = False
-        elif self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or int(user_id) == int(request.user.id):
-            LeaveAdmin = False
-
+            LeaveAdmin = True
+        elif self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
+            LeaveAdmin = True
+        elif  int(user_id) == int(request.user.id):
+            userCheck = True
         leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
@@ -199,7 +214,8 @@ class Dashboard(View):
          'employeeId':employeeDetail.employee_assigned_id,
          'userid':user_id,
          'managerFlag':managerFlag,
-         'LeaveAdmin':LeaveAdmin }
+         'LeaveAdmin':LeaveAdmin,
+         'userCheck':userCheck }
         return render(request, 'User.html', context)
 
 

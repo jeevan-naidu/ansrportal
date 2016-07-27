@@ -100,7 +100,7 @@
                     <div class="row margin-correct">
 
                         <div class="col-md-6">
-                          {%if managerFlag%}
+                          {%if managerFlag or  LeaveAdmin%}
                           <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
                               {% csrf_token %}
                               {% bootstrap_messages %}
@@ -121,7 +121,7 @@
 
 
                           <!-- <a href="#" class="pull-right btn btn-sm btn-danger">Export</a> -->
-                          {% if not LeaveAdmin %}
+                          {% if  LeaveAdmin or userCheck%}
                           <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="Apply Leave"  class="pull-right btn btn-sm btn-danger btn-ansr-orange">
                             Apply Leave
                           </a>
