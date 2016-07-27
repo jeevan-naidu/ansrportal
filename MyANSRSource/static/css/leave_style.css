@@ -686,3 +686,8 @@
         }
         .table>tbody>tr.info:hover>td{background: #FAFDFF;}
         .table>tbody>tr.info>td:first-child>a{color: #C76B4F;font-size: 14px;}
+
+
+        /* Short leave section */
+
+        .short-leave{background: #E54B4B !important}
