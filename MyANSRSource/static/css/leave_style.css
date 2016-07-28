@@ -632,7 +632,7 @@
         .template-header + hr{margin-bottom: 10px;}
         .Lv-ApLvHeader + hr{margin-top: 10px}
 
-        .Lv-Type-Selected .Lv-ProgressBar-TotalDays{line-height: 15.7px}
+        .Lv-ProgressBar-TotalDays{line-height: 15.7px}
 
         /* Corrections -3 */
 
@@ -670,7 +670,7 @@
           border-color: #FFDDD1;
         }
         .table-hover.ansrgreen>tbody>tr:hover>td{background: #FAFDFF}
-        .btn-ansr-orange{background: #ee5f2d;border: 1px solid #ee5f2d;}
+        .btn-ansr-orange{background: #ee5f2d;border: 1px solid #ee5f2d;color: #fff}
         .btn-ansr-orange:hover, .btn-ansr-orange:focus{background: #D84614;border: 1px solid #ee5f2d;}
 
         /* Header Nav */
@@ -694,3 +694,33 @@
         /* Changes for Vendroid */
 
         .vd_content-section .row{margin-bottom: 0px;}
+
+
+
+        /* Leave */
+
+.modal-header {
+    min-height: 16.43px;
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+    box-shadow: 0 3px 9px rgba(0,0,0,.5);
+}
+
+.modal-footer {
+    padding: 15px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+
