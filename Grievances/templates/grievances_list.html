@@ -1,18 +1,8 @@
 {% extends 'master.html' %}
 {% load bootstrap3 %}
 {% load fontawesome %}
-{% load static from staticfiles %} 
+{% load static from staticfiles %}
 {% load grievances_template_tags %}
-{% block ansrMenu %}
- <li><a href="/myansrsource/dashboard">
-    {% fontawesome_icon 'university' large=True %}
-    Dashboard
- </a></li>
- <li class="ansrLogout"><a href="{% url 'logout' %}">
-    {% fontawesome_icon 'sign-out' large=True color='red' %}
-    <span class="ansrLogout">Logout</span>
-  </a></li>
-{% endblock %}
 
 {% block siteTitle %}myansrsource : Grievances{% endblock %}
 
@@ -66,7 +56,6 @@
 <h4 class="margin-left-15" >
 			<div class="pull-left total-greivances">Total : {{objects_list|length}}</div>
 		  <a class="launchModalForm pull-right margin-right-15" href="#add_grievance_popup" role="button" class="btn" data-toggle="modal"><button type="button" class="btn btn-danger">Register a grievance</button></a>
-    <!--<a style="color:#fff" href="{% url 'add_grievance' %}"><button type="button" class="btn btn-info"> Click here to register your grievance</button></a>-->
 </h4>
 
 <div class="container-fluid">
@@ -107,18 +96,18 @@
 							<td style="width: 15%">
 								<p>{{object.grievance_id}}</p>
 								
-								{% if object.escalate %}<p><label type="label" class="label label-warning">Escalated</button></p> {% endif %}
+								{% if object.escalate %}<p><label type="label" class="label label-warning">Escalated</label></p> {% endif %}
 								
 								
 								
-								{% if object.satisfaction_level == 'satisfied' or object.satisfaction_level = 'not_sure'%}
+								{% if object.satisfaction_level == 'satisfied' or object.satisfaction_level == 'not_sure'%}
 									<div>
 										<label type="label" class="label label-success ">{{object.get_satisfaction_level_display}}</label>
 									</div>
 									
 								{% endif %}
 								
-								{% if object.satisfaction_level == 'dissatisfied' or object.satisfaction_level = 'very_dissatisfied'%}
+								{% if object.satisfaction_level == 'dissatisfied' or object.satisfaction_level == 'very_dissatisfied'%}
 									<div>
 										<label type="label" class="label label-danger ">{{object.get_satisfaction_level_display}}</label>
 									</div>
@@ -174,9 +163,8 @@
 {% block page_specific_JS %}
 		<script src='/static/js/jquery.ui.widget.js' type="text/javascript"></script>
 		<script src='/static/js/bootstrap-filestyle.min.js' type="text/javascript"></script>
-		<!--<script src='/static/js/grievances_user.js' type="text/javascript"></script>-->
-		<script src='{% static 'js/grievances_user.js' %}' type="text/javascript"></script>
-	
+		<script src='/static/js/grievances_user.js' type="text/javascript"></script>
+
 {% endblock %}
 
 

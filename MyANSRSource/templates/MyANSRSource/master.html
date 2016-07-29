@@ -23,8 +23,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-
+  <script type="text/javascript" src="/static/js/jquery.js"></script>
     {# Load Pace JS #}
+
        <script src="{% static 'js/pace.js' %}"></script>
 
     {# Load Bootstrap CSS and JS #}
@@ -35,7 +36,9 @@
            {# in the plugin django-boostrap3 we don't have an option       #}
            {# to change media from screen to all.                          #}
        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-       {% bootstrap_javascript %}
+
+
+
 
        {# Load SweetAlert CSS and JS #}
        <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.0.1/sweetalert.min.css" media="screen">
@@ -251,14 +254,10 @@
                                                 <!-- data-intro="<strong>Toggle Right Navigation </strong><br/>On smaller device such as tablet or phone you can click on the middle content to close the right or left navigation." data-step=2 data-position="left" -->
                                                 <a href="#" class="mega-link" data-action="toggle-navbar-right">
                                                     <span class="mega-icon">
-                <i class="fa fa-comments"></i>
-            </span>
-                                                    <!--            <span  class="mega-image">
-                <img src="/static/images/avatar/avatar.jpg" alt="example image" />
-            </span> -->
+                                                        <i class="fa fa-comments"></i>
+                                                    </span>
                                                     <span class="badge vd_bg-red">8</span>
                                                 </a>
-
                                             </li>
                                         </ul>
                                         {% else %}
@@ -307,8 +306,8 @@
                                         <li id="home" class="one-icon mega-li">
                                             <a class="mega-link  vd_bg-yellow" href="javascript:void(0);" data-action="click-trigger">
                                                 <span class="mega-icon">
-                <i class="fa fa-cloud"></i>
-            </span>
+                                                    <i class="fa fa-cloud"></i>
+                                                </span>
                                                 <!-- <span class="badge vd_bg-red">
                 10
             </span> -->
@@ -317,8 +316,8 @@
                                         <li id="tabs-menu-tasks" class="one-icon mega-li">
                                             <a class="mega-link  vd_bg-yellow" href="javascript:void(0);" data-action="click-trigger">
                                                 <span class="mega-icon">
-                <i class="fa fa-tasks"></i>
-            </span>
+                                                    <i class="fa fa-tasks"></i>
+                                                </span>
                                                 <!-- <span class="badge vd_bg-red">
                 8
             </span> -->
@@ -327,16 +326,16 @@
                                         <li id="test-2" class="one-icon mega-li">
                                             <a class="mega-link vd_bg-yellow " href="javascript:void(0);" data-action="click-trigger">
                                                 <span class="mega-icon">
-                <i class="fa fa-pencil"></i>
-            </span>
+                                                    <i class="fa fa-pencil"></i>
+                                                </span>
                                             </a>
 
                                         </li>
                                         <li id="test" class="one-icon mega-li">
                                             <a class="mega-link vd_bg-yellow" href="javascript:void(0);" data-action="click-trigger">
                                                 <span class="mega-icon">
-                <i class="fa fa-plus"></i>
-            </span>
+                                                    <i class="fa fa-plus"></i>
+                                                </span>
                                             </a>
                                             <div class="vd_mega-menu-content  width-xs-2  center-xs-2" data-action="click-target">
                                                 <div class="child-menu">
@@ -393,9 +392,6 @@
                                                         </a>
                                                  </li>
                                             {% endif %}
-
-
-
 
                                         </ul>
                                     </div>
@@ -463,31 +459,31 @@
                                     <div class="child-menu" data-action="click-target">
                                         <ul>
                                             <li>
-                                                <a href="/myansrsource/fb360/choose-peer">
+                                                <a href="/fb360/choose-peer">
                                                     <span class="menu-text">Choose Peer(s)</span>
                                                 </a>
                                             </li>
 
                                             {% if isManager %}
                                                 <li>
-                                                    <a href="/myansrsource/fb360/choose-reportee">
+                                                    <a href="/fb360/choose-reportee">
                                                         <span class="menu-text">Choose Reportee(s)</span>
                                                     </a>
                                                 </li>
                                             {% endif %}
 
                                             <li>
-                                                <a href="/myansrsource/fb360/choose-additional-manager">
+                                                <a href="/fb360/choose-additional-manager">
                                                     <span class="menu-text">Choose Additional Manager(s)</span>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="/myansrsource/fb360/request-action">
+                                                <a href="/fb360/request-action">
                                                     <span class="menu-text">Manage Request(s)</span>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="/myansrsource/fb360/give-feedback">
+                                                <a href="/fb360/give-feedback">
                                                     <span class="menu-text">Feedback</span>
                                                 </a>
                                             </li>
@@ -653,7 +649,7 @@
                     <div class="vd_menu vd_navbar-bottom-widget">
                         <ul>
                             <li>
-                                <a href="pages-logout.html">
+                                <a href="/myansrsource/logout">
                                     <span class="menu-icon"><i class="fa fa-sign-out"></i></span>
                                     <span class="menu-text">Logout</span>
                                 </a>
@@ -768,17 +764,17 @@
 
     <!-- Javascript =============================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/javascript" src="/static/js/jquery.js"></script>
+
     <!--[if lt IE 9]>
  <script type="text/javascript" src="/static/js/excanvas.js"></script>
 <![endif]-->
 
-       <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
+
 
         <!--   block to be inherited for page specific JavaScript -->
 
 
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
     <script type="text/javascript" src='/static/plugins/jquery-ui/jquery-ui.custom.min.js'></script>
     <script type="text/javascript" src="/static/plugins/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
 
@@ -805,7 +801,7 @@
 
     <!-- Calendar -->
     <script type="text/javascript" src='/static/plugins/moment/moment.min.js'></script>
-    <script type="text/javascript" src='/static/plugins/jquery-ui/jquery-ui.custom.min.js'></script>
+{#    <script type="text/javascript" src='/static/plugins/jquery-ui/jquery-ui.custom.min.js'></script>#}
     <script type="text/javascript" src='/static/plugins/fullcalendar/fullcalendar.min.js'></script>
 
     <!-- Question Mark -->
@@ -817,7 +813,10 @@
 
     {% include 'session_security/all.html' %}
 
-    {% block page_specific_JS %}{% endblock %}
+    <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
+    {% block page_specific_JS %}
 
     <!-- Scripts for plugins -->
     <script type="text/javascript">
@@ -876,12 +875,7 @@
                         url: 'http://google.com/'
                     }]
 
-
-
-
                 });
-
-
 
                 /* News Widget */
                 $(".vd_news-widget .vd_carousel").carouFredSel({
@@ -972,6 +966,8 @@
             s.parentNode.insertBefore(ga, s);
         })();
     </script>
+    {% endblock %}
+{#    End page specific js #}
 
 </body>
 

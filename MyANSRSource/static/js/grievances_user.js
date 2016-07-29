@@ -29,24 +29,25 @@ $(document).ready(function(){
                 RateAndClosureFormSubmit();
                 EscalationFormSubmit();
                 
-				$('.panel-group').on('hidden.bs.collapse', function(){
-					//alert($(this).attr('class').split(" ")[0]);
-					$(this).find('.panel-title').each(function(){
-						$(this).find(".glyphicon").removeClass("expand1");
-						});
-					});
-				
-				
-				$('.panel-group').on('shown.bs.collapse', function(){
-					$(this).find('.panel-title').each(function(){
-						if ($(this).attr('class') == 'panel-title') {
-							$(this).find(".glyphicon").addClass("expand1");
-						}
-						else{
-							$(this).find(".glyphicon").removeClass("expand1");
-						}
-						});
-					});
+				// $('.panel-group').on('hidden.bs.collapse', function(){
+				// 	//alert($(this).attr('class').split(" ")[0]);
+				// 	$(this).find('.panel-title').each(function(){
+				// 		$(this).find(".glyphicon").removeClass("expand1");
+				// 		});
+				// 	});
+				//
+				//
+				// $('.panel-group').on('shown.bs.collapse', function(){
+                 //    alert();
+				// 	$(this).find('.panel-title').each(function(){
+				// 		if ($(this).attr('class') == 'panel-title') {
+				// 			$(this).find(".glyphicon").addClass("expand1");
+				// 		}
+				// 		else{
+				// 			$(this).find(".glyphicon").removeClass("expand1");
+				// 		}
+				// 		});
+				// 	});
                 
                 
                 // File size validation
