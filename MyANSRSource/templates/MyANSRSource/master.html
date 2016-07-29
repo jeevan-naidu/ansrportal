@@ -776,7 +776,7 @@
        <script src='{% static 'js/main.js' %}' type="text/javascript"></script>
 
         <!--   block to be inherited for page specific JavaScript -->
-       {% block page_specific_JS %}{% endblock %}
+
 
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src='/static/plugins/jquery-ui/jquery-ui.custom.min.js'></script>
@@ -816,6 +816,8 @@
      {% include 'autocomplete_light/static.html' %}
 
     {% include 'session_security/all.html' %}
+
+    {% block page_specific_JS %}{% endblock %}
 
     <!-- Scripts for plugins -->
     <script type="text/javascript">

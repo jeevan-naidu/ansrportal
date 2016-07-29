@@ -5,8 +5,6 @@
 {% if record_added %}
 <h4> Success</h4>
 {% else %}
-
-
 			<!-- Ajax -->
 		 <div id="ajax_loader_apply_leave" class="ajax_bck"><div class="ajax_load_image"></div></div>
 		 <form id="modal-container-252304" class="form-horizontal" method="post" enctype="multipart/form-data">
@@ -19,25 +17,22 @@
 					{% for field in form.visible_fields %}
 					<div class="form-group">
 
+                        <label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
 
-					<label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
-
-
-					<div class="col-sm-10">{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
-						{% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
-					</div>
-				</div>
-			 {% endfor %}
-
+                        <div class="col-sm-10">{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
+                            {% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+            </form>
 
 			{% else %}
 			<form class="form-horizontal" role="form">
 					{% for field in form.visible_fields %}
 					{% if  forloop.counter == 3 or forloop.counter == 5%}
-	 {% else %}
-				<div class="form-group">
-				{% endif %}
-
+	                {% else %}
+                        <div class="form-group">
+                    {% endif %}
 
 					<label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
 
@@ -46,12 +41,13 @@
 		 				{% else %}
 						<div class="col-sm-10">
 						{% endif %}
+
 						{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
 						{% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
-					</div>
+                        </div>
 					{% if  forloop.counter == 2 or forloop.counter == 4%}
-	 {% else %}
-				</div>
+                    {% else %}
+                    </div>
 				{% endif %}
 			 {% endfor %}
 
@@ -68,12 +64,12 @@
 		 Remaining Leaves : {{leave_count}}
 		 {% endif %}
 	 </div>
- </div>
+    </div>
  {% if errors %}
  <div class="form-group">
 	<div class="col-sm-offset-2 col-sm-10">
 		{% for non_field_error in errors %}
-		<div style="color:red;"><h5> {{non_field_error}}</h5></div>
+		    <div style="color:red;"><h5> {{non_field_error}}</h5></div>
 		{% endfor %}
 
 	 {% endif %}
@@ -84,15 +80,14 @@
  </div>
 </form>
 
-
 	{% endif %}
 
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
 
 		   <script>
 			 $(document).ready(function() {
-    //$('#id_leave').val("sick_leave")
-});
+                });
 			 $('#id_leave').change(function(){
 				 var ajax_loader_element = $('#ajax_loader_apply_leave');
 				 var selectedLeave = $('#id_leave option:selected').val()
@@ -251,8 +246,6 @@
 								 format: 'yyyy-mm-dd',
 								 autoclose: true
 							 });
-
-
-	});
+	                    });
 
 			  </script>
