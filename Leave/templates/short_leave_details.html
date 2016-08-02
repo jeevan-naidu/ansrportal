@@ -1,0 +1,50 @@
+
+{% load grievances_template_tags %}
+
+
+ <div class="LeaveDetails" >
+<table class=" table table-hover view_details" >
+     <tr >
+         <td >User : </td>
+         <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
+     </tr>
+     <tr>
+         <td>Applies On: </td>
+         <td>{{leave.applied_on}}</td>
+     </tr>
+     <tr >
+         <td>Leave Type : </td>
+         <td>{{ leave.short_leave_type }}</td>
+     </tr>
+
+     <tr >
+         <td>Short Leave Date: </td>
+         <td>{{leave.for_date}} </td>
+     </tr>
+     <tr >
+         <td>Due Date: </td>
+         <td>{{leave.due_date}}  </td>
+     </tr>
+     <tr >
+         <td>Reason: </td>
+         <td>{{leave.reason}}</td>
+     </tr>
+ <tr >
+         <td>Status: </td>
+         <td>{{leave.status|title}}</td>
+     </tr>
+     <tr >
+             <td>Status Action On: </td>
+             <td>{{leave.status_action_on}} </td>
+         </tr>
+         <tr >
+                 <td>Status Action By: </td>
+                 <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
+             </tr>
+             <tr >
+                 <td></td>
+
+             </tr>
+
+ </table>
+</div>

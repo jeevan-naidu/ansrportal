@@ -23,7 +23,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from forms import LeaveListViewForm
-from Leave.models import LeaveApplications, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME
+from Leave.models import LeaveApplications, ShortLeave, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME
 from CompanyMaster.models import *
 from django.contrib.auth.models import User
 from export_xls.views import export_xlwt
@@ -158,17 +158,22 @@ class Dashboard(View):
             managerFlag = True
         else:
             managerFlag = False
+        # short leave grid population
+        ShortLeaveApplied = ShortLeave.objects.filter(user = user_id, active=True).count()
+        ShortLeaveAppproved = ShortLeave.objects.filter(user=user_id, active=False).count()
         context={'leave_summary':leave_summary,
-        'gender':genderFlag,
-        'male':genderMale,
-        'manager': mangerfirstname,
-         'form':UserListViewForm(),
-         'userfullname':userDetail.first_name+" "+userDetail.last_name,
-         'employeeId':employeeDetail.employee_assigned_id,
-         'userid':user_id,
-         'managerFlag':managerFlag,
-         'LeaveAdmin':LeaveAdmin,
-         'userCheck':userCheck }
+                 'gender': genderFlag,
+                 'male': genderMale,
+                 'manager': mangerfirstname,
+                 'form': UserListViewForm(),
+                 'userfullname': userDetail.first_name + " " + userDetail.last_name,
+                 'employeeId': employeeDetail.employee_assigned_id,
+                 'userid': user_id,
+                 'managerFlag': managerFlag,
+                 'LeaveAdmin': LeaveAdmin,
+                 'userCheck': userCheck,
+                 'ShortLeaveApplied':ShortLeaveApplied,
+                 'ShortLeaveAppproved':ShortLeaveAppproved}
         return render(request, 'User.html', context)
 
     def post(self, request):
@@ -205,17 +210,23 @@ class Dashboard(View):
             managerFlag = True
         else:
             managerFlag = False
+        # short leave grid population
+        ShortLeaveApplied = ShortLeave.objects.filter(user=user_id, active=True).count()
+        ShortLeaveAppproved = ShortLeave.objects.filter(user=user_id, active=False).count()
         context={'leave_summary':leave_summary,
-        'gender':genderFlag,
-        'male':genderMale,
-        'manager': mangerfirstname,
-         'form':UserListViewForm(),
-         'userfullname':userDetail.first_name+" "+userDetail.last_name,
-         'employeeId':employeeDetail.employee_assigned_id,
-         'userid':user_id,
-         'managerFlag':managerFlag,
-         'LeaveAdmin':LeaveAdmin,
-         'userCheck':userCheck }
+                 'gender': genderFlag,
+                 'male': genderMale,
+                 'manager': mangerfirstname,
+                 'form': UserListViewForm(),
+                 'userfullname': userDetail.first_name + " " + userDetail.last_name,
+                 'employeeId': employeeDetail.employee_assigned_id,
+                 'userid': user_id,
+                 'managerFlag': managerFlag,
+                 'LeaveAdmin': LeaveAdmin,
+                 'userCheck': userCheck,
+                 'ShortLeaveApplied': ShortLeaveApplied,
+                 'ShortLeaveAppproved': ShortLeaveAppproved
+                 }
         return render(request, 'User.html', context)
 
 
@@ -782,3 +793,115 @@ class LeaveManageView(LeaveListView):
             messages.success(self.request, "Successfully Updated")
 
         return HttpResponseRedirect("/leave/manage")
+
+#This method returns the transction for the user in short leave table
+def ShortLeaveTransact(request):
+    statusType = request.GET.get('type')
+    user_id = request.GET.get('user_id')
+    loggedInUser = request.user.id
+    if statusType == 'All':
+        Short_Leave_transact = ShortLeave.objects.filter( user=user_id,
+                                                         active=True).values('id',
+                                                                             'for_date',
+                                                                             'due_date',
+                                                                             'status')
+    elif statusType == 'Open':
+        Short_Leave_transact = ShortLeave.objects.filter( user=user_id,
+                                                         active=True).values('id',
+                                                                             'for_date',
+                                                                             'due_date',
+                                                                             'status')
+    else:
+        Short_Leave_transact = ShortLeave.objects.filter( user=user_id,
+                                                         active=False).values('id',
+                                                                             'for_date',
+                                                                             'due_date',
+                                                                              'status')
+
+    count = 0
+    data1 = "<tr class=""><th>Sr.No</th><th>For Date</th><th>Due Date</th><th>Action</th></tr>"
+    for leave in Short_Leave_transact:
+        count = count + 1
+        data1 += "<tr class=\"success\"><td>{0}<br><a \
+             onclick =\"shortLeaveDetails({1})\" role=\"button\" data-toggle=\"modal\" title=\"View Details\">Details</a>\
+             </td><td>{2}</td><td>{3}</td><td>\
+             ".format(
+            count,
+            leave['id'],
+            leave['for_date'],
+            leave['due_date'],
+        )
+        if leave['status'] == 'open' and int(loggedInUser) == int(user_id):
+            data1 += '<div class="btn btn-danger btn-xs">Dispute</div>\
+                <div class="btn btn-danger btn-xs">Accept</div></td></tr>'
+        else:
+            data1 = data1 + '</td></tr>'
+    json_data = json.dumps(data1)
+    return HttpResponse(json_data, content_type="application/json")
+
+
+#details of every leave transaction
+def ShortLeaveDetail(request):
+    leave_id = request.GET.get('leaveid')
+    leave = ShortLeave.objects.get(id=leave_id)
+    return render(request, 'short_leave_details.html',
+                  {'leave': leave,})
+
+
+
+#action on short leaves
+# def ShortLeaveAction(request):
+#     actionType = request.GET.get('actionType')
+#     leave_id = request.GET.get('leaveid')
+#     user_id = request.GET.get('user_id')
+#     shortLeave = ShortLeave.objects.get(id=leave_id)
+#     if actionType == 'dispute':
+#         shortLeave.dispute = True
+#         shortLeave.status_action_by = user_id
+#         shortLeave.save()
+#     elif actionType == 'shortLeave':
+
+
+
+
+#short leave resolution
+def ShortLeaveResolution(fromdate, todate, fromsession, tosession, user):
+    shortLeaves = ShortLeave.objects.filter(user=user, for_date__lte=fromdate, for_date__gte = todate)
+    for leave in shortLeaves:
+        if leave.leave_type == 'half_day':
+            leave.active = False
+            leave.save()
+        else:
+            if leave.for_date == fromdate and leave.for_date != todate and fromsession== 'session_first':
+                leave.active = False
+                leave.save()
+            elif leave.for_date != fromdate and leave.for_date == todate and tosession == 'session_second':
+                leave.active = False
+                leave.save()
+            elif leave.for_date > fromdate and leave.for_date < todate:
+                leave.active = False
+                leave.save()
+            else:
+                leaveapplicationcheck = LeaveApplications.objects.filter(from_date__lte=leave.for_date, to_date__gte = leave.for_date)
+                if leaveapplicationcheck and leave.leave_type == 'full_day':
+                    leave.active = False
+                    leave.save()
+                else:
+                    if len(leaveapplicationcheck) > 1:
+                        leave.active = False
+                        leave.save()
+                    elif len(leaveapplicationcheck) == 1 and leaveapplicationcheck.leave_type!=13:
+                        leave.active = False
+                        leave.save()
+
+
+
+
+
+
+
+
+
+
+
+

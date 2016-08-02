@@ -3,7 +3,7 @@
 {% load fontawesome %}
 {% load static from staticfiles %}
 {% block siteTitle %}myansrsource:Leave{% endblock %}
-<!DOCTYPE html>
+
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
     {% fontawesome_icon 'university' large=True %}
@@ -601,9 +601,66 @@ function refreshBackground() {
         window.location.reload();
     }
 $(document).ready(function() {
+    gridLoad('earned_leave');
 
-gridLoad('earned_leave');
+//short leave datapopulation
+var openshortleave = {{ ShortLeaveApplied }};
+var approvedshortleave = {{ ShortLeaveAppproved }};
 
+
+shortleavegrid(openshortleave, approvedshortleave);
+
+function shortleavegrid(openshortleave, approvedshortleave){
+    if(openshortleave!=0){
+        $('#short_leave .applied').text(openshortleave);
+      }
+      if(approvedshortleave!=0){
+      $('#short_leave .approved').text(approvedshortleave);
+      }
+      if(openshortleave || approvedshortleave ){
+        applied_perc = (openshortleave/(openshortleave + approvedshortleave ))*100;
+        approved_perc = (approvedshortleave/(openshortleave + approvedshortleave ))*100;
+        $('#short_leave .applied').css({'width' : applied_perc+"%"});
+        $('#short_leave .approved').css({'width' : approved_perc+"%"});
+      }
+}
+
+ $('#short_leave .col-md-12 .row').click(function(){
+    removeSelection();
+   $('#short_leave .col-md-12 .row').addClass("Lv-Type-Selected");
+     var statusdropdown = document.getElementById("month_select");
+{#     console.log(statusdropdown);#}
+{#     var all = document.createElement("all");#}
+{#     all.text = "All";#}
+{#     statusdropdown.add(all,4);#}
+
+   shortLeaveGridLoad();
+  });
+
+function shortLeaveGridLoad(){
+
+    $('.table-bordered').empty();
+     $.ajax(
+        {
+            type : "GET",
+            url : '/leave/shortleavetransact/',
+            data :{'type':$('#month_select').val(),user_id:{{userid}}} ,
+            success : function(data)
+            {
+                $('.table-bordered').append(data);
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+              },
+            }
+          );
+
+}
+
+//short leave compleate
   var totalcount = 0;
   {% for leave in leave_summary%}
   var leaveType='{{leave.leave_type__leave_type}}';
@@ -1014,6 +1071,8 @@ function removeSelection(){
   $("#comp_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off_apply .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#sabbatical .col-md-12 .row").removeClass("Lv-Type-Selected");
+    ///for short leave
+    $("#short_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
 
 
 }
@@ -1213,6 +1272,28 @@ function showDetails(leave_id){
               },
             }
           );
+}
+
+// short leave details
+function shortLeaveDetails(leave_id) {
+    $.ajax(
+            {
+                type: "GET",
+                url: '/leave/shortleavedetails/',
+                data: {'leaveid': leave_id},
+                success: function (data) {
+                    $('.LeaveDetails').remove()
+                    $('#myModal').modal({show: true})
+                    $('#myModaldata').append(data);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+                },
+            }
+    );
 }
 </script>
 

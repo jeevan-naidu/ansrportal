@@ -11,6 +11,8 @@ CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 
 APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'))
 SESSION_STATUS = (('session_first', 'First Half'), ('session_second', 'Second Half'))
 BUTTON_NAME = (('success', 'approved'), ('info', 'open'), ('danger', 'rejected'), ('warning', 'cancelled'))
+SHORT_LEAVE_STATUS = (('open','Open'),('closed','Closed'))
+SHORT_LEAVE_TYPE = (('half_day','HALF'),('full_day','FULL'))
 
 # def content_file_name(instance, filename):
 #     return '/'.join(['content', instance.user.username, filename])
@@ -118,3 +120,26 @@ class LeaveApplications(models.Model):
 
     def update(self, *args, **kwargs):
         super(LeaveApplications, self).save(*args, **kwargs)
+
+
+class ShortLeave(models.Model):
+    ''' This model contains all the detail regarding short leave.
+    Here we will store the cron result, after check of every employee
+    in table.
+    '''
+    short_leave_type = models .CharField(max_length = 50, choices=SHORT_LEAVE_TYPE, verbose_name='leave type')
+    for_date = models.DateField(verbose_name='short leave applied for date')
+    status = models.CharField(max_length=100, choices=SHORT_LEAVE_STATUS, verbose_name='Status Of Short Leave')
+    status_action_by = models.ForeignKey(User, verbose_name='action taken By User', related_name='actiom_taker')
+    status_action_on = models.DateField(auto_now=True, verbose_name='Status Change date')
+    status_comments = models.CharField(max_length=500, verbose_name='Status change comment')
+    dispute = models.BooleanField(blank=False, verbose_name="Dispute Raised?", default=False)
+    due_date = models.DateField(verbose_name='application of comp off', null=True)
+    reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
+    applied_on = models.DateField(auto_now_add=True, verbose_name='short Leave Applied Date')
+    active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
+    user = models.ForeignKey(User, db_index=True, verbose_name='User', related_name='applied_for_user') #- i
+
+    def __unicode__(self):
+      ''' return unicode strings '''
+      return '%s' % (self.user.username)

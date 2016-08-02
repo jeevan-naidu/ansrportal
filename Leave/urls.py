@@ -13,4 +13,6 @@ urlpatterns = patterns(u'',
                            name=u'list_leave_all'),
                        url(r'^manage/$', login_required(LeaveManageView.as_view(template_name='Manager.html')),
                            name=u'manage_leave_list'),
+                       url(r'^shortleavetransact/$', login_required(ShortLeaveTransact), name=u'ShortLeaveTransact'),
+                       url(r'^shortleavedetails/$', login_required(ShortLeaveDetail), name=u"ShortLeaveDetail"),
                        )
