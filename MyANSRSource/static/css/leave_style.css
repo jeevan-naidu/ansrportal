@@ -688,6 +688,17 @@
         .table>tbody>tr.info>td:first-child>a{color: #C76B4F;font-size: 14px;}
 
 
+
         /* Short leave section */
 
         .short-leave{background: #E54B4B !important}
+
+
+        .active .anchor-inherit.btn{
+          color: rgb(138, 174, 192);
+        }
+        
+        .active .Lv-Mg-NotifyCount{
+          color: #898989;
+        }
+

@@ -23,7 +23,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from forms import LeaveListViewForm
-from Leave.models import LeaveApplications, ShortLeave, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME
+from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME
 from CompanyMaster.models import *
 from django.contrib.auth.models import User
 from export_xls.views import export_xlwt
@@ -159,8 +159,8 @@ class Dashboard(View):
         else:
             managerFlag = False
         # short leave grid population
-        ShortLeaveApplied = ShortLeave.objects.filter(user = user_id, active=True).count()
-        ShortLeaveAppproved = ShortLeave.objects.filter(user=user_id, active=False).count()
+        ShortLeaveApplied = ShortAttendance.objects.filter(user = user_id, active=True).count()
+        ShortLeaveAppproved = ShortAttendance.objects.filter(user=user_id, active=False).count()
         context={'leave_summary':leave_summary,
                  'gender': genderFlag,
                  'male': genderMale,
@@ -211,8 +211,8 @@ class Dashboard(View):
         else:
             managerFlag = False
         # short leave grid population
-        ShortLeaveApplied = ShortLeave.objects.filter(user=user_id, active=True).count()
-        ShortLeaveAppproved = ShortLeave.objects.filter(user=user_id, active=False).count()
+        ShortLeaveApplied = ShortAttendance.objects.filter(user=user_id, active=True).count()
+        ShortLeaveAppproved = ShortAttendance.objects.filter(user=user_id, active=False).count()
         context={'leave_summary':leave_summary,
                  'gender': genderFlag,
                  'male': genderMale,
@@ -235,6 +235,8 @@ class ApplyLeaveView(View):
     ''' add or edit leave '''
 
     def get(self, request):
+        import ipdb
+        ipdb.set_trace()
         context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],
         'leave_type_check' : None, 'leave':None}
         try:
@@ -747,6 +749,7 @@ def update_leave_application(request, status):
 
 class LeaveManageView(LeaveListView):
     def get_context_data(self, **kwargs):
+
         context = super(LeaveManageView, self).get_context_data(**kwargs)
         if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
             context['all'] = LeaveApplications.objects.all()
@@ -794,25 +797,28 @@ class LeaveManageView(LeaveListView):
 
         return HttpResponseRedirect("/leave/manage")
 
+
+
+
 #This method returns the transction for the user in short leave table
-def ShortLeaveTransact(request):
+def ShortAttendanceTransact(request):
     statusType = request.GET.get('type')
     user_id = request.GET.get('user_id')
     loggedInUser = request.user.id
     if statusType == 'All':
-        Short_Leave_transact = ShortLeave.objects.filter( user=user_id,
+        Short_Leave_transact = ShortAttendance.objects.filter( user=user_id,
                                                          active=True).values('id',
                                                                              'for_date',
                                                                              'due_date',
                                                                              'status')
     elif statusType == 'Open':
-        Short_Leave_transact = ShortLeave.objects.filter( user=user_id,
+        Short_Leave_transact = ShortAttendance.objects.filter( user=user_id,
                                                          active=True).values('id',
                                                                              'for_date',
                                                                              'due_date',
                                                                              'status')
     else:
-        Short_Leave_transact = ShortLeave.objects.filter( user=user_id,
+        Short_Leave_transact = ShortAttendance.objects.filter( user=user_id,
                                                          active=False).values('id',
                                                                              'for_date',
                                                                              'due_date',
@@ -832,41 +838,54 @@ def ShortLeaveTransact(request):
             leave['due_date'],
         )
         if leave['status'] == 'open' and int(loggedInUser) == int(user_id):
-            data1 += '<div class="btn btn-danger btn-xs">Dispute</div>\
-                <div class="btn btn-danger btn-xs">Accept</div></td></tr>'
+            data1 += '<div class="btn btn-danger btn-xs"   onclick =\"ShortAttendanceAction({0}{1})\">Dispute</div>\
+                <div class="btn btn-danger btn-xs"  onclick =\"ShortAttendanceAction({0}{2})\">Accept</div></td></tr></td></tr>'.format(leave['id'],0,1)
         else:
-            data1 = data1 + '</td></tr>'
+            data1 += '<div class="btn btn-danger btn-xs" disabled  onclick =\"ShortAttendanceAction({0}{1})\">Dispute</div>\
+                            <div class="btn btn-danger btn-xs" disabled  onclick =\"ShortAttendanceAction({0}{2})\">Accept</div></td></tr></td></tr>'.format(
+                leave['id'], 0, 1)
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
 
 
 #details of every leave transaction
-def ShortLeaveDetail(request):
+def ShortAttendanceDetail(request):
     leave_id = request.GET.get('leaveid')
-    leave = ShortLeave.objects.get(id=leave_id)
+    leave = ShortAttendance.objects.get(id=leave_id)
     return render(request, 'short_leave_details.html',
                   {'leave': leave,})
 
 
 
 #action on short leaves
-# def ShortLeaveAction(request):
-#     actionType = request.GET.get('actionType')
-#     leave_id = request.GET.get('leaveid')
-#     user_id = request.GET.get('user_id')
-#     shortLeave = ShortLeave.objects.get(id=leave_id)
-#     if actionType == 'dispute':
-#         shortLeave.dispute = True
-#         shortLeave.status_action_by = user_id
-#         shortLeave.save()
-#     elif actionType == 'shortLeave':
-
-
+def ShortAttendanceAction(request):
+    # import ipdb
+    # ipdb.set_trace()
+    context_data = {}
+    actionType = request.GET.get('actionType')
+    leave_id = request.GET.get('leaveid')
+    user_id = request.user.id
+    shortAttendance = ShortAttendance.objects.get(id=leave_id)
+    if actionType == 'dispute':
+        shortAttendance.dispute = 'raised'
+        shortAttendance.status_action_by = User.objects.get(id=user_id)
+        shortAttendance.status_comments = "Short attendance raised to manager for approval"
+        shortAttendance.save()
+        context_data['success_msg'] = "Your short attendance had sent for manager approval."
+    elif actionType == 'accept':
+        shortAttendance.status = 'accepted'
+        shortAttendance.status_action_by = User.objects.get(id=user_id)
+        shortAttendance.status_comments = "Short attendance accepted by user"
+        shortAttendance.save()
+        context_data['success_msg'] = "You had accepted the short attendance .please apply  leave."
+    template = render(request, 'User.html', context_data)
+    context_data['html_data'] = template.content
+    return JsonResponse(context_data)
 
 
 #short leave resolution
-def ShortLeaveResolution(fromdate, todate, fromsession, tosession, user):
-    shortLeaves = ShortLeave.objects.filter(user=user, for_date__lte=fromdate, for_date__gte = todate)
+def ShortAttendanceResolution(fromdate, todate, fromsession, tosession, user):
+    shortLeaves = ShortAttendance.objects.filter(user=user, for_date__lte=fromdate, for_date__gte = todate)
     for leave in shortLeaves:
         if leave.leave_type == 'half_day':
             leave.active = False
@@ -897,11 +916,83 @@ def ShortLeaveResolution(fromdate, todate, fromsession, tosession, user):
 
 
 
+class ShortAttendanceManageView(View):
+    def get(self, request):
+        # import ipdb
+        # ipdb.set_trace()
+        context = {}
+        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
+            context['shortAttendanceOpen'] = ShortAttendance.objects.filter(dispute="open")
+
+        elif self.request.user.groups.filter(name='myansrsourcePM').exists():
+            context['shortAttendanceOpen'] = ShortAttendance.objects.filter(dispute="raised", apply_to=self.request.user)
+
+
+        return render(request, 'short_attendance_manage.html', context)
+
+    def post(self, request, *args, **kwargs):
+        save_failed = reject_failed = cancel_failed = save_email = reject_email = cancel_email = 0
+        save_status = False
+        if request.POST.getlist('approve'):
+            for approve_obj in request.POST.getlist('approve'):
+                save_status = UpdateShortAttendance(self.request, approve_obj)
+                if not save_status:
+                    save_failed += 1
+                if type(save_status) is str:
+                    save_email += 1
+        if request.POST.getlist('reject'):
+            for reject_obj in request.POST.getlist('reject'):
+                reject_status = UpdateShortAttendance(self.request, reject_obj)
+                if not reject_status:
+                    reject_failed += 1
+                if type(reject_status) is str:
+                    reject_email += 1
+        if request.POST.getlist('cancel'):
+            for cancel_obj in request.POST.getlist('cancel'):
+                cancel_status = UpdateShortAttendance(self.request, cancel_obj)
+                if not cancel_status:
+                    cancel_failed += 1
+                if type(cancel_status) is str:
+                    cancel_email += 1
+        if cancel_email > 0 or reject_email > 0 or save_email > 0:
+            messages.error(self.request, "Sorry Unable to Notify The "
+                                         "Leave Application Status Update  By Email But  Leave "
+                                         "Applications Are Processed Successfully")
+
+        if save_failed > 0 or reject_failed > 0 or cancel_failed > 0:
+            messages.warning(self.request, "Sorry Unable to Process Few short attendance Applications")
+        else:
+            messages.success(self.request, "Successfully Updated")
+
+        return HttpResponseRedirect("/leave/shortleavemanage")
 
 
 
 
 
+def UpdateShortAttendance(request, status):
+    status_tmp = status.split('_')
+    exception = False
+    if request.POST.get('remark_'+status_tmp[1]):
+        remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
+    else:
+        remark_tmp = ''
+    short_attendance = ShortAttendance.objects.get(id=status_tmp[1])
+    if status_tmp[0] == 'approved':
+        short_attendance.dispute = "approved"
 
+    short_attendance.status = status_tmp[0]
+    short_attendance.status_comments = remark_tmp
+    short_attendance.status_action_by = request.user
+    short_attendance.dispute = "open"
+
+    try:
+        short_attendance.save()
+        # ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
+        # leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
+        return True
+    except Exception, e:
+        logger.error(e)
+        return False
 
 

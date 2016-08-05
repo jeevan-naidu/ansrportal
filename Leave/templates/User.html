@@ -643,7 +643,7 @@ function shortLeaveGridLoad(){
      $.ajax(
         {
             type : "GET",
-            url : '/leave/shortleavetransact/',
+            url : '/leave/ShortAttendanceTransact/',
             data :{'type':$('#month_select').val(),user_id:{{userid}}} ,
             success : function(data)
             {
@@ -1279,11 +1279,11 @@ function shortLeaveDetails(leave_id) {
     $.ajax(
             {
                 type: "GET",
-                url: '/leave/shortleavedetails/',
+                url: '/leave/ShortAttendanceDetail/',
                 data: {'leaveid': leave_id},
                 success: function (data) {
-                    $('.LeaveDetails').remove()
-                    $('#myModal').modal({show: true})
+                    $('.LeaveDetails').remove();
+                    $('#myModal').modal({show: true});
                     $('#myModaldata').append(data);
 
                 },
@@ -1295,6 +1295,80 @@ function shortLeaveDetails(leave_id) {
             }
     );
 }
+
+function ShortAttendanceAction(data1) {
+    var buttonFlag = data1%10;
+    var actionType = "";
+    var leaveid = parseInt(data1/10);
+    var actioncomment = "";
+    if (buttonFlag == 0) {
+        actioncomment = "Do you want to escalate dispute to your manager,  for your short attendance?";
+        actionType = "dispute"
+    }
+    else {
+        actioncomment = "Do you want to accept your short attendance?";
+        actionType = "accept"
+    }
+    if(actionType = "accept"){
+               $.ajax(
+        {
+            type : "GET",
+            url : '/leave/add/',
+            data :{'user_id':{{userid}}} ,
+            success : function(data)
+            {
+                $("#modal_body").html(data);
+
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                HideAjaxLoader(ajax_loader_element);
+              },
+            }
+          );
+    }
+
+{#    swal({#}
+{#                title: "Are you sure?",#}
+{#                text: actioncomment,#}
+{#                type: "warning",#}
+{#                showCancelButton: true,#}
+{#                confirmButtonColor: "#DD6B55",#}
+{#                confirmButtonText: "Yes, Submit it!",#}
+{#                cancelButtonText: "No, cancel it.",#}
+{#                closeOnConfirm: true,#}
+{#                closeOnCancel: true#}
+{#            },#}
+{#            function (isConfirm) {#}
+{#                if (isConfirm) {#}
+{#                    if(actionType = "dispute"){#}
+{#                 #}
+{#                    }#}
+{#                    else{#}
+{#                    $.ajax(#}
+{#                            {#}
+{#                                type: "GET",#}
+{#                                url: '/leave/ShortAttendanceAction/',#}
+{#                                data: {'actionType' :actionType , 'leaveid':leaveid},#}
+{#                                success: function (data) {#}
+{#                                    swal("Done!", data.success_msg, "success");#}
+{#                                },#}
+{#                                error: function (XMLHttpRequest, textStatus, errorThrown) {#}
+{#                                    alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "#}
+{#                                            + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown +#}
+{#                                            "<br><br> Please take a screenshot of this message and send it to" +#}
+{#                                            " <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk"+actionType+" "+leaveid+"</a></p>");#}
+{##}
+{#                                },#}
+{##}
+{#                            });#}
+{#                }#}
+{#                }#}
+{#            });#}
+}
+
 </script>
 
 <script type="text/javascript">
