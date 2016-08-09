@@ -615,3 +615,10 @@ span:hover .booked-by{display: block}
 .ansrLogo {
     max-width: 175px !important;
 }
+
+
+/* VendroidForTest */
+
+/* Timesheet */
+
+#timesheet legend{padding-bottom: 10px;}
