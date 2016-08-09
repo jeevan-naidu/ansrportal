@@ -619,6 +619,13 @@ span:hover .booked-by{display: block}
 
 /* VendroidForTest */
 
+/* Master */
+
+.vd_menu .menu-icon{display: none;}
+.nav-left-small .vd_navbar-left .vd_menu .menu-icon, .nav-right-small .vd_navbar-right .vd_menu .menu-icon{display: block;}
+.vd_mega-menu-content{padding: 0px;} /* Remove when more entries are added to  */
+
+
 /* Timesheet */
 
 #timesheet legend{padding-bottom: 10px;}
