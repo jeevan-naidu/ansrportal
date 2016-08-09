@@ -10,6 +10,12 @@
 {% endblock %}
 {% block container %}"container container-timesheet" {% endblock %}
 {% block timesheetContent %}
+
+                    <div class="panel pb-15">
+                        <!-- first widget (vertical tabs) -->
+
+                        <div class="panel-body">
+
   <form id="timesheet" method="post" action="" enctype="multipart/form-data">
 	{% csrf_token %}
     <div id="timesheet-billable">
@@ -278,6 +284,23 @@
 	{% endfor %}
 	</table>
     </div>
+
+
+
+</div>
+</div>
+
+
+
+
+                    <div class="panel pb-15">
+                        <!-- first widget (vertical tabs) -->
+
+                        <div class="panel-body">
+
+
+
+
     <div id="timesheet-non-billable">
 	<legend>
 	Non - Project Effort
@@ -422,13 +445,15 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
+<div style="margin-bottom:15px;" class="clearfix">
         {% if hold_button %}
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-info" disabled="disabled">Save Timesheet</button>
-            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right" disabled="disabled">Submit Timesheet</a>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space" disabled="disabled">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right" disabled="disabled">Save</button>
         {% else %}
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-info">Save Timesheet</button>
-            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right">Save</button>
         {% endif %}
+        </div>
 	<script>
 
  		$(document).on("click", "#submitTS", function(e) {
@@ -462,4 +487,20 @@
 	</script>
  </button>
  </form>
+
+
+</div>
+
+</div>
+
+
+
+<style type="text/css">
+	
+.table>thead>tr>th{border-bottom: 0px;
+}
+
+</style>
+
+
 {% endblock %}

@@ -6,7 +6,7 @@
 {% block siteTitle %}myansrsource:Timesheet Entry{% endblock %}
 
 {% block content  %}
-<legend class="clearfix pad-bot-10">
+<legend class="clearfix pad-bot-10 bb0">
  <div class="col-md-1">
  <form id="prevWeek" method="get" action="" enctype="multipart/form-data">
 	<input type="hidden" name="week" value="prev" />
@@ -23,7 +23,7 @@
 	{% endif %}
  </form>
  </div>
-	<div class="col-md-7 text-right">Enter Timesheet : {% block startDate %}{% endblock %} - {% block endDate %}{% endblock %}</div>
+	<div class="col-md-7 text-right"><b>Enter Timesheet :</b> <i>{% block startDate %}{% endblock %} - {% block endDate %}{% endblock %}</i></div>
 
  <div class="col-md-4 text-right">
  <form id="nextWeek" method="get" action="" enctype="multipart/form-data">
