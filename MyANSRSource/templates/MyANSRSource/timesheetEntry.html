@@ -21,12 +21,12 @@
     <div id="timesheet-billable">
 	<legend>
 	Project Effort
-	<span class="pull-right">
-		<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
-			<span class="glyphicon glyphicon-plus"></span>
-			Add Project effort Item
-		</a>
-	</span>
+		<span class="pull-right">
+			<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
+				<span class="glyphicon glyphicon-plus"></span>
+				Add Project effort Item
+			</a>
+		</span>
 	</legend>
 
     {{ tsFormset.management_form }}
@@ -45,9 +45,17 @@
 		{% if forloop.first %}
 		<thead>
 		<tr>
-			<td colspan="4" class="text-right"><h5></small><b>Swipe Card Hours</b></small></h5></td>
+			<td colspan="4" class="text-right">
+				<h5>
+					<small>
+						<b>Swipe Card Hours</b>
+					</small>
+				</h5>
+			</td>
 			{% for k, v in attendance.items %}
-				<td class="text-center"><b>{{ v }}</b></td>
+				<td class="text-center">
+				<b>{{ v }}</b>
+				</td>
 			{% endfor %}
 		</tr>
 		<tr>

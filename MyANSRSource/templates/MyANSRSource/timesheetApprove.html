@@ -1,12 +1,39 @@
-{% extends 'master.html' %}
+{% extends 'timesheetMaster.inc'  %}
 
 <!-- {% block timesheetActive %}class="active"{% endblock %} -->
 
 {% block content %}
-<div class="jumbotron shadow">
+
+
+
+
+<legend class="clearfix pad-bot-10 bb0">
+
+    <div class="col-md-7 text-right">Approve / Hold Exceptions</div>
+
+
+</legend>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <div class="panel pb-15">
+                        <!-- first widget (vertical tabs) -->
+
+                        <div class="panel-body">
+
 <form id="approveTS" method="post" action="" >
-    <button type="submit" class="btn btn-info pull-right">Submit Status</button>
-    <legend><h2><small>Approve / Hold Exceptions</small></h2></legend>
+<!--     <button type="submit" class="btn btn-info pull-right">Submit Status</button>
+    <legend><h2><small>Approve / Hold Exceptions</small></h2></legend> -->
 	{% csrf_token %}
     {% for eachInfo in timesheetInfo %}
         <table class="table table-condensed">
@@ -84,5 +111,5 @@
 	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
 </form>
 </div>
-
+</div>
 {% endblock %}
