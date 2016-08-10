@@ -496,7 +496,7 @@ jQuery(document).ready(function($)
 				 $('[data-action^="click-target"]').hide();
 				 $('[data-action^="click-trigger"]').removeClass('open');	
 	 			 $('body').removeClass('expand-all');				 			 
-				 calculateContentHeight();
+				 // calculateContentHeight();
 			}			
 		});
 		

@@ -225,8 +225,8 @@
         }
 	.Lv-ApproveTH >th{
 	  background-color: #464A4C;
-    background-color: #91ACB9;
-    background-color: rgba(112,192,197, 1);
+    /*background-color: #91ACB9;
+    background-color: rgba(112,192,197, 1);*/
 	  color: #fff;
 	}
 	.Lv-Pipe{
@@ -277,10 +277,11 @@
 	  width: 100%;
 	}
 	.Lv-ApprLvSubmit{
-    background-color: #CDE2EF;
+    /*background-color: #CDE2EF;*/
     /* background-color: #D8EBF7; */
-    background-color: #FAFDFF;
+    /*background-color: #FAFDFF;
     background-color: #E7F0F7;
+    background-color: #FFF;*/
     margin-bottom: 20px;
     padding: 10px 14px;
     color: #fff;
@@ -288,7 +289,7 @@
     border-top: 0px;
 	}
 
-  .table.ansrgreen{border-color: #E7F0F7}
+  .table.ansrgreen{border-color: #E7F0F7;border-color: #dadada}
 
 
 
@@ -680,6 +681,7 @@
           color: #214761;
           color: #102B3E;
           background: #FAFDFF;
+          background-color: #FFF;
           font-family: 'Droid Sans',sans-serif;;
           font-size: 13px;
         }
@@ -722,5 +724,11 @@
     padding: 15px;
     text-align: right;
     border-top: 1px solid #e5e5e5;
+}
+
+/* Vendroid Mod */
+
+.btn-ansr-orange:hover, .btn-ansr-orange:focus{
+  color: #fff
 }
 
