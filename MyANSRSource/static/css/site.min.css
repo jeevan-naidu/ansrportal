@@ -623,6 +623,12 @@ span:hover .booked-by{display: block}
 /* General */
 
 .pull-right-space{margin-left: 15px;}
+.panel-heading-styles{
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    background-color: #777 !important    
+}
 
 /* Master */
 

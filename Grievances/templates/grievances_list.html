@@ -9,7 +9,7 @@
 {% block content  %}
 		
 <!--	fixed left section	-->
-		<div class="HowItWorksContainer how_it_works_hide">
+<!-- 		<div class="HowItWorksContainer how_it_works_hide">
 			<div class="DivRotate DivVer"><h3>How it works</h3></div>
 			
 			<div class="HowitWorksContent animated ">
@@ -22,7 +22,7 @@
 					<li>You close the grievance. </li>
 				</ol>
 			</div>
-		</div>
+		</div> -->
 
 <!-- Add grievance popup-->
 <div class="modal fade" id="add_grievance_popup" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
@@ -73,7 +73,25 @@
 	<div class="row">
 		<div class="col-md-12">
 			<table class="table table-hover table-striped">
-				<thead>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<thead class="panel-heading-styles">
 					<tr class="TbHead">
 						<th style="width: 7%">
 							Sr. No.
@@ -95,6 +113,11 @@
 						</th>
 					</tr>
 				</thead>
+
+
+
+
+
 				
 				<tbody id="listTableBody">
 					{% if objects_list %}
@@ -158,6 +181,20 @@
 						
 					{% endif %}
 				</tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			
 			</table>
 		</div>
