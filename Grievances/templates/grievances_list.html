@@ -47,11 +47,22 @@
 </div>
 <!-- End add grievance popup -->
 
-<h2 class="text-center">Grievances</h2>
 
+
+<legend class="clearfix pad-bot-10 bb0">
+<b class="text-center"><p>Grievances</p></b> 
+
+</legend>
+
+
+
+
+
+
+<!-- 
 {% if objects_list %}
 					<h5 class="text-center">( Your Grievances )</h5>
-{% endif %}
+{% endif %} -->
 
 <h4 class="margin-left-15" >
 			<div class="pull-left total-greivances">Total : {{objects_list|length}}</div>
@@ -89,7 +100,7 @@
 					{% if objects_list %}
 						{% for object in objects_list %}
 							
-						<tr class="warning" style="border-bottom: 1px solid #DBD9D9">
+						<tr class="" style="border-bottom: 1px solid #DBD9D9">
 							<td >
 								<p>{{forloop.counter}}</p>
 							</td>
@@ -117,8 +128,11 @@
 							
 							<td style="width: 50%">
 								<!--	Grievance details - grievance, action taken, user actions, HR closure message -->
+
+
 									{% include 'grievance_details.html' %}
-									
+
+
 							</td>
 							
 							<td style="width: 15%">
@@ -156,6 +170,23 @@
 						</div>
 {% endif %}
 <h5 class="text-center">Very often, problems go unnoticed. If you don't tell us about them, we won't be able to fix them. Please share your grievances with us if any, so that we can improve your experience at <strong>ansr</strong>source.</h5>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 {% endblock  %}
