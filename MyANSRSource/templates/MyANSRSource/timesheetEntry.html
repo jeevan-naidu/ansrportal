@@ -231,22 +231,22 @@
 				{% elif data.label == 'Feedback' %}
 			       		<td>
 						{% if  data.value == None or data.value == '' %}
-						<button type="button" class="btn btn-default" disabled='disabled'>
+							<button type="button" class="btn btn-default" disabled='disabled'></button>
 						{% else %}
-						{% with apIdT="#myModal-"|add:data.id_for_label %}
-							{% for data in form.visible_fields %}
-								{% if 'hold' in data.label %}
-									{% if data.value %}
-										<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-									{% else %}
-										<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
+							{% with apIdT="#myModal-"|add:data.id_for_label %}
+								{% for data in form.visible_fields %}
+									{% if 'hold' in data.label %}
+										{% if data.value %}
+											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}></button>
+										{% else %}
+											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}></button>
+										{% endif %}
 									{% endif %}
-								{% endif %}
-							{% endfor %}
-						{% endwith %}
+								{% endfor %}
+							{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
-						</button>
+						
 						{% with apId="myModal-"|add:data.id_for_label %}
 						<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 								<div class="modal-dialog">

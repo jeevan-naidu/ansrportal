@@ -619,6 +619,7 @@ span:hover .booked-by{display: block}
 
 /* VendroidForTest */
 
+
 /* General */
 
 .pull-right-space{margin-left: 15px;}
@@ -634,3 +635,4 @@ span:hover .booked-by{display: block}
 
 .bb0{border-bottom: 0px !important}
 #timesheet-non-billable legend, #timesheet legend{padding-bottom: 10px;}
+

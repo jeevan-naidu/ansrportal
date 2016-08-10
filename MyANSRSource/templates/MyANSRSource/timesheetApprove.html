@@ -1,6 +1,6 @@
-{% extends 'projectMaster.inc' %}
+{% extends 'master.html' %}
 
-{% block timesheetActive %}class="active"{% endblock %}
+<!-- {% block timesheetActive %}class="active"{% endblock %} -->
 
 {% block content %}
 <div class="jumbotron shadow">
@@ -79,9 +79,10 @@
                     <td class="text-center" colspan="4"><b>{{ eachInfo.NHours }}</b> Non-Project Hour(s)</td>
                 </tr>
             </tbody>
-        <table>
+        </table>
     {% endfor %}
 	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
 </form>
 </div>
+
 {% endblock %}
