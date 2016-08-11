@@ -136,10 +136,10 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
     leaveallowed = {'earned_leave':'Earned Leave', 'sick_leave':'Sick Leave', 'casual_leave':'Casual Leave','short_leave':'Short Leave', 'comp_off_avail':'Comp Off Avail'}
     leaveAvaliable = LeaveSummary.objects.filter(user=user, leave_type__in =[1,2,3,13], year=date.today().year).values('balance','leave_type__leave_type')
     for leave in leaveAvaliable:
-        if leave['leave_type__leave_type'] != 'short_leave' and leave['balance'] > 0:
+        if leave['leave_type__leave_type'] != 'short_leave' and float(leave['balance']) > 0:
             SHORT_LEAVE_TYPES_CHOICES = ((leave['leave_type__leave_type'],
                                           leaveallowed[leave['leave_type__leave_type']] ),)+SHORT_LEAVE_TYPES_CHOICES
-        elif leave['balance'] > 0 and staytime.stay_time > time(07,00,00):
+        elif float(leave['balance']) > 0 and staytime.stay_time > time(07,00,00):
             SHORT_LEAVE_TYPES_CHOICES = ((leave['leave_type__leave_type'],
                                           leaveallowed[leave['leave_type__leave_type']]),) + SHORT_LEAVE_TYPES_CHOICES
     SHORT_LEAVE_TYPES_CHOICES = (('', '---------'),) + SHORT_LEAVE_TYPES_CHOICES
@@ -183,6 +183,7 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
                 'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
 
             }
+
 
 
     if data:
@@ -243,6 +244,9 @@ class ShortAttendanceRemarkForm(forms.ModelForm):
     )
     fordate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true', 'readonly': 'readonly'}
 
+
     class Meta:
         model = ShortAttendance
         fields = ['fordate', 'leave_id', 'Reason']
+
+
