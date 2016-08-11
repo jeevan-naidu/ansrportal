@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from CompanyMaster.models import Holiday
 from models import LeaveApplications, LeaveType, LeaveSummary
 
-def leaveValidation(leave_form, user, attachment):
+def leaveValidation(leave_form, user, attachment=None):
     ''' leave types which needs from and to dates'''
     result = {'errors' : [], 'success':[]}
     lateLeaveApplication = lateLeaveCheck(leave_form, user)

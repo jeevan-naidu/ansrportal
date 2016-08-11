@@ -17,26 +17,7 @@
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
-<!-- {% block breadcrumb %}
-<div class="container-fluid pad0">
-    <div class="row">
-            <div class="">
-                <ul class="breadcrumb">
-                    <li>
-					<a href="{% url 'Leave_dashboard' %}">Home</a>
-                    </li>
-                    <li>
-					<a href="{% url 'list_leave' %}">Leave</a>
-                    </li>
-                    <li class="active">
-					List
-                    </li>
 
-                </ul>
-            </div>
-    </div>
-</div>
-{% endblock %} -->
 
 {% block content  %}
 
@@ -205,19 +186,18 @@
                 <table class="table table-bordered table-hover mb-0 ansrgreen">
                     <tr class="Lv-ApproveTH ">
                         <th>Employee</th>
-                        <th>Type</th>
                         <th>For Date</th>
                         <th>Due Date</th>
                         <th>Applied To</th>
                         <th>Reason</th>
+                        <th>Status Comment</th>
                         <th>Stay Time: </th>
                         <th class="text-center">Action</th>
                     </tr>
 
                     {%  autopaginate shortAttendanceOpen 10 %}
                     {% for leave in shortAttendanceOpen %}
-                    <tr {%for k,v in  BUTTON_NAME %}
-                                {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
+                    <tr>
                         <td>
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">{{leave.user.first_name}} {{leave.user.last_name}}</a>
                             <!-- Details -->
@@ -250,6 +230,14 @@
                                         <td>Stay Time: </td>
                                         <td>{{ leave.stay_time }}</td>
                                     </tr>
+                                <tr >
+                                        <td>Time In: </td>
+                                        <td>{{ leave.swipe_in }}</td>
+                                    </tr>
+                                <tr >
+                                        <td>Time Out: </td>
+                                        <td>{{ leave.swipe_out }}</td>
+                                    </tr>
                                     <tr >
                                         <td>Reason: </td>
                                         <td>{{leave.reason}}</td>
@@ -270,16 +258,21 @@
                                                 <td>Status Action By: </td>
                                                 <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
                                             </tr>
+                                 <tr >
+                                                <td>Status Action comment: </td>
+                                                <td>{{leave.status_comments}} </td>
+                                            </tr>
 
 
                                 </table></div>
                             <!--<div><h5>Posted On: <br>13-Jan-2016 3:27pm</h5></div>-->
                         </td>
-                        <td>{{ leave.short_leave_type }}</td>
+
                         <td>{{ leave.for_date }}</td>
                         <td>{{ leave.due_date }}</td>
                          <td>{{leave.apply_to}}</td>
                         <td><span style="display:block;max-width:130px;">{{leave.reason}}</span></td>
+                        <td>{{ leave.status_comments }}</td>
                         <td>{{ leave.stay_time }}</td>
                         <td>
                             <div class="checkbox checkbox-success radio-mod btn-xs">
@@ -296,15 +289,6 @@
                             </div>
 
 
-                            {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
-                                <div class="checkbox checkbox-warning radio-mod btn-xs">
-                                    <input id="cancel{{leave.id}}" type="checkbox" name="cancel" class="cancel" value="cancelled_{{leave.id}}">
-                                    <label for="cancel{{leave.id}}">
-                                    Cancel
-                                    </label>
-                                </div>
-
-                            {% endif %}
 
                                 <div class="col-md-4 pull-right">
                                     <div>
@@ -358,17 +342,17 @@
 
 
 
-    <!-- Insertion A -->{%if  leave_list  %}
+    <!-- Insertion A -->
                     <div class="Lv-ApprLvSubmit">
                         <div class="margin-0-auto text-right">
                             <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange">Submit</button>
 
                         </div>
 
-                    </div>{% endif %}
+                    </div>
 
 
-			</div> {%if  leave_list  %}<div class="col-sm-12 text-center mod"> {% paginate %} </div>{% endif %}
+			</div> <div class="col-sm-12 text-center mod"> {% paginate %} </div>
 
             <div class="row">
                 <div class="col-md-12">
@@ -431,24 +415,24 @@
     jQuery(document).ready( function (){
 
 
-{#    	$('.remarks').attr('maxlength','');#}
-{#						var text_max = 500;#}
-{#						var text_length = $('.remarks').val().length;#}
-{#						var text_remaining = text_max - text_length;#}
-{#						$('#textarea_remaining').html(text_max + ' characters remaining');#}
-{##}
-{#						$('.remarks').keyup(function() {#}
-{#							text_length = $(this).val().length;#}
-{#							text_remaining = text_max - text_length;#}
-{#							if (text_length > 500) {#}
-{#								$(this).val($(this).val().slice(0,500))#}
-{##}
-{#								// the length changes in the above line#}
-{#								text_length = $(this).val().length;#}
-{#							    text_remaining = text_max - text_length;#}
-{#							}#}
-{#							$('#textarea_remaining').html(text_remaining + ' characters remaining');#}
-{#						});#}
+    	$('.remarks').attr('maxlength','');
+						var text_max = 500;
+						var text_length = $('.remarks').val().length;
+						var text_remaining = text_max - text_length;
+						$('#textarea_remaining').html(text_max + ' characters remaining');
+
+						$('.remarks').keyup(function() {
+							text_length = $(this).val().length;
+							text_remaining = text_max - text_length;
+							if (text_length > 500) {
+								$(this).val($(this).val().slice(0,500))
+
+								// the length changes in the above line
+								text_length = $(this).val().length;
+							    text_remaining = text_max - text_length;
+							}
+							$('#textarea_remaining').html(text_remaining + ' characters remaining');
+						});
 
             var url = window.location.href ;
             url = url.split('/');
