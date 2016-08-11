@@ -1125,4 +1125,8 @@ class RaiseDispute(View):
             shortAttendance.save()
             context_data['record_added'] = True
             context_data['success_msg'] = "Your short attendance had sent for manager approval."
+        else:
+
+            form = ShortAttendanceRemarkForm(request.POST)
+            context_data['form'] = form
         return render(request, 'short_attendance_remark.html', context_data)
