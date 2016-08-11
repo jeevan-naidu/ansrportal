@@ -21,11 +21,11 @@ class Command(BaseCommand):
 
 
 def shortLeave():
-    import ipdb
-    ipdb.set_trace()
+    # import ipdb
+    # ipdb.set_trace()
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active = True)
-    checkdate = date(2016,7,12)
+    checkdate = date(2016,7,22)
     FMT = '%H:%M:%S'
 
     dueDate = checkdate + timedelta(days=30)
@@ -101,9 +101,17 @@ def shortLeave():
             else:
                 print(user.first_name + user.last_name + " hr need to take care")
         except:
-            logger.error(u"{0} having issue".
-                         format(user.id)
-                         )
+            ShortAttendance(user=user,
+                            short_leave_type='full_day',
+                            for_date=checkdate,
+                            status="open",
+                            status_action_by=User.objects.get(id=35),
+                            status_comments="missing record",
+                            due_date=dueDate,
+                            dispute="open",
+                            reason="missing records",
+                            apply_to=manager_d,
+                            ).save()
 
 
 
