@@ -11,12 +11,12 @@
 {% block container %}"container container-timesheet" {% endblock %}
 {% block timesheetContent %}
 
+  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
+
                     <div class="panel pb-15">
                         <!-- first widget (vertical tabs) -->
 
                         <div class="panel-body">
-
-  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
 	{% csrf_token %}
     <div id="timesheet-billable">
 	<legend>
@@ -239,22 +239,22 @@
 				{% elif data.label == 'Feedback' %}
 			       		<td>
 						{% if  data.value == None or data.value == '' %}
-							<button type="button" class="btn btn-default" disabled='disabled'></button>
+							<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 							{% with apIdT="#myModal-"|add:data.id_for_label %}
 								{% for data in form.visible_fields %}
 									{% if 'hold' in data.label %}
 										{% if data.value %}
-											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}></button>
+											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
 										{% else %}
-											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}></button>
+											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 										{% endif %}
 									{% endif %}
 								{% endfor %}
 							{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
-						
+						</button>
 						{% with apId="myModal-"|add:data.id_for_label %}
 						<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 								<div class="modal-dialog">
@@ -453,6 +453,11 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
+
+		</div><!-- ./panel tags -->
+
+	</div>
+
 <div style="margin-bottom:15px;" class="clearfix">
         {% if hold_button %}
             <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space" disabled="disabled">Submit</a>
@@ -492,14 +497,18 @@
             });
         });
 
+
+        // Script to reduce nav-bar width
+
+        $(document).ready(function(){
+        	$('body').addClass("nav-left-small");
+        })
+
 	</script>
- </button>
+
+
  </form>
 
-
-</div>
-
-</div>
 
 
 

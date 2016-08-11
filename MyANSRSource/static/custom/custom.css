@@ -132,3 +132,6 @@ iframe{
 /*html, body, .vd_body ,.full-layout .container, .vd_navbar{height: 100%;}
 .content{height: calc(100% - 100px);}
 .vd_content-wrapper{position: relative;z-index: -1}*/
+
+
+.nav-left-small .vd_navbar-left .vd_menu>ul>li>a>.menu-badge, .nav-right-small .vd_navbar-right .vd_menu>ul>li>a>.menu-badge{display: none;}
