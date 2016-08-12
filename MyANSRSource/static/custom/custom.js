@@ -11,8 +11,26 @@ jQuery(document).ready(function($){
 		$('.jsh2').css('height', hgt1);
 	}
 
+	// Height for navbar
+
+	navHeight = function(){
+		vph = $(window).height();
+		console.log(vph);
+		vphp = parseInt(vph);
+		vphp -= 106;
+		console.log(vphp);
+		$('.nbh').css('height', vphp + 'px' );
+	}
+
+	// navHeight();
 	heightFunction();
+
+
+
+
+
 	$(window).resize(function(){
+	// navHeight();
 		heightFunction();
 	})
 
