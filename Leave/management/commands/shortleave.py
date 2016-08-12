@@ -25,7 +25,7 @@ def shortLeave():
     # ipdb.set_trace()
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active = True)
-    checkdate = date(2016,7,22)
+    checkdate = date(2016,7,29)
     FMT = '%H:%M:%S'
 
     dueDate = checkdate + timedelta(days=30)
