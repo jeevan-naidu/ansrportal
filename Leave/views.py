@@ -965,8 +965,6 @@ class ApplyShortLeaveView(View):
             return render(request, 'short_leave_apply_form.html', context_data)
 
     def post(self, request):
-        # import ipdb
-        # ipdb.set_trace()
         context_data = {'add': True, 'record_added': False, 'form': None, 'success_msg': None, 'html_data': None,
                         'errors': [], 'leave_type_check': None, 'leave': 'formdata'}
         user_id = request.POST['name']
@@ -1004,7 +1002,7 @@ class ApplyShortLeaveView(View):
             todate = leave_form.cleaned_data['toDate']
             fromsession = leave_form.cleaned_data['from_session']
             tosession = leave_form.cleaned_data['to_session']
-            ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
+
             if not manager:
                 context_data['errors'].append('you are not assigned to any manager. please contact HR ')
                 context_data['form'] = leave_form
@@ -1056,7 +1054,7 @@ class ApplyShortLeaveView(View):
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
-                elif leaveType == 'loss_of_pay':
+                elif leaveType.leave_type == 'loss_of_pay':
                     leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
 
                     LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate,
@@ -1072,6 +1070,7 @@ class ApplyShortLeaveView(View):
 
                     return render(request, 'short_leave_apply_form.html', context_data)
                 else:
+                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
                     template = render(request, 'short_leave_apply_form.html', context_data)
                     context_data['html_data'] = template.content
