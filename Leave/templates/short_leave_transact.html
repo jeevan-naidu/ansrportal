@@ -6,22 +6,27 @@
     <a
              onclick ="shortLeaveDetails({{ leave.id }})" role="button" data-toggle="modal" title="View Details">Details</a>
              </td>
-    <td>{{ leave.for_date }}</td><td>{{ leave.due_date }}</td><td>
-
-
-
+    <td>{{ leave.for_date }}</td><td>{{ leave.due_date }}</td>
+    <td>
+    {% if admin_access %}
     <div class="col-md-6 apply-export">
-                          <!-- <a href="#" class="pull-right btn btn-sm btn-danger">Export</a> -->
-
                           <a id="modal-shortleave-{{ leave.id }}" href="#modal-container-shortleave" role="button" data-toggle="modal" title="Apply Leave"
                              class="pull-right btn btn-xs btn-danger btn-ansr-orange">
                             Accept
                           </a>
 
                         </div>
+    {% if leave.dispute == 'raised' %}
+        <div class="col-md-6 apply-export" >
 
-        <div class="col-md-6 apply-export">
-                          <!-- <a href="#" class="pull-right btn btn-sm btn-danger">Export</a> -->
+                          <a id="modal-shortleave-{{ leave.id }}" href="#modal-container-shortleave-dispute" role="button" disabled data-toggle="modal" title="raise dispute"
+                             class="pull-right btn btn-xs btn-danger ">
+                            Dispute
+                          </a>
+
+                        </div>
+    {% else %}
+    <div class="col-md-6 apply-export">
 
                           <a id="modal-shortleave-{{ leave.id }}" href="#modal-container-shortleave-dispute" role="button" data-toggle="modal" title="raise dispute"
                              class="pull-right btn btn-xs btn-danger ">
@@ -29,13 +34,9 @@
                           </a>
 
                         </div>
+    {% endif %}
+    {% endif %}
 
-
-
-
-
-
-                        </div>
 </td>
      </tr>
     {% endfor %}

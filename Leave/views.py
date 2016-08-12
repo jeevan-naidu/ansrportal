@@ -501,7 +501,7 @@ class LeaveListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(LeaveListView, self).get_context_data(**kwargs)
 
-        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
+        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() :
             if 'all' in self.kwargs:
                 context['leave_list'] = leave_list_all(None, False)
 
@@ -651,7 +651,7 @@ class LeaveListView(ListView):
         if 'export' in request.POST:
             if from_date == '' and to_date == '' and status == '' and apply_to == '' \
                     and employee == '':
-                if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
+                if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
                     leave_list_export = leave_list_all(self.request.user, True)
                 elif self.request.user.groups.filter(name='myansrsourcePM').exists():
                     leave_list_export = leave_list_all(self.request.user, False)
@@ -770,7 +770,7 @@ class LeaveManageView(LeaveListView):
     def get_context_data(self, **kwargs):
 
         context = super(LeaveManageView, self).get_context_data(**kwargs)
-        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or self.request.user.is_superuser:
+        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
             context['all'] = LeaveApplications.objects.all()
             context['open'] = context['leave_list'].filter(status='open')
         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
@@ -821,17 +821,25 @@ class LeaveManageView(LeaveListView):
 
 #This method returns the transction for the user in short leave table
 def ShortAttendanceTransact(request):
+    context = {'user_id':None, 'admin_access':False}
     statusType = request.GET.get('type')
     user_id = request.GET.get('user_id')
+    logged_in_user = request.user.id
     if not user_id:
         user_id = request.user.id
+    if request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() or int(logged_in_user)== int(user_id):
+        context['admin_access'] =True
+
+
     Short_Leave_transact = ShortAttendance.objects.filter( user=user_id,
                                                          active=True).values('id',
                                                                              'for_date',
                                                                              'due_date',
-                                                                             'status')
+                                                                  'status','dispute')
+    context['user_id'] = user_id
+    context['Short_Leave_transact'] = Short_Leave_transact
     return render(request, 'short_leave_transact.html',
-                      {'Short_Leave_transact': Short_Leave_transact,'user_id':user_id})
+                  context)
 
 
 #details of every leave transaction
@@ -1104,14 +1112,16 @@ class RaiseDispute(View):
     '''raise dispute form for comments'''
 
     def get(self,request):
+        context_data = {'record_added': False}
         leaveid = request.GET.get('leaveid')
         shortAttendance = ShortAttendance.objects.get(id=leaveid)
         form = ShortAttendanceRemarkForm(initial={'leave_id':leaveid,'fordate':shortAttendance.for_date})
-        return render(request, 'short_attendance_remark.html',{'form':form})
+        context_data['form'] = form
+        return render(request, 'short_attendance_remark.html', context_data)
 
     def post(self,request):
         form = ShortAttendanceRemarkForm(request.POST)
-        context_data = {}
+        context_data = {'record_added':False}
         if form.is_valid():
 
             leave_id = form.cleaned_data['leave_id']
@@ -1124,6 +1134,9 @@ class RaiseDispute(View):
             shortAttendance.save()
             context_data['record_added'] = True
             context_data['success_msg'] = "Your short attendance had sent for manager approval."
+            template = render(request, 'short_attendance_remark.html', context_data)
+            context_data['html_data'] = template.content
+            return JsonResponse(context_data)
         else:
 
             form = ShortAttendanceRemarkForm(request.POST)

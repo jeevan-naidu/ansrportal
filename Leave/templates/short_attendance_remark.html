@@ -7,15 +7,13 @@
 {% else %}
 
 
-			<!-- Ajax -->
+			<!-- Ajax loader -->
 		 <div id="ajax_loader_apply_leave" class="ajax_bck"><div class="ajax_load_image"></div></div>
-		 <form id="modal-container-252304" class="form-horizontal" method="post" enctype="multipart/form-data">
+		 <form id="modal-container-shortleave-dispute" class="form-horizontal" method="post" enctype="multipart/form-data">
 
 		  {% csrf_token %}
-			<!-- <div id='ajax_loader_apply_leave'></div> -->
 			<div style="color:red" id="LeaveForm_errors"></div><br>
 
-			<form class="form-horizontal" role="form">
 					{% for field in form.visible_fields %}
 					<div class="form-group">
 
@@ -49,16 +47,18 @@
 	 {% endfor %}
 	</div>
  </div>
-</form>
 
+</form>
 
 	{% endif %}
 
 
 
+
+
 		   <script>
 
-				  $("form#modal-container-252304").submit(function(){
+				  $("form#modal-container-shortleave-dispute").submit(function(){
 
 						 var formData = new FormData($(this)[0]);
 						 form_id = $(this)[0].id;
@@ -66,11 +66,11 @@
 						ajax_loader_element = $('#ajax_loader_apply_leave');
 
 						 swal({   title: "Are you sure?",
-							text: "Do you want to submit your leave application?",
+							text: "Do you want to raise dispute?",
 							type: "warning",
 							showCancelButton: true,
 							confirmButtonColor: "#DD6B55",
-							confirmButtonText: "Yes, Submit it!",
+							confirmButtonText: "Yes, raise it!",
 							cancelButtonText: "No, cancel it.",
 							closeOnConfirm: true,
 							closeOnCancel: true
@@ -87,7 +87,8 @@
 
 									   if (data.record_added) {
 											 swal("Done!", data.success_msg, "success");
-											$("#modal_body__dispute").html('');
+
+											$("#modal_body_dispute").html('');
 											window.location.reload();
 										 }
 									   else{
