@@ -15,14 +15,14 @@ jQuery(document).ready(function($){
 
 	navHeight = function(){
 		vph = $(window).height();
-		console.log(vph);
-		vphp = parseInt(vph);
-		vphp -= 106;
-		console.log(vphp);
-		$('.nbh').css('height', vphp + 'px' );
+		// console.log(vph);
+		// vphp = parseInt(vph);
+		vph -= 106;
+		// console.log(vphp);
+		$('.vd_content-wrapper').css('min-height', vph + 'px' );
 	}
 
-	// navHeight();
+	navHeight();
 	heightFunction();
 
 
@@ -30,7 +30,7 @@ jQuery(document).ready(function($){
 
 
 	$(window).resize(function(){
-	// navHeight();
+		navHeight();
 		heightFunction();
 	})
 
