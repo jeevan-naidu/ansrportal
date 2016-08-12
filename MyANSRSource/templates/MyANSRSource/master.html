@@ -668,6 +668,51 @@
 
 
         <div class="vd_title-section clearfix">
+
+<!-- Code insertion -->
+
+            <style type="text/css">
+                .vd_title-section{position: relative;}
+                #questions{
+                    position: absolute;
+                    right: -10px;
+                    top: 10px;
+                    z-index: 4;
+                    background: #fff;
+                    border: 1px solid #cecece;
+                    padding: 5px 15px 5px 25px;
+                    border-radius: 7px;
+                    box-shadow: 1px 1px 2px #dadada;
+                }
+                #questions span{
+                    padding-top: 2px;
+                    margin-right: 15px;
+                    margin-top: 2px;
+                    color: #777;
+                }
+                #questions i{
+                    font-size: 12px;
+                    font-weight: 100;
+                    width: 15px;
+                }
+                #questions a{padding: 2px 5px;border-radius: 50%;margin-right: 5px;}
+
+
+
+            </style>
+
+            <div id="questions">
+                
+                <span>Do you think this is a very good dummy question?</span>
+                <a data-toggle="tooltip" class="btn menu-icon vd_bd-red vd_red"> <i class="fa fa-times"></i> </a>
+                <a data-toggle="tooltip" class="btn menu-icon vd_bd-green vd_green"> <i class="fa fa-check"></i> </a>
+            </div>
+
+
+
+
+
+
             <div class="vd_panel-header">
                 <div class="vd_panel-menu  hidden-xs">
                     <div class="menu no-bg vd_red" data-original-title="Start Layout Tour Guide" data-toggle="tooltip" data-placement="bottom" onClick="javascript:introJs().setOption('showBullets', false).start();"> <span class="menu-icon font-md"><i class="fa fa-question-circle"></i></span> </div>
@@ -675,6 +720,11 @@
                 </div>
                 <h4>my<span>ansr</span>source</h4>
             </div>
+
+
+
+<!-- ./Code insertion -->
+
         </div>
 
 
@@ -710,6 +760,9 @@
                 </div>
                 <!-- container -->
             </div>
+
+
+
         </footer>
         <!-- Footer END -->
         {% endblock %}
