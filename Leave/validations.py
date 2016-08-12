@@ -312,9 +312,9 @@ def getLeaveBalance(leavetype, endmonth, user):
             balnce_of_last_year = LeaveSummary.objects.filter(leave_type = leaveType, year = current_year-1).values('balance')
             if balnce_of_last_year:
                 leaveTotal = leaveTotal + float((balnce_of_last_year[0]['balance']).encode('utf-8'))
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth+1)
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth)
         elif leaveType.carry_forward == 'monthly':
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth+1)
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth)
         else:
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
     return leaveTotal

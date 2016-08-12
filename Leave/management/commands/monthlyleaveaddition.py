@@ -36,8 +36,7 @@ def monthlyLeaveAdditionCron():
                     else:
                         leave.balance = leave.balance + 1.5
                 elif leave.leave_type.carry_forward == 'monthly':
-                    leaveTotal = float(leaveTotal) + float((leave.leave_type.count).encode('utf-8')) * (endmonth-joined_month)
-                    if joined_day>25:
+                    if joiningdateDay>25:
                         leaveTotal = leaveTotal + .5
             else:
                 leave.balance = float(leave.balance) + float((leave.leave_type.count).encode('utf-8'))
