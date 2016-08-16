@@ -109,6 +109,36 @@
       <script type="text/javascript" src="/static/js/respond.min.js"></script>
     <![endif]-->
 
+
+    <!-- Moved up from bottom -->
+
+    <script type="text/javascript" src='/static/plugins/jquery-ui/jquery-ui.custom.min.js'></script>
+    <script type="text/javascript" src="/static/plugins/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/caroufredsel.js"></script>
+    <script type="text/javascript" src="/static/js/plugins.js"></script>
+
+    <script type="text/javascript" src="/static/plugins/breakpoints/breakpoints.js"></script>
+    <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/static/plugins/prettyPhoto-plugin/js/jquery.prettyPhoto.js"></script>
+
+    <script type="text/javascript" src="/static/plugins/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="/static/plugins/tagsInput/jquery.tagsinput.min.js"></script>
+    <script type="text/javascript" src="/static/plugins/bootstrap-switch/bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="/static/plugins/blockUI/jquery.blockUI.js"></script>
+    <script type="text/javascript" src="/static/plugins/pnotify/js/jquery.pnotify.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/theme.js"></script>
+    <script type="text/javascript" src="/static/custom/custom.js"></script>
+
+
+
+
+
+
+
+
+
      <!-- Custom CSS -->
     <link href="/static/custom/custom.css" rel="stylesheet" type="text/css">
 
@@ -138,14 +168,18 @@
                                 <a href="/myansrsource"><img alt="logo" src="/static/images/ansrlogo.png"></a>
                             </div>
                             <!-- logo -->
-                            <div class="vd_panel-menu  hidden-sm hidden-xs" data-intro="<strong>Minimize Left Navigation</strong><br/>Toggle navigation size to medium or small size. You can set both button or one button only. See full option at documentation." data-step=1>
+<!--  data-action="remove-navbar" data-original-title="Remove Navigation Bar Toggle" class="remove-navbar-button menu" -->
+
+
+
+                            <div class="vd_panel-menu  hidden-sm hidden-xs" data-action="remove-navbar" data-original-title="Remove Navigation Bar Toggle" class="remove-navbar-button menu" data-intro="<strong>Minimize Left Navigation</strong><br/>Toggle navigation size to medium or small size. You can set both button or one button only. See full option at documentation." data-step=1>
                                 <span class="nav-medium-button menu" data-toggle="tooltip" data-placement="bottom" data-original-title="Medium Nav Toggle" data-action="nav-left-medium">
                       <i class="fa fa-bars"></i>
                     </span>
 
-                                <span class="nav-small-button menu" data-toggle="tooltip" data-placement="bottom" data-original-title="Small Nav Toggle" data-action="nav-left-small">
+                               <!--  <span class="nav-small-button menu" data-toggle="tooltip" data-placement="bottom" data-original-title="Small Nav Toggle" data-action="nav-left-small">
                       <i class="fa fa-ellipsis-v"></i>
-                    </span>
+                    </span> -->
 
                             </div>
                             <div class="vd_panel-menu left-pos visible-sm visible-xs">
@@ -669,75 +703,9 @@
 
 
 
-<div class="vd_head-section clearfix">
-            <div class="vd_panel-header">
-              <ul class="breadcrumb">
-                <li><a href="index.php">Home</a> </li>
-                <li class="active">Default Dashboard</li>
-              </ul>
-              <div class="vd_panel-menu hidden-sm hidden-xs" data-intro="<strong>Expand Control</strong><br/>To expand content page horizontally, vertically, or Both. If you just need one button just simply remove the other button code." data-step="5" data-position="left">
-    <div data-action="remove-navbar" data-original-title="Remove Navigation Bar Toggle" data-toggle="tooltip" data-placement="bottom" class="remove-navbar-button menu"> <i class="fa fa-arrows-h"></i> </div>
-      <div data-action="remove-header" data-original-title="Remove Top Menu Toggle" data-toggle="tooltip" data-placement="bottom" class="remove-header-button menu"> <i class="fa fa-arrows-v"></i> </div>
-      <div data-action="fullscreen" data-original-title="Remove Navigation Bar and Top Menu Toggle" data-toggle="tooltip" data-placement="bottom" class="fullscreen-button menu"> <i class="glyphicon glyphicon-fullscreen"></i> </div>
-      
-</div>
- 
-            </div>
-          </div>
-
-
-
-
-
-
-
-
-
 
         <div class="vd_title-section clearfix">
 
-<!-- Code insertion -->
-<!-- 
-            <style type="text/css">
-                .vd_title-section{position: relative;}
-                #questions{
-                    position: absolute;
-                    right: -10px;
-                    top: 10px;
-                    z-index: 4;
-                    background: #fff;
-                    border: 1px solid #cecece;
-                    padding: 5px 15px 5px 25px;
-                    border-radius: 7px;
-                    box-shadow: 1px 1px 2px #dadada;
-                }
-                #questions span{
-                    padding-top: 2px;
-                    margin-right: 15px;
-                    margin-top: 2px;
-                    color: #777;
-                }
-                #questions i{
-                    font-size: 12px;
-                    font-weight: 100;
-                    width: 15px;
-                }
-                #questions a{padding: 2px 5px;border-radius: 50%;margin-right: 5px;}
-
-
-
-            </style>
-
-            <div id="questions">
-                
-                <span>Do you think this is a very good dummy question?</span>
-                <a data-toggle="tooltip" class="btn menu-icon vd_bd-red vd_red"> <i class="fa fa-times"></i> </a>
-                <a data-toggle="tooltip" class="btn menu-icon vd_bd-green vd_green"> <i class="fa fa-check"></i> </a>
-            </div>
-
- -->
-
-<!-- ./Code insertion -->
 
 
 
@@ -836,7 +804,7 @@
 
 
 
-
+<!-- Start of question bank -->
 
 <!-- Modal for portal questions -->
 
@@ -863,9 +831,9 @@
 </style>
 
 <script type="text/javascript">
-    $(window).load(function(){
+/*    $(window).load(function(){
         $('#portal-question-modal').modal('show');
-    });
+    });*/
 </script>
 
 
@@ -1060,7 +1028,7 @@
 
 
 
-
+<!-- End of question bank -->
 
 
 
@@ -1113,25 +1081,6 @@
         <!--   block to be inherited for page specific JavaScript -->
 
 
-
-    <script type="text/javascript" src='/static/plugins/jquery-ui/jquery-ui.custom.min.js'></script>
-    <script type="text/javascript" src="/static/plugins/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
-
-    <script type="text/javascript" src="/static/js/caroufredsel.js"></script>
-    <script type="text/javascript" src="/static/js/plugins.js"></script>
-
-    <script type="text/javascript" src="/static/plugins/breakpoints/breakpoints.js"></script>
-    <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="/static/plugins/prettyPhoto-plugin/js/jquery.prettyPhoto.js"></script>
-
-    <script type="text/javascript" src="/static/plugins/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script type="text/javascript" src="/static/plugins/tagsInput/jquery.tagsinput.min.js"></script>
-    <script type="text/javascript" src="/static/plugins/bootstrap-switch/bootstrap-switch.min.js"></script>
-    <script type="text/javascript" src="/static/plugins/blockUI/jquery.blockUI.js"></script>
-    <script type="text/javascript" src="/static/plugins/pnotify/js/jquery.pnotify.min.js"></script>
-
-    <script type="text/javascript" src="/static/js/theme.js"></script>
-    <script type="text/javascript" src="/static/custom/custom.js"></script>
 
     <!-- Specific Page Scripts Put Here -->
 
