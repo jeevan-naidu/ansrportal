@@ -12,6 +12,8 @@
 
 /* Overrides */
 
+a{color: #337ab7}
+
 .vd_mega-menu-wrapper .vd_mega-menu>.mega-ul>li.one-icon .mega-link:hover, .vd_mega-menu-wrapper .vd_mega-menu>.mega-ul>li.one-icon .mega-link.open{background-color: #f89c2c !important;color: #fff}
 
 .vd_navbar{background-color: #7D7D7D}
