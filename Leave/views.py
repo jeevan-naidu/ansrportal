@@ -83,6 +83,8 @@ def LeaveTransaction(request):
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
 
+
+
 def LeaveCancel(request):
     user_id=request.user.id
     leave_id = request.GET.get('leaveid')
@@ -234,8 +236,6 @@ class ApplyLeaveView(View):
     ''' add or edit leave '''
 
     def get(self, request):
-        # import ipdb
-        # ipdb.set_trace()
         context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],
         'leave_type_check' : None, 'leave':None}
         try:
@@ -262,6 +262,8 @@ class ApplyLeaveView(View):
 
 
     def post(self, request):
+        import ipdb
+        ipdb.set_trace()
         user_id = request.POST['name']
         if not user_id:
             user_id =request.user.id
@@ -294,7 +296,7 @@ class ApplyLeaveView(View):
                 if leave_selected!= 'short_leave':
                     validate = oneTimeLeaveValidation(leave_form, user_id)
                 else:
-                    validate = {'todate':leave_form.cleaned_data['fromDate'],'errors' : [], 'success':[]}
+                    validate = {'todate':leave_form.cleaned_data['fromDate'],'errors' : [], 'success':[1]}
                 fromdate = leave_form.cleaned_data['fromDate']
                 todate = validate['todate']
                 fromsession = 'session_first'

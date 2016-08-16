@@ -18,6 +18,12 @@ class Command(BaseCommand):
         newJoineeCron()
 
 def newJoineeCron():
+    '''
+    who ever is not having entry in leave summry table but in emoployee table
+    Returns
+    -------
+    create entry
+    '''
     newUsers = Employee.objects.filter()
     leaveTypeList = LeaveType.objects.all()
     for user in newUsers:
@@ -49,6 +55,20 @@ def newJoineeCron():
                                                                       applied =0,
                                                                       approved = 0,
                                                                       balance = leave_type_obj.count)
+                        elif leave_type_obj.leave_type=='sabbatical':
+                            LeaveSummary.objects.create(user=user_temp, leave_type=leave_type_obj,
+                                                                      year=date.today().year,
+                                                                      applied =0,
+                                                                      approved = 0,
+                                                                      balance = leave_type_obj.count)
+                    elif leave_type_obj.occurrence == 'monthly':
+                        # leavetotal = monthlyLeaveAdd(user_temp, leave_type_obj)
+                        leavetotal = 0
+                        LeaveSummary.objects.create(user=user_temp, leave_type=leave_type_obj,
+                                                    year=date.today().year,
+                                                    applied=0,
+                                                    approved=0,
+                                                    balance=leavetotal)
 
                     else:
                         LeaveSummary.objects.create(user=user_temp, leave_type=leave_type_obj,
@@ -56,3 +76,41 @@ def newJoineeCron():
                                                                   applied =0,
                                                                   approved = 0,
                                                                   balance = 0)
+
+
+def monthlyLeaveAdd(user, leave):
+    '''
+    Leave addition for earned leave
+    casual leave, sick leave based on joining date.
+    New entry in employee table
+    '''
+    try:
+        todaydate = date.today()
+        todaydateMonth = todaydate.month
+        todaydateYear = todaydate.year
+        joiningdate = user.date_joined.date()
+        joiningdateDay = joiningdate.day
+        joiningdateMonth = joiningdate.month
+        joiningdateYear = joiningdate.year
+        leavetotal=0
+        if todaydateYear == joiningdateYear and todaydateMonth==joiningdateMonth:
+            if leave.carry_forward == 'yearly':
+                if joiningdateDay > 0 and joiningdateDay < 11:
+                    leavetotal = .5
+                elif joiningdateDay > 10 and joiningdateDay < 21:
+                    leavetotal =  1
+                else:
+                    leavetotal =  1.5
+
+            elif leave.carry_forward == 'monthly':
+                if joiningdateDay > 25:
+                    leavetotal = .5
+            else:
+                leavetotal = 2
+
+        return leavetotal
+
+
+    except:
+        logger.error("user having issue")
+

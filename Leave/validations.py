@@ -279,6 +279,8 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
 #calculting leave awarded to user
 def getLeaveBalance(leavetype, endmonth, user):
     ''' getting leave for every month'''
+    import ipdb
+    ipdb.set_trace()
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     joined_year = joined_date[0]['joined'].year
     joined_month = joined_date[0]['joined'].month
@@ -289,14 +291,14 @@ def getLeaveBalance(leavetype, endmonth, user):
     if current_year == joined_year:
         if leaveType.carry_forward == 'yearly':
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
-            if endmonth != joined_month:
-                day_worked = 30 - joined_day
-                if day_worked>=28:
-                    leaveTotal = leaveTotal + 1.5
-                elif day_worked>=20:
-                    leaveTotal = leaveTotal + 1
-                elif day_worked>=10:
-                    leaveTotal = leaveTotal + 0.5
+            # if endmonth != joined_month:
+            day_worked = 30 - joined_day
+            if day_worked>=28:
+                leaveTotal = leaveTotal + 1.5
+            elif day_worked>=20:
+                 leaveTotal = leaveTotal + 1
+            elif day_worked>=10:
+                leaveTotal = leaveTotal + 0.5
         elif leaveType.carry_forward == 'monthly':
             day_worked = 30 - joined_day
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
