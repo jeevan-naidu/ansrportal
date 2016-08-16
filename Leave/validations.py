@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from CompanyMaster.models import Holiday
 from models import LeaveApplications, LeaveType, LeaveSummary
 
-def leaveValidation(leave_form, user, attachment):
+def leaveValidation(leave_form, user, attachment=None):
     ''' leave types which needs from and to dates'''
     result = {'errors' : [], 'success':[]}
     lateLeaveApplication = lateLeaveCheck(leave_form, user)
@@ -278,6 +278,9 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
 
 #calculting leave awarded to user
 def getLeaveBalance(leavetype, endmonth, user):
+    ''' getting leave for every month'''
+    import ipdb
+    ipdb.set_trace()
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     joined_year = joined_date[0]['joined'].year
     joined_month = joined_date[0]['joined'].month
@@ -287,18 +290,18 @@ def getLeaveBalance(leavetype, endmonth, user):
     leaveType=LeaveType.objects.get(leave_type=leavetype)
     if current_year == joined_year:
         if leaveType.carry_forward == 'yearly':
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month-1)
-            if endmonth != joined_month:
-                day_worked = 30 - joined_day
-                if day_worked>=28:
-                    leaveTotal = leaveTotal + 1.5
-                elif day_worked>=20:
-                    leaveTotal = leaveTotal + 1
-                elif day_worked>=10:
-                    leaveTotal = leaveTotal + 0.5
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
+            # if endmonth != joined_month:
+            day_worked = 30 - joined_day
+            if day_worked>=28:
+                leaveTotal = leaveTotal + 1.5
+            elif day_worked>=20:
+                 leaveTotal = leaveTotal + 1
+            elif day_worked>=10:
+                leaveTotal = leaveTotal + 0.5
         elif leaveType.carry_forward == 'monthly':
             day_worked = 30 - joined_day
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month-1)
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
             if endmonth != joined_month:
                 if day_worked>=25:
                     leaveTotal = leaveTotal + .5
@@ -311,9 +314,9 @@ def getLeaveBalance(leavetype, endmonth, user):
             balnce_of_last_year = LeaveSummary.objects.filter(leave_type = leaveType, year = current_year-1).values('balance')
             if balnce_of_last_year:
                 leaveTotal = leaveTotal + float((balnce_of_last_year[0]['balance']).encode('utf-8'))
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth)
         elif leaveType.carry_forward == 'monthly':
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth)
         else:
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
     return leaveTotal
