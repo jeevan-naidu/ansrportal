@@ -867,7 +867,7 @@
                 8
             </span>
         </a>
-      <div class="vd_mega-menu-content width-xs-3 width-sm-4 width-md-4 center-xs-4 open-top" style="display:block" data-action="click-target">
+      <div class="vd_mega-menu-content width-xs-3 width-sm-4 width-md-4 center-xs-4 open-top" data-action="click-target"><!-- Set style='display:block' -->
         <div class="child-menu">  
            <div class="title"> 
                Answer these questions
@@ -931,80 +931,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
        
 </ul>
 <!-- Head menu search form ends -->  
@@ -1021,6 +947,144 @@
 
 
 
+
+
+
+
+
+
+<!-- Modal for portal questions -->
+
+<style type="text/css">
+    
+    #the-portal-question{
+        background: #ccc;
+        font-weight: 999;
+        font-size: 20px;
+        padding: 15px;
+        margin-top: -15px;
+        color: #5f5f5f;
+    }
+    #portal-question-modal .controls{text-align: right;}
+    #portal-question-modal .control-label{text-align: left;}
+    label.label-block{display: block;}
+
+
+
+</style>
+
+<script type="text/javascript">
+    $(window).load(function(){
+        $('#portal-question-modal').modal('show');
+    });
+</script>
+
+
+
+<!--             <button class="btn btn-primary " data-toggle="modal" data-target="#portal-question-modal"> Launch demo modal </button> -->
+
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="portal-question-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                        </div>
+                        <div class="modal-body"> 
+                            <form class="form-horizontal">
+
+
+                            <div class="form-group text-center" id="the-portal-question">First Name</div>
+
+
+
+
+                            <div class="form-group">
+                              <label class="label-block">
+                               <div class="col-sm-4 controls">
+                                 <input class="input-border-btm" type="radio">
+                               </div>
+                               <div class="col-sm-8 control-label">First Name</div>
+                              </label> 
+                            </div>
+
+
+
+                            <div class="form-group">
+                              <label class="label-block">
+                               <div class="col-sm-4 controls">
+                                 <input class="input-border-btm" type="radio">
+                               </div>
+                               <div class="col-sm-8 control-label">First Name</div>
+                              </label> 
+                            </div>
+
+
+
+                            <div class="form-group">
+                              <label class="label-block">
+                               <div class="col-sm-4 controls">
+                                 <input class="input-border-btm" type="radio">
+                               </div>
+                               <div class="col-sm-8 control-label">First Name</div>
+                              </label> 
+                            </div>
+
+
+
+
+                            <div class="form-group">
+                              <label class="label-block">
+                               <div class="col-sm-4 controls">
+                                 <input class="input-border-btm" type="radio">
+                               </div>
+                               <div class="col-sm-8 control-label">First Name</div>
+                              </label> 
+                            </div>                            
+<!--                             <div class="form-group">
+                              <div class="col-sm-4 controls">
+                                <input class="input-border-btm" type="radio">
+                              </div>
+                              <label class="col-sm-8 control-label">
+                              <span>User Name</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                              <div class="col-sm-4 controls">
+                                <input class="input-border-btm" type="radio">
+                              </div>
+                              <label class="col-sm-8 control-label">
+                              <span>Password</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                              <div class="col-sm-4 controls">
+                                <input class="input-border-btm" type="radio">
+                              </div>
+                              <label class="col-sm-8 control-label">
+                              <span>Last Field</span>
+                                </label>
+                            </div> -->
+
+
+
+                            
+                            
+                          </form>
+                        
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Previous</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Next</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content --> 
+                    </div>
+                    <!-- /.modal-dialog --> 
+                  </div>
+                  <!-- /.modal --> 
 
 
 
