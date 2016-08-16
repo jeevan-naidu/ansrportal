@@ -16,28 +16,16 @@ class Command(BaseCommand):
 
 def monthlyLeaveAdditionCron():
     users = User.objects.filter(is_active = True)
-    todaydate = date.today()
-    todaydateDay = todaydate.day
-    todaydateMonth = todaydate.month
-    todaydateYear = todaydate.year
+
     for user in users:
-        leaves = LeaveSummary.objects.filter(user = user, leave_type__occurrence = 'monthly')
-        joiningdate = user.date_joined.date()
-        joiningdateDay = joiningdate.day
-        joiningdateMonth = joiningdate.month
-        joiningdateYear = joiningdate.year
-        for leave in leaves:
-            if todaydateYear == joiningdateYear and todaydateMonth==joiningdateMonth:
-                if leave.leave_type.carry_forward == 'yearly':
-                    if joiningdateDay>0 and joiningdateDay<11:
-                        leave.balance = leave.balance + .5
-                    elif joiningdateDay>10 and joiningdateDay<21:
-                        leave.balance = leave.balance + 1
-                    else:
-                        leave.balance = leave.balance + 1.5
-                elif leave.leave_type.carry_forward == 'monthly':
-                    if joiningdateDay>25:
-                        leaveTotal = leaveTotal + .5
-            else:
+        try:
+            leaves = LeaveSummary.objects.filter(user = user, leave_type__occurrence = 'monthly')
+            for leave in leaves:
                 leave.balance = float(leave.balance) + float((leave.leave_type.count).encode('utf-8'))
-            leave.save()
+                leave.save()
+                print "leave added for {0} {1} leave type id {2} balance is {3}".format(user.first_name,
+                                                                                             user.last_name,
+                                                                                             leave.leave_type_id,
+                                                                                             leave.balance)
+        except:
+            logger.error("error happens for {0}".format(user.id))
