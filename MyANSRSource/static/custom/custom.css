@@ -56,6 +56,17 @@ a{color: #337ab7}
 }
 
 
+/* Side-menu Mod */
+
+.vd_menu ul li .child-menu ul li a{padding: 3px 25px 5px;}
+.menu-badge {
+    float: right;
+    position: absolute;
+    right: 20px;
+    top: 2px;
+}/* Experimental */
+
+
 /* Text-section */
 
 .text-section-content{border-top: 2px solid #717171;}
