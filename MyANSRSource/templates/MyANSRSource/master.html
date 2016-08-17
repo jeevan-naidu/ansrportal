@@ -370,14 +370,19 @@
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
                                         <span class="menu-icon"><i class="fa fa-dashboard"></i></span>
-                                        <span class="menu-text">Timesheet</span>
+                                        <span class="menu-text">myTime</span>
                                         <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                     </a>
                                     <div class="child-menu" data-action="click-target">
                                         <ul>
                                             <li>
                                                 <a href="/myansrsource/timesheet/entry">
-                                                    <span class="menu-text">Enter Your Timesheet</span>
+                                                    <span class="menu-text">Enter Timesheet</span>
+                                                    {% if TSProjectsCount > 0 %}
+                                                        <span class="menu-badge"><span class="badge vd_bg-red">{{ TSProjectsCount }}</span></span>
+                                                    {% else %}
+                                                        <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
+                                                    {% endif %}
                                                 </a>
                                             </li>
 
@@ -385,6 +390,11 @@
                                                  <li>
                                                         <a href="/myansrsource/timesheet/approve">
                                                             <span class="menu-text">Approve Timesheet</span>
+                                                            {% if unapprovedts > 0 %}
+                                                                <span class="menu-badge"><span class="badge vd_bg-red">{{ unapprovedts }}</span></span>
+                                                            {% else %}
+                                                                <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
+                                                            {% endif %}
                                                         </a>
                                                  </li>
                                             {% endif %}
@@ -393,11 +403,11 @@
                                     </div>
                                 </li>
 
-                                {% if user|manage_project or user|create_project %}
+                                {% if user|manage_project or user|create_project or request.user|IsMilestoneReportsAdmin %}
                                     <li>
                                         <a href="javascript:void(0);" data-action="click-trigger">
                                             <span class="menu-icon"><i class="icon-palette"> </i></span>
-                                            <span class="menu-text">Project Management</span>
+                                            <span class="menu-text">myProjects</span>
                                             <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                         </a>
                                         <div class="child-menu" data-action="click-target">
@@ -414,21 +424,41 @@
                                                 <li>
                                                     <a href="/myansrsource/project/modify">
                                                         <span class="menu-text">Manage Project/Enter Change Request</span>
+                                                        {% if activeProjects > 0 %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">{{ activeProjects }}</span></span>
+                                                        {% else %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
+                                                        {% endif %}
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="/myansrsource/project/view-project">
                                                         <span class="menu-text">View Project</span>
+                                                        {% if myProjects > 0 %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">{{ myProjects }}</span></span>
+                                                        {% else %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
+                                                        {% endif %}
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="/myansrsource/project/manage-projectleader">
                                                         <span class="menu-text">Manage Project Leader</span>
+                                                        {% if activeProjects > 0 %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">{{ activeProjects }}</span></span>
+                                                        {% else %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
+                                                        {% endif %}
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="/myansrsource/project/manage-team">
                                                         <span class="menu-text">Manage Team</span>
+                                                        {% if activeProjects > 0 %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">{{ activeProjects }}</span></span>
+                                                        {% else %}
+                                                            <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
+                                                        {% endif %}
                                                     </a>
                                                 </li>
                                                 {% if user|manage_milestones %}
@@ -438,13 +468,55 @@
                                                         </a>
                                                     </li>
                                                 {% endif %}
+
+
+                                                    <li>
+                                                        <a href="javascript:" data-action="click-trigger" class="open">
+                                                            <span class="menu-text">Reports</span>
+                                                            <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                        </a>
+                                                        <div class="child-menu" data-action="click-target" style="display: block;">
+                                                            <ul class="clearfix">
+                                                                <li>
+                                                                    <a href="/myansrsource/reports/single-project">
+                                                                        <span class="menu-text">Individual Project Performance</span>
+                                                                        <span class="menu-badge"><span class="badge vd_bg-red">HOT</span></span>
+                                                                     </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="/myansrsource/reports/project-perfomance">
+                                                                        <span class="menu-text">Project Performance Summary</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="/myansrsource/reports/single-member">
+                                                                        <span class="menu-text">Individual Team-Member Performance</span>
+                                                                     </a>
+                                                                </li>
+                                                                <li> <a href="/myansrsource/reports/member-perfomance">
+                                                                        <span class="menu-text">Team-Member Performance Summary</span>
+                                                                    </a>
+                                                                </li>
+
+                                                                 {% if request.user|IsMilestoneReportsAdmin %}
+                                                                    <li>
+                                                                        <a href="/reports/milestones/">
+                                                                            <span class="menu-text">Milestone Report</span>
+                                                                        </a>
+                                                                    </li>
+                                                                 {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                    </li>
+
+
+
                                             {% endif %}
 
                                             </ul>
                                         </div>
                                     </li>
                                 {% endif %}
-
 
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
