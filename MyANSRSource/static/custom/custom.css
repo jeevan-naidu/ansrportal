@@ -63,8 +63,9 @@ a{color: #337ab7}
     float: right;
     position: absolute;
     right: 20px;
-    top: 2px;
+    top: 4px;
 }/* Experimental */
+.child-menu .menu-badge{top: 0px;}
 
 
 /* Text-section */

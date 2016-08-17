@@ -471,7 +471,9 @@ jQuery(document).ready(function($)
 					$('[data-action^="click-trigger"]').removeClass('open');
 				};
 				$(this).addClass('open');
-				$(this).parent().children('[data-action^="click-target"]').slideDown('fast',  function(){    if ($('.navbar-menu').outerHeight() < $('.navbar-menu .vd_menu').outerHeight() + $('.navbar-spacing ').outerHeight()){calculateContentHeight()};
+				$(this).parent().children('[data-action^="click-target"]').slideDown('fast',  function(){    if ($('.navbar-menu').outerHeight() < $('.navbar-menu .vd_menu').outerHeight() + $('.navbar-spacing ').outerHeight()){
+					// calculateContentHeight()
+				};
 			
 				});	
 				
