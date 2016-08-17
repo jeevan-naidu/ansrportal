@@ -6,9 +6,21 @@ from CompanyMaster.models import Holiday
 from models import LeaveApplications, LeaveType, LeaveSummary
 
 def leaveValidation(leave_form, user, attachment=None):
-    ''' leave types which needs from and to dates'''
+    '''
+    LEAVETYPE :- earned leave, casual leave, sick leave, work from home, sabbatical, loss of pay process in this method
+
+    Parameters
+    ----------
+    leave_form
+    user
+    attachment
+
+    Returns
+    -------
+    Returns dictionary with key success (containing the no of leave applied) and errors containing error message
+    '''
     result = {'errors' : [], 'success':[]}
-    lateLeaveApplication = lateLeaveCheck(leave_form, user)
+    lateLeaveApplication = lateLeaveCheck(leave_form)
     if lateLeaveApplication['error']:
         result['errors'].append( lateLeaveApplication['error'])
 
@@ -36,10 +48,21 @@ def leaveValidation(leave_form, user, attachment=None):
     return result
 
 def oneTimeLeaveValidation(leave_form, user):
-    ''' leave types which needs only from date '''
+    '''
+    LEAVETYPE- maternity leave, paternity leave, berevement leave, comp off apply, comp off avail, pay off, short leave processed here.
+    Parameters
+    ----------
+    leave_form
+    user
+
+    Returns
+    -------
+    Returns dictionary with key success (containing the no of leave applied), errors containing error message,
+    todate same as from date, due date for comp off and pay off.
+    '''
     holiday = Holiday.objects.all().values('date')
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
-    lateLeaveApplication = lateLeaveCheck(leave_form, user)
+    lateLeaveApplication = lateLeaveCheck(leave_form)
     if lateLeaveApplication['error']:
         result['errors'].append( lateLeaveApplication['error'])
 
@@ -59,8 +82,13 @@ def oneTimeLeaveValidation(leave_form, user):
             result['todate'] = date_by_adding_business_days(fromDate, result['success'],holiday, leaveType_selected)
         else:
             result['errors'].append("You do not have the necessary leave balance to avail of this leave.")
+    elif leaveType_selected == 'short_leave':
+        result['success'] = 1
+        result['todate'] = fromDate
+        if fromDate in [date['date'] for date in holiday] or fromDate.weekday() >= 5:
+            result['errors'].append('You have applied for leave on a holiday.')
+
     else:
-        holiday = Holiday.objects.all().values('date')
         result['success'] = 1
         result['todate'] = fromDate
         result['due_date'] = fromDate - timedelta(days = int(leaveType.apply_within_days))
@@ -76,7 +104,7 @@ def oneTimeLeaveValidation(leave_form, user):
                 if fromDate == dates['date']:
                     flag = True
             if not flag:
-                result['errors'].append('You can only earn comp offs and payoffs for working on weekends or holidays. ')
+                result['errors'].append('You can only earn comp offs and payoffs for working on weekends or holidays.')
         elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in [holiday1['date'] for holiday1 in holiday]:
             result['errors'].append('You have applied for leave on a holiday.')
 
@@ -95,7 +123,21 @@ def oneTimeLeaveValidation(leave_form, user):
 
 
 def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
-    ''' validations for new joinees based on leave type, holidays, sabbatical'''
+    '''
+    This method for those from date and to date can vary eg(casual leave, sick leave).
+    all the validation is happening here
+    Parameters
+    ----------
+    leave_form
+    user
+    fromDate
+    toDate
+    attachment
+
+    Returns
+    -------
+    Returns dictionary with key success (containing the no of leave applied), errors containing error message.
+    '''
     result = {'errors' : [], 'success':[]}
     fromSession = leave_form.cleaned_data['from_session']
     toSession = leave_form.cleaned_data['to_session']
@@ -150,7 +192,7 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
             return result
 
         else:
-            result_temp = validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, leaveType, user, leave_form)
+            result_temp = validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, leaveType, user)
             if result_temp['success']:
                 result['success'] = leavecount
                 return result
@@ -162,7 +204,23 @@ def validation_leave_type(leave_form, user, fromDate, toDate, attachment):
 
 
 
-def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, leaveType, user, leave_form):
+def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, leaveType, user):
+    '''
+
+    Parameters
+    ----------
+    fromDate
+    toDate
+    fromSession
+    toSession
+    leavecount
+    leaveType
+    user
+
+    Returns
+    -------
+
+    '''
     result = {'errors' : [], 'success':[]}
     if fromDate.month != toDate.month:
         last_day = getLast_day_of_month(fromDate)
@@ -198,6 +256,16 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
 
 
 def getLast_day_of_month(date):
+    '''
+
+    Parameters
+    ----------
+    date
+
+    Returns
+    -------
+
+    '''
     if date.month == 12:
         return date.replace(day=31)
     return date.replace(month=date.month+1, day=1) - timedelta(days=1)
@@ -206,12 +274,35 @@ def getLast_day_of_month(date):
 
 
 def getStart_day_of_month(date):
+    '''
+
+    Parameters
+    ----------
+    date
+
+    Returns
+    -------
+
+    '''
     return date.replace(day=1)
 
 
 
 def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
-    ''' Calculaton for number of leaves accoeding to selected dated and sessions'''
+    '''
+
+    Parameters
+    ----------
+    fromdate
+    todate
+    fromsession
+    tosession
+    leaveType
+
+    Returns
+    -------
+
+    '''
     holiday = Holiday.objects.all().values('date')
     holiday_in_leave = 0
     leavecount = 0
@@ -239,11 +330,19 @@ def leave_calculation(fromdate, todate, fromsession, tosession, leaveType):
 
 
 
-
-
-#calculating leave avail by a user
 def getLeaveApproved(user, last_day = None, leaveType = None):
-    ''' get all approved leaves '''
+    '''
+
+    Parameters
+    ----------
+    user
+    last_day
+    leaveType
+
+    Returns
+    -------
+
+    '''
     leavecount=0
     year = date.today().year
     newYearDate = date(year, 1, 1)
@@ -278,9 +377,18 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
 
 #calculting leave awarded to user
 def getLeaveBalance(leavetype, endmonth, user):
-    ''' getting leave for every month'''
-    # import ipdb
-    # ipdb.set_trace()
+    '''
+    Method return the no of leave avaliable for application based on leave type for certain user
+    Parameters
+    ----------
+    leavetype
+    endmonth
+    user
+
+    Returns
+    -------
+    returns no of avaliable in the month
+    '''
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     joined_year = joined_date[0]['joined'].year
     joined_month = joined_date[0]['joined'].month
@@ -291,7 +399,6 @@ def getLeaveBalance(leavetype, endmonth, user):
     if current_year == joined_year:
         if leaveType.carry_forward == 'yearly':
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
-            # if endmonth != joined_month:
             day_worked = 30 - joined_day
             if day_worked>=28:
                 leaveTotal = leaveTotal + 1.5
@@ -302,12 +409,10 @@ def getLeaveBalance(leavetype, endmonth, user):
         elif leaveType.carry_forward == 'monthly':
             day_worked = 30 - joined_day
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
-            # if endmonth != joined_month:
             if day_worked>=25:
                 leaveTotal = leaveTotal + .5
         else:
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
-
 
     else:
         if leaveType.carry_forward == 'yearly':
@@ -323,6 +428,17 @@ def getLeaveBalance(leavetype, endmonth, user):
 
 
 def newJoineeValidation(user, from_date = None):
+    '''
+    Method uses for checking user complition of 80 days in company
+    Parameters
+    ----------
+    user
+    from_date
+
+    Returns
+    -------
+    returns false if user completed 80 days else true
+    '''
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     if from_date:
         check_date = from_date
@@ -336,6 +452,19 @@ def newJoineeValidation(user, from_date = None):
 
 
 def date_by_adding_business_days(from_date, add_days,holidays, leaveType_selected):
+    '''
+    Method used for getting date after adding certain date, after removing holiday and weekends(except for maternity)
+    Parameters
+    ----------
+    from_date
+    add_days
+    holidays
+    leaveType_selected
+
+    Returns
+    -------
+    returns the date after addition of days
+    '''
     current_date = from_date
     if current_date in [holiday['date'] for holiday in holidays] or current_date.weekday()>=5:
         business_days_to_add = add_days
@@ -354,6 +483,17 @@ def date_by_adding_business_days(from_date, add_days,holidays, leaveType_selecte
 
 
 def leaveCheckBetweenAppliedLied(leavelist, leave_form):
+    '''
+    Method is used for checking applied leave overlapping with existing leave on same time period.
+    Parameters
+    ----------
+    leavelist
+    leave_form
+
+    Returns
+    -------
+    returns boolean true for overlapping leaves.
+    '''
     flag = False
     if leavelist:
         leave = leavelist[0]
@@ -385,6 +525,18 @@ def leaveCheckBetweenAppliedLied(leavelist, leave_form):
 
 
 def compOffAvailibilityCheck(fromDate, user):
+    '''
+    Method used for validating comp off apply against comp off earned , and making the oldest
+     comp off earned as inactive
+    Parameters
+    ----------
+    fromDate
+    user
+
+    Returns
+    -------
+    returns Boolean as per avaliability of comp off earned.
+    '''
     leaves = LeaveApplications.objects.filter(leave_type__leave_type ='comp_off_earned',
     active =True,
     from_date__lt =fromDate,
@@ -395,21 +547,21 @@ def compOffAvailibilityCheck(fromDate, user):
         return False
     return True
 
-def lateLeaveCheck(leave_form, user):
+def lateLeaveCheck(leave_form):
+    '''
+    Method for validating the leave application date which is allowed only 60 days in past
+    Parameters
+    ----------
+    leave_form
+
+    Returns
+    -------
+    return a dictionary with key as error which returns error
+    '''
     context ={'error':None}
     fromdate = leave_form.cleaned_data['fromDate']
-
-
     if fromdate< date(2016,7,1):
         context['error'] = 'you are applying for past date'
-        # fromSession = leave_form.cleaned_data['from_session']
-        # todate = leave_form.cleaned_data['toDate']
-        # toSession = leave_form.cleaned_data['to_session']
-        # leaveType_selected = leave_form.cleaned_data['leave']
-        # leavecount = leave_calculation(fromdate, todate, fromSession, toSession, leaveType_selected)
-        # emp_id = Employee.objects.get(user_id=user)
-        #LateLeaveEmailSendTask.delay(User.objects.get(id=user), emp_id.employee_assigned_id, fromdate, fromSession, todate, toSession, leaveType_selected, leavecount)
-
     if date.today().day - fromdate.day > 60:
         context['error'] = '60 back limit failing'
     return context

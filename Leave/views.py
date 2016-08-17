@@ -262,8 +262,6 @@ class ApplyLeaveView(View):
 
 
     def post(self, request):
-        import ipdb
-        ipdb.set_trace()
         user_id = request.POST['name']
         if not user_id:
             user_id =request.user.id
@@ -283,20 +281,17 @@ class ApplyLeaveView(View):
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
             try:
-                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= user_id, year = date.today().year)[0].balance
+                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected, user_id=user_id, year=date.today().year)[0].balance
             except:
                 context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
                 context_data['form'] = leave_form
-            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off', 'short_leave']
+            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off','short_leave']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
             reason=leave_form.cleaned_data['Reason']
             manager = managerCheck(user_id)
             if leave_selected in onetime_leave:
-                if leave_selected!= 'short_leave':
-                    validate = oneTimeLeaveValidation(leave_form, user_id)
-                else:
-                    validate = {'todate':leave_form.cleaned_data['fromDate'],'errors' : [], 'success':[1]}
+                validate = oneTimeLeaveValidation(leave_form, user_id)
                 fromdate = leave_form.cleaned_data['fromDate']
                 todate = validate['todate']
                 fromsession = 'session_first'
@@ -331,25 +326,8 @@ class ApplyLeaveView(View):
                     user = User.objects.get(id=user_id)
                     leavesummry_temp = LeaveSummary.objects.create(user=user, leave_type=leaveType, applied=0, approved=0, balance=0,
                                                                year=date.today().year)
-                if leavesummry_temp.balance and float(leavesummry_temp.balance) >= 1 and leave_form.cleaned_data['leave'] == 'short_leave':
-                    leavesummry_temp.applied = float(leavesummry_temp.applied) + 1
-                    leavesummry_temp.balance = float(leavesummry_temp.balance) - 1
 
-                    if attachment:
-                         LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id, request.user.id)
-                         leavesummry_temp.save()
-                         #EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
-                    else:
-                         LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         days_count=leavecount, reason=reason).saveas(user_id, request.user.id)
-                         leavesummry_temp.save()
-                        # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
-
-                    context_data['success']= 'leave saved'
-                    context_data['record_added'] = 'True'
-
-                elif leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
+                if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
                     if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate, user_id):
                         context_data['errors'].append( 'For this time period there is no comp off ')
                         context_data['form'] = leave_form
@@ -407,7 +385,6 @@ class ApplyLeaveView(View):
             context_data['form'] = leave_form
 
         return render(request, 'leave_apply.html', context_data)
-
 
 def managerCheck(user):
     manager_id = Employee.objects.filter(user_id=user).values('manager_id')
