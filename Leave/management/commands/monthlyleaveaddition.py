@@ -16,12 +16,16 @@ class Command(BaseCommand):
 
 def monthlyLeaveAdditionCron():
     users = User.objects.filter(is_active = True)
+
     for user in users:
-        leaves = LeaveSummary.objects.filter(user = user, leave_type__occurrence = 'monthly')
-        for leave in leaves:
-            leave.balance = float(leave.balance) + float((leave.leave_type.count).encode('utf-8'))
-            leave.save()
-            print "leave added for {0} {1} leave type id {2} balance is {3}".format(user.first_name,
-                                                                                         user.last_name,
-                                                                                         leave.leave_type_id,
-                                                                                         leave.balance)
+        try:
+            leaves = LeaveSummary.objects.filter(user = user, leave_type__occurrence = 'monthly')
+            for leave in leaves:
+                leave.balance = float(leave.balance) + float((leave.leave_type.count).encode('utf-8'))
+                leave.save()
+                print "leave added for {0} {1} leave type id {2} balance is {3}".format(user.first_name,
+                                                                                             user.last_name,
+                                                                                             leave.leave_type_id,
+                                                                                             leave.balance)
+        except:
+            logger.error("error happens for {0}".format(user.id))
