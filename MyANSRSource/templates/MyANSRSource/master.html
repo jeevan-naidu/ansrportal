@@ -580,37 +580,7 @@
                                             </ul>
                                         </div>
                                     </li>
-                                    <li>
-                                        <a href="javascript:void(0);" data-action="click-trigger">
-                                            <span class="menu-icon"><i class="fa fa-th-list"></i></span>
-                                            <span class="menu-text">Reports Management</span>
-                                            <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
-                                        </a>
-                                        <div class="child-menu" data-action="click-target">
-                                            <ul>
-                                                <li>
-                                                    <a href="/myansrsource/reports/single-project">
-                                                        <span class="menu-text">Individual Project Performance</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="/myansrsource/reports/project-perfomance">
-                                                        <span class="menu-text">Project Performance Summary</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="/myansrsource/reports/single-member">
-                                                        <span class="menu-text">Individual Team-Member Performance</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="/myansrsource/reports/member-perfomance">
-                                                        <span class="menu-text">Team-Member Performance Summary</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
+
                                 {% endif %}
 
                                 <li>
@@ -638,25 +608,6 @@
                                     </div>
                                 </li>
 
-                                {% if request.user|IsMilestoneReportsAdmin %}
-                                    <li>
-                                    <a href="javascript:void(0);" data-action="click-trigger">
-                                        <span class="menu-icon"><i class="fa fa-th-list"></i></span>
-                                        <span class="menu-text">Milestones</span>
-                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
-                                    </a>
-                                    <div class="child-menu" data-action="click-target">
-                                        <ul>
-                                            <li>
-                                                <a href="/reports/milestones/">
-                                                    <span class="menu-text">Get reports</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-
-                                {% endif  %}
 
                             {% if request.user|IsSalesforceAdmin %}
                                     <li>
@@ -677,6 +628,76 @@
                                 </li>
 
                                 {% endif  %}
+
+                                <li>
+                                    <a href="javascript:void(0);" data-action="click-trigger">
+                                        <span class="menu-icon"><i class="fa fa-th-list"></i></span>
+                                        <span class="menu-text">myHR</span>
+                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                    </a>
+                                    <div class="child-menu" data-action="click-target">
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Manage Leaves</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul class="clearfix">
+                                                        <li>
+                                                            <a href="{% url 'Leave_dashboard' %}">
+                                                                <span class="menu-text">Dashboard</span>
+                                                            </a>
+                                                        </li>
+                                                        {% if request.user|has_group:"myansrsourceHR"  or request.user|has_group:"myansrsourcePM" or request.user.is_superuser %}
+                                                            <li>
+                                                                <a href="{% url 'manage_leave_list' %}">
+                                                                    <span class="menu-text">Manage Requests</span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="{% url 'list_leave' %}">
+                                                                    <span class="menu-text">View Requests</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                            </li>
+
+                                            <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Manage Grievances</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul class="clearfix">
+                                                        <li>
+                                                            <a href="/grievances/">
+                                                                <span class="menu-text">Grievance</span>
+                                                            </a>
+                                                        </li>
+                                                        {% if request.user|has_group:"myansrsourceGrievanceAdmin" %}
+                                                            <li>
+                                                                <a href="/grievances_admin/">
+                                                                    <span class="menu-text">Grievance Admin</span>
+                                                                </a>
+                                                            </li>
+
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                            </li>
+
+
+
+
+
+
+                                        </ul>
+                                    </div>
+                                </li>
+
 
 
                                <li>
