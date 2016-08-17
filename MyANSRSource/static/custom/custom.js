@@ -34,6 +34,10 @@ jQuery(document).ready(function($){
 		heightFunction();
 	})
 
+	$(window).load(function(){
+		heightFunction();
+	})
+
 
 
 
