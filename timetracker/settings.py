@@ -345,6 +345,7 @@ LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
+LEAVE_ADMIN_GROUP = 'LeaveAdmin'
 
 #Broker Settings
 BROKER_HOST = "localhost"
@@ -352,4 +353,3 @@ BROKER_PORT = 5672
 BROKER_USER = 'root'
 BROKER_PASSWORD = 'Welcome#2677'
 BROKER_VHOST = "ansrvhost"
-

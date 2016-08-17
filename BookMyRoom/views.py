@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.generic import View
 import datetime
 from django.utils import timezone
+from django.utils.encoding import smart_str
 import pytz
 
 
@@ -93,6 +94,7 @@ def GetBookingsView(request):
     context_data.pop('bookings_list')
     return JsonResponse(context_data)
 
+
 def CancelBooking(request):
     
     booking_id = request.POST.get('cancel_id', '')
@@ -108,11 +110,62 @@ def CancelBooking(request):
     
     return JsonResponse(context_data)
     
-    
-# def BookMeetingRoomView(request):
-#     import ipdb;ipdb.set_trace()
-#     pass
+
+def GetAllRoomsList(request):
 
 
+
+    get_date = request.GET.get('date')
+    get_room = request.GET.get('room')
+    get_token = request.GET.get('token')
+    rooms_list = RoomDetail.objects.all()
+    room_dict = {'karle_ground_floor': [], 'karle_second_floor': [], 'btp': []}
+    for i in rooms_list:
+        if i.location in room_dict:
+            room_dict[i.location].append([smart_str(i.id), smart_str(i.room_name)])
+        else:
+            room_dict[i.location] = [[smart_str(i.id), smart_str(i.room_name)]]
+
+    template = render(request, 'BookMyRoom/AppRoomsList.html', room_dict)
+    context_data = {'record_updated': False, 'user_mismatch': False}
+
+    return JsonResponse({'html_data':template.content})
+
+
+def GetBookingDetails(request):
+
+
+    room_id = int(request.GET['room_id'])
+    room_obj = RoomDetail.objects.get(id=room_id)
+    context_data = {'bookings_list': [], 'room_obj':room_obj, 'bookings_details': [] }
+    current_date_time_obj = datetime.datetime.now()
+
+    utcnow_datetime_obj = timezone.make_aware(current_date_time_obj, timezone.get_current_timezone())
+    bookings_list = MeetingRoomBooking.objects.filter(from_time__startswith=utcnow_datetime_obj.date, room__id=room_id,
+                                                      status='booked').order_by('from_time')
+    timings_list = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
+                    '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+                    '18:00', '18:30', '19:00', '19:30']
+    bookings_details = []
+
+    for elm in timings_list:
+        exists = False
+        for obj in bookings_list:
+            local_time = timezone.localtime(obj.from_time)
+            temp_var = ""
+            temp_var += '0' + str(local_time.hour) if len(str(local_time.hour)) < 2 else str(local_time.hour)
+            temp_var += ':' + str(local_time.minute) + '0' if len(str(local_time.minute)) < 2 else ':' + str(local_time.minute)
+
+            if temp_var == elm:
+                full_name = str(obj.booked_by.first_name) + " " + str(obj.booked_by.last_name)
+                bookings_details.append((temp_var, full_name))
+                exists = True
+                break
+        if not exists:
+            bookings_details.append((elm, "Vacant"))
+
+    context_data['bookings_details'] = bookings_details
+    template = render(request, 'BookMyRoom/AppRoomBookingDetails.html', context_data)
+    return JsonResponse({'html_data':template.content})
     
 

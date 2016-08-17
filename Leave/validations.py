@@ -5,9 +5,13 @@ from django.contrib.auth.models import User
 from CompanyMaster.models import Holiday
 from models import LeaveApplications, LeaveType, LeaveSummary
 
-def leaveValidation(leave_form, user, attachment):
+def leaveValidation(leave_form, user, attachment=None):
     ''' leave types which needs from and to dates'''
     result = {'errors' : [], 'success':[]}
+    lateLeaveApplication = lateLeaveCheck(leave_form, user)
+    if lateLeaveApplication['error']:
+        result['errors'].append( lateLeaveApplication['error'])
+
     fromDate = leave_form.cleaned_data['fromDate']
     toDate = leave_form.cleaned_data['toDate']
     fromSession = leave_form.cleaned_data['from_session']
@@ -35,6 +39,10 @@ def oneTimeLeaveValidation(leave_form, user):
     ''' leave types which needs only from date '''
     holiday = Holiday.objects.all().values('date')
     result = {'errors' : [], 'success':[], 'todate':[0], 'due_date':[0]}
+    lateLeaveApplication = lateLeaveCheck(leave_form, user)
+    if lateLeaveApplication['error']:
+        result['errors'].append( lateLeaveApplication['error'])
+
     leaveType_selected = leave_form.cleaned_data['leave']
     leaveType=LeaveType.objects.get(leave_type= leaveType_selected)
     fromDate = leave_form.cleaned_data['fromDate']
@@ -68,7 +76,7 @@ def oneTimeLeaveValidation(leave_form, user):
                 if fromDate == dates['date']:
                     flag = True
             if not flag:
-                result['errors'].append('You can only earn comp offs and payoffs for working on weekends or holidays. ')
+                result['errors'].append('You can only earn comp offs and payoffs for working on weekends or holidays. ')
         elif leaveType_selected == 'comp_off_avail' and fromDate.strftime("%A") in ("Saturday", "Sunday") or fromDate in [holiday1['date'] for holiday1 in holiday]:
             result['errors'].append('You have applied for leave on a holiday.')
 
@@ -270,6 +278,9 @@ def getLeaveApproved(user, last_day = None, leaveType = None):
 
 #calculting leave awarded to user
 def getLeaveBalance(leavetype, endmonth, user):
+    ''' getting leave for every month'''
+    # import ipdb
+    # ipdb.set_trace()
     joined_date = Employee.objects.filter(user_id=user).values('joined')
     joined_year = joined_date[0]['joined'].year
     joined_month = joined_date[0]['joined'].month
@@ -279,21 +290,21 @@ def getLeaveBalance(leavetype, endmonth, user):
     leaveType=LeaveType.objects.get(leave_type=leavetype)
     if current_year == joined_year:
         if leaveType.carry_forward == 'yearly':
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month-1)
-            if endmonth != joined_month:
-                day_worked = 30 - joined_day
-                if day_worked>=28:
-                    leaveTotal = leaveTotal + 1.5
-                elif day_worked>=20:
-                    leaveTotal = leaveTotal + 1
-                elif day_worked>=10:
-                    leaveTotal = leaveTotal + 0.5
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
+            # if endmonth != joined_month:
+            day_worked = 30 - joined_day
+            if day_worked>=28:
+                leaveTotal = leaveTotal + 1.5
+            elif day_worked>=20:
+                 leaveTotal = leaveTotal + 1
+            elif day_worked>=10:
+                leaveTotal = leaveTotal + 0.5
         elif leaveType.carry_forward == 'monthly':
             day_worked = 30 - joined_day
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month-1)
-            if endmonth != joined_month:
-                if day_worked>=25:
-                    leaveTotal = leaveTotal + .5
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth-joined_month)
+            # if endmonth != joined_month:
+            if day_worked>=25:
+                leaveTotal = leaveTotal + .5
         else:
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
 
@@ -303,9 +314,9 @@ def getLeaveBalance(leavetype, endmonth, user):
             balnce_of_last_year = LeaveSummary.objects.filter(leave_type = leaveType, year = current_year-1).values('balance')
             if balnce_of_last_year:
                 leaveTotal = leaveTotal + float((balnce_of_last_year[0]['balance']).encode('utf-8'))
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth)
         elif leaveType.carry_forward == 'monthly':
-            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * endmonth
+            leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8')) * (endmonth)
         else:
             leaveTotal = leaveTotal + float((leaveType.count).encode('utf-8'))
     return leaveTotal
@@ -343,6 +354,7 @@ def date_by_adding_business_days(from_date, add_days,holidays, leaveType_selecte
 
 
 def leaveCheckBetweenAppliedLied(leavelist, leave_form):
+    flag = False
     if leavelist:
         leave = leavelist[0]
         leave_fromdate = leave.from_date
@@ -352,21 +364,24 @@ def leaveCheckBetweenAppliedLied(leavelist, leave_form):
         fromdate = leave_form.cleaned_data['fromDate']
         todate = leave_form.cleaned_data['toDate']
         fromSession = leave_form.cleaned_data['from_session']
-        tosession = leave_form.cleaned_data['to_session']
+        toSession = leave_form.cleaned_data['to_session']
         if fromdate == leave_todate:
             if leave_tosession == 'session_first' and fromSession == 'session_second':
-                return False
+                flag = False
+            elif leave_fromsession == 'session_second' and toSession == 'session_first':
+                flag = False
             else:
-                return True
+                flag = True
         elif todate == leave_fromdate:
-            if tosession == 'session_first' and leave_fromsession == 'session_second':
-                return False
+            if leave_tosession == 'session_first' and fromSession == 'session_second':
+                flag = False
+            elif leave_fromsession == 'session_second' and toSession == 'session_first':
+                flag = False
             else:
-                return True
+                flag = True
         else:
-            return True
-    else:
-        return False
+            flag = True
+        return flag
 
 
 def compOffAvailibilityCheck(fromDate, user):
@@ -379,3 +394,22 @@ def compOffAvailibilityCheck(fromDate, user):
         leaves[0].update()
         return False
     return True
+
+def lateLeaveCheck(leave_form, user):
+    context ={'error':None}
+    fromdate = leave_form.cleaned_data['fromDate']
+
+
+    if fromdate< date(2016,7,1):
+        context['error'] = 'you are applying for past date'
+        # fromSession = leave_form.cleaned_data['from_session']
+        # todate = leave_form.cleaned_data['toDate']
+        # toSession = leave_form.cleaned_data['to_session']
+        # leaveType_selected = leave_form.cleaned_data['leave']
+        # leavecount = leave_calculation(fromdate, todate, fromSession, toSession, leaveType_selected)
+        # emp_id = Employee.objects.get(user_id=user)
+        #LateLeaveEmailSendTask.delay(User.objects.get(id=user), emp_id.employee_assigned_id, fromdate, fromSession, todate, toSession, leaveType_selected, leavecount)
+
+    if date.today().day - fromdate.day > 60:
+        context['error'] = '60 back limit failing'
+    return context
