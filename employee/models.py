@@ -226,7 +226,6 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     exprience = models.IntegerField(
         "Experience in Months",
-        max_length=3,
         blank=False)
 
     '''
@@ -256,7 +255,6 @@ class Employee(models.Model):
         blank=True)
     uan = models.IntegerField(
         "Universal account number",
-        max_length=12,
         blank=True,
         null=True,
         unique=True)
@@ -266,7 +264,6 @@ class Employee(models.Model):
                                    max_length=70, blank=True, null=True)
     bank_account = models.IntegerField(
         "Account Number",
-        max_length=30,
         blank=True,
         null=True,
         unique=True)
@@ -364,7 +361,6 @@ class Education(models.Model):
     institute = models.CharField("Institution", max_length=50, blank=False)
     overall_marks = models.IntegerField(
         "Total Score/GPA",
-        max_length=50,
         blank=False)
 
     def __unicode__(self):
@@ -415,7 +411,7 @@ class PreviousEmployment(models.Model):
 class Remainder(models.Model):
     user = models.ForeignKey(Employee, default=None)
     name = models.CharField(verbose_name="Event Name",
-                            max_length="100"
+                            max_length=100
                             )
     startDate = models.DateField(verbose_name="Start Date",
                                  default=timezone.now)

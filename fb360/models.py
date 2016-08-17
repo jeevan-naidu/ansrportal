@@ -179,12 +179,10 @@ class Group(models.Model):
     Group to manage question
     """
     name = models.CharField("Name", max_length=100, blank=False)
-    priority = models.IntegerField("Priority", max_length=100,
-                                   validators=[MinValueValidator(0)],
-                                   blank=False)
+    priority = models.IntegerField("Priority",validators=[MinValueValidator(0)], blank=False)
     fb = models.ManyToManyField(
         FB360,
-        related_name='New FB',
+        related_name='New_FB',
         default=None)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -201,7 +199,7 @@ class Question(models.Model):
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=256, blank=False)
-    priority = models.IntegerField("Priority", max_length=100,
+    priority = models.IntegerField("Priority",
                                    validators=[MinValueValidator(0)],
                                    blank=False, default=None)
     qtype = models.CharField(
@@ -211,7 +209,7 @@ class Question(models.Model):
         default=QST_TYPE[0][0])
     group = models.ManyToManyField(
         Group,
-        related_name='New Group',
+        related_name='New_Group',
         default=None)
     category = models.ManyToManyField(
         emp.models.Designation,

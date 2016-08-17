@@ -1,7 +1,7 @@
 # Third-Party Plugin imports
-import autocomplete_light
-autocomplete_light.autodiscover()
-
+#import autocomplete_light
+#autocomplete_light.autodiscover()
+from dal import autocomplete
 # Our App model imports
 from .models import Initiator, Respondent, Question, FB360
 import employee
@@ -41,7 +41,7 @@ class SurveyForm(forms.ModelForm):
 
 
 # Choose Peer screen form
-class PeerForm(autocomplete_light.ModelForm):
+class PeerForm(forms.ModelForm):
 
     """
         Form show peer autocomplete to choose peer
@@ -57,7 +57,7 @@ class PeerForm(autocomplete_light.ModelForm):
 
 
 # Choose Peer screen form
-class AdditionalManagerForm(autocomplete_light.ModelForm):
+class AdditionalManagerForm(forms.ModelForm):
 
     """
         Form show additional manager autocomplete to choose manager

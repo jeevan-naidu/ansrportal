@@ -1,16 +1,17 @@
-import autocomplete_light
+#import autocomplete_light
+from dal import autocomplete
 from Grievances.models import Grievances
 
 
-class AutocompleteGrievanceAdmin(autocomplete_light.AutocompleteModelBase):
+class AutocompleteGrievanceAdmin(autocomplete.Select2QuerySetView):
     autocomplete_js_attributes = {'placeholder': 'Enter a Grievance Id'}
 
-    def choices_for_request(self):
+    def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = self.choices.filter(
+        choices = Grievances.filter(
             grievance_id__icontains=q
         )
 
-        return self.order_choices(choices)[0:self.limit_choices]
+        return choices #self.order_choices(choices)[0:self.limit_choices]
 
-autocomplete_light.register(Grievances, AutocompleteGrievanceAdmin)
+#autocomplete_light.register(Grievances, AutocompleteGrievanceAdmin)

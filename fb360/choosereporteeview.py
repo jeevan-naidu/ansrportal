@@ -15,7 +15,8 @@ from django.contrib.auth.decorators import login_required
 from .ismanager import is_manager
 
 # Internal imports
-from django.contrib.formtools.wizard.views import SessionWizardView
+#from django.contrib.formtools.wizard.views import SessionWizardView
+from formtools.wizard.views import SessionWizardView
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 

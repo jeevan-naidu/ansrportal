@@ -1,8 +1,26 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from MyANSRSource import views, reportviews
+from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser
 from Reports import views as milestonreporteviews
-urlpatterns = patterns(u'',
-                       url(r'^getchapters/(?P<projectid>[0-9]+)/$',
+urlpatterns = [
+			    url(
+        r'^AutocompleteProjects/$',
+        AutocompleteProjects.as_view(),
+        name='AutocompleteProjects',
+    ),
+url(
+        r'^AutocompleteUser/$',
+        AutocompleteUser.as_view(),
+        name='AutocompleteUser',
+    ),
+
+
+ url(
+        r'^AutocompleteBook/$',
+        AutocompleteBook.as_view(),
+        name='AutocompleteBook',
+    ),                    
+			url(r'^getchapters/(?P<projectid>[0-9]+)/$',
                            views.GetChapters,
                            name=u'getchapters'),
                        url(r'^gettask/(?P<projectid>[0-9]+)/$',
@@ -72,4 +90,4 @@ urlpatterns = patterns(u'',
                        
                        url(r'^logout/$', views.Logout, name=u'logout'),
                        url(r'^$', views.index, name=u'index'),
-                       )
+                       ]

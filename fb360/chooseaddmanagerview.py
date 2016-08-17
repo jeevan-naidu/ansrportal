@@ -11,7 +11,8 @@ from . import helper
 from django.contrib.auth.decorators import login_required
 
 # Internal imports
-from django.contrib.formtools.wizard.views import SessionWizardView
+#from django.contrib.formtools.wizard.views import SessionWizardView
+from formtools.wizard.views import SessionWizardView
 from django.db.models import Q
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist

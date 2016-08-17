@@ -1,46 +1,47 @@
-import autocomplete_light
+#import autocomplete_light
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Book, Project
+from dal import autocomplete
 
 
-class AutocompleteUser(autocomplete_light.AutocompleteModelBase):
+class AutocompleteUser(autocomplete.Select2QuerySetView):
     autocomplete_js_attributes = {'placeholder': 'Enter a member name'}
 
-    def choices_for_request(self):
+    def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = self.choices.filter(
+        choices = User.objects.filter(
             Q(is_superuser=False)
         )
 
         choices = choices.filter(email__icontains=q)
-        return self.order_choices(choices)[0:self.limit_choices]
+        return choices
 
-autocomplete_light.register(User, AutocompleteUser)
+#autocomplete_light.register(User, AutocompleteUser)
 
 
-class AutocompleteBook(autocomplete_light.AutocompleteModelBase):
+class AutocompleteBook(autocomplete.Select2QuerySetView):
     autocomplete_js_attributes = {'placeholder': 'Enter a book name'}
 
-    def choices_for_request(self):
+    def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = self.choices.filter(
+        choices = Book.objects.filter(
             name__icontains=q,
             active=True
         )
-        return self.order_choices(choices)[0:self.limit_choices]
+        return choices
 
-autocomplete_light.register(Book, AutocompleteBook)
+#autocomplete_light.register(Book, AutocompleteBook)
 
 
-class AutocompleteProjects(autocomplete_light.AutocompleteModelBase):
+class AutocompleteProjects(autocomplete.Select2QuerySetView):
     autocomplete_js_attributes = {'placeholder': 'Enter a Project name /Project Id'}
 
-    def choices_for_request(self):
+    def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = self.choices.filter(
+        choices = Project.objects.filter(
             Q(name__icontains=q) | Q(projectId__icontains=q)
         )
-        return self.order_choices(choices)[0:self.limit_choices]
+        return choices
 
-autocomplete_light.register(Project, AutocompleteProjects)
+#autocomplete_light.register(Project, AutocompleteProjects)

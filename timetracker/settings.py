@@ -28,10 +28,10 @@ AUTH_LDAP_GLOBAL_OPTIONS = {
     ldap.OPT_PROTOCOL_VERSION: 3,
 }
 
-AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
+AUTHENTICATION_BACKENDS = [
+    #'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
-    )
+    ]
 
 AUTH_LDAP_SERVER_URI = "ldap://ansr-blr-pdc.ansr.com"
 AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
@@ -111,18 +111,18 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portal.ansrsource.com']
 
 # Ansr template definition
 
-TEMPLATE_DIRS = (
+"""TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'MyANSRSource/templates/MyANSRSource/'),
     os.path.join(BASE_DIR, 'employee/template/'),
     os.path.join(BASE_DIR, 'employee/emp_photo/'),
-)
+)"""
 
 # When CRSF failurers happen we just ask them to relogin using our own template
 CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'
 
 # Application definition
 
-INSTALLED_APPS = (
+"""INSTALLED_APPS = [
     'autocomplete_light',
     'grappelli',
     'django.contrib.admin',
@@ -150,10 +150,45 @@ INSTALLED_APPS = (
     'Leave',
     'export_xls',
     'djcelery',
+] """
 
-)
+# Application definition
 
-MIDDLEWARE_CLASSES = (
+INSTALLED_APPS = [
+    'dal',
+    'dal_select2',
+    'django.contrib.humanize',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    #'autocomplete_light',
+    'grappelli',
+    'bootstrap3',  # Django Bootstrap3
+    'bootstrap3_datetime',
+    'session_security',  # Django session TimeOut / Security
+    'fontawesome',
+    'xlsxwriter',
+    'employee',
+    'CompanyMaster',
+    'MyANSRSource',
+    'fb360',
+    'Grievances',
+    'GrievanceAdmin',
+    'pagination',
+    'Reports',
+    'Salesforce',
+    'BookMyRoom',
+    'Leave',
+    'export_xls',
+    'djcelery',
+    #'endless_pagination',  
+]
+
+MIDDLEWARE_CLASSES = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -161,21 +196,43 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+
     'session_security.middleware.SessionSecurityMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
-)
+]
 # Overriding Default T_C_P with new T_C_p
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
-    'django.core.context_processors.request',
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.request"
+#TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS# + (
+    #'django.core.context_processors.request',
+    #"django.contrib.auth.context_processors.auth",
+    #"django.core.context_processors.debug",
+#    "django.core.context_processors.i18n",
+    #"django.core.context_processors.media",
+#    "django.core.context_processors.request"
 
-)
+#)
+
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'MyANSRSource/templates/MyANSRSource/'),
+    		os.path.join(BASE_DIR, 'employee/template/'),
+   		os.path.join(BASE_DIR, 'employee/emp_photo/'),
+		],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+
 RESTRICTED_URLS = (
                   (r'/grievances_admin/(.*)$', ),
               )
@@ -203,7 +260,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "ANSRSource",
+        "NAME": "myansrsource",#myansrsource
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
@@ -310,6 +367,26 @@ LOGGING = {
 
 }
 
+
+# Password validation
+# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
 # Attendance Feed Settings
 FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data"
 FEED_EXT = "csv"
@@ -353,3 +430,125 @@ BROKER_USER = 'root'
 BROKER_PASSWORD = 'Welcome#2677'
 BROKER_VHOST = "ansrvhost"
 
+
+"""
+Django settings for mysite project.
+
+Generated by 'django-admin startproject' using Django 1.9.7.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/1.9/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/1.9/ref/settings/
+
+
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'i-^%tl1jq#%oiq#d^&q)f+9m8aa=gtugjaa1gz6)p%kn)t!zaj'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+
+MIDDLEWARE_CLASSES = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'mysite.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'mysite.wsgi.application'
+
+
+# Database
+# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+
+# Password validation
+# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/1.9/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+
+STATIC_URL = '/static/' """

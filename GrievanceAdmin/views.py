@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import datetime
 from django.utils import timezone
 from django.views.generic.list import ListView
@@ -24,19 +25,31 @@ class GrievanceAdminListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(GrievanceAdminListView, self).get_context_data(**kwargs)
-        context['grievances'] = Grievances.objects.all().order_by("-created_date")
+        context['grievances'] = grievances_list = Grievances.objects.all().order_by("-created_date")
         context['users'] = User.objects.filter(is_active=True)
         context['category'] = Grievances_category.objects.filter(active=True)
         context['grievances_choices'] = STATUS_CHOICES_CLOSED
         form = FilterGrievanceForm()
         context['form'] = form
+	paginator = Paginator(grievances_list, 5) # Show 5 grievances per page
 
-        if 'page' not in self.request.GET:
+    	page = self.request.GET.get('page')
+    	try:
+            grievances_page = paginator.page(page)
+    	except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+            grievances_page = paginator.page(1)
+    	except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+            grievances_page = paginator.page(paginator.num_pages)
+
+    	context['grievances_page'] = grievances_page
+        """if 'page' not in self.request.GET:
             if 'grievance' in self.request.session:
                 del self.request.session['grievance']
 
         if 'grievance' in self.request.session:
-            context['grievances'] = self.request.session['grievance']
+            context['grievances'] = self.request.session['grievance'] """
 
         return context
 

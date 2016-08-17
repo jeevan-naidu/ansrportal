@@ -42,7 +42,7 @@
 	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-    {% load pagination_tags %}
+
   <div class="container-fluid">
 
 
@@ -196,7 +196,7 @@
 					</tr>
 				</thead>
 				<tbody>
-                     {%  autopaginate grievances 10 %}
+                     
                         {%   for object in grievances  %}
 
 
@@ -318,7 +318,22 @@
 
 
              {% endfor %}
-			<div class="text-center"> {% paginate %} </div>
+			<div class="text-center"><div class="pagination">
+    <span class="step-links">
+        {% if grievances_page.has_previous %}
+            <a href="?page={{ grievances_page.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ grievances_page.number }} of {{ grievances_page.paginator.num_pages }}.
+        </span>
+
+        {% if grievances_page.has_next %}
+            <a href="?page={{ grievances_page.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+</div>
 
 		</div>
 	</div>

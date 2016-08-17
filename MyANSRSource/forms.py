@@ -1,19 +1,21 @@
-import autocomplete_light
-autocomplete_light.autodiscover()
+#import autocomplete
+#autocomplete.autodiscover()
 from django.db.models import Q
 from django import forms
 from django.utils import timezone
-from MyANSRSource.models import Project, ProjectTeamMember, \
+from MyANSRSource.models import Book,Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
+from django.contrib.auth.models import User
 import datetime
 import calendar
 import helper
-import autocomplete_light
-autocomplete_light.autodiscover()
+#import autocomplete
+#autocomplete.autodiscover()
+from dal import autocomplete
 
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -349,8 +351,27 @@ def TimesheetFormset(currentUser,enddate):
 
 
 # Form Class to create project
-class ProjectBasicInfoForm(autocomplete_light.ModelForm):
-
+class ProjectBasicInfoForm(forms.ModelForm):
+    book = forms.ModelChoiceField(
+        queryset=Book.objects.all(),
+        label="Book/Title",
+	widget=autocomplete.ModelSelect2(url='AutocompleteBook',attrs={
+        # Set some placeholder
+        'data-placeholder': 'Type Book/Title Name ...',
+        # Only trigger autocompletion after 3 characters have been typed
+        #'data-minimum-input-length': 3,
+    },),
+        required=True, )
+    projectManager = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        #label="Book/Title",
+	widget=autocomplete.ModelSelect2(url='AutocompleteUser',attrs={
+        # Set some placeholder
+        'data-placeholder': 'Type Employee Name ...',
+        # Only trigger autocompletion after 3 characters have been typed
+        #'data-minimum-input-length': 3,
+    },),
+        required=True, )
     class Meta:
         model = Project
         fields = (
@@ -448,7 +469,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['po'].widget.attrs['class'] = "form-control"
 
 
-class ChangeProjectTeamMemberForm(autocomplete_light.ModelForm):
+class ChangeProjectTeamMemberForm(forms.ModelForm):
 
     id = forms.IntegerField(label="teamRecId", widget=forms.HiddenInput())
 
@@ -552,7 +573,7 @@ class ProjectFlagForm(forms.ModelForm):
 
 
 # Form Class to create milestones for project
-class changeProjectLeaderForm(autocomplete_light.ModelForm):
+class changeProjectLeaderForm(forms.ModelForm):
 
     class Meta:
         model = Project
@@ -592,7 +613,7 @@ class LoginForm(forms.Form):
 
 
 # Reports
-class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
+class TeamMemberPerfomanceReportForm(forms.ModelForm):
     startDate = forms.DateField(
         label="From",
         widget=DateTimePicker(options=dateTimeOption),
@@ -606,7 +627,13 @@ class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
     project = forms.ModelChoiceField(
         queryset=None,
         label="Project",
-        required=False, help_text="Leave blank for all",
+	widget=autocomplete.ModelSelect2(url='AutocompleteProjects',attrs={
+        # Set some placeholder
+        'data-placeholder': 'Type the project name ...',
+        # Only trigger autocompletion after 3 characters have been typed
+        'data-minimum-input-length': 3,
+    },),
+        required=False, 
     )
 
     class Meta:
@@ -626,7 +653,7 @@ class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
         self.fields['endDate'].widget.attrs['class'] = "form-control"
         
         self.fields['project'].queryset = Project.objects.all().order_by('name')
-        self.fields['project'].widget = autocomplete_light.ChoiceWidget('ProjectAutocompleteProjects')
+        #self.fields['project'].widget = autocomplete.ChoiceWidget('ProjectAutocompleteProjects')
         self.fields['project'].widget.attrs['class'] = "form-control"
         self.fields['project'].widget.attrs['placeholder'] = 'Enter a Project Name /Project Id'
 
@@ -635,15 +662,22 @@ class ProjectPerfomanceReportForm(forms.Form):
     project = forms.ModelChoiceField(
         queryset=None,
         label="Project",
-        required=True,
+	widget=autocomplete.ModelSelect2(url='AutocompleteProjects',attrs={
+        # Set some placeholder
+        'data-placeholder': 'Type the project name ...',
+        # Only trigger autocompletion after 3 characters have been typed
+        'data-minimum-input-length': 3,
+    },),
+        required=False, 
     )
+
 
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
         super(ProjectPerfomanceReportForm, self).__init__(*args, **kwargs)
         self.fields['project'].queryset = Project.objects.filter(
             id__in=helper.get_my_project_list(currentUser)).order_by('name')
-        self.fields['project'].widget = autocomplete_light.ChoiceWidget('ProjectAutocompleteProjects')
+        #self.fields['project'].widget = autocomplete.ChoiceWidget('ProjectAutocompleteProjects')
         self.fields['project'].widget.attrs['class'] = "form-control"
         self.fields['project'].widget.attrs['placeholder'] = 'Enter a Project Name /Project Id'
 

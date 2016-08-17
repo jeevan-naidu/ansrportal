@@ -1,4 +1,4 @@
-import autocomplete_light
+#import autocomplete_light
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
@@ -7,17 +7,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
-autocomplete_light.autodiscover()
-admin.autodiscover()
+#autocomplete_light.autodiscover()
+#admin.autodiscover()
 
 # Modify this to change the title from "Django Administration"
 
 admin.site.site_header = apps.MyANSRSourceConfig.verbose_name +  \
     ' - Management UI'
 
-urlpatterns = patterns('',
-                       url(r'^autocomplete/',
-                           include('autocomplete_light.urls')),
+urlpatterns = [
+                       #url(r'^autocomplete/',
+                           #include('autocomplete_light.urls')),
                        url(r'^grappelli/', include('grappelli.urls')),
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^fb360/', include('fb360.urls')),
@@ -33,4 +33,4 @@ urlpatterns = patterns('',
                        url(r'^bookings/', include('BookMyRoom.urls')),
                        url(r'^leave/', include('Leave.urls')),
 
-                       ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

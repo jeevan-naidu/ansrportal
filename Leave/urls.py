@@ -1,8 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import  url
 from views import *
 from django.contrib.auth.decorators import login_required
 from Leave import views
-urlpatterns = patterns(u'',
+from Leave.autocomplete_light_registry import AutocompleteUserSearch
+urlpatterns = [
                        url(r'^$', login_required(Dashboard.as_view()), name=u'Leave_dashboard'),
                        url(r'^add/$', login_required(ApplyLeaveView.as_view()), name=u'leave_list'),
                        url(r'^cancel/$', login_required(LeaveCancel), name=u'leave_cancel'),
@@ -13,4 +14,5 @@ urlpatterns = patterns(u'',
                            name=u'list_leave_all'),
                        url(r'^manage/$', login_required(LeaveManageView.as_view(template_name='Manager.html')),
                            name=u'manage_leave_list'),
-                       )
+                       url(r'^AutocompleteUserSearch/$', login_required(AutocompleteUserSearch.as_view()), name=u'AutocompleteUserSearch'),
+                       ]

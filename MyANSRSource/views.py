@@ -4,14 +4,15 @@ import json
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
 
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList # util -> utils
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.formtools.wizard.views import SessionWizardView
+#from django.contrib.formtools.wizard.views import SessionWizardView
+from formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
