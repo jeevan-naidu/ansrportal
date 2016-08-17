@@ -689,42 +689,6 @@
                                                 </div>
                                             </li>
 
-
-
-
-
-
-                                        </ul>
-                                    </div>
-                                </li>
-
-
-
-                               <li>
-                                    <a href="javascript:void(0);" data-action="click-trigger">
-                                        <span class="menu-icon"><i class="fa fa-th-list"></i></span>
-                                        <span class="menu-text">Leave</span>
-                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
-                                    </a>
-                                    <div class="child-menu" data-action="click-target">
-                                        <ul>
-                                            <li>
-                                                <a href="{% url 'Leave_dashboard' %}">
-                                                    <span class="menu-text">Dashboard</span>
-                                                </a>
-                                            </li>
-                                            {% if request.user|has_group:"myansrsourceHR"  or request.user|has_group:"myansrsourcePM" or request.user.is_superuser %}
-                                                 <li>
-                                                    <a href="{% url 'manage_leave_list' %}">
-                                                        <span class="menu-text">Manage Requests<span class="badge vd_bg-yellow">{{ leave_count }}</span></span>
-                                                    </a>
-                                                </li>
-                                                 <li>
-                                                    <a href="{% url 'list_leave' %}">
-                                                        <span class="menu-text">View Requests</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
                                         </ul>
                                     </div>
                                 </li>
