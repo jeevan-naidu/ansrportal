@@ -4,8 +4,8 @@
 
     <div class="time-panel clearfix">
 
-      <div class="col-sm-3"></div>
-      <div class="col-sm-9 time-slots">
+      <div class="col-sm-3 col-md-2"></div>
+      <div class="col-sm-9 col-md-10 time-slots">
 
         <div class="col-sm-2">
             <span>8:00</span>
@@ -45,8 +45,8 @@
 		  {% csrf_token %}
   {% for room_obj in rooms_list %}
     <div class="room-and-time clearfix">
-        <div class="col-sm-3">{{room_obj.room_name}}</div>
-        <div class="col-sm-9 selectors">
+        <div class="col-sm-3 col-md-2">{{room_obj.room_name}}</div>
+        <div class="col-sm-9 col-md-10 selectors">
           {% for block in TimingsList %}
           <div class="col-sm-2 checkbox-removed">
             {% for time in block %}
