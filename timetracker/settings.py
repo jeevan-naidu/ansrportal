@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     'Leave',
     'export_xls',
     'djcelery',
+    'ContentManagement',
 
 )
 

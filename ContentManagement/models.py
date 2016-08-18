@@ -6,10 +6,13 @@ from django.contrib.auth.models import User
 
 class NoticeTypes(models.Model):
 
-    type = models.CharField(max_length=100)
+    notice_type = models.CharField(max_length=100)
     active = models.BooleanField(default=True, verbose_name="Is Active?")
     created_date = models.DateTimeField(verbose_name="created On", auto_now_add=True)
     updated_date = models.DateTimeField(verbose_name="Updated On", auto_now=True)
+    
+    def __unicode__(self):
+        return '%s' % (self.notice_type)
 
 
 class Notice(models.Model):
@@ -23,21 +26,27 @@ class Notice(models.Model):
     created_date = models.DateTimeField(verbose_name="created On", auto_now_add=True)
     updated_date = models.DateTimeField(verbose_name="Updated On", auto_now=True)
     active = models.BooleanField(default=True, verbose_name="Is Active?")
+    
+    def __unicode__(self):
+        return '%s' % (self.display_message)
 
 
 class MediaContentTypes(models.Model):
 
-    type = models.CharField(max_length=100)
+    media_content_type = models.CharField(max_length=100)
     active = models.BooleanField(default=True, verbose_name="Is Active?")
     created_date = models.DateTimeField(verbose_name="created On", auto_now_add=True)
     updated_date = models.DateTimeField(verbose_name="Updated On", auto_now=True)
     active = models.BooleanField(default=True, verbose_name="Is Active?")
+    
+    def __unicode__(self):
+        return '%s' % (self.media_content_type)
 
 
 class MediaContent(models.Model):
 
     media_content_type = models.ForeignKey(MediaContentTypes)
-    file = models.FileField(upload_to='', blank=True, null=True, help_text="Image/video file")
+    media_file = models.FileField(upload_to='', blank=True, null=True, help_text="Image/video file")
     display_message = models.TextField(max_length=200, validators=[MinLengthValidator(15)],
                                        help_text="Max length: 200 characters")
     search_keywords = models.CharField(max_length=200,
@@ -47,3 +56,5 @@ class MediaContent(models.Model):
     updated_date = models.DateTimeField(verbose_name="Updated On", auto_now=True)
     active = models.BooleanField(default=True, verbose_name="Is Active?")
 
+    def __unicode__(self):
+        return '%s' % (self.display_message)
