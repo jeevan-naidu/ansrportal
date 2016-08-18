@@ -57,7 +57,7 @@ def newJoineeCron():
                                                                                            user_temp.last_name,
                                                                                            leave_type_obj)
                             elif leave_type_obj.leave_type=='bereavement_leave':
-                                LeaveSummary.objects.create(user=user_temp, leave_type=leave_type_obj,
+                                LeaveSummary.objects.create(user=user, leave_type=leave_type_obj,
                                                                           year=date.today().year,
                                                                           applied =0,
                                                                           approved = 0,
@@ -115,7 +115,7 @@ def monthlyLeaveAdd(user, leave):
         joiningdateMonth = joiningdate.month
         joiningdateYear = joiningdate.year
         leavetotal=0
-        if todaydateYear == joiningdateYear and todaydateMonth==joiningdateMonth:
+        if todaydateYear == joiningdateYear: #and todaydateMonth==joiningdateMonth:
             if leave.carry_forward == 'yearly':
                 if joiningdateDay > 0 and joiningdateDay < 11:
                     leavetotal = .5
@@ -123,10 +123,12 @@ def monthlyLeaveAdd(user, leave):
                     leavetotal = 1
                 else:
                     leavetotal = 1.5
+                leavetotal = leavetotal + float((leave.count).encode('utf-8')) * (todaydateMonth - joiningdateMonth)
 
             elif leave.carry_forward == 'monthly':
-                if joiningdateDay > 25:
+                if joiningdateDay < 6:
                     leavetotal = .5
+                leavetotal = leavetotal + float((leave.count).encode('utf-8')) * (todaydateMonth - joiningdateMonth)
             else:
                 leavetotal = 2
 
@@ -134,5 +136,5 @@ def monthlyLeaveAdd(user, leave):
 
 
     except:
-        logger.error("user having issue")
+        logger.error("user having issue{}")
 

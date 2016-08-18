@@ -128,9 +128,9 @@ def LeaveForm(leavetype, user, data=None):
 
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
+
+
 def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
-    # import ipdb
-    # ipdb.set_trace()
     staytime = ShortAttendance.objects.get(id=leaveid)
     SHORT_LEAVE_TYPES_CHOICES = ( ('loss_of_pay', 'Loss Of Pay'),)
     leaveallowed = {'earned_leave':'Earned Leave', 'sick_leave':'Sick Leave', 'casual_leave':'Casual Leave','short_leave':'Short Leave', 'comp_off_avail':'Comp Off Avail'}
@@ -145,12 +145,10 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
     SHORT_LEAVE_TYPES_CHOICES = (('', '---------'),) + SHORT_LEAVE_TYPES_CHOICES
 
     class ApplyShortLeaveForm(forms.ModelForm):
-        # Add Bootstrap widgets
         leave = forms.ChoiceField(choices=SHORT_LEAVE_TYPES_CHOICES, initial=leavetype)
         leave.widget.attrs = {'class': 'form-control', 'required': 'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
-        # Add Bootstrap widgets
         Reason.widget.attrs = {'class': 'form-control'}
 
         fromDate = forms.DateField(
@@ -183,15 +181,45 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
                 'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
 
             }
+    class ApplyShortLeaveForm1(forms.ModelForm):
+        leave = forms.ChoiceField(choices=SHORT_LEAVE_TYPES_CHOICES, initial=leavetype)
+        leave.widget.attrs = {'class': 'form-control', 'required': 'true'}
 
+        Reason = forms.CharField(max_length=100, required=False)
+        Reason.widget.attrs = {'class': 'form-control'}
 
+        fromDate = forms.DateField(
+            initial=fordate,
+            label="From",
+            widget=DateTimePicker(options=dateTimeOption),
+        )
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true', 'readonly':'readonly'}
 
-    if data:
-        form = ApplyShortLeaveForm(data)
-        return form
+        name = forms.CharField(initial=user, widget=forms.HiddenInput())
+        leave_id = forms.CharField(initial=leaveid, widget=forms.HiddenInput())
+
+        class Meta:
+            model = LeaveApplications
+            fields = ['leave', 'fromDate', 'Reason', 'name','id']
+            widgets = {
+                'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
+
+            }
+
+    if leavetype in ['short_leave']:
+        if data:
+            form = ApplyShortLeaveForm1(data)
+            return form
+        else:
+            form = ApplyShortLeaveForm1()
+            return form
     else:
-        form = ApplyShortLeaveForm()
-        return form
+        if data:
+            form = ApplyShortLeaveForm(data)
+            return form
+        else:
+            form = ApplyShortLeaveForm()
+            return form
 
 
 

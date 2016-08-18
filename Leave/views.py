@@ -925,8 +925,7 @@ class ApplyShortLeaveView(View):
             leavetype = request.GET.get('leavetype')
             leaveid = request.GET.get('leaveid')
             user_id = request.GET.get('user_id')
-            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned',
-                             'comp_off_avail', 'pay_off', 'short_leave']
+            onetime_leave = ['comp_off_avail', 'short_leave']
             count_not_required = ['comp_off_earned', 'pay_off', 'work_from_home', 'loss_of_pay']
             if leaveid:
                 shortAttendance = ShortAttendance.objects.get(id=leaveid)
@@ -952,8 +951,8 @@ class ApplyShortLeaveView(View):
             return render(request, 'short_leave_apply_form.html', context_data)
 
     def post(self, request):
-        context_data = {'add': True, 'record_added': False, 'form': None, 'success_msg': None, 'html_data': None,
-                        'errors': [], 'leave_type_check': None, 'leave': 'formdata'}
+        # import ipdb
+        # ipdb.set_trace()
         user_id = request.POST['name']
         leaveid = request.POST['leave_id']
         if leaveid:
@@ -966,29 +965,40 @@ class ApplyShortLeaveView(View):
             leave_form = ShortLeaveForm(request.POST['leave'], user_id, request.POST)
 
         if not user_id:
-            user_id =request.user.id
+            user_id = request.user.id
 
-        if leave_form.is_valid() :
+        context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None, 'leave':'formdata' }
 
+        if leave_form.is_valid() and not context_data['errors']:
+
+            duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
             try:
-                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type= leave_selected, user_id= user_id, year = date.today().year)[0].balance
+                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected, user_id=user_id, year=date.today().year)[0].balance
             except:
                 context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
                 context_data['form'] = leave_form
-
+            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off','short_leave']
+            if leave_selected in onetime_leave:
+                context_data['leave_type_check'] = 'OneTime'
             reason=leave_form.cleaned_data['Reason']
             manager = managerCheck(user_id)
+            if leave_selected in onetime_leave:
+                validate = oneTimeLeaveValidation(leave_form, user_id)
+                fromdate = leave_form.cleaned_data['fromDate']
+                todate = validate['todate']
+                fromsession = 'session_first'
+                tosession = 'session_second'
+                if leave_selected in ['comp_off_earned', 'pay_off']:
+                    duedate = validate['due_date']
 
-            if leave_selected != 'short_leave':
-                validate = leaveValidation(leave_form, user_id)
+
             else:
-                validate = {'todate': leave_form.cleaned_data['fromDate'], 'errors': [], 'success': []}
-
-            fromdate = leave_form.cleaned_data['fromDate']
-            todate = leave_form.cleaned_data['toDate']
-            fromsession = leave_form.cleaned_data['from_session']
-            tosession = leave_form.cleaned_data['to_session']
+                validate=leaveValidation(leave_form, user_id)
+                fromdate = leave_form.cleaned_data['fromDate']
+                todate = leave_form.cleaned_data['toDate']
+                fromsession = leave_form.cleaned_data['from_session']
+                tosession = leave_form.cleaned_data['to_session']
 
             if not manager:
                 context_data['errors'].append('you are not assigned to any manager. please contact HR ')
@@ -1010,25 +1020,11 @@ class ApplyShortLeaveView(View):
                     leavesummry_temp = LeaveSummary.objects.create(user=user, leave_type=leaveType, applied=0, approved=0, balance=0,
                                                                year=date.today().year)
 
-                if leavesummry_temp.balance and float(leavesummry_temp.balance) >= 1 and leave_form.cleaned_data['leave'] == 'short_leave':
-                    leavesummry_temp.applied = float(leavesummry_temp.applied) + 1
-                    leavesummry_temp.balance = float(leavesummry_temp.balance) - 1
-
-
-                    LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                    days_count=leavecount, reason=reason).saveas(user_id, request.user.id)
-                    leavesummry_temp.save()
-                    # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
-
-                    context_data['success']= 'leave saved'
-                    context_data['record_added'] = 'True'
-
-
-                elif leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
+                if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
                     if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate, user_id):
                         context_data['errors'].append( 'For this time period there is no comp off ')
                         context_data['form'] = leave_form
-                        return render(request, 'short_leave_apply_form.html', context_data)
+                        return render(request, 'leave_apply.html', context_data)
 
                     leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
                     leavesummry_temp.balance = float(leavesummry_temp.balance) - leavecount
@@ -1041,24 +1037,30 @@ class ApplyShortLeaveView(View):
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
-                elif leaveType.leave_type == 'loss_of_pay':
-                    leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
-
-                    LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate,
-                                      from_session=fromsession, to_session=tosession,
-                                      days_count=leavecount, reason=reason).saveas(user_id, request.user.id)
-                    leavesummry_temp.save()
                 else:
-                    context_data['errors'].append( 'You do not have the necessary leave balance to avail of this leave.')
-                    context_data['form'] = leave_form
+                    if leave_form.cleaned_data['leave'] in ['comp_off_earned','work_from_home','pay_off','loss_of_pay']:
+                        leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
+
+
+                        LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
+                        days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id, request.user.id)
+                        leavesummry_temp.save()
+                        EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+
+                        context_data['success']= 'leave saved'
+                        context_data['record_added'] = 'True'
+                    else:
+                        context_data['errors'].append( 'You do not have the necessary leave balance to avail of this leave.')
+                        context_data['form'] = leave_form
 
                     # return render(request, 'leave_apply.html', context_data)
                 if context_data['errors']:
 
                     return render(request, 'short_leave_apply_form.html', context_data)
                 else:
-                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
+                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user)
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
+                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user)
                     template = render(request, 'short_leave_apply_form.html', context_data)
                     context_data['html_data'] = template.content
                     return JsonResponse(context_data)
