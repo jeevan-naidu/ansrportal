@@ -568,12 +568,13 @@ span:hover .booked-by{display: block}
 @media only screen and (max-width: 1366px){
     .selectors label{margin-left: 0px;}
     .time-slots div span{width: 30px;}
+
 }
 
 
 
-@media only screen and (max-width: 1366px){
-    .selectors input[type="checkbox"]+label{
+@media only screen and (max-width: 1200px){
+    #legend span, .selectors input[type="checkbox"]+label{
         height: 15px;
         width: 15px;
     }
