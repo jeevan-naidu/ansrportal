@@ -474,6 +474,7 @@ background-color: #fcf8e3;
 
 .margin-0{margin: 0px;}
 
+#BookRoomAndViewDetailsContainer .panel{background: #fff}
 .room-booking-content{padding: 20px 15px;}
 .nav-btns{margin-top: 9px;}
 .nav-btns p{line-height: 36px;margin-right: 30px;margin-bottom: 0px;}
@@ -562,6 +563,30 @@ span:hover .booked-by{display: block}
 #legend p.blocked span{background-color: #999;border-color: #999;}
 #legend p.booked span{background-color: #fdba11;border-color: #fdba11;}
 #legend p.user-booked span, .user-selected{background-color: #70c0c5 !important;border-color: #70c0c5 !important;}
+
+
+@media only screen and (max-width: 1366px){
+    .selectors label{margin-left: 0px;}
+    .time-slots div span{width: 30px;}
+}
+
+
+
+@media only screen and (max-width: 1366px){
+    .selectors input[type="checkbox"]+label{
+        height: 15px;
+        width: 15px;
+    }
+    .time-slots div span:first-child{margin-right: 2px;}
+}
+
+
+
+
+
+
+
+
 
 /* Pulsate */
 
