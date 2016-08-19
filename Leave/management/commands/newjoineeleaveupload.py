@@ -75,7 +75,7 @@ def newJoineeCron():
                                                                                            user_temp.last_name,
                                                                                            leave_type_obj)
                         elif leave_type_obj.occurrence == 'monthly':
-                            leavetotal = monthlyLeaveAdd(user_temp, leave_type_obj)
+                            leavetotal = monthlyLeaveAdd(user, leave_type_obj)
                             #leavetotal = 0
                             LeaveSummary.objects.create(user=user_temp, leave_type=leave_type_obj,
                                                         year=date.today().year,
@@ -110,7 +110,7 @@ def monthlyLeaveAdd(user, leave):
         todaydate = date.today()
         todaydateMonth = todaydate.month
         todaydateYear = todaydate.year
-        joiningdate = user.date_joined.date()
+        joiningdate = user.joined
         joiningdateDay = joiningdate.day
         joiningdateMonth = joiningdate.month
         joiningdateYear = joiningdate.year
