@@ -916,8 +916,6 @@ class ApplyShortLeaveView(View):
     ''' add or edit leave '''
 
     def get(self, request):
-        # import ipdb
-        # ipdb.set_trace()
         context_data = {'add': True, 'record_added': False, 'form': None, 'success_msg': None, 'html_data': None,
                         'errors': [],
                         'leave_type_check': None, 'leave': None,'leaveid':None}
@@ -1058,9 +1056,8 @@ class ApplyShortLeaveView(View):
 
                     return render(request, 'short_leave_apply_form.html', context_data)
                 else:
-                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user)
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
-                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user)
+                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
                     template = render(request, 'short_leave_apply_form.html', context_data)
                     context_data['html_data'] = template.content
                     return JsonResponse(context_data)
