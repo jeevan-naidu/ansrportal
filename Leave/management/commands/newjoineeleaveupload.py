@@ -57,7 +57,7 @@ def newJoineeCron():
                                                                                            user_temp.last_name,
                                                                                            leave_type_obj)
                             elif leave_type_obj.leave_type=='bereavement_leave':
-                                LeaveSummary.objects.create(user=user, leave_type=leave_type_obj,
+                                LeaveSummary.objects.create(user=user_temp, leave_type=leave_type_obj,
                                                                           year=date.today().year,
                                                                           applied =0,
                                                                           approved = 0,
