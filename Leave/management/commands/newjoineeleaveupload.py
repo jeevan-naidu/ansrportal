@@ -117,12 +117,14 @@ def monthlyLeaveAdd(user, leave):
         leavetotal=0
         if todaydateYear == joiningdateYear: #and todaydateMonth==joiningdateMonth:
             if leave.carry_forward == 'yearly':
-                if joiningdateDay > 0 and joiningdateDay < 11:
+                if joiningdateDay > 0 and joiningdateDay <= 2:
                     leavetotal = 1.5
-                elif joiningdateDay > 10 and joiningdateDay < 21:
+                elif joiningdateDay > 2 and joiningdateDay <= 10:
                     leavetotal = 1
-                else:
+                elif joiningdateDay > 10 and joiningdateDay <= 20:
                     leavetotal = .5
+                else:
+                    leavetotal = 0
                 leavetotal = leavetotal + float((leave.count).encode('utf-8')) * (todaydateMonth - joiningdateMonth)
 
             elif leave.carry_forward == 'monthly':
