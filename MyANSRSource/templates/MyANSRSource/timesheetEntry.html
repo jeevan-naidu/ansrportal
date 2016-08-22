@@ -178,9 +178,9 @@
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
-									<a class="btn btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
 								{% else %}
-									<a class="btn btn-default row-total-view fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view fixed-btn-size" href="javascript:;">
 								{% endif %}
 							{% endif %}
 						{% endfor %}
@@ -502,8 +502,8 @@
         });
 
 
-        // Script to reduce nav-bar width
 
+        // Script to hide popover on click of element other than popover
         $('html').on('click', function(e) {
               if (typeof $(e.target).data('original-title') == 'undefined' &&
                  !$(e.target).parents().is('.popover.in')) {
@@ -521,9 +521,9 @@
 
 <style type="text/css">
 	
-.table>thead>tr>th{border-bottom: 0px;
-}
-
+.table>thead>tr>th{border-bottom: 0px;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td{padding: 5px;}
+.lh-30{line-height: 30px;}
 </style>
 
 
