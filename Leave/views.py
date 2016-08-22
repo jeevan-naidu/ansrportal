@@ -181,6 +181,7 @@ class Dashboard(View):
         return render(request, 'User.html', context)
 
     def post(self, request):
+
         userForm = UserListViewForm(request.POST)
         user_id = userForm['user'].value()
         LeaveAdmin = False
@@ -267,6 +268,8 @@ class ApplyLeaveView(View):
 
 
     def post(self, request):
+        # import ipdb
+        # ipdb.set_trace()
         user_id = request.POST['name']
         if not user_id:
             user_id =request.user.id
@@ -854,6 +857,8 @@ class ShortAttendanceManageView(View):
 
         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
             context['shortAttendanceOpen'] = ShortAttendance.objects.filter(dispute="raised", apply_to=self.request.user)
+        else:
+            raise PermissionDenied("Sorry, you don't have permission to access this feature")
 
 
         return render(request, 'short_attendance_manage.html', context)
