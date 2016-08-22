@@ -123,28 +123,28 @@ class LeaveApplications(models.Model):
         super(LeaveApplications, self).save(*args, **kwargs)
 
 
-# class ShortAttendance(models.Model):
-#     ''' This model contains all the detail regarding short leave.
-#     Here we will store the cron result, after check of every employee
-#     in table.
-#     '''
-#     short_leave_type = models .CharField(max_length = 50, choices=SHORT_ATTENDANCE_TYPE, verbose_name='leave type')
-#     for_date = models.DateField(verbose_name='short attendance applied for date')
-#     stay_time = models.TimeField( verbose_name='stay time with in office', blank=True, null=True,)
-#     status = models.CharField(max_length=100, choices=SHORT_ATTENDANCE_STATUS, verbose_name='Status Of Short attendance')
-#     status_action_by = models.ForeignKey(User, verbose_name='action taken By User', related_name='action_taker')
-#     status_action_on = models.DateField(auto_now=True, verbose_name='Status Change date')
-#     status_comments = models.CharField(max_length=500, verbose_name='Status change comment')
-#     dispute = models.CharField(max_length=100, choices=DISPUTE_STATUS, verbose_name='Status Of Dispute')
-#     due_date = models.DateField(verbose_name='date before resolve short attendance', null=True)
-#     reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
-#     applied_on = models.DateField(auto_now_add=True, verbose_name='short attendance Applied Date')
-#     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
-#     user = models.ForeignKey(User, db_index=True, verbose_name='User', related_name='applied_for_user') #- i
-#     apply_to = models.ForeignKey(User, db_index=True, verbose_name='Manager', related_name='Smanager')  # - i
-#     swipe_in = models.TimeField( verbose_name='swipe in time', blank=True, null=True,)
-#     swipe_out = models.TimeField(verbose_name='swipe out time', blank=True, null=True,)
-#
-#     def __unicode__(self):
-#       ''' return unicode strings '''
-#       return '%s' % (self.user.username)
+class ShortAttendance(models.Model):
+    ''' This model contains all the detail regarding short leave.
+    Here we will store the cron result, after check of every employee
+    in table.
+    '''
+    short_leave_type = models .CharField(max_length = 50, choices=SHORT_ATTENDANCE_TYPE, verbose_name='leave type')
+    for_date = models.DateField(verbose_name='short attendance applied for date')
+    stay_time = models.TimeField( verbose_name='stay time with in office', blank=True, null=True,)
+    status = models.CharField(max_length=100, choices=SHORT_ATTENDANCE_STATUS, verbose_name='Status Of Short attendance')
+    status_action_by = models.ForeignKey(User, verbose_name='action taken By User', related_name='action_taker')
+    status_action_on = models.DateField(auto_now=True, verbose_name='Status Change date')
+    status_comments = models.CharField(max_length=500, verbose_name='Status change comment')
+    dispute = models.CharField(max_length=100, choices=DISPUTE_STATUS, verbose_name='Status Of Dispute')
+    due_date = models.DateField(verbose_name='date before resolve short attendance', null=True)
+    reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
+    applied_on = models.DateField(auto_now_add=True, verbose_name='short attendance Applied Date')
+    active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
+    user = models.ForeignKey(User, db_index=True, verbose_name='User', related_name='applied_for_user') #- i
+    apply_to = models.ForeignKey(User, db_index=True, verbose_name='Manager', related_name='Smanager')  # - i
+    swipe_in = models.TimeField( verbose_name='swipe in time', blank=True, null=True,)
+    swipe_out = models.TimeField(verbose_name='swipe out time', blank=True, null=True,)
+
+    def __unicode__(self):
+      ''' return unicode strings '''
+      return '%s' % (self.user.username)
