@@ -508,12 +508,12 @@ def leaveCheckBetweenAppliedLied(leavelist, leave_form):
         if fromdate == leave_todate:
             if leave_tosession == 'session_first' and fromSession == 'session_second':
                 flag = False
-            elif leave_fromsession == 'session_second' and toSession == 'session_first':
+            elif leave_fromsession == 'session_second' and toSession == 'session_first' and leave_fromdate == todate:
                 flag = False
             else:
                 flag = True
         elif todate == leave_fromdate:
-            if leave_tosession == 'session_first' and fromSession == 'session_second':
+            if leave_tosession == 'session_first' and fromSession == 'session_second' and fromdate == leave_todate:
                 flag = False
             elif leave_fromsession == 'session_second' and toSession == 'session_first':
                 flag = False
