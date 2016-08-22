@@ -38,6 +38,7 @@ from django.core.exceptions import PermissionDenied
 from tasks import EmailSendTask, ManagerEmailSendTask
 from django.conf import settings
 
+
 logger = logging.getLogger('MyANSRSource')
 
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
@@ -160,6 +161,7 @@ class Dashboard(View):
         else:
             managerFlag = False
         # short leave grid population
+        leaveShortAttendanceIsActive = settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE
         ShortLeaveApplied = ShortAttendance.objects.filter(user = user_id, active=True).count()
         ShortLeaveAppproved = ShortAttendance.objects.filter(user=user_id, active=False).count()
         context={'leave_summary':leave_summary,
@@ -174,7 +176,8 @@ class Dashboard(View):
                  'LeaveAdmin': LeaveAdmin,
                  'userCheck': userCheck,
                  'ShortLeaveApplied':ShortLeaveApplied,
-                 'ShortLeaveAppproved':ShortLeaveAppproved}
+                 'ShortLeaveAppproved':ShortLeaveAppproved,
+                 'leaveShortAttendanceIsActive':leaveShortAttendanceIsActive}
         return render(request, 'User.html', context)
 
     def post(self, request):
@@ -214,6 +217,7 @@ class Dashboard(View):
         # short leave grid population
         ShortLeaveApplied = ShortAttendance.objects.filter(user=user_id, active=True).count()
         ShortLeaveAppproved = ShortAttendance.objects.filter(user=user_id, active=False).count()
+        leaveShortAttendanceIsActive = settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE
         context={'leave_summary':leave_summary,
                  'gender': genderFlag,
                  'male': genderMale,
@@ -226,7 +230,8 @@ class Dashboard(View):
                  'LeaveAdmin': LeaveAdmin,
                  'userCheck': userCheck,
                  'ShortLeaveApplied': ShortLeaveApplied,
-                 'ShortLeaveAppproved': ShortLeaveAppproved
+                 'ShortLeaveAppproved': ShortLeaveAppproved,
+                 'leaveShortAttendanceIsActive':leaveShortAttendanceIsActive
                  }
         return render(request, 'User.html', context)
 
@@ -829,12 +834,20 @@ def ShortAttendanceDetail(request):
                   {'leave': leave})
 
 
+def ShortAttendanceLock(*args, **kwargs):
+    def lock(fntion):
+        def decorated(*args,**kwargs):
+            if settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE:
+                return fntion(*args, **kwargs)
+            else:
+                return False
+    return lock()
 
 
 class ShortAttendanceManageView(View):
     def get(self, request):
-        # import ipdb
-        # ipdb.set_trace()
+        if not settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE:
+            raise PermissionDenied("Sorry, you don't have permission to access this feature")
         context = {}
         if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
             context['shortAttendanceOpen'] = ShortAttendance.objects.filter(dispute="raised")
