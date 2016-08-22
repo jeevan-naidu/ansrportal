@@ -136,6 +136,7 @@
 								{% endif %}
 							{% endif %}
 						{% endfor %}
+                            <span style="display: none;">
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
 									{% for typeData in form.hidden_fields %}
@@ -156,12 +157,13 @@
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
-							-
+                            </span>
+
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
                                         {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero">{{ tdata.value }}</span>H
+                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
                                         {% else %}
                                             <span class="b-hours {{ dayclass }} set-zero">0</span>H
                                         {% endif %}
@@ -182,6 +184,7 @@
 								{% endif %}
 							{% endif %}
 						{% endfor %}
+                            <span style="display: none;">
 							{% for data in form.hidden_fields %}
 								{% if 'totalQ' in data.id_for_label %}
 									{% for typeData in form.hidden_fields %}
@@ -202,7 +205,8 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-							-
+                            </span>
+
 							{% for data in form.hidden_fields %}
 
 								{% if 'totalH' in data.id_for_label %}
@@ -500,9 +504,12 @@
 
         // Script to reduce nav-bar width
 
-        $(document).ready(function(){
-        	$('body').addClass("nav-left-hide remove-navbar nav-left-medium");
-        })
+        $('html').on('click', function(e) {
+              if (typeof $(e.target).data('original-title') == 'undefined' &&
+                 !$(e.target).parents().is('.popover.in')) {
+                $('[data-original-title]').popover('hide');
+              }
+            });
 
 	</script>
 

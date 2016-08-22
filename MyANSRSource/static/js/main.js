@@ -5,7 +5,7 @@ var helper = helper || {};
 // Helper
 helper.range = function(start, end) {
     var result = [];
-    for(var i = start; i < end; i += 1) {
+    for (var i = start; i < end; i += 1) {
         result.push(i);
     }
 
@@ -16,7 +16,7 @@ helper.forEach = function(arr, action) {
     var arrLen = arr.length,
         i;
 
-    for(i = 0; i < arrLen; i += 1) {
+    for (i = 0; i < arrLen; i += 1) {
         action(arr[i]);
     }
 };
@@ -34,7 +34,7 @@ helper.sumOfArr = function(arr) {
 // argument element must be jQuery element
 helper.getValOrText = function($ele) {
     var eleVal;
-    if($ele.prop('tagName') === 'SELECT' || $ele.prop('tagName') === 'INPUT') {
+    if ($ele.prop('tagName') === 'SELECT' || $ele.prop('tagName') === 'INPUT') {
         eleVal = $ele.val();
     } else {
         eleVal = $ele.text();
@@ -49,12 +49,12 @@ app.spaceToUnderscore = function($containerEle) {
         item,
         itemId;
 
-        items.each(function() {
+    items.each(function() {
         item = $(this);
         itemId = item.attr('id');
 
-        if(itemId) {
-            if(/\s/.test(itemId)) {
+        if (itemId) {
+            if (/\s/.test(itemId)) {
                 itemId = itemId.replace(/\s+/g, '_');
                 item.attr('id', itemId);
             }
@@ -91,14 +91,16 @@ app.calcCurRowChangeDate = function($tableEle) {
 
 
 app.getTaskChapter = function(selValue, currRow) {
-  endDate=document.getElementsByName('enddate')[0].value;
-    if(selValue) {
+    endDate = document.getElementsByName('enddate')[0].value;
+    if (selValue) {
         $.ajax({
             url: '/myansrsource/gettask/' + selValue + '/',
             dataType: 'json',
-            data: {endDate:endDate},
+            data: {
+                endDate: endDate
+            },
             success: function(data) {
-                len=data.flag
+                len = data.flag
                 data = data.data;
                 var dataLen = data.length,
                     options = '',
@@ -108,58 +110,58 @@ app.getTaskChapter = function(selValue, currRow) {
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
-                for(j=12;j>5;j--){
-                $(currRow[0].cells[j]).find('*').attr('disabled', false);
-               $(currRow[0].cells[j]).find("*").removeAttr("tabindex");
+                for (j = 12; j > 5; j--) {
+                    $(currRow[0].cells[j]).find('*').attr('disabled', false);
+                    $(currRow[0].cells[j]).find("*").removeAttr("tabindex");
                 }
-                for(j=12;j>12-len;j--){
-                  switch (j){
-                    case 12:
-                    {
-                     $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                     $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                      break;
-                    }
-                    case 11:
-                    {
-                        $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                        $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                for (j = 12; j > 12 - len; j--) {
+                    switch (j) {
+                        case 12:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
+                        case 11:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
 
-                      break;
+                                break;
+                            }
+                        case 10:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
+                        case 9:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
+                        case 8:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
+                        case 7:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
+                        case 6:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
                     }
-                    case 10:
-                    {
-                    $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                    $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                    break;
-                    }
-                    case 9:
-                    {
-                      $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                      $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                      break;
-                    }
-                    case 8:
-                    {
-                      $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                      $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                      break;
-                    }
-                    case 7:
-                    {
-                        $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                        $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                      break;
-                    }
-                    case 6:
-                    {
-                    $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                    $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                      break;
-                    }
-                  }
 
-                  }
+                }
 
                 currRow.find(".b-task").html(options);
 
@@ -217,7 +219,7 @@ app.getActiveTaskChapter = function() {
     app.timesheet.actTaskList = [];
     app.timesheet.actChaptersList = [];
 
-    for(i = 0; i < tasksLen; i += 1) {
+    for (i = 0; i < tasksLen; i += 1) {
         task = $($tasks[i]);
         chapter = $($chapters[i]);
 
@@ -236,10 +238,10 @@ app.setActive = function($elements, arr) {
         $element,
         i;
 
-    for(i = 0; i < $elementsLen; i += 1) {
+    for (i = 0; i < $elementsLen; i += 1) {
         $element = $($elements[i]);
-        if (arr[i]){
-            $element.find('option[value=' + arr[i] +']').attr('selected', 'selected');
+        if (arr[i]) {
+            $element.find('option[value=' + arr[i] + ']').attr('selected', 'selected');
         }
     }
 };
@@ -253,11 +255,11 @@ app.changeProject = function() {
             selectedValue = Number($this.val()),
             selectedProject;
 
-            app.getTaskChapter(selectedValue, $row);
+        app.getTaskChapter(selectedValue, $row);
 
 
         // get current project by id
-        if(selectedValue != 0) {
+        if (selectedValue != 0) {
             selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
             app.curProjectUnitShort = selectedProject.project__projectType__code;
             app.curProjectUnit = selectedProject.project__projectType__description;
@@ -332,7 +334,7 @@ app.firstTimeTotal = function() {
             $cRow = $(item).closest('tr');
             cRowTask = $cRow.find('.b-task option:selected').data('task-type');
             cRowHours = $cRow.find('.b-hours');
-            cRowQuestions =  $cRow.find('.b-questions');
+            cRowQuestions = $cRow.find('.b-questions');
             cRowItemsLen = cRowHours.length;
             $cRowTQuestions = $cRow.find('.t-questions');
             $cRowTHours = $cRow.find('.t-hours');
@@ -340,7 +342,7 @@ app.firstTimeTotal = function() {
             $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
 
 
-            for(i = 0; i < cRowItemsLen; i += 1) {
+            for (i = 0; i < cRowItemsLen; i += 1) {
                 cRowItemHour = Number($(cRowHours[i]).text());
                 cRowItemQuestion = Number($(cRowQuestions[i]).text());
 
@@ -352,16 +354,16 @@ app.firstTimeTotal = function() {
             $cRowTHours.text(cRowHourTotal.toFixed(2));
             $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
 
-            if(cRowTask === 'I') {
-                idleHoursTotal +=  cRowHourTotal;
-                idleQuestionTotal +=  cRowQuestionTotal;
+            if (cRowTask === 'I') {
+                idleHoursTotal += cRowHourTotal;
+                idleQuestionTotal += cRowQuestionTotal;
 
                 $cRowBTHoursHidden.val(0);
                 $cRowITHoursHidden.val(cRowHourTotal);
 
             } else {
-                billableHoursTotal +=  cRowHourTotal;
-                billableQuestionTotal +=  cRowQuestionTotal;
+                billableHoursTotal += cRowHourTotal;
+                billableQuestionTotal += cRowQuestionTotal;
 
                 $cRowBTHoursHidden.val(cRowHourTotal);
                 $cRowITHoursHidden.val(0);
@@ -413,7 +415,7 @@ app.firstTimeTotal = function() {
             $row,
             i;
 
-        for(i = 0; i < billableSelectProjectLen; i += 1) {
+        for (i = 0; i < billableSelectProjectLen; i += 1) {
             $item = $(billableSelectProject[i]);
             selValue = $item.val();
             $row = $item.closest('tr');
@@ -421,8 +423,6 @@ app.firstTimeTotal = function() {
             app.getTaskChapter(selValue, $row);
         }
     };
-
-
 
 
 
@@ -483,20 +483,20 @@ app.firstTimeTotal = function() {
     };
 
     app.tsInputIsValid = function($elem, str) {
-        if(!str) {
+        if (!str) {
             console.log('Please enter the valid number');
             $elem.addClass('alert-danger');
             return false;
         } else {
             // check for decimal
             str = Number(str);
-            if(str < 0) {
+            if (str < 0) {
                 console.log('Please enter the positive number');
                 $elem.addClass('alert-danger');
                 return false;
             }
-            if(/\./.test(str)) {
-                if(!(/\b\.\d\d?\b/.test(str))) {
+            if (/\./.test(str)) {
+                if (!(/\b\.\d\d?\b/.test(str))) {
                     console.log('Only two decimal is allowed');
                     $elem.addClass('alert-danger');
                     return false;
@@ -514,7 +514,7 @@ app.firstTimeTotal = function() {
         getTastChaptersEachProject();
     };
 
-    $(document).ajaxStop(function () {
+    $(document).ajaxStop(function() {
         app.firstTimeTotal();
     });
 
@@ -524,7 +524,7 @@ app.firstTimeTotal = function() {
         app.norms = '0.0 / Day';
         // Manage project
         var $changeTeamMembers = $('#change-team-members');
-        if($changeTeamMembers.length > 0) {
+        if ($changeTeamMembers.length > 0) {
             app.spaceToUnderscore($changeTeamMembers);
 
             $changeTeamMembers.dynamicForm({
@@ -534,7 +534,7 @@ app.firstTimeTotal = function() {
                 plannedEffortCalc: true,
                 changeTeamMember: true,
                 setEditableAll: true,
-                defaultValues: {  // When add row, set the elements default values
+                defaultValues: { // When add row, set the elements default values
                     setZeroList: [23],
                     setEmptyList: null
                 },
@@ -543,7 +543,7 @@ app.firstTimeTotal = function() {
         }
 
         var $manageMilestone = $('#manage-milestones');
-        if($manageMilestone.length > 0) {
+        if ($manageMilestone.length > 0) {
             app.spaceToUnderscore($manageMilestone);
 
             $manageMilestone.dynamicForm({
@@ -553,7 +553,7 @@ app.firstTimeTotal = function() {
                 changeMilestone: true,
                 isAmountTotal: true,
                 setEditableAll: true,
-                defaultValues: {  // When add row, set the elements default values
+                defaultValues: { // When add row, set the elements default values
                     setZeroList: [6, 9],
                     setEmptyList: [5]
                 },
@@ -563,7 +563,7 @@ app.firstTimeTotal = function() {
 
         // Project
         var addTeamMembers = $('#add-team-members');
-        if(addTeamMembers.length > 0) {
+        if (addTeamMembers.length > 0) {
             app.spaceToUnderscore(addTeamMembers);
             addTeamMembers.dynamicForm({
                 add: '#addForm',
@@ -572,7 +572,7 @@ app.firstTimeTotal = function() {
                 calendarPosList: [11, 16],
                 addTeamMember: true,
                 plannedEffortCalc: true,
-                defaultValues: {  // When add row, set the elements default values
+                defaultValues: { // When add row, set the elements default values
                     setZeroList: null,
                     setEmptyList: null
                 }
@@ -589,30 +589,30 @@ app.firstTimeTotal = function() {
                 holiday,
                 holidayDay,
                 totalHolidayLen = window.holidays.data.length;
-                app.holidaysList = [];
+            app.holidaysList = [];
 
 
             app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
 
             helper.clearArray(app.holidaysList);
 
-            for(var i = 0; i < totalHolidayLen; i += 1) {
+            for (var i = 0; i < totalHolidayLen; i += 1) {
                 holiday = new Date(window.holidays.data[i].date);
                 holidayDay = holiday.getDay();
 
-                if(holidayDay !== 0 && holidayDay !== 6) {
+                if (holidayDay !== 0 && holidayDay !== 6) {
                     app.holidaysList.push(holiday);
                 }
             }
 
             // Calculate effort for each row
             $addTeamRows.each(function(index) {
-                if(index > 0) {
+                if (index > 0) {
                     item = $(this);
                     starDateItem = item.find('.pro-start-date');
                     endDateItem = item.find('.pro-end-date');
                     plannedEffortItem = item.find('.pro-planned-effort'),
-                    plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
+                        plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
 
                     plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
                 }
@@ -627,11 +627,11 @@ app.firstTimeTotal = function() {
                 plannedEffortItem = row.find('.pro-planned-effort');
                 plannedEffortPercentItem = row.find('.pro-planned-effort-percent');
 
-                if(item.hasClass('pro-planned-effort-percent')) {
+                if (item.hasClass('pro-planned-effort-percent')) {
                     plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
                 }
 
-                if(item.hasClass('pro-planned-effort')) {
+                if (item.hasClass('pro-planned-effort')) {
                     plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem, 'percent').plannedEffortPercent);
                 }
             };
@@ -648,7 +648,7 @@ app.firstTimeTotal = function() {
         }
 
         var financialMilestones = $('#financial-milestones');
-        if(financialMilestones.length > 0) {
+        if (financialMilestones.length > 0) {
             app.spaceToUnderscore(financialMilestones);
             financialMilestones.dynamicForm({
                 add: '#add-milestone-btn',
@@ -657,7 +657,7 @@ app.firstTimeTotal = function() {
                 calendarPosList: [0],
                 isAmountTotal: true,
                 isFinancialMilestone: true,
-                defaultValues: {  // When add row, set the elements default values
+                defaultValues: { // When add row, set the elements default values
                     setZeroList: [6, 9],
                     setEmptyList: [5]
                 },
@@ -667,18 +667,17 @@ app.firstTimeTotal = function() {
 
         // TimeSheet
         var timesheetBillable = $('#timesheet-billable');
-        try{
-        var strtDate=document.getElementsByName('startdate')[0].value;
-        }
-        catch(error){
+        try {
+            var strtDate = document.getElementsByName('startdate')[0].value;
+        } catch (error) {
 
         }
-        if(timesheetBillable.length > 0) {
+        if (timesheetBillable.length > 0) {
             timesheetBillable.dynamicForm({
                 add: '#timesheet-billable-add-btn',
                 del: '#timesheet-billable-del-btn',
                 billableTotal: true,
-                defaultValues: {  // When add row, set the elements default values
+                defaultValues: { // When add row, set the elements default values
                     setZeroList: app.billableSetZeroList,
                     setEmptyList: null
                 }
@@ -686,7 +685,9 @@ app.firstTimeTotal = function() {
             $.ajax({
                 url: '/myansrsource/getprojecttype',
                 dataType: 'json',
-                data: { strtDate:strtDate},
+                data: {
+                    strtDate: strtDate
+                },
                 success: function(data) {
                     app.projectsList = data.data;
                 },
@@ -700,13 +701,13 @@ app.firstTimeTotal = function() {
         }
 
         var timesheetNonBillable = $('#timesheet-non-billable');
-        if(timesheetNonBillable.length > 0) {
+        if (timesheetNonBillable.length > 0) {
             timesheetNonBillable.dynamicForm({
                 add: '#timesheet-non-billable-add-btn',
                 del: '#timesheet-non-billable-del-btn',
                 daysTotal: true,
                 nonBillable: true,
-                defaultValues: {  // When add row, set the elements default values
+                defaultValues: { // When add row, set the elements default values
                     setZeroList: [0, 2, 3, 4, 5, 6, 7, 8, 9],
                     setEmptyList: null
                 }
@@ -715,7 +716,7 @@ app.firstTimeTotal = function() {
 
         var contigencyEffortEle = $('.contigency-effort-input');
 
-        if(contigencyEffortEle.length > 0) {
+        if (contigencyEffortEle.length > 0) {
             localStorage.contigencyEffort = contigencyEffortEle.val();
         }
 
@@ -739,7 +740,7 @@ app.getSum = function($elements, $outputElement) {
         total = 0,
         i;
 
-    for(i = 0; i < elementsLen; i += 1) {
+    for (i = 0; i < elementsLen; i += 1) {
         $item = $($elements[i]);
         itemVal = $item.val();
         total += itemVal;
@@ -749,27 +750,28 @@ app.getSum = function($elements, $outputElement) {
 };
 
 // Form control plugin
-;(function() {
+;
+(function() {
     $.fn.dynamicForm = function(options) {
         var $table = $(this),
             $addBtn = $(options.add),
             $delBtn = $(options.del),
-            $rows   = $table.find('tr'),
+            $rows = $table.find('tr'),
 
             rowCountElement = $table.find('input[type="hidden"]:first'),
             rowCount = Number(rowCountElement.val());
 
-        if(options.addTeamMember || options.changeTeamMember) {
+        if (options.addTeamMember || options.changeTeamMember) {
             rowCountElement = $table.parent().parent().find('input[type="hidden"]:nth-of-type(3), input[type="hidden"]:nth-of-type(4)');
             rowCount = Number(rowCountElement.val());
         }
 
-        if(options.isFinancialMilestone) {
+        if (options.isFinancialMilestone) {
             rowCountElement = $table.parent().parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
 
-	if(options.changeMilestone) {
+        if (options.changeMilestone) {
             rowCountElement = $table.parent().parent().parent().find('input[type="hidden"]:nth-of-type(3)');
             rowCount = Number(rowCountElement.val());
         }
@@ -789,33 +791,33 @@ app.getSum = function($elements, $outputElement) {
                 $curIdSel,
                 $popover = $('.popover');
 
-            if($popover.length > 0) {
+            if ($popover.length > 0) {
                 $popover.hide();
             }
 
 
-        // Slice the id number from last row id
-        lastRowId = app.getIdNo(lastRowId);
-        lastRowId = Number(lastRowId);
+            // Slice the id number from last row id
+            lastRowId = app.getIdNo(lastRowId);
+            lastRowId = Number(lastRowId);
 
-	    newRow = lastRow.clone();
-        newRowId = lastRowId + 1;
+            newRow = lastRow.clone();
+            newRowId = lastRowId + 1;
 
-        lastRow.after(newRow);
+            lastRow.after(newRow);
 
             $formFields = newRow.find('select, input, div, span');
             formFieldsLen = $formFields.length;
             rowCount += 1;
 
-            if(options.billableTotal || options.nonBillable) {
+            if (options.billableTotal || options.nonBillable) {
                 var disableElms = newRow.find('.ansr-disabled'),
                     disableElms2 = newRow.find('.disabled');
 
-                if(disableElms.length > 0) {
+                if (disableElms.length > 0) {
                     disableElms.removeClass('ansr-disabled');
                 }
 
-                if(disableElms2.length > 0) {
+                if (disableElms2.length > 0) {
                     disableElms2.removeClass('disabled');
                 }
             }
@@ -828,25 +830,25 @@ app.getSum = function($elements, $outputElement) {
                 curId = $element.attr('id');
                 curName = $element.attr('name');
 
-                if(curId) {
+                if (curId) {
                     curId = curId.replace(app.getIdNo(curId), newRowId);
                     $element.attr('id', curId);
                 }
 
-                if(curName) {
+                if (curName) {
                     curName = curName.replace(app.getIdNo(curName), newRowId);
                     $element.attr('name', curName);
                 }
 
-                if(options.billableTotal || options.nonBillable) {
+                if (options.billableTotal || options.nonBillable) {
                     var rowCountInitialElement = $table.find('input[type="hidden"]:eq(1)');
                     $(rowCountInitialElement).attr('value', rowCount);
                 }
 
-                if(options.defaultValues.setZeroList) {
-                    if(options.defaultValues.setZeroList.indexOf(index) !== -1) {
+                if (options.defaultValues.setZeroList) {
+                    if (options.defaultValues.setZeroList.indexOf(index) !== -1) {
                         // For project unit not set zero
-                        if(!$element.hasClass('project-unit')) {
+                        if (!$element.hasClass('project-unit')) {
                             if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
                                 $element.val('0');
                                 //console.log('input');
@@ -861,50 +863,54 @@ app.getSum = function($elements, $outputElement) {
                     //console.log(index + ': set zero');
                 }
 
-                if(options.defaultValues.setEmptyList) {
-                    if(options.defaultValues.setEmptyList.indexOf(index) !== -1) {
+                if (options.defaultValues.setEmptyList) {
+                    if (options.defaultValues.setEmptyList.indexOf(index) !== -1) {
                         $element.val('');
                         //console.log(index + ': set empty');
                     }
                 }
 
-                if(options.setEnableList) {
-                    if(options.setEnableList.indexOf(index) !== -1) {
+                if (options.setEnableList) {
+                    if (options.setEnableList.indexOf(index) !== -1) {
                         $element.prop('disabled', false);
                         //console.log(index + ': setEnableList');
                     }
                 }
 
-                if(options.setEditable) {
-                    if(options.setEditable.indexOf(index) !== -1) {
+                if (options.setEditable) {
+                    if (options.setEditable.indexOf(index) !== -1) {
                         $element.prop('readonly', false);
                         //console.log(index + ': setEditable');
                     }
                 }
 
-                if(options.setEditableAll) {
+                if (options.setEditableAll) {
                     $element.removeAttr('readonly');
                 }
 
-                if(options.calendar) {
-                    if(curId) {
+                if (options.calendar) {
+                    if (curId) {
                         if (curId.match('Date_pickers')) {
                             $curIdSel = $('#' + curId);
-                            $curIdSel.datetimepicker({"pickTime": false, "language": "en-us", "format": "YYYY-MM-DD"}).on('change', function() {
+                            $curIdSel.datetimepicker({
+                                "pickTime": false,
+                                "language": "en-us",
+                                "format": "YYYY-MM-DD"
+                            }).on('change', function() {
                                 app.calcCurRowChangeDate($table);
                             });
                         }
                     }
                 }
 
-                if(options.addTeamMember || options.changeTeamMember) {
-                    if((formFieldsLen - 1) === index) {
+                if (options.addTeamMember || options.changeTeamMember) {
+                    if ((formFieldsLen - 1) === index) {
                         $element.prop('disabled', false);
                     }
                     // For team member autocomplete
-                    if($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
+                    if ($element.hasClass('autocomplete-light-widget') && $element.attr('data-widget-bootstrap') == 'normal') {
                         var $remove = $element.find('.remove');
-                        if($remove.css('display') === 'none') {
+                        if ($remove.css('display') === 'none') {
                             $element.yourlabsWidget().input.bind('selectChoice', function(e, choice, autocomplete) {
                                 var $this = $(this);
                                 $this.getMemberHolidayList();
@@ -921,54 +927,54 @@ app.getSum = function($elements, $outputElement) {
                 }
 
 
-                if(options.plannedEffortCalc) {
-                    if($element.hasClass('pro-planned-effort-percent')) {
+                if (options.plannedEffortCalc) {
+                    if ($element.hasClass('pro-planned-effort-percent')) {
                         $element.val(100);
                     }
                 }
 
-                if(options.billableTotal) {
+                if (options.billableTotal) {
                     app.rowChapter = $('#id_form-' + newRowId + '-chapter');
-                    if($element.hasClass('billable-select-project')) {
+                    if ($element.hasClass('billable-select-project')) {
                         app.rowProject = $element;
                     }
                 }
 
 
 
-                if($element.hasClass('set-empty')) {
+                if ($element.hasClass('set-empty')) {
                     var elementType = $element.prop('tagName');
-                    if(elementType === 'SELECT' || elementType === 'INPUT') {
+                    if (elementType === 'SELECT' || elementType === 'INPUT') {
                         $element.val('');
                     } else {
                         $element.text('');
                     }
                 }
 
-                if($element.hasClass('set-zero')) {
+                if ($element.hasClass('set-zero')) {
                     var elementType2 = $element.prop('tagName');
-                    if(elementType2 === 'SELECT' || elementType2 === 'INPUT') {
+                    if (elementType2 === 'SELECT' || elementType2 === 'INPUT') {
                         $element.attr('value', 0);
-                        console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     } else {
                         $element.text('0');
                     }
                 }
 
-                if($element.hasClass('remove-sel-options')) {
+                if ($element.hasClass('remove-sel-options')) {
                     var elementType3 = $element.prop('tagName');
-                    if(elementType3 === 'SELECT') {
+                    if (elementType3 === 'SELECT') {
                         $element.find('option')
-                                .remove()
-                                .end()
-                                .append('<option value>-----</option>');
-                        console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                            .remove()
+                            .end()
+                            .append('<option value>-----</option>');
+                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     }
                 }
 
-                if($element.hasClass('set-q')) {
+                if ($element.hasClass('set-q')) {
                     var elementType4 = $element.prop('tagName');
-                    if(elementType4 === 'SELECT' || elementType4 === 'INPUT') {
+                    if (elementType4 === 'SELECT' || elementType4 === 'INPUT') {
                         $element.attr('value', 'Q');
                     } else {
                         $element.text('Q');
@@ -976,7 +982,7 @@ app.getSum = function($elements, $outputElement) {
                 }
 
 
-            console.log('index: ' + index + ' - ' + curId);  // Check the index value of the elements
+                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
 
             });
 
@@ -985,7 +991,7 @@ app.getSum = function($elements, $outputElement) {
             billableTotalFun();
             amountTotalFun();
 
-            if(options.plannedEffortCalc) {
+            if (options.plannedEffortCalc) {
                 app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
 
                 app.proPlannedEffortPercentItems.on({
@@ -997,18 +1003,18 @@ app.getSum = function($elements, $outputElement) {
 
                 // Calculate effort for new row
                 var item = $($table).find('tr').last(),
-                starDateItem = item.find('.pro-start-date'),
-                endDateItem = item.find('.pro-end-date'),
-                plannedEffortItem = item.find('.pro-planned-effort'),
-                plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
+                    starDateItem = item.find('.pro-start-date'),
+                    endDateItem = item.find('.pro-end-date'),
+                    plannedEffortItem = item.find('.pro-planned-effort'),
+                    plannedEffortPercentItem = item.find('.pro-planned-effort-percent');
 
                 plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
             }
 
-            if(options.billableTotal) {
+            if (options.billableTotal) {
                 app.billableSelectProject = $('.billable-select-project');
                 app.changeProject();
-		        app.autoFillInit(app.rowProject, app.rowChapter);
+                app.autoFillInit(app.rowProject, app.rowChapter);
             }
         };
 
@@ -1024,7 +1030,7 @@ app.getSum = function($elements, $outputElement) {
 
                 isDelete = curRowCheckbox.is(':checked');
 
-                if(isDelete) {
+                if (isDelete) {
                     curRowCheckbox.closest('tr').remove();
 
                     rowCount -= 1;
@@ -1036,10 +1042,10 @@ app.getSum = function($elements, $outputElement) {
         };
 
         var daysTotalFun = function() {
-            if(options.daysTotal) {
+            if (options.daysTotal) {
                 var $days = $table.find('.days');
 
-                var totalDays = function () {
+                var totalDays = function() {
                     var $curEle = $(this),
                         $curRow = $curEle.closest('tr'),
                         $curDays = $curRow.find('.days'),
@@ -1064,10 +1070,10 @@ app.getSum = function($elements, $outputElement) {
                     }
 
                     var nonBillableTotalFun = function() {
-                        for(i = 0; i < totalListLen; i += 1) {
+                        for (i = 0; i < totalListLen; i += 1) {
                             curTotalNonBillable = Number($($totalList[i]).val());
 
-                            tempTotalNonBillable +=  curTotalNonBillable;
+                            tempTotalNonBillable += curTotalNonBillable;
                         }
 
                         totalNonBillable = tempTotalNonBillable.toFixed(2);
@@ -1091,18 +1097,18 @@ app.getSum = function($elements, $outputElement) {
         };
 
         var billableTotalFun = function() {
-            if(options.billableTotal) {
-                var $totalBillableHours     = $('.total-billable-hours'),
-                    $totalIdleHours         = $('.total-idle-hours');
+            if (options.billableTotal) {
+                var $totalBillableHours = $('.total-billable-hours'),
+                    $totalIdleHours = $('.total-idle-hours');
 
 
                 var $dayPopoverBtn = $table.find('.day-popover-button');
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input"></label></div>';
+                var popoverCon = '<div class="mar-bot-5" style="display: none;><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input style="position: absolute;top: -45px;left: 16px;width: 67px;" class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
+                popoverCon += '<div class="mar-bot-5" style="display: none;><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input"></label></div>';
 
                 $dayPopoverBtn.popover({
                     trigger: 'click',
@@ -1112,33 +1118,33 @@ app.getSum = function($elements, $outputElement) {
                 });
 
 
-               var primaryCb = function(e) {
-                   e.preventDefault();
-                   e.stopPropagation();
+                var primaryCb = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                   var $curDayBtn              = $(this),
-                        $curRow                 = $curDayBtn.closest('tr'),
-                        $curRowQuestions        = $curRow.find('.b-questions'),
-                        $curRowHours            = $curRow.find('.b-hours'),
-                        $totalQuestions         = $curRow.find('.t-questions'),
-                        $totalHours             = $curRow.find('.t-hours'),
-                        $totalQuestionsHidden   = $curRow.find('.t-questions-hidden'),
-                        $totalHoursHidden       = $curRow.find('.t-hours-hidden'),
-                        curRowQuestionsLen      = $curRowQuestions.length,
-                        $curQuestionsView       = $curDayBtn.find('.b-questions'),
-                        $curHoursView           = $curDayBtn.find('.b-hours'),
-                        $curQuestionsHidden     = $curDayBtn.find('.b-questions-hidden'),
-                        $curHoursHidden         = $curDayBtn.find('.b-hours-hidden'),
-                        $curQuestionsInput      = $curDayBtn.next().find('.question-input'),
-                        $curHoursInput          = $curDayBtn.next().find('.hours-input'),
-                        $curProjectUnit         = $curDayBtn.find('.project-unit'),
-                        $curProjectPopupUnit    = $curDayBtn.next().find('.project-type-popup'),
-                        $curProjectPopupNorm    = $curDayBtn.next().find('.norm-input'),
-                        curQuestionsViewText    = $curQuestionsView.text(),
-                        curHoursViewText        = $curHoursView.text(),
-                        curProjectUnit          = $curProjectUnit.text(),
-                        $curSelectProject       = $curRow.find('.billable-select-project'),
-                        selectedValue   = Number($curSelectProject.val()),
+                    var $curDayBtn = $(this),
+                        $curRow = $curDayBtn.closest('tr'),
+                        $curRowQuestions = $curRow.find('.b-questions'),
+                        $curRowHours = $curRow.find('.b-hours'),
+                        $totalQuestions = $curRow.find('.t-questions'),
+                        $totalHours = $curRow.find('.t-hours'),
+                        $totalQuestionsHidden = $curRow.find('.t-questions-hidden'),
+                        $totalHoursHidden = $curRow.find('.t-hours-hidden'),
+                        curRowQuestionsLen = $curRowQuestions.length,
+                        $curQuestionsView = $curDayBtn.find('.b-questions'),
+                        $curHoursView = $curDayBtn.find('.b-hours'),
+                        $curQuestionsHidden = $curDayBtn.find('.b-questions-hidden'),
+                        $curHoursHidden = $curDayBtn.find('.b-hours-hidden'),
+                        $curQuestionsInput = $curDayBtn.next().find('.question-input'),
+                        $curHoursInput = $curDayBtn.next().find('.hours-input'),
+                        $curProjectUnit = $curDayBtn.find('.project-unit'),
+                        $curProjectPopupUnit = $curDayBtn.next().find('.project-type-popup'),
+                        $curProjectPopupNorm = $curDayBtn.next().find('.norm-input'),
+                        curQuestionsViewText = $curQuestionsView.text(),
+                        curHoursViewText = $curHoursView.text(),
+                        curProjectUnit = $curProjectUnit.text(),
+                        $curSelectProject = $curRow.find('.billable-select-project'),
+                        selectedValue = Number($curSelectProject.val()),
                         selectedProject;
 
                     var viewToInput = function() {
@@ -1148,13 +1154,13 @@ app.getSum = function($elements, $outputElement) {
 
                     var projectUnitViewToPopUp = function() {
                         // get current project by id
-                        if(selectedValue != 0) {
+                        if (selectedValue != 0) {
                             selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
 
                             //console.log(selectedProject);
                             app.curProjectUnitShort = selectedProject.project__projectType__code;
-                            app.curProjectUnit      = selectedProject.project__projectType__description;
-                            app.norms               = selectedProject.project__maxProductivityUnits;
+                            app.curProjectUnit = selectedProject.project__projectType__description;
+                            app.norms = selectedProject.project__maxProductivityUnits;
 
                             $curProjectPopupUnit.text(app.curProjectUnit);
                         } else {
@@ -1162,7 +1168,7 @@ app.getSum = function($elements, $outputElement) {
                         }
 
                         // Get project norms
-                        if(app.norms > 0 && app.norms != undefined) {
+                        if (app.norms > 0 && app.norms != undefined) {
                             $curProjectPopupNorm.text(app.norms + '  ' + app.curProjectUnitShort + '/DAY');
                         } else {
                             $curProjectPopupNorm.text('  ');
@@ -1180,27 +1186,27 @@ app.getSum = function($elements, $outputElement) {
                             curHours,
                             i,
                             curTaskType = $curRow.find('.b-task option:selected').data('task-type'),
-                            curTotalIdleHours          = 0,
-                            curTotalBillableHours      = 0,
-                            $curTotalIdleHoursHidden    = $curRow.find('.r-total-idle-hours'),
-                            $curTotalBillableHoursHidden    = $curRow.find('.r-total-billable-hours');
+                            curTotalIdleHours = 0,
+                            curTotalBillableHours = 0,
+                            $curTotalIdleHoursHidden = $curRow.find('.r-total-idle-hours'),
+                            $curTotalBillableHoursHidden = $curRow.find('.r-total-billable-hours');
 
                         console.log('curTaskType: ' + curTaskType);
 
-                        if(curTaskType === 'I') {
+                        if (curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
                         } else {
                             $curRow.removeClass('idle-row').addClass('billable-row');
                         }
 
-                        for(i = 0; i < curRowQuestionsLen; i += 1) {
+                        for (i = 0; i < curRowQuestionsLen; i += 1) {
                             curQuestions = Number($($curRowQuestions[i]).text());
-                            curHours     = Number($($curRowHours[i]).text());
+                            curHours = Number($($curRowHours[i]).text());
 
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
 
-                            if(curTaskType === 'I') {
+                            if (curTaskType === 'I') {
                                 curTotalIdleHours += curHours;
                             } else {
                                 curTotalBillableHours += curHours;
@@ -1233,12 +1239,12 @@ app.getSum = function($elements, $outputElement) {
                             tempIdleTotal = Number(tempIdleTotal);
                             tempBillableTotal = Number(tempBillableTotal);
 
-                            for(i = 0; i < rTotalIdleHoursListLen; i += 1) {
+                            for (i = 0; i < rTotalIdleHoursListLen; i += 1) {
                                 curIdleTotal = Number($($rTotalIdleHoursList[i]).val());
                                 tempIdleTotal += curIdleTotal;
                             }
 
-                            for(i = 0; i < rTotalBillableHoursListLen; i += 1) {
+                            for (i = 0; i < rTotalBillableHoursListLen; i += 1) {
                                 curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
                                 tempBillableTotal += curBillableTotal;
                             }
@@ -1264,7 +1270,7 @@ app.getSum = function($elements, $outputElement) {
                         var curInput = $curHoursInput.val();
                         console.log(curInput);
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
-                        if(tsInput) {
+                        if (tsInput) {
                             $curQuestionsView.text($curQuestionsInput.val());
                             $curHoursView.text($curHoursInput.val());
 
@@ -1275,7 +1281,7 @@ app.getSum = function($elements, $outputElement) {
                         }
                     };
 
-                   $curQuestionsInput.on({
+                    $curQuestionsInput.on({
                         keyup: inputToView,
                         click: inputToView
                     }, calculateTotal);
@@ -1299,13 +1305,13 @@ app.getSum = function($elements, $outputElement) {
 
 
                 $dayPopoverBtn.on('keyup', function(e) {
-                    if(e.keyCode === 9) {
+                    if (e.keyCode === 9) {
                         $(this).trigger('click');
                     }
                 });
 
                 $(document).on('keyup', function(e) {
-                    if(e.keyCode === 27) {
+                    if (e.keyCode === 27) {
                         var $popover = $('.popover');
                         $popover.popover('hide');
                     }
@@ -1321,10 +1327,10 @@ app.getSum = function($elements, $outputElement) {
         };
 
         var amountTotalFun = function() {
-            if(options.isAmountTotal) {
+            if (options.isAmountTotal) {
                 var $datePickers = $('.date-picker');
 
-                if($($datePickers[0]).prop('readonly') == true) {
+                if ($($datePickers[0]).prop('readonly') == true) {
                     $table.hide();
 
                     $links.each(function() {
@@ -1342,18 +1348,18 @@ app.getSum = function($elements, $outputElement) {
 
                 // amount validation
                 var amountValidatoinFun = function() {
-                    if(projectTotalValueHidden !== Number($amountTotal.text())) {
-                        if(!($amountTotal.hasClass('t-danger'))) {
+                    if (projectTotalValueHidden !== Number($amountTotal.text())) {
+                        if (!($amountTotal.hasClass('t-danger'))) {
                             $amountTotal.addClass('t-danger');
                         }
                     } else {
-                        if($amountTotal.hasClass('t-danger')) {
+                        if ($amountTotal.hasClass('t-danger')) {
                             $amountTotal.removeClass('t-danger');
                         }
                     }
                 };
 
-                var amountTotal = function () {
+                var amountTotal = function() {
                     var $amountsLen = $amounts.length,
                         i,
                         $curItem,
@@ -1363,7 +1369,7 @@ app.getSum = function($elements, $outputElement) {
                         $curItem = Number($($amounts[i]).val());
                         temp += $curItem;
                     }
-		            temp = temp.toFixed(2);
+                    temp = temp.toFixed(2);
                     $amountTotal.text(temp);
 
                     amountValidatoinFun();
@@ -1382,7 +1388,7 @@ app.getSum = function($elements, $outputElement) {
         billableTotalFun();
         amountTotalFun();
 
-        if(options.plannedEffortCalc) {
+        if (options.plannedEffortCalc) {
             app.plannedEfforInit($table);
         }
 
@@ -1393,7 +1399,7 @@ app.getSum = function($elements, $outputElement) {
 }(jQuery));
 
 
-app.workingDaysBetweenDates = function (startDate, endDate) {
+app.workingDaysBetweenDates = function(startDate, endDate) {
     var newDate,
         holidayCount = 0,
         holidaysListLen = app.holidaysList.length;
@@ -1404,9 +1410,9 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
 
     // Calculate days between dates
     var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
-    startDate.setHours(0,0,0,1);  // Start just after midnight
-    endDate.setHours(23,59,59,999);  // End just before midnight
-    var diff = endDate - startDate;  // Milliseconds between datetime objects
+    startDate.setHours(0, 0, 0, 1); // Start just after midnight
+    endDate.setHours(23, 59, 59, 999); // End just before midnight
+    var diff = endDate - startDate; // Milliseconds between datetime objects
     var days = Math.ceil(diff / millisecondsPerDay);
 
     // Subtract two weekend days for every week in between
@@ -1433,8 +1439,8 @@ app.workingDaysBetweenDates = function (startDate, endDate) {
     var startDateFormat,
         startGetDay;
 
-    for(var i = 0; i < holidaysListLen; i += 1) {
-        if(app.holidaysList[i] >= startDate && app.holidaysList[i] <= endDate) {
+    for (var i = 0; i < holidaysListLen; i += 1) {
+        if (app.holidaysList[i] >= startDate && app.holidaysList[i] <= endDate) {
             holidayCount += 1;
         }
     }
@@ -1463,11 +1469,11 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
 
 
     // Type cast
-    for(var i = 0; i < startDateLen; i += 1) {
+    for (var i = 0; i < startDateLen; i += 1) {
         startDate[i] = Number(startDate[i]);
     }
 
-    for(i = 0; i < endDateLen; i += 1) {
+    for (i = 0; i < endDateLen; i += 1) {
         endDate[i] = Number(endDate[i]);
     }
 
@@ -1481,8 +1487,8 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
     // Calculate planned effort
     var totalPlannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
 
-    if(percent) {
-        var plannedEffortPercent = (plannedEffortVal/totalPlannedEffort) * 100;  // Calculate effort percentage
+    if (percent) {
+        var plannedEffortPercent = (plannedEffortVal / totalPlannedEffort) * 100; // Calculate effort percentage
         plannedEffortPercent = Math.round(plannedEffortPercent);
         plannedEffortPercent = Number(plannedEffortPercent);
 
@@ -1492,7 +1498,7 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
         };
     } else {
         var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
-         plannedEffort = plannedEffort.toFixed(2);
+        plannedEffort = plannedEffort.toFixed(2);
         //plannedEffort = Math.round(plannedEffort);
 
         return {
@@ -1518,18 +1524,18 @@ app.plannedEfforInit = function($table) {
 
     app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
 
-    for(var i = 0; i < totalHolidayLen; i += 1) {
+    for (var i = 0; i < totalHolidayLen; i += 1) {
         holiday = new Date(window.holidays.data[i].date);
         holidayDay = holiday.getDay();
 
-        if(holidayDay !== 0 && holidayDay !== 6) {
+        if (holidayDay !== 0 && holidayDay !== 6) {
             app.holidaysList.push(holiday);
         }
     }
 
     // Calculate effort for each row
     $tableRows.each(function(index) {
-        if(index > 0) {
+        if (index > 0) {
             item = $(this);
             starDateItem = item.find('.pro-start-date');
             endDateItem = item.find('.pro-end-date');
@@ -1551,11 +1557,11 @@ app.plannedEfforInit = function($table) {
         plannedEffortItem = row.find('.pro-planned-effort');
         plannedEffortPercentItem = row.find('.pro-planned-effort-percent');
 
-        if(item.hasClass('pro-planned-effort-percent')) {
+        if (item.hasClass('pro-planned-effort-percent')) {
             plannedEffortItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem).plannedEffort);
         }
 
-        if(item.hasClass('pro-planned-effort')) {
+        if (item.hasClass('pro-planned-effort')) {
             plannedEffortPercentItem.val(app.getPlannedEffort(starDateItem, endDateItem, plannedEffortItem, plannedEffortPercentItem, 'percent').plannedEffortPercent);
         }
     };
@@ -1576,16 +1582,15 @@ app.plannedEfforInit = function($table) {
 
 
 app.autoFillInit = function($currentElement, $currentChapter) {
-    function fireEvent(element,event){
-        if (document.createEventObject){
+    function fireEvent(element, event) {
+        if (document.createEventObject) {
             // dispatch for IE
             var evt = document.createEventObject();
-            return element.fireEvent('on'+event,evt)
-        }
-        else{
+            return element.fireEvent('on' + event, evt)
+        } else {
             // dispatch for firefox + others
             var evt = document.createEvent("HTMLEvents");
-            evt.initEvent(event, true, true ); // event type,bubbling,cancelable
+            evt.initEvent(event, true, true); // event type,bubbling,cancelable
             return !element.dispatchEvent(evt);
         }
     }
@@ -1620,9 +1625,9 @@ $.fn.getMemberHolidayList = function(options) {
         selectedVal = $select.val();
 
     $.ajax({
-        url: '/myansrsource/getholidays/' + selectedVal + '/' ,
+        url: '/myansrsource/getholidays/' + selectedVal + '/',
         dataType: 'json',
-        success: function( data ) {
+        success: function(data) {
             data = data.data;
 
             helper.clearArray(app.holidaysList);
@@ -1631,19 +1636,19 @@ $.fn.getMemberHolidayList = function(options) {
                 holidayDay,
                 totalHolidayLen = data.length;
 
-            for(var i = 0; i < totalHolidayLen; i += 1) {
+            for (var i = 0; i < totalHolidayLen; i += 1) {
                 holiday = new Date(data[i].date);
                 holidayDay = holiday.getDay();
 
-                if(holidayDay !== 0 && holidayDay !== 6) {
+                if (holidayDay !== 0 && holidayDay !== 6) {
                     app.holidaysList.push(holiday);
                 }
             }
 
             console.log(app.holidaysList);
         },
-        error: function( data ) {
-            console.log( "ERROR:  " + data );
+        error: function(data) {
+            console.log("ERROR:  " + data);
         }
     });
 
