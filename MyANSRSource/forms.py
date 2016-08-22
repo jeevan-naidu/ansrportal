@@ -79,9 +79,7 @@ class ActivityForm(forms.Form):
                                         min_value=0.0,
                                         decimal_places=2,
                                         )
-    activity_feedback = forms.CharField(
-        max_length="50", label="Feedback", required=False
-    )
+
     atId = forms.IntegerField(label="id",
                               required=False,
                               widget=forms.HiddenInput())
@@ -92,7 +90,6 @@ class ActivityForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
-        self.fields['activity_feedback'].widget.attrs['readonly'] = 'True'
         self.fields['activity_total'].widget.attrs['readonly'] = 'True'
         self.fields['activity'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['class'] = "form-control \
@@ -111,7 +108,6 @@ class ActivityForm(forms.Form):
         days input-field Sun-t"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
-        self.fields['activity_feedback'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['value'] = 0
         self.fields['activity_tuesday'].widget.attrs['value'] = 0
         self.fields['activity_wednesday'].widget.attrs['value'] = 0
@@ -239,9 +235,7 @@ def TimesheetFormset(currentUser,enddate):
                                     max_digits=12,
                                     decimal_places=2,
                                     widget=forms.HiddenInput())
-        feedback = forms.CharField(
-            max_length="50", label="Feedback", required=False
-        )
+
         tsId = forms.IntegerField(label="id",
                                   required=False,
                                   widget=forms.HiddenInput())
@@ -323,10 +317,6 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalH'].widget.attrs[
                 'class'
             ] = "t-hours-hidden d-item set-zero"
-            self.fields['feedback'].widget.attrs[
-                'class'
-            ] = "form-control d-item set-zero"
-            self.fields['feedback'].widget.attrs['readonly'] = 'True'
             self.fields['mondayH'].widget.attrs['value'] = 0
             self.fields['mondayQ'].widget.attrs['value'] = 0.0
             self.fields['tuesdayH'].widget.attrs['value'] = 0
