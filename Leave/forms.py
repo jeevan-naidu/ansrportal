@@ -105,7 +105,7 @@ def LeaveForm(leavetype, user, data=None):
             #   'to_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
             }
 
-    onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave',  'comp_off_avail', 'pay_off', 'short_leave']
+    onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave',  'comp_off_avail', 'pay_off', 'short_leave','comp_off_earned']
     regular_leave = ['earned_leave', 'sick_leave', 'casual_leave', 'loss_of_pay', 'work_from_home', 'sabbatical']
 
     if leavetype in onetime_leave:

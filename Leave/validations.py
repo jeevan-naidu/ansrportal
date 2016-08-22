@@ -85,7 +85,7 @@ def oneTimeLeaveValidation(leave_form, user):
     elif leaveType_selected == 'short_leave':
         result['success'] = 1
         result['todate'] = fromDate
-        if fromDate in [date['date'] for date in holiday] or fromDate.weekday() >= 5:
+        if fromDate in [datedata['date'] for datedata in holiday] or fromDate.weekday() >= 5:
             result['errors'].append('You have applied for leave on a holiday.')
 
     else:
