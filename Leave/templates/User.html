@@ -39,7 +39,6 @@
             <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
-                        <form method='POST'  id='post-form' action=".">
                         <div class="modal-header">
 
                             <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -68,7 +67,77 @@
     </div>
     <!--  End Apply/cancel leave pop-->
 
+    <!--  Start Apply/cancel short attendance popup-->
+   <div class="row margin-correct">
+        <div class="col-md-12">
+            <div class="modal fade" id="modal-container-shortleave" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
 
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								Please Enter Your Short Attendance Leave Application
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-300" id="modal_body_shortleave">
+                          loading...............
+                        </div>
+                            <div class="form-group">
+
+                        <div class="modal-footer">
+
+                          <p class="text-left manager-name">Manager : {{manager}}</p>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+  <!--  End Apply/cancel short attendance pop-->
+
+     <!--  Start Apply/cancel short attendance popup-->
+   <div class="row margin-correct">
+        <div class="col-md-12">
+            <div class="modal fade" id="modal-container-shortleave-dispute" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								Please Enter Remark
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-300" id="modal_body_dispute">
+                          loading...............
+                        </div>
+                            <div class="form-group">
+
+                        <div class="modal-footer">
+
+                          <p class="text-left manager-name">Manager : {{manager}}</p>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+  <!--  End Apply/cancel short attendance pop-->
 
     <div class="container Lv-themeTxtColor ">
 
@@ -98,7 +167,7 @@
                     <div class="row margin-correct">
 
                         <div class="col-md-6">
-                          {%if managerFlag%}
+                          {%if managerFlag or  LeaveAdmin%}
                           <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
                               {% csrf_token %}
                               {% bootstrap_messages %}
@@ -119,7 +188,7 @@
 
 
                           <!-- <a href="#" class="pull-right btn btn-sm btn-danger">Export</a> -->
-                          {% if not LeaveAdmin %}
+                          {% if  LeaveAdmin or userCheck%}
                           <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="Apply Leave"  class="pull-right btn btn-sm btn-danger btn-ansr-orange">
                             Apply Leave
                           </a>
@@ -457,6 +526,31 @@
                         </div>
                     </div>
 
+
+<!-- Short Leave -->
+                {% if leaveShortAttendanceIsActive %}
+                    <div class="row pad5 progress-bar-container" id="short_leave">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                            Short Attendance
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="progress Lv-progress short-leave">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+    {% endif %}
+<!-- ./Short Leave -->
+
                     <div class="row pad15X margin-correct">
 
                         <div class="col-sm-12">
@@ -491,7 +585,7 @@
                         <div class="Lv-TransactionsContainer">
 
 
-<div class="Transactions-header clearfix">
+<div class="Transactions-header clearfix" id="transaction_status">
                           <span class="pull-right">
                            <label for="month_select">Select status&nbsp;:&nbsp;</label>
                            <select class="Lv-Tr-SelectMonth input-sm" id="month_select">
@@ -517,6 +611,27 @@
                                     <th>To</th>
                                     <th>Days</th>
                                 </tr>
+
+
+<!-- Temp Section -->
+
+<tr class="success">
+    <td>1<br><a onclick="showDetails(317)" role="button" data-toggle="modal" title="View Details">Details</a>         </td>
+    <td>2016-07-27<br>First Half</td>
+    <td>2016-07-28, <br>Second Half</td>
+    <td>
+        <div class="btn btn-danger btn-xs">Dispute</div>
+        <div class="btn btn-danger btn-xs">Accept</div>
+    </td>
+</tr>
+ 
+<!-- ./ Temp Section -->
+
+
+
+
+
+
 
 
                             </table>
@@ -545,18 +660,81 @@
 
 
 
-
+</div>
 
 
 <script>
+$('.remark').click(function(e){
+            var class_name = this.id.split('_');
+           $("#remark__"+class_name[1]).show();
+           e.preventDefault();
+        });
+
+
 
 function refreshBackground() {
         window.location.reload();
     }
 $(document).ready(function() {
 
-gridLoad('earned_leave');
 
+    gridLoad('earned_leave');
+
+//short leave datapopulation
+var openshortleave = {{ ShortLeaveApplied }};
+var approvedshortleave = {{ ShortLeaveAppproved }};
+
+
+shortleavegrid(openshortleave, approvedshortleave);
+
+function shortleavegrid(openshortleave, approvedshortleave){
+    if(openshortleave!=0){
+        $('#short_leave .applied').text(openshortleave);
+      }
+      if(approvedshortleave!=0){
+      $('#short_leave .approved').text(approvedshortleave);
+      }
+      if(openshortleave || approvedshortleave ){
+        applied_perc = (openshortleave/(openshortleave + approvedshortleave ))*100;
+        approved_perc = (approvedshortleave/(openshortleave + approvedshortleave ))*100;
+        $('#short_leave .applied').css({'width' : applied_perc+"%"});
+        $('#short_leave .approved').css({'width' : approved_perc+"%"});
+      }
+}
+
+ $('#short_leave .col-md-12 .row').click(function(){
+    removeSelection();
+   $('#short_leave .col-md-12 .row').addClass("Lv-Type-Selected");
+     var statusdropdown = document.getElementById("month_select");
+
+     $("#transaction_status *").attr("disabled", "disabled").off('click');
+   shortLeaveGridLoad();
+  });
+
+function shortLeaveGridLoad(){
+
+    $('.table-bordered').empty();
+     $.ajax(
+        {
+            type : "GET",
+            url : '/leave/ShortAttendanceTransact/',
+            data :{'type':$('#month_select').val(),user_id:{{userid}}} ,
+            success : function(data)
+            {
+                $('.table-bordered').append(data);
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+              },
+            }
+          );
+
+}
+
+//short leave compleate
   var totalcount = 0;
   {% for leave in leave_summary%}
   var leaveType='{{leave.leave_type__leave_type}}';
@@ -955,6 +1133,8 @@ gridLoad('earned_leave');
           );
           });
 
+
+
 function removeSelection(){
   $("#earned_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#child_care .col-md-12 .row").removeClass("Lv-Type-Selected");
@@ -967,6 +1147,8 @@ function removeSelection(){
   $("#comp_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off_apply .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#sabbatical .col-md-12 .row").removeClass("Lv-Type-Selected");
+    ///for short leave
+    $("#short_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
 
 
 }
@@ -977,6 +1159,8 @@ function gridLoad(name){
   getLeaveName = {'sabbatical':'Sabbatical', 'comp_off_avail':"Comp Off avail",'paternity_leave':'Paternity','maternity_leave':'Maternity', 'comp_off_earned':'Comp Off Earned', 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'bereavement_leave':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
   leavename = getLeaveName[name];
   $("#leave_name").text(leavename);
+
+    $('#transaction_status *').removeAttr("disabled");
   $('.table-bordered').empty();
   $.ajax(
         {
@@ -1167,6 +1351,31 @@ function showDetails(leave_id){
             }
           );
 }
+
+// short leave details
+function shortLeaveDetails(leave_id) {
+    $.ajax(
+            {
+                type: "GET",
+                url: '/leave/ShortAttendanceDetail/',
+                data: {'leaveid': leave_id},
+                success: function (data) {
+                    $('.LeaveDetails').remove();
+                    $('#myModal').modal({show: true});
+                    $('#myModaldata').append(data);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+                },
+            }
+    );
+}
+
+
+
 </script>
 
 <script type="text/javascript">

@@ -71,10 +71,12 @@
     }
 
     .MyLeavesContainer {
-    	padding: 30px 25px 30px;
-      background-color: #FFF;
-    	margin-bottom: 5px;
-      margin-top: -1px;
+	padding: 30px 25px 30px;
+  background-color: #D3F0F5;
+  background-color: #D3F5D6;
+  background-color: #EBF5FB;
+	margin-bottom: 5px;
+  margin-top: -1px;
     }
     .MyLeavesContainer .row:not(:last-child){
       cursor: pointer;
@@ -186,10 +188,13 @@
       border-left: 3px solid #1D92E5;
     }*/
     .Lv-Type-Selected{
-      background: #F0F0F0;
-      margin: -5px -10px;
+      background-color: #E0E0E0;
+      background-color: #DADADA;
+      background: #FFF;
+      /* margin: -5px -10px; */
       color: #444;
-      font-weight: 700;
+       font-weight: 700;
+      /* border-left: 3px solid #1D92E5; */
       border-left: 5px solid #7DB0B9;
       color: #696969;
       line-height: 20px;
@@ -204,7 +209,6 @@
     }
     .Lv-Tr-SelectMonth{
         color:#000;
-        width: 100px;
     }
 
     span.total-leave-count{color: #333}
@@ -216,7 +220,9 @@
         /*	Start Leave- Approve tab */
 
         .Lv-ApLvHeader {
-            background-color: #f0f0f0;
+            /*background-color: #464A4C;*/
+            background-color: #4289A3;
+            background-color: #ffffff;
             margin-bottom: 10px;
             /*border-radius: 3px;*/
             /*padding: 5px 14px;*/
@@ -225,8 +231,8 @@
         }
 	.Lv-ApproveTH >th{
 	  background-color: #464A4C;
-    /*background-color: #91ACB9;
-    background-color: rgba(112,192,197, 1);*/
+    background-color: #91ACB9;
+    background-color: rgba(112,192,197, 1);
 	  color: #fff;
 	}
 	.Lv-Pipe{
@@ -277,11 +283,10 @@
 	  width: 100%;
 	}
 	.Lv-ApprLvSubmit{
-    /*background-color: #CDE2EF;*/
+    background-color: #CDE2EF;
     /* background-color: #D8EBF7; */
-    /*background-color: #FAFDFF;
+    background-color: #FAFDFF;
     background-color: #E7F0F7;
-    background-color: #FFF;*/
     margin-bottom: 20px;
     padding: 10px 14px;
     color: #fff;
@@ -289,7 +294,7 @@
     border-top: 0px;
 	}
 
-  .table.ansrgreen{border-color: #E7F0F7;border-color: #dadada}
+  .table.ansrgreen{border-color: #E7F0F7}
 
 
 
@@ -513,7 +518,7 @@
                   max-width: 120px;
                   display: block;
                   font-size: 11px;
-                  /*padding-left: 15px;*/
+                  padding-left: 15px;
                 }
 
                 .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
@@ -598,7 +603,7 @@
         /*.apply-export .btn:hover{background: #114456}*/
         .apply-export a.btn:nth-child(2){margin-right: 10px;}
 
-        .progress-bar-container{margin:0px -35px 0px;font-size: 12px;}
+        .progress-bar-container{margin:0px -30px 0px;font-size: 12px;}
         .progress-bar{
           -webkit-box-shadow: inset 0 0 0 rgba(0,0,0,.15);
           box-shadow: inset 0 0px 0 rgba(0,0,0,.15);
@@ -624,7 +629,7 @@
         /* Corrections -2  */
 
         .LvMenuBtn{display: none}
-        /*body.pace-done{padding-top: 75px;}*/
+        body.pace-done{padding-top: 75px;}
         .ansrLogo{max-width: 175px !important}
         .template-header{margin-top: 0px;}
 
@@ -633,19 +638,14 @@
         .template-header + hr{margin-bottom: 10px;}
         .Lv-ApLvHeader + hr{margin-top: 10px}
 
-        .Lv-ProgressBar-TotalDays{line-height: 15.7px}
+        .Lv-Type-Selected .Lv-ProgressBar-TotalDays{line-height: 15.7px}
 
         /* Corrections -3 */
 
-        .Transactions-header{width: 100%; background: #FFF;line-height: 40px;padding: 0px 15px}
+        .Transactions-header{width: 100%;background: #D3F5D6; background: #EBF5FB;line-height: 40px;padding: 0px 15px}
         .Transactions-header label{margin-bottom: 0px;}
         .no-border th, .no-border td{border: 1px solid #FFF}
-        .leave-data-container{
-          padding: 15px;
-          overflow-y: auto;
-          height: 100%;
-          background: #f0f0f0;
-        }
+        .leave-data-container{padding: 15px;overflow-y: auto;height: 100%;}
 
         .approve-reject{
           margin-right: 25px;
@@ -671,7 +671,7 @@
           border-color: #FFDDD1;
         }
         .table-hover.ansrgreen>tbody>tr:hover>td{background: #FAFDFF}
-        .btn-ansr-orange{background: #ee5f2d;border: 1px solid #ee5f2d;color: #fff}
+        .btn-ansr-orange{background: #ee5f2d;border: 1px solid #ee5f2d;}
         .btn-ansr-orange:hover, .btn-ansr-orange:focus{background: #D84614;border: 1px solid #ee5f2d;}
 
         /* Header Nav */
@@ -681,7 +681,6 @@
           color: #214761;
           color: #102B3E;
           background: #FAFDFF;
-          background-color: #FFF;
           font-family: 'Droid Sans',sans-serif;;
           font-size: 13px;
         }
@@ -690,45 +689,16 @@
 
 
 
+        /* Short leave section */
+
+        .short-leave{background: #E54B4B !important}
 
 
+        .active .anchor-inherit.btn{
+          color: rgb(138, 174, 192);
+        }
 
-        /* Changes for Vendroid */
-
-        .vd_content-section .row{margin-bottom: 0px;}
-
-
-
-        /* Leave */
-
-.modal-header {
-    min-height: 16.43px;
-    padding: 15px;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.modal-content {
-    position: relative;
-    background-color: #fff;
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    border: 1px solid #999;
-    border: 1px solid rgba(0,0,0,.2);
-    border-radius: 6px;
-    outline: 0;
-    -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
-    box-shadow: 0 3px 9px rgba(0,0,0,.5);
-}
-
-.modal-footer {
-    padding: 15px;
-    text-align: right;
-    border-top: 1px solid #e5e5e5;
-}
-
-/* Vendroid Mod */
-
-.btn-ansr-orange:hover, .btn-ansr-orange:focus{
-  color: #fff
-}
+        .active .Lv-Mg-NotifyCount{
+          color: #898989;
+        }
 

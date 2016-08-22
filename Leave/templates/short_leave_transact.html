@@ -1,0 +1,93 @@
+<tbody>
+<tr class=""><th>Sr.No</th><th>For Date</th><th>Due Date</th><th>Action</th></tr>
+{% for leave in Short_Leave_transact %}
+<tr class="success">
+    <td>{{ forloop.counter }}<br>
+    <a
+             onclick ="shortLeaveDetails({{ leave.id }})" role="button" data-toggle="modal" title="View Details">Details</a>
+             </td>
+    <td>{{ leave.for_date }}</td><td>{{ leave.due_date }}</td>
+    <td>
+    {% if admin_access %}
+    <div class="col-md-6 apply-export">
+                          <a id="modal-shortleave-{{ leave.id }}" href="#modal-container-shortleave" role="button" data-toggle="modal" title="Apply Leave"
+                             class="pull-right btn btn-xs btn-danger btn-ansr-orange">
+                            Accept
+                          </a>
+
+                        </div>
+    {% if leave.dispute == 'raised' %}
+        <div class="col-md-6 apply-export" >
+
+                          <a id="modal-shortleave-{{ leave.id }}" href="#modal-container-shortleave-dispute" role="button" disabled data-toggle="modal" title="raise dispute"
+                             class="pull-right btn btn-xs btn-danger ">
+                            Dispute
+                          </a>
+
+                        </div>
+    {% else %}
+    <div class="col-md-6 apply-export">
+
+                          <a id="modal-shortleave-{{ leave.id }}" href="#modal-container-shortleave-dispute" role="button" data-toggle="modal" title="raise dispute"
+                             class="pull-right btn btn-xs btn-danger ">
+                            Dispute
+                          </a>
+
+                        </div>
+    {% endif %}
+    {% endif %}
+
+</td>
+     </tr>
+    {% endfor %}
+</tbody>
+<script>
+     $("#modal-container-shortleave").on('shown.bs.modal', function(e){
+         button=e.relatedTarget;
+         leaveid=button.id.substring(17);
+
+  $.ajax(
+        {
+            type : "GET",
+            url : '/leave/addshortleave/',
+            data :{'user_id':{{user_id}},'leaveid':leaveid} ,
+            success : function(data)
+            {
+                $("#modal_body_shortleave").html(data);
+
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body_shortleave").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                HideAjaxLoader(ajax_loader_element);
+              },
+            }
+          );
+          });
+
+      $("#modal-container-shortleave-dispute").on('shown.bs.modal', function(e){
+         button=e.relatedTarget;
+         leaveid=button.id.substring(17);
+
+  $.ajax(
+        {
+            type : "GET",
+            url : '/leave/raisedispute/',
+            data :{'user_id':{{user_id}},'leaveid':leaveid} ,
+            success : function(data)
+            {
+                $("#modal_body_dispute").html(data);
+
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body_shortleave").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                HideAjaxLoader(ajax_loader_element);
+              },
+            }
+          );
+          });
+
+    </script>

@@ -341,11 +341,12 @@ MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
 GRIEVANCES_ADMIN_EMAIL = "amol.pachpute@ansrsource.com"
-LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+# LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
+LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
 
 #Broker Settings
 BROKER_HOST = "localhost"

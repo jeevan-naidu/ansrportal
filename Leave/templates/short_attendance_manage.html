@@ -1,11 +1,22 @@
 
-{% extends 'master.html' %}
+{% extends 'master.inc' %}
 <title>{% block siteTitle %}myansrsource:Manage Leave Applications{% endblock %}</title>
 
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
 
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
 
 
 {% block content  %}
@@ -101,14 +112,14 @@
 
                             <div class="row">
                               <div class="col-sm-4 Lv-Mg-SubMenu">
-                                  <div class="pull-left Lv-Mg-SubActive">
-                                      <b><a id="open_requests" href="{% url 'manage_leave_list' %}"  title="Open Requests" class="anchor-inherit btn"><b>Open Requests</b></a></b>
-                                      <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
-
-                                  </div>
-                                   <div class="pull-left col-sm-offset-1 Lv-Mg-SubActive active">
+{#                                  <div class="pull-left Lv-Mg-SubActive">#}
+{#                                      <b><a id="open_requests" href="{% url 'manage_leave_list' %}"  title="Open Requests" class="anchor-inherit btn"><b>Open Requests</b></a></b>#}
+{#                                      <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>#}
+{##}
+{#                                  </div>#}
+                                   <div class="pull-left col-sm-offset-1 Lv-Mg-SubActive">
                                       <b><a id="open_requests" href="{% url 'Short_Attendance_Manage_View' %}"  title="Open Requests" class="anchor-inherit btn"><b>Short Attendances</b></a></b>
-                                      <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
+                                      <span class="Lv-Mg-NotifyCount"> {{shortAttendanceOpen.count}}</span>
 
                                   </div>
                                   <div class="pull-left requests-reports hidden">
@@ -125,16 +136,16 @@
                               <div class="col-sm-4 pull-right">
 
 
-              <!-- Insertion A -->{%if  leave_list  %}
+              <!-- Insertion A -->
 
                                   <div class="margin-0-auto text-right pull-right">
                                       <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange">Submit</button>
 
-                                  </div>{% endif %}
+                                  </div>
 
 
                                   <div class="form-inline approve-reject pull-right">
-                                       {%if  leave_list  %}  <div class="checkbox checkbox-success">
+                                        <div class="checkbox checkbox-success">
                                           <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
                                           <label for="approve_all" class="lh-16">
                                              Approve All
@@ -145,7 +156,7 @@
                                           <label for="reject_all" class="lh-16">
                                               Reject All
                                           </label>
-                                      </div> {% endif %}
+                                      </div>
                                   </div>
 
 
@@ -171,30 +182,29 @@
  {% csrf_token %}
         <div class=""><!-- row -->
             <div class="">
-                {%if  leave_list  %}
+
                 <table class="table table-bordered table-hover mb-0 ansrgreen">
                     <tr class="Lv-ApproveTH ">
                         <th>Employee</th>
-                        <th>Type</th>
-                        <th>From</th>
-                        <th>To</th>
+                        <th>For Date</th>
+                        <th>Due Date</th>
                         <th>Applied To</th>
                         <th>Reason</th>
-                        <th>Days</th>
+                        <th>Status Comment</th>
+                        <th>Stay Time: </th>
                         <th class="text-center">Action</th>
                     </tr>
 
-                    {%  autopaginate open 10 %}
-                    {% for leave in open %}
-                    <tr {%for k,v in  BUTTON_NAME %}
-                                {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
+                    {%  autopaginate shortAttendanceOpen 10 %}
+                    {% for leave in shortAttendanceOpen %}
+                    <tr>
                         <td>
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">{{leave.user.first_name}} {{leave.user.last_name}}</a>
                             <!-- Details -->
                                <div class="GrDetails" style = "display:none" >
                             <table class="table  table-hover view_details"  >
                                     <tr >
-                                        <td >Applied By : </td>
+                                        <td >User : </td>
                                         <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
                                     </tr>
                                     <tr>
@@ -203,22 +213,30 @@
                                     </tr>
                                     <tr >
                                         <td>Leave Type : </td>
-                                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
+                                        <td>{{ leave.short_leave_type }}</td>
                                     </tr>
 
 
 
                                     <tr >
-                                        <td>From: </td>
-                                        <td>{{leave.from_date}} ,{%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
+                                        <td>For Date: </td>
+                                        <td>{{leave.for_date}} </td>
                                     </tr>
                                     <tr >
-                                        <td>To: </td>
-                                        <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
+                                        <td>Due Date: </td>
+                                        <td>{{leave.due_date}} </td>
                                     </tr>
                                     <tr >
-                                        <td>No Of Days: </td>
-                                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+                                        <td>Stay Time: </td>
+                                        <td>{{ leave.stay_time }}</td>
+                                    </tr>
+                                <tr >
+                                        <td>Time In: </td>
+                                        <td>{{ leave.swipe_in }}</td>
+                                    </tr>
+                                <tr >
+                                        <td>Time Out: </td>
+                                        <td>{{ leave.swipe_out }}</td>
                                     </tr>
                                     <tr >
                                         <td>Reason: </td>
@@ -240,43 +258,22 @@
                                                 <td>Status Action By: </td>
                                                 <td>{{leave.status_action_by.first_name}} {{leave.status_action_by.last_name}}</td>
                                             </tr>
-                                    <tr >
-                                        <td></td>
-                                        <td>
-                                            <div>
-                                              {% if leave.atachement%} <p><strong>Attachment:</strong></p>
-         <div class="" >
-         <!-- Attachments start -->
-                   <a target="_blank" href="{{leave.atachement.url}}">
-                       {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
-                           <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
-                       {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
-                           <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
-                       {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
-                           <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
-                       {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
-                           <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
-                       {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
-                           <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
+                                 <tr >
+                                                <td>Status Action comment: </td>
+                                                <td>{{leave.status_comments}} </td>
+                                            </tr>
 
-                       {% endif %}
-                   </a>
-                 </div>
-           {% endif %}
-            <!-- Attachments end -->
-                                            </div>
-                                        </td>
-                                    </tr>
 
                                 </table></div>
                             <!--<div><h5>Posted On: <br>13-Jan-2016 3:27pm</h5></div>-->
                         </td>
-                        <td>{%for k,v in LEAVE_TYPES_CHOICES %}{%if leave.leave_type|safe == k  %}{{v.strip}}{% endif %}{% endfor %}</td>
-                        <td>{{leave.from_date}},<br> {%for k,v in  SESSION_STATUS %} {%if k == leave.from_session %} {{v}} {% endif %}{%endfor%}</td>
-                        <td>{{leave.to_date}},<br>{%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%}</td>
+
+                        <td>{{ leave.for_date }}</td>
+                        <td>{{ leave.due_date }}</td>
                          <td>{{leave.apply_to}}</td>
                         <td><span style="display:block;max-width:130px;">{{leave.reason}}</span></td>
-                        <td>{%for k,v in leave_days.iteritems%}{%if k|safe == leave.id|safe%} {{v}} {%endif%}{%endfor%}</td>
+                        <td>{{ leave.status_comments }}</td>
+                        <td>{{ leave.stay_time }}</td>
                         <td>
                             <div class="checkbox checkbox-success radio-mod btn-xs">
                                 <input id="approve{{leave.id}}" type="checkbox" name="approve" class="approve" value="approved_{{leave.id}}">
@@ -292,15 +289,6 @@
                             </div>
 
 
-                            {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
-                                <div class="checkbox checkbox-warning radio-mod btn-xs">
-                                    <input id="cancel{{leave.id}}" type="checkbox" name="cancel" class="cancel" value="cancelled_{{leave.id}}">
-                                    <label for="cancel{{leave.id}}">
-                                    Cancel
-                                    </label>
-                                </div>
-
-                            {% endif %}
 
                                 <div class="col-md-4 pull-right">
                                     <div>
@@ -343,54 +331,33 @@
 
                 </div>
                                         <!--</div>-->
-                                        <div>
-                                          {% if leave.atachement%}
-     <div class="" >
-     <!-- Attachments start -->
-               <a target="_blank" href="{{leave.atachement.url}}">
-                   {% if leave.atachement.name|GetFileTypeFromName == 'xls' or leave.atachement.name|GetFileTypeFromName == 'xlsx' %}
-                       <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
-                   {% elif leave.atachement.name|GetFileTypeFromName == 'csv' %}
-                       <img alt="A csv file" src="/static/images/file_type_icons/csv_icon.png" height="50px" width="50px">
-                   {% elif leave.atachement.name|GetFileTypeFromName == 'pdf' %}
-                       <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
-                   {% elif leave.atachement.name|GetFileTypeFromName == 'doc' or leave.atachement.name|GetFileTypeFromName == 'docx'  %}
-                       <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
-                   {% elif leave.atachement.name|GetFileTypeFromName == 'jpg' or leave.atachement.name|GetFileTypeFromName == 'jpeg' or leave.atachement.name|GetFileTypeFromName == 'png' %}
-                       <img alt="A doc file" src="{{leave.atachement.url }}" height="50px" width="50px">
 
-                   {% endif %}
-               </a>
-             </div>
-       {% endif %}
-        <!-- Attachments end -->
-                                        </div>
 
                                 </div>
                         </td>
                     </tr>
              {% endfor%}<!-- end of tr-warning -->
                 </table>
-{% endif %}
 
 
 
-    <!-- Insertion A -->{%if  leave_list  %}
+
+    <!-- Insertion A -->
                     <div class="Lv-ApprLvSubmit">
                         <div class="margin-0-auto text-right">
                             <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange">Submit</button>
 
                         </div>
 
-                    </div>{% endif %}
+                    </div>
 
 
-			</div> {%if  leave_list  %}<div class="col-sm-12 text-center mod"> {% paginate %} </div>{% endif %}
+			</div> <div class="col-sm-12 text-center mod"> {% paginate %} </div>
 
             <div class="row">
                 <div class="col-md-12">
                     <table class="table table-bordered table-hover Lv-RecordsNotFound">
-                        {%if not leave_list  %}<tr class="info">
+                        {%if not shortAttendanceOpen  %}<tr class="info">
                             <th class="text-center">No leave applications to approve</th>
                         </tr>{% endif %}
                     </table>
@@ -439,7 +406,7 @@
 
 
 {% block page_specific_JS %}
-{##}
+
 {#    <script src="/static/js/jquery.min.js"></script>#}
 {#    <script src="/static/js/bootstrap.min.js"></script>#}
 {#    <script src="/static/js/scripts.js"></script>#}
