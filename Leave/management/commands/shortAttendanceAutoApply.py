@@ -1,4 +1,5 @@
 from Leave.models import ShortAttendance, LeaveApplications, LeaveSummary
+from employee.models import Employee
 from django.contrib.auth.models import User
 from datetime import date,datetime, timedelta, time
 from django.core.management.base import BaseCommand
@@ -16,9 +17,8 @@ class Command(BaseCommand):
 
 
 def shortAttendanceApply():
-    import ipdb
-    ipdb.set_trace()
-    duedate = '2016-08-21'
+
+    duedate = '2016-09-01'
     shortattendance = ShortAttendance.objects.filter(due_date=duedate,active=True)
     for attendance in shortattendance:
         applyLeave(attendance)
@@ -26,8 +26,7 @@ def shortAttendanceApply():
 
 
 def applyLeave(attendance):
-    # import ipdb
-    # ipdb.set_trace()
+
     user_id = attendance.user.id
     reason = "applied by system because dispute not resolved"
     applied_by = User.objects.get(id=35).id
@@ -45,37 +44,53 @@ def applyLeave(attendance):
 
 
 
+
 def avaliableLeaveCheck(user_id, short_leave_type):
-    # import ipdb
-    # ipdb.set_trace()
-    leavesavaliableforapply = ['casula_leave','earned_leave']
+
+    leavesavaliableforapply = ['casual_leave','earned_leave','loss_off_pay']
     for val in leavesavaliableforapply:
         leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=date.today().year)
         if short_leave_type == 'full_day' and leave and leave[0].balance>=1:
-            return val
+            return leave[0].leave_type
         elif leave and leave[0].balance>0:
-            return val
+            return leave[0].leave_type
 
     return 0
 
 def leavesubmit(attendance,leave,reason,user_id,applied_by):
-    # import ipdb
-    # ipdb.set_trace()
-    if attendance.short_leave_type == 'full_day':
-        leavecount = 1
-        fromsession = 'first_session'
-        tosession = 'second_session'
-    else:
-        leavecount = .5
-        fromsession = 'first_session'
-        tosession = 'first_session'
-    leave.balance = float(leave.balance) - leavecount
-    leave.approved = float(leave.approved) + leavecount
-    LeaveApplications(leave_type=leave.leave_type, from_date=attendance.due_date, to_date=attendance.due_date,
-                      from_session=fromsession,
-                      to_session=tosession,
-                      days_count=1, reason=reason,
-                      status='approved').saveas(user_id, applied_by)
-    attendance.active = False
-    attendance.save()
-    leave.save()
+    try:
+        # import ipdb
+        # ipdb.set_trace()
+        if attendance.short_leave_type == 'full_day':
+            leavecount = 1
+            fromsession = 'session_first'
+            tosession = 'session_second'
+        else:
+            leavecount = .5
+            fromsession = 'session_first'
+            tosession = 'session_first'
+        leave.balance = float(leave.balance) - leavecount
+        leave.approved = float(leave.approved) + leavecount
+        manager_id = Employee.objects.filter(user_id=user_id).values('manager_id')
+        manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
+        manager_d = User.objects.get(id=manager[0]['user_id'])
+        applied_by = User.objects.get(id=applied_by)
+        LeaveApplications(user=User.objects.get(id=user_id),
+                          leave_type=leave.leave_type,
+                          from_date=attendance.due_date,
+                          to_date=attendance.due_date,
+                          from_session=fromsession,
+                          to_session=tosession,
+                          days_count=leavecount, reason=reason,
+                          status='approved',
+                          status_action_by=applied_by,
+                          applied_by=applied_by,
+                          apply_to=manager_d,
+                          ).save()
+        attendance.active = False
+        attendance.save()
+        leave.save()
+
+    except:
+        print "please check manager for user id {0}".format(user_id)
+        logger.error("error happen for {0} while putting forced leave manager is not there".format(user_id))
