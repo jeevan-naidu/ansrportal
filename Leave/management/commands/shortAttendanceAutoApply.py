@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
 def shortAttendanceApply():
 
-    duedate = '2016-08-11'
+    duedate = '2016-09-8'
     shortattendance = ShortAttendance.objects.filter(due_date=duedate,active=True)
     for attendance in shortattendance:
         applyLeave(attendance)
