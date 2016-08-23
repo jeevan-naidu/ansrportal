@@ -639,9 +639,18 @@
                                                             </li>
                                                             <li>
                                                                 <a href="{% url 'list_leave' %}">
-                                                                    <span class="menu-text">View Requests</span>
+                                                                    <span class="menu-text">View Requests</span>{{ IsActiveShortAttendance }}
                                                                 </a>
                                                             </li>
+
+                                                            {% if 'check'|IsActiveShortAttendance %}
+                                                                <li>
+                                                                    <a href="{% url 'Short_Attendance_Manage_View' %}" >
+                                                                        <span class="menu-text">Short Attendance Dispute</span>
+							</a>
+                                                            </li>
+                                                                        {% endif %}
+
                                                         {% endif %}
                                                     </ul>
                                                 </div>
