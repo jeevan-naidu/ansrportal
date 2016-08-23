@@ -110,9 +110,12 @@
 	{% if bookings_list %}
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
-				<div class="col-sm-4">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
-				<div class="col-sm-4">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
+				<div class="col-sm-3">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
+				<div class="col-sm-3">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
 				<div class="col-sm-4">
+					<input type="text" name="" class="form-control">
+				</div>
+				<div class="col-sm-2">
 					<button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>
 				</div>
 			</div>
