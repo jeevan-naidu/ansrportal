@@ -1107,7 +1107,7 @@ app.getSum = function($elements, $outputElement) {
                     $rowTotalView = $('.row-total-view');
 
                 var popoverCon = '<div class="mar-bot-5" style="display: none;><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
-                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours">Hours</label> <input style="position: absolute;top: -45px;left: 16px;width: 67px;" class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours"></label> <input style="position: absolute;top: -44px;left: 16px;width: 82px;    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.25) inset;" class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
                 popoverCon += '<div class="mar-bot-5" style="display: none;><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input"></label></div>';
 
                 $dayPopoverBtn.popover({

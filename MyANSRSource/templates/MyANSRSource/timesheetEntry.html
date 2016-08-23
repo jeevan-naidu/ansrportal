@@ -126,7 +126,7 @@
 			{% for data in form.visible_fields %}
 			{% spaceless %}
 			{% if data.label in shortDays %}
-					<td>
+					<td style="position:relative">
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
@@ -352,9 +352,9 @@
 			<th>
 		    {% endif %}
                     	{{ data.label }}
-                    {% if data.field.required %}
+                   <!--  {% if data.field.required %}
                         <span class="required">*</span>
-		    {% endif %}
+		    {% endif %} -->
                     </th>
                     {% endif %}
                 {% endfor %}
@@ -530,6 +530,8 @@
 .table>thead>tr>th{border-bottom: 0px;}
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td{padding: 5px;}
 .lh-30{line-height: 30px;}
+.popover.fade.bottom{background-color: rgba(255, 255, 255, 0);border:0px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0);}
+.popover.fade.bottom .arrow{display: none;}
 </style>
 
 
