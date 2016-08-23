@@ -5,6 +5,8 @@
 {% if record_added %}
 <h4> Success</h4>
 {% else %}
+
+
 			<!-- Ajax -->
 		 <div id="ajax_loader_apply_leave" class="ajax_bck"><div class="ajax_load_image"></div></div>
 		 <form id="modal-container-252304" class="form-horizontal" method="post" enctype="multipart/form-data">
@@ -17,22 +19,25 @@
 					{% for field in form.visible_fields %}
 					<div class="form-group">
 
-                        <label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
 
-                        <div class="col-sm-10">{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
-                            {% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-            </form>
+					<label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
+
+
+					<div class="col-sm-10">{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
+						{% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
+					</div>
+				</div>
+			 {% endfor %}
+
 
 			{% else %}
 			<form class="form-horizontal" role="form">
 					{% for field in form.visible_fields %}
 					{% if  forloop.counter == 3 or forloop.counter == 5%}
-	                {% else %}
-                        <div class="form-group">
-                    {% endif %}
+	 {% else %}
+				<div class="form-group">
+				{% endif %}
+
 
 					<label class="control-label col-sm-2" >{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</label>
 
@@ -41,13 +46,12 @@
 		 				{% else %}
 						<div class="col-sm-10">
 						{% endif %}
-
 						{{ field }}{% if field.help_text %} {{ field.help_text }} {% endif %}
 						{% if field.errors %}<p style="color:red;">{{ field.errors|striptags }}</p>{% endif %}
-                        </div>
+					</div>
 					{% if  forloop.counter == 2 or forloop.counter == 4%}
-                    {% else %}
-                    </div>
+	 {% else %}
+				</div>
 				{% endif %}
 			 {% endfor %}
 
@@ -64,12 +68,12 @@
 		 Remaining Leaves : {{leave_count}}
 		 {% endif %}
 	 </div>
-    </div>
+ </div>
  {% if errors %}
  <div class="form-group">
 	<div class="col-sm-offset-2 col-sm-10">
 		{% for non_field_error in errors %}
-		    <div style="color:red;"><h5> {{non_field_error}}</h5></div>
+		<div style="color:red;"><h5> {{non_field_error}}</h5></div>
 		{% endfor %}
 
 	 {% endif %}
@@ -80,14 +84,15 @@
  </div>
 </form>
 
+
 	{% endif %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+
 
 		   <script>
 			 $(document).ready(function() {
-                });
+    //$('#id_leave').val("sick_leave")
+});
 			 $('#id_leave').change(function(){
 				 var ajax_loader_element = $('#ajax_loader_apply_leave');
 				 var selectedLeave = $('#id_leave option:selected').val();
@@ -102,8 +107,6 @@
 															 success : function(data)
 															 {
 																	 $("#modal_body").html(data);
-
-
 																	 $(function () {
 																			 $('#id_toDate_pickers').datepicker({
 																				 format: 'yyyy-mm-dd',
@@ -114,10 +117,6 @@
 																				 autoclose: true
 																			 }).datepicker("setDate", "0");
 																		 });
-
-
-
-
 															 },
 															 error: function(XMLHttpRequest, textStatus, errorThrown) {
 															 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -126,7 +125,6 @@
 															 },
 													 }
 											 );
-
 										 }
 										 else{
 											$.ajax(
@@ -137,8 +135,6 @@
 																					success : function(data)
 																					{
 																							$("#modal_body").html(data);
-
-
 																							$(function () {
 					 																			 $('#id_toDate_pickers').datepicker({
 					 																				 format: 'yyyy-mm-dd',
@@ -149,8 +145,6 @@
 					 																				 autoclose: true
 					 																			 }).datepicker("setDate", "0");
 					 																		 });
-
-
 																					},
 																					error: function(XMLHttpRequest, textStatus, errorThrown) {
 																					$("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -162,34 +156,26 @@
 																	$('#id_leave').val("selectedLeave")//.attr("selected", "selected");
 						}
 			 });
-
-
 				 // File size validation
 				var fileExtension = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml'];
 				$('.filestyle').bind('change', function() {
 				if (this.files[0].size > 1000000) {
 					alert("File size greater than 1MB not allowed");
-
 					$('.filestyle').val('')
 				}
 				else
 				{
 					if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
                     alert("Allowed file types : "+fileExtension.join(', '));
-
 										$('.filestyle').val('')
                 }
 				}
-
 				});
-
 				  $("form#modal-container-252304").submit(function(){
-
 						 var formData = new FormData($(this)[0]);
 						 form_id = $(this)[0].id;
 						 form_element = $(this);
 						ajax_loader_element = $('#ajax_loader_apply_leave');
-
 						 swal({   title: "Are you sure?",
 							text: "Do you want to submit your leave application?",
 							type: "warning",
@@ -202,14 +188,12 @@
 							},
 							function(isConfirm){
 								if (isConfirm) {
-
 								 ShowAjaxLoader(ajax_loader_element, form_element.width(), form_element.height());
 								 $.ajax({
 									url: "/leave/add/",
 									type: 'post',
 									data: formData,
 									success: function (data) {
-
 									   if (data.record_added) {
 											 swal("Done!", data.success_msg, "success");
 											$("#modal_body").html('');
@@ -219,24 +203,20 @@
 										$("#modal_body").html(data);
 									   }
 										HideAjaxLoader($('#ajax_loader_apply_leave'));
-
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
 												$("#LeaveForm_errors").html("Oops! Something went wrong on the server. The details are below: "
 													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
 												HideAjaxLoader(ajax_loader_element);
 											},
-
 									cache: false,
 									contentType: false,
 									processData: false
 								 });
 								}
 							   });
-
 						 return false;
 					 });
-
 					 $(function () {
 							 $('#id_toDate_pickers').datepicker({
 								 format: 'yyyy-mm-dd',
@@ -246,13 +226,11 @@
 								 format: 'yyyy-mm-dd',
 								 autoclose: true
 							 });
-	                    });
-
+	});
 	$('#id_fromDate_pickers').datepicker()
 	    .on("input change", function (e) {
 				if(e.target.value){
 					$("#id_toDate_pickers").datepicker("update", e.target.value);
 				}
-
 	});
 			  </script>
