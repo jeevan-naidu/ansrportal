@@ -1245,7 +1245,6 @@ def Dashboard(request):
     isManager = 0
     if myReportee:
         isManager = 1
-    leaveShortAttendanceIsActive = settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1272,7 +1271,6 @@ def Dashboard(request):
         'totalemp': totalEmployees,
         'isManager': isManager,
         'swipe_display':swipe_display,
-        'leaveShortAttendanceIsActive':leaveShortAttendanceIsActive,
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
