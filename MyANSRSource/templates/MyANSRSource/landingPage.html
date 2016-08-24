@@ -152,7 +152,67 @@ $(window).load(function(){
 
                 })
 
-})
+	{% for eachHoliday in holidayList %}
+	$("#calendar").fullCalendar('renderEvent',{
+	    id :'2',
+        title : '{{ eachHoliday.name }}',
+        start : '{{ eachHoliday.date }}',
+        color :'#009452'},true);
+    {% endfor %}
+
+});
+
+
+	$("#Holiday").click(function(){
+		if (document.getElementById('Holiday').checked){
+			{% for eachHoliday in holidayList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',2);
+	}
+	});
+	$("#Financial_milestone").click(function(){
+		if (document.getElementById('Financial_milestone').checked){
+			{% for eachMilestone in financialM %}
+			$("#calendar").fullCalendar('renderEvent',{id :'3', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#D6412B'},true);
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',3);
+	}
+	});
+	$("#Non_financial_milestone").click(function(){
+		if (document.getElementById('Non_financial_milestone').checked){
+			{% for eachMilestone in nonfinancialM %}
+			$("#calendar").fullCalendar('renderEvent',{id :'4', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#FFBA02'},true);
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',4);
+	}
+	});
+	$("#Learning_and_development").click(function(){
+		if (document.getElementById('Learning_and_development').checked){
+			{% for eachTraining in trainingList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'5', title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}', start : '{{ eachTraining.trainingDate }}', end : '{{ eachTraining.endDate }}', color :'#176CED'},true);
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',5);
+	}
+	});
+	$("#Hr_activity").click(function(){
+		if (document.getElementById('Hr_activity').checked){
+			{% for eachAct in hrList %}
+			$("#calendar").fullCalendar('renderEvent',{id :'6', title : '{{ eachAct.name }}', start : '{{ eachAct.date }}', color :'#F04C23'},true);
+		{% endfor %}
+		}
+		else{
+		$("#calendar").fullCalendar('removeEvents',6);
+	}
+	});
 
 </script>
 
