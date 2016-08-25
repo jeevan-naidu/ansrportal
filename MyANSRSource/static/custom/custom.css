@@ -1,4 +1,4 @@
-/* Insert Your Custom CSS Here */
+ Insert Your Custom CSS Here */
 
 
 /* Bootstrap extensions */
@@ -151,30 +151,6 @@ iframe{
 
 .nav-left-small .vd_navbar-left .vd_menu>ul>li>a>.menu-badge, .nav-right-small .vd_navbar-right .vd_menu>ul>li>a>.menu-badge{display: none;}
 
-
-/* Checkbox styling */
-
-/*
-input[type="checkbox"].styled {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  box-sizing: borer-box;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  background: url('../images/checks.png')no-repeat;
-  background-position: -3px -3px;
-}
-input[type="checkbox"].styled:checked {
-  background: url('../images/checks.png')no-repeat -3px -27px;
-}
-*/
-
-
-/*input[type=checkbox].chk1:before { content:""; display:inline-block; width:12px; height:12px; background:red; }
-input[type=checkbox].chk1:checked:before { background:green; }*/
-
-
 input[type=checkbox]:before {
     content: '\f00c';
     display: inline-block;
@@ -191,4 +167,123 @@ input[type=checkbox]:before {
 input[type=checkbox]:checked:before {
     content: '\f00c'; 
     color: #fff 
+}
+
+
+
+
+
+
+
+
+
+/* Timesheet Carousel */
+
+.timesheet-carousel{width:700px;margin:auto}
+.timesheet-carousel .carousel-inner{padding-bottom: 2px;}
+.timesheet-carousel .carousel-control
+{
+    width: 25px;
+    text-shadow: none;
+    opacity: 1;
+    background: #fff;
+    box-shadow: 1px 0px 5px rgba(153, 153, 153, 0.29);
+    bottom: 2px;
+}
+.carousel-control.left, .timesheet-carousel .carousel-control.right {
+    background-image:none;
+}
+.timesheet-carousel .carousel-control.left{left: -30px;border-top-left-radius: 3px;border-bottom-left-radius: 3px;}
+.timesheet-carousel .carousel-control.right{right: -30px;border-top-right-radius: 3px;border-bottom-right-radius: 3px;}
+.timesheet-carousel .carousel-control .glyphicon-chevron-left, .timesheet-carousel .carousel-control .icon-prev, .timesheet-carousel .carousel-control .glyphicon-chevron-right, .timesheet-carousel .carousel-control .icon-next{
+    font-size: 12px;
+    color: #9e9e9e;
+    top: 70%;
+}
+.timesheet-carousel .img-responsive{
+    width:100%;
+    height:auto;
+}
+.timesheet-week{
+    background: #fff;
+    padding: 10px 0px;
+    /*border-radius: 3px;*/ 
+    box-shadow: 1px 0px 5px rgba(153, 153, 153, 0.29);
+    position: relative;
+}
+.timesheet-week:after{
+    content: "Submitted";
+    display: block;
+    background: #333;
+    color: #fff;
+    margin: -5px 5px -6px;
+    font-size: 11px;
+}
+.timesheet-week.timesheet-not-filled:after{
+    content: "Not Filled";
+    background: #666;
+}
+.timesheet-week.timesheet-closed:after{
+    content: "Incomplete";
+    background: #aaa;
+}
+.week-container{padding: 0px 5px;}
+.week-container a{color: #777}
+.week-start-date{position: relative;}
+.week-start-date{top: -8px;}
+.timesheet-not-filled{/*background: #ffadad*/}
+
+
+/*.timesheet-closed{background: #fbfbfb;}
+.week-container a .timesheet-closed{color: #cac7c7}*/
+
+/*@media (min-width: 992px ) {
+    .carousel-inner .active.left {
+        left: -25%;
+    }
+    .carousel-inner .next {
+        left:  25%;
+    }
+    .carousel-inner .prev {
+        left: -25%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px ) {
+    .carousel-inner .active.left {
+        left: -33.3%;
+    }
+    .carousel-inner .next {
+        left:  33.3%;
+    }
+    .carousel-inner .prev {
+        left: -33.3%;
+    }
+    .active > div:first-child {
+        display:block;
+    }
+    .active > div:first-child + div {
+        display:block;
+    }
+    .active > div:last-child {
+        display:none;
+    }
+}
+
+@media (max-width: 767px) {
+    .carousel-inner .active.left {
+        left: -100%;
+    }
+    .carousel-inner .next {
+        left:  100%;
+    }
+    .carousel-inner .prev {
+        left: -100%;
+    }
+    .active > div {
+        display:none;
+    }
+    .active > div:first-child {
+        display:block;
+    }
 }
