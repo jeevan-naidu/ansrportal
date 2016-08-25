@@ -6,18 +6,7 @@
 {% load fontawesome %}
 {% load static from staticfiles %}
 
-
-{% block ansrMenu %}
- <li><a href="/myansrsource/dashboard">
-    {% fontawesome_icon 'university' large=True %}
-    Dashboard
- </a></li>
- <li class="ansrLogout"><a href="{% url 'logout' %}">
-    {% fontawesome_icon 'sign-out' large=True color='red' %}
-    <span class="ansrLogout">Logout</span>
-  </a></li>
-{% endblock %}
-
+{% block pageTitle %}Manage Leaves{% endblock %}
 
 {% block content  %}
 
@@ -51,19 +40,6 @@
     <!--  End messages-->
 
     <div class="container Lv-themeTxtColor ">
-
-
-
-
-      <div class="row">
-          <div class="col-md-12">
-              <h3 class="text-center template-header">Manage Leaves</h3>
-                      <hr>
-          </div>
-
-      </div>
-
-
 
 
 

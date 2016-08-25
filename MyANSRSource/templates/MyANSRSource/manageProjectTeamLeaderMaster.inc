@@ -14,29 +14,10 @@
 
 {% block siteTitle %}myansrsource:Manager{% endblock %}
 
-{% block responsiveMenu %}
-<button type="button" class="navbar-toggle" data-toggle="collapse" 
-    data-target="#example-navbar-collapse">
-    <span class="sr-only">Toggle navigation</span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>                                  
-</button>
-{% endblock %}
-
-{% block ansrMenu %}
- <li><a href="/myansrsource/dashboard">
-    {% fontawesome_icon 'university' large=True %}
-    Dashboard
- </a></li>
- <li class="ansrLogout"><a href="{% url 'logout' %}">
-    {% fontawesome_icon 'sign-out' large=True color='red' %}
-    <span class="ansrLogout">Logout</span>
-  </a></li>
-{% endblock %}
-
 {% block loggedStatus %}
 {% endblock %}
+
+{% block pageTitle %}{{ wizard.steps.current }}{% endblock %}
 {% block content %}
 <ul class="form-steps clearfix">
     <li class="form-step one-half {% block MPactiveClass %}{% endblock %}">
@@ -55,7 +36,7 @@
     <form id="changeProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 	<legend>
-		<b>{{ wizard.steps.current }}</b>
+		
 		{% block addForm %}{% endblock %}
 	</legend>
         {{ wizard.management_form }}

@@ -14,16 +14,7 @@
 
 {% block siteTitle %}myansrsource:Manager{% endblock %}
 
-{% block responsiveMenu %}
-<button type="button" class="navbar-toggle" data-toggle="collapse" 
-    data-target="#example-navbar-collapse">
-    <span class="sr-only">Toggle navigation</span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>                                  
-</button>
-{% endblock %}
-
+{% block pageTitle %}{{ wizard.steps.current }}{% endblock %}
 
 
 {% block loggedStatus %}
@@ -56,7 +47,7 @@
     <form id="createProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 	<legend>
-		<b>{{ wizard.steps.current }}</b>
+		
 		{% block addForm %}{% endblock %}
 	</legend>
         {{ wizard.management_form }}

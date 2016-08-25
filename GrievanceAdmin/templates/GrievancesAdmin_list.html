@@ -5,35 +5,7 @@
 {% load fontawesome %}
 {% load static from staticfiles %}
 
-
-{% block ansrMenu %}
- <li><a href="/myansrsource/dashboard">
-    {% fontawesome_icon 'university' large=True %}
-    Dashboard
- </a></li>
- <li class="ansrLogout"><a href="{% url 'logout' %}">
-    {% fontawesome_icon 'sign-out' large=True color='red' %}
-    <span class="ansrLogout">Logout</span>
-  </a></li>
-{% endblock %}
-{% block breadcrumb %}
-<div class="container-fluid pad0">
-    <div class="row">
-            <div class="col-md-12">
-                <ul class="breadcrumb">
-
-                    <li>
-					<a href='/grievances_admin'>Grievances</a>
-                    </li>
-                    <li class="active">
-					List
-                    </li>
-
-                </ul>
-            </div>
-    </div>
-</div>
-{% endblock %}
+{% block pageTitle %}Registered Grievances{% endblock %}
 
 {% block content  %}
 {% load grievances_template_tags %}
@@ -144,16 +116,18 @@
 
 
 
-                {%if message%}
-				{% for message in messages %}
-                <p {% if message.tags %} class=" alert alert-{{ message.tags }}"{% endif %}>{{ message }}</p>
-                {% endfor %} {%endif%}
-				<h3 class="text-center">
-					<b>Grievance list</b>
-				</h3>
-				<h4 class="text-center">
-				{% if not grievances %}<b>( 0 in total )
-                </b> {%elif grievances %} 	<b>( {{grievances.count}} in total )</b>{%endif%}
+                {% if message %}
+					{% for message in messages %}
+					<p {% if message.tags %} class=" alert alert-{{ message.tags }}"{% endif %}>{{ message }}</p>
+					{% endfor %}
+				{% endif %}
+				
+				<h4 >
+					{% if not grievances %}
+						Total : 0
+					{% elif grievances %}
+						Total : {{grievances.count}}
+					{%endif%}
 				</h4>
 			</div>
 		</div>
