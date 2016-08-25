@@ -565,32 +565,6 @@
 
                                 {% endif %}
 
-                                <li>
-                                    <a href="javascript:void(0);" data-action="click-trigger">
-                                        <span class="menu-icon"><i class="fa fa-th-list"></i></span>
-                                        <span class="menu-text">mygrievances</span>
-                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
-                                    </a>
-                                    <div class="child-menu" data-action="click-target">
-                                        <ul>
-                                            <li>
-                                                <a href="/grievances/">
-                                                    <span class="menu-text">Grievance</span>
-                                                </a>
-                                            </li>
-                                            {% if request.user|has_group:"myansrsourceGrievanceAdmin" %}
-                                            <li>
-                                                <a href="/grievances_admin/">
-                                                    <span class="menu-text">Grievance Administration</span>
-                                                    <span class="menu-badge"><span class="badge vd_bg-yellow">{{ grievances_count }}</span></span>
-                                                </a>
-                                            </li>
-                                            {% endif %}
-                                        </ul>
-                                    </div>
-                                </li>
-
-
                             {% if request.user|IsSalesforceAdmin %}
                                     <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
