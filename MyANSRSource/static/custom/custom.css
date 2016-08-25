@@ -181,14 +181,16 @@ input[type=checkbox]:before {
     width: 17px;
     height: 17px;
     padding: 2px;
-    background: #ff5d5d;
+    background: #BBB7B7;
     font: normal normal normal 12px/1 FontAwesome;
-    color: #da3f3f;
+    color: #ABA5A5;
     border-radius: 2px;
-    border: 1px solid #f74343;
+    border: 1px solid #BBB7B7;
     cursor: pointer;
 }
 input[type=checkbox]:checked:before {
     content: '\f00c'; 
-    color: #fff 
+    color: #fff;
+    background: #ff5d5d;
+    border: 1px solid #f74343;
 }
