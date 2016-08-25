@@ -175,8 +175,8 @@ input[type="checkbox"].styled:checked {
 input[type=checkbox].chk1:checked:before { background:green; }*/
 
 
-input[type=checkbox]:before {
-    content: '\f00c';
+#timesheet input[type=checkbox]:before {
+    content: '\f014';
     display: inline-block;
     width: 17px;
     height: 17px;
@@ -189,9 +189,10 @@ input[type=checkbox]:before {
     cursor: pointer;
     transition: all 0.5s;
 }
-input[type=checkbox]:checked:before {
-    content: '\f00c'; 
+#timesheet input[type=checkbox]:checked:before {
+    content: '\f014';
     color: #fff;
     background: #ff5d5d;
     border: 1px solid #f74343;
 }
+
