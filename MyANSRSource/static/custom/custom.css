@@ -181,7 +181,7 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
     display: inline-block;
     width: 17px;
     height: 17px;
-    padding: 2px;
+    padding: 2px 2px 2px 3px;
     background: #BBB7B7;
     font: normal normal normal 12px/1 FontAwesome;
     color: #ABA5A5;
