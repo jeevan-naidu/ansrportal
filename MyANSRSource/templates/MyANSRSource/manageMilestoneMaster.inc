@@ -4,6 +4,10 @@
 
 {{ wizard.form.media }}
 
+{% block bootstrapCSS%}
+            <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+{% endblock %}
+
 {% endblock %}
 
 {% load i18n %}

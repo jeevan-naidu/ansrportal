@@ -35,7 +35,10 @@
            {# same styles for both screen and printing. Unfortunately      #}
            {# in the plugin django-boostrap3 we don't have an option       #}
            {# to change media from screen to all.                          #}
-       <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+        {% block bootstrapCSS%}
+            <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        {% endblock %}
 
 
 
