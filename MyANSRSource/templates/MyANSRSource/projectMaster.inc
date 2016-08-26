@@ -43,6 +43,24 @@
     </li>
 </ul>
 <div>
+
+
+<style type="text/css">
+    
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+.yourlabs-autocomplete{
+    max-height: 200px !important;
+    max-width: 350px !important;
+    overflow: auto;
+}    
+
+</style>
+
+
+
  <div id="create">
     <form id="createProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
@@ -70,7 +88,7 @@
 		                <b id="browserPrevious">Previous</b>
                     </button>
         {% endif %}
-            <button type="submit" value="submit" class="btn btn-info pull-right">
+            <button type="submit" value="submit" class="btn btn-info pull-right" style="margin-bottom:30px;">
                 {% if wizard.steps.current == wizard.steps.last %}
                     {% fontawesome_icon 'upload' large=True %}
 		            <b>Confirm & Create Project</b>
