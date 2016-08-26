@@ -36,9 +36,9 @@
                   <span class="glyphicon-calendar glyphicon"></span>
               </span>
           </div>
-          <button type="button" class="btn btn-primary btn-sm location" flag='1' id="karle_ground_floor">Karle-Level 0</button>
-          <button type="button" class="btn btn-default btn-sm location" flag='0' id="karle_second_floor">Karle-Level 2</button>
-          <button type="button" class="btn btn-default btn-sm location" flag='0' id="btp">BTP</button>
+          <button type="button" class="btn btn-disabled btn-sm location" flag='1' id="karle_ground_floor">Karle-Level 0</button>
+          <button type="button" class="btn btn-disabled btn-sm location" flag='0' id="karle_second_floor">Karle-Level 2</button>
+          <button type="button" class="btn btn-disabled btn-sm location" flag='0' id="btp">BTP</button>
         </div>
 
 <!-- <div class="nav-btns">
@@ -123,13 +123,13 @@ $(document).ready(function(){
     $('.location').each(function(){
             if($(this).attr('flag') == '1')
             {
-                $(this).removeClass('btn-default btn-primary');
-                $(this).addClass('btn-primary');
+                $('.location').addClass('btn-bookings');
+                $(this).removeClass('btn-bookings');
             }
-            else{
-                $(this).removeClass('btn-default btn-primary');
-                $(this).addClass('btn-default');
-            }
+            // else{
+            //     $('.location').addClass('btn-bookings');
+            //     $(this).removeClass('btn-bookings');
+            // }
         });
 
 
