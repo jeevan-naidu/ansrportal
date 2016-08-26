@@ -130,6 +130,7 @@ $(window).load(function(){
      $('#calendar').fullCalendar({
         eventOrder:'id',
         aspectRatio: 2.12,
+        contentHeight: 450,
         eventLimit: true,
         events: [
                     {% for eachSwipe in swipe_display %}
