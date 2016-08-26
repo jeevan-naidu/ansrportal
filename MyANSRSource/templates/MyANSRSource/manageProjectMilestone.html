@@ -3,8 +3,8 @@
 {% load fontawesome %}
 
 {% block addForm %}
-<span class="pull-right">
-    <a class="btn btn-success btn-xs" id="add-milestone-btn">
+<span class="clearfix">
+    <a class="btn btn-success btn-xs pull-right" id="add-milestone-btn">
         {% fontawesome_icon 'plus' %}
         Add Milestone
     </a>
@@ -22,14 +22,14 @@
 {% endif %}
 	{% if forloop.first %}
         <span class="label label-default holiday">{{ totalValue }}</span>
-        <span class="label label-default training pull-right">
+        <span class="label label-default training pull-right" style="margin-right:15px;">
             {% if type == False %}
                 External
             {% else %}
                 Internal
             {% endif %}
         </span>
-		<table class="table table-condensed table-responsive bottom" id="manage-milestones">
+		<table class="table table-condensed table-responsive" id="manage-milestones">
 	{% endif %}
 		{% for t in form %}
 			{% if forloop.first %}
@@ -63,8 +63,11 @@
 	      {% endfor %}
 	{% if forloop.last %}
 		</table>
-        <div class="row col-lg-12">
-            <div class="col-lg-6 center-block"> 
+
+
+<hr>		
+        <div class="row">
+            <div class="col-lg-6 pull-right"> 
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
