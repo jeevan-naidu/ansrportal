@@ -4,8 +4,11 @@
 {% block pageTitle %}Team Member Performance Summary{% endblock %}
 
 {%block childcontent %}
+
+<div class="panel">
+<div class="panel-body">
 <div class="row">
-	<div class="col-md-12">
+    <div class="col-md-12">
         <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
@@ -24,7 +27,7 @@
                         <td>{{ field }}</td> 
                     {% endfor %}
                     <td class="col-lg-1"><button type="submit" class="btn btn-primary" value="submit" name="submit">
-                        {% fontawesome_icon 'line-chart' large=True %}
+                        <!-- {% fontawesome_icon 'line-chart' large=True %} -->
                         Get Report
                     </button></td>
                     <td class="col-lg-1">
@@ -33,7 +36,7 @@
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
                         {% endif %}
-                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                <!-- {% fontawesome_icon 'file-excel-o' large=True %} -->
                                 Export to Excel
                             </button>
                     </td>
@@ -136,6 +139,9 @@
                 {% endif %}
             {% endif %}
         </table>
-	</div>
+    </div>
 </div>
+</div>
+</div>
+
 {% endblock %}

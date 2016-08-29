@@ -4,8 +4,13 @@
 {% load humanize %}
 {% block pageTitle %}Individual Project Performance{% endblock %}
 {%block childcontent %}
+
+
+
+<div class="panel clearfix">
+<div class="panel-body">
 <div class="row">
-	<div class="col-md-12">
+    <div class="col-md-12">
         <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
@@ -24,7 +29,7 @@
                         <td class="col-lg-10">{{ field }}</td> 
                     {% endfor %}
                     <td><button type="submit" id="submit" name="click" class="btn btn-primary">
-                        {% fontawesome_icon 'line-chart' large=True %}
+                        <!-- {% fontawesome_icon 'line-chart' large=True %} -->
                         Get Report
                     </button></td>
                     <td>
@@ -33,7 +38,7 @@
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
                         {% endif %}
-                                {% fontawesome_icon 'file-excel-o' large=True %}
+                                <!-- {% fontawesome_icon 'file-excel-o' large=True %} -->
                                 Export to Excel
                             </button>
                     </td>
@@ -296,6 +301,9 @@
                 {% endif %}
             {% endif %}
         </table>
-	</div>
+    </div>
 </div>
+</div>
+</div>
+
 {% endblock %}
