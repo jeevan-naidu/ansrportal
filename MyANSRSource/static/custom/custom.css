@@ -250,7 +250,7 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
     content: "Not Filled";
     background: #666;
 }
-.timesheet-week.timesheet-closed:after{
+.timesheet-week.timesheet-incomplete:after{
     content: "Incomplete";
     background: #aaa;
 }
