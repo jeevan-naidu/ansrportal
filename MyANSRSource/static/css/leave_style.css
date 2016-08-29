@@ -644,6 +644,7 @@
         .no-border th, .no-border td{border: 1px solid #FFF}
         .leave-data-container{
           padding: 15px;
+          padding-bottom: 30px;
           overflow-y: auto;
           height: 100%;
           background: #f0f0f0;
