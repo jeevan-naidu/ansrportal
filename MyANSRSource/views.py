@@ -125,6 +125,20 @@ def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
 
+def mondays(year):
+    '''generate all days that are Mondays in the given year'''
+    jan1 = date(year, 1, 1)
+
+    # find first Monday (which could be this day)
+    monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
+
+    while 1:
+        if monday.year != year:
+            break
+        yield monday
+        monday += timedelta(days=7)
+
+
 @login_required
 @permission_required('MyANSRSource.enter_timesheet')
 def Timesheet(request):
@@ -132,6 +146,8 @@ def Timesheet(request):
     # Week Calculation.
     leaveDayWork = False
     # Getting the form values and storing it to DB.
+
+
     if request.method == 'POST':
         # Getting the forms with submitted values
         hold_button = False
@@ -740,6 +756,20 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
 
 def renderTimesheet(request, data):
 
+
+    curr_year = datetime.now().year
+    mondays_list = [x for x in mondays(curr_year)]
+
+    # list of dict with mentioned ts entry columns
+    weeks_timesheetEntry_list = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart__in=mondays_list). \
+        values('wkstart', 'wkend', 'hold', 'approved').distinct()
+
+    ts_week_info_dict = {}
+    for dict_obj in weeks_timesheetEntry_list:
+        wk_start = dict_obj['wkstart']
+        dict_obj.pop('wkstart')
+        ts_week_info_dict[wk_start] = dict_obj
+
     attendance = {}
     tsObj = TimeSheetEntry.objects.filter(
         wkstart=data['weekstartDate'],
@@ -898,7 +928,10 @@ def renderTimesheet(request, data):
                  'prevWeekBlock': prevWeekBlock,
                  'total': total,
                  'tsFormset': tsFormset,
-                 'atFormset': atFormset}
+                 'atFormset': atFormset,
+                 'mondays_list': mondays_list,
+                 'ts_week_info_dict': ts_week_info_dict,
+                 }
     if 'tsErrorList' in data:
         finalData['tsErrorList'] = data['tsErrorList']
     if 'atErrorList' in data:
