@@ -11,34 +11,6 @@
 
 
 
-
-<script type="text/javascript">
-	
-jQuery(document).ready(function() {
-        
-	jQuery('.carousel[data-type="multi"] .item').each(function(){
-		var next = jQuery(this).next();
-		if (!next.length) {
-			next = jQuery(this).siblings(':first');
-		}
-		next.children(':first-child').clone().appendTo(jQuery(this));
-	  
-		for (var i=0;i<4;i++) {
-			next=next.next();
-			if (!next.length) {
-				next = jQuery(this).siblings(':first');
-			}
-			next.children(':first-child').clone().appendTo($(this));
-		}
-	});
-        
-});
-	
-</script>
-
-
-
-
 <div class="timesheet-carousel text-center">
 <div class="carousel slide row" data-ride="carousel" data-type="multi" data-interval="false" id="fruitscarousel">
 
@@ -47,21 +19,27 @@ jQuery(document).ready(function() {
 
         <div class="item active">
             <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 25 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 35 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 45 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 55 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 65 - Aug 21</span></div></a></div>
         </div>
         <div class="item">
             <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week"><span class="week-start-date">Aug 21 - Aug 28</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week"><span class="week-start-date">Aug 21 - Aug 28</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week"><span class="week-start-date">Aug 21 - Aug 28</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
         </div>
         <div class="item">
             <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Sep 01 - Sep 07</span></div></a></div>
-        </div>
-        <div class="item">
-            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-not-filled"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
-        </div>
-        <div class="item">
-            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
-        </div>
-        <div class="item">
-            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 16 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 17 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 18 - Aug 21</span></div></a></div>
+            <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 19 - Aug 21</span></div></a></div>
         </div>
 
     </div>
