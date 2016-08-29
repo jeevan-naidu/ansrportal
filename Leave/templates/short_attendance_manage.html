@@ -10,7 +10,7 @@
 
 {% block content  %}
 
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+<!--  -->
     <link href="/static/css/leave_style.css" rel="stylesheet">
 	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
@@ -167,13 +167,13 @@
                         <th>Applied To</th>
                         <th>Reason</th>
                         <th>Status Comment</th>
-                        <th>Stay Time: </th>
+                        <th>Stay Time </th>
                         <th class="text-center">Action</th>
                     </tr>
 
                     {%  autopaginate shortAttendanceOpen 10 %}
                     {% for leave in shortAttendanceOpen %}
-                    <tr>
+                    <tr class="info">
                         <td>
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">{{leave.user.first_name}} {{leave.user.last_name}}</a>
                             <!-- Details -->
@@ -248,7 +248,7 @@
                         <td>{{ leave.due_date }}</td>
                          <td>{{leave.apply_to}}</td>
                         <td><span style="display:block;max-width:130px;">{{leave.reason}}</span></td>
-                        <td>{{ leave.status_comments }}</td>
+                        <td style="max-width: 200px;">{{ leave.status_comments }}</td>
                         <td>{{ leave.stay_time }}</td>
                         <td>
                             <div class="checkbox checkbox-success radio-mod btn-xs">
