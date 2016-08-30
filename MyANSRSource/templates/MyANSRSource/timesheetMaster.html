@@ -7,63 +7,151 @@
 
 {% block content  %}
 
+<div class="dropdown pull-right week-selector">
+  <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    Dropdown
+    <!-- <span class="caret"></span> -->
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li>
+        <a href="#" data-value="action">
+            Week 52<span class="unfilled"></span>
+        </a>
+    </li>
+    <li>
+        <a href="#" data-value="another action">
+            Week 51
+        </a>
+    </li>
+    <li>
+        <a href="#" data-value="action">
+            Week 50
+        </a>
+    </li>
+    <li>
+        <a href="#" data-value="another action">
+            Week 46
+        </a>
+    </li>
+    <li>
+        <a href="#" data-value="action" class="unfilled">
+            Week 52<!-- <span class="unfilled"></span> -->
+        </a>
+    </li>
+    <li>
+        <a href="#" data-value="another action">
+            Week 06
+        </a>
+    </li>        
+  </ul>
+</div>
 
- <div class="timesheet-carousel text-center">
-<div class="carousel slide row" data-ride="carousel" data-wrap='false' data-type="multi" data-interval="false" id="fruitscarousel">
+<script type="text/javascript">
 
-    <div class="carousel-inner" id="carousel-inner">
+    $(".dropdown-menu li a").click(function(){
+        $(this).parents(".dropdown").find('.btn').html($(this).text());
+        $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+    });  
 
-
-
-
-            <div class="item active">
-          {% for info_dict in ts_final_list %}
-            {% if forloop.counter0|divisibleby:6 %}
-                {% ifnotequal forloop.counter0 0 %}
-                    </div>
-                    <div class="item">
-                {% endifnotequal %}
-
-            {% endif %}
+</script>
 
 
+<style type="text/css">
+.btn.left-text{text-align: left;}    
+.week-selector button, .week-selector li a{min-width: 200px;}
+.week-selector li:not(:last-child){border-bottom: 1px solid #ccc;}
+.week-selector li:not(:last-child) a{padding-bottom: 5px;padding-top: 5px;}
+.week-selector a:hover{background-color: #949494 !important}
+/*.unfilled{    
+    background: #fd6666;
+    height: 15px;
+    width: 15px;
+    float: right;
+    border-radius: 50%;
+    margin-top: 2px;
+}*/
+a.unfilled:after{
+    content: "";
+    display: block;
+    background: #fd6666;
+    height: 15px;
+    width: 15px;
+    float: right;
+    border-radius: 50%;
+    margin-top: 2px;
+}
 
-                <div class="col-md-2 week-container">
-                    <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}">
-                            {% if info_dict.filled %}
+</style>
 
-                                {% if info_dict.hold == True %}
-                                    <div class="timesheet-week ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="timesheet-carousel text-center hidden">
+    <div class="carousel slide row" data-ride="carousel" data-wrap='false' data-type="multi" data-interval="false" id="fruitscarousel">
+
+        <div class="carousel-inner" id="carousel-inner">
+
+
+
+
+                <div class="item active">
+              {% for info_dict in ts_final_list %}
+                {% if forloop.counter0|divisibleby:6 %}
+                    {% ifnotequal forloop.counter0 0 %}
+                        </div>
+                        <div class="item">
+                    {% endifnotequal %}
+
+                {% endif %}
+
+
+
+                    <div class="col-md-2 week-container">
+                        <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}">
+                                {% if info_dict.filled %}
+
+                                    {% if info_dict.hold == True %}
+                                        <div class="timesheet-week ">
+                                            <span class="week-start-date">{{ info_dict.for_week }}</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="timesheet-week timesheet-incomplete">
+                                                <span class="week-start-date">{{ info_dict.for_week }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="timesheet-week timesheet-not-filled">
                                         <span class="week-start-date">{{ info_dict.for_week }}</span>
                                     </div>
-                                {% else %}
-                                    <div class="timesheet-week timesheet-incomplete">
-                                            <span class="week-start-date">{{ info_dict.for_week }}</span>
-                                    </div>
                                 {% endif %}
-                            {% else %}
-                                <div class="timesheet-week timesheet-not-filled">
-                                    <span class="week-start-date">{{ info_dict.for_week }}</span>
-                                </div>
-                            {% endif %}
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
 
-        {% endfor %}
-            {% if mondays_list|length|divisibleby:6 %}
-            {% else %}
-                </div>
-            {% endif %}
+            {% endfor %}
+                {% if mondays_list|length|divisibleby:6 %}
+                {% else %}
+                    </div>
+                {% endif %}
 
 
+
+        </div>
+
+        <a class="left carousel-control" href="#fruitscarousel" data-slide="prev"><i class="glyphicon glyphicon-chevron-left"></i></a>
+        <a class="right carousel-control" href="#fruitscarousel" data-slide="next"><i class="glyphicon glyphicon-chevron-right"></i></a>
 
     </div>
-
-    <a class="left carousel-control" href="#fruitscarousel" data-slide="prev"><i class="glyphicon glyphicon-chevron-left"></i></a>
-    <a class="right carousel-control" href="#fruitscarousel" data-slide="next"><i class="glyphicon glyphicon-chevron-right"></i></a>
-
-</div>
 </div>
 
 
