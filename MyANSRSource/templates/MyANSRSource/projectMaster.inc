@@ -82,10 +82,10 @@
 	{% endif %}
 	{% buttons %}
         {% if wizard.steps.prev %}
-                <button name="wizard_goto_step" value="{{ wizard.steps.prev }}"
+                <button id="browserPrevious" name="wizard_goto_step" value="{{ wizard.steps.prev }}"
                     type="button" class="btn btn-info">
                         {% fontawesome_icon 'arrow-circle-left' large=True %}
-		                <b id="browserPrevious">Previous</b>
+		                <b>Previous</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right" style="margin-bottom:30px;">

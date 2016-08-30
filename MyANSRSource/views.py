@@ -1035,6 +1035,7 @@ def ApproveTimesheet(request):
                  'teamMember__employee__employee_assigned_id',
                  'teamMember__last_name', 'wkstart', 'wkend'
                  ).order_by('teamMember', 'wkstart', 'wkend').distinct()
+
         tsList = []
         if len(data):
             for eachTS in data:

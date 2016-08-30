@@ -65,8 +65,8 @@
     }());
 
     $(document).ready(function(){
-       $("#browserPrevious").click(function(){
-            history.go(-1);
+       $("button#browserPrevious").click(function(e){
+            window.history.go(-1);
             return false;
         });
     });

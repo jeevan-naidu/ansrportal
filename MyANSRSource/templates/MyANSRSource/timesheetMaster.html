@@ -11,19 +11,12 @@
  <div class="timesheet-carousel text-center">
 <div class="carousel slide row" data-ride="carousel" data-wrap='false' data-type="multi" data-interval="false" id="fruitscarousel">
 
-    <div class="carousel-inner">
-
-         <div class="item active">
-                <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 15 - Aug 21</span></div></a></div>
-                <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 25 - Aug 21</span></div></a></div>
-                <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 35 - Aug 21</span></div></a></div>
-                <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 45 - Aug 21</span></div></a></div>
-                <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 55 - Aug 21</span></div></a></div>
-                <div class="col-md-2 week-container"><a href="#"><div class="timesheet-week timesheet-closed"><span class="week-start-date">Aug 65 - Aug 21</span></div></a></div>
-            </div>
+    <div class="carousel-inner" id="carousel-inner">
 
 
-            <div class="item ">
+
+
+            <div class="item active">
           {% for info_dict in ts_final_list %}
             {% if forloop.counter0|divisibleby:6 %}
                 {% ifnotequal forloop.counter0 0 %}
@@ -38,9 +31,7 @@
                 <div class="col-md-2 week-container">
                     <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}">
                             {% if info_dict.filled %}
-                                <script>
-                                alert({{ info_dict.filled }});
-                                </script>
+
                                 {% if info_dict.hold == True %}
                                     <div class="timesheet-week ">
                                         <span class="week-start-date">{{ info_dict.for_week }}</span>
@@ -122,6 +113,12 @@
 	<b>{% bootstrap_messages %}</b>
 </div>
 {% block timesheetContent %}{% endblock %}
+
+<script>
+    $(document).ready(function(){
+        $('#fruitscarousel').carousel(parseInt($('#carousel-inner > div').length) - 1);
+    });
+</script>
 
 {% endblock %}
 

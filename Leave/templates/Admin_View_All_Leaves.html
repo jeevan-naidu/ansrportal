@@ -162,12 +162,6 @@
                 </div><!-- end of Lv-ApLvHeader -->
                 <hr>
 
-
-
-
-
-
-
             </div>
         </div>
         <!-- End Menu -->
@@ -191,7 +185,7 @@
                     {% for leave in leave_list %}
 
                     <tr  {%for k,v in  BUTTON_NAME %}
-                                {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
+                                {%if v|safe == leave.status|safe %} class ="info" {%endif%}{%endfor%}>
                         <td>
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" class ="list_view mod" title="View Details">{{leave.user.first_name}} {{leave.user.last_name}}</a>
                             <div class="GrDetails" style = "display:none" >
@@ -201,7 +195,7 @@
                                      <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
                                  </tr>
                                  <tr>
-                                     <td>Applies On: </td>
+                                     <td>Applied On: </td>
                                      <td>{{leave.applied_on}}</td>
                                  </tr>
                                  <tr >
