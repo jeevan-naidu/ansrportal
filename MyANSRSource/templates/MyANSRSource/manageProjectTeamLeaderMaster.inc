@@ -33,6 +33,17 @@
 </ul>
 <div>
 
+<style type="text/css">
+    
+.yourlabs-autocomplete{
+    max-height: 300px;
+    overflow: auto;
+}
+
+</style>
+
+
+
 <div class="panel clearfix">
 <div class="panel-body">
  <div id="create">

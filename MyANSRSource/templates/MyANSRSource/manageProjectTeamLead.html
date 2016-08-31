@@ -3,6 +3,17 @@
 {% block TMactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
+
+<style type="text/css">
+	
+.yourlabs-autocomplete{
+	max-height: 300px;
+	overflow: auto;
+}
+
+</style>
+
+
 	<div class="alert alert-danger" role="alert">
         <ul>
 		{% for k, v in form.errors.items %}
