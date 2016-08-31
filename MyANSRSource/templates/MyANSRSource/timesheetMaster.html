@@ -7,35 +7,6 @@
 
 {% block content  %}
 
-<style type="text/css">
-.btn.left-text{text-align: left;}    
-.week-selector button, .week-selector li a{min-width: 200px;}
-.week-selector li:not(:last-child){border-bottom: 1px solid #ccc;}
-.week-selector li:not(:last-child) a{padding-bottom: 5px;padding-top: 5px;}
-.week-selector a:hover{background-color: #949494 !important}
-/*.unfilled{    
-    background: #fd6666;
-    height: 15px;
-    width: 15px;
-    float: right;
-    border-radius: 50%;
-    margin-top: 2px;
-}*/
-a.unfilled:after{
-    content: "";
-    display: block;
-    background: #fd6666;
-    height: 15px;
-    width: 15px;
-    float: right;
-    border-radius: 50%;
-    margin-top: 2px;
-}
-
-</style>
-
-
-
 
 
 
@@ -127,11 +98,62 @@ a.unfilled:after{
  </div>
 
 
+<style type="text/css">
+.btn.left-text{text-align: left;}
+.week-selector{margin: 0px 5px;}    
+.week-selector button, .week-selector li a{min-width: 200px;}
+.week-selector li:not(:last-child){border-bottom: 1px solid #ccc;}
+.week-selector li:not(:last-child) a{padding-bottom: 5px;padding-top: 5px;}
+.week-selector a:hover{background-color: #949494 !important}
+/*.unfilled{    
+    background: #fd6666;
+    height: 15px;
+    width: 15px;
+    float: right;
+    border-radius: 50%;
+    margin-top: 2px;
+}*/
+a.unfilled:after, button.unfilled:after{
+    content: "";
+    display: block;
+    background: #fd6666;
+    height: 15px;
+    width: 15px;
+    float: right;
+    border-radius: 50%;
+    margin-top: 2px;
+    margin-right: 5px;
+}
+a.filled:after, button.filled:after{
+    content: "";
+    display: block;
+    background: #6ab592;
+    height: 15px;
+    width: 15px;
+    float: right;
+    border-radius: 50%;
+    margin-top: 2px;
+    margin-right: 5px;
+}
+
+.week-selector .dropdown-menu{
+    max-height: 350px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+</style>
+
+
+
+
+
+
 
 
 <div class="dropdown week-selector pull-left">
-  <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-  <i class="fa fa-calendar"></i>
+  <button class="btn btn-default dropdown-toggle left-text filled" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+  <i class="fa fa-calendar" style="margin-right:5px;color:#999"></i>
     {{ weekstartDate|date:"d-M" }} - {{ weekendDate|date:"d-M" }}
     <!-- <span class="caret"></span> -->
   </button>
@@ -158,10 +180,10 @@ a.unfilled:after{
 
 <script type="text/javascript">
 
-    $(".dropdown-menu li a").click(function(){
+/*    $(".dropdown-menu li a").click(function(){
         $(this).parents(".dropdown").find('.btn').html($(this).text());
         $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-    });  
+    });  */
 
 </script>
 
