@@ -136,7 +136,7 @@ a.unfilled:after{
     <!-- <span class="caret"></span> -->
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-       {% for info_dict in ts_final_list %}
+       {% for info_dict in ts_final_list reversed %}
            <li>
                 {% if info_dict.filled %}
                     <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action">
