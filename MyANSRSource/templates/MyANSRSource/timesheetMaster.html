@@ -26,7 +26,7 @@
 
     </div>
 </div>
-<div class="translate-right" id="'translate-right"></div>
+<div class="translate-right" id="translate-right"></div>
 </div>
 
 
@@ -78,22 +78,46 @@
 
 <script>
     $(document).ready(function(){
+
+
 {#        $('#fruitscarousel').carousel(parseInt($('#carousel-inner > div').length) - 1);#}
 
-        newWidth = parseInt($('.car-inner2-strip > div').length * 100) + 2;
-        scrollwidth  = newWidth  - parseInt($('.timesheet-carousel').css('width').split("px")[0]) ;
-        alert(scrollwidth);
-
-
-        alert(newWidth.toString() + 'px');
-{#        $('.car-inner2').css('width', toString(parseInt($('.car-inner2 > span').length) * 110) + 'px')#}
+        var newWidth = parseInt($('.car-inner2-strip > div').length * 100) + 2;
         $('.car-inner2-strip').css('width', newWidth.toString() + 'px')
+        var maxScrollwidth  = newWidth  - parseInt($('.timesheet-carousel').css('width').split("px")[0]) ;
+
+        var leftScrollVal = maxScrollwidth;
+        var rightScrollVal = 0;
+        $('.car-inner2-strip').css('left', -leftScrollVal);
+
+
+
+{#        alert(newWidth.toString() + 'px');#}
+{#        $('.car-inner2').css('width', toString(parseInt($('.car-inner2 > span').length) * 110) + 'px')#}
+
 
         $('#translate-left').click(function () {
-            
+            if (leftScrollVal > 2){
+                $('.car-inner2-strip').css('left',-(leftScrollVal-50));
+                leftScrollVal -= 50;
+                rightScrollVal += 50;
+            }
+            else{
+                alert('no space');
+            }
+
         })
 
         $('#translate-right').click(function () {
+            if (rightScrollVal > 0){
+                $('.car-inner2-strip').css('left',-(leftScrollVal+50));
+                rightScrollVal -= 50;
+                leftScrollVal += 50;
+            }
+            else{
+                alert('no space');
+            }
+
 
         })
 

@@ -223,6 +223,7 @@ margin: auto;
     border:1px solid #0AA699;
     height:40px;
     position: relative;
+    transition: all 0.5s;
 
 }
 .ts_week{
