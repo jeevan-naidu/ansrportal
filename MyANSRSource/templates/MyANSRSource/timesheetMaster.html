@@ -136,36 +136,21 @@ a.unfilled:after{
     <!-- <span class="caret"></span> -->
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-    <li>
-        <a href="#" data-value="action">
-            Week 52<span class="unfilled"></span>
-        </a>
-    </li>
-    <li>
-        <a href="#" data-value="another action">
-            Week 51
-        </a>
-    </li>
-    <li>
-        <a href="#" data-value="action">
-            Week 50
-        </a>
-    </li>
-    <li>
-        <a href="#" data-value="another action">
-            Week 46
-        </a>
-    </li>
-    <li>
-        <a href="#" data-value="action" class="unfilled">
-            Week 52<!-- <span class="unfilled"></span> -->
-        </a>
-    </li>
-    <li>
-        <a href="#" data-value="another action">
-            Week 06
-        </a>
-    </li>        
+       {% for info_dict in ts_final_list %}
+           <li>
+                {% if info_dict.filled %}
+                    <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action">
+                           {{ info_dict.for_week }}
+                    </a>
+                {% else %}
+                    <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="unfilled">
+                            {{ info_dict.for_week }}
+                    </a>
+                {% endif %}
+            </li>
+      {% endfor %}
+
+
   </ul>
 </div>
 
