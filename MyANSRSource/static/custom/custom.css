@@ -205,8 +205,70 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
 
 
 /* Timesheet Carousel */
+.car-parent{
+margin: auto;
+    width:900px;
+}
 
-.timesheet-carousel{width:700px;margin:auto}
+.timesheet-carousel{
+    width: 700px;
+    margin: auto;
+    height: 50px;
+    border: 2px solid;
+    float: left;
+    overflow: hidden;
+}
+.car-inner2-strip{
+    width: 1000px;
+    border:1px solid #0AA699;
+    height:40px;
+    position: relative;
+
+}
+.ts_week{
+    width:100px;
+    padding: 2px 4px;
+    float: left;
+
+}
+
+.timesheet-week2 {
+    background: #fff;
+    padding: 10px 0px;
+    width: 110px;
+    /* border-radius: 3px; */
+    box-shadow: 1px 0px 5px rgba(153, 153, 153, 0.29);
+    position: relative;
+}
+.translate-left{
+    border: 1px solid #0AA699;
+    height:30px;
+    width: 30px;
+    float: left;
+}
+
+.translate-right{
+    border: 1px solid #0AA699;
+    height:30px;
+    width: 30px;
+    float: left;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .timesheet-carousel .carousel-inner{padding-bottom: 2px;}
 .timesheet-carousel .carousel-control
 {
@@ -234,13 +296,14 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
 .timesheet-week{
     background: #fff;
     padding: 10px 0px;
+    width: 110px;
     /*border-radius: 3px;*/ 
     box-shadow: 1px 0px 5px rgba(153, 153, 153, 0.29);
     position: relative;
 }
 .timesheet-week:after{
     content: "Submitted";
-    display: block;
+    /*display: block;*/
     background: #6AC38C;
     color: #fff;
     margin: -5px 5px -6px;
