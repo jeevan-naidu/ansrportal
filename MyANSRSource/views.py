@@ -702,7 +702,7 @@ def switchWeeks(request):
             disabled = 'next'
         else:
             disabled = ''
-    else:
+    elif request.GET.get('week'):
 
         weekstartDate = datetime.strptime(request.GET.get('wkstart'), '%d%m%Y').date()
         ansrEndDate = datetime.strptime(request.GET.get('wkend'), '%d%m%Y').date()
