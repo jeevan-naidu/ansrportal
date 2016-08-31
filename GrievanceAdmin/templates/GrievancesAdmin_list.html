@@ -159,7 +159,7 @@
 						</th>
 
 						<th class="TbHead td-center">
-							Is Escalated
+							Escalated
 						</th>
 						<th class="TbHead td-center">
 							Status
@@ -173,7 +173,14 @@
                      {%  autopaginate grievances 10 %}
                         {%   for object in grievances  %}
 
+<style type="text/css">
+  
+.table tbody>tr>td {
+    max-width: 300px;
+    word-wrap: break-word;
+}  
 
+</style>
 
 					<tr class="warning">
 						<td class="nowrapClass">
