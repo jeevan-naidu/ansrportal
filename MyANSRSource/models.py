@@ -197,7 +197,7 @@ class Project(models.Model):
                                default=timezone.now)
     salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
                                            verbose_name="SF\
-                                           Oppurtunity Number",
+                                           Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
@@ -419,7 +419,7 @@ class ProjectChangeInfo(models.Model):
                                        verbose_name="Revised amount")
     salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
                                            verbose_name="Sales Force \
-                                           Oppurtunity Number",
+                                           Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
