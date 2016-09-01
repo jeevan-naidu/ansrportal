@@ -1,4 +1,4 @@
-{% extends 'timesheetMaster.html'  %}
+{% extends 'timesheetMaster.inc'  %}
 
 {% load bootstrap3 %}
 {% block startDate %}
@@ -10,42 +10,17 @@
 {% endblock %}
 {% block container %}"container container-timesheet" {% endblock %}
 {% block timesheetContent %}
-
-<style type="text/css">
-
-
-
-</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <form id="timesheet" method="post" action="" enctype="multipart/form-data">
-
-                    <div class="panel pb-15">
-                        <!-- first widget (vertical tabs) -->
-
-                        <div class="panel-body">
 	{% csrf_token %}
     <div id="timesheet-billable">
 	<legend>
 	Project Effort
-		<span class="pull-right">
-			<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
-				<span class="glyphicon glyphicon-plus"></span>
-				Add Project effort Item
-			</a>
-		</span>
+	<span class="pull-right">
+		<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
+			<span class="glyphicon glyphicon-plus"></span>
+			Add Project effort Item
+		</a>
+	</span>
 	</legend>
 
     {{ tsFormset.management_form }}
@@ -64,15 +39,9 @@
 		{% if forloop.first %}
 		<thead>
 		<tr>
-			<td colspan="4" class="text-right">
-				<h6>
-                    <strong>Swipe Card Hours</strong>
-				</h6>
-			</td>
+			<td colspan="4" class="text-right"><h5></small><b>Swipe Card Hours</b></small></h5></td>
 			{% for k, v in attendance.items %}
-				<td class="text-center">
-				<b>{{ v }}</b>
-				</td>
+				<td class="text-center"><b>{{ v }}</b></td>
 			{% endfor %}
 		</tr>
 		<tr>
@@ -143,7 +112,7 @@
 			{% for data in form.visible_fields %}
 			{% spaceless %}
 			{% if data.label in shortDays %}
-					<td style="position:relative">
+					<td>
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
@@ -153,7 +122,6 @@
 								{% endif %}
 							{% endif %}
 						{% endfor %}
-                            <span style="display: none;">
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
 									{% for typeData in form.hidden_fields %}
@@ -174,15 +142,14 @@
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
-                            </span>
-
+							-
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
                                         {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
+                                            <span class="b-hours {{ dayclass }} set-zero">{{ tdata.value }}</span>H
                                         {% else %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H
+                                            <span class="b-hours {{ dayclass }} set-zero">0</span>H
                                         {% endif %}
                                     {% endwith %}
 									{{ tdata }}
@@ -195,13 +162,12 @@
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
-									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
+									<a class="btn btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
 								{% else %}
-									<a class="lh-30 btn-default row-total-view fixed-btn-size" href="javascript:;">
+									<a class="btn btn-default row-total-view fixed-btn-size" href="javascript:;">
 								{% endif %}
 							{% endif %}
 						{% endfor %}
-                            <span style="display: none;">
 							{% for data in form.hidden_fields %}
 								{% if 'totalQ' in data.id_for_label %}
 									{% for typeData in form.hidden_fields %}
@@ -222,8 +188,7 @@
 									{{ data }}
 								{% endif %}
 							{% endfor %}
-                            </span>
-
+							-
 							{% for data in form.hidden_fields %}
 
 								{% if 'totalH' in data.id_for_label %}
@@ -260,19 +225,19 @@
 				{% elif data.label == 'Feedback' %}
 			       		<td>
 						{% if  data.value == None or data.value == '' %}
-							<button type="button" class="btn btn-default" disabled='disabled'>
+						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
-							{% with apIdT="#myModal-"|add:data.id_for_label %}
-								{% for data in form.visible_fields %}
-									{% if 'hold' in data.label %}
-										{% if data.value %}
-											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-										{% else %}
-											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-										{% endif %}
+						{% with apIdT="#myModal-"|add:data.id_for_label %}
+							{% for data in form.visible_fields %}
+								{% if 'hold' in data.label %}
+									{% if data.value %}
+										<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
+									{% else %}
+										<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 									{% endif %}
-								{% endfor %}
-							{% endwith %}
+								{% endif %}
+							{% endfor %}
+						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
@@ -313,23 +278,6 @@
 	{% endfor %}
 	</table>
     </div>
-
-
-
-</div>
-</div>
-
-
-
-
-                    <div class="panel pb-15">
-                        <!-- first widget (vertical tabs) -->
-
-                        <div class="panel-body">
-
-
-
-
     <div id="timesheet-non-billable">
 	<legend>
 	Non - Project Effort
@@ -369,9 +317,9 @@
 			<th>
 		    {% endif %}
                     	{{ data.label }}
-                   <!--  {% if data.field.required %}
+                    {% if data.field.required %}
                         <span class="required">*</span>
-		    {% endif %} -->
+		    {% endif %}
                     </th>
                     {% endif %}
                 {% endfor %}
@@ -474,20 +422,13 @@
 
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-
-		</div><!-- ./panel tags -->
-
-	</div>
-
-<div style="margin-bottom:15px;" class="clearfix">
         {% if hold_button %}
-            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space" disabled="disabled">Submit</a>
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right" disabled="disabled">Save</button>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-info" disabled="disabled">Save Timesheet</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right" disabled="disabled">Submit Timesheet</a>
         {% else %}
-            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space">Submit</a>
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right">Save</button>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-info">Save Timesheet</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-info pull-right">Submit Timesheet</a>
         {% endif %}
-        </div>
 	<script>
 
  		$(document).on("click", "#submitTS", function(e) {
@@ -518,39 +459,7 @@
             });
         });
 
-
-
-        // Script to hide popover on click of element other than popover
-        $('html').on('click', function(e) {
-              if (typeof $(e.target).data('original-title') == 'undefined' &&
-                 !$(e.target).parents().is('.popover.in')) {
-                $('[data-original-title]').popover('hide');
-              }
-            });
-
-
-        $(document).ready(function(){
-        	$('body').addClass("nav-left-hide remove-navbar nav-left-medium");
-        })
-
-
 	</script>
-
-
+ </button>
  </form>
-
-
-
-
-<style type="text/css">
-
-.table>thead>tr>th{border-bottom: 0px;}
-.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td{padding: 5px;}
-.lh-30{line-height: 30px;}
-.popover.fade.bottom{background-color: rgba(255, 255, 255, 0);border:0px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0);}
-.popover.fade.bottom .arrow{display: none;}
-.popover-content{height:0px;width:0px;padding:0px}
-</style>
-
-
 {% endblock %}

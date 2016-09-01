@@ -134,7 +134,7 @@ class ReportAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('projectType', 'name', 'taskType', 'norm')
+    list_display = ('projectType', 'name', 'taskType')
     filter_fields = ('projectType',)
     ordering = ['projectType', 'name', ]
     search_fields = ['name', ]

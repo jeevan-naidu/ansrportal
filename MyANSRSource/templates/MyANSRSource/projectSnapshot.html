@@ -1,6 +1,6 @@
 {% extends 'projectMaster.inc' %}
 {% load fontawesome %}
-{% block pageTitle %}New Project Snapshot{% endblock %}
+
 {% block content %}
 <ul class="form-steps clearfix">
     <li class="form-step one-fourth">
@@ -25,7 +25,7 @@
     </li>
 </ul>
 <div class="col-xs-12 col-md-12 col-lg-12  jumbotron shadow">
-
+<legend><b>Summary</b></legend>
 <form id="snapshot" name="snapshot" method="POST" action="save">
 {% csrf_token %}
 <div class="panel panel-default">

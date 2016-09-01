@@ -16,6 +16,8 @@
     -o-box-shadow: 0 0 5px rgba(0, 0, 0, .3)
 }
 body {
+    padding-top: 70px;
+    padding-bottom: 70px;
     font-family: 'Droid Sans', sans-serif
 }
 .required {
@@ -216,16 +218,16 @@ body {
     width: 96%
 }
 .holiday {
-    background-color: #00542f
+    background-color: #009452
 }
 .remainder {
     background-color: #F4B961
 }
 .financialM {
-    background-color: #841707
+    background-color: #D6412B
 }
 .nonfinancialM {
-    background-color: #775d17
+    background-color: #FFBA02
 }
 .training {
     background-color: #176CED
@@ -233,19 +235,6 @@ body {
 .hrAct {
     background-color: #F04C23
 }
-
-/* Vendroid Insertion */
-
-#calendar-options-bottom {padding-top: 5px;}
-#calendar-options-bottom label{
-    padding: 5px 10px;
-    margin-top: -2px;
-    margin-right: 5px;
-    cursor: pointer;
-    opacity: 0.4;
-}
-#calendar-options-bottom input[type="checkbox"]:checked + label{opacity: 1}
-#calendar-options-bottom input[type="checkbox"]{display: none;}
 .ansr-disabled {
     pointer-events: none;
     cursor: not-allowed;
@@ -487,18 +476,10 @@ background-color: #fcf8e3;
 
 .margin-0{margin: 0px;}
 
-#BookRoomAndViewDetailsContainer .panel{background: #fff}
 .room-booking-content{padding: 20px 15px;}
 .nav-btns{margin-top: 9px;}
 .nav-btns p{line-height: 36px;margin-right: 30px;margin-bottom: 0px;}
 .btn-blue{background-color: #61A3DC; color: #FFF}
-.btn-disabled, .btn-disabled:hover, .btn-disabled:focus{color: #bbb}
-.btn-bookings{
-    background: #73b3e8;
-    border: 1px solid #4a9ade;
-    color: #0c3d67;
-}
-.btn-bookings:hover{color: #0c3d67;}
 .time-panel{margin-bottom: 25px;}
 .time-slots div span{width: 40px;display: inline-block;font-size: 10px;}
 .time-slots div span:first-child{margin-right: 14px;}
@@ -584,31 +565,6 @@ span:hover .booked-by{display: block}
 #legend p.booked span{background-color: #fdba11;border-color: #fdba11;}
 #legend p.user-booked span, .user-selected{background-color: #70c0c5 !important;border-color: #70c0c5 !important;}
 
-
-@media only screen and (max-width: 1366px){
-    .selectors label{margin-left: 0px;}
-    .time-slots div span{width: 30px;}
-
-}
-
-
-
-@media only screen and (max-width: 1200px){
-    #legend span, .selectors input[type="checkbox"]+label{
-        height: 15px;
-        width: 15px;
-    }
-    .time-slots div span:first-child{margin-right: 2px;}
-}
-
-
-
-
-
-
-
-
-
 /* Pulsate */
 
 .pulsate{
@@ -661,30 +617,3 @@ span:hover .booked-by{display: block}
 .ansrLogo {
     max-width: 175px !important;
 }
-
-
-/* VendroidForTest */
-
-
-/* General */
-
-.pull-right-space{margin-left: 15px;}
-.panel-heading-styles{
-    border-bottom: 1px solid transparent;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    background-color: #777 !important    
-}
-
-/* Master */
-
-.vd_menu .menu-icon{display: none;}
-.nav-left-small .vd_navbar-left .vd_menu .menu-icon, .nav-right-small .vd_navbar-right .vd_menu .menu-icon{display: block;}
-.vd_mega-menu-content{padding: 0px;} /* Remove when more entries are added to  */
-
-
-/* Timesheet */
-
-.bb0{border-bottom: 0px !important}
-#timesheet-non-billable legend, #timesheet legend{padding-bottom: 10px;}
-

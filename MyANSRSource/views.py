@@ -17,7 +17,6 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee
 
 
 from fb360.models import Respondent
@@ -126,44 +125,6 @@ def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
 
-def get_mondays_list_till_date():
-    '''generate all days that are Mondays in the current year
-    returns only monday(date object)'''
-    current_date = datetime.now().date()
-    jan1 = date(current_date.year, 1, 1)
-
-
-    # find first Monday (which could be this day)
-    monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
-
-    while 1:
-
-        if monday.year != current_date.year or monday > current_date:
-            break
-        yield monday
-        monday += timedelta(days=7)
-
-# diff between above function get_mondays_list_till_date() and below function weeks_list_till_date
-# is only in the yield statement
-#
-def weeks_list_till_date():
-    '''generate week(monday to sunday) for the current year
-    returns tuple for with 2 objects: week_start and week_end'''
-    current_date = datetime.now().date()
-
-    jan1 = date(current_date.year, 1, 1)
-
-    # find first Monday (which could be this day)
-    monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
-
-    while 1:
-
-        if monday.year != current_date.year or monday > current_date:
-            break
-        yield (monday, monday + timedelta(days=6))
-        monday += timedelta(days=7)
-
-
 @login_required
 @permission_required('MyANSRSource.enter_timesheet')
 def Timesheet(request):
@@ -171,8 +132,6 @@ def Timesheet(request):
     # Week Calculation.
     leaveDayWork = False
     # Getting the form values and storing it to DB.
-
-
     if request.method == 'POST':
         # Getting the forms with submitted values
         hold_button = False
@@ -703,16 +662,6 @@ def switchWeeks(request):
             disabled = 'next'
         else:
             disabled = ''
-    elif request.GET.get('wkstart'):
-
-        weekstartDate = datetime.strptime(request.GET.get('wkstart'), '%d%m%Y').date()
-        ansrEndDate = datetime.strptime(request.GET.get('wkend'), '%d%m%Y').date()
-        if (datetime.now().date() - ansrEndDate).days < 0:
-            disabled = 'next'
-        else:
-            disabled = ''
-
-
     return {'start': weekstartDate, 'end': ansrEndDate, 'disabled': disabled}
 
 
@@ -790,44 +739,6 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
 
 
 def renderTimesheet(request, data):
-
-
-    mondays_list = [x for x in get_mondays_list_till_date()]
-
-    # list of dict with mentioned ts entry columns
-    weeks_timesheetEntry_list = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart__in=mondays_list). \
-        values('wkstart', 'wkend', 'hold', 'approved').distinct()
-
-    mondays_list = [str(x.strftime("%b") + "-" + str(x.day)) for x in mondays_list]
-
-    weeks_list = [x for x in weeks_list_till_date()]
-
-    ts_week_info_dict = {}
-    for dict_obj in weeks_timesheetEntry_list:
-        for_week = str(str(dict_obj['wkstart'].day) + "-" + dict_obj['wkstart'].strftime("%b")) + " - "+ \
-                   str(str(dict_obj['wkend'].day) + "-" + dict_obj['wkend'].strftime("%b"))
-        dict_obj['for_week'] = for_week
-        dict_obj['filled'] = True
-        wkstart = str(dict_obj['wkstart']).split('-')[::-1]
-        dict_obj['wkstart'] = "".join([x for x in wkstart])
-        wkend = str(dict_obj['wkend']).split('-')[::-1]
-        dict_obj['wkend'] = "".join([x for x in wkend])
-
-        ts_week_info_dict[for_week] = dict_obj
-
-    ts_final_list = []
-
-    for tup in weeks_list:
-        for_week = str(tup[0].day) + "-" + str(tup[0].strftime("%b")) + " - " + str(tup[1].day) + \
-                    "-" + str(tup[1].strftime("%b"))
-        if for_week in ts_week_info_dict:
-            ts_final_list.append(ts_week_info_dict[for_week])
-        else:
-            wkstart = str(tup[0]).split('-')[::-1]
-            wkend = str(tup[1]).split('-')[::-1]
-            ts_final_list.append({'for_week':for_week, 'wkstart': "".join([x for x in wkstart]),
-                                  'wkend': "".join([x for x in wkend]), 'filled': False})
-
 
     attendance = {}
     tsObj = TimeSheetEntry.objects.filter(
@@ -987,11 +898,7 @@ def renderTimesheet(request, data):
                  'prevWeekBlock': prevWeekBlock,
                  'total': total,
                  'tsFormset': tsFormset,
-                 'atFormset': atFormset,
-                 'mondays_list': mondays_list,
-                 'ts_week_info_dict': ts_week_info_dict,
-                 'ts_final_list':ts_final_list
-                 }
+                 'atFormset': atFormset}
     if 'tsErrorList' in data:
         finalData['tsErrorList'] = data['tsErrorList']
     if 'atErrorList' in data:
@@ -1040,7 +947,6 @@ def ApproveTimesheet(request):
                  'teamMember__employee__employee_assigned_id',
                  'teamMember__last_name', 'wkstart', 'wkend'
                  ).order_by('teamMember', 'wkstart', 'wkend').distinct()
-
         tsList = []
         if len(data):
             for eachTS in data:
@@ -1119,9 +1025,6 @@ def getHours(request, wstart, wend, mem, project, label):
 
 @login_required
 def Dashboard(request):
-
-    todays_date = datetime.now().date()
-    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day, date_of_birthO__month=todays_date.month)
     if request.method == 'POST':
         myremainder = MyRemainderForm(request.POST)
         btg = BTGReportForm(request.POST)
@@ -1367,8 +1270,7 @@ def Dashboard(request):
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
         'isManager': isManager,
-        'swipe_display': swipe_display,
-        'birthdays_list': birthdays_list,
+        'swipe_display':swipe_display
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():

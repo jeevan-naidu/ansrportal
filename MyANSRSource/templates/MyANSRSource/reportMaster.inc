@@ -1,4 +1,4 @@
-{% extends 'master.html' %}
+{% extends 'master.inc' %}
 {% load permissions %}
 {% block addFormMedia %}
 {% load fontawesome %}

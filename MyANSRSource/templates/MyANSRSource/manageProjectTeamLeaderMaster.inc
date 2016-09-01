@@ -1,4 +1,4 @@
-{% extends 'master.html' %}
+{% extends 'master.inc' %}
 
 {% block addFormMedia %}
 
@@ -14,10 +14,29 @@
 
 {% block siteTitle %}myansrsource:Manager{% endblock %}
 
-{% block loggedStatus %}
+{% block responsiveMenu %}
+<button type="button" class="navbar-toggle" data-toggle="collapse" 
+    data-target="#example-navbar-collapse">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>                                  
+</button>
 {% endblock %}
 
-{% block pageTitle %}{{ wizard.steps.current }}{% endblock %}
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+{% block loggedStatus %}
+{% endblock %}
 {% block content %}
 <ul class="form-steps clearfix">
     <li class="form-step one-half {% block MPactiveClass %}{% endblock %}">
@@ -32,64 +51,44 @@
     </li>
 </ul>
 <div>
-
-<style type="text/css">
-    
-.yourlabs-autocomplete{
-    max-height: 300px;
-    overflow: auto;
-}
-
-</style>
-
-
-
-<div class="panel clearfix">
-<div class="panel-body">
  <div id="create">
     <form id="changeProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
-    <legend>
-        
-        {% block addForm %}{% endblock %}
-    </legend>
+	<legend>
+		<b>{{ wizard.steps.current }}</b>
+		{% block addForm %}{% endblock %}
+	</legend>
         {{ wizard.management_form }}
-    {% if wizard.form.forms %}
-        {{ wizard.form.management_form }}
-        {% for form in wizard.form.forms %}
-        {% block childform %}{% endblock %}
-        {% endfor %}
-    {% else %}
-        {{ wizard.form.management_form }}
-        {% with form=wizard.form %}
-        {% block masterform %}{% endblock %}
-        {% endwith %}
-    {% endif %}
-    {% buttons %}
+	{% if wizard.form.forms %}
+		{{ wizard.form.management_form }}
+		{% for form in wizard.form.forms %}
+		{% block childform %}{% endblock %}
+		{% endfor %}
+	{% else %}
+		{{ wizard.form.management_form }}
+		{% with form=wizard.form %}
+		{% block masterform %}{% endblock %}
+		{% endwith %}
+	{% endif %}
+	{% buttons %}
         {% if wizard.steps.prev %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
                         {% fontawesome_icon 'arrow-circle-left' large=True %}
-                <b>Choose Project</b>
+		        <b>Choose Project</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
                         {% fontawesome_icon 'upload' large=True %}
-            <b>Update Project Leader(s)</b>
+		    <b>Update Project Leader(s)</b>
                 {% else %}
-            <b>View Project Leader(s)</b>
+		    <b>View Project Leader(s)</b>
                     {% fontawesome_icon 'arrow-circle-right' large=True %}
                 {% endif %}
             </button>
         {% endbuttons %}
     </form>
  </div>
-</div>
-</div>
-
-
-
-
 </div>
 {% endblock %}

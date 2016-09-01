@@ -2,9 +2,6 @@
 
 {% block createProjectActive %}class="active"{% endblock %}
 {% block MPactiveClass %}active{% endblock %}
-
-{% block pageTitle %}Manage/Change project{% endblock %}
-
 {% block childform %}{% block masterform %}
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
@@ -17,30 +14,25 @@
         </ul>        
 	</div>
 {% endif %}
-
-    <div class="panel clearfix">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-8 center-block">
-                    <div class="table-responsive col-lg-12">
-                        <table class="table table-bordered">
-                            <thead>
-                                <th class="text-center">Choose</th>
-                                <th class="text-center">Project</th>
-                            </thead>
-                            {% for field in form.project %}
-                                <tr>
-                                    <td class="col-lg-1 text-center">
-                                        {{ field.tag }}
-                                    </td>
-                                    <td class="col-lg-7">
-                                        {{ field.choice_label }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    </div>
-                </div>
+    <div class="row">
+        <div class="col-sm-6 center-block">
+            <div class="table-responsive col-lg-12">
+                <table class="table table-bordered">
+                    <thead>
+                        <th class="text-center">Choose</th>
+                        <th>Project</th>
+                    </thead>
+                    {% for field in form.project %}
+                        <tr>
+                            <td class="col-lg-1 text-center">
+                                {{ field.tag }}
+                            </td>
+                            <td class="col-lg-7">
+                                {{ field.choice_label }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
     </div>

@@ -9,7 +9,6 @@ import datetime
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 from django.utils import timezone
-from django.utils.encoding import smart_str
 
 date_instance = DateField()
 
@@ -123,11 +122,8 @@ class MilestoneReportsView(View):
             for obj in MilestoneList:
 
                 leads_list = ",".join(i.first_name + " " + i.last_name for i in obj.project.projectManager.all())
-                writer.writerow([smart_str(obj.project.projectId), smart_str(obj.project.name), smart_str(leads_list),
-                                 smart_str(obj.milestoneDate), smart_str(obj.description),
-                                 smart_str(obj.amount), smart_str(obj.closed), smart_str(obj.financial),
-                                 smart_str(obj.project.customerContact), smart_str(obj.closedon),
-                                 smart_str(obj.updatedOn)])
+                writer.writerow([obj.project.projectId, obj.project.name, leads_list, obj.milestoneDate, obj.description,
+                                 obj.amount, obj.closed, obj.financial, obj.project.customerContact, obj.closedon, obj.updatedOn])
             if MilestoneList:
                 return response
             else:

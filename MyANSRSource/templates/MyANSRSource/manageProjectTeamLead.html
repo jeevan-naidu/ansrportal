@@ -3,17 +3,6 @@
 {% block TMactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 {% if form.errors %}
-
-<style type="text/css">
-	
-.yourlabs-autocomplete{
-	max-height: 300px;
-	overflow: auto;
-}
-
-</style>
-
-
 	<div class="alert alert-danger" role="alert">
         <ul>
 		{% for k, v in form.errors.items %}
@@ -37,8 +26,8 @@
 			{% if forloop.first %}
 			   	<tr>
 			{% endif %}
-                    <td class="col-xs-4">Choose Project Leader(s) </td>
-					<td class="col-xs-8">{{ t }}</td>
+                    <td class="col-lg-4">Choose Project Leader(s) </td>
+					<td class="col-lg-8">{{ t }}</td>
 			{% if forloop.last %}
 				</tr>
 			{% endif %}

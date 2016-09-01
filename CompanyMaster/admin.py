@@ -1,6 +1,5 @@
 from django.contrib import admin
-from CompanyMaster.models import OfficeLocation, CustomerType,\
-    DataPoint, Division, BusinessUnit, Holiday, Customer, Training, HRActivity
+from CompanyMaster.models import *
 
 
 class DivisionInline(admin.TabularInline):
@@ -18,7 +17,7 @@ class CustomerTypeAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'customerCode')
+    list_display = ('customer_name', 'customer_code')
 
 
 class DepartmentAdmin(admin.ModelAdmin):
@@ -54,3 +53,21 @@ admin.site.register(BusinessUnit, BusinessUnitAdmin)
 admin.site.register(OfficeLocation, OfficeLocatonAdmin)
 admin.site.register(DataPoint, DataPointsAdmin)
 admin.site.register(Training, TrainingAdmin)
+
+admin.site.register(Region)
+admin.site.register(Currency)
+admin.site.register(Country)
+admin.site.register(Company)
+admin.site.register(Location)
+admin.site.register(SupportTask)
+admin.site.register(Practice)
+admin.site.register(SubPractice)
+admin.site.register(Role)
+admin.site.register(CareerBand)
+admin.site.register(Designation)
+admin.site.register(KRA)
+admin.site.register(CareerLadderHeader)
+admin.site.register(CareerLadder)
+admin.site.register(PnL)
+admin.site.register(BusinessSegment)
+admin.site.register(GroupCustomer)

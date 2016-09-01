@@ -1,8 +1,8 @@
 from django import template
 from django.contrib.auth.models import Group
-from django.conf import settings
-register = template.Library()
 
+register = template.Library()
+from django.conf import settings
 
 
 @register.filter('create_project')
@@ -44,8 +44,3 @@ def IsMilestoneReportsAdmin(user):
 def IsSalesforceAdmin(user):
     UserGroupsList = user.groups.all().values_list('name', flat=True)
     return settings.SALESFORCE_ADMIN_GROUP_NAME in UserGroupsList
-
-
-@register.filter('IsActiveShortAttendance')
-def IsActiveShortAttendance(value):
-    return settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE

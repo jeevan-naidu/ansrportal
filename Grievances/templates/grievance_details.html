@@ -1,31 +1,19 @@
 
 {% load grievances_template_tags %}
-<div class="panel-group" id="accordion-{{object.id}}">
-
-
-
-	<div class="panel panel-default">
-		<div class="panel-heading vd_bg-grey vd_bd-grey">
+<div class="panel-group marginTop" id="panel-{{object.id}}">
+	<div class="panel Gr-PnBg">
+		<div class="panel-heading">
 			
 			<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-1{{object.id}}">
 					<div class="indicator smooth_transitions glyphicon glyphicon-play {{object.id}}"></div>
 					
-					<b class="book">{{object.subject | truncatechars:60}}</b>
+					<b class="font-15">{{object.subject | truncatechars:60}}</b>
 			</a>
-
-
-
-		                       
-
-
-
-
-
 		</div>
 		<div id="panel-element-1{{object.id}}" class="panel-collapse collapse">
 			<div class="panel-body ">
 				<div class="message_body Gr-max-height">
-					<p><i><b class="book">Subject:</b> {{object.subject}}</i></p>
+					<p><i><b class="font-15">Subject:</b> {{object.subject}}</i></p>
 					<p><i>{{object.grievance}}</i></p>
 					
 					<!-- Attachments start -->
@@ -51,12 +39,12 @@
 	</div>
 		
 	{% if object.action_taken %}
-	<div class="panel panel-default">
-		<div class="panel-heading vd_bg-grey vd_bd-grey">
+			<div class="panel Gr-PnBg">
+				<div class="panel-heading ">
 					
 					 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-2{{object.id}}">
 						<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
-						<b class="book">Action taken</b></a>
+						<b class="font-15">Action taken</b></a>
 				</div>
 				<div id="panel-element-2{{object.id}}" class="panel-collapse collapse">
 					<div class="panel-body">
@@ -92,12 +80,12 @@
 			
 			{% if object.satisfaction_level %}
 				
-	<div class="panel panel-default">
-		<div class="panel-heading vd_bg-grey vd_bd-grey">
+				<div class="panel Gr-PnBg">
+					<div class="panel-heading">
 						
 						<a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
 							<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
-							<b class="book">User Actions</b></a>
+							<b class="font-15">User Actions</b></a>
 					</div>
 					<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
 						<div class="panel-body">
@@ -146,12 +134,12 @@
 				</div>
 			
 			{% else %}
-	<div class="panel panel-default">
-		<div class="panel-heading vd_bg-blue vd_bd-blue">
+				<div class="panel Gr-PnBg">
+						<div class="panel-heading">
 							
 							 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-3{{object.id}}">
 								<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
-								<b class="book">User Actions</b></a>
+								<b class="font-15">User Actions</b></a>
 						</div>
 						<div id="panel-element-3{{object.id}}" class="panel-collapse collapse">
 							<div class="panel-body">
@@ -252,12 +240,12 @@
 
 	
 	{% if object.admin_closure_message %}		
-	<div class="panel panel-default">
-		<div class="panel-heading vd_bg-green vd_bd-green">
+			<div class="panel Gr-PnBg">
+				<div class="panel-heading">
 					
 					 <a class="panel-title" data-toggle="collapse" data-parent="#panel-{{object.id}}" href="#panel-element-4{{object.id}}">
 						<span class="indicator smooth_transitions glyphicon glyphicon-play"></span>
-						<b class="book">Admin Closure Message</b></a>
+						<b class="font-15">Admin Closure Message</b></a>
 				</div>
 				<div id="panel-element-4{{object.id}}" class="panel-collapse collapse">
 					<div class="panel-body">

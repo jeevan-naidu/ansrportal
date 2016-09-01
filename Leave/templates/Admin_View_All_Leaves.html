@@ -1,12 +1,41 @@
 
-{% extends 'master.html' %}
+{% extends 'master.inc' %}
 <title>{% block siteTitle %}myansrsource:Leave List View{% endblock %}</title>
 
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block pageTitle %}All Leaves{% endblock %}
 
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+<!-- {% block breadcrumb %}
+<div class="container-fluid pad0">
+    <div class="row">
+            <div class="">
+                <ul class="breadcrumb">
+                    <li>
+					<a href="{% url 'Leave_dashboard' %}">Home</a>
+                    </li>
+                    <li>
+					<a href='/leave/'>Leave</a>
+                    </li>
+                    <li class="active">
+					List
+                    </li>
+
+                </ul>
+            </div>
+    </div>
+</div>
+{% endblock %} -->
 
 {% block content  %}
     <link href="/static/css/leave_style.css" rel="stylesheet">
@@ -17,6 +46,20 @@
 
 
     <div class="container Lv-themeTxtColor ">
+
+
+
+
+      <div class="row">
+          <div class="col-md-12">
+              <h3 class="text-center template-header">All Transaction</h3>
+              <hr>
+          </div>
+
+        <hr>
+      </div>
+
+
 
 
         <!--  Start Leave details popup-->
@@ -55,13 +98,7 @@
         <!--  End Leave details pop-->
 
         <!--      My Leaves Start -->
-<style type="text/css">
-  
-.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
-    padding: 5px 8px;
-}
-  
-</style>
+
 
         <!--	Start Menu -->
         <div class="row">
@@ -168,6 +205,12 @@
                 </div><!-- end of Lv-ApLvHeader -->
                 <hr>
 
+
+
+
+
+
+
             </div>
         </div>
         <!-- End Menu -->
@@ -191,7 +234,7 @@
                     {% for leave in leave_list %}
 
                     <tr  {%for k,v in  BUTTON_NAME %}
-                                {%if v|safe == leave.status|safe %} class ="info" {%endif%}{%endfor%}>
+                                {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
                         <td>
                             <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" class ="list_view mod" title="View Details">{{leave.user.first_name}} {{leave.user.last_name}}</a>
                             <div class="GrDetails" style = "display:none" >
@@ -201,7 +244,7 @@
                                      <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
                                  </tr>
                                  <tr>
-                                     <td>Applied On: </td>
+                                     <td>Applies On: </td>
                                      <td>{{leave.applied_on}}</td>
                                  </tr>
                                  <tr >

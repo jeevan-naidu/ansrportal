@@ -229,3 +229,5 @@ class AttendanceAdmin(admin.ModelAdmin):
 admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(TeamMember, EmployeeAdmin)
 admin.site.register(Designation, DesignationAdmin)
+
+

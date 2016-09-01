@@ -1,7 +1,5 @@
 {% extends 'changeProjectMaster.inc' %}
 
-{% block pageTitle %}Change Project Basic Info{% endblock %}
-
 {% block createProjectActive %}class="active"{% endblock %}
 {% block CBIactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
@@ -16,23 +14,11 @@
         </ul>        
 	</div>
 {% endif %}
-
-
-<style type="text/css">
-    
-    .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
-    padding: 5px 5px;
-}
-</style>
-
-
-<div class="panel clearfix">
-<div class="panel-body">
     <div class="row">
         <div class="col-sm-6 center-block">
             <div class="table-responsive col-lg-12">
             <h3><small><b>{{ projectName }}</b></small></h3>
-            <h4><b><span class="label label-default">Total effort : {{ totalEffort }}</span></b></small></h4>
+		    <h4><b><span class="label label-default">Total effort : {{ totalEffort }}</span></b></small></h4>
             <table class="table">
                 <tr>
                     {% for hField in form.hidden_fields %}
@@ -64,10 +50,6 @@
             </div>
         </div>
     </div>
-</div>
-</div>
-
-
 <script>
     var app = app || {};
 

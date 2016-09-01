@@ -1,220 +1,30 @@
-
+{% extends 'master.inc' %}
 
 {% load bootstrap3 %}
 
 {% load fontawesome %}
 
- <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-
-    <script type="text/javascript" src="/static/js/jquery.js"></script>
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-
+{% block siteTitle %}myansrsource:Login{% endblock %}
 
 {% block content %}
-
-
-
-
-<link href="/static/css/font-entypo.css" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- Theme CSS -->
-    <link href="http://vendroid.venmond.com/css/theme.min.css" rel="stylesheet" type="text/css">
-    <!--[if IE]> <link href="css/ie.css" rel="stylesheet" > <![endif]-->
-    <link href="http://vendroid.venmond.com/css/chrome.css" rel="stylesheet" type="text/chrome"> <!-- chrome only css -->   
-
-            <link href="http://vendroid.venmond.com/css/theme-responsive.min.css" rel="stylesheet" type="text/css"> 
-
-            
-
-
-
-
-<body id="pages" class="full-layout no-nav-left no-nav-right  nav-top-fixed background-login     responsive remove-navbar login-layout   clearfix" data-active="pages "  data-smooth-scrolling="1">     
-<div class="vd_body">
-<!-- Header Start -->
-
-<!-- Header Ends --> 
-<div class="content">
-  <div class="container"> 
-    
-    <!-- Middle Content Start -->
-    
-    <div class="vd_content-wrapper">
-      <div class="vd_container">
-        <div class="vd_content clearfix">
-          <div class="vd_content-section clearfix">
-            <div class="vd_login-page">
-              <div class="heading clearfix">
-                <div class="logo">
-                  <h2 class="mgbt-xs-5"><img src="/static/images/ansrlogo.png" alt="logo"></h2>
-                </div>
-                <!-- <h4 class="text-center font-semibold vd_grey">LOGIN TO YOUR ACCOUNT</h4> -->
-              </div>
-              <div class="panel widget">
-                <div class="panel-body">
-                  <div class="login-icon entypo-icon"> <i class="icon-key" style="margin-top: 25px;display: block;"></i> </div>
-
-
-                  {% bootstrap_messages %}
-                  <form id="loginForm" action="{% url 'index' %}" method="POST" enctype="multipart/form-data" class="form-horizontal" role="form">
-                  {% csrf_token %}
-                  <div class="alert alert-danger vd_hidden">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
-                    <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>Oh snap!</strong> Change a few things up and try submitting again. </div>
-                  <div class="alert alert-success vd_hidden">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
-                    <span class="vd_alert-icon"><i class="fa fa-check-circle vd_green"></i></span><strong>Well done!</strong>. </div>                  
-                    <div class="form-group  mgbt-xs-20">
-
-
-
-
-                      <div class="col-md-12">
-
-                        <div class="label-wrapper sr-only">
-                          <label class="control-label sr-only" for="id_userid">Userid</label>
-                        </div>
-                        <div class="vd_input-wrapper" id="email-input-wrapper"> <span class="menu-icon"> <i class="fa fa-envelope"></i> </span>
-                      <input autofocus="autofocus" class="" id="id_userid" maxlength="30" name="userid" placeholder="Userid" required="required" title="" type="text">
-                        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <div class="label-wrapper">
-                          <label class="control-label sr-only" for="id_password">Password</label>
-                        </div>
-                        <div class="vd_input-wrapper" id="password-input-wrapper" > <span class="menu-icon"> <i class="fa fa-lock"></i> </span>
-                          <input type="password" placeholder="Password" id="id_password" name="password" class="required" required>
-                        </div>
-
-                      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </div>
-                    <div id="vd_login-error" class="alert alert-danger hidden"><i class="fa fa-exclamation-circle fa-fw"></i> Please fill the necessary field </div>
-                    <div class="form-group">
-                      <div class="col-md-12 text-center mgbt-xs-5">
-                        <button class="btn vd_bg-green vd_white width-100" type="submit">Login</button>
-                      </div>
-<!--                       <div class="col-md-12">
-                        <div class="row">
-                          <div class="col-xs-6">
-                            <div class="vd_checkbox">
-                              <input type="checkbox" id="checkbox-1" value="1">
-                              <label for="checkbox-1"> Remember me</label>
-                            </div>
-                          </div>
-                          <div class="col-xs-6 text-right">
-                            <div class=""> <a href="pages-forget-password.php">Forget Password? </a> </div>
-                          </div>
-                        </div>
-                      </div> -->
-
-                      
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <!-- Panel Widget -->
-              <!-- <div class="register-panel text-center font-semibold"> <a href="pages-register.php">CREATE AN ACCOUNT<span class="menu-icon"><i class="fa fa-angle-double-right fa-fw"></i></span></a> </div> -->
+    <div class="container">
+        <div class="col-lg-6 col-md-12 col-xs-12
+            col-lg-offset-3 jumbotron shadow"> 
+            <div class="col-lg-12 col-md-12 col-xs-12">
+                <legend>Logon&nbsp;to&nbsp;myansrsource&nbsp;</legend>
+                <form id="loginForm"  action="{% url 'index' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% bootstrap_messages %}
+                    {% bootstrap_form form layout='inline' %} 
+                    {% buttons %}
+                        <button type="submit" class="btn btn-sm btn-primary
+                            col-lg-3 col-xs-12 col-md-12 pull-right">
+                        {% fontawesome_icon 'sign-in' large=True %}
+                        Login
+                        </button>
+                    {% endbuttons %}
+                </form>
             </div>
-            <!-- vd_login-page --> 
-            
-          </div>
-          <!-- .vd_content-section --> 
-          
         </div>
-        <!-- .vd_content --> 
-      </div>
-      <!-- .vd_container --> 
     </div>
-    <!-- .vd_content-wrapper --> 
-    
-    <!-- Middle Content End --> 
-    
-  </div>
-  <!-- .container --> 
-</div>
-<!-- .content -->
-
-<!-- Footer Start -->
-  <footer class="footer-2"  id="footer">      
-    <div class="vd_bottom ">
-        <div class="container">
-            <div class="row">
-              <div class=" col-xs-12">
-                <div class="copyright text-center">
-                    Copyright &copy;2014 Venmond Inc. All Rights Reserved 
-                </div>
-              </div>
-            </div><!-- row -->
-        </div><!-- container -->
-    </div>
-  </footer>
-<!-- Footer END -->
-
-
-
-
-
-
-
-
-<style type="text/css">
-.vd_input-wrapper .menu-icon{top:13px;}
-</style>
-
-
-
-
-
-
-
 {% endblock %}

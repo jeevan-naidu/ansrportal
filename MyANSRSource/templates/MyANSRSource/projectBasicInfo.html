@@ -14,14 +14,7 @@
         </ul>        
 	</div>
 {% endif %}
-
-                    <div class="panel pb-15">
-                        <!-- first widget (vertical tabs) -->
-
-                        <div class="panel-body">
-
-
-
+        <div class="row">
             <div class="col-sm-6 center-block">
                 <div class="table-responsive">
                     <table class="table">
@@ -55,7 +48,6 @@
 		    </table>
 		</div>
 	   </div>
-       </div>
 	</div>
 <script>
     var app = app || {};
@@ -65,8 +57,8 @@
     }());
 
     $(document).ready(function(){
-       $("button#browserPrevious").click(function(e){
-            window.history.go(-1);
+       $("#browserPrevious").click(function(){
+            history.go(-1);
             return false;
         });
     });

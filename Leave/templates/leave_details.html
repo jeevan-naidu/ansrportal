@@ -9,7 +9,7 @@
          <td>{{leave.user.first_name}} {{leave.user.last_name}}</td>
      </tr>
      <tr>
-         <td>Applied On: </td>
+         <td>Applies On: </td>
          <td>{{leave.applied_on}}</td>
      </tr>
      <tr >
@@ -28,7 +28,7 @@
          <td>{{leave.to_date}} , {%for k,v in  SESSION_STATUS %} {%if k == leave.to_session %} {{v}} {% endif %} {%endfor%} </td>
      </tr>
      <tr >
-         <td>No of Days: </td>
+         <td>No Of Days: </td>
          <td>{{leave.days_count}}</td>
      </tr>
      <tr >

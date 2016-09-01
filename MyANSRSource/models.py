@@ -6,6 +6,10 @@ from django.utils import timezone
 import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 
+MEASURE_PRODUCTIVITY_CHOICES = (('yes', 'Yes'), ('no', 'No'))
+
+LINKED_TO_ASSET_CHOICES = (('yes', 'Yes'), ('no', 'No'))
+
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
     ('I', 'Idle'),
@@ -77,10 +81,11 @@ class Activity(models.Model):
 
 
 class projectType(models.Model):
-    code = models.CharField(max_length=2, null=False,
-                            verbose_name="Unit of Work")
+    code = models.CharField(max_length=10, null=False,
+                            verbose_name="Unit of Work", help_text='max length 10')
     description = models.CharField(max_length=100, null=False,
                                    verbose_name="Description")
+    linked_to_asset = models.CharField(max_length=10, choices=LINKED_TO_ASSET_CHOICES, blank=True, null=True)
     active = models.BooleanField(
         blank=False,
         default=True,
@@ -100,6 +105,7 @@ class Task(models.Model):
     name = models.CharField(max_length=100, verbose_name="Task")
     code = models.CharField(max_length=1, null=False,
                             verbose_name="Short Code", default=None)
+    measure_productivity = models.CharField(max_length=200, choices=MEASURE_PRODUCTIVITY_CHOICES)
     taskType = models.CharField(max_length=2,
                                 choices=TASKTYPEFLAG,
                                 verbose_name='Task type',
@@ -162,8 +168,8 @@ class Project(models.Model):
     customer = models.ForeignKey(
         CompanyMaster.models.Customer,
         verbose_name="Customer",
-        default=None,
-        null=False,
+        blank=True,
+        null=True,
     )
     currentProject = models.BooleanField(
         blank=False,
@@ -197,7 +203,7 @@ class Project(models.Model):
                                default=timezone.now)
     salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
                                            verbose_name="SF\
-                                           Opportunity Number",
+                                           Oppurtunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
@@ -419,7 +425,7 @@ class ProjectChangeInfo(models.Model):
                                        verbose_name="Revised amount")
     salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
                                            verbose_name="Sales Force \
-                                           Opportunity Number",
+                                           Oppurtunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")

@@ -205,7 +205,7 @@ class Employee(models.Model):
     # Business unit to which this employee belongs
     business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
     # user's default office location
-    location = models.ForeignKey('CompanyMaster.OfficeLocation')
+    location = models.ForeignKey('CompanyMaster.Location', null=True, blank=True)
     # Corporates have already assigned employee Ids.
     employee_assigned_id = models.CharField(
         "Employee ID",
@@ -282,6 +282,10 @@ class Employee(models.Model):
         max_length=30,
         null=True,
         blank=True)
+    # company = models.ForeignKey('CompanyMaster.Company', verbose_name = 'Company Name', blank=True, null=True)
+    # pratice = models.ForeignKey('CompanyMaster.Practice', verbose_name ='Practice', blank=True, null=True)
+    # sub_practice = models.ForeignKey('CompanyMaster.SubPractice', verbose_name = 'Sub Practice', blank=True, null=True)
+
     '''
     ================================================
     For 360 degree feedback system

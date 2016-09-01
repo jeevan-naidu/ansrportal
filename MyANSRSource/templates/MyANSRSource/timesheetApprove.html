@@ -1,18 +1,12 @@
-{% extends 'timesheetMaster.inc'  %}
+{% extends 'projectMaster.inc' %}
 
-<!-- {% block timesheetActive %}class="active"{% endblock %} -->
-{% block pageTitle %}Approve / Hold Exceptions{% endblock %}
+{% block timesheetActive %}class="active"{% endblock %}
+
 {% block content %}
-
-
-                    <div class="panel pb-15">
-                        <!-- first widget (vertical tabs) -->
-
-                        <div class="panel-body">
-
+<div class="jumbotron shadow">
 <form id="approveTS" method="post" action="" >
-<!--     <button type="submit" class="btn btn-info pull-right">Submit Status</button>
-    <legend><h2><small>Approve / Hold Exceptions</small></h2></legend> -->
+    <button type="submit" class="btn btn-info pull-right">Submit Status</button>
+    <legend><h2><small>Approve / Hold Exceptions</small></h2></legend>
 	{% csrf_token %}
     {% for eachInfo in timesheetInfo %}
         <table class="table table-condensed">
@@ -33,7 +27,7 @@
                     {% endwith %}
                         <div class="modal-dialog">
                              <div class="modal-content">
-                                <div class="modal-header vd_bg-blue vd_white">
+                                <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">
                                         <span aria-hidden="true">&times;</span>
                                         <span class="sr-only">Close</span>
@@ -85,10 +79,9 @@
                     <td class="text-center" colspan="4"><b>{{ eachInfo.NHours }}</b> Non-Project Hour(s)</td>
                 </tr>
             </tbody>
-        </table>
+        <table>
     {% endfor %}
 	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
 </form>
-</div>
 </div>
 {% endblock %}
