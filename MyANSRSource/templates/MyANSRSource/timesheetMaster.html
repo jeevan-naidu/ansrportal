@@ -5,6 +5,11 @@
 
 {% block siteTitle %}myansrsource:Timesheet Entry{% endblock %}
 
+
+{% block pageTitle %}
+    Timesheet : {{ weekstartDate|date:"d-M" }} - {{ weekendDate|date:"d-M" }}
+{% endblock %}
+
 {% block content  %}
 
 
@@ -152,7 +157,7 @@ a.filled:after, button.filled:after{
 
 
 <div class="dropdown week-selector pull-left">
-  <button class="btn btn-default dropdown-toggle left-text filled" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+  <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
   <i class="fa fa-calendar" style="margin-right:5px;color:#999"></i>
     {{ weekstartDate|date:"d-M" }} - {{ weekendDate|date:"d-M" }}
     <!-- <span class="caret"></span> -->
