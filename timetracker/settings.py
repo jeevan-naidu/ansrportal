@@ -322,7 +322,7 @@ FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
 # External Project Notifiers
-EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com','amol.pachpute@ansrsource.com']
+EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com']
 
 # New Joinee Notifiers
 NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
@@ -345,13 +345,14 @@ MEDIA_URL = '/media/'
 
 GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
 
-LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+LEAVE_ADMIN_EMAIL = ['HR4U@ansrsource.com']
 
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
+LEAVE_SHORT_ATTENDANCE_ISACTIVE = False
 
 
 #Broker Settings
