@@ -187,8 +187,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 60*60
 # Settings for Django-session-security
-SESSION_SECURITY_WARN_AFTER = 90*60  # Time Given in seconds
-SESSION_SECURITY_EXPIRE_AFTER = 100*60
+SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
+SESSION_SECURITY_EXPIRE_AFTER = 10*60
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
@@ -205,7 +205,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "mysqlroot",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -254,7 +254,11 @@ logger.setLevel(logging.DEBUG)
 
 
 # FB360 Configuration
-EMAIL_ABOUT_STATUS = ['sanjay.kunnath@ansrsource.com']
+EMAIL_ABOUT_STATUS = [
+    'sanjay.kunnath@ansrsource.com',
+    'Samprit.Managoli@ansrsource.com',
+    'Divya.Mathew@ansrsource.com',
+    ]
 
 
 LOGGING = {
@@ -318,10 +322,10 @@ FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
 # External Project Notifiers
-EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com']
+EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com','amol.pachpute@ansrsource.com']
 
 # New Joinee Notifiers
-NEW_JOINEE_NOTIFIERS = ['ansr.source.test@gmail.com']
+NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
@@ -339,13 +343,16 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "sanjay.kunnath@ansrsource.com"
-# LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
+
+LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
+
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
-LEAVE_SHORT_ATTENDANCE_ISACTIVE = False
+
 
 #Broker Settings
 BROKER_HOST = "localhost"
@@ -353,3 +360,4 @@ BROKER_PORT = 5672
 BROKER_USER = 'root'
 BROKER_PASSWORD = 'Welcome#2677'
 BROKER_VHOST = "ansrvhost"
+
