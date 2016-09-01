@@ -6,9 +6,11 @@
 {% block siteTitle %}myansrsource:Timesheet Entry{% endblock %}
 
 
+
 {% block pageTitle %}
     Timesheet : {{ weekstartDate|date:"d-M" }} - {{ weekendDate|date:"d-M" }}
 {% endblock %}
+
 
 {% block content  %}
 
@@ -105,12 +107,12 @@
 
 <style type="text/css">
 .btn.left-text{text-align: left;}
-.week-selector{margin: 0px 5px;}    
+.week-selector{margin: 0px 5px;}
 .week-selector button, .week-selector li a{min-width: 200px;}
 .week-selector li:not(:last-child){border-bottom: 1px solid #ccc;}
 .week-selector li:not(:last-child) a{padding-bottom: 5px;padding-top: 5px;}
 .week-selector a:hover{background-color: #949494 !important}
-/*.unfilled{    
+/*.unfilled{
     background: #fd6666;
     height: 15px;
     width: 15px;
@@ -176,9 +178,19 @@ a.incomplete:after, button.incomplete:after{
        {% for info_dict in ts_final_list reversed %}
            <li>
                 {% if info_dict.filled %}
-                    <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action">
+                    {% if info_dict.hold == True %}
+                         <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="filled">
                            {{ info_dict.for_week }}
-                    </a>
+                         </a>
+                    {% else %}
+                        <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="incomplete">
+                           {{ info_dict.for_week }}
+                         </a>
+                    {% endif %}
+
+
+
+
                 {% else %}
                     <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="unfilled">
                             {{ info_dict.for_week }}
