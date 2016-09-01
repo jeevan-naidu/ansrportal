@@ -121,20 +121,21 @@
                         <p class="text-center">Team Natus Vincere</p>
                         </div> -->
                         <!-- ./name- -->                      
+                        {% for employee in birthdays_list %}
+                            {% if forloop.first %}
+                                <div class="item active">
+                            {% else %}
+                                <div class="item">
+                            {% endif %}
 
-                        <div class="item active">
-                          <div class="birthday-name">
-                            <p class="text-center name">Ladislav Kovacs</p>
-                            <p class="text-center team">Team Natus Vincere</p>
-                          </div>
-                        </div>
+                              <div class="birthday-name">
+                                <p class="text-center name">{{ employee.user.first_name }} {{ employee.user.last_name }}</p>
+                                <p class="text-center team">{{ employee.business_unit }}</p>
+                              </div>
+                            </div>
 
-                        <div class="item">
-                          <div class="birthday-name">
-                            <p class="text-center name">Wiktor Wojtaz</p>
-                            <p class="text-center team">Team virtus Pro</p>
-                          </div>
-                        </div>
+                        {% endfor %}
+
 
                       </div>
 

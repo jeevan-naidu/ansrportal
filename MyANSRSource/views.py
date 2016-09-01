@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
+from employee.models import Employee
 
 
 from fb360.models import Respondent
@@ -1118,6 +1119,9 @@ def getHours(request, wstart, wend, mem, project, label):
 
 @login_required
 def Dashboard(request):
+
+    todays_date = datetime.now().date()
+    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day, date_of_birthO__month=todays_date.month)
     if request.method == 'POST':
         myremainder = MyRemainderForm(request.POST)
         btg = BTGReportForm(request.POST)
@@ -1363,7 +1367,8 @@ def Dashboard(request):
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
         'isManager': isManager,
-        'swipe_display':swipe_display,
+        'swipe_display': swipe_display,
+        'birthdays_list': birthdays_list,
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
