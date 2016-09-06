@@ -1,0 +1,358 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}myansrsource:Hire{% endblock %}
+{% block pageTitle %}Hire{% endblock %}
+{% block content  %}
+
+<div class="vd_content-section clearfix">
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Candidate Profile </h3>
+                  </div>
+
+
+
+<style>
+.autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+
+
+</style>
+
+
+
+                  <div class="panel-body">
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+
+
+   <div class="form-group">
+                        <label class="col-sm-2 control-label"></label><!-- start -->
+
+                        <div class="col-sm-2 controls">
+
+                            <div>Requisition</div>
+                            <div>
+                            {{ form.requisition_number }}
+{#                          <input type="text" placeholder="Requsition no" class="width-50">#}
+                          <!--<span class="help-inline">Enter requsition name</span>-->
+                        </div>
+
+                        </div>
+                       <div class="col-sm-3">
+
+                          <div> Department</div>
+
+                            <div>
+                                                      <select class="width-100">
+                                                        <option>Product Engineering</option>
+                                                        <option>Choice 2</option>
+                                                        <option>Choice 3</option>
+                                                        <option>Choice 4</option>
+                                                      </select>
+                            </div>
+                       </div>
+
+
+                       <div class="col-sm-3">
+
+                          <div> Hiring Manager</div>
+
+                            <div>
+                          <input type="text" placeholder="Name" class="width-100 input-sm">
+
+                            </div>
+                       </div>
+
+                      </div><!--./end of form group-->
+
+
+
+
+
+
+
+
+   <div class="form-group">
+                        <label class="col-sm-4 control-label"></label><!-- start -->
+
+
+                       <div class="col-sm-3">
+
+                          <div> Designation</div>
+
+                            <div>
+                                                      <select class="width-100">
+                                                        <option>Product Engineering</option>
+                                                        <option>Choice 2</option>
+                                                        <option>Choice 3</option>
+                                                        <option>Choice 4</option>
+                                                      </select>
+                            </div>
+                       </div>
+
+                       <div class="col-sm-3">
+
+                          <div> Specialization</div>
+
+                            <div>
+                                                      <select class="width-100">
+                                                        <option>Product Engineering</option>
+                                                        <option>Choice 2</option>
+                                                        <option>Choice 3</option>
+                                                        <option>Choice 4</option>
+                                                      </select>
+                            </div>
+                       </div>
+
+
+
+
+
+
+                      </div><!--./end of form group-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <!--<div class="form-group">
+                        <label class="col-sm-3 control-label">Department</label>
+                        <div class="col-sm-7 controls">
+                          <select class="width-40">
+                            <option>Media</option>
+                            <option>Editor</option>
+                          </select>
+                        </div>
+                      </div>--><!-- ./form group -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr>
+
+
+
+
+
+
+                      <div class="form-group">
+                              {{ form.candidate_name.errors }}
+                        <label class="col-sm-3 control-label" >Candidate Name</label>
+                        <div class="col-sm-7 controls">
+                          <input type="text" placeholder="Name" class="width-50 input-sm">
+{#                            {{ form.candidate_name }}#}
+
+                          <span class="help-inline">Enter his/her name</span> </div>
+                      </div>
+                        <div class="form-group">
+{#                            {{ form.mobile_number.errors }}#}
+                        <label class="col-sm-3 control-label">Phone Number</label>
+                        <div class="col-sm-7 controls">
+{#                            {{ form.mobile_number }}#}
+                          <input type="text" placeholder="phone number" class="width-30 input-sm">
+                          <span class="help-inline">Enter phone number</span> </div>
+                      </div>
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Email</label>
+                        <div class="col-sm-7 controls">
+{#                            {{ form.email_id }}#}
+                          <input type="text" placeholder="email" class="width-50 input-sm">
+                          <span class="help-inline">Enter enter email</span> </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Gender</label>
+                        <div class="col-sm-7 controls">
+                          <div class="vd_radio radio-success">
+                            <input type="radio" name="optionsRadios2" id="optionsRadios3" value="option3" checked>
+                            <label  for="optionsRadios3">Male</label>
+                            <input type="radio" name="optionsRadios2" id="optionsRadios4" value="option4">
+                            <label  for="optionsRadios4">Female</label>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Date Of Birth</label>
+                        <div class="col-sm-7 controls">
+                          <div class="input-group input-border width-50"> <span class="input-group-addon no-bd no-bg"><i class="fa fa-calendar"></i></span>
+                            <input type="text" placeholder="Calendar" class="no-bd input-sm">
+{#                              {{ form.date_of_birth }}#}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Source</label>
+
+                        <div class="col-sm-7 controls">
+                            {{ form.source }}
+{#                          <select class="width-40">#}
+{#                            <option>Naukri</option>#}
+{#                            <option>Monster</option>#}
+{#                            <option>Linkedin</option>#}
+{#                            <option>Referral</option>#}
+{#                          </select>#}
+                        </div>
+                      </div>
+
+                      <div class="form-group hidden">
+                        <label class="col-sm-3 control-label"></label>
+                        <div class="col-sm-7 controls">
+                          <input type="text" placeholder="Name" class="width-50">
+                          <span class="help-inline">Enter his/her name</span> </div>
+                      </div>
+
+<hr>
+
+
+                           <div class="form-group">
+                        <label class="col-sm-3 control-label">Interviewed</label>
+                        <div class="col-sm-7 controls">
+                          <input type="text"  class="width-50 input-sm">
+{#                            {{ form.interview_by }}#}
+                          <span class="help-inline">Enter Interviewer name</span> </div>
+                      </div>
+
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Interview round</label>
+                        <div class="col-sm-7 controls">
+                          <select class="width-40">
+                            <option>written</option>
+                            <option>face to face</option>
+                          </select>
+                        </div>
+                      </div>
+
+       <div class="form-group">
+                        <label class="col-sm-3 control-label">Interview Date</label>
+                        <div class="col-sm-7 controls">
+                          <div class="input-group">
+                            <span class="input-group-addon" id="datepicker-icon-trigger" data-datepicker="#datepicker-icon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" placeholder="Date" id="datepicker-icon" class="width-30 input-sm">
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Selection status</label>
+                        <div class="col-sm-7 controls">
+                          <select class="width-40">
+                            <option>Selected</option>
+                            <option>Rejected</option>
+                          </select>
+                        </div>
+                      </div>
+
+
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Remarks</label>
+                        <div class="col-sm-7 controls">
+                          <textarea rows="3" class="width-50"></textarea>
+                        </div>
+                      </div>
+
+
+
+
+                      <div class="form-group form-actions">
+                        <div class="col-sm-3"> </div>
+                        <div class="col-sm-7">
+                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Save</button>
+                          <button class="btn vd_btn" type="button">Cancel</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          </div>
+          <!-- .vd_content-section -->
+{# <div class="form-group">#}
+{# {% if errors %}#}
+{##}
+{#	<div class="col-sm-offset-2 col-sm-10">#}
+{#		{% for non_field_error in errors %}#}
+{#		<div style="color:red;"><h5> {{non_field_error}}</h5></div>#}
+{#		{% endfor %}#}
+{##}
+{#	 {% endif %}#}
+{#	 {% for field in form.hidden_fields %}#}
+{#		 {{field}}#}
+{#	 {% endfor %}#}
+{#	</div>#}
+{# </div>#}
+
+
+{% endblock %}

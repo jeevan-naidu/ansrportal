@@ -1,0 +1,140 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}myansrsource:Hire{% endblock %}
+{% block pageTitle %}Hire{% endblock %}
+{% block content  %}
+                <div class="vd_content-section clearfix">
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> MRF Details </h3>
+                  </div>
+
+                     <div class="panel-body">
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                      <div class="form-group">
+                <div class="form-group">
+                        <label class="col-sm-3 control-label">Requsition No</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.requisition_number }}
+{#                          <input type="text" placeholder="Requsition no" class="width-50">#}
+                          <span class="help-inline">Enter requsition name</span> </div>
+                      </div>
+
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Department</label>
+
+                        <div class="col-sm-7 controls">
+                            {{ form.department }}
+
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Designation</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.designation }}
+
+                        </div>
+                      </div>
+
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Specialization</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.specialization }}
+
+                        </div>
+                      </div>
+
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Hiring Manager</label>
+                        <div class="col-sm-7 controls">
+{#                          <input type="text" placeholder="Name" class="width-50">#}
+                            {{ form.manager }}
+                          <span class="help-inline">Enter name of hiring manager</span> </div>
+                      </div>
+
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Count</label>
+                        <div class="col-sm-7 controls">
+                          <input type="text" placeholder="Name" class="width-50">
+                          <span class="help-inline">Enter count</span> </div>
+                      </div>
+
+                            <div class="form-group form-actions">
+                        <div class="col-sm-3"> </div>
+                        <div class="col-sm-7">
+                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Save</button>
+                          <button class="btn vd_btn" type="button">Cancel</button>
+                        </div>
+                      </div>
+                          </div>
+                    </form>
+
+                  </div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+</div>
+
+    <script>
+    $("#id_department").change(function(){
+        var selectedDepartment = $('#id_department option:selected').val();
+         $.ajax(
+                 {
+                     type : "GET",
+                     url : '/hire/designation/',
+                     data :{'department': selectedDepartment} ,
+                     success : function(data)
+                     {
+
+                     },
+                     error: function(XMLHttpRequest, textStatus, errorThrown) {
+                         $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                         HideAjaxLoader(ajax_loader_element);
+                     },
+                 }
+         );
+    });
+
+       $("#id_designation").change(function(){
+        var selectedDesignation = $('#id_designation option:selected').val();
+         $.ajax(
+                 {
+                     type : "GET",
+                     url : '/hire/specialization/',
+                     data :{'designation': selectedDesignation,} ,
+                     success : function(data)
+                     {
+                         $("#modal_body").html(data);
+                         $(function () {
+                             $('#id_toDate_pickers').datepicker({
+                                 format: 'yyyy-mm-dd',
+                                 autoclose: true
+                             }).datepicker("setDate", "0");
+                             $('#id_fromDate_pickers').datepicker({
+                                 format: 'yyyy-mm-dd',
+                                 autoclose: true
+                             }).datepicker("setDate", "0");
+                         });
+                     },
+                     error: function(XMLHttpRequest, textStatus, errorThrown) {
+                         $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                         HideAjaxLoader(ajax_loader_element);
+                     },
+                 }
+         );
+    })
+    </script>
+{% endblock %}
+
