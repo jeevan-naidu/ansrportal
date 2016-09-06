@@ -21,63 +21,63 @@
 
 
 
-<div class="timesheet-carousel text-center hidden">
-    <div class="carousel slide row" data-ride="carousel" data-wrap='false' data-type="multi" data-interval="false" id="fruitscarousel">
-
-        <div class="carousel-inner" id="carousel-inner">
-
-
-
-
-                <div class="item active">
-              {% for info_dict in ts_final_list %}
-                {% if forloop.counter0|divisibleby:6 %}
-                    {% ifnotequal forloop.counter0 0 %}
-                        </div>
-                        <div class="item">
-                    {% endifnotequal %}
-
-                {% endif %}
-
-
-
-                    <div class="col-md-2 week-container">
-                        <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}">
-                                {% if info_dict.filled %}
-
-                                    {% if info_dict.hold == True %}
-                                        <div class="timesheet-week ">
-                                            <span class="week-start-date">{{ info_dict.for_week }}</span>
-                                        </div>
-                                    {% else %}
-                                        <div class="timesheet-week timesheet-incomplete">
-                                                <span class="week-start-date">{{ info_dict.for_week }}</span>
-                                        </div>
-                                    {% endif %}
-                                {% else %}
-                                    <div class="timesheet-week timesheet-not-filled">
-                                        <span class="week-start-date">{{ info_dict.for_week }}</span>
-                                    </div>
-                                {% endif %}
-                        </a>
-                    </div>
-
-
-            {% endfor %}
-                {% if mondays_list|length|divisibleby:6 %}
-                {% else %}
-                    </div>
-                {% endif %}
-
-
-
-        </div>
-
-        <a class="left carousel-control" href="#fruitscarousel" data-slide="prev"><i class="glyphicon glyphicon-chevron-left"></i></a>
-        <a class="right carousel-control" href="#fruitscarousel" data-slide="next"><i class="glyphicon glyphicon-chevron-right"></i></a>
-
-    </div>
-</div><!-- ./carousel for week -->
+{#<div class="timesheet-carousel text-center hidden">#}
+{#    <div class="carousel slide row" data-ride="carousel" data-wrap='false' data-type="multi" data-interval="false" id="fruitscarousel">#}
+{##}
+{#        <div class="carousel-inner" id="carousel-inner">#}
+{##}
+{##}
+{##}
+{##}
+{#                <div class="item active">#}
+{#              {% for info_dict in ts_final_list %}#}
+{#                {% if forloop.counter0|divisibleby:6 %}#}
+{#                    {% ifnotequal forloop.counter0 0 %}#}
+{#                        </div>#}
+{#                        <div class="item">#}
+{#                    {% endifnotequal %}#}
+{##}
+{#                {% endif %}#}
+{##}
+{##}
+{##}
+{#                    <div class="col-md-2 week-container">#}
+{#                        <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}">#}
+{#                                {% if info_dict.filled %}#}
+{##}
+{#                                    {% if info_dict.hold == True %}#}
+{#                                        <div class="timesheet-week ">#}
+{#                                            <span class="week-start-date">{{ info_dict.for_week }}</span>#}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                        <div class="timesheet-week timesheet-incomplete">#}
+{#                                                <span class="week-start-date">{{ info_dict.for_week }}</span>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
+{#                                {% else %}#}
+{#                                    <div class="timesheet-week timesheet-not-filled">#}
+{#                                        <span class="week-start-date">{{ info_dict.for_week }}</span>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                        </a>#}
+{#                    </div>#}
+{##}
+{##}
+{#            {% endfor %}#}
+{#                {% if mondays_list|length|divisibleby:6 %}#}
+{#                {% else %}#}
+{#                    </div>#}
+{#                {% endif %}#}
+{##}
+{##}
+{##}
+{#        </div>#}
+{##}
+{#        <a class="left carousel-control" href="#fruitscarousel" data-slide="prev"><i class="glyphicon glyphicon-chevron-left"></i></a>#}
+{#        <a class="right carousel-control" href="#fruitscarousel" data-slide="next"><i class="glyphicon glyphicon-chevron-right"></i></a>#}
+{##}
+{#    </div>#}
+{#</div><!-- ./carousel for week -->#}
 
 
 
