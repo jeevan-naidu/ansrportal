@@ -1142,73 +1142,73 @@
 
 
     <!-- Scripts for plugins -->
-    <script type="text/javascript">
-        $(window).load(function() {
-
-
-
-                /* News Widget - Required */
-                $(".vd_news-widget .vd_carousel").carouFredSel({
-                    prev: {
-                        button: function() {
-                            return $(this).parent().parent().children('.vd_carousel-control').children('a:first-child')
-                        }
-                    },
-                    next: {
-                        button: function() {
-                            return $(this).parent().parent().children('.vd_carousel-control').children('a:last-child')
-                        }
-                    },
-                    scroll: {
-                        fx: "crossfade",
-                        onBefore: function() {
-                            var target = "#front-1-clients";
-                            $(target).css("transition", "all .5s ease-in-out 0s");
-                            if ($(target).hasClass("vd_bg-soft-yellow")) {
-                                $(target).removeClass("vd_bg-soft-yellow");
-                                $(target).addClass("vd_bg-soft-red");
-                            } else
-                            if ($(target).hasClass("vd_bg-soft-red")) {
-                                $(target).removeClass("vd_bg-soft-red");
-                                $(target).addClass("vd_bg-soft-blue");
-                            } else
-                            if ($(target).hasClass("vd_bg-soft-blue")) {
-                                $(target).removeClass("vd_bg-soft-blue");
-                                $(target).addClass("vd_bg-soft-green");
-                            } else
-                            if ($(target).hasClass("vd_bg-soft-green")) {
-                                $(target).removeClass("vd_bg-soft-green");
-                                $(target).addClass("vd_bg-soft-yellow");
-                            }
-                        }
-                    },
-                    width: "auto",
-                    height: "responsive",
-                    responsive: true,
-                    auto: 3000
-
-                });
-
-
-                // Iframe
-
-                $('iframe').attr('src', 'http://demo.ansrsource.com/')
-
-                $('iframe').load(function() {
-                    $('.screen').html('- Click -')
-                    $('.screen').css('cursor', 'pointer');
-                    $('.screen').click(function() {
-                        $(this).css('display', 'none');
-                        $('iframe').contents().find('html').css('display', 'none');
-                    });
-
-                });
-
-
-
-
-            }) // End of window.load
-    </script>
+{#    <script type="text/javascript">#}
+{#        $(window).load(function() {#}
+{##}
+{##}
+{##}
+{#                /* News Widget - Required */#}
+{#                $(".vd_news-widget .vd_carousel").carouFredSel({#}
+{#                    prev: {#}
+{#                        button: function() {#}
+{#                            return $(this).parent().parent().children('.vd_carousel-control').children('a:first-child')#}
+{#                        }#}
+{#                    },#}
+{#                    next: {#}
+{#                        button: function() {#}
+{#                            return $(this).parent().parent().children('.vd_carousel-control').children('a:last-child')#}
+{#                        }#}
+{#                    },#}
+{#                    scroll: {#}
+{#                        fx: "crossfade",#}
+{#                        onBefore: function() {#}
+{#                            var target = "#front-1-clients";#}
+{#                            $(target).css("transition", "all .5s ease-in-out 0s");#}
+{#                            if ($(target).hasClass("vd_bg-soft-yellow")) {#}
+{#                                $(target).removeClass("vd_bg-soft-yellow");#}
+{#                                $(target).addClass("vd_bg-soft-red");#}
+{#                            } else#}
+{#                            if ($(target).hasClass("vd_bg-soft-red")) {#}
+{#                                $(target).removeClass("vd_bg-soft-red");#}
+{#                                $(target).addClass("vd_bg-soft-blue");#}
+{#                            } else#}
+{#                            if ($(target).hasClass("vd_bg-soft-blue")) {#}
+{#                                $(target).removeClass("vd_bg-soft-blue");#}
+{#                                $(target).addClass("vd_bg-soft-green");#}
+{#                            } else#}
+{#                            if ($(target).hasClass("vd_bg-soft-green")) {#}
+{#                                $(target).removeClass("vd_bg-soft-green");#}
+{#                                $(target).addClass("vd_bg-soft-yellow");#}
+{#                            }#}
+{#                        }#}
+{#                    },#}
+{#                    width: "auto",#}
+{#                    height: "responsive",#}
+{#                    responsive: true,#}
+{#                    auto: 3000#}
+{##}
+{#                });#}
+{##}
+{##}
+{#                // Iframe#}
+{##}
+{#                $('iframe').attr('src', 'http://demo.ansrsource.com/')#}
+{##}
+{#                $('iframe').load(function() {#}
+{#                    $('.screen').html('- Click -')#}
+{#                    $('.screen').css('cursor', 'pointer');#}
+{#                    $('.screen').click(function() {#}
+{#                        $(this).css('display', 'none');#}
+{#                        $('iframe').contents().find('html').css('display', 'none');#}
+{#                    });#}
+{##}
+{#                });#}
+{##}
+{##}
+{##}
+{##}
+{#            }) // End of window.load#}
+{#    </script>#}
 
     <script type="text/javascript">
 /*        $(document).ready(function() {
