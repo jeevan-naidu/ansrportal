@@ -3,8 +3,22 @@
 {% load fontawesome %}
 {% block pageTitle %}Individual Team Member Performance{% endblock %}
 {%block childcontent %}
+
+<style type="text/css">
+    
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+.yourlabs-autocomplete{max-width: 300px;max-height: 400px;overflow: auto;}
+.yourlabs-autocomplete span{white-space: normal !important;}
+</style>
+
+
+<div class="panel clearfix">
+<div class="panel-body">
 <div class="row">
-	<div class="col-md-12">
+    <div class="col-md-12">
         <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
@@ -15,9 +29,9 @@
                             {% if field.field.required %}
                                 <span class="required">*</span>
                             {% endif %}
-							{% if field.help_text %}
-							  ({{field.help_text}})
-							  {% endif %}
+                            {% if field.help_text %}
+                              ({{field.help_text}})
+                              {% endif %}
                         </th>
                     {% endfor %}
                 </tr>
@@ -27,21 +41,21 @@
                     {% endfor %}
                 </tr>
             </table>
-			<div class="pull-right">
-				<button type="submit" class="btn btn-primary" value="submit" name="click">
-					<input type="hidden" value="generate" name="status" />
-					{% fontawesome_icon 'line-chart' large=True %}
-					Get Report
-				</button>
-						
-				{% if data %}
-					<button type="submit" class="btn btn-success" name="generate">
-				{% else %}
-					<button type="submit" class="btn btn-success" disabled>
-				{% endif %}
-						{% fontawesome_icon 'file-excel-o' large=True %}
-						Export to Excel
-					</button>
+            <div class="pull-right">
+                <button type="submit" class="btn btn-primary" value="submit" name="click">
+                    <input type="hidden" value="generate" name="status" />
+                    <!-- {% fontawesome_icon 'line-chart' large=True %} -->
+                    Get Report
+                </button>
+                        
+                {% if data %}
+                    <button type="submit" class="btn btn-success" name="generate">
+                {% else %}
+                    <button type="submit" class="btn btn-success" disabled>
+                {% endif %}
+                        <!-- {% fontawesome_icon 'file-excel-o' large=True %} -->
+                        Export to Excel
+                    </button>
             </div>
         </form>
         {% if member %}
@@ -49,7 +63,7 @@
                 <tr>
                     <td class="text-center" colspan="4"><b>Individual Team Member Perfomance</b></td>
                 </tr>
-				 <tr>
+                 <tr>
                     <td class="text-center" colspan="4"><b>Project(s): {% if for_project %}{{for_project}}{% else %}All{% endif %}</b></td>
                 </tr>
                 <tr>
@@ -60,10 +74,10 @@
                    
                 </tr>
             </table>
-			<div class="pull-right">
-				 <small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Suubmitted
+            <div class="pull-right">
+                 <small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Suubmitted
                                {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small>
-			</div>
+            </div>
         {% endif %}
         <table class="table table-condensed">
             <thead>
@@ -166,6 +180,9 @@
                     <tr>
             {% endif %}
         </table>
-	</div>
+    </div>
+</div>
+
+</div>
 </div>
 {% endblock %}

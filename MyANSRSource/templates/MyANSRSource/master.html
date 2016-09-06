@@ -35,6 +35,7 @@
            {# same styles for both screen and printing. Unfortunately      #}
            {# in the plugin django-boostrap3 we don't have an option       #}
            {# to change media from screen to all.                          #}
+
        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
 
@@ -299,9 +300,9 @@
                         <div class="menu-container">
                             <div class="vd_mega-menu-wrapper">
                                 <!-- Top left round buttons -->
-                                <div class="vd_mega-menu" data-intro="<strong>Tabs Menu</strong><br/>Can be placed for dropdown menu, tabs, or user profile. Responsive for medium and small size navigation." data-step=4>
+                                <div class="vd_mega-menu" data-intro="<strong>Tabs Menu</strong><br/>Can be placed for dropdown menu, tabs, or user profile. Responsive for medium and small size navigation." data-step=2>
                                     <ul class="mega-ul">
-                                        <li id="home" class="one-icon mega-li" title="Home" data-placement="bottom" data-toggle="tooltip" >
+                                        <li id="home" class="one-icon mega-li" title="Home" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Home Button</strong><br/>Return to the homepage" data-step=3>
                                             <a class="mega-link  vd_bg-red" href="/">
                                                 <span class="mega-icon">
                                                     <i class="fa fa-home"></i>
@@ -311,7 +312,7 @@
             </span> -->
                                             </a>
                                         </li>
-                                        <li id="tabs-menu-tasks" class="one-icon mega-li" title="Book Meeting Room" data-placement="bottom" data-toggle="tooltip" >
+                                        <li id="tabs-menu-tasks" class="one-icon mega-li" title="Book Meeting Room" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Room Booking</strong><br/>Book a meeting room in Karle or BTP." data-step=4>
                                             <a class="mega-link  vd_bg-yellow" href="/bookings/">
                                                 <span class="mega-icon">
                                                     <i class="demo-icon icon-asset-1door"></i>
@@ -321,16 +322,16 @@
             </span> -->
                                             </a>
                                         </li>
-                                        <li id="test-2" class="one-icon mega-li" title="Yammer" data-placement="bottom" data-toggle="tooltip" >
-                                            <a class="mega-link vd_bg-yellow " href="https://www.yammer.com/" target="_blank">
+                                        <li id="test-2" class="one-icon mega-li" title="Yammer" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Yammer</strong><br/>Takes you to yammer.com" data-step=5>
+                                            <a class="mega-link vd_bg-yellow " href="https://www.yammer.com/ansrsource.com/" target="_blank">
                                                 <span class="mega-icon">
                                                     <i class="demo-icon icon-1471432377_yammer_mod" style="font-size:13px;"></i>
                                                 </span>
                                             </a>
 
                                         </li>
-                                        <li id="test" class="one-icon mega-li" title="ansr wiki" data-placement="bottom" data-toggle="tooltip" >
-                                            <a class="mega-link vd_bg-yellow" href="http://wiki.ansrsource.com/" target="_blank">
+                                        <li id="test" class="one-icon mega-li" title="ansr wiki (Coming Soon) " data-placement="bottom" data-toggle="tooltip" data-intro="<strong>ANSR Wiki</strong><br/>The ANSRSource wiki microsite - coming soon." data-step=6>
+                                            <a class="mega-link vd_bg-yellow" href="#" >
                                                 <span class="mega-icon">
                                                     <i class="fa fa-book"></i>
                                                 </span>
@@ -342,8 +343,8 @@
                         </div>
                     </div>
                     <div class="navbar-menu clearfix">
-                        <div class="vd_panel-menu hidden-xs">
-                            <span data-original-title="Expand All" data-toggle="tooltip" data-placement="bottom" data-action="expand-all" class="menu" data-intro="<strong>Expand Button</strong><br/>To expand all menu on left navigation menu." data-step=5>
+                        <div class="vd_panel-menu hidden-xs hidden">
+                            <span data-original-title="Expand All" data-toggle="tooltip" data-placement="bottom" data-action="expand-all" class="menu">
                 <i class="fa fa-sort-amount-asc"></i>
             </span>
                         </div>
@@ -353,7 +354,7 @@
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
                                         <span class="menu-icon"><i class="fa fa-dashboard"></i></span>
-                                        <span class="menu-text">mytime</span>
+                                        <span class="menu-text">Timesheet</span>
                                         <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                     </a>
                                     <div class="child-menu" data-action="click-target">
@@ -390,7 +391,7 @@
                                     <li>
                                         <a href="javascript:void(0);" data-action="click-trigger">
                                             <span class="menu-icon"><i class="icon-palette"> </i></span>
-                                            <span class="menu-text">myprojects</span>
+                                            <span class="menu-text">Projects</span>
                                             <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                         </a>
                                         <div class="child-menu" data-action="click-target">
@@ -474,7 +475,7 @@
                                                                 <li>
                                                                     <a href="/myansrsource/reports/single-project">
                                                                         <span class="menu-text">Individual Project Performance</span>
-                                                                        <span class="menu-badge"><span class="badge vd_bg-red">HOT</span></span>
+                                                                        <!-- <span class="menu-badge"><span class="badge vd_bg-red">HOT</span></span> -->
                                                                      </a>
                                                                 </li>
                                                                 <li>
@@ -515,7 +516,7 @@
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
                                         <span class="menu-icon entypo-icon"><i class="icon-bookmark"> </i></span>
-                                        <span class="menu-text">myfb360</span>
+                                        <span class="menu-text">FB360</span>
                                         <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                     </a>
                                     <div class="child-menu" data-action="click-target">
@@ -558,7 +559,7 @@
                                     <li>
                                         <a href="javascript:void(0);" data-action="click-trigger">
                                             <span class="menu-icon"><i class="fa fa-sitemap"> </i></span>
-                                            <span class="menu-text">myadministration</span>
+                                            <span class="menu-text">Administration</span>
                                             <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                         </a>
                                         <div class="child-menu" data-action="click-target">
@@ -600,7 +601,7 @@
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
                                         <span class="menu-icon"><i class="fa fa-th-list"></i></span>
-                                        <span class="menu-text">myhr</span>
+                                        <span class="menu-text">HR</span>
                                         <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                     </a>
                                     <div class="child-menu" data-action="click-target">
@@ -688,7 +689,10 @@
                         </ul>
                     </div>
                 </div>
-                <div class="vd_navbar vd_nav-width vd_navbar-chat vd_bg-black-80 vd_navbar-right   ">
+
+<!-- Commented code - Right sidebar -->
+
+<!--                 <div class="vd_navbar vd_nav-width vd_navbar-chat vd_bg-black-80 vd_navbar-right   ">
                     <div class="navbar-tabs-menu clearfix">
                         <span class="expand-menu" data-action="expand-navbar-tabs-menu">
               <span class="menu-icon menu-icon-left">
@@ -725,7 +729,7 @@
 
                     </div>
 
-                </div>
+                </div> -->
                 <!-- Middle Content Start -->
 
                 <div class="vd_content-wrapper">
@@ -741,10 +745,11 @@
         <div class="vd_title-section clearfix">
             <div class="vd_panel-header">
                 <div class="vd_panel-menu  hidden-xs">
-                    <div class="menu no-bg vd_red" data-original-title="Start Layout Tour Guide" data-toggle="tooltip" data-placement="bottom" onClick="javascript:introJs().setOption('showBullets', false).start();"> <span class="menu-icon font-md"><i class="fa fa-question-circle"></i></span> </div>
+                    {% block tour %}
+                    {% endblock %}
                     <!-- menu -->
                 </div>
-                <h4>{% block pageTitle %}my<span>ansr</span>source{% endblock %}</h4>
+                <h4><b>{% block pageTitle %}Dashboard{% endblock %}</b></h4>
             </div>
 
 
@@ -1137,73 +1142,73 @@
 
 
     <!-- Scripts for plugins -->
-    <script type="text/javascript">
-        $(window).load(function() {
-
-
-
-                /* News Widget - Required */
-                $(".vd_news-widget .vd_carousel").carouFredSel({
-                    prev: {
-                        button: function() {
-                            return $(this).parent().parent().children('.vd_carousel-control').children('a:first-child')
-                        }
-                    },
-                    next: {
-                        button: function() {
-                            return $(this).parent().parent().children('.vd_carousel-control').children('a:last-child')
-                        }
-                    },
-                    scroll: {
-                        fx: "crossfade",
-                        onBefore: function() {
-                            var target = "#front-1-clients";
-                            $(target).css("transition", "all .5s ease-in-out 0s");
-                            if ($(target).hasClass("vd_bg-soft-yellow")) {
-                                $(target).removeClass("vd_bg-soft-yellow");
-                                $(target).addClass("vd_bg-soft-red");
-                            } else
-                            if ($(target).hasClass("vd_bg-soft-red")) {
-                                $(target).removeClass("vd_bg-soft-red");
-                                $(target).addClass("vd_bg-soft-blue");
-                            } else
-                            if ($(target).hasClass("vd_bg-soft-blue")) {
-                                $(target).removeClass("vd_bg-soft-blue");
-                                $(target).addClass("vd_bg-soft-green");
-                            } else
-                            if ($(target).hasClass("vd_bg-soft-green")) {
-                                $(target).removeClass("vd_bg-soft-green");
-                                $(target).addClass("vd_bg-soft-yellow");
-                            }
-                        }
-                    },
-                    width: "auto",
-                    height: "responsive",
-                    responsive: true,
-                    auto: 3000
-
-                });
-
-
-                // Iframe
-
-                $('iframe').attr('src', 'http://demo.ansrsource.com/')
-
-                $('iframe').load(function() {
-                    $('.screen').html('- Click -')
-                    $('.screen').css('cursor', 'pointer');
-                    $('.screen').click(function() {
-                        $(this).css('display', 'none');
-                        $('iframe').contents().find('html').css('display', 'none');
-                    });
-
-                });
-
-
-
-
-            }) // End of window.load
-    </script>
+{#    <script type="text/javascript">#}
+{#        $(window).load(function() {#}
+{##}
+{##}
+{##}
+{#                /* News Widget - Required */#}
+{#                $(".vd_news-widget .vd_carousel").carouFredSel({#}
+{#                    prev: {#}
+{#                        button: function() {#}
+{#                            return $(this).parent().parent().children('.vd_carousel-control').children('a:first-child')#}
+{#                        }#}
+{#                    },#}
+{#                    next: {#}
+{#                        button: function() {#}
+{#                            return $(this).parent().parent().children('.vd_carousel-control').children('a:last-child')#}
+{#                        }#}
+{#                    },#}
+{#                    scroll: {#}
+{#                        fx: "crossfade",#}
+{#                        onBefore: function() {#}
+{#                            var target = "#front-1-clients";#}
+{#                            $(target).css("transition", "all .5s ease-in-out 0s");#}
+{#                            if ($(target).hasClass("vd_bg-soft-yellow")) {#}
+{#                                $(target).removeClass("vd_bg-soft-yellow");#}
+{#                                $(target).addClass("vd_bg-soft-red");#}
+{#                            } else#}
+{#                            if ($(target).hasClass("vd_bg-soft-red")) {#}
+{#                                $(target).removeClass("vd_bg-soft-red");#}
+{#                                $(target).addClass("vd_bg-soft-blue");#}
+{#                            } else#}
+{#                            if ($(target).hasClass("vd_bg-soft-blue")) {#}
+{#                                $(target).removeClass("vd_bg-soft-blue");#}
+{#                                $(target).addClass("vd_bg-soft-green");#}
+{#                            } else#}
+{#                            if ($(target).hasClass("vd_bg-soft-green")) {#}
+{#                                $(target).removeClass("vd_bg-soft-green");#}
+{#                                $(target).addClass("vd_bg-soft-yellow");#}
+{#                            }#}
+{#                        }#}
+{#                    },#}
+{#                    width: "auto",#}
+{#                    height: "responsive",#}
+{#                    responsive: true,#}
+{#                    auto: 3000#}
+{##}
+{#                });#}
+{##}
+{##}
+{#                // Iframe#}
+{##}
+{#                $('iframe').attr('src', 'http://demo.ansrsource.com/')#}
+{##}
+{#                $('iframe').load(function() {#}
+{#                    $('.screen').html('- Click -')#}
+{#                    $('.screen').css('cursor', 'pointer');#}
+{#                    $('.screen').click(function() {#}
+{#                        $(this).css('display', 'none');#}
+{#                        $('iframe').contents().find('html').css('display', 'none');#}
+{#                    });#}
+{##}
+{#                });#}
+{##}
+{##}
+{##}
+{##}
+{#            }) // End of window.load#}
+{#    </script>#}
 
     <script type="text/javascript">
 /*        $(document).ready(function() {

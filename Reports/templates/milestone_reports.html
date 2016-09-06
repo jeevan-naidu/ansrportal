@@ -11,7 +11,13 @@
 
 {% block content  %}
 
+<style type="text/css">
+  
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
 
+</style>
 
 {% if errors %}
     <div class="alert alert-warning">
@@ -20,7 +26,8 @@
   </div>
 {% endif %}
 
-
+<div class="panel clearfix">
+<div class="panel-body">
 <form action="/reports/milestones/" method="post" id="MilestoneReportsForm">
 {% csrf_token %}
 <table border="0" style="margin:0 auto">
@@ -37,12 +44,12 @@
 
 <button type="submit" value="submit" class="btn btn-info pull-right">
                     <i class="fa fa-download fa-lg"></i>
-		    <b>Get Report</b>
+        <b>Get Report</b>
                 
             </button>
 </form>
-
-
+</div>
+</div>
 <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>

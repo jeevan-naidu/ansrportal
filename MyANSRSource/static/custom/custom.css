@@ -1,4 +1,4 @@
- Insert Your Custom CSS Here */
+
 
 
 /* Bootstrap extensions */
@@ -241,18 +241,18 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
 .timesheet-week:after{
     content: "Submitted";
     display: block;
-    background: #333;
+    background: #6AC38C;
     color: #fff;
     margin: -5px 5px -6px;
     font-size: 11px;
 }
 .timesheet-week.timesheet-not-filled:after{
     content: "Not Filled";
-    background: #666;
+    background: #E27676;
 }
-.timesheet-week.timesheet-closed:after{
+.timesheet-week.timesheet-incomplete:after{
     content: "Incomplete";
-    background: #aaa;
+    background: #ECA54F;
 }
 .week-container{padding: 0px 5px;}
 .week-container a{color: #777}
@@ -261,65 +261,7 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
 .timesheet-not-filled{/*background: #ffadad*/}
 
 
-/*.timesheet-closed{background: #fbfbfb;}
-.week-container a .timesheet-closed{color: #cac7c7}*/
 
-/*@media (min-width: 992px ) {
-    .carousel-inner .active.left {
-        left: -25%;
-    }
-    .carousel-inner .next {
-        left:  25%;
-    }
-    .carousel-inner .prev {
-        left: -25%;
-    }
-}
+/* Crazy overrides */
 
-@media (min-width: 768px) and (max-width: 991px ) {
-    .carousel-inner .active.left {
-        left: -33.3%;
-    }
-    .carousel-inner .next {
-        left:  33.3%;
-    }
-    .carousel-inner .prev {
-        left: -33.3%;
-    }
-    .active > div:first-child {
-        display:block;
-    }
-    .active > div:first-child + div {
-        display:block;
-    }
-    .active > div:last-child {
-        display:none;
-    }
-}
-
-@media (max-width: 767px) {
-    .carousel-inner .active.left {
-        left: -100%;
-    }
-    .carousel-inner .next {
-        left:  100%;
-    }
-    .carousel-inner .prev {
-        left: -100%;
-    }
-    .active > div {
-        display:none;
-    }
-    .active > div:first-child {
-        display:block;
-    }
-}
-=======
-#timesheet input[type=checkbox]:checked:before {
-    content: '\f014';
-    color: #fff;
-    background: #ff5d5d;
-    border: 1px solid #f74343;
-}
-
->>>>>>> 9b9d5a18d11329a750fcc57a38f5a8fb7ef0f852
+legend{border:none !important;}

@@ -4,8 +4,13 @@
 {% load humanize %}
 {% block pageTitle %}Project Performance Summary{% endblock %}
 {%block childcontent %}
+
+<div class="panel clearfix">
+
+
+<div class="panel-body">
 <div class="row">
-	<div class="col-md-12">
+    <div class="col-md-12">
         <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
             {% csrf_token %}
             {% bootstrap_messages %}
@@ -196,6 +201,10 @@
                 {% endif %}
             {% endif %}
         </table>
-	</div>
+    </div>
 </div>
+</div>
+</div>
+
+
 {% endblock %}

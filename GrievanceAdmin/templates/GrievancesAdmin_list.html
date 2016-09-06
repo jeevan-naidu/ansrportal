@@ -22,7 +22,7 @@
 				<div class="modal fade " id="modal-container-566651" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-lg">
 						<div class="modal-content">
-							<div class="modal-header">
+							<div class="modal-header vd_bg-blue vd_white">
 
 								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 									x
@@ -33,9 +33,9 @@
 							</div>
 							<div class="modal-body clearfix" id="grievance_modal_body">
 							</div>
-							<div class="modal-footer">
+							<div class="modal-footer background-login">
 
-
+<button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
 							</div>
 						</div>
 
@@ -159,7 +159,7 @@
 						</th>
 
 						<th class="TbHead td-center">
-							Is Escalated
+							Escalated
 						</th>
 						<th class="TbHead td-center">
 							Status
@@ -173,7 +173,18 @@
                      {%  autopaginate grievances 10 %}
                         {%   for object in grievances  %}
 
+<style type="text/css">
+  
+.table tbody>tr>td {
+    max-width: 300px;
+    word-wrap: break-word;
+}  
 
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+</style>
 
 					<tr class="warning">
 						<td class="nowrapClass">

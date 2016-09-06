@@ -1,9 +1,7 @@
 """
 Django settings for timetracker project.
-
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
-
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
@@ -254,7 +252,7 @@ logger.setLevel(logging.DEBUG)
 
 
 # FB360 Configuration
-EMAIL_ABOUT_STATUS = ['sanjay.kunnath@ansrsource.com', 'amol.pachpute@ansrsource.com']
+EMAIL_ABOUT_STATUS = ['sanjay.kunnath@ansrsource.com']
 
 
 LOGGING = {
@@ -318,8 +316,7 @@ FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
 # External Project Notifiers
-EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com',
-                              'amol.pachpute@ansrsource.com']
+EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com']
 
 # New Joinee Notifiers
 NEW_JOINEE_NOTIFIERS = ['ansr.source.test@gmail.com']
@@ -340,13 +337,13 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "amol.pachpute@ansrsource.com"
+GRIEVANCES_ADMIN_EMAIL = "sanjay.kunnath@ansrsource.com"
 # LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
-LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
+LEAVE_SHORT_ATTENDANCE_ISACTIVE = False
 
 #Broker Settings
 BROKER_HOST = "localhost"

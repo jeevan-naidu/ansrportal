@@ -16,11 +16,15 @@
 
 {% block siteTitle %}myansrsource : Grievances{% endblock %}
 
+
+{% block pageTitle %}
+    Salesforce Data
+{% endblock %}
+
 {% block content  %}
 
 <!--Start modal-->
-<div class="row">
-		<div class="col-md-12">
+
 
 			<div class="modal fade" id="modal-container-992788" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				<div class="modal-dialog">
@@ -46,8 +50,7 @@
 				
 			</div>
 			
-		</div>
-	</div>
+
 <!--End modal-->
 
 
@@ -62,7 +65,7 @@
 
 
 
-<h2 class="text-center">Salesforce</h2>
+<h2 class="text-center hidden">Salesforce</h2>
 
 
 
@@ -103,15 +106,18 @@
 </div>
 
 
+
+<div class="panel clearfix">
+<div class="panel-body">
 <h4 class="pull-right">Total : {{salesforce_data_list|length}}</h4>
 <table class="table table-striped">
     <thead>
       <tr>
-		<th>No.</th>
-        <th>SF No.</th>
-        <th>Opportunity Name</th>
-        <th>Business Unit</th>
-		<th>Customer Contact</th>
+		<th class="text-center">No.</th>
+        <th class="text-center">SF No.</th>
+        <th class="text-center">Opportunity Name</th>
+        <th class="text-center">Business Unit</th>
+		<th class="text-center">Customer Contact</th>
       </tr>
     </thead>
     <tbody>
@@ -183,6 +189,16 @@
   </table>
 
 <h4 class="pull-right">Total : {{salesforce_data_list|length}}</h4>
+
+</div>
+
+
+
+</div>
+
+
+
+
 
 
 
