@@ -396,6 +396,7 @@
                                         </a>
                                         <div class="child-menu" data-action="click-target">
                                             <ul>
+                                            {% if user|manage_project %}
                                                     <li>
                                                         <a href="javascript:" data-action="click-trigger" class="open">
                                                             <span class="menu-text">Projects</span>
@@ -413,7 +414,6 @@
                                                 </li>
                                                 {% endif %}
 
-                                            {% if user|manage_project %}
                                                 <li>
                                                     <a href="/myansrsource/project/modify">
                                                         <span class="menu-text">Manage Project/Enter Change Request</span>
@@ -463,7 +463,9 @@
                                                 {% endif %}
                                                             </ul>
                                                         </div>
-                                                    </li>
+                                                    </li><!--  -->
+                                            {% endif %}
+
 
                                                     <li>
                                                         <a href="javascript:" data-action="click-trigger" class="open">
@@ -506,7 +508,6 @@
 
 
 
-                                            {% endif %}
 
                                             </ul>
                                         </div>
