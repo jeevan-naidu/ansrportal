@@ -1,0 +1,100 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}myansrsource:Hire{% endblock %}
+{% block pageTitle %}Hire{% endblock %}
+{% block content  %}
+<!--  Start update interview popup-->
+
+            <div class="modal fade" id="modal-container-hire" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								Please Enter Your Leave
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-300" id="modal_body">
+                          loading...............
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+    <!--  End update interview pop-->
+
+        <div class=""><!-- row -->
+            <div class="">
+
+                <table class="table table-bordered table-hover mb-0 ansrgreen">
+                    <tr class="Lv-ApproveTH ">
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th>Requsition Number</th>
+                        <th>Candidate Status</th>
+                        <th>Last round Attendded</th>
+                        <th>Last round Status</th>
+                        <th>Last round Comment</th>
+                        <th>Last round Date</th>
+                        <th>Actions</th>
+                    </tr>
+
+{#                    {%  autopaginate candidatelist 10 %}#}
+                    {% for candidate in candidatelist %}
+                    <tr class="info">
+                    <td>{{candidate.profile.candidate_name}}</td>
+                        <td>{{ candidate.profile.mobile_number }}</td>
+                        <td>{{candidate.profile.requisition_number.requisition_number.requisition_number}} </td>
+                        <td>{{candidate.profile.candidate_status}} </td>
+                         <td>{{candidate.interview_step}} </td>
+                    <td>{{candidate.interview_status}} </td>
+                    <td>{{candidate.feedback}} </td>
+                    <td>{{candidate.interview_on}} </td>
+                    <td><a id="modal-hire" href="#modal-container-hire" role="button" data-toggle="modal"
+                           title="Apply Leave"  class="pull-right btn btn-sm btn-danger btn-ansr-orange">
+                            Update
+                          </a></td>
+
+                        </tr>
+
+{% endfor %}
+</table>
+                </div>
+</div>
+
+    <script>
+    $("#modal-container-hire").on('shown.bs.modal', function(){
+
+  $.ajax(
+        {
+            type : "GET",
+            url : '/hire/processupdate/',
+            data :{} ,
+            success : function(data)
+            {
+                $("#modal_body").html(data);
+
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                HideAjaxLoader(ajax_loader_element);
+              },
+            }
+          );
+          });
+            </script>
+{% endblock %}
