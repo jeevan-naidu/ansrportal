@@ -55,14 +55,15 @@
                         <label class="col-sm-3 control-label">Hiring Manager</label>
                         <div class="col-sm-7 controls">
 {#                          <input type="text" placeholder="Name" class="width-50">#}
-                            {{ form.manager }}
+                            {{ form.raised_by }}
                           <span class="help-inline">Enter name of hiring manager</span> </div>
                       </div>
 
                         <div class="form-group">
                         <label class="col-sm-3 control-label">Count</label>
                         <div class="col-sm-7 controls">
-                          <input type="text" placeholder="Name" class="width-50">
+                            {{ form.count }}
+{#                          <input type="text" placeholder="Name" class="width-50">#}
                           <span class="help-inline">Enter count</span> </div>
                       </div>
 
@@ -86,8 +87,28 @@
 </div>
 
     <script>
+{#    $(document).ready(function(){#}
+{#        var dep = document.getElementById('id_designation')#}
+{#        var dropdownlength = dep.options.length;#}
+{#        for(i=0; i<dropdownlength; i++){#}
+{#            dep.options[i]=null;#}
+{#        }#}
+{##}
+{#        var desig = document.getElementById('id_specialization');#}
+{#            var dropdownlength = desig.options.length;#}
+{#            for(i=0; i<dropdownlength; i++){#}
+{#                desig.options[i]=null;#}
+{#            }#}
+{##}
+{#    })#}
+
     $("#id_department").change(function(){
         var selectedDepartment = $('#id_department option:selected').val();
+        var dep = document.getElementById('id_designation')
+        var dropdownlength = dep.options.length;
+        for(i=0; i<dropdownlength; i++){
+            dep.options[i]=null;
+        }
          $.ajax(
                  {
                      type : "GET",
@@ -96,36 +117,46 @@
                      success : function(data)
                      {
 
+                         var len = (data.message).length
+                         for(i=0 ; i<len; i++)
+                         {
+                             var desig = document.createElement('option');
+                             desig.text = desig.value = data.message[i];
+                             dep.add(desig, 0);
+                         }
                      },
                      error: function(XMLHttpRequest, textStatus, errorThrown) {
-                         $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                        alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                                  + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-                         HideAjaxLoader(ajax_loader_element);
+
                      },
                  }
          );
     });
 
        $("#id_designation").change(function(){
-        var selectedDesignation = $('#id_designation option:selected').val();
+           var selectedDepartment = $('#id_department option:selected').val();
+           var selectedDesignation = $('#id_designation option:selected').val();
+           var desig = document.getElementById('id_specialization');
+            var dropdownlength = desig.options.length;
+            for(i=0; i<dropdownlength; i++){
+                desig.options[i]=null;
+            }
          $.ajax(
                  {
                      type : "GET",
                      url : '/hire/specialization/',
-                     data :{'designation': selectedDesignation,} ,
+                     data :{'designation': selectedDesignation,'department':selectedDepartment} ,
                      success : function(data)
                      {
-                         $("#modal_body").html(data);
-                         $(function () {
-                             $('#id_toDate_pickers').datepicker({
-                                 format: 'yyyy-mm-dd',
-                                 autoclose: true
-                             }).datepicker("setDate", "0");
-                             $('#id_fromDate_pickers').datepicker({
-                                 format: 'yyyy-mm-dd',
-                                 autoclose: true
-                             }).datepicker("setDate", "0");
-                         });
+                        var len = (data.message).length
+                         for(i=0 ; i<len; i++)
+                         {
+                             var spec = document.createElement('option');
+                             spec.text = spec.value = data.message[i];
+                             desig.add(spec, 0);
+                         }
+                         console.log(data.message);
                      },
                      error: function(XMLHttpRequest, textStatus, errorThrown) {
                          $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -135,6 +166,37 @@
                  }
          );
     })
+
+    $('#id_requisition_number-autocomplete').bind(
+      'selectChoice',
+      function(e, choice, autocomplete) {
+          var requsitionno = choice.html()
+          requsitionno = requsitionno.substring(requsitionno.indexOf(' ')+1,requsitionno.length)
+           $.ajax(
+                   {
+                       type : "GET",
+                       url : '/hire/mrfsearch/',
+                       data :{'requsitionno': requsitionno} ,
+                       success : function(data)
+                       {
+                           console.log(data.message[0])
+                           var json = JSON.parse(data.details)
+                           var requobject = JSON.parse(data.message)
+                           var department = json['department'];
+                           var designation = json['designation']
+                           var hiringmanager = json['manager']
+                           var specialization = json['specialization']
+                           document.getElementById("id_requisition_number-autocomplete").value = requobject;
+                           document.getElementById("id_department").value = department;
+                           document.getElementById("id_designation").value = designation;
+                           document.getElementById("id_specialization").value = specialization;
+                           document.getElementById("id_raised_by").value = hiringmanager;
+
+                       }
+                   }
+           );
+      });
+
     </script>
 {% endblock %}
 
