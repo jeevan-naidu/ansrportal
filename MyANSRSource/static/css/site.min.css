@@ -235,6 +235,11 @@ body {
 }
 
 .fc .fc-event{color: #FFF !important}
+.fc-center h2{
+    color: #b13232;
+    font-weight: bold;
+    font-size: 20px;    
+}
 
 /* Vendroid Insertion */
 
