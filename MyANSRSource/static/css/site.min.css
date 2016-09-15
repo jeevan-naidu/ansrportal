@@ -238,16 +238,17 @@ body {
 
 /* Vendroid Insertion */
 
-#calendar-options-bottom {padding-top: 5px;padding-left: 0px;}
+#calendar-options-bottom {padding-top: 5px;padding-left: 0px;padding-right: 0px;}
 #calendar-options-bottom label{
     padding: 5px 10px;
     margin-top: -2px;
     margin-right: 5px;
     cursor: pointer;
     opacity: 0.4;
-    width: 125px;
+    width: 120px;
     display: inline-block;
 }
+#calendar-options-bottom label:last-child{margin-right: 0px;}
 #calendar-options-bottom input[type="checkbox"]:checked + label{opacity: 1}
 #calendar-options-bottom input[type="checkbox"]{display: none;}
 .ansr-disabled {
