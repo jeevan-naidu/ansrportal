@@ -234,7 +234,7 @@ body {
     background-color: #F04C23
 }
 
-.fc .fc-event{color: #FFF !important}
+.fc .fc-event{color: #FFF !important;background-color: #5a666d !important;border-color: #5a666d !important}
 .fc-center h2{
     color: #b13232;
     font-weight: bold;
