@@ -132,7 +132,6 @@ INSTALLED_APPS = [
     'fb360',
     'Grievances',
     'GrievanceAdmin',
-    'pagination',
     'Reports',
     'Salesforce',
     'BookMyRoom',
@@ -185,8 +184,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 60 * 60
 # Settings for Django-session-security
-SESSION_SECURITY_WARN_AFTER = 1 * 60  # Time Given in seconds
-SESSION_SECURITY_EXPIRE_AFTER = 2 * 60
+SESSION_SECURITY_WARN_AFTER = 90 * 60  # Time Given in seconds
+SESSION_SECURITY_EXPIRE_AFTER = 100 * 60
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 ROOT_URLCONF = 'timetracker.urls'
@@ -201,7 +200,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "bala",
         "HOST": "localhost",
         "PORT": "3306",
     },
