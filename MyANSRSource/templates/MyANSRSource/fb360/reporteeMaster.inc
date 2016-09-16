@@ -12,7 +12,7 @@
 
 {% load bootstrap3 %}
 
-{% block siteTitle %}myansrsource:FB360&deg;{% endblock %}
+{% block siteTitle %}FB360&deg;{% endblock %}
 
 {% block responsiveMenu %}
 <button type="button" class="navbar-toggle" data-toggle="collapse" 
