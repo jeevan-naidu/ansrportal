@@ -11,7 +11,7 @@ from . import helper
 from django.contrib.auth.decorators import login_required
 
 # Internal imports
-from django.contrib.formtools.wizard.views import SessionWizardView
+from formtools.wizard.views import SessionWizardView
 from django.http import HttpResponseRedirect
 
 

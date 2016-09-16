@@ -14,7 +14,7 @@ from django.shortcuts import render
 from datetime import timedelta, datetime, date
 from django.db.models import Sum, Avg, Min, Max
 from employee.models import Employee
-from django.core.servers.basehttp import FileWrapper
+from wsgiref.util import FileWrapper
 from dateutil import relativedelta as rdelta
 from django.db.models import Q
 from django.http import HttpResponse

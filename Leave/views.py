@@ -138,7 +138,8 @@ class Dashboard(View):
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
-
+        # import pdb;
+        # pdb.set_trace();
         if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
             LeaveAdmin = True
 

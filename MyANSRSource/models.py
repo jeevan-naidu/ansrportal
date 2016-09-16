@@ -446,14 +446,14 @@ class Report(models.Model):
                             choices=FREQUENCY,
                             verbose_name='Frequency',
                             default='W')
-    day = models.IntegerField(max_length=2,
+    day = models.IntegerField(validators=[MaxValueValidator(2)],
                               choices=[
                                   (k, v) for k, v in enumerate(
                                       [i for i in xrange(1, 31)])
                               ],
                               verbose_name='Day',
                               default=0)
-    weekday = models.IntegerField(max_length=2,
+    weekday = models.IntegerField(validators=[MaxValueValidator(2)],
                                   choices=[(k, v) for k, v in enumerate(days)],
                                   verbose_name='Weekday',
                                   default=0)

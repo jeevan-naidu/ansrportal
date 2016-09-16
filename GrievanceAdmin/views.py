@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from forms import FilterGrievanceForm
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
@@ -18,25 +19,51 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 
 
+def paginator_handler(request, grievances_list):
+    # print grievances_list
+    paginator = Paginator(grievances_list, 10)  # Show 5 grievances per page
+    page = request.GET.get('page')
+    try:
+        grievances_page = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        grievances_page = paginator.page(1)
+    except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            grievances_page = paginator.page(paginator.num_pages)
+    # print grievances_page
+    return grievances_page
+
+
 class GrievanceAdminListView(ListView):
     template_name = "GrievancesAdmin_list.html"
     model = Grievances
 
     def get_context_data(self, **kwargs):
         context = super(GrievanceAdminListView, self).get_context_data(**kwargs)
-        context['grievances'] = Grievances.objects.all().order_by("-created_date")
+        context['grievances'] = grievances_list = Grievances.objects.all().order_by("-created_date")
         context['users'] = User.objects.filter(is_active=True)
         context['category'] = Grievances_category.objects.filter(active=True)
         context['grievances_choices'] = STATUS_CHOICES_CLOSED
         form = FilterGrievanceForm()
         context['form'] = form
+        if "page" not in self.request.GET and 'grievances_page' in self.request.session:
+            del self.request.session['grievances_page']
 
-        if 'page' not in self.request.GET:
-            if 'grievance' in self.request.session:
-                del self.request.session['grievance']
+        if 'grievances_page' in self.request.session:
+            context['grievances_page'] = paginator_handler(self.request, self.request.session['grievances_page'])
+            # del self.request.session['grievances_page']
 
-        if 'grievance' in self.request.session:
-            context['grievances'] = self.request.session['grievance']
+        else:
+            context['grievances_page'] = paginator_handler(self.request, grievances_list)
+
+        # context['grievances_page'] = grievances_page
+        # if 'page' not in self.request.GET:
+        #     if 'grievance' in self.request.session:
+        #         del self.request.session['grievance']
+        #
+        # if 'grievance' in self.request.session:
+        #     context['grievances'] = self.request.session['grievance']
 
         return context
 
@@ -44,19 +71,21 @@ class GrievanceAdminListView(ListView):
         form = FilterGrievanceForm(request.POST)
         grievances = []
         TZ = timezone.pytz.timezone(settings.TIME_ZONE)
-        if 'user' not in request.POST:
+        user = grievance_id = ''
+        # print request.POST
+        if 'user-autocomplete' in request.POST:
             user = request.POST.get('user-autocomplete')
-        else:
+        elif 'user' in request.POST:
             user = request.POST.get('user')
 
-        if 'grievance_id' not in request.POST:
+        if 'grievance_id-autocomplete' in request.POST:
             grievance_id = request.POST.get('grievance_id-autocomplete')
-        else:
+        elif 'grievance_id' in request.POST:
             grievance_id = request.POST.get('grievance_id')
 
         category = request.POST.get('category')
         status = request.POST.get('grievance_status')
-
+        # print user
         from_date = request.POST.get('created_date')
         if from_date:
             from_date_list = from_date.split("/")
@@ -73,6 +102,7 @@ class GrievanceAdminListView(ListView):
 
         context_users = User.objects.filter(is_active=True)
         context_category = Grievances_category.objects.filter(active=True)
+        # import pdb;pdb.set_trace();
         try:
             if user != '' and category != '' and status != '' and from_date != '' \
                     and to_date != '' and grievance_id != '':
@@ -101,6 +131,7 @@ class GrievanceAdminListView(ListView):
             if user == '' and category == '' and status == '' and from_date == '' \
                     and to_date == '' and grievance_id != '':
                 grievances = Grievances.objects.filter(pk=grievance_id)  # only grievance_id
+                # print grievances
 
             if user != '' and category != '' and status == '' and from_date == ''\
                     and to_date == ''and grievance_id == '':
@@ -205,18 +236,19 @@ class GrievanceAdminListView(ListView):
                                                                             to_from_date])  # user, status and date
         except ValueError:
             grievances = None
+        grievances_page = grievances
+        if grievances_page and grievances_page.count > 0:
+            self.request.session['grievances_page'] = grievances_page
 
-        if grievances and grievances.count > 0:
-            self.request.session['grievance'] = grievances
+        if 'grievances_page' not in self.request.session:
+            del self.request.session['grievances_page']
 
-        if not grievances and 'grievance' in self.request.session:
-            del self.request.session['grievance']
-
-        if 'grievance' in self.request.session:
-            grievances = self.request.session['grievance']
+        # if 'grievances_page' in self.request.session:
+        #     grievances_page = self.request.session['grievances_page']
+        grievances_page = paginator_handler(self.request, grievances_page)
 
         return render(self.request, self.template_name, {'grievances': grievances, 'category': context_category,
-                                                         'users': context_users,
+                                                         'users': context_users, 'grievances_page': grievances_page,
                                                          'grievances_choices': STATUS_CHOICES_CLOSED,
                                                          'form': FilterGrievanceForm()})
 

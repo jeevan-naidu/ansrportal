@@ -4,43 +4,72 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from django.utils.safestring import mark_safe
 from django import forms
 from django.contrib.auth.models import User
-from Leave.models import LeaveApplications,ShortAttendance, LEAVE_TYPES_CHOICES, SESSION_STATUS, LeaveSummary
+from Leave.models import LeaveApplications, ShortAttendance, LEAVE_TYPES_CHOICES, SESSION_STATUS, LeaveSummary
 from employee.models import Employee
 from django.contrib.auth.models import User
 from datetime import date, time
-import autocomplete_light
-autocomplete_light.autodiscover()
+from dal import autocomplete
+
 LEAVE_TYPES_CHOICES = (('', '---------'),) + LEAVE_TYPES_CHOICES
 
-SESSION_STATUS_CHOICES =(('', 'SELECT SESSION'),)+ SESSION_STATUS
+SESSION_STATUS_CHOICES = (('', 'SELECT SESSION'),) + SESSION_STATUS
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
-class UserListViewForm(autocomplete_light.ModelForm):
-    user = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                  widget=autocomplete_light.ChoiceWidget('UserAutocompleteUserSearch'))
 
-    user.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Employee Name'}
+class UserListViewForm(forms.ModelForm):
+    user = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        # label="Book/Title",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUserSearch', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type  Your Team Member Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+    # user
+    # user = forms.ModelChoiceField(
+    #     queryset=User.objects.filter(is_active=True),
+    #     label="user",
+    #     required=True,
+    # )
+
     class Meta:
         model = User
         fields = ['user']
+        # widgets = {
+        #     'first_name': autocomplete.ModelSelect2(url='AutocompleteUserSearch')
+        # }
+
+    # def __init__(self, *args, **kwargs):
+    #     # currentUser = kwargs.pop('user')
+    #     super(UserListViewForm, self).__init__(*args, **kwargs)
+    #     #self.fields['user'].queryset = User.objects.all()
+    #     #self.fields['user'].widget = autocomplete.ModelSelect2(url='AutocompleteUserSearch', )
+    #     self.fields['user'].widget.attrs['class'] = "form-control"
+    #     self.fields['user'].widget.attrs['placeholder'] = 'Enter a Project Name /Project Id'
+
 
 def LeaveForm(leavetype, user, data=None):
     class ApplyLeaveForm(forms.ModelForm):
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= '............')
-        leave.widget.attrs = {'class': 'form-control', 'required':'true'}
-        name = forms.CharField(initial = user, widget=forms.HiddenInput())
+        leave = forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial='............')
+        leave.widget.attrs = {'class': 'form-control', 'required': 'true'}
+        name = forms.CharField(initial=user, widget=forms.HiddenInput())
+
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave','name']
+            fields = ['leave', 'name']
 
     class ApplyLeaveForm1(forms.ModelForm):
-        leave_attachment = forms.FileField(label='Attachment', required=False, help_text=mark_safe("Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.<br>Maximum allowed file size: 1MB"))
+        leave_attachment = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+            "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.<br>Maximum allowed file size: 1MB"))
         # Add Bootstrap widgets
-        leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
+        leave_attachment.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                         'data-iconName': 'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
-        leave.widget.attrs = {'class': 'form-control', 'required':'true'}
+        leave = forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial=leavetype)
+        leave.widget.attrs = {'class': 'form-control', 'required': 'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
         # Add Bootstrap widgets
@@ -50,25 +79,26 @@ def LeaveForm(leavetype, user, data=None):
             label="From",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required':'true'}
-        name = forms.CharField(initial = user, widget=forms.HiddenInput())
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true'}
+        name = forms.CharField(initial=user, widget=forms.HiddenInput())
+
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave', 'fromDate', 'Reason', 'leave_attachment','name']
+            fields = ['leave', 'fromDate', 'Reason', 'leave_attachment', 'name']
             widgets = {
-              'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
+                'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
             }
 
-
-
     class ApplyLeaveForm2(forms.ModelForm):
-        leave_attachment = forms.FileField(label='Attachment', required=False, help_text=mark_safe("Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.<br>Maximum allowed file size: 1MB"))
+        leave_attachment = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+            "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.<br>Maximum allowed file size: 1MB"))
         # Add Bootstrap widgets
-        leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
+        leave_attachment.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                         'data-iconName': 'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
-        leave.widget.attrs = {'class': 'form-control', 'required':'true'}
+        leave = forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial=leavetype)
+        leave.widget.attrs = {'class': 'form-control', 'required': 'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
         # Add Bootstrap widgets
@@ -78,34 +108,35 @@ def LeaveForm(leavetype, user, data=None):
             label="From",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required':'true'}
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true'}
 
         toDate = forms.DateField(
             label="To",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
+        toDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'false'}
 
-        from_session= forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
-        from_session.widget.attrs = {'class': 'form-control', 'required':'false'}
+        from_session = forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
+        from_session.widget.attrs = {'class': 'form-control', 'required': 'false'}
 
-        to_session= forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
-        to_session.widget.attrs = {'class': 'form-control', 'required':'false'}
+        to_session = forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
+        to_session.widget.attrs = {'class': 'form-control', 'required': 'false'}
 
-        name = forms.CharField(initial = user, widget=forms.HiddenInput())
+        name = forms.CharField(initial=user, widget=forms.HiddenInput())
 
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session','Reason', 'leave_attachment','name']
+            fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session', 'Reason', 'leave_attachment', 'name']
             widgets = {
-              'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
-              #'leave':forms.Select(attrs={'class': 'form-control', 'required':'true'}),
-            #   'from_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
-            #   'to_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
+                'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
+                # 'leave':forms.Select(attrs={'class': 'form-control', 'required':'true'}),
+                #   'from_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
+                #   'to_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
             }
 
-    onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave',  'comp_off_avail', 'pay_off', 'short_leave','comp_off_earned']
+    onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_avail', 'pay_off',
+                     'short_leave', 'comp_off_earned']
     regular_leave = ['earned_leave', 'sick_leave', 'casual_leave', 'loss_of_pay', 'work_from_home', 'sabbatical']
 
     if leavetype in onetime_leave:
@@ -126,20 +157,22 @@ def LeaveForm(leavetype, user, data=None):
         form = ApplyLeaveForm()
         return form
 
+
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 
-
-def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
+def ShortLeaveForm(leavetype, user, fordate=None, leaveid=None, data=None):
     staytime = ShortAttendance.objects.get(id=leaveid)
-    SHORT_LEAVE_TYPES_CHOICES = ( ('loss_of_pay', 'Loss Of Pay'),)
-    leaveallowed = {'earned_leave':'Earned Leave', 'sick_leave':'Sick Leave', 'casual_leave':'Casual Leave','short_leave':'Short Leave', 'comp_off_avail':'Comp Off Avail'}
-    leaveAvaliable = LeaveSummary.objects.filter(user=user, leave_type__in =[1,2,3,13], year=date.today().year).values('balance','leave_type__leave_type')
+    SHORT_LEAVE_TYPES_CHOICES = (('loss_of_pay', 'Loss Of Pay'),)
+    leaveallowed = {'earned_leave': 'Earned Leave', 'sick_leave': 'Sick Leave', 'casual_leave': 'Casual Leave',
+                    'short_leave': 'Short Leave', 'comp_off_avail': 'Comp Off Avail'}
+    leaveAvaliable = LeaveSummary.objects.filter(user=user, leave_type__in=[1, 2, 3, 13],
+                                                 year=date.today().year).values('balance', 'leave_type__leave_type')
     for leave in leaveAvaliable:
         if leave['leave_type__leave_type'] != 'short_leave' and float(leave['balance']) > 0:
             SHORT_LEAVE_TYPES_CHOICES = ((leave['leave_type__leave_type'],
-                                          leaveallowed[leave['leave_type__leave_type']] ),)+SHORT_LEAVE_TYPES_CHOICES
-        elif float(leave['balance']) > 0 and staytime.stay_time > time(07,00,00):
+                                          leaveallowed[leave['leave_type__leave_type']]),) + SHORT_LEAVE_TYPES_CHOICES
+        elif float(leave['balance']) > 0 and staytime.stay_time > time(07, 00, 00):
             SHORT_LEAVE_TYPES_CHOICES = ((leave['leave_type__leave_type'],
                                           leaveallowed[leave['leave_type__leave_type']]),) + SHORT_LEAVE_TYPES_CHOICES
     SHORT_LEAVE_TYPES_CHOICES = (('', '---------'),) + SHORT_LEAVE_TYPES_CHOICES
@@ -156,14 +189,14 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
             label="From",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true', 'readonly':'readonly'}
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true', 'readonly': 'readonly'}
 
         toDate = forms.DateField(
             initial=fordate,
             label="To",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        toDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'false', 'readonly':'readonly'}
+        toDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'false', 'readonly': 'readonly'}
 
         from_session = forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
         from_session.widget.attrs = {'class': 'form-control', 'required': 'false'}
@@ -176,11 +209,12 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
 
         class Meta:
             model = LeaveApplications
-            fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session', 'Reason', 'name','id']
+            fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session', 'Reason', 'name', 'id']
             widgets = {
                 'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
 
             }
+
     class ApplyShortLeaveForm1(forms.ModelForm):
         leave = forms.ChoiceField(choices=SHORT_LEAVE_TYPES_CHOICES, initial=leavetype)
         leave.widget.attrs = {'class': 'form-control', 'required': 'true'}
@@ -193,14 +227,14 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
             label="From",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true', 'readonly':'readonly'}
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true', 'readonly': 'readonly'}
 
         name = forms.CharField(initial=user, widget=forms.HiddenInput())
         leave_id = forms.CharField(initial=leaveid, widget=forms.HiddenInput())
 
         class Meta:
             model = LeaveApplications
-            fields = ['leave', 'fromDate', 'Reason', 'name','id']
+            fields = ['leave', 'fromDate', 'Reason', 'name', 'id']
             widgets = {
                 'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
 
@@ -222,9 +256,7 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
             return form
 
 
-
-class LeaveListViewForm(autocomplete_light.ModelForm):
-
+class LeaveListViewForm(forms.ModelForm):
     # user = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
     #                               widget=autocomplete_light.ChoiceWidget('UserAutocompleteUser'))
     #
@@ -272,9 +304,6 @@ class ShortAttendanceRemarkForm(forms.ModelForm):
     )
     fordate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true', 'readonly': 'readonly'}
 
-
     class Meta:
         model = ShortAttendance
         fields = ['fordate', 'leave_id', 'Reason']
-
-

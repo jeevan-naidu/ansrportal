@@ -87,7 +87,8 @@
             </tbody>
         </table>
     {% endfor %}
-	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
+	{%if eachInfo.projects %}<button type="submit" class="btn btn-info pull-right">Submit Status</button>
+    {%else%} <span > No Projects </span>{% endif %}
 </form>
 </div>
 </div>
