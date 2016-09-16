@@ -184,7 +184,8 @@ class Dashboard(View):
     def post(self, request):
 
         userForm = UserListViewForm(request.POST)
-        user_id = userForm['user'].value()
+        employee_id = userForm['user'].value()
+        user_id = Employee.objects.filter(employee_assigned_id=employee_id).values('user_id')
         LeaveAdmin = False
         userCheck = False
         if not user_id:
