@@ -65,7 +65,7 @@
 
 <style type="text/css">
 
-.carousel-inner{background-color: #f0fffc}    
+/*.carousel-inner{background-color: #f0fffc}    */
 .carousel-inner .item{height: 100%;position: relative;}
 #birthday-greeting{position: absolute;left: 0px;right: 0px;margin-top: 50px;font-size: 30px;color: #38796e;font-family: 'Roboto Slab', serif;}
 .birthday-name{position: absolute;left: 0px;right: 0px;text-align: center;bottom:15%;}
@@ -220,7 +220,7 @@ $(window).load(function(){
 	    id :'2',
         title : '{{ eachHoliday.name }}',
         start : '{{ eachHoliday.date }}',
-        color :'#009452'},true);
+        color :'#009452 !important'},true);
     {% endfor %}
 
 });
@@ -229,7 +229,7 @@ $(window).load(function(){
 	$("#Holiday").click(function(){
 		if (document.getElementById('Holiday').checked){
 			{% for eachHoliday in holidayList %}
-			$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452'},true);
+			$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452 !important'},true);
 		{% endfor %}
 		}
 		else{
@@ -239,7 +239,7 @@ $(window).load(function(){
 	$("#Financial_milestone").click(function(){
 		if (document.getElementById('Financial_milestone').checked){
 			{% for eachMilestone in financialM %}
-			$("#calendar").fullCalendar('renderEvent',{id :'3', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#D6412B'},true);
+			$("#calendar").fullCalendar('renderEvent',{id :'3', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#D6412B !important'},true);
 		{% endfor %}
 		}
 		else{
@@ -249,7 +249,7 @@ $(window).load(function(){
 	$("#Non_financial_milestone").click(function(){
 		if (document.getElementById('Non_financial_milestone').checked){
 			{% for eachMilestone in nonfinancialM %}
-			$("#calendar").fullCalendar('renderEvent',{id :'4', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#FFBA02'},true);
+			$("#calendar").fullCalendar('renderEvent',{id :'4', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#FFBA02 !important'},true);
 		{% endfor %}
 		}
 		else{
@@ -259,7 +259,7 @@ $(window).load(function(){
 	$("#Learning_and_development").click(function(){
 		if (document.getElementById('Learning_and_development').checked){
 			{% for eachTraining in trainingList %}
-			$("#calendar").fullCalendar('renderEvent',{id :'5', title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}', start : '{{ eachTraining.trainingDate }}', end : '{{ eachTraining.endDate }}', color :'#176CED'},true);
+			$("#calendar").fullCalendar('renderEvent',{id :'5', title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}', start : '{{ eachTraining.trainingDate }}', end : '{{ eachTraining.endDate }}', color :'#176CED !important'},true);
 		{% endfor %}
 		}
 		else{
@@ -269,7 +269,7 @@ $(window).load(function(){
 	$("#Hr_activity").click(function(){
 		if (document.getElementById('Hr_activity').checked){
 			{% for eachAct in hrList %}
-			$("#calendar").fullCalendar('renderEvent',{id :'6', title : '{{ eachAct.name }}', start : '{{ eachAct.date }}', color :'#F04C23'},true);
+			$("#calendar").fullCalendar('renderEvent',{id :'6', title : '{{ eachAct.name }}', start : '{{ eachAct.date }}', color :'#F04C23 !important'},true);
 		{% endfor %}
 		}
 		else{
