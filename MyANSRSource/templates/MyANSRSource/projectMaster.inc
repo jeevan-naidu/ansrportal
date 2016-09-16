@@ -12,7 +12,7 @@
 
 {% load fontawesome %}
 
-{% block siteTitle %}myansrsource:Manager{% endblock %}
+{% block siteTitle %}Projects{% endblock %}
 
 {% block pageTitle %}{{ wizard.steps.current }}{% endblock %}
 

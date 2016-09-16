@@ -12,7 +12,7 @@
 
 {% load bootstrap3 %}
 
-{% block siteTitle %}myansrsource:Manager{% endblock %}
+{% block siteTitle %}Projects{% endblock %}
 
 
 
