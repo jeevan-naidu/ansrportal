@@ -45,7 +45,6 @@
                        <div class="col-sm-3">
 
                           <div> Department</div>
-{#                                    <input type="text" placeholder="Name" class="width-100 input-sm" id="department">#}
                            {{ form.department }}
 
                        </div>
@@ -56,18 +55,12 @@
                           <div> Hiring Manager</div>
 
                             <div>
-{#                          <input type="text" placeholder="Name" class="width-100 input-sm" id="manager">#}
                                 {{ form.manager }}
 
                             </div>
                        </div>
 
                       </div><!--./end of form group-->
-
-
-
-
-
 
 
 
@@ -78,7 +71,6 @@
                        <div class="col-sm-3">
 
                           <div> Designation</div>
-{#                                <input type="text" placeholder="Name" class="width-100 input-sm" id="designation">#}
                            {{ form.designation }}
 
                        </div>
@@ -86,7 +78,6 @@
                        <div class="col-sm-3">
 
                           <div> Specialization</div>
-{#                                <input type="text" placeholder="Name" class="width-100 input-sm" id="specialization">#}
                            {{ form.specialization }}
 
                        </div>
@@ -105,7 +96,6 @@
                               {{ form.candidate_name.errors }}
                         <label class="col-sm-3 control-label" >Candidate Name</label>
                         <div class="col-sm-7 controls">
-{#                          <input type="text" placeholder="Name" class="width-50 input-sm">#}
                             {{ form.candidate_name }}
 
                           <span class="help-inline">Enter his/her name</span> </div>
@@ -115,7 +105,6 @@
                         <label class="col-sm-3 control-label">Phone Number</label>
                         <div class="col-sm-7 controls">
                             {{ form.mobile_number }}
-{#                          <input type="text" placeholder="phone number" class="width-30 input-sm">#}
                           <span class="help-inline">Enter phone number</span> </div>
                       </div>
                         <div class="form-group">
@@ -123,7 +112,6 @@
                         <label class="col-sm-3 control-label">Email</label>
                         <div class="col-sm-7 controls">
                             {{ form.email_id }}
-{#                          <input type="text" placeholder="email" class="width-50 input-sm">#}
                           <span class="help-inline">Enter enter email</span> </div>
                       </div>
                       <div class="form-group">
@@ -207,10 +195,6 @@
                           <span class="help-inline">Enter Interviewer name</span> </div>
                       </div>
 
-
-
-
-
                       <div class="form-group">
                           {{ form.remark.errors }}
                         <label class="col-sm-3 control-label">Remarks</label>
@@ -231,32 +215,20 @@
                         </div>
                       </div>
                           </div>
-{#                         <div class="form-group">#}
-{# {% if errors %}#}
-{##}
-{#	<div class="col-sm-offset-2 col-sm-10">#}
-{#		{% for non_field_error in errors %}#}
-{#		<div style="color:red;"><h5> {{non_field_error}}</h5></div>#}
-{#		{% endfor %}#}
-{##}
-{#	 {% endif %}#}
-{#	 {% for field in form.hidden_fields %}#}
-{#		 {{field}}#}
-{#	 {% endfor %}#}
-{#	</div>#}
-{# </div>#}
-{# <div class="form-group">#}
-{# {% if programmingerror %}#}
-{##}
-{#	<div class="col-sm-offset-2 col-sm-10">#}
-{##}
-{#		<div style="color:red;"><h5> {{programmingerror}}</h5></div>#}
-{##}
-{##}
-{#	 {% endif %}#}
-{##}
-{#	</div>#}
-{# </div>#}
+                    {% if errors %}
+						   <tr>
+							{% for non_field_error in errors %}
+							 <td></td>
+							  <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
+							{% endfor %}
+							</tr>
+						 {% endif %}
+                    {% if error %}
+                          <div style="color:red;">{{ error }}</div>
+                      {% endif %}
+						 {% for field in form.hidden_fields %}
+							 {{field}}
+						 {% endfor %}
                     </form>
 
                   </div>
@@ -272,12 +244,7 @@
 
 
     <script>
-{#    $(document).ready(function(){#}
-{#            $('#id_date_of_birth_pickers').datepicker({#}
-{#                format: 'yyyy-mm-dd',#}
-{#                autoclose: true#}
-{#            }).datepicker("setDate", "0");#}
-{#    });#}
+
 
     //uses for requsition no data population
     $('#id_requisition_number-autocomplete').bind(
@@ -301,9 +268,13 @@
                            var specialization = json['specialization']
                            document.getElementById("id_requisition_number-autocomplete").value = requobject;
                            document.getElementById("id_department").value = department;
+                           document.getElementById("id_department").readOnly = true;
                            document.getElementById("id_designation").value = designation;
+                           document.getElementById("id_designation").readOnly = true;
                            document.getElementById("id_specialization").value = specialization;
+                           document.getElementById("id_specialization").readOnly = true;
                            document.getElementById("id_manager").value = hiringmanager;
+                           document.getElementById("id_manager").readOnly = true;
 
                        }
                    }
@@ -323,19 +294,7 @@
         }
     });
 
-{#    $('#id_refered_by-autocomplete').bind(#}
-{#      'selectChoice',#}
-{#      function(e, choice, autocomplete) {#}
-{#          var referedby = choice.html()#}
-{#          document.getElementById("id_refered_by-autocomplete").value = referedby;#}
-{##}
-{#      });#}
-{#	$('#id_date_of_birth_pickers').datepicker()#}
-{#	    .on("input change", function (e) {#}
-{#				if(e.target.value){#}
-{#					$("#id_toDate_pickers").datepicker("update", e.target.value);#}
-{#				}#}
-{#	});#}
+
             </script>
     <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>

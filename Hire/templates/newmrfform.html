@@ -14,10 +14,22 @@
                   </div>
 
                      <div class="panel-body">
+
+
+<ul class="nav nav-tabs">
+  <li ><a href="/hire/addmrf"  id="mrf">MRF</a></li>
+  <li class="active"><a href="/hire/addnewmrf/"  id="newmrf">NEW MRF</a></li>
+</ul>
+
+
+              <div class="tab-pane active" id="tab1">
+<br>
+
                     <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                       <div class="form-group">
                 <div class="form-group">
+                    {{ form.requisition_number.errors }}
                         <label class="col-sm-3 control-label">Requsition No</label>
                         <div class="col-sm-7 controls">
                             {{ form.requisition_number }}
@@ -26,6 +38,7 @@
                       </div>
 
                         <div class="form-group">
+                            {{ form.department.errors }}
                         <label class="col-sm-3 control-label">Department</label>
 
                         <div class="col-sm-7 controls">
@@ -35,6 +48,7 @@
                       </div>
 
                       <div class="form-group">
+                          {{ form.designation.errors }}
                         <label class="col-sm-3 control-label">Designation</label>
                         <div class="col-sm-7 controls">
                             {{ form.designation }}
@@ -44,6 +58,7 @@
 
 
                       <div class="form-group">
+
                         <label class="col-sm-3 control-label">Specialization</label>
                         <div class="col-sm-7 controls">
                             {{ form.specialization }}
@@ -52,14 +67,16 @@
                       </div>
 
                         <div class="form-group">
+
                         <label class="col-sm-3 control-label">Hiring Manager</label>
                         <div class="col-sm-7 controls">
 {#                          <input type="text" placeholder="Name" class="width-50">#}
                             {{ form.manager }}
-                          <span class="help-inline">Enter name of hiring manager</span> </div>
+                         </div>{{ form.manager.errors }}
                       </div>
 
                         <div class="form-group">
+                            {{ form.count.errors }}
                         <label class="col-sm-3 control-label">Count</label>
                         <div class="col-sm-7 controls">
                             {{ form.count }}
@@ -74,8 +91,29 @@
                           <button class="btn vd_btn" type="button">Cancel</button>
                         </div>
                       </div>
+                      {% if success %}
+                          <div style="color:green;">{{ success }}</div>
+                      {% endif %}
+                      {% if error %}
+                          <div style="color:red;">{{ error }}</div>
+                      {% endif %}
+                           {% if errors %}
+						   <tr>
+							{% for non_field_error in errors %}
+							 <td></td>
+							  <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
+							{% endfor %}
+							</tr>
+						 {% endif %}
+						 {% for field in form.hidden_fields %}
+							 {{field}}
+						 {% endfor %}
                           </div>
                     </form>
+
+
+</div><!-- ./tab -->
+
 
                   </div>
                 </div>
@@ -92,7 +130,6 @@
         var specdropdown=$('#id_specialization');
         desigdropdown.empty()
         specdropdown.empty()
-
     })
 
     $("#id_department").change(function(){
@@ -107,13 +144,15 @@
                      data :{'department': selectedDepartment} ,
                      success : function(data)
                      {
-                         var len = (data.message).length
+
+                         var len = (data.message).length;
                          for(i=0 ; i<len; i++)
                          {
                              var desig = document.createElement('option');
                              desig.text = desig.value = data.message[i];
                              dep.add(desig, 0);
                          }
+                         document.getElementById('id_designation').getElementsByTagName('option')[0].selected = 'selected';
                      },
                      error: function(XMLHttpRequest, textStatus, errorThrown) {
                         alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -144,7 +183,7 @@
                              spec.text = spec.value = data.message[i];
                              desig.add(spec, 0);
                          }
-                         console.log(data.message);
+                         document.getElementById('id_specialization').getElementsByTagName('option')[0].selected = 'selected';
                      },
                      error: function(XMLHttpRequest, textStatus, errorThrown) {
                          $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -153,7 +192,7 @@
                      },
                  }
          );
-    })
+    });
 
 
 

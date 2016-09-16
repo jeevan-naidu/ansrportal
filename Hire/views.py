@@ -3,8 +3,9 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.views.generic import View
 from django.contrib.auth.models import User
-from models import MRF, Count, Position, Profile, Process
+from models import MRF, Count, Position, Profile, Process, RESULT_STATUS, REFERENCE_SOURCE
 from forms import ProfileForm, MRFForm, NewMRFForm, ProcessForm
+from datetime import date, timedelta
 import json
 
 def recruitment_form(request):
@@ -43,6 +44,11 @@ class Hire(View):
                 interview_on = form.cleaned_data['interview_on']
                 interview_status = form.cleaned_data['interview_status']
                 remark = form.cleaned_data['remark']
+                mobilenocheck = uniquevalidation(mobile_number)
+                if mobilenocheck:
+                    context['error'] = "Candidate with same phone number is already avaliable"
+                    context["form"] = form
+                    return render(request, "candidateform.html", context)
                 if referred_by:
                     profile = Profile(candidate_name=candidate_name, date_of_birth=date_of_birth,
                                       gender=gender, mobile_number=mobile_number, email_id=email_id,
@@ -62,7 +68,7 @@ class Hire(View):
                 process.save()
                 process.interview_by.add(interview_by)
             except Exception as programmingerror:
-                context['programmingerror'] = programmingerror
+                context['error'] = programmingerror
                 context["form"] = form
                 return render(request, "candidateform.html", context)
 
@@ -95,8 +101,10 @@ class MRFAdd(View):
                 mrfentry = mrfentry[0]
                 mrfentry.count = count
                 mrfentry.save()
+                context['success'] = "Requsition number updated"
             else:
                 Count(requisition_number=requisition_number, recruiter=user, count=count).save()
+                context['success'] = "Requsition number updated"
         context["form"] = form
         return render(request, "mrfform.html", context)
 
@@ -121,12 +129,14 @@ class NewMRFAdd(View):
             count = form.cleaned_data['count']
             position = Position.objects.filter(department=department, designation=designation,
                                                specialization=specialization)
-            if position:
+            requisitionnocheck = MRF.objects.filter(requisition_number=requisition_number)
+            if position and not requisitionnocheck:
                 MRF(requisition_number=requisition_number, position=position[0], manager=manager).save()
                 mrf = MRF.objects.filter(requisition_number=requisition_number)
                 Count(requisition_number=mrf[0], recruiter=user, count=count).save()
+                context['success'] = "Requsition number saved"
             else:
-                print "not working"
+                context['error'] = "Requsition number is already present."
 
 
         context["form"] = form
@@ -134,8 +144,6 @@ class NewMRFAdd(View):
 
 
 def designation(request):
-    # import ipdb
-    # ipdb.set_trace()
     response_data = {}
     department = request.GET.get('department')
     designation = Position.objects.filter(department=department).only('designation')
@@ -143,7 +151,8 @@ def designation(request):
     if designation:
         response_data['result'] = 'Success'
         for value in designation:
-            designationlist.append(value.designation)
+            if value not in designationlist:
+                designationlist.append(value.designation)
     designationlist.append(".........")
     response_data['message'] = designationlist
     return HttpResponse(JsonResponse(response_data), content_type='application/json')
@@ -159,7 +168,8 @@ def specialization(request):
     if specialization:
         response_data['result'] = 'Success'
         for value in specialization:
-            specializationlist.append(value.specialization)
+            if value not in specializationlist:
+                specializationlist.append(value.specialization)
     specializationlist.append(".........")
     response_data['message'] = specializationlist
     return HttpResponse(JsonResponse(response_data), content_type='application/json')
@@ -173,7 +183,7 @@ def mrfsearch(request):
     context_data['department'] = mrf_detail[0].position.department
     context_data['designation'] = mrf_detail[0].position.designation
     context_data['specialization'] = mrf_detail[0].position.specialization
-    context_data['manager'] = mrf_detail[0].manager.first_name
+    context_data['manager'] = mrf_detail[0].manager.first_name + " " + mrf_detail[0].manager.last_name
     response_data['result'] = 'Success'
     response_data['details'] = json.dumps(context_data)
     response_data['message'] = serializers.serialize('json', mrf_detail)
@@ -182,9 +192,14 @@ def mrfsearch(request):
 
 def candidatesearch(request):
     user = request.user.id
-    countlist = Count.objects.filter(recruiter=user).values('id')
-    candidatelist = Process.objects.filter(profile__requisition_number__in=countlist)
-    return render(request, 'candidatemanage.html',{'candidatelist':candidatelist})
+    context_data = {'interviewdetial':[]}
+    candidatelist = Profile.objects.filter(requisition_number__recruiter=user).values('id')
+    for candidate in candidatelist:
+        testdetail = Process.objects.filter(profile=candidate['id'])
+        context_data['interviewdetial'].append(testdetail)
+    context_data['REFERENCE_SOURCE'] = REFERENCE_SOURCE
+    context_data['RESULT_STATUS'] = RESULT_STATUS
+    return render(request, 'candidatemanage.html', context_data)
 
 
 class ProcessUpdate(View):
@@ -200,3 +215,12 @@ class ProcessUpdate(View):
         form = ProcessForm(request.POST)
         context['form'] = form
         return render(request, "processform.html", context)
+
+def uniquevalidation(mobileno):
+    candidate = Profile.objects.filter(mobile_number=mobileno)
+    today = date.today()
+    alloweddate = today - timedelta(days=180)
+    for val in candidate:
+        if val.created_on > alloweddate:
+            return True
+    return False
