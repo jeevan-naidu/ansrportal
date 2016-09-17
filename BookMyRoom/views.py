@@ -20,16 +20,16 @@ TimingsList = [ ['08:00-08:30', '08:30-09:00', '09:00-09:30', '09:30-10:00'],
 
 class BookMeetingRoomView(View):
     ''' add or edit grievances '''
-    
+
     def get(self, request):
         if 'for_location' not in request.session:
             request.session['for_location'] = ''
         if 'for_date' not in request.session:
             request.session['for_date'] = ''
         return render(request, 'BookMyRoom/index.html', locals())
-    
+
     def post(self, request):
-        
+
         context_data = {'add' : True, 'record_added' : False, 'success_msg' : None,
                         'html_data' : None, 'errors' : '', 'for_date':'' }
         if not request.POST.get('for_date'):
@@ -47,16 +47,16 @@ class BookMeetingRoomView(View):
                 time_period_list = data_list[1].split("-")
                 from_time = time_period_list[0]
                 to_time = time_period_list[1]
-                
+
                 from_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(from_time), '%Y-%m-%d/%H:%M')
                 to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
                 try:
                     booking_obj = MeetingRoomBooking.objects.get(room=room_obj, from_time=from_time_obj, to_time=to_time_obj, status='booked')
-                    
+
                     context_data['errors'] = "Oops! :( Looks like someone else clicked\
                     <b>Submit</b> just before you did. Better luck next time."
                 except:
-                    booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked', 
+                    booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked',
                                                 from_time=from_time_obj, to_time=to_time_obj)
                     booking_obj.save()
                     context_data['record_added'] = True
@@ -65,7 +65,7 @@ class BookMeetingRoomView(View):
 
 
 def GetBookingsView(request):
-    
+
     context_data = {'html_data': '', 'rooms_list': [], 'bookings_list': [],
                     'TimingsList': TimingsList, 'for_date': '', 'errors': '', 'bookings_list': '',
                     'location':''}
@@ -96,10 +96,10 @@ def GetBookingsView(request):
 
 
 def CancelBooking(request):
-    
-    booking_id = request.POST.get('cancel_id', '')
-    context_data = {'record_updated':False, 'user_mismatch':False}
-   
+
+    booking_id = request.GET.get('cancel_id', '')
+    context_data = {'record_updated': False, 'user_mismatch': False}
+
     booking_obj = MeetingRoomBooking.objects.get(id=int(booking_id))
     if booking_obj.booked_by == request.user:
         booking_obj.status = 'cancelled'
@@ -107,9 +107,9 @@ def CancelBooking(request):
         context_data['record_updated'] = True
     else:
         context_data['user_mismatch'] = True
-    
+
     return JsonResponse(context_data)
-    
+
 
 def GetAllRoomsList(request):
 

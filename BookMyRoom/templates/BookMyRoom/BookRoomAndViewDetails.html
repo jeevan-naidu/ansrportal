@@ -249,7 +249,9 @@
 
 														$.ajax({
 																url: '/bookings/cancel/',
-																type: 'POST',
+																type: 'GET',
+																 contentType: "application/json; charset=utf-8",
+                                                                 dataType: "json",
 																 data: {'cancel_id':cancel_id},
 																success: function (data) {
 																		if (data.record_updated == true) {
