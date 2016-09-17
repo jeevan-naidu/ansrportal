@@ -3,7 +3,7 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 
-{% block siteTitle %}myansrsource:Timesheet Entry{% endblock %}
+{% block siteTitle %}Enter Timesheet{% endblock %}
 
 {% block content  %}
 
