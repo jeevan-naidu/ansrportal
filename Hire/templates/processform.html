@@ -1,3 +1,6 @@
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
 {% if record_added %}
 <h4> Success</h4>
 {% else %}
@@ -70,9 +73,9 @@
                 </div>
     </div>
 </div>
-    <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
-<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
-<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+{#    <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />#}
+{#<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>#}
+{#<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>#}
 <script>
      function ShowAjaxLoader(element, width, height){
       element.show();
@@ -113,11 +116,11 @@
 										HideAjaxLoader($('#ajax_loader_apply_leave'));
                                         if (data.record_added) {
                                             swal("Done!", data.success_msg, "success");
-                                           $("#modal-container-hire").html('');
+                                           $("#modal_body").html('');
                                             window.location.reload();
                                         }
                                         else{
-                                            $("#modal-container-hire").html(data);
+                                            $("#modal_body").html(data);
                                         }
 
 									},
