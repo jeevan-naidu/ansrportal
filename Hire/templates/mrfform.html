@@ -1,0 +1,160 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}myansrsource:Hire{% endblock %}
+{% block pageTitle %}Hire{% endblock %}
+{% block content  %}
+                <div class="vd_content-section clearfix">
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> MRF Details </h3>
+                  </div>
+
+                     <div class="panel-body">
+
+
+
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="/hire/addmrf"  id="mrf">MRF</a></li>
+  <li><a href="/hire/addnewmrf/"  id="newmrf">NEW MRF</a></li>
+</ul>
+
+
+
+
+              <div class="tab-pane active" id="tab1">
+<br>
+
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                      <div class="form-group">
+                <div class="form-group">
+                        <label class="col-sm-3 control-label">Requsition No</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.requisition_number }}
+{#                          <input type="text" placeholder="Requsition no" class="width-50">#}
+                          <span class="help-inline">Enter requsition name</span> </div>
+                      </div>
+
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Department</label>
+
+                        <div class="col-sm-7 controls">
+                            {{ form.department }}
+
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Designation</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.designation }}
+
+                        </div>
+                      </div>
+
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label">Specialization</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.specialization }}
+
+                        </div>
+                      </div>
+
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Hiring Manager</label>
+                        <div class="col-sm-7 controls">
+{#                          <input type="text" placeholder="Name" class="width-50">#}
+                            {{ form.raised_by }}
+                          <span class="help-inline">Enter name of hiring manager</span> </div>
+                      </div>
+
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label">Count</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.count }}
+{#                          <input type="text" placeholder="Name" class="width-50">#}
+                          <span class="help-inline">Enter count</span> </div>
+                      </div>
+
+                            <div class="form-group form-actions">
+                        <div class="col-sm-3"> </div>
+                        <div class="col-sm-7">
+                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Save</button>
+                          <button class="btn vd_btn" type="button">Cancel</button>
+                        </div>
+                      </div>
+                       {% if success %}
+                          <div style="color:green;">{{ success }}</div>
+                      {% endif %}
+                           {% if errors %}
+						   <tr>
+							{% for non_field_error in errors %}
+							 <td></td>
+							  <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
+							{% endfor %}
+							</tr>
+						 {% endif %}
+						 {% for field in form.hidden_fields %}
+							 {{field}}
+						 {% endfor %}
+                          </div>
+                    </form>
+
+</div><!-- ./tab content -->
+
+
+
+                  </div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+</div>
+
+    <script>
+
+    $('#id_requisition_number-autocomplete').bind(
+      'selectChoice',
+      function(e, choice, autocomplete) {
+          var requsitionno = choice.html()
+          requsitionno = requsitionno.substring(requsitionno.indexOf(' ')+1,requsitionno.length)
+           $.ajax(
+                   {
+                       type : "GET",
+                       url : '/hire/mrfsearch/',
+                       data :{'requsitionno': requsitionno} ,
+                       success : function(data)
+                       {
+                           console.log(data.message[0])
+                           var json = JSON.parse(data.details)
+                           var requobject = JSON.parse(data.message)
+                           var department = json['department'];
+                           var designation = json['designation']
+                           var hiringmanager = json['manager']
+                           var specialization = json['specialization']
+{#                           document.getElementById("id_requisition_number-autocomplete").value = requobject;#}
+                           document.getElementById("id_department").value = department;
+                           document.getElementById("id_department").readOnly = true;
+                           document.getElementById("id_designation").value = designation;
+                           document.getElementById("id_designation").readOnly = true;
+                           document.getElementById("id_specialization").value = specialization;
+                           document.getElementById("id_specialization").readOnly = true;
+                           document.getElementById("id_raised_by").value = hiringmanager;
+                           document.getElementById("id_raised_by").readOnly = true;
+
+                       }
+                   }
+           );
+      });
+
+    </script>
+{% endblock %}
+

@@ -19,8 +19,10 @@ DISPUTE_STATUS = (('open','Open'),('raised', 'Raised'), ('approved', 'Approved')
 #     return '/'.join(['content', instance.user.username, filename])
 
 def content_file_name(instance, filename):
-    ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
-    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-) '''
+    '''
+    This function generates a random string of length 16 which will be a combination of (4 digits + 4
+    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-)
+     '''
 
     import random
     import string

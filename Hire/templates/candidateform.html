@@ -1,0 +1,303 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}myansrsource:Hire{% endblock %}
+{% block pageTitle %}Hire{% endblock %}
+{% block content  %}
+
+<div class="vd_content-section clearfix">
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Candidate Profile </h3>
+                  </div>
+
+
+
+<style>
+.autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+
+
+</style>
+
+
+
+                  <div class="panel-body">
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+
+
+   <div class="form-group">
+                        <label class="col-sm-2 control-label"></label><!-- start -->
+
+                        <div class="col-sm-2 controls">
+
+                            <div>Requisition</div>
+                            <div>
+                            {{ form.requisition_number }}
+
+                        </div>
+
+                        </div>
+                       <div class="col-sm-3">
+
+                          <div> Department</div>
+                           {{ form.department }}
+
+                       </div>
+
+
+                       <div class="col-sm-3">
+
+                          <div> Hiring Manager</div>
+
+                            <div>
+                                {{ form.manager }}
+
+                            </div>
+                       </div>
+
+                      </div><!--./end of form group-->
+
+
+
+   <div class="form-group">
+                        <label class="col-sm-4 control-label"></label><!-- start -->
+
+
+                       <div class="col-sm-3">
+
+                          <div> Designation</div>
+                           {{ form.designation }}
+
+                       </div>
+
+                       <div class="col-sm-3">
+
+                          <div> Specialization</div>
+                           {{ form.specialization }}
+
+                       </div>
+
+
+
+
+
+
+                      </div><!--./end of form group-->
+
+
+
+<hr>
+              <div class="form-group">
+                              {{ form.candidate_name.errors }}
+                        <label class="col-sm-3 control-label" >Candidate Name</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.candidate_name }}
+
+                          <span class="help-inline">Enter his/her name</span> </div>
+                      </div>
+                        <div class="form-group">
+                            {{ form.mobile_number.errors }}
+                        <label class="col-sm-3 control-label">Phone Number</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.mobile_number }}
+                          <span class="help-inline">Enter phone number</span> </div>
+                      </div>
+                        <div class="form-group">
+                            {{ form.email_id.errors }}
+                        <label class="col-sm-3 control-label">Email</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.email_id }}
+                          <span class="help-inline">Enter enter email</span> </div>
+                      </div>
+                      <div class="form-group">
+                          {{ form.gender.errors }}
+                        <label class="col-sm-3 control-label">Gender</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.gender }}
+{#                          <div class="vd_radio radio-success">#}
+{#                            <input type="radio" name="optionsRadios2" id="optionsRadios3" value="option3" checked>#}
+{#                            <label  for="optionsRadios3">Male</label>#}
+{#                              {{ form.gender.0 }}#}
+{#                            <input type="radio" name="optionsRadios2" id="optionsRadios4" value="option4">#}
+{#                            <label  for="optionsRadios4">{{ form.gender.1 }}</label>#}
+{#                              {{ form.gender.1 }}#}
+{#                          </div>#}
+{#                        </div>#}
+                      </div>
+
+
+                      <div class="form-group">
+                          {{ form.date_of_birth.errors }}
+                        <label class="col-sm-3 control-label">Date Of Birth</label>
+                        <div class="col-sm-7 controls">
+                          <div class="input-group input-border width-50">
+{#                              <span class="input-group-addon no-bd no-bg"><i class="fa fa-calendar"></i></span>#}
+{#                            <input type="text" placeholder="Calendar" class="no-bd input-sm">#}
+                              {{ form.date_of_birth }}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                          {{ form.source.errors }}
+                        <label class="col-sm-3 control-label">Source</label>
+
+                        <div class="col-sm-7 controls">
+                            {{ form.source }}
+                        </div>
+                      </div>
+
+                      <div class="form-group hidden" id="referral_detail">
+                          {{ form.refered_by.errors }}
+                        <label class="col-sm-3 control-label"> Referred by</label>
+                        <div class="col-sm-7 controls">
+{#                          <input type="text" placeholder="Name" class="width-50">#}
+                            {{ form.refered_by }}
+                          <span class="help-inline">Enter his/her name</span> </div>
+                      </div>
+
+<hr>
+
+                          <div class="form-group">
+                              {{ form.interview_on.errors }}
+                        <label class="col-sm-3 control-label">Interview Date</label>
+                        <div class="col-sm-7 controls">
+                          <div class="input-group input-border width-50">
+
+                              {{ form.interview_on }}
+                          </div>
+                        </div>
+                      </div>
+
+                          <div class="form-group">
+                              {{ form.interview_status.errors }}
+                        <label class="col-sm-3 control-label">Interview round Test</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.interview_status }}
+{#                          <select class="width-40">#}
+{#                            <option>written</option>#}
+{#                            <option>face to face</option>#}
+                          </select>
+                        </div>
+                      </div>
+
+                           <div class="form-group">
+                               {{ form.interview_by.errors }}
+                        <label class="col-sm-3 control-label">Interviewed By</label>
+                        <div class="col-sm-7 controls">
+{#                          <input type="text"  class="width-50 input-sm">#}
+                            {{ form.interview_by }}
+                          <span class="help-inline">Enter Interviewer name</span> </div>
+                      </div>
+
+                      <div class="form-group">
+                          {{ form.remark.errors }}
+                        <label class="col-sm-3 control-label">Remarks</label>
+                        <div class="col-sm-7 controls">
+{#                          <textarea rows="3" class="width-50"></textarea>#}
+                            {{ form.remark }}
+                        </div>
+                      </div>
+
+
+
+
+                      <div class="form-group form-actions">
+                        <div class="col-sm-3"> </div>
+                        <div class="col-sm-7">
+                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Save</button>
+                          <button class="btn vd_btn" type="button">Cancel</button>
+                        </div>
+                      </div>
+                          </div>
+                    {% if errors %}
+						   <tr>
+							{% for non_field_error in errors %}
+							 <td></td>
+							  <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
+							{% endfor %}
+							</tr>
+						 {% endif %}
+                    {% if error %}
+                          <div style="color:red;">{{ error }}</div>
+                      {% endif %}
+						 {% for field in form.hidden_fields %}
+							 {{field}}
+						 {% endfor %}
+                    </form>
+
+                  </div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+
+          </div>
+          <!-- .vd_content-section -->
+
+
+    <script>
+
+
+    //uses for requsition no data population
+    $('#id_requisition_number-autocomplete').bind(
+      'selectChoice',
+      function(e, choice, autocomplete) {
+          var requsitionno = choice.html()
+          requsitionno = requsitionno.substring(requsitionno.indexOf(' ')+1,requsitionno.length)
+           $.ajax(
+                   {
+                       type : "GET",
+                       url : '/hire/mrfsearch/',
+                       data :{'requsitionno': requsitionno} ,
+                       success : function(data)
+                       {
+
+                           var json = JSON.parse(data.details)
+                           var requobject = JSON.parse(data.message)
+                           var department = json['department'];
+                           var designation = json['designation']
+                           var hiringmanager = json['manager']
+                           var specialization = json['specialization']
+                           document.getElementById("id_requisition_number-autocomplete").value = requobject;
+                           document.getElementById("id_department").value = department;
+                           document.getElementById("id_department").readOnly = true;
+                           document.getElementById("id_designation").value = designation;
+                           document.getElementById("id_designation").readOnly = true;
+                           document.getElementById("id_specialization").value = specialization;
+                           document.getElementById("id_specialization").readOnly = true;
+                           document.getElementById("id_manager").value = hiringmanager;
+                           document.getElementById("id_manager").readOnly = true;
+
+                       }
+                   }
+           );
+      });
+
+    // uses for referel check
+    $("#id_source").change(function(){
+        var selectedtext = this.value;
+        if(selectedtext=="employee_referral"){
+            $("#referral_detail").removeClass("hidden");
+            $("#referral_detail").attr("disabled", false);
+    }
+    else{
+        $("#referral_detail").addClass("hidden");
+            $("#referral_detail").attr("disabled", true);
+        }
+    });
+
+
+            </script>
+    <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+{% endblock %}

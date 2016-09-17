@@ -1,0 +1,201 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}myansrsource:Hire{% endblock %}
+{% block pageTitle %}Hire{% endblock %}
+{% block content  %}
+                <div class="vd_content-section clearfix">
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> MRF Details </h3>
+                  </div>
+
+                     <div class="panel-body">
+
+
+<ul class="nav nav-tabs">
+  <li ><a href="/hire/addmrf"  id="mrf">MRF</a></li>
+  <li class="active"><a href="/hire/addnewmrf/"  id="newmrf">NEW MRF</a></li>
+</ul>
+
+
+              <div class="tab-pane active" id="tab1">
+<br>
+
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                      <div class="form-group">
+                <div class="form-group">
+                    {{ form.requisition_number.errors }}
+                        <label class="col-sm-3 control-label">Requsition No</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.requisition_number }}
+{#                          <input type="text" placeholder="Requsition no" class="width-50">#}
+                          <span class="help-inline">Enter requsition name</span> </div>
+                      </div>
+
+                        <div class="form-group">
+                            {{ form.department.errors }}
+                        <label class="col-sm-3 control-label">Department</label>
+
+                        <div class="col-sm-7 controls">
+                            {{ form.department }}
+
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                          {{ form.designation.errors }}
+                        <label class="col-sm-3 control-label">Designation</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.designation }}
+
+                        </div>
+                      </div>
+
+
+                      <div class="form-group">
+
+                        <label class="col-sm-3 control-label">Specialization</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.specialization }}
+
+                        </div>
+                      </div>
+
+                        <div class="form-group">
+
+                        <label class="col-sm-3 control-label">Hiring Manager</label>
+                        <div class="col-sm-7 controls">
+{#                          <input type="text" placeholder="Name" class="width-50">#}
+                            {{ form.manager }}
+                         </div>{{ form.manager.errors }}
+                      </div>
+
+                        <div class="form-group">
+                            {{ form.count.errors }}
+                        <label class="col-sm-3 control-label">Count</label>
+                        <div class="col-sm-7 controls">
+                            {{ form.count }}
+{#                          <input type="text" placeholder="Name" class="width-50">#}
+                          <span class="help-inline">Enter count</span> </div>
+                      </div>
+
+                            <div class="form-group form-actions">
+                        <div class="col-sm-3"> </div>
+                        <div class="col-sm-7">
+                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Save</button>
+                          <button class="btn vd_btn" type="button">Cancel</button>
+                        </div>
+                      </div>
+                      {% if success %}
+                          <div style="color:green;">{{ success }}</div>
+                      {% endif %}
+                      {% if error %}
+                          <div style="color:red;">{{ error }}</div>
+                      {% endif %}
+                           {% if errors %}
+						   <tr>
+							{% for non_field_error in errors %}
+							 <td></td>
+							  <td><div style="color:red;"><h5> {{non_field_error}}</h5></div></td>
+							{% endfor %}
+							</tr>
+						 {% endif %}
+						 {% for field in form.hidden_fields %}
+							 {{field}}
+						 {% endfor %}
+                          </div>
+                    </form>
+
+
+</div><!-- ./tab -->
+
+
+                  </div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+</div>
+
+    <script>
+    $(document).ready(function(){
+        var desigdropdown=$('#id_designation');
+        var specdropdown=$('#id_specialization');
+        desigdropdown.empty()
+        specdropdown.empty()
+    })
+
+    $("#id_department").change(function(){
+        var selectedDepartment = $('#id_department option:selected').val();
+        var dep = document.getElementById('id_designation')
+        var desigdropdown=$('#id_designation');
+        desigdropdown.empty()
+         $.ajax(
+                 {
+                     type : "GET",
+                     url : '/hire/designation/',
+                     data :{'department': selectedDepartment} ,
+                     success : function(data)
+                     {
+
+                         var len = (data.message).length;
+                         for(i=0 ; i<len; i++)
+                         {
+                             var desig = document.createElement('option');
+                             desig.text = desig.value = data.message[i];
+                             dep.add(desig, 0);
+                         }
+                         document.getElementById('id_designation').getElementsByTagName('option')[0].selected = 'selected';
+                     },
+                     error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+                     },
+                 }
+         );
+    });
+
+       $("#id_designation").change(function(){
+           var selectedDepartment = $('#id_department option:selected').val();
+           var selectedDesignation = $('#id_designation option:selected').val();
+           var desig = document.getElementById('id_specialization');
+           var specdropdown=$('#id_specialization');
+           specdropdown.empty()
+         $.ajax(
+                 {
+                     type : "GET",
+                     url : '/hire/specialization/',
+                     data :{'designation': selectedDesignation,'department':selectedDepartment} ,
+                     success : function(data)
+                     {
+                        var len = (data.message).length
+                         for(i=0 ; i<len; i++)
+                         {
+                             var spec = document.createElement('option');
+                             spec.text = spec.value = data.message[i];
+                             desig.add(spec, 0);
+                         }
+                         document.getElementById('id_specialization').getElementsByTagName('option')[0].selected = 'selected';
+                     },
+                     error: function(XMLHttpRequest, textStatus, errorThrown) {
+                         $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                         HideAjaxLoader(ajax_loader_element);
+                     },
+                 }
+         );
+    });
+
+
+
+    </script>
+{% endblock %}
+
