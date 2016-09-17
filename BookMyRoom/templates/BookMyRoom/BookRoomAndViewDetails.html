@@ -107,6 +107,13 @@
 
 <div class="row bookings margin-0">
 	<h4>Your Bookings <small> (Only future bookings are displayed here)</small></h4>
+    <div class="form-inline approve-reject pull-right">
+            <div class="checkbox checkbox-success">
+                                          <input id="release_all" type="checkbox" name="release_all" class="release_all">
+                                          <label for="release_all" class="lh-16">
+                                             Release All
+                                          </label>
+                                      </div>
 	{% if bookings_list %}
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
@@ -137,8 +144,31 @@
 </div><!--end of panel-->
 
 <script>
+    var cancel_data = { 'cancel_id' : []};
 	$(document).ready(function(){
-		 $('#reset-btn').click(function(){
+
+        function push_all () {
+            $(".CancelBooking").each(function() {
+            <!--console.log($(this).attr('data-value'));-->
+                cancel_data['cancel_id'].push($(this).attr('data-value'));
+
+            });
+            console.log("data" +JSON.stringify(cancel_data));
+            return false;
+        }
+        $("#release_all").change(function() {
+            if(this.checked) {
+                var r = confirm("Do You Want To Release All Your Bookings ? ");
+                if (r == true) {
+                    push_all();
+                    $(".CancelBooking").trigger( "click" )
+                }
+            }
+        });
+
+
+
+		$('#reset-btn').click(function(){
 				$('input[type="checkbox"]').attr('checked', false);
 			});
 		});
@@ -225,9 +255,12 @@
         });
 
 
-				$(".CancelBooking").click(function(){
 
-            var cancel_id = $(this).attr('data-value');
+				$(".CancelBooking").click(function(){
+				    var condition = $( '#release_all').prop( "checked" );
+                    if(condition === false) {
+                         cancel_data['cancel_id'].push ($(this).attr('data-value'));
+                    }
 
 						swal({   title: "",
                 text: "Are you sure you want to release this meeting room?",
@@ -252,7 +285,8 @@
 																type: 'GET',
 																 contentType: "application/json; charset=utf-8",
                                                                  dataType: "json",
-																 data: {'cancel_id':cancel_id},
+																 data: cancel_data,
+
 																success: function (data) {
 																		if (data.record_updated == true) {
 																			swal({

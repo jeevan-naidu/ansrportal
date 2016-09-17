@@ -96,17 +96,26 @@ def GetBookingsView(request):
 
 
 def CancelBooking(request):
-
-    booking_id = request.GET.get('cancel_id', '')
+    partial_update = False
+    # booking_id = request.GET.getlist('cancel_id', '')
+    print request.GET.getlist('cancel_id[]')
+    # exit()
     context_data = {'record_updated': False, 'user_mismatch': False}
-
-    booking_obj = MeetingRoomBooking.objects.get(id=int(booking_id))
-    if booking_obj.booked_by == request.user:
-        booking_obj.status = 'cancelled'
-        booking_obj.save()
-        context_data['record_updated'] = True
-    else:
-        context_data['user_mismatch'] = True
+    #
+    booking_obj = MeetingRoomBooking.objects.filter(id__in=request.GET.getlist('cancel_id[]'))
+    print booking_obj.query
+    print booking_obj
+    for obj in booking_obj:
+        if obj.booked_by == request.user:
+            obj.status = 'cancelled'
+            try:
+                obj.save()
+            except:
+                partial_update = True
+        if not partial_update:
+            context_data['record_updated'] = True
+        else:
+            context_data['user_mismatch'] = True
 
     return JsonResponse(context_data)
 
