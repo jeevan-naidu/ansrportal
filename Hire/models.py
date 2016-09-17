@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 REFERENCE_SOURCE = (('naukari', 'Naukari'), ('linkedin', 'Linkedin'), ('career', 'Career'),
                     ('employee_referral', 'Employee Referral'),('others', 'Others'))
-RESULT_STATUS = (('rejected', 'Rejected'), ('on_hold', 'On Hold'), ('selected', 'Selected'))
+RESULT_STATUS = (('rejected', 'Rejected'), ('on_hold', 'On Hold'), ('selected', 'Selected'), ('in_progress', 'In Progress'))
 INTERVIEW_PROCESS = (('test', 'Test'), ('f2f', 'Face To Face'),('others', 'Others'))
 GENDER_CHOICES = (('male', 'Male'),('female', 'Female'))
 

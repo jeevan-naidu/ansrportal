@@ -45,6 +45,10 @@ class Hire(View):
                 interview_status = form.cleaned_data['interview_status']
                 remark = form.cleaned_data['remark']
                 mobilenocheck = uniquevalidation(mobile_number)
+                if interview_status == 'rejected':
+                    candidate_status = 'rejected'
+                else:
+                    candidate_status = 'in_progress'
                 if mobilenocheck:
                     context['error'] = "Candidate with same phone number is already avaliable"
                     context["form"] = form
@@ -53,12 +57,12 @@ class Hire(View):
                     profile = Profile(candidate_name=candidate_name, date_of_birth=date_of_birth,
                                       gender=gender, mobile_number=mobile_number, email_id=email_id,
                                       requisition_number=requisition_number, source=source,
-                                      candidate_status=interview_status, referred_by=referred_by )
+                                      candidate_status=candidate_status, referred_by=referred_by )
                 else:
                     profile = Profile(candidate_name=candidate_name, date_of_birth=date_of_birth,
                                       gender=gender, mobile_number=mobile_number, email_id=email_id,
                                       requisition_number=requisition_number, source=source,
-                                      candidate_status=interview_status)
+                                      candidate_status=candidate_status)
 
 
                 profile.save()
@@ -221,10 +225,12 @@ class ProcessUpdate(View):
             remark = form.cleaned_data['remark']
             profile_id = form.cleaned_data['profile_id']
             profile = Profile.objects.get(id=profile_id)
-            process = Process.objects.create(interview_step="test", interview_status=interview_status,
+            process = Process.objects.create(interview_step="f2f", interview_status=interview_status,
                                              interview_on=interview_on,
                                              profile=profile, feedback=remark)
             process.save()
+            profile.candidate_status=interview_status
+            profile.save()
             process.interview_by.add(interview_by)
             context['record_added'] = True
             context['success_msg'] = "Updated"

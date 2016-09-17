@@ -10,7 +10,7 @@
             <div class="modal fade" id="modal-container-hire" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header vd_bg-blue vd_white">
 
                             <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
 								x
@@ -23,7 +23,7 @@
                         <div class="modal-body min-height-300" id="modal_body">
                           loading...............
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer vd_bg-white">
 
                         </div>
                     </div>
@@ -72,10 +72,14 @@
            {% if interviewlist.0.interview_step == 'f2f' %}
                   <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.interview_status %} {{v}} {% endif %}{%endfor%}</td>
            {% elif interviewlist.1.interview_step == 'f2f' %}
-                  <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.interview_status %} {{v}} {% endif %}{%endfor%}</td>
+                  <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.1.interview_status %} {{v}} {% endif %}{%endfor%}</td>
            {% else %}
+               {% if interviewlist.0.interview_status == "rejected" %}
+                   <td>Rejected</td>
+                   {% else %}
                   <td ><a id="modal-hire-{{ interviewlist.0.profile.id }}" href="#modal-container-hire" data-toggle="modal" title="Update"  bgcolor="#FF0000">
                             None</a></td>
+                   {% endif %}
            {% endif %}
                   <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.profile.candidate_status %} {{v}} {% endif %}{%endfor%}</td>
                          </tr>
@@ -89,8 +93,6 @@
     $("#modal-container-hire").on('shown.bs.modal', function(e){
             button=e.relatedTarget;
             prof=button.id.substring(11);
-        console.log(button);
-        console.log(prof);
   $.ajax(
         {
             type : "GET",
@@ -99,6 +101,13 @@
             success : function(data)
             {
                 $("#modal_body").html(data);
+                $(function () {
+{#				$('#id_interview_on_pickers').datepicker({#}
+{#					 								format: 'yyyy-mm-dd',#}
+{#					 								autoclose: true#}
+{#					 								}).datepicker("setDate", "0");#}
+
+                });
 
 
               },
@@ -110,5 +119,6 @@
             }
           );
           });
+
             </script>
 {% endblock %}
