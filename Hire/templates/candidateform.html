@@ -18,7 +18,10 @@
 
 <style>
 .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
-
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+ul{list-style: none;padding-left: 0px;}
 
 </style>
 
@@ -31,7 +34,7 @@
 
 
    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label><!-- start -->
+                        <label class="col-sm-1 control-label"></label><!-- start -->
 
                         <div class="col-sm-2 controls">
 
@@ -65,7 +68,7 @@
 
 
    <div class="form-group">
-                        <label class="col-sm-4 control-label"></label><!-- start -->
+                        <label class="col-sm-3 control-label"></label><!-- start -->
 
 
                        <div class="col-sm-3">
@@ -135,7 +138,7 @@
                           {{ form.date_of_birth.errors }}
                         <label class="col-sm-3 control-label">Date Of Birth</label>
                         <div class="col-sm-7 controls">
-                          <div class="input-group input-border width-50">
+                          <div class="input-group width-50">
 {#                              <span class="input-group-addon no-bd no-bg"><i class="fa fa-calendar"></i></span>#}
 {#                            <input type="text" placeholder="Calendar" class="no-bd input-sm">#}
                               {{ form.date_of_birth }}
@@ -167,7 +170,7 @@
                               {{ form.interview_on.errors }}
                         <label class="col-sm-3 control-label">Interview Date</label>
                         <div class="col-sm-7 controls">
-                          <div class="input-group input-border width-50">
+                          <div class="input-group width-50">
 
                               {{ form.interview_on }}
                           </div>
