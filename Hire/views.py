@@ -206,13 +206,29 @@ class ProcessUpdate(View):
 
     def get(self, request):
         context = {}
-        form = ProcessForm()
+        profile = request.GET.get('profile')
+        form = ProcessForm(initial={'profile_id': profile})
         context['form'] = form
         return render(request, "processform.html", context)
 
     def post(self, request):
         context = {}
         form = ProcessForm(request.POST)
+        if form.is_valid():
+            interview_by = form.cleaned_data['interview_by']
+            interview_on = form.cleaned_data['interview_on']
+            interview_status = form.cleaned_data['interview_status']
+            remark = form.cleaned_data['remark']
+            profile_id = form.cleaned_data['profile_id']
+            profile = Profile.objects.get(id=profile_id)
+            process = Process.objects.create(interview_step="test", interview_status=interview_status,
+                                             interview_on=interview_on,
+                                             profile=profile, feedback=remark)
+            process.save()
+            process.interview_by.add(interview_by)
+            context['record_added'] = True
+            context['success_msg'] = "Updated"
+
         context['form'] = form
         return render(request, "processform.html", context)
 

@@ -17,7 +17,7 @@
 							</button>
 
                             <h4 class="modal-title" id="myModalLabel">
-								Please Enter Your Leave
+								Please Enter Interview Detail
 							</h4>
                         </div>
                         <div class="modal-body min-height-300" id="modal_body">
@@ -40,48 +40,62 @@
 
                 <table class="table table-bordered table-hover mb-0 ansrgreen">
                     <tr class="Lv-ApproveTH ">
-                        <th>Name</th>
-                        <th>Phone Number</th>
-                        <th>Requsition Number</th>
-                        <th>Candidate Status</th>
-                        <th>Last round Attendded</th>
-                        <th>Last round Status</th>
-                        <th>Last round Comment</th>
-                        <th>Last round Date</th>
-                        <th>Actions</th>
+                        <th>Date</th>
+                        <th>Candidate Name</th>
+                        <th>Contact Number</th>
+                        <th>Designation</th>
+                        <th>Specialization</th>
+                        <th>Source</th>
+                        <th>Source Detail</th>
+                        <th>Test</th>
+                        <th>Face to Face</th>
+                        <th>Final Status</th>
                     </tr>
 
-{#                    {%  autopaginate candidatelist 10 %}#}
-                    {% for candidate in candidatelist %}
-                    <tr class="info">
-                    <td>{{candidate.profile.candidate_name}}</td>
-                        <td>{{ candidate.profile.mobile_number }}</td>
-                        <td>{{candidate.profile.requisition_number.requisition_number.requisition_number}} </td>
-                        <td>{{candidate.profile.candidate_status}} </td>
-                         <td>{{candidate.interview_step}} </td>
-                    <td>{{candidate.interview_status}} </td>
-                    <td>{{candidate.feedback}} </td>
-                    <td>{{candidate.interview_on}} </td>
-                    <td><a id="modal-hire" href="#modal-container-hire" role="button" data-toggle="modal"
-                           title="Apply Leave"  class="pull-right btn btn-sm btn-danger btn-ansr-orange">
-                            Update
-                          </a></td>
+                    {% for interviewlist in interviewdetial %}
+                         <tr>
+                    <td>{{interviewlist.0.interview_on}} </td>
+                    <td>{{interviewlist.0.profile.candidate_name}}</td>
+                    <td>{{ interviewlist.0.profile.mobile_number }}</td>
+                    <td>{{interviewlist.0.profile.requisition_number.requisition_number.position.designation}} </td>
+                    <td>{{interviewlist.0.profile.requisition_number.requisition_number.position.specialization}} </td>
+                    <td>{%for k,v in  REFERENCE_SOURCE %} {%if k == interviewlist.0.profile.source %} {{v}} {% endif %}{%endfor%}</td>
+                    <td>{{interviewlist.0.profile.referred_by.first_name}} {{interviewlist.0.profile.referred_by.last_name}} </td>
 
-                        </tr>
+           {% if interviewlist.0.interview_step == 'test' %}
+                    <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.interview_status %} {{v}} {% endif %}{%endfor%}</td>
+           {% elif interviewlist.1.interview_step == 'test' %}
+                    <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.interview_status %} {{v}} {% endif %}{%endfor%}</td>
+           {% else %}
+                   <td bgcolor="#cc0000">None </td>
+           {% endif %}
+           {% if interviewlist.0.interview_step == 'f2f' %}
+                  <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.interview_status %} {{v}} {% endif %}{%endfor%}</td>
+           {% elif interviewlist.1.interview_step == 'f2f' %}
+                  <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.interview_status %} {{v}} {% endif %}{%endfor%}</td>
+           {% else %}
+                  <td ><a id="modal-hire-{{ interviewlist.0.profile.id }}" href="#modal-container-hire" data-toggle="modal" title="Update"  bgcolor="#FF0000">
+                            None</a></td>
+           {% endif %}
+                  <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.profile.candidate_status %} {{v}} {% endif %}{%endfor%}</td>
+                         </tr>
 
 {% endfor %}
 </table>
-                </div>
+</div>
 </div>
 
     <script>
-    $("#modal-container-hire").on('shown.bs.modal', function(){
-
+    $("#modal-container-hire").on('shown.bs.modal', function(e){
+            button=e.relatedTarget;
+            prof=button.id.substring(11);
+        console.log(button);
+        console.log(prof);
   $.ajax(
         {
             type : "GET",
             url : '/hire/processupdate/',
-            data :{} ,
+            data :{"profile":prof} ,
             success : function(data)
             {
                 $("#modal_body").html(data);

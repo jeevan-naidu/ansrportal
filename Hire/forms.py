@@ -107,12 +107,11 @@ class NewMRFForm(autocomplete_light.ModelForm):
 
 
 class ProcessForm(autocomplete_light.ModelForm):
+    profile_id = forms.CharField(widget=forms.HiddenInput())
     interview_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
                                      widget=autocomplete_light.ChoiceWidget('UserAutocompleteUserHireSearch'))
 
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
-    # interview_step = forms.ChoiceField(choices=INTERVIEW_PROCESS)
-    # interview_step.widget.attrs = {'class': 'width-40', 'required': 'true'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
     interview_on.widget.attrs = {'class': 'no-bd, input-sm form-control filter_class', 'required': 'true'}
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
@@ -122,3 +121,4 @@ class ProcessForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = Process
+        fields = ['profile_id', 'interview_by', 'interview_on', 'interview_status', 'remark']
