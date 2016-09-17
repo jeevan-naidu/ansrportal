@@ -14,7 +14,7 @@
 <head>
     {% load static from staticfiles %}
     <meta charset="utf-8" />
-    <title>Portal Dashboard Prototype</title>
+    <title>{% block  siteTitle %}myansrsource{% endblock %}</title>
     <meta name="keywords" content="HTML5 Template, CSS3, All Purpose Admin Template, " />
     <meta name="description" content="Responsive Admin Template for multipurpose use">
     <meta name="author" content="Venmond">
@@ -354,7 +354,7 @@
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
                                         <span class="menu-icon"><i class="fa fa-dashboard"></i></span>
-                                        <span class="menu-text">Timesheet</span>
+                                        <span class="menu-text">myTime</span>
                                         <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                     </a>
                                     <div class="child-menu" data-action="click-target">
@@ -391,11 +391,12 @@
                                     <li>
                                         <a href="javascript:void(0);" data-action="click-trigger">
                                             <span class="menu-icon"><i class="icon-palette"> </i></span>
-                                            <span class="menu-text">Projects</span>
+                                            <span class="menu-text">myProjects</span>
                                             <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                         </a>
                                         <div class="child-menu" data-action="click-target">
                                             <ul>
+                                            {% if user|manage_project %}
                                                     <li>
                                                         <a href="javascript:" data-action="click-trigger" class="open">
                                                             <span class="menu-text">Projects</span>
@@ -413,7 +414,6 @@
                                                 </li>
                                                 {% endif %}
 
-                                            {% if user|manage_project %}
                                                 <li>
                                                     <a href="/myansrsource/project/modify">
                                                         <span class="menu-text">Manage Project/Enter Change Request</span>
@@ -463,7 +463,9 @@
                                                 {% endif %}
                                                             </ul>
                                                         </div>
-                                                    </li>
+                                                    </li><!--  -->
+                                            {% endif %}
+
 
                                                     <li>
                                                         <a href="javascript:" data-action="click-trigger" class="open">
@@ -506,7 +508,6 @@
 
 
 
-                                            {% endif %}
 
                                             </ul>
                                         </div>
@@ -601,7 +602,7 @@
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
                                         <span class="menu-icon"><i class="fa fa-th-list"></i></span>
-                                        <span class="menu-text">HR</span>
+                                        <span class="menu-text">myHR</span>
                                         <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                     </a>
                                     <div class="child-menu" data-action="click-target">
@@ -749,7 +750,7 @@
                     {% endblock %}
                     <!-- menu -->
                 </div>
-                <h4><b>{% block pageTitle %}Dashboard{% endblock %}</b></h4>
+                <h4>{% block pageTitle %}my<b>ansr</b>source{% endblock %}</h4>
             </div>
 
 

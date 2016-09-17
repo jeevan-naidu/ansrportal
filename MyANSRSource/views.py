@@ -1121,7 +1121,7 @@ def getHours(request, wstart, wend, mem, project, label):
 def Dashboard(request):
 
     todays_date = datetime.now().date()
-    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day, date_of_birthO__month=todays_date.month)
+    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day, date_of_birthO__month=todays_date.month, user_id__is_active=True)
     if request.method == 'POST':
         myremainder = MyRemainderForm(request.POST)
         btg = BTGReportForm(request.POST)
