@@ -37,6 +37,7 @@ from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
 from tasks import EmailSendTask, ManagerEmailSendTask
 from django.conf import settings
+from GrievanceAdmin.views import paginator_handler
 
 
 logger = logging.getLogger('MyANSRSource')
@@ -496,6 +497,7 @@ class LeaveListView(ListView):
 
             else:
                 context['leave_list'] = LeaveApplications.objects.filter().order_by("-from_date")
+
             context['users'] = Employee.objects.filter(user__is_active=True).order_by('user__username')
 
         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
@@ -509,6 +511,8 @@ class LeaveListView(ListView):
 
         else:
             raise PermissionDenied
+        context['leave_list_count'] = len(context['leave_list'])
+        #
 
         context['APPLICATION_STATUS'] = APPLICATION_STATUS
         context['LEAVE_TYPES_CHOICES'] = LEAVE_TYPES_CHOICES
@@ -531,6 +535,8 @@ class LeaveListView(ListView):
 
         if 'leave_list' in self.request.session:
             context['leave_list'] = self.request.session['leave_list']
+        context['leave_list_inherit'] = context['leave_list']
+        context['leave_list'] = paginator_handler(self.request, context['leave_list'])
         return context
 
     def post(self, request, *args, **kwargs):
@@ -759,14 +765,15 @@ class LeaveManageView(LeaveListView):
     def get_context_data(self, **kwargs):
 
         context = super(LeaveManageView, self).get_context_data(**kwargs)
-        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
+        if self.request.user.groups.filter(name=settings.LEAVE_ADMIN_GROUP).exists():
             context['all'] = LeaveApplications.objects.all()
-            context['open'] = context['leave_list'].filter(status='open')
+            context['open'] = context['leave_list_inherit'].filter(status='open')
         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
             context['all'] = LeaveApplications.objects.filter(apply_to=self.request.user)
-            context['open'] = context['leave_list'].filter(status='open', apply_to=self.request.user)
-
-
+            context['open'] = context['leave_list_inherit'].filter(status='open', apply_to=self.request.user)
+        context['open_count'] = len(context['open'])
+        context['open'] = paginator_handler(self.request, context['open'])
+        #
         return context
 
     def post(self, request, *args, **kwargs):

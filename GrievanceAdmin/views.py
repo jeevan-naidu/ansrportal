@@ -19,20 +19,18 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 
 
-def paginator_handler(request, grievances_list):
-    # print grievances_list
-    paginator = Paginator(grievances_list, 10)  # Show 5 grievances per page
+def paginator_handler(request, obj_list):
+    paginator = Paginator(obj_list, 10)  # Show 5 grievances per page
     page = request.GET.get('page')
     try:
-        grievances_page = paginator.page(page)
+        obj_page = paginator.page(page)
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
-        grievances_page = paginator.page(1)
+        obj_page = paginator.page(1)
     except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
-            grievances_page = paginator.page(paginator.num_pages)
-    # print grievances_page
-    return grievances_page
+            obj_page = paginator.page(paginator.num_pages)
+    return obj_page
 
 
 class GrievanceAdminListView(ListView):
