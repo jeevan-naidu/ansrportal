@@ -9,13 +9,13 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 
 class ProfileForm(autocomplete_light.ModelForm):
-    candidate_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm',
+    candidate_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm form-control',
                                                                                   'required': '', 'data-error': 'Please enter candidate name'}))
     mobile_number = forms.RegexField(regex=r'^\+?1?\d{9,15}$',
                                    error_message=(
                                        "Phone number must be entered in the format: '+999999999'. "
                                        "Up to 15 digits allowed."),
-                                   widget=forms.TextInput(attrs={'class': 'width-30 input-sm',
+                                   widget=forms.TextInput(attrs={'class': 'width-30 input-sm form-control',
                                                                  'required': 'true','type': 'tel', 'pattern':'^\+?1?\d{9,15}$'}))
 
     email_id = forms.EmailField(widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
@@ -34,11 +34,11 @@ class ProfileForm(autocomplete_light.ModelForm):
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
                                        'placeholder': 'Enter Requisition number'}
-    department = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
+    department = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm form-control',
                                                                               'required': 'true'}))
-    designation = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
+    designation = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm form-control',
                                                                                'required': 'true'}))
-    specialization = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
+    specialization = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm form-control',
                                                                                   'required': 'true'}))
     manager = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
                                                                            'required': 'true'}))

@@ -2,9 +2,19 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block siteTitle %}Hire{% endblock %}
-{% block pageTitle %}Hire{% endblock %}
+{% block siteTitle %}Daily Interview Report{% endblock %}
+{% block pageTitle %}Dashboard{% endblock %}
 {% block content  %}
+
+<link href="/static/css/leave_style.css" rel="stylesheet" type="text/css">
+
+
+<style type="text/css">
+  
+.yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}  
+
+</style>
+
 <!--  Start update interview popup-->
 
             <div class="modal fade" id="modal-container-hire" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
