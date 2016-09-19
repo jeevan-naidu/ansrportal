@@ -10,7 +10,7 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 class ProfileForm(autocomplete_light.ModelForm):
     candidate_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm',
-                                                                                  'required': 'true'}))
+                                                                                  'required': '', 'data-error': 'Please enter candidate name'}))
     mobile_number = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-30 input-sm',
                                                                                  'required': 'true'}))
     email_id = forms.EmailField(widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
@@ -50,7 +50,7 @@ class ProfileForm(autocomplete_light.ModelForm):
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
     interview_status.widget.attrs = {'class': 'width-40', 'required': 'true'}
     remark = forms.CharField(max_length=100)
-    remark.widget.attrs = {'class': 'width-50', 'required': 'true'}
+    remark.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
 
     class Meta:
         model = Profile
