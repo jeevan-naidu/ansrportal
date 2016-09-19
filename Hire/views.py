@@ -194,7 +194,6 @@ def mrfsearch(request):
     context_data['designation'] = mrf_detail[0].position.designation
     context_data['specialization'] = mrf_detail[0].position.specialization
     context_data['manager'] = mrf_detail[0].manager.first_name + " " + mrf_detail[0].manager.last_name
-    context_data['count'] = count[0].count
     response_data['result'] = 'Success'
     response_data['details'] = json.dumps(context_data)
     response_data['message'] = serializers.serialize('json', mrf_detail)
