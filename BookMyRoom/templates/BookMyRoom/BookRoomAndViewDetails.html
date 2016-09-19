@@ -259,6 +259,7 @@
 				$(".CancelBooking").click(function(){
 				    var condition = $( '#release_all').prop( "checked" );
                     if(condition === false) {
+                         cancel_data = { 'cancel_id' : []};
                          cancel_data['cancel_id'].push ($(this).attr('data-value'));
                     }
 
