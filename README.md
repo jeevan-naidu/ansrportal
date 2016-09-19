@@ -2,7 +2,7 @@ ansr-timesheet
 ==============
 
 
-Creating a new deployement VM
+Creating a new deployment VM
 =============================
 For creating a new deployment VM.  First setup uwsgi using the following instructions.
 
@@ -33,3 +33,12 @@ Use this command to install supervisor
 Use only pip to install supervisor and uwsgi
 
 Create a new folder named "log" in {your-project}/supervisor/ folder
+
+Deploy Code 
+-------------
+
+* Deploy django code from git.
+* Create a virtualenv for the project
+* activate the virtualenv
+* pip install -r requirements.txt
+
