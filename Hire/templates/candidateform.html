@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block siteTitle %}Hire{% endblock %}
+{% block siteTitle %}Daily Interview Report{% endblock %}
 {% block pageTitle %}Candidate Profile{% endblock %}
 {% block content  %}
 
@@ -42,6 +42,7 @@ ul{list-style: none;padding-left: 0px;}
                             <div>Requisition<span class="mandatory-field"> *</span></div>
                             <div>
                             {{ form.requisition_number }}
+                          <div class="help-block with-errors"></div> 
 
                         </div>
 
@@ -50,6 +51,7 @@ ul{list-style: none;padding-left: 0px;}
 
                           <div> Department<span class="mandatory-field"> *</span></div>
                            {{ form.department }}
+                          <div class="help-block with-errors"></div> 
 
                        </div>
 
@@ -60,6 +62,7 @@ ul{list-style: none;padding-left: 0px;}
 
                             <div>
                                 {{ form.manager }}
+                          <div class="help-block with-errors"></div> 
 
                             </div>
                        </div>
@@ -76,6 +79,7 @@ ul{list-style: none;padding-left: 0px;}
 
                           <div> Designation<span class="mandatory-field"> *</span></div>
                            {{ form.designation }}
+                          <div class="help-block with-errors"></div> 
 
                        </div>
 
@@ -83,6 +87,7 @@ ul{list-style: none;padding-left: 0px;}
 
                           <div> Specialization<span class="mandatory-field"> *</span></div>
                            {{ form.specialization }}
+                          <div class="help-block with-errors"></div> 
 
                        </div>
 
