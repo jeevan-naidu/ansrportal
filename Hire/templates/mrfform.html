@@ -37,7 +37,7 @@
                         {% csrf_token %}
                       <div class="form-group">
                 <div class="form-group">
-                        <label class="col-sm-3 control-label">Requisition No</label>
+                        <label class="col-sm-3 control-label">Requisition No<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.requisition_number }}
 {#                          <input type="text" placeholder="Requisition no" class="width-50">#}
@@ -45,7 +45,7 @@
                       </div>
 
                         <div class="form-group">
-                        <label class="col-sm-3 control-label">Department</label>
+                        <label class="col-sm-3 control-label">Department<span class="mandatory-field"> *</span></label>
 
                         <div class="col-sm-7 controls">
                             {{ form.department }}
@@ -54,7 +54,7 @@
                       </div>
 
                       <div class="form-group">
-                        <label class="col-sm-3 control-label">Designation</label>
+                        <label class="col-sm-3 control-label">Designation<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.designation }}
 
@@ -63,7 +63,7 @@
 
 
                       <div class="form-group">
-                        <label class="col-sm-3 control-label">Specialization</label>
+                        <label class="col-sm-3 control-label">Specialization<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.specialization }}
 
@@ -71,7 +71,7 @@
                       </div>
 
                         <div class="form-group">
-                        <label class="col-sm-3 control-label">Hiring Manager</label>
+                        <label class="col-sm-3 control-label">Hiring Manager<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
 {#                          <input type="text" placeholder="Name" class="width-50">#}
                             {{ form.raised_by }}
@@ -79,7 +79,7 @@
                       </div>
 
                         <div class="form-group">
-                        <label class="col-sm-3 control-label">Count</label>
+                        <label class="col-sm-3 control-label">Count<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.count }}
 {#                          <input type="text" placeholder="Name" class="width-50">#}
