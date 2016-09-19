@@ -265,3 +265,7 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
 /* Crazy overrides */
 
 legend{border:none !important;}
+
+/* Hire Module */
+
+span.mandatory-field{color: red}

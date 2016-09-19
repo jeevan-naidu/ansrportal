@@ -16,7 +16,7 @@ class ProfileForm(autocomplete_light.ModelForm):
     email_id = forms.EmailField(widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect({'class': '', 'required': 'true'}))
     date_of_birth = forms.DateField(widget=DateTimePicker(options=dateTimeOption),)
-    date_of_birth.widget.attrs = {'class': 'no-bd input-sm form-control filter_class', 'required': 'true'}
+    date_of_birth.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
     source = forms.ChoiceField(choices=REFERENCE_SOURCE)
     source.widget.attrs = {'class': 'width-40', 'required': 'true'}
     refered_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),required=False,
@@ -28,7 +28,7 @@ class ProfileForm(autocomplete_light.ModelForm):
                                         widget=autocomplete_light.ChoiceWidget('CountAutoCompleteRequisitionSearch'))
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
-                                       'placeholder': 'Enter Requsition number'}
+                                       'placeholder': 'Enter Requisition number'}
     department = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
                                                                               'required': 'true'}))
     designation = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
@@ -46,7 +46,7 @@ class ProfileForm(autocomplete_light.ModelForm):
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name',
                                 }
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
-    interview_on.widget.attrs = {'class': 'no-bd, input-sm form-control filter_class', 'required': 'true'}
+    interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
     interview_status.widget.attrs = {'class': 'width-40', 'required': 'true'}
     remark = forms.CharField(max_length=100)
@@ -66,16 +66,16 @@ class MRFForm(autocomplete_light.ModelForm):
                                                     'MRFAutoCompleteRequisitionSearch'))
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
-                                       'placeholder': 'Enter Requsition number'}
+                                       'placeholder': 'Enter Requisition number'}
     department = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
     designation = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
 
     specialization = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
     raised_by = forms.CharField(max_length=50)
 
-    raised_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
+    raised_by.widget.attrs = {'class': 'form-control filter_class input-sm width-50', 'placeholder': 'Enter Manager Name'}
     count = forms.CharField(max_length=10)
-    count.widget.attrs = {'class': 'width-50', 'required': 'true'}
+    count.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
 
     class Meta:
         model = MRF
@@ -99,7 +99,7 @@ class NewMRFForm(autocomplete_light.ModelForm):
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manger Name',
                                }
     count = forms.CharField(max_length=10)
-    count.widget.attrs = {'class': 'width-50', 'required': 'true'}
+    count.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
 
     class Meta:
         model = MRF
@@ -113,7 +113,7 @@ class ProcessForm(autocomplete_light.ModelForm):
 
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
-    interview_on.widget.attrs = {'class': 'no-bd, input-sm form-control filter_class', 'required': 'true'}
+    interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
     interview_status.widget.attrs = {'class': 'width-40', 'required': 'true'}
     remark = forms.CharField(max_length=100)

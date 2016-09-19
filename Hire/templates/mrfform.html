@@ -2,10 +2,18 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block siteTitle %}myansrsource:Hire{% endblock %}
-{% block pageTitle %}Hire{% endblock %}
+{% block siteTitle %}Hire{% endblock %}
+{% block pageTitle %}MRF Details{% endblock %}
 {% block content  %}
-                <div class="vd_content-section clearfix">
+
+
+<style type="text/css">
+  
+.yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}  
+
+</style>
+
+
             <div class="row" id="form-basic">
               <div class="col-md-12">
                 <div class="panel widget">
@@ -16,14 +24,10 @@
                      <div class="panel-body">
 
 
-
-
 <ul class="nav nav-tabs">
-  <li class="active"><a href="/hire/addmrf"  id="mrf">MRF</a></li>
-  <li><a href="/hire/addnewmrf/"  id="newmrf">NEW MRF</a></li>
+  <li class="active"><a href="/hire/addmrf"  id="mrf">Edit MRF</a></li>
+  <li><a href="/hire/addnewmrf/"  id="newmrf">New MRF</a></li>
 </ul>
-
-
 
 
               <div class="tab-pane active" id="tab1">
@@ -33,15 +37,15 @@
                         {% csrf_token %}
                       <div class="form-group">
                 <div class="form-group">
-                        <label class="col-sm-3 control-label">Requsition No</label>
+                        <label class="col-sm-3 control-label">Requisition No<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.requisition_number }}
-{#                          <input type="text" placeholder="Requsition no" class="width-50">#}
-                          <span class="help-inline">Enter requsition name</span> </div>
+{#                          <input type="text" placeholder="Requisition no" class="width-50">#}
+                          <span class="help-inline">Enter requisition number</span> </div>
                       </div>
 
                         <div class="form-group">
-                        <label class="col-sm-3 control-label">Department</label>
+                        <label class="col-sm-3 control-label">Department<span class="mandatory-field"> *</span></label>
 
                         <div class="col-sm-7 controls">
                             {{ form.department }}
@@ -50,7 +54,7 @@
                       </div>
 
                       <div class="form-group">
-                        <label class="col-sm-3 control-label">Designation</label>
+                        <label class="col-sm-3 control-label">Designation<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.designation }}
 
@@ -59,7 +63,7 @@
 
 
                       <div class="form-group">
-                        <label class="col-sm-3 control-label">Specialization</label>
+                        <label class="col-sm-3 control-label">Specialization<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.specialization }}
 
@@ -67,7 +71,7 @@
                       </div>
 
                         <div class="form-group">
-                        <label class="col-sm-3 control-label">Hiring Manager</label>
+                        <label class="col-sm-3 control-label">Hiring Manager<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
 {#                          <input type="text" placeholder="Name" class="width-50">#}
                             {{ form.raised_by }}
@@ -75,7 +79,7 @@
                       </div>
 
                         <div class="form-group">
-                        <label class="col-sm-3 control-label">Count</label>
+                        <label class="col-sm-3 control-label">Count<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.count }}
 {#                          <input type="text" placeholder="Name" class="width-50">#}
@@ -117,7 +121,7 @@
               <!-- col-md-12 -->
             </div>
             <!-- row -->
-</div>
+
 
     <script>
 

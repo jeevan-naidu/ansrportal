@@ -514,47 +514,6 @@
                                     </li>
                                 {% endif %}
 
-                                <li>
-                                    <a href="javascript:void(0);" data-action="click-trigger">
-                                        <span class="menu-icon entypo-icon"><i class="icon-bookmark"> </i></span>
-                                        <span class="menu-text">FB360</span>
-                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
-                                    </a>
-                                    <div class="child-menu" data-action="click-target">
-                                        <ul>
-                                            <li>
-                                                <a href="/fb360/choose-peer">
-                                                    <span class="menu-text">Choose Peer(s)</span>
-                                                </a>
-                                            </li>
-
-                                            {% if isManager %}
-                                                <li>
-                                                    <a href="/fb360/choose-reportee">
-                                                        <span class="menu-text">Choose Reportee(s)</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-
-                                            <li>
-                                                <a href="/fb360/choose-additional-manager">
-                                                    <span class="menu-text">Choose Additional Manager(s)</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="/fb360/request-action">
-                                                    <span class="menu-text">Manage Request(s)</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="/fb360/give-feedback">
-                                                    <span class="menu-text">Feedback</span>
-                                                </a>
-                                            </li>
-
-                                        </ul>
-                                    </div>
-                                </li>
 
                                 {% if user|manage_project or user|create_project %}
                                     <li>
@@ -670,7 +629,9 @@
 
                                         <li>
                                                 <a href="javascript:" data-action="click-trigger" class="open">
+
                                                     <span class="menu-text">Daily Interview Report</span>
+
                                                     <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                                 </a>
                                                 <div class="child-menu" data-action="click-target" style="display: block;">
@@ -692,11 +653,61 @@
                                                                 </a>
                                                             </li>
 
+                                                        <li>
+                                                                <a href="/hire/addmrf">
+                                                                    <span class="menu-text">MRF Details</span>
+                                                                </a>
+                                                            </li>
 
 
                                                     </ul>
                                                 </div>
                                             </li>
+
+                                        <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">FB360</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target">
+                                                    <ul>
+                                                        <li>
+                                                            <a href="/fb360/choose-peer">
+                                                                <span class="menu-text">Choose Peer(s)</span>
+                                                            </a>
+                                                        </li>
+
+                                                        {% if isManager %}
+                                                            <li>
+                                                                <a href="/fb360/choose-reportee">
+                                                                    <span class="menu-text">Choose Reportee(s)</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+
+                                                        <li>
+                                                            <a href="/fb360/choose-additional-manager">
+                                                                <span class="menu-text">Choose Additional Manager(s)</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="/fb360/request-action">
+                                                                <span class="menu-text">Manage Request(s)</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="/fb360/give-feedback">
+                                                                <span class="menu-text">Feedback</span>
+                                                            </a>
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
+                                            </li>
+
+
+
+
 
                                         </ul>
                                     </div>

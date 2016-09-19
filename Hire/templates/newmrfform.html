@@ -2,8 +2,8 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block siteTitle %}myansrsource:Hire{% endblock %}
-{% block pageTitle %}Hire{% endblock %}
+{% block siteTitle %}Hire{% endblock %}
+{% block pageTitle %}New MRF Details{% endblock %}
 {% block content  %}
                 <div class="vd_content-section clearfix">
             <div class="row" id="form-basic">
@@ -17,8 +17,8 @@
 
 
 <ul class="nav nav-tabs">
-  <li ><a href="/hire/addmrf"  id="mrf">MRF</a></li>
-  <li class="active"><a href="/hire/addnewmrf/"  id="newmrf">NEW MRF</a></li>
+  <li ><a href="/hire/addmrf"  id="mrf">Edit MRF</a></li>
+  <li class="active"><a href="/hire/addnewmrf/"  id="newmrf">New MRF</a></li>
 </ul>
 
 
@@ -30,16 +30,16 @@
                       <div class="form-group">
                 <div class="form-group">
                     {{ form.requisition_number.errors }}
-                        <label class="col-sm-3 control-label">Requsition No</label>
+                        <label class="col-sm-3 control-label">Requisition No<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.requisition_number }}
-{#                          <input type="text" placeholder="Requsition no" class="width-50">#}
-                          <span class="help-inline">Enter requsition name</span> </div>
+{#                          <input type="text" placeholder="Requisition no" class="width-50">#}
+                          <span class="help-inline">Enter requisition Number</span> </div>
                       </div>
 
                         <div class="form-group">
                             {{ form.department.errors }}
-                        <label class="col-sm-3 control-label">Department</label>
+                        <label class="col-sm-3 control-label">Department<span class="mandatory-field"> *</span></label>
 
                         <div class="col-sm-7 controls">
                             {{ form.department }}
@@ -49,7 +49,7 @@
 
                       <div class="form-group">
                           {{ form.designation.errors }}
-                        <label class="col-sm-3 control-label">Designation</label>
+                        <label class="col-sm-3 control-label">Designation<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.designation }}
 
@@ -59,7 +59,7 @@
 
                       <div class="form-group">
 
-                        <label class="col-sm-3 control-label">Specialization</label>
+                        <label class="col-sm-3 control-label">Specialization<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.specialization }}
 
@@ -68,7 +68,7 @@
 
                         <div class="form-group">
 
-                        <label class="col-sm-3 control-label">Hiring Manager</label>
+                        <label class="col-sm-3 control-label">Hiring Manager<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
 {#                          <input type="text" placeholder="Name" class="width-50">#}
                             {{ form.manager }}
@@ -77,7 +77,7 @@
 
                         <div class="form-group">
                             {{ form.count.errors }}
-                        <label class="col-sm-3 control-label">Count</label>
+                        <label class="col-sm-3 control-label">Count<span class="mandatory-field"> *</span></label>
                         <div class="col-sm-7 controls">
                             {{ form.count }}
 {#                          <input type="text" placeholder="Name" class="width-50">#}
