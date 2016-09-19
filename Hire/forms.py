@@ -55,7 +55,7 @@ class ProfileForm(autocomplete_light.ModelForm):
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
     interview_status.widget.attrs = {'class': 'width-40', 'required': 'true'}
     remark = forms.CharField(max_length=100)
-    remark.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
+    remark.widget.attrs = {'class': 'width-50 input-sm', 'required': 'false'}
 
     class Meta:
         model = Profile
