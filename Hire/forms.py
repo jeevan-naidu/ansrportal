@@ -11,8 +11,13 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 class ProfileForm(autocomplete_light.ModelForm):
     candidate_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm',
                                                                                   'required': '', 'data-error': 'Please enter candidate name'}))
-    mobile_number = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-30 input-sm',
-                                                                                 'required': 'true'}))
+    mobile_number = forms.RegexField(regex=r'^\+?1?\d{9,15}$',
+                                   error_message=(
+                                       "Phone number must be entered in the format: '+999999999'. "
+                                       "Up to 15 digits allowed."),
+                                   widget=forms.TextInput(attrs={'class': 'width-30 input-sm',
+                                                                 'required': 'true','type': 'tel', 'pattern':'^\+?1?\d{9,15}$'}))
+
     email_id = forms.EmailField(widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect({'class': '', 'required': 'true'}))
     date_of_birth = forms.DateField(widget=DateTimePicker(options=dateTimeOption),)
