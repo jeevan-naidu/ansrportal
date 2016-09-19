@@ -183,11 +183,14 @@ def mrfsearch(request):
     context_data = {}
     response_data = {}
     requisition_no = request.GET.get('requsitionno')
+    user_id = request.user.id
     mrf_detail = MRF.objects.filter(requisition_number=requisition_no)
+    count = Count.objects.filter(recruiter=user_id, requisition_number=mrf_detail[0].id)
     context_data['department'] = mrf_detail[0].position.department
     context_data['designation'] = mrf_detail[0].position.designation
     context_data['specialization'] = mrf_detail[0].position.specialization
     context_data['manager'] = mrf_detail[0].manager.first_name + " " + mrf_detail[0].manager.last_name
+    context_data['count'] = count[0].count
     response_data['result'] = 'Success'
     response_data['details'] = json.dumps(context_data)
     response_data['message'] = serializers.serialize('json', mrf_detail)

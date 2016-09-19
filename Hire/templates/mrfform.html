@@ -140,7 +140,7 @@
                            var designation = json['designation']
                            var hiringmanager = json['manager']
                            var specialization = json['specialization']
-{#                           document.getElementById("id_requisition_number-autocomplete").value = requobject;#}
+                           var count = json['count']
                            document.getElementById("id_department").value = department;
                            document.getElementById("id_department").readOnly = true;
                            document.getElementById("id_designation").value = designation;
@@ -149,6 +149,7 @@
                            document.getElementById("id_specialization").readOnly = true;
                            document.getElementById("id_raised_by").value = hiringmanager;
                            document.getElementById("id_raised_by").readOnly = true;
+                           document.getElementById("id_count").value = count;
 
                        }
                    }
