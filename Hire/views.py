@@ -186,6 +186,10 @@ def mrfsearch(request):
     user_id = request.user.id
     mrf_detail = MRF.objects.filter(requisition_number=requisition_no)
     count = Count.objects.filter(recruiter=user_id, requisition_number=mrf_detail[0].id)
+    if count:
+        context_data['count'] = count[0].count
+    else:
+        context_data['count'] = 0
     context_data['department'] = mrf_detail[0].position.department
     context_data['designation'] = mrf_detail[0].position.designation
     context_data['specialization'] = mrf_detail[0].position.specialization

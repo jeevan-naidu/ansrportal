@@ -79,7 +79,7 @@ class Process(models.Model):
     interview_by = models.ManyToManyField(User, verbose_name='Interviewers')
     interview_on = models.DateField()
     profile = models.ForeignKey(Profile, verbose_name='Candidate Name', related_name='candidate')
-    feedback = models.TextField(verbose_name='Feedback')
+    feedback = models.TextField(verbose_name='Feedback', null=True, blank=True)
     created_on = models.DateField(auto_now_add=True)
     modified_on = models.DateField(auto_now=True)
 
