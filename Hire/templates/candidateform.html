@@ -3,15 +3,14 @@
 {% load fontawesome %}
 {% load static from staticfiles %}
 {% block siteTitle %}Hire{% endblock %}
-{% block pageTitle %}Hire{% endblock %}
+{% block pageTitle %}Candidate Profile{% endblock %}
 {% block content  %}
 
-<div class="vd_content-section clearfix">
             <div class="row" id="form-basic">
               <div class="col-md-12">
                 <div class="panel widget">
                   <div class="panel-heading vd_bg-grey">
-                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Candidate Profile </h3>
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Candidate Details </h3>
                   </div>
 
 
@@ -22,6 +21,8 @@
     padding: 5px 8px;
 }
 ul{list-style: none;padding-left: 0px;}
+
+.yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}
 
 </style>
 
@@ -115,7 +116,7 @@ ul{list-style: none;padding-left: 0px;}
                         <label class="col-sm-3 control-label">Email</label>
                         <div class="col-sm-7 controls">
                             {{ form.email_id }}
-                          <span class="help-inline">Enter enter email</span> </div>
+                          <span class="help-inline">Enter email</span> </div>
                       </div>
                       <div class="form-group">
                           {{ form.gender.errors }}
@@ -242,8 +243,6 @@ ul{list-style: none;padding-left: 0px;}
             </div>
             <!-- row -->
 
-          </div>
-          <!-- .vd_content-section -->
 
 
     <script>

@@ -28,7 +28,7 @@ class ProfileForm(autocomplete_light.ModelForm):
                                         widget=autocomplete_light.ChoiceWidget('CountAutoCompleteRequisitionSearch'))
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
-                                       'placeholder': 'Enter Requsition number'}
+                                       'placeholder': 'Enter Requisition number'}
     department = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
                                                                               'required': 'true'}))
     designation = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-100 input-sm',
@@ -66,7 +66,7 @@ class MRFForm(autocomplete_light.ModelForm):
                                                     'MRFAutoCompleteRequisitionSearch'))
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
-                                       'placeholder': 'Enter Requsition number'}
+                                       'placeholder': 'Enter Requisition number'}
     department = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
     designation = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
 
@@ -75,7 +75,7 @@ class MRFForm(autocomplete_light.ModelForm):
 
     raised_by.widget.attrs = {'class': 'form-control filter_class input-sm width-50', 'placeholder': 'Enter Manager Name'}
     count = forms.CharField(max_length=10)
-    count.widget.attrs = {'class': 'width-50', 'required': 'true'}
+    count.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
 
     class Meta:
         model = MRF
@@ -99,7 +99,7 @@ class NewMRFForm(autocomplete_light.ModelForm):
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manger Name',
                                }
     count = forms.CharField(max_length=10)
-    count.widget.attrs = {'class': 'width-50', 'required': 'true'}
+    count.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
 
     class Meta:
         model = MRF
