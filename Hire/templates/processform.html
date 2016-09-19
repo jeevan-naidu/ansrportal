@@ -5,6 +5,14 @@
 <h4> Success</h4>
 {% else %}
 
+<style type="text/css">
+  
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}  
+
+</style>
+
  <div id="ajax_loader_apply_leave" class="ajax_bck"><div class="ajax_load_image"></div></div>
 
                     <form id="modal-container-hire" class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
@@ -73,9 +81,10 @@
                 </div>
     </div>
 </div>
-{#    <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />#}
-{#<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>#}
-{#<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>#}
+
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
 <script>
      function ShowAjaxLoader(element, width, height){
       element.show();
@@ -139,5 +148,13 @@
 
 						 return false;
 					 });
+    </script>
+
+
+    <script type="text/javascript">
+      
+      $("#id_interview_on_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+
+
     </script>
 {% endif %}
