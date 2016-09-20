@@ -240,9 +240,11 @@ class ProcessUpdate(View):
             process.interview_by.add(interview_by)
             context['record_added'] = True
             context['success_msg'] = "Updated"
+            return JsonResponse(context)
 
         context['form'] = form
         return render(request, "processform.html", context)
+
 
 def uniquevalidation(mobileno):
     candidate = Profile.objects.filter(mobile_number=mobileno)

@@ -79,8 +79,8 @@ class MRFForm(autocomplete_light.ModelForm):
     raised_by = forms.CharField(max_length=50)
 
     raised_by.widget.attrs = {'class': 'form-control filter_class input-sm width-50', 'placeholder': 'Enter Manager Name'}
-    count = forms.CharField(max_length=10)
-    count.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
+    count = forms.CharField(max_length=10, widget=forms.TextInput(
+        attrs={'class': 'width-50 input-sm', 'required': 'true','type':'number','min':'0'}))
 
     class Meta:
         model = MRF
@@ -103,8 +103,8 @@ class NewMRFForm(autocomplete_light.ModelForm):
 
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manger Name',
                                }
-    count = forms.CharField(max_length=10)
-    count.widget.attrs = {'class': 'width-50 input-sm', 'required': 'true'}
+    count = forms.CharField(max_length=10, widget=forms.TextInput(
+        attrs={'class': 'width-50 input-sm', 'required': 'true', 'type': 'number', 'min':'0'}))
 
     class Meta:
         model = MRF
@@ -121,8 +121,8 @@ class ProcessForm(autocomplete_light.ModelForm):
     interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
     interview_status.widget.attrs = {'class': 'width-40', 'required': 'true'}
-    remark = forms.CharField(max_length=100)
-    remark.widget.attrs = {'class': 'width-50', 'required': 'true'}
+    remark = forms.CharField(max_length=100, required=False)
+    remark.widget.attrs = {'class': 'width-50 input-sm'}
 
     class Meta:
         model = Process

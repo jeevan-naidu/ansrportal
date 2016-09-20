@@ -121,7 +121,6 @@
 									type: 'post',
                                      data: formData,
 									success: function (data) {
-
 										HideAjaxLoader($('#ajax_loader_apply_leave'));
                                         if (data.record_added) {
                                             swal("Done!", data.success_msg, "success");
