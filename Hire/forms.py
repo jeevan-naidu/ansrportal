@@ -18,7 +18,7 @@ class ProfileForm(autocomplete_light.ModelForm):
                                    widget=forms.TextInput(attrs={'class': 'width-30 input-sm form-control',
                                                                  'required': 'true','type': 'tel', 'pattern':'^\+?1?\d{9,15}$'}))
 
-    email_id = forms.EmailField(widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
+    email_id = forms.EmailField(widget=forms.TextInput(attrs={'class': 'width-50 input-sm', 'type':'email'}))
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect({'class': '', 'required': 'true'}))
     date_of_birth = forms.DateField(widget=DateTimePicker(options=dateTimeOption),)
     date_of_birth.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
