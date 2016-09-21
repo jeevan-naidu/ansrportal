@@ -40,12 +40,6 @@ def IsMilestoneReportsAdmin(user):
     return settings.MILESTONE_REPORTS_ADMIN_GROUP_NAME in UserGroupsList
 
 
-@register.filter('IsSalesforceAdmin')
-def IsSalesforceAdmin(user):
-    UserGroupsList = user.groups.all().values_list('name', flat=True)
-    return settings.SALESFORCE_ADMIN_GROUP_NAME in UserGroupsList
-
-
 @register.filter('IsActiveShortAttendance')
 def IsActiveShortAttendance(value):
     return settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE

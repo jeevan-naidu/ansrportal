@@ -1,9 +1,11 @@
 {% extends 'master.html' %}
+{% load sales_permissions %}
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
 {% load grievances_template_tags %}
 {% block ansrMenu %}
+
  <li><a href="/myansrsource/dashboard">
     {% fontawesome_icon 'university' large=True %}
     Dashboard
@@ -22,7 +24,6 @@
 {% endblock %}
 
 {% block content  %}
-
 <!--Start modal-->
 
 
@@ -68,7 +69,7 @@
 <h2 class="text-center hidden">Salesforce</h2>
 
 
-
+{% if request.user|IsSalesforceAdmin %}
 
 <div class="row">
 	<div class="col-md-2"></div>
@@ -105,7 +106,7 @@
 	<div class="col-md-2"></div>
 </div>
 
-
+{% endif %}
 
 <div class="panel clearfix">
 <div class="panel-body">
