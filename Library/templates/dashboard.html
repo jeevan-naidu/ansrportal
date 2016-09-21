@@ -7,6 +7,12 @@
 {% block content  %}
 
 <link href="/static/css/leave_style.css" rel="stylesheet" type="text/css">
+<link href="/static/css/library.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+
+    input[type="radio"]{display: inline-block}
+
+    </style>
 
      <div class="panel"><!-- row -->
             <div class="panel-body">
@@ -16,7 +22,29 @@
        {% if is_admin %}
   <li data-toggle="tab"  data-target="#c"  ><a href="#">ADMIN</a></li>
        {% endif %}
+
+   <div class="pull-right col-sm-6">
+{#       <form class="search" method="post" action="index.html" >#}
+           <div class="search">
+		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Book Title" />
+		 <ul class="results dropdown-menu" >
+{#			 <li><a href="index.html">Search Result #1<br /><span>Description...</span></a></li>#}
+{#			 <li><a href="index.html">Search Result #2<br /><span>Description...</span></a></li>#}
+{#	 		<li><a href="index.html">Search Result #3<br /><span>Description...</span></a></li>#}
+{#         	<li><a href="index.html">Search Result #4</a></li>#}
+		 </ul>
+               </div>
+{#	 </form>#}
+
+{#       <input type="text" id="book-search" class="form-inline input-sm width-50" placeholder="Search by Book Title">#}
+
+       <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" checked>Book Title</label>
+       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author">Author</label>
+
+   </div>
+
 </ul>
+
 
  <div class="tab-content">
                               <div class="tab-pane active" id="a">
@@ -113,7 +141,6 @@
 <script>
     $(".lend-book").click(function(){
         bookid= $(this)[0].id;
-        console.log(bookid)
         $.ajax({
         url:'/library/bookrent/',
         data:{'bookid':bookid},
@@ -134,7 +161,6 @@
 
 $(".action-book").click(function(){
         bookid= $(this)[0].id;
-        console.log(bookid)
         $.ajax({
         url:'/library/adminaction/',
         data:{'bookid':bookid},
@@ -153,7 +179,6 @@ $(".action-book").click(function(){
     });
 $(".return-book").click(function(){
         bookid= $(this)[0].id;
-        console.log(bookid)
         $.ajax({
         url:'/library/bookreturn/',
         data:{'bookid':bookid},
@@ -171,5 +196,45 @@ $(".return-book").click(function(){
 
         });
     });
+
+$('input:radio[name="search-category"]').change(function(){
+    var text = $(this).val();
+    var search = "Search by "+text;
+    document.getElementById('book-search').placeholder= search;
+});
+
+$('#book-search').on('input', function(e){
+    var searchtext = $(this).val();
+    var inpt = $('input:radio[name="search-category"]:checked');
+    var category = inpt.val();
+    $.ajax({
+        url:'/library/booksearch',
+        type:'GET',
+        data:{'searchtext':searchtext, 'category':category},
+        success: function(data){
+            bookscount = Object.keys(data).length
+            $(".results").empty()
+            for(var i=0; i<bookscount; i++) {
+                d1 = data[i]
+                bookdetail = data[i].split(",")
+
+                $(".results").append('<li style="display:block"><a onclick="loadbook('+bookdetail[0]+')">'+bookdetail[1]+'<br/> by<span>'+bookdetail[2]+'</span></a></li>')
+
+            }
+        }
+
+    });
+});
+
+function loadbook(id){
+    console.log(id)
+}
+$(document).click(function(e){
+    var $clicked = $(e.target);
+    if($clicked.tagName == 'A' && $clicked.closest('#suggestionDivId').length>0)
+        $(".searchbox").val($(this).html());
+
+})
+
 </script>
 {% endblock %}
