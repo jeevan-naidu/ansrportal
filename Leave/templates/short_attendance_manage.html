@@ -46,10 +46,10 @@
 
         <!--  Start Leave details popup-->
 
-                <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal fade details-modal" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header vd_bg-blue vd_white">
 
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 								x
@@ -276,14 +276,12 @@
                 <div class="modal fade" id="test-modal-{{leave.id}}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header vd_bg-blue vd_white">
 
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 								x
 							</button>
-                                <h4 class="modal-title text-center" id="myModalLabel--">
-								<b> Remarks</b>
-							</h4>
+                                <h4 class="modal-title" id="myModalLabel--">Remarks</h4>
                             </div>
                             <div class="modal-body"><!-- Content goes here -->
 
@@ -420,7 +418,7 @@
         <!--});-->
         jQuery('.list_view').click(function(){
             var GrDetails = $(this).siblings(".GrDetails").html();
-            jQuery(".modal-body").html(GrDetails);
+            jQuery(".details-modal .modal-body").html(GrDetails);
         });
          jQuery('.remark').click(function(e){
             var class_name = this.id.split('_');
