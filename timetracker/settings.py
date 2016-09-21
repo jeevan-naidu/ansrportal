@@ -332,6 +332,7 @@ MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
 GRIEVANCES_ADMIN_EMAIL = "sanjay.kunnath@ansrsource.com"
+BOOKING_ROOM_ADMIN = "BookingRoomAdmin"
 # LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
