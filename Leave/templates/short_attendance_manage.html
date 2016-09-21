@@ -46,7 +46,7 @@
 
         <!--  Start Leave details popup-->
 
-                <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal fade details-modal" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header vd_bg-blue vd_white">
@@ -418,7 +418,7 @@
         <!--});-->
         jQuery('.list_view').click(function(){
             var GrDetails = $(this).siblings(".GrDetails").html();
-            jQuery(".modal-body").html(GrDetails);
+            jQuery(".details-modal .modal-body").html(GrDetails);
         });
          jQuery('.remark').click(function(e){
             var class_name = this.id.split('_');
