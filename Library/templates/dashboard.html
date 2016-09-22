@@ -1,20 +1,4 @@
-{% extends 'master.html' %}
-{% load bootstrap3 %}
-{% load fontawesome %}
-{% load static from staticfiles %}
-{% block siteTitle %}Lend A Book{% endblock %}
-{% block pageTitle %}Library{% endblock %}
-{% block content  %}
-
-<link href="/static/css/leave_style.css" rel="stylesheet" type="text/css">
-<link href="/static/css/library.css" rel="stylesheet" type="text/css">
-    <style type="text/css">
-
-    input[type="radio"]{display: inline-block}
-
-    </style>
-
-     <div class="panel"><!-- row -->
+<!-- row -->
             <div class="panel-body">
    <ul class="nav nav-tabs">
  <li data-toggle="tab"  data-target="#a" class="active"><a href="#">Avaliable Books</a></li>
@@ -24,23 +8,19 @@
        {% endif %}
 
    <div class="pull-right col-sm-6">
-{#       <form class="search" method="post" action="index.html" >#}
            <div class="search">
-		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Book Title" />
+		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Book Title" value="{{ query }}"/>
 		 <ul class="results dropdown-menu" >
-{#			 <li><a href="index.html">Search Result #1<br /><span>Description...</span></a></li>#}
-{#			 <li><a href="index.html">Search Result #2<br /><span>Description...</span></a></li>#}
-{#	 		<li><a href="index.html">Search Result #3<br /><span>Description...</span></a></li>#}
-{#         	<li><a href="index.html">Search Result #4</a></li>#}
 		 </ul>
                </div>
-{#	 </form>#}
 
-{#       <input type="text" id="book-search" class="form-inline input-sm width-50" placeholder="Search by Book Title">#}
-
-       <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" checked>Book Title</label>
-       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author">Author</label>
-
+        {% if category == 'Author'  %}
+       <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" >Book Title</label>
+       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" checked>Author</label>
+        {% else %}
+            <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" checked>Book Title</label>
+       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" >Author</label>
+       {% endif %}
    </div>
 
 </ul>
@@ -137,8 +117,24 @@
      </div>
 
 </div>
-</div>
+
 <script>
+    function loadbybookname(value){
+         var searchtext = $('#book-search').val();
+        var inpt = $('input:radio[name="search-category"]:checked');
+        var category = inpt.val();
+        $.ajax({
+            url:'/library/booksearchbyname',
+            type:'GET',
+            data:{'bookid':value,'searchtext':searchtext, 'category':category},
+            success: function(data){
+                 $(".panel").empty();
+                $(".panel").append(data);
+        }
+
+    });
+    }
+
     $(".lend-book").click(function(){
         bookid= $(this)[0].id;
         $.ajax({
@@ -217,8 +213,8 @@ $('#book-search').on('input', function(e){
             for(var i=0; i<bookscount; i++) {
                 d1 = data[i]
                 bookdetail = data[i].split(",")
+                    $(".results").append('<li><a onclick=loadbybookname('+bookdetail[0]+')>'+bookdetail[1]+'<br /><span>by '+bookdetail[2]+'</span></a></li>')
 
-                $(".results").append('<li style="display:block"><a onclick="loadbook('+bookdetail[0]+')">'+bookdetail[1]+'<br/> by<span>'+bookdetail[2]+'</span></a></li>')
 
             }
         }
@@ -226,15 +222,26 @@ $('#book-search').on('input', function(e){
     });
 });
 
-function loadbook(id){
-    console.log(id)
-}
-$(document).click(function(e){
-    var $clicked = $(e.target);
-    if($clicked.tagName == 'A' && $clicked.closest('#suggestionDivId').length>0)
-        $(".searchbox").val($(this).html());
 
-})
 
+ $('#book-search').on('keypress', function (e) {
+
+         if(e.which === 13){
+
+            var searchtext = $(this).val();
+        var inpt = $('input:radio[name="search-category"]:checked');
+        var category = inpt.val();
+
+        $.ajax({
+            url:'/library/booksearchpage',
+            type:'GET',
+            data:{'searchtext':searchtext, 'category':category},
+            success: function(data){
+                 $(".panel").empty();
+                $(".panel").append(data);
+        }
+
+    });
+         }
+   });
 </script>
-{% endblock %}
