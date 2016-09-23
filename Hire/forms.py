@@ -1,13 +1,13 @@
 from django import forms
 from django.contrib.auth.models import User
-from models import Profile, Count, RESULT_STATUS, GENDER_CHOICES, REFERENCE_SOURCE, Position, INTERVIEW_PROCESS, MRF, Process
+from models import Profile, Count, GENDER_CHOICES, REFERENCE_SOURCE, Position, MRF, Process,INTERVIEW_PROCESS
 from employee.models import Employee
 from bootstrap3_datetime.widgets import DateTimePicker
 import autocomplete_light
 autocomplete_light.autodiscover()
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
-
+RESULT_STATUS = (('rejected', 'Rejected'), ('selected', 'Selected'))
 class ProfileForm(autocomplete_light.ModelForm):
     candidate_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm form-control',
                                                                                   'required': '', 'data-error': 'Please enter candidate name'}))
@@ -119,7 +119,7 @@ class ProcessForm(autocomplete_light.ModelForm):
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
     interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
-    interview_status = forms.ChoiceField(choices=RESULT_STATUS)
+    interview_status = forms.ChoiceField(choices=INTERVIEW_PROCESS)
     interview_status.widget.attrs = {'class': 'width-40', 'required': 'true'}
     remark = forms.CharField(max_length=100, required=False)
     remark.widget.attrs = {'class': 'width-50 input-sm'}
