@@ -75,7 +75,7 @@ class ProjectAdmin(admin.ModelAdmin):
         qs = super(ProjectAdmin, self).get_queryset(request)
         # or request.user.has_perm('MyANSRSource.view_all_projects'):
         if request.user.is_superuser:
-            return qs.filter(closed=False)
+            return qs.filter()
         else:
             return qs.filter(closed=False, projectManager=request.user)
     search_fields = (
@@ -104,6 +104,9 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class projectTypeAdmin(admin.ModelAdmin):
     list_display = ('code', 'description',)
+    def get_queryset(self, request):
+        qs = super(projectTypeAdmin, self).get_queryset(request)
+        return qs.filter(active=True)
 
 
 class TimeSheetEntryAdmin(admin.ModelAdmin):
