@@ -882,6 +882,8 @@ def getProjectData(request, startDate, endDate, projects, start, end):
                                      endDate, start, end,
                                      eachProject, 'Idle')[1]
             data['ptd'] = data['billed'] + data['bPTM'] + data['idle'] + data['iPTM']
+            data['status'] = eachProject.closed
+            data['sfid'] = eachProject.salesForceNumber
             report.append(data)
     return report
 

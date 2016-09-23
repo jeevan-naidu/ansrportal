@@ -75,7 +75,7 @@ class ProjectAdmin(admin.ModelAdmin):
         qs = super(ProjectAdmin, self).get_queryset(request)
         # or request.user.has_perm('MyANSRSource.view_all_projects'):
         if request.user.is_superuser:
-            return qs
+            return qs.filter(closed=False)
         else:
             return qs.filter(closed=False, projectManager=request.user)
     search_fields = (
@@ -138,6 +138,10 @@ class TaskAdmin(admin.ModelAdmin):
     filter_fields = ('projectType',)
     ordering = ['projectType', 'name', ]
     search_fields = ['name', ]
+    def get_queryset(self, request):
+        qs = super(TaskAdmin, self).get_queryset(request)
+        return qs.filter(active=True)
+
 
 
 class ProjectTeamMemberAdmin(admin.ModelAdmin):
