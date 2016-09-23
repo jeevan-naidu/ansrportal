@@ -43,7 +43,7 @@
 
 
     <!--  End update interview pop-->
-
+{% load pagination_tags %}
         <div class="panel"><!-- row -->
             <div class="panel-body">
 
@@ -63,6 +63,7 @@
                         <th>Recruiter</th>
                         {% endif %}
                     </tr>
+                 {%  autopaginate interviewdetial 10 %}
 
                     {% for interviewlist in interviewdetial %}
                          <tr>
@@ -104,6 +105,7 @@
 </table>
 </div>
 </div>
+<div class="text-center">{% paginate %} </div>
 
     <script>
     $("#modal-container-hire").on('shown.bs.modal', function(e){
