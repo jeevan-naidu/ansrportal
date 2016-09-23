@@ -42,7 +42,7 @@
                         <td>{{book.author.name}} {{book.author.surname}}</td>
                         <td>{{book.publisher.name}}</td>
                         <td>
-                            {% if book.status == 'avaliable' %}
+                            {% if book.status == 'available' %}
                                 <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.id}}">Apply</button>
                             {% else %}
                             <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>
@@ -50,7 +50,24 @@
                         </td>
                         </tr>
                     {% endfor %}
-
+                    {% for book in bookshelvesordered %}
+                    <tr>
+                        <td>{{book.book.title}}</td>
+                        <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
+                        <td>{{book.book.publisher.name}}</td>
+                        <td>
+                            {% if book.book.status == 'available' %}
+                                <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.book.id}}">Apply</button>
+                            {% else %}
+                            <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>
+                            <div class="booked-by">
+                        <h4>Loaned By</h4>
+                        <p>dd</p>
+                    </div>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endfor %}
 
 </table>
                                   </div>
@@ -61,6 +78,8 @@
                         <th>Book Title</th>
                         <th>Author</th>
                         <th>Publisher</th>
+                        <th>Booked Date</th>
+                        <th>Return Date</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -69,6 +88,8 @@
                         <td>{{book.book.title}}</td>
                         <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
                         <td>{{book.book.publisher.name}}</td>
+                        <td>{{book.lend_from}}</td>
+                        <td>{{book.lend_to}}</td>
                     <td>{{book.status}}</td>
                     <td>
                             {% if book.status == 'approved' %}
@@ -92,6 +113,7 @@
                         <th>Book Title</th>
                         <th>Author</th>
                         <th>Publisher</th>
+                        <th>Booked Date</th>
                         <th>Action</th>
                     </tr>
                     {% for book in orderedbook %}
@@ -100,6 +122,8 @@
                         <td>{{book.book.title}}</td>
                         <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
                         <td>{{book.book.publisher.name}}</td>
+                        <td>{{book.lend_from}}</td>
+
                     <td>
 
                                 <button type="button" class="btn btn-primary btn-sm action-book" id="accept-{{book.id}}">Accept</button>

@@ -7,16 +7,6 @@ from django.http import JsonResponse
 # Create your views here.
 def dashboard(request):
     context = {}
-    # userid = request.user.id
-    # bookshelves = Book.objects.all()
-    # lendbook = BookApplication.objects.filter(lend_by=userid)
-    # context['bookshelves'] = bookshelves
-    # context['lendbook'] = lendbook
-    # if request.user.groups.filter(name='LibraryAdmin'):
-    #     context['is_admin'] = True
-    #     context['orderedbook'] = BookApplication.objects.filter(status='applied')
-    # else:
-    #     context['is_admin'] = False
     return render(request, 'librarymaster.html', context)
 
 
@@ -28,7 +18,7 @@ def bookrent(request):
     today = date.today()
     lendto = today + timedelta(days = book.lend_period.days_amount)
     BookApplication(book=book, lend_by=user,lend_from=today, lend_to=lendto, status='applied', status_action_by=user).save()
-    book.status = 'unavaliable'
+    book.status = 'unavailable'
     book.save()
     context['is_added'] = True
     context['success_msg'] = 'your request raised for admin approval'
@@ -53,7 +43,7 @@ def adminaction(request):
         bookapplication.status_action_by = user
         context['action'] = "rejected"
         book = bookapplication.book
-        book.status = "avaliable"
+        book.status = "available"
         book.save()
         context['is_added'] = True
         bookapplication.save()
@@ -95,14 +85,14 @@ def booksearch(request):
 
 
 def booksearchpage(request):
-    # import ipdb
-    # ipdb.set_trace()
     context = {}
     searchtext = request.GET.get('searchtext')
     category = request.GET.get('category')
     userid = request.user.id
     if category == 'Author':
-        bookshelves = Book.objects.filter(author__name__icontains=searchtext)
+        bookshelves = Book.objects.filter(author__name__icontains=searchtext,status='available')
+        bookshelvesordered = BookApplication.objects.filter(status__in=['applied', 'approved'],
+                                                            book__author__name__icontains=searchtext)
         lendbook = BookApplication.objects.filter(lend_by=userid, book__author__name__icontains=searchtext)
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
@@ -110,7 +100,9 @@ def booksearchpage(request):
         else:
             context['is_admin'] = False
     else:
-        bookshelves = Book.objects.filter(title__icontains=searchtext)
+        bookshelves = Book.objects.filter(title__icontains=searchtext,status='available')
+        bookshelvesordered = BookApplication.objects.filter(status__in=['applied', 'approved'],
+                                                            book__title__icontains=searchtext)
         lendbook = BookApplication.objects.filter(lend_by=userid, book__title__icontains=searchtext)
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
@@ -120,13 +112,12 @@ def booksearchpage(request):
     context['query'] = searchtext
     context['category'] = category
     context['bookshelves'] = bookshelves
+    context['bookshelvesordered'] = bookshelvesordered
     context['lendbook'] = lendbook
     return render(request, 'dashboard.html', context)
 
 
 def booksearchbyname(request):
-    # import ipdb
-    # ipdb.set_trace()
     searchtext = request.GET.get('searchtext')
     category = request.GET.get('category')
     context = {}
@@ -134,7 +125,9 @@ def booksearchbyname(request):
 
     userid = request.user.id
 
-    bookshelves = Book.objects.filter(id=bookid)
+    bookshelves = Book.objects.filter(id=bookid, status='available')
+    bookshelvesordered = BookApplication.objects.filter(status__in=['applied', 'approved'],
+                                                        book__id=bookid)
     lendbook = BookApplication.objects.filter(lend_by=userid, book__id=bookid)
     if request.user.groups.filter(name='LibraryAdmin'):
         context['is_admin'] = True
@@ -146,5 +139,6 @@ def booksearchbyname(request):
     context['query'] = searchtext
     context['category'] = category
     context['bookshelves'] = bookshelves
+    context['bookshelvesordered'] = bookshelvesordered
     context['lendbook'] = lendbook
     return render(request, 'dashboard.html', context)
