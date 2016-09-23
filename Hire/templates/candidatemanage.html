@@ -1,6 +1,7 @@
 {% extends 'master.html' %}
 {% load bootstrap3 %}
 {% load fontawesome %}
+{% load permissions %}
 {% load static from staticfiles %}
 {% block siteTitle %}Daily Interview Report{% endblock %}
 {% block pageTitle %}Dashboard{% endblock %}
@@ -58,6 +59,9 @@
                         <th>Test</th>
                         <th>Face to Face</th>
                         <th>Final Status</th>
+                        {% if request.user|has_group:'HireAdmin' %}
+                        <th>Recruiter</th>
+                        {% endif %}
                     </tr>
 
                     {% for interviewlist in interviewdetial %}
@@ -90,6 +94,10 @@
                    {% endif %}
            {% endif %}
                   <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.profile.candidate_status %} {{v}} {% endif %}{%endfor%}</td>
+                         {% if request.user|has_group:'HireAdmin' %}
+                             <td>{{ interviewlist.0.profile.requisition_number.recruiter.first_name }}
+                                 {{ interviewlist.0.profile.requisition_number.recruiter.last_name }}</td>
+                         {% endif %}
                          </tr>
 
 {% endfor %}

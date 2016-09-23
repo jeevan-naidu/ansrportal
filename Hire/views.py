@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from models import MRF, Count, Position, Profile, Process, RESULT_STATUS, REFERENCE_SOURCE
 from forms import ProfileForm, MRFForm, NewMRFForm, ProcessForm
 from datetime import date, timedelta
+from django.conf import settings
 import json
 
 def recruitment_form(request):
@@ -203,7 +204,10 @@ def mrfsearch(request):
 def candidatesearch(request):
     user = request.user.id
     context_data = {'interviewdetial':[]}
-    candidatelist = Profile.objects.filter(requisition_number__recruiter=user).values('id')
+    if request.user.groups.filter(name= settings.HIRE_ADMIN).exists():
+        candidatelist = Profile.objects.filter().values('id')
+    else:
+        candidatelist = Profile.objects.filter(requisition_number__recruiter=user).values('id')
     for candidate in candidatelist:
         testdetail = Process.objects.filter(profile=candidate['id'])
         context_data['interviewdetial'].append(testdetail)

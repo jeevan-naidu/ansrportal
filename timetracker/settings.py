@@ -356,6 +356,9 @@ LEAVE_ADMIN_GROUP = 'LeaveAdmin'
 LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
 
 
+HIRE_RECRUITER = 'HireRecruiter'
+HIRE_ADMIN = 'HireAdmin'
+
 #Broker Settings
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672

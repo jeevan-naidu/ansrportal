@@ -627,6 +627,7 @@
                                                 </div>
                                             </li>
 
+                                         {% if request.user|has_group:'HireRecruiter' %}
                                         <li>
                                                 <a href="javascript:" data-action="click-trigger" class="open">
 
@@ -661,6 +662,7 @@
                                             </li>
 
                                         <li>
+                                        {% endif %}
                                                 <a href="javascript:" data-action="click-trigger" class="open">
                                                     <span class="menu-text">FB360</span>
                                                     <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
