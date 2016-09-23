@@ -330,6 +330,30 @@ ul{list-style: none;padding-left: 0px;}
 
 
             </script>
+
+
+
+<script type="text/javascript">
+  
+$(document).ready(function(){
+
+/*$('html').click(function(){
+  $('input#id_date_of_birth').focus(); 
+})*/
+
+$('.input-group-addon').click(function(){
+  $(this).parent().find('input').focus();
+})
+
+
+
+})
+
+</script>
+
+
+
+
     <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
