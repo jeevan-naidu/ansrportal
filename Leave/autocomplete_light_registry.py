@@ -21,6 +21,7 @@ class AutocompleteUserSearch(autocomplete_light.AutocompleteModelBase):
 
         choices = choices.filter(first_name__icontains=q)
         choices = choices.filter(id__in=userlist)
+        choices = choices.filter(is_active=True)
         return self.order_choices(choices)[0:self.limit_choices]
 
 autocomplete_light.register(User, AutocompleteUserSearch)

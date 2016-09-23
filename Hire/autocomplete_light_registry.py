@@ -9,9 +9,7 @@ class AutoCompleteRequisitionSearch(autocomplete_light.AutocompleteModelBase):
 
     def choices_for_request(self):
         q = self.request.GET.get('q', '')
-        # avaliable_choice = Count.objects.filter(recruiter = self.request.user.id).values('id')
         choices = self.choices.filter(requisition_number__icontains=q)
-        # choices = choices.filter(id__in=avaliable_choice)
         return self.order_choices(choices)[0:self.limit_choices]
 
 autocomplete_light.register(MRF, AutoCompleteRequisitionSearch)
@@ -25,6 +23,7 @@ class AutocompleteUserHireSearch(autocomplete_light.AutocompleteModelBase):
         q = self.request.GET.get('q', '')
         choices = self.choices.filter(first_name__icontains=q)
         choices = choices.filter(id__in=userlist)
+        choices = choices.filter(is_active=True)
         return self.order_choices(choices)[0:self.limit_choices]
 
 autocomplete_light.register(User, AutocompleteUserHireSearch)
