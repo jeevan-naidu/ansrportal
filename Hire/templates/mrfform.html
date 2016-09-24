@@ -124,7 +124,12 @@
 
 
     <script>
-
+window.onload = function(){
+                           document.getElementById("id_department").readOnly = true;
+                           document.getElementById("id_designation").readOnly = true;
+                           document.getElementById("id_specialization").readOnly = true;
+                           document.getElementById("id_manager").readOnly = true;
+    }
     $('#id_requisition_number-autocomplete').bind(
       'selectChoice',
       function(e, choice, autocomplete) {

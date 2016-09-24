@@ -87,7 +87,7 @@ class MRFForm(autocomplete_light.ModelForm):
 
 
 class NewMRFForm(autocomplete_light.ModelForm):
-    requisition_number = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
+    requisition_number = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm', 'required': 'true'}))
     department = forms.ChoiceField(initial='.....', choices=DEPARTMENT)
     department.widget.attrs = {'class': 'width-40', 'required': 'true'}
     designation = forms.ChoiceField(choices=[(dep['designation'], dep['designation'])
