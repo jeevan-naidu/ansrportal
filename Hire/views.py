@@ -156,7 +156,7 @@ def designation(request):
     if designation:
         response_data['result'] = 'Success'
         for value in designation:
-            if value not in designationlist:
+            if value.designation not in designationlist:
                 designationlist.append(value.designation)
     designationlist.append(".........")
     response_data['message'] = designationlist
@@ -173,7 +173,7 @@ def specialization(request):
     if specialization:
         response_data['result'] = 'Success'
         for value in specialization:
-            if value not in specializationlist:
+            if value.specialization not in specializationlist:
                 specializationlist.append(value.specialization)
     specializationlist.append(".........")
     response_data['message'] = specializationlist
