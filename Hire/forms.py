@@ -119,7 +119,7 @@ class ProcessForm(autocomplete_light.ModelForm):
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
     interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
-    interview_status = forms.ChoiceField(choices=INTERVIEW_PROCESS)
+    interview_status = forms.ChoiceField(choices=RESULT_STATUS)
     interview_status.widget.attrs = {'class': 'width-40', 'required': 'true'}
     remark = forms.CharField(max_length=100, required=False)
     remark.widget.attrs = {'class': 'width-50 input-sm'}
