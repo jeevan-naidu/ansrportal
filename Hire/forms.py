@@ -1,12 +1,11 @@
 from django import forms
 from django.contrib.auth.models import User
 from models import Profile, Count, GENDER_CHOICES, REFERENCE_SOURCE, Position, MRF, Process,INTERVIEW_PROCESS
-from employee.models import Employee
 from bootstrap3_datetime.widgets import DateTimePicker
 import autocomplete_light
 autocomplete_light.autodiscover()
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
-
+DEPARTMENT = (('','........'),) + tuple([(dep['department'], dep['department']) for dep in Position.objects.filter().values('department').distinct()])
 RESULT_STATUS = (('rejected', 'Rejected'), ('selected', 'Selected'))
 class ProfileForm(autocomplete_light.ModelForm):
     candidate_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm form-control',
@@ -89,8 +88,7 @@ class MRFForm(autocomplete_light.ModelForm):
 
 class NewMRFForm(autocomplete_light.ModelForm):
     requisition_number = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm'}))
-    department = forms.ChoiceField(initial='.....',choices=[(dep['department'], dep['department'])
-                                                                for dep in Position.objects.filter().values('department').distinct()])
+    department = forms.ChoiceField(initial='.....', choices=DEPARTMENT)
     department.widget.attrs = {'class': 'width-40', 'required': 'true'}
     designation = forms.ChoiceField(choices=[(dep['designation'], dep['designation'])
                                              for dep in Position.objects.filter().values('designation').distinct()])
