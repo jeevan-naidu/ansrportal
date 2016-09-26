@@ -180,7 +180,7 @@ def Timesheet(request):
         # for timesheet bug which showed project not available  error message by vivek
         tmp_date = datetime.now().date()
         tmp_date -= timedelta(days=7)
-        endDate1 = request.GET.get('enddate', '')
+        endDate1 = request.GET.get('endDate', '')
         if request.GET.get("week") == 'prev':
             if endDate1:
                 tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
@@ -692,7 +692,7 @@ def switchWeeks(request):
             request.GET.get('startdate'), '%d%m%Y'
         ).date() - timedelta(days=7)
         ansrEndDate = datetime.strptime(
-            request.GET.get('enddate'), '%d%m%Y'
+            request.GET.get('endDate'), '%d%m%Y'
         ).date() - timedelta(days=7)
         disabled = ''
     elif request.GET.get('week') == 'next':
@@ -700,7 +700,7 @@ def switchWeeks(request):
             request.GET.get('startdate'), '%d%m%Y'
         ).date() + timedelta(days=7)
         ansrEndDate = datetime.strptime(
-            request.GET.get('enddate'), '%d%m%Y'
+            request.GET.get('endDate'), '%d%m%Y'
         ).date() + timedelta(days=7)
         if (datetime.now().date() - ansrEndDate).days < 0:
             disabled = 'next'
@@ -710,7 +710,7 @@ def switchWeeks(request):
     elif request.GET.get('startdate'):
 
         weekstartDate = datetime.strptime(request.GET.get('startdate'), '%d%m%Y').date()
-        ansrEndDate = datetime.strptime(request.GET.get('enddate'), '%d%m%Y').date()
+        ansrEndDate = datetime.strptime(request.GET.get('endDate'), '%d%m%Y').date()
         if (datetime.now().date() - ansrEndDate).days < 0:
             disabled = 'next'
         else:
@@ -878,10 +878,10 @@ def renderTimesheet(request, data):
                     k = u'{0}H'.format(eachDay)
                     if k in eachData:
                         d[newK] += eachData[k]
-    endDate1=request.GET.get('enddate','')
+    endDate1=request.GET.get('endDate','')
     date=datetime.now().date()
     if request.GET.get("week")=='prev':
-        endDate1=request.GET.get('enddate','')
+        endDate1=request.GET.get('endDate','')
         date=datetime.now().date()
         if endDate1:
             date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
