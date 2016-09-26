@@ -206,7 +206,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "mysqlroot",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -353,8 +353,7 @@ MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
-LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
-
+LEAVE_SHORT_ATTENDANCE_ISACTIVE = False
 
 HIRE_RECRUITER = 'HireRecruiter'
 HIRE_ADMIN = 'HireAdmin'
