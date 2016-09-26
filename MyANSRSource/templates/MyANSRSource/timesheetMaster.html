@@ -179,17 +179,17 @@ a.incomplete:before, button.incomplete:before{
            <li>
                 {% if info_dict.filled %}
                     {% if info_dict.hold == True %}
-                         <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="filled">
+                         <a href="entry?enddate={{ info_dict.wkstart }}&startdate={{ info_dict.wkend }}" data-value="action" class="filled">
                            {{ info_dict.for_week }}
                          </a>
                     {% else %}
-                        <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="incomplete">
+                        <a href="entry?enddate={{ info_dict.wkstart }}&startdate={{ info_dict.wkend }}" data-value="action" class="incomplete">
                            {{ info_dict.for_week }}
                          </a>
                     {% endif %}
 
                 {% else %}
-                    <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="unfilled">
+                    <a href="entry?enddate={{ info_dict.wkstart }}&startdate={{ info_dict.wkend }}" data-value="action" class="unfilled">
                             {{ info_dict.for_week }}
                     </a>
                 {% endif %}
