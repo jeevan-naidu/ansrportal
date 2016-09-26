@@ -190,6 +190,9 @@ def Timesheet(request):
             if endDate1:
                 tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
                 tmp_date += timedelta(days=1)
+        else:
+            if endDate1:
+                tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
         #  fix ends here
 
         tsform = TimesheetFormset(request.user, tmp_date)
@@ -697,16 +700,17 @@ def switchWeeks(request):
             request.GET.get('startdate'), '%d%m%Y'
         ).date() + timedelta(days=7)
         ansrEndDate = datetime.strptime(
-            request.GET.get('endDate'), '%d%m%Y'
+            request.GET.get('enddate'), '%d%m%Y'
         ).date() + timedelta(days=7)
         if (datetime.now().date() - ansrEndDate).days < 0:
             disabled = 'next'
         else:
             disabled = ''
-    elif request.GET.get('wkstart'):
 
-        weekstartDate = datetime.strptime(request.GET.get('wkstart'), '%d%m%Y').date()
-        ansrEndDate = datetime.strptime(request.GET.get('wkend'), '%d%m%Y').date()
+    elif request.GET.get('startdate'):
+
+        weekstartDate = datetime.strptime(request.GET.get('startdate'), '%d%m%Y').date()
+        ansrEndDate = datetime.strptime(request.GET.get('enddate'), '%d%m%Y').date()
         if (datetime.now().date() - ansrEndDate).days < 0:
             disabled = 'next'
         else:
