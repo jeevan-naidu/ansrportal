@@ -90,7 +90,7 @@
  <div class="pull-left">
  <form id="prevWeek" method="get" action="" enctype="multipart/form-data">
     <input type="hidden" name="week" value="prev" />
-    <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
+    <input type="hidden" name="endDate" value="{{ weekendDate|date:"dmY" }}" />
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     {% if disabled == 'prev' %}
         <button type="submit" value="submit" disabled="disabled" class="btn btn-default">
