@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     'export_xls',
     'djcelery',
     'Hire',
+    'Library',
 
 )
 

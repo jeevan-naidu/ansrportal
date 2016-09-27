@@ -1,0 +1,271 @@
+<!-- row -->
+            <div class="panel-body">
+   <ul class="nav nav-tabs">
+ <li data-toggle="tab"  data-target="#a" class="active"><a href="#">Avaliable Books</a></li>
+  <li data-toggle="tab"  data-target="#b" ><a href="#">Lend History</a></li>
+       {% if is_admin %}
+  <li data-toggle="tab"  data-target="#c"  ><a href="#">ADMIN</a></li>
+       {% endif %}
+
+   <div class="pull-right col-sm-6">
+           <div class="search">
+		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Book Title" value="{{ query }}"/>
+		 <ul class="results dropdown-menu" >
+		 </ul>
+               </div>
+
+        {% if category == 'Author'  %}
+       <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" >Book Title</label>
+       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" checked>Author</label>
+        {% else %}
+            <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" checked>Book Title</label>
+       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" >Author</label>
+       {% endif %}
+   </div>
+
+</ul>
+
+
+ <div class="tab-content">
+                              <div class="tab-pane active" id="a">
+<br>
+                <table class="table table-bordered table-hover mb-0 ansrgreen">
+                    <tr class="Lv-ApproveTH ">
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Publisher</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for book in bookshelves %}
+                    <tr>
+                        <td>{{book.title}}</td>
+                        <td>{{book.author.name}} {{book.author.surname}}</td>
+                        <td>{{book.publisher.name}}</td>
+                        <td>
+                            {% if book.status == 'available' %}
+                                <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.id}}">Apply</button>
+                            {% else %}
+                            <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endfor %}
+                    {% for book in bookshelvesordered %}
+                    <tr>
+                        <td>{{book.book.title}}</td>
+                        <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
+                        <td>{{book.book.publisher.name}}</td>
+                        <td>
+                            {% if book.book.status == 'available' %}
+                                <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.book.id}}">Apply</button>
+                            {% else %}
+                            <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>
+                            <div class="booked-by">
+                        <h4>Loaned By</h4>
+                        <p>dd</p>
+                    </div>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endfor %}
+
+</table>
+                                  </div>
+      <div class="tab-pane fade" id="b">
+          <br>
+                <table class="table table-bordered table-hover mb-0 ansrgreen">
+                    <tr class="Lv-ApproveTH ">
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Publisher</th>
+                        <th>Booked Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for book in lendbook %}
+                    <tr>
+                        <td>{{book.book.title}}</td>
+                        <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
+                        <td>{{book.book.publisher.name}}</td>
+                        <td>{{book.lend_from}}</td>
+                        <td>{{book.lend_to}}</td>
+                    <td>{{book.status}}</td>
+                    <td>
+                            {% if book.status == 'approved' %}
+                                <button type="button" class="btn btn-primary btn-sm return-book" id="{{book.id}}">Return</button>
+                            {% else %}
+                            <button type="button" disabled class="btn btn-primary btn-sm ">Return</button>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endfor %}
+
+
+</table>
+      </div>
+  {% if is_admin %}
+  <div class="tab-pane fade" id="c">
+          <br>
+                <table class="table table-bordered table-hover mb-0 ansrgreen">
+                    <tr class="Lv-ApproveTH ">
+                        <th>Applied By</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Publisher</th>
+                        <th>Booked Date</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for book in orderedbook %}
+                    <tr>
+                        <td>{{book.lend_by.first_name}} {{book.lend_by.last_name}}</td>
+                        <td>{{book.book.title}}</td>
+                        <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
+                        <td>{{book.book.publisher.name}}</td>
+                        <td>{{book.lend_from}}</td>
+
+                    <td>
+
+                                <button type="button" class="btn btn-primary btn-sm action-book" id="accept-{{book.id}}">Accept</button>
+
+                            <button type="button"  class="btn btn-primary btn-sm action-book" id="reject-{{book.id}}">Reject</button>
+
+                        </td>
+                        </tr>
+                    {% endfor %}
+
+
+</table>
+      </div>
+ {% endif %}
+     </div>
+
+</div>
+
+<script>
+    function loadbybookname(value){
+         var searchtext = $('#book-search').val();
+        var inpt = $('input:radio[name="search-category"]:checked');
+        var category = inpt.val();
+        $.ajax({
+            url:'/library/booksearchbyname',
+            type:'GET',
+            data:{'bookid':value,'searchtext':searchtext, 'category':category},
+            success: function(data){
+                 $(".panel").empty();
+                $(".panel").append(data);
+        }
+
+    });
+    }
+
+    $(".lend-book").click(function(){
+        bookid= $(this)[0].id;
+        $.ajax({
+        url:'/library/bookrent/',
+        data:{'bookid':bookid},
+        type:'GET',
+        success: function(data){
+            if(data.is_added){
+                swal("Done!", data.success_msg, "success");
+
+                window.location.reload();
+            }
+            else{
+
+            }
+        }
+
+        });
+    });
+
+$(".action-book").click(function(){
+        bookid= $(this)[0].id;
+        $.ajax({
+        url:'/library/adminaction/',
+        data:{'bookid':bookid},
+        type:'GET',
+        success: function(data){
+            if(data.is_added){
+                swal("Done!", data.success_msg, "success");
+                window.location.reload();
+            }
+            else{
+
+            }
+        }
+
+        });
+    });
+$(".return-book").click(function(){
+        bookid= $(this)[0].id;
+        $.ajax({
+        url:'/library/bookreturn/',
+        data:{'bookid':bookid},
+        type:'GET',
+        success: function(data){
+            if(data.is_added){
+                swal("Done!", data.success_msg, "success");
+
+                window.location.reload();
+            }
+            else{
+
+            }
+        }
+
+        });
+    });
+
+$('input:radio[name="search-category"]').change(function(){
+    var text = $(this).val();
+    var search = "Search by "+text;
+    document.getElementById('book-search').placeholder= search;
+});
+
+$('#book-search').on('input', function(e){
+    var searchtext = $(this).val();
+    var inpt = $('input:radio[name="search-category"]:checked');
+    var category = inpt.val();
+    $.ajax({
+        url:'/library/booksearch',
+        type:'GET',
+        data:{'searchtext':searchtext, 'category':category},
+        success: function(data){
+            bookscount = Object.keys(data).length
+            $(".results").empty()
+            for(var i=0; i<bookscount; i++) {
+                d1 = data[i]
+                bookdetail = data[i].split(",")
+                    $(".results").append('<li><a onclick=loadbybookname('+bookdetail[0]+')>'+bookdetail[1]+'<br /><span>by '+bookdetail[2]+'</span></a></li>')
+
+
+            }
+        }
+
+    });
+});
+
+
+
+ $('#book-search').on('keypress', function (e) {
+
+         if(e.which === 13){
+
+            var searchtext = $(this).val();
+        var inpt = $('input:radio[name="search-category"]:checked');
+        var category = inpt.val();
+
+        $.ajax({
+            url:'/library/booksearchpage',
+            type:'GET',
+            data:{'searchtext':searchtext, 'category':category},
+            success: function(data){
+                 $(".panel").empty();
+                $(".panel").append(data);
+        }
+
+    });
+         }
+   });
+</script>

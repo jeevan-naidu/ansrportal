@@ -1,0 +1,39 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}Lend A Book{% endblock %}
+{% block pageTitle %}Library{% endblock %}
+{% block content  %}
+
+<link href="/static/css/leave_style.css" rel="stylesheet" type="text/css">
+<link href="/static/css/library.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+
+    input[type="radio"]{display: inline-block}
+
+    /* Dropdown */
+
+    .search ul.results{display:block;backface-visibility: hidden; border:0px;box-shadow: none}
+
+    </style>
+
+     <div class="panel">
+         </div>
+<script>
+window.onload = function() {
+
+    $.ajax({
+            url:'/library/booksearchpage',
+            type:'GET',
+            data:{'searchtext':'', 'category':'Author'},
+            success: function(data){
+                $(".panel").append(data);
+        }
+
+    });
+};
+
+
+</script>
+{% endblock %}
