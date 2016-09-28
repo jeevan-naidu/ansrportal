@@ -16,7 +16,7 @@ import autocomplete_light
 autocomplete_light.autodiscover()
 
 PROJECT_CLOSE_FLAG = (('','................'),
-                      ('Extending end date external ', 'Extending end date external '),
+                      ('Extending end date external ', 'Extending end date external (client side)'),
                       ('Extending end date internal ', 'Extending end date internal '),
                       ('Extending end date for 0 value project ', 'Extending end date for 0 value project '),
                       ('Revising planned effort ', 'Revising planned effort '),
@@ -438,7 +438,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         super(ChangeProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['reason'].widget.attrs['class'] = "form-control reason"
-        self.fields['remark'].widget.attrs['class'] = "form-control remark"
+        self.fields['remark'].widget.attrs['class'] = "form-control remark controls"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
         self.fields['revisedEffort'].widget.attrs['class'] = "form-control"
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control"

@@ -80,11 +80,28 @@
 <script>
    window.onload = function() {
        $('.remark').remove();
+       var reason = $('.reason option:selected').val();
+            if(reason == 'Others'){
+                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" maxlength="1000" name="Change Basic Information-remark" type="text" required="true">';
+                $(".remark_span").append(reason);
+            }
+            else{
+                reamrkinput = $('.remark')
+                if(reamrkinput){
+                    $('.remark').remove();
+                }
+            }
         var reasondropdown = $('.reason');
         var leng = reasondropdown['0'].length;
         reasondropdown['0'].remove(leng-1);
         reasondropdown['0'].remove(leng-2);
         reasondropdown['0'].remove(leng-3);
+       if($('.project_close')[0].checked){
+            closingcommentsadd();
+       }
+       else{
+           commentsadd();
+       }
         }
 
 
@@ -93,7 +110,7 @@
 
             var reason = $('.reason option:selected').val();
             if(reason == 'Others'){
-                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" maxlength="100" name="Change Basic Information-remark" type="text">';
+                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" maxlength="100" name="Change Basic Information-remark" type="text" required="true">';
                 $(".remark_span").append(reason);
             }
             else{
@@ -106,7 +123,15 @@
         });
 $('.project_close').click(function(){
      if(this.checked){
-         reamrkinput = $('.remark')
+         closingcommentsadd();
+     }
+     else{
+         commentsadd();
+     }
+
+});
+function closingcommentsadd(){
+    reamrkinput = $('.remark')
                 if(reamrkinput){
                     $('.remark').remove();
                 }
@@ -126,9 +151,10 @@ $('.project_close').click(function(){
          spec.text = '...............';
                              reasondropdown[0].add(spec, 0);
          reasondropdown[0].getElementsByTagName('option')[0].selected = 'selected'
-     }
-     else{
-         var reasondropdown = $('.reason');
+}
+
+function commentsadd(){
+    var reasondropdown = $('.reason');
          reasondropdown.empty()
          var spec = document.createElement('option');
          spec.text = spec.value = 'Others';
@@ -149,16 +175,13 @@ $('.project_close').click(function(){
          spec.text = spec.value = 'Extending end date internal ';
                              reasondropdown[0].add(spec, 0);
          var spec = document.createElement('option');
-         spec.text = spec.value = 'Extending end date external ';
+         spec.text = spec.value = 'Extending end date external (client side) ';
                              reasondropdown[0].add(spec, 0);
          var spec = document.createElement('option');
          spec.text = '...............';
                              reasondropdown[0].add(spec, 0);
         reasondropdown[0].getElementsByTagName('option')[0].selected = 'selected';
-     }
-
-});
-
+}
 </script>
 
 {% endblock %}{% endblock %}

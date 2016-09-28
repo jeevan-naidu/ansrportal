@@ -3,6 +3,7 @@ from models import Book, BookApplication
 from datetime import date, timedelta
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.db.models import Q
 
 # Create your views here.
 def dashboard(request):
@@ -74,7 +75,8 @@ def booksearch(request):
     searchtext = request.GET.get('searchtext')
     category = request.GET.get('category')
     if category == 'Author':
-        booklist = Book.objects.filter(author__name__icontains=searchtext)[:10]
+        booklist = Book.objects.filter(
+            Q(author__name__icontains=searchtext)|Q(author__surname__icontains=searchtext))[:10]
     else:
         booklist = Book.objects.filter(title__icontains=searchtext)[:10]
     i=0
