@@ -103,19 +103,19 @@ class ActivityForm(forms.Form):
         self.fields['activity_total'].widget.attrs['readonly'] = 'True'
         self.fields['activity'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['class'] = "form-control \
-        days input-field Mon-t"
+        days input-field Mon-t 24hrcheck"
         self.fields['activity_tuesday'].widget.attrs['class'] = "form-control \
-        days input-field Tue-t"
+        days input-field Tue-t 24hrcheck"
         self.fields['activity_wednesday'].widget.attrs['class'] = "form-control \
-        days input-field Wed-t"
+        days input-field Wed-t 24hrcheck"
         self.fields['activity_thursday'].widget.attrs['class'] = "form-control \
-        days input-field Thu-t"
+        days input-field Thu-t 24hrcheck"
         self.fields['activity_friday'].widget.attrs['class'] = "form-control \
-        days input-field Fri-t"
+        days input-field Fri-t 24hrcheck"
         self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
-        days input-field Sat-t"
+        days input-field Sat-t 24hrcheck"
         self.fields['activity_sunday'].widget.attrs['class'] = "form-control \
-        days input-field Sun-t"
+        days input-field Sun-t 24hrcheck"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
         self.fields['activity_monday'].widget.attrs['value'] = 0
@@ -144,21 +144,17 @@ def TimesheetFormset(currentUser,enddate):
             label="Project",
             required=True,
         )
-        location = forms.ModelChoiceField(
-            queryset=None,
-            required=True
-        )
-        chapter = forms.ModelChoiceField(
-            queryset=Chapter.objects.all(),
-            required=False,
-        )
+        # location = forms.ModelChoiceField(
+        #     queryset=None,
+        #     required=True
+        # )
+        chapter = forms.CharField(widget=forms.Select())
+
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
-        task = forms.ModelChoiceField(
-            queryset=Task.objects.filter(active=True),
-            label="Task",
-            required=True,
-        )
+
+        task = forms.CharField(widget=forms.Select())
+
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
@@ -257,22 +253,22 @@ def TimesheetFormset(currentUser,enddate):
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
             self.fields['project'].queryset = Project.objects.filter(
-                #closed=False,
+                # closed=False,
                 endDate__gte=enddate,
-                #endDate__gte=datetime.date.today(),
+                # endDate__gte=datetime.date.today(),
                 id__in=ProjectTeamMember.objects.filter(
                     Q(member=currentUser.id) |
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             ).order_by('name')
-            self.fields['location'].queryset = OfficeLocation.objects.filter(
-                active=True)
+            # self.fields['location'].queryset = OfficeLocation.objects.filter(
+            #     active=True)
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
             self.fields['tsId'].widget.attrs['class'] = "set-zero"
-            self.fields['location'].widget.attrs['class'] = \
-                "form-control d-item set-zero"
+            # self.fields['location'].widget.attrs['class'] = \
+            #     "form-control d-item set-zero"
             self.fields['chapter'].widget.attrs[
                 'class'] = "form-control d-item b-chapter \
                 remove-sel-options set-zero"
@@ -345,6 +341,8 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalQ'].widget.attrs['value'] = 0.0
             self.fields['tsId'].widget.attrs['value'] = 0
             self.fields['projectType'].widget.attrs['value'] = 'Q'
+
+
     return TimeSheetEntryForm
 
 

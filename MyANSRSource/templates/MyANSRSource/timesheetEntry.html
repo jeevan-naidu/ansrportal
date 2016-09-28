@@ -30,7 +30,7 @@
 
 
 
-  <form id="timesheet" method="post" action="" enctype="multipart/form-data">
+  <form id="timesheet" method="post" action="" enctype="multipart/form-data" novalidate>
 
                     <div class="panel pb-15">
                         <!-- first widget (vertical tabs) -->
@@ -64,7 +64,7 @@
 		{% if forloop.first %}
 		<thead>
 		<tr>
-			<td colspan="4" class="text-right">
+			<td colspan="3" class="text-right">
 				<h6>
                     <strong>Swipe Card Hours</strong>
 				</h6>
@@ -76,7 +76,7 @@
 			{% endfor %}
 		</tr>
 		<tr>
-			<td colspan="4" class="text-right">
+			<td colspan="3" class="text-right">
 				<strong>Timesheet Hours</strong>
 			</td>
 			<td class="text-center">
@@ -110,7 +110,7 @@
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 4 %}
+				{% if forloop.counter == 0 or forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3%}
 					<th class="res-14-per">
 				{% else %}
 					<th>

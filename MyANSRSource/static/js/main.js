@@ -172,7 +172,7 @@ app.getTaskChapter = function(selValue, currRow) {
 
             error: function(data) {
                 console.log('Error: ' + data);
-                alert(data.responseText)
+                console.log(data.responseText)
             }
         });
 
@@ -468,7 +468,16 @@ app.firstTimeTotal = function() {
 
             tempTotal = helper.sumOfArr(tempArr);
 
-            $output.text(tempTotal);
+            if (tempTotal >24) {
+
+                $($arr).addClass('alert-danger');
+                $('#saveTS').prop('disabled',true);
+                $('#submitTS').prop('disabled',true).addClass('disabled');
+            }
+            else {
+                 $($arr).removeClass('alert-danger');
+            }
+             $output.text(tempTotal);
         }
 
         total($mon, $monTotal);
@@ -478,7 +487,9 @@ app.firstTimeTotal = function() {
         total($fri, $friTotal);
         total($sat, $satTotal);
         total($sun, $sunTotal);
-
+        if(!($(".24hrcheck").hasClass('alert-danger'))) {
+            $('#saveTS,#submitTS').prop('disabled',false).removeClass('disabled');
+        }
 
     };
 
@@ -487,7 +498,8 @@ app.firstTimeTotal = function() {
             console.log('Please enter the valid number');
             $elem.addClass('alert-danger');
             return false;
-        } else {
+        }
+        else {
             // check for decimal
             str = Number(str);
             if (str < 0) {
