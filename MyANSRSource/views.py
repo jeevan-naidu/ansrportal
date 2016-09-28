@@ -697,16 +697,16 @@ def switchWeeks(request):
             request.GET.get('startdate'), '%d%m%Y'
         ).date() + timedelta(days=7)
         ansrEndDate = datetime.strptime(
-            request.GET.get('endDate'), '%d%m%Y'
+            request.GET.get('enddate'), '%d%m%Y'
         ).date() + timedelta(days=7)
         if (datetime.now().date() - ansrEndDate).days < 0:
             disabled = 'next'
         else:
             disabled = ''
-    elif request.GET.get('wkstart'):
+    elif request.GET.get('startdate'):
 
-        weekstartDate = datetime.strptime(request.GET.get('wkstart'), '%d%m%Y').date()
-        ansrEndDate = datetime.strptime(request.GET.get('wkend'), '%d%m%Y').date()
+        weekstartDate = datetime.strptime(request.GET.get('startdate'), '%d%m%Y').date()
+        ansrEndDate = datetime.strptime(request.GET.get('enddate'), '%d%m%Y').date()
         if (datetime.now().date() - ansrEndDate).days < 0:
             disabled = 'next'
         else:
@@ -886,7 +886,7 @@ def renderTimesheet(request, data):
             date=data['weekstartDate']
 
     elif request.GET.get("week")=='next':
-        endDate1=request.GET.get('endDate','')
+        endDate1=request.GET.get('enddate','')
         date=datetime.now().date()
         if endDate1:
             date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
@@ -2094,7 +2094,7 @@ def saveProject(request):
             startDate = datetime.fromtimestamp(
                 int(request.POST.get('startDate'))).date()
             endDate = datetime.fromtimestamp(
-                int(request.POST.get('endDate'))).date()
+                int(request.POST.get('enddate'))).date()
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')

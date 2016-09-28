@@ -90,8 +90,8 @@
  <div class="pull-left">
  <form id="prevWeek" method="get" action="" enctype="multipart/form-data">
     <input type="hidden" name="week" value="prev" />
+ <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     {% if disabled == 'prev' %}
         <button type="submit" value="submit" disabled="disabled" class="btn btn-default">
             <span class="glyphicon glyphicon-arrow-left"></span>
@@ -179,17 +179,17 @@ a.incomplete:before, button.incomplete:before{
            <li>
                 {% if info_dict.filled %}
                     {% if info_dict.hold == True %}
-                         <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="filled">
+                         <a href="entry?startdate={{ info_dict.wkstart }}&enddate={{ info_dict.wkend }}" data-value="action" class="filled">
                            {{ info_dict.for_week }}
                          </a>
                     {% else %}
-                        <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="incomplete">
+                        <a href="entry?startdate={{ info_dict.wkstart }}&enddate={{ info_dict.wkend }}" data-value="action" class="incomplete">
                            {{ info_dict.for_week }}
                          </a>
                     {% endif %}
 
                 {% else %}
-                    <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}" data-value="action" class="unfilled">
+                    <a href="entry?startdate={{ info_dict.wkstart }}&enddate={{ info_dict.wkend }}" data-value="action" class="unfilled">
                             {{ info_dict.for_week }}
                     </a>
                 {% endif %}
@@ -221,7 +221,7 @@ a.incomplete:before, button.incomplete:before{
  <form id="nextWeek" method="get" action="" enctype="multipart/form-data">
     <input type="hidden" name="week" value="next" />
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
-    <input type="hidden" name="endDate" value="{{ weekendDate|date:"dmY" }}" />
+    <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
     {% if disabled == 'next' %}
         <button type="submit" value="submit" disabled="disabled" class="btn btn-default">
             <span class="glyphicon glyphicon-arrow-right"></span>
