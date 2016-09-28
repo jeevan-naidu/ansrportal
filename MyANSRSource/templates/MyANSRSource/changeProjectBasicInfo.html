@@ -43,18 +43,27 @@
                     <tr>
                         <td class="col-lg-6">
                                 {% if field.label != 'BasicInfoId' %}
+                                    {% if field.label != 'Remark' %}
                                     {{ field.label }}
                                     {% if field.field.required %}
                                         <span class="required">*</span>
                                     {% endif %}
+                                        {% endif %}
                                 {% endif %}
                         </td>
                         <td class="col-lg-7">
                             {% if field.label == 'Revised Effort' %}
-                                <span class="col-lg-10">{{ field }}</span> 
+
+                                <span class="col-lg-10">{{ field }}</span>
+
                                 <span class="col-lg-2"><b><span class="label label-default form-control">PH(s)</span></b></span>
                             {% else %}
-                                <span class="col-lg-10">{{ field }}</span> 
+                                {% if field.label == 'Remark' %}
+                                    <span class="col-lg-10 remark_span">{{ field }}</span>
+                                    {% else %}
+                                    <span class="col-lg-10">{{ field }}</span>
+                                    {% endif %}
+
                                 <span class="col-lg-2"></span>
                             {% endif %}
                         </td>
@@ -69,11 +78,87 @@
 
 
 <script>
-    var app = app || {};
+   window.onload = function() {
+       $('.remark').remove();
+        var reasondropdown = $('.reason');
+        var leng = reasondropdown['0'].length;
+        reasondropdown['0'].remove(leng-1);
+        reasondropdown['0'].remove(leng-2);
+        reasondropdown['0'].remove(leng-3);
+        }
 
-    (function() {
 
-    }());
+
+        $('.reason').change(function(){
+
+            var reason = $('.reason option:selected').val();
+            if(reason == 'Others'){
+                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" maxlength="100" name="Change Basic Information-remark" type="text">';
+                $(".remark_span").append(reason);
+            }
+            else{
+                reamrkinput = $('.remark')
+                if(reamrkinput){
+                    $('.remark').remove();
+                }
+            }
+
+        });
+$('.project_close').click(function(){
+     if(this.checked){
+         reamrkinput = $('.remark')
+                if(reamrkinput){
+                    $('.remark').remove();
+                }
+         var reasondropdown = $('.reason');
+         reasondropdown.empty()
+
+         var spec = document.createElement('option');
+         spec.text = spec.value = 'Closing sample project';
+                             reasondropdown[0].add(spec, 0);
+          var spec = document.createElement('option');
+         spec.text = spec.value = 'Closing master project';
+                             reasondropdown[0].add(spec, 0);
+          var spec = document.createElement('option');
+         spec.text = spec.value = 'Closing rework project';
+                             reasondropdown[0].add(spec, 0);
+         var spec = document.createElement('option');
+         spec.text = '...............';
+                             reasondropdown[0].add(spec, 0);
+         reasondropdown[0].getElementsByTagName('option')[0].selected = 'selected'
+     }
+     else{
+         var reasondropdown = $('.reason');
+         reasondropdown.empty()
+         var spec = document.createElement('option');
+         spec.text = spec.value = 'Others';
+                             reasondropdown[0].add(spec, 0);
+          var spec = document.createElement('option');
+         spec.text = spec.value = 'Revising planned cost for 0 value project ';
+                             reasondropdown[0].add(spec, 0);
+         var spec = document.createElement('option');
+         spec.text = spec.value = 'Revising planned cost ';
+                             reasondropdown[0].add(spec, 0);
+         var spec = document.createElement('option');
+         spec.text = spec.value = 'Revising planned effort for 0 value project ';
+                             reasondropdown[0].add(spec, 0);
+         var spec = document.createElement('option');
+         spec.text = spec.value = 'Revising planned effort ';
+                             reasondropdown[0].add(spec, 0);
+         var spec = document.createElement('option');
+         spec.text = spec.value = 'Extending end date internal ';
+                             reasondropdown[0].add(spec, 0);
+         var spec = document.createElement('option');
+         spec.text = spec.value = 'Extending end date external ';
+                             reasondropdown[0].add(spec, 0);
+         var spec = document.createElement('option');
+         spec.text = '...............';
+                             reasondropdown[0].add(spec, 0);
+        reasondropdown[0].getElementsByTagName('option')[0].selected = 'selected';
+     }
+
+});
+
 </script>
 
 {% endblock %}{% endblock %}

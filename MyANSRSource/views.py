@@ -1709,7 +1709,11 @@ def UpdateProjectInfo(request, newInfo):
 
         pci = ProjectChangeInfo()
         pci.project = pru
-        pci.reason = newInfo[1]['reason']
+        if newInfo[1]['remark']:
+            pci.reason = newInfo[1]['reason'] + " " + newInfo[1]['remark']
+        else:
+            pci.reason = newInfo[1]['reason']
+
         pci.endDate = newInfo[1]['endDate']
         pci.salesForceNumber = newInfo[1]['salesForceNumber']
         pci.revisedEffort = newInfo[1]['revisedEffort']

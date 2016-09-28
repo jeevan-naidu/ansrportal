@@ -15,7 +15,18 @@ import helper
 import autocomplete_light
 autocomplete_light.autodiscover()
 
-
+PROJECT_CLOSE_FLAG = (('','................'),
+                      ('Extending end date external ', 'Extending end date external '),
+                      ('Extending end date internal ', 'Extending end date internal '),
+                      ('Extending end date for 0 value project ', 'Extending end date for 0 value project '),
+                      ('Revising planned effort ', 'Revising planned effort '),
+                      ('Revising planned effort for 0 value project ', 'Revising planned effort for 0 value project '),
+                      ('Revising planned cost ', 'Revising planned cost '),
+                      ('Revising planned cost for 0 value project ', 'Revising planned cost for 0 value project '),
+                      ('Others', 'Others'),
+                      ('Closing sample project', 'Closing sample project'),
+                      ('Closing master project', 'Closing master project'),
+                      ('Closing rework project', 'Closing rework project'),)
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 startDate = TimeSheetEntry.objects.all().values('wkstart').distinct()
 year = list(set([eachDate['wkstart'].year for eachDate in startDate]))
@@ -24,7 +35,6 @@ MONTHS = tuple(zip(
     (calendar.month_name[i] for i in range(1, 13))
 ))
 YEARS = tuple(zip(year, year))
-
 
 class ActivityForm(forms.Form):
     activity = forms.ModelChoiceField(
@@ -412,11 +422,12 @@ class ChangeProjectForm(forms.ModelForm):
 class ChangeProjectBasicInfoForm(forms.ModelForm):
 
     id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
-
+    reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG)
+    remark = forms.CharField(max_length=100, required=False)
     class Meta:
         model = ProjectChangeInfo
         fields = (
-            'reason', 'endDate', 'revisedEffort',
+            'reason', 'remark', 'endDate', 'revisedEffort',
             'revisedTotal', 'salesForceNumber', 'po', 'closed', 'signed'
         )
         widgets = {
@@ -426,11 +437,12 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        self.fields['reason'].widget.attrs['class'] = "form-control"
+        self.fields['reason'].widget.attrs['class'] = "form-control reason"
+        self.fields['remark'].widget.attrs['class'] = "form-control remark"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
         self.fields['revisedEffort'].widget.attrs['class'] = "form-control"
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control"
-        self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['closed'].widget.attrs['class'] = "form-control project_close"
         self.fields['signed'].widget.attrs['class'] = "form-control"
         self.fields['salesForceNumber'].widget.attrs['class'] = "form-control"
         self.fields['salesForceNumber'].widget.attrs['min'] = "20100000"
