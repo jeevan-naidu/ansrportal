@@ -2094,7 +2094,7 @@ def saveProject(request):
             startDate = datetime.fromtimestamp(
                 int(request.POST.get('startDate'))).date()
             endDate = datetime.fromtimestamp(
-                int(request.POST.get('enddate'))).date()
+                int(request.POST.get('endDate'))).date()
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')
