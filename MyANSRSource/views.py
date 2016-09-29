@@ -1710,7 +1710,7 @@ def UpdateProjectInfo(request, newInfo):
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
-            pci.reason = newInfo[1]['reason'] + " " + newInfo[1]['remark']
+            pci.reason = newInfo[1]['remark']
         else:
             pci.reason = newInfo[1]['reason']
 
