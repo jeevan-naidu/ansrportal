@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from Library.models import Book, Author, LendPeriods, Publisher
 
 logger = logging.getLogger('MyANSRSource')
-FEED_DIR = "/home/vivekpradhan/Documents/"
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data/"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
