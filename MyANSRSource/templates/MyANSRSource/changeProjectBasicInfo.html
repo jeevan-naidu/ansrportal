@@ -79,18 +79,8 @@
 
 <script>
    window.onload = function() {
-       $('.remark').remove();
-       var reason = $('.reason option:selected').val();
-            if(reason == 'Others'){
-                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" maxlength="1000" name="Change Basic Information-remark" type="text" required="true">';
-                $(".remark_span").append(reason);
-            }
-            else{
-                reamrkinput = $('.remark')
-                if(reamrkinput){
-                    $('.remark').remove();
-                }
-            }
+        var reason = $('.reason option:selected').val();
+        var textremark = $('.remark')[0].value;
         var reasondropdown = $('.reason');
         var leng = reasondropdown['0'].length;
         reasondropdown['0'].remove(leng-1);
@@ -102,6 +92,21 @@
        else{
            commentsadd();
        }
+
+         $('.remark').remove();
+
+            if(reason == 'Others'){
+                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" name="Change Basic Information-remark" type="text" required="true" value='+textremark+'>';
+                $(".remark_span").append(reason);
+                reasondropdown = $('.reason');
+                reasondropdown[0].getElementsByTagName('option')[7].selected = 'selected';
+            }
+            else{
+                reamrkinput = $('.remark')
+                if(reamrkinput){
+                    $('.remark').remove();
+                }
+            }
         }
 
 
@@ -110,7 +115,7 @@
 
             var reason = $('.reason option:selected').val();
             if(reason == 'Others'){
-                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" maxlength="100" name="Change Basic Information-remark" type="text" required="true">';
+                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" name="Change Basic Information-remark" type="text" required="true">';
                 $(".remark_span").append(reason);
             }
             else{
@@ -175,7 +180,7 @@ function commentsadd(){
          spec.text = spec.value = 'Extending end date internal ';
                              reasondropdown[0].add(spec, 0);
          var spec = document.createElement('option');
-         spec.text = spec.value = 'Extending end date external (client side) ';
+         spec.text = spec.value = 'Extending end date external (client side)';
                              reasondropdown[0].add(spec, 0);
          var spec = document.createElement('option');
          spec.text = '...............';
