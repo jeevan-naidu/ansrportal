@@ -34,6 +34,7 @@
                         <th>Book Title</th>
                         <th>Author</th>
                         <th>Publisher</th>
+                        <th>Genre</th>
                         <th>Action</th>
                     </tr>
                     {% for book in bookshelves %}
@@ -42,6 +43,7 @@
                         <td>{{book.title}}</td>
                         <td>{{book.author.name}} {{book.author.surname}}</td>
                         <td>{{book.publisher.name}}</td>
+                    <td>{{ book.genre }}</td>
                         <td>
                             {% if book.status == 'available' %}
                                 <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.id}}">Apply</button>
@@ -56,6 +58,7 @@
                         <td>{{book.book.title}}</td>
                         <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
                         <td>{{book.book.publisher.name}}</td>
+                        <td>{{ book.book.genre }}</td>
                         <td>
                             {% if book.book.status == 'available' %}
                                 <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.book.id}}">Apply</button>
@@ -170,9 +173,16 @@
         type:'GET',
         success: function(data){
             if(data.is_added){
-                swal("Done!", data.success_msg, "success");
 
-                window.location.reload();
+
+swal({
+  title: "Done!",
+   text: data.success_msg,
+    type: "success"
+  },
+  function(){
+    window.location.reload();
+});
             }
             else{
 
@@ -190,8 +200,15 @@ $(".action-book").click(function(){
         type:'GET',
         success: function(data){
             if(data.is_added){
-                swal("Done!", data.success_msg, "success");
-                window.location.reload();
+                swal({
+  title: "Done!",
+   text: data.success_msg,
+    type: "success"
+  },
+  function(){
+    window.location.reload();
+});
+
             }
             else{
 
@@ -208,9 +225,16 @@ $(".return-book").click(function(){
         type:'GET',
         success: function(data){
             if(data.is_added){
-                swal("Done!", data.success_msg, "success");
+                swal({
+  title: "Done!",
+   text: data.success_msg,
+    type: "success"
+  },
+  function(){
+    window.location.reload();
+});
 
-                window.location.reload();
+
             }
             else{
 

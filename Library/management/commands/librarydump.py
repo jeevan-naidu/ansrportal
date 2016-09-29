@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from Library.models import Book, Author, LendPeriods, Publisher
 
 logger = logging.getLogger('MyANSRSource')
-FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data/"
+FEED_DIR = "/home/vivekpradhan/Documents/"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
@@ -56,7 +56,7 @@ def insertToDb1(data_file):
             else:
                 author, created1 = Author.objects.get_or_create(name=authorname[0], surname='')
             publisher, created2 = Publisher.objects.get_or_create(name=data_file[3])
-            book, created3 = Book.objects.get_or_create(title=data_file[0],
+            Book(title=data_file[0],
                  ISBN=1111111111111,
                  page_amount=250,
                  author=author,
@@ -64,7 +64,7 @@ def insertToDb1(data_file):
                  publisher=publisher,
                  status='available',
                  genre=data_file[2],
-                 )
+                 ).save()
 
     except Exception, e:
-        print "Exception happen: " + str(e)
+        print "Exception happen: " + str(e) + "book having problem" + data_file[0]

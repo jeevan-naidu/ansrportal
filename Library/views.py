@@ -81,7 +81,7 @@ def booksearch(request):
         booklist = Book.objects.filter(title__icontains=searchtext)[:10]
     i=0
     for book in booklist:
-        context[i] = str(book.id) + ", " + book.title + ", " + book.author.name
+        context[i] = str(book.id) + ", " + book.title + ", " + book.author.name + " " + book.author.surname
         i = i+1
     return JsonResponse(context)
 
@@ -98,7 +98,9 @@ def booksearchpage(request):
         lendbook = BookApplication.objects.filter(lend_by=userid, book__author__name__icontains=searchtext)
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
-            context['orderedbook'] = BookApplication.objects.filter(status='applied', book__author__name__icontains=searchtext)
+            context['orderedbook'] = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
+                                                                    | Q(book__author__surname__icontains=searchtext),
+                                                                    status='applied')
         else:
             context['is_admin'] = False
     else:
