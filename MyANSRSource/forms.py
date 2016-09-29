@@ -16,7 +16,7 @@ import autocomplete_light
 autocomplete_light.autodiscover()
 
 PROJECT_CLOSE_FLAG = (('','................'),
-                      ('Extending end date external ', 'Extending end date external (client side)'),
+                      ('Extending end date external (client side)', 'Extending end date external (client side)'),
                       ('Extending end date internal ', 'Extending end date internal '),
                       ('Extending end date for 0 value project ', 'Extending end date for 0 value project '),
                       ('Revising planned effort ', 'Revising planned effort '),
