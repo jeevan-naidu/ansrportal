@@ -144,10 +144,10 @@ def TimesheetFormset(currentUser,enddate):
             label="Project",
             required=True,
         )
-        # location = forms.ModelChoiceField(
-        #     queryset=None,
-        #     required=True
-        # )
+        location = forms.ModelChoiceField(
+            queryset=None,
+            required=True
+        )
         chapter = forms.CharField(widget=forms.Select())
 
         projectType = forms.CharField(label="pt",
@@ -261,14 +261,14 @@ def TimesheetFormset(currentUser,enddate):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             ).order_by('name')
-            # self.fields['location'].queryset = OfficeLocation.objects.filter(
-            #     active=True)
+            self.fields['location'].queryset = OfficeLocation.objects.filter(
+                active=True)
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
             self.fields['tsId'].widget.attrs['class'] = "set-zero"
-            # self.fields['location'].widget.attrs['class'] = \
-            #     "form-control d-item set-zero"
+            self.fields['location'].widget.attrs['class'] = \
+                "form-control d-item set-zero"
             self.fields['chapter'].widget.attrs[
                 'class'] = "form-control d-item b-chapter \
                 remove-sel-options set-zero"
