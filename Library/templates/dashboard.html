@@ -93,7 +93,7 @@
                         <td>{{book.book.publisher.name}}</td>
                         <td>{{book.lend_from}}</td>
                         <td>{{book.lend_to}}</td>
-                    <td>{{book.status}}</td>
+                    <td>{%for k,v in  status %} {%if k == book.status %} {{v}} {% endif %}{%endfor%}</td>
                     <td>
                             {% if book.status == 'approved' %}
                                 <button type="button" class="btn btn-primary btn-sm return-book" id="{{book.id}}">Return</button>
@@ -115,8 +115,8 @@
                         <th>Applied By</th>
                         <th>Book Title</th>
                         <th>Author</th>
-                        <th>Publisher</th>
                         <th>Booked Date</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                     {% for book in orderedbook %}
@@ -124,9 +124,8 @@
                         <td>{{book.lend_by.first_name}} {{book.lend_by.last_name}}</td>
                         <td>{{book.book.title}}</td>
                         <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
-                        <td>{{book.book.publisher.name}}</td>
                         <td>{{book.lend_from}}</td>
-
+                        <td>{%for k,v in  status %} {%if k == book.status %} {{v}} {% endif %}{%endfor%}</td>
                     <td>
 
                                 <button type="button" class="btn btn-primary btn-sm action-book" id="accept-{{book.id}}">Accept</button>
@@ -170,9 +169,15 @@
         type:'GET',
         success: function(data){
             if(data.is_added){
-                swal("Done!", data.success_msg, "success");
+                swal({
+                      title: "Done!",
+                       text: data.success_msg,
+                        type: "success"
+                      },
+                      function(){
+                        window.location.reload();
+                    });
 
-                window.location.reload();
             }
             else{
 
@@ -190,8 +195,15 @@ $(".action-book").click(function(){
         type:'GET',
         success: function(data){
             if(data.is_added){
-                swal("Done!", data.success_msg, "success");
-                window.location.reload();
+                swal({
+                      title: "Done!",
+                       text: data.success_msg,
+                        type: "success"
+                      },
+                      function(){
+                        window.location.reload();
+                    });
+
             }
             else{
 
@@ -208,9 +220,15 @@ $(".return-book").click(function(){
         type:'GET',
         success: function(data){
             if(data.is_added){
-                swal("Done!", data.success_msg, "success");
+                swal({
+                      title: "Done!",
+                       text: data.success_msg,
+                        type: "success"
+                      },
+                      function(){
+                        window.location.reload();
+                    });
 
-                window.location.reload();
             }
             else{
 
