@@ -121,7 +121,7 @@ def booksearchpage(request):
             context['is_admin'] = True
             context['orderedbook'] = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
                                                                     | Q(book__author__surname__icontains=searchtext),
-                                                                    status='applied')
+                                                                    status__in=['applied', 'appliedreturned'])
         else:
             context['is_admin'] = False
     else:

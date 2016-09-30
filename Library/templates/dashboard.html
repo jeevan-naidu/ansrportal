@@ -9,7 +9,7 @@
 
    <div class="pull-right col-sm-6">
            <div class="search">
-		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Book Title" value="{{ query }}"/>
+		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Author" value="{{ query }}"/>
 		 <ul class="results dropdown-menu" >
 		 </ul>
                </div>
@@ -101,7 +101,7 @@
                             {% if book.status == 'approved' %}
                                 <button type="button" class="btn btn-primary btn-sm return-book" id="{{book.id}}">Return</button>
                             {% else %}
-                            <button type="button" disabled class="btn btn-primary btn-sm ">Return</button>
+{#                            <button type="button" disabled class="btn btn-primary btn-sm ">Return</button>#}
                             {% endif %}
                         </td>
                         </tr>
