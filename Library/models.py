@@ -4,7 +4,7 @@ import hashlib
 from django.utils import timezone
 
 RESULT_STATUS = (('applied', 'Applied'), ('approved', 'Approved'), ('rejected', 'Rejected'),
-                 ('returnedapplied', 'Returned Applied'), ('returned', 'Returned'))
+                 ('appliedreturned', 'Returned Applied'), ('returned', 'Returned'))
 BOOK_STATUS = (('available', 'Available'), ('unavailable', 'UnAvailable'))
 
 class Book(models.Model):
