@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from models import Book, BookApplication
+from models import Book, BookApplication, RESULT_STATUS
 from datetime import date, timedelta
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 def dashboard(request):
@@ -32,14 +33,14 @@ def adminaction(request):
     action = bookid[:6]
     bookid = bookid[7:]
     bookapplication = BookApplication.objects.get(id=bookid)
-    if action == "accept":
+    if action == "accept" and bookapplication.status == 'applied':
         bookapplication.status = "approved"
         bookapplication.status_action_by = user
         context['action'] = "approved"
         context['is_added'] = True
         bookapplication.save()
         context['success_msg'] = 'You approved the book request'
-    else:
+    elif action == 'reject' and bookapplication.status == 'applied':
         bookapplication.status = "rejected"
         bookapplication.status_action_by = user
         context['action'] = "rejected"
@@ -49,6 +50,26 @@ def adminaction(request):
         context['is_added'] = True
         bookapplication.save()
         context['success_msg'] = 'You rejected the book request'
+    elif action == 'accept' and bookapplication.status == 'returnedapplied':
+        bookapplication.status = "returned"
+        bookapplication.status_action_by = user
+        book = bookapplication.book
+        book.status = "available"
+        book.save()
+        context['action'] = "returned"
+        context['is_added'] = True
+        bookapplication.save()
+        context['success_msg'] = 'You approved the return book request'
+    else:
+        bookapplication.status = "approved"
+        bookapplication.status_action_by = user
+        context['action'] = "rejected"
+        book = bookapplication.book
+        book.status = "unavailable"
+        book.save()
+        context['is_added'] = True
+        bookapplication.save()
+        context['success_msg'] = 'You rejected the return book request'
 
     return JsonResponse(context)
 
@@ -58,16 +79,12 @@ def bookreturn(request):
     bookid = request.GET.get('bookid')
     user = User.objects.get(id=request.user.id)
     bookapplication = BookApplication.objects.get(id=bookid)
-    bookapplication.status = "returned"
+    bookapplication.status = "returnedapplied"
     bookapplication.status_action_by = user
-    book = bookapplication.book
     context['is_added'] = True
     bookapplication.save()
-    context['success_msg'] = 'You approved the book request'
-    book.status = 'avaliable'
-    book.save()
     context['is_added'] = True
-    context['success_msg'] = 'your request raised for admin approval'
+    context['success_msg'] = 'your return request raised for admin approval'
     return JsonResponse(context)
 
 def booksearch(request):
@@ -99,8 +116,7 @@ def booksearchpage(request):
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
             context['orderedbook'] = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
-                                                                    | Q(book__author__surname__icontains=searchtext),
-                                                                    status='applied')
+                                                                    | Q(book__author__surname__icontains=searchtext),                                                                status='applied')
         else:
             context['is_admin'] = False
     else:
@@ -115,6 +131,7 @@ def booksearchpage(request):
             context['is_admin'] = False
     context['query'] = searchtext
     context['category'] = category
+    context['status'] = RESULT_STATUS
     context['bookshelves'] = bookshelves
     context['bookshelvesordered'] = bookshelvesordered
     context['lendbook'] = lendbook
@@ -135,7 +152,8 @@ def booksearchbyname(request):
     lendbook = BookApplication.objects.filter(lend_by=userid, book__id=bookid)
     if request.user.groups.filter(name='LibraryAdmin'):
         context['is_admin'] = True
-        context['orderedbook'] = BookApplication.objects.filter(status='applied', book__id=bookid)
+        context['orderedbook'] = BookApplication.objects.filter(status__in=['applied', 'returnedapplied']
+                                                                , book__id=bookid)
     else:
         context['is_admin'] = False
 
@@ -145,4 +163,5 @@ def booksearchbyname(request):
     context['bookshelves'] = bookshelves
     context['bookshelvesordered'] = bookshelvesordered
     context['lendbook'] = lendbook
+    context['status'] = RESULT_STATUS
     return render(request, 'dashboard.html', context)

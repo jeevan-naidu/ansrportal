@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 import hashlib
 from django.utils import timezone
 
-RESULT_STATUS = (('applied', 'Applied'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('returned', 'Returned'))
+RESULT_STATUS = (('applied', 'Applied'), ('approved', 'Approved'), ('rejected', 'Rejected'),
+                 ('returnedapplied', 'Returned Applied'), ('returned', 'Returned'))
 BOOK_STATUS = (('available', 'Available'), ('unavailable', 'UnAvailable'))
 
 class Book(models.Model):
