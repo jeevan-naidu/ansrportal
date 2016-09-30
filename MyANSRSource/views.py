@@ -520,7 +520,7 @@ def Timesheet(request):
                                 if v==None:
                                     v=float(0.0)
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
-                                if v == None:
+                                if v==None:
                                     v = float(0.0)
                             if k == 'chapter':
                                 v = Chapter.objects.get(pk=v)
