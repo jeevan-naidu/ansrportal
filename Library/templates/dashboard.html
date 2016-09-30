@@ -53,25 +53,25 @@
                         </td>
                         </tr>
                     {% endfor %}
-                    {% for book in bookshelvesordered %}
-                    <tr>
-                        <td>{{book.book.title}}</td>
-                        <td>{{book.book.author.name}} {{book.book.author.surname}}</td>
-                        <td>{{book.book.publisher.name}}</td>
-                        <td>{{ book.book.genre }}</td>
-                        <td>
-                            {% if book.book.status == 'available' %}
-                                <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.book.id}}">Apply</button>
-                            {% else %}
-                            <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>
-                            <div class="booked-by">
-                        <h4>Loaned By</h4>
-                        <p>dd</p>
-                    </div>
-                            {% endif %}
-                        </td>
-                        </tr>
-                    {% endfor %}
+{#                    {% for book in bookshelvesordered %}#}
+{#                    <tr>#}
+{#                        <td>{{book.book.title}}</td>#}
+{#                        <td>{{book.book.author.name}} {{book.book.author.surname}}</td>#}
+{#                        <td>{{book.book.publisher.name}}</td>#}
+{#                        <td>{{ book.book.genre }}</td>#}
+{#                        <td>#}
+{#                            {% if book.book.status == 'available' %}#}
+{#                                <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.book.id}}">Apply</button>#}
+{#                            {% else %}#}
+{#                            <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>#}
+{#                            <div class="booked-by">#}
+{#                        <h4>Loaned By</h4>#}
+{#                        <p>dd</p>#}
+{#                    </div>#}
+{#                            {% endif %}#}
+{#                        </td>#}
+{#                        </tr>#}
+{#                    {% endfor %}#}
 
 </table>
 
