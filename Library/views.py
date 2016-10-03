@@ -110,10 +110,6 @@ def booksearchpage(request):
     userid = request.user.id
     if category == 'Author':
         bookshelves = Book.objects.filter(Q(author__name__icontains=searchtext)| Q(author__surname__icontains=searchtext),)
-                                          # status='available')
-        # bookshelvesordered = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
-        #                                                     | Q(book__author__surname__icontains=searchtext),
-        #                                                     book__status='unavaliable')
         lendbook = BookApplication.objects.filter( Q(book__author__name__icontains=searchtext)
                                                                     | Q(book__author__surname__icontains=searchtext),
                                                                         lend_by=userid)
@@ -121,25 +117,22 @@ def booksearchpage(request):
             context['is_admin'] = True
             context['orderedbook'] = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
                                                                     | Q(book__author__surname__icontains=searchtext),
-                                                                    status='applied')
+                                                                    status__in=['applied', 'appliedreturned'])
         else:
             context['is_admin'] = False
     else:
         bookshelves = Book.objects.filter(title__icontains=searchtext,)
-                                          # status='available')
-        # bookshelvesordered = BookApplication.objects.filter(status__in=['applied', 'approved'],
-        #                                                     book__title__icontains=searchtext)
         lendbook = BookApplication.objects.filter(lend_by=userid, book__title__icontains=searchtext)
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
-            context['orderedbook'] = BookApplication.objects.filter(status='applied',  book__title__icontains=searchtext)
+            context['orderedbook'] = BookApplication.objects.filter(status__in=['applied', 'appliedreturned'],
+                                                                    book__title__icontains=searchtext)
         else:
             context['is_admin'] = False
     context['query'] = searchtext
     context['category'] = category
     context['status'] = RESULT_STATUS
     context['bookshelves'] = bookshelves
-    # context['bookshelvesordered'] = bookshelvesordered
     context['lendbook'] = lendbook
     return render(request, 'dashboard.html', context)
 
@@ -153,8 +146,6 @@ def booksearchbyname(request):
     userid = request.user.id
 
     bookshelves = Book.objects.filter(id=bookid)
-    # bookshelvesordered = BookApplication.objects.filter(book__status = 'unavaliable',
-    #                                                     book__id=bookid)
     lendbook = BookApplication.objects.filter(lend_by=userid, book__id=bookid)
     if request.user.groups.filter(name='LibraryAdmin'):
         context['is_admin'] = True
@@ -171,3 +162,12 @@ def booksearchbyname(request):
     context['lendbook'] = lendbook
     context['status'] = RESULT_STATUS
     return render(request, 'dashboard.html', context)
+
+def bookdetail(request):
+    context = {}
+    book_id = request.GET.get('id')
+    bookshelvesordered = BookApplication.objects.filter(status__in=['applied', 'appliedreturned', 'approved'],
+                                                        book__id=book_id)
+    context['status'] = RESULT_STATUS
+    context['bookshelvesordered'] = bookshelvesordered
+    return render(request, 'detail.html', context)
