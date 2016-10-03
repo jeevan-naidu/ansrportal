@@ -125,15 +125,41 @@ def booksearchpage(request):
         lendbook = BookApplication.objects.filter(lend_by=userid, book__title__icontains=searchtext)
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
-            context['orderedbook'] = BookApplication.objects.filter(status__in=['applied', 'appliedreturned'],
+            orderedbook = BookApplication.objects.filter(status__in=['applied', 'appliedreturned'],
                                                                     book__title__icontains=searchtext)
+            paginator2 = Paginator(orderedbook, 10)
+            try:
+                orderedbookdata = paginator2.page(page)
+            except PageNotAnInteger:
+                orderedbookdata = paginator2.page(1)
+            except EmptyPage:
+                orderedbookdata = paginator2.page(paginator2.num_pages)
+            context['orderedbook'] = orderedbookdata
         else:
             context['is_admin'] = False
+    page = request.GET.get('page', 1)
+    paginator = Paginator(bookshelves, 10)
+    try:
+        bookshelvesdata = paginator.page(page)
+    except PageNotAnInteger:
+        bookshelvesdata = paginator.page(1)
+    except EmptyPage:
+        bookshelvesdata = paginator.page(paginator.num_pages)
+
+    paginator1 = Paginator(lendbook, 10)
+    try:
+        lendbookdata = paginator1.page(page)
+    except PageNotAnInteger:
+        lendbookdata = paginator1.page(1)
+    except EmptyPage:
+        lendbookdata = paginator1.page(paginator1.num_pages)
+
+
     context['query'] = searchtext
     context['category'] = category
     context['status'] = RESULT_STATUS
-    context['bookshelves'] = bookshelves
-    context['lendbook'] = lendbook
+    context['bookshelves'] = bookshelvesdata
+    context['lendbook'] = lendbookdata
     return render(request, 'dashboard.html', context)
 
 

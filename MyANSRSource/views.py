@@ -197,7 +197,8 @@ def Timesheet(request):
                 tmp_date += timedelta(days=1)
         else:
             startdate = request.GET.get('startdate', '')
-            tmp_date = datetime(year=int(startdate[4:8]), month=int(startdate[2:4]), day=int(startdate[0:2]))
+            if startdate:
+                tmp_date = datetime(year=int(startdate[4:8]), month=int(startdate[2:4]), day=int(startdate[0:2]))
         tsform = TimesheetFormset(request.user, tmp_date)
         tsFormset = formset_factory(
             tsform, extra=1, max_num=1, can_delete=True
