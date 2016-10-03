@@ -190,8 +190,9 @@ def Timesheet(request):
             if endDate1:
                 tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
                 tmp_date += timedelta(days=1)
-        #  fix ends here
-
+        else:
+            startdate = request.GET.get('startdate', '')
+            tmp_date = datetime(year=int(startdate[4:8]), month=int(startdate[2:4]), day=int(startdate[0:2]))
         tsform = TimesheetFormset(request.user, tmp_date)
         tsFormset = formset_factory(
             tsform, extra=1, max_num=1, can_delete=True
@@ -790,7 +791,6 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
 
 
 def renderTimesheet(request, data):
-
 
     mondays_list = [x for x in get_mondays_list_till_date()]
 
