@@ -164,6 +164,11 @@ def weeks_list_till_date():
         monday += timedelta(days=7)
 
 
+# to convert unicode strings to string with apostrophe removed from each project name
+def unicode_to_string(resultant_set):
+    return str([x.encode('UTF8') for x in resultant_set]).replace("'", "")
+
+
 @login_required
 @permission_required('MyANSRSource.enter_timesheet')
 def Timesheet(request):
@@ -307,6 +312,11 @@ def Timesheet(request):
                         timesheetDict['approved'] = approved
                     timesheetList.append(timesheetDict.copy())
                     timesheetDict.clear()
+            if (mondayTotal > 24) | (tuesdayTotal > 24) | \
+            (wednesdayTotal > 24) | (thursdayTotal > 24) | \
+            (fridayTotal > 24) | (saturdayTotal > 24) | \
+            (sundayTotal > 24):
+                messages.error(request, 'You can only work for 24 hours a day')
             for activity in activities:
                 if activity.cleaned_data['activity'] is not None:
                     if activity.cleaned_data['DELETE'] is True:
@@ -426,6 +436,10 @@ def Timesheet(request):
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
                                 if v==None:
                                     v=float(0.0)
+                            if k == 'chapter':
+                                v = Chapter.objects.get(pk=v)
+                            if k == 'task':
+                                v = Task.objects.get(pk=v)
                             setattr(billableTS, k, v)
                     billableTS.save()
                     global dbSave
@@ -507,8 +521,13 @@ def Timesheet(request):
                                 if v==None:
                                     v=float(0.0)
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
-                                if v==None:
-                                    v=float(0.0)
+                                if v == None:
+                                    v = float(0.0)
+                            if k == 'chapter':
+                                v = Chapter.objects.get(pk=v)
+                            if k == 'task':
+                                v = Task.objects.get(pk=v)
+
                             setattr(billableTS, k, v)
                     billableTS.save()
                     global dbSave
@@ -543,22 +562,22 @@ def Timesheet(request):
 
             if len(approvedSet) > 0:
                 messages.success(
-                    request, 'Timesheet approved :' + str(list(approvedSet)))
+                    request, 'Timesheet approved :' + unicode_to_string(approvedSet))
                 hold_button = True
             if len(autoApprovedSet) > 0:
                 messages.success(
                     request, 'Timesheet auto-approved by the system :' +
-                    str(list(autoApprovedSet)))
+                    unicode_to_string(autoApprovedSet))
                 hold_button = True
             if len(holdSet) > 0:
                 messages.info(
                     request, 'Timesheet sent to your manager :' +
-                    str(list(holdSet)))
+                    unicode_to_string(holdSet))
                 hold_button = True
             if len(saveSet) > 0:
                 messages.info(
                     request, 'Timesheet has been saved:' +
-                    str(list(saveSet)))
+                    unicode_to_string(saveSet))
                 hold_button = False
         else:
             # Switch dates back and forth
@@ -656,17 +675,17 @@ def Timesheet(request):
         hold_button = False
         if len(approvedSet) > 0:
             messages.success(
-                request, 'Timesheet approved :' + str(list(approvedSet)))
+                request, 'Timesheet approved :' + unicode_to_string(approvedSet))
             hold_button = True
         if len(holdSet) > 0:
             messages.info(
                 request, 'Timesheet pending manager approval :' +
-                str(list(holdSet)))
+                unicode_to_string(holdSet))
             hold_button = True
         if len(sentBackSet) > 0:
             messages.info(
-                request, 'Timesheet you have to submit:' +
-                str(list(sentBackSet)))
+                request, 'Timesheet you have to submit:' + unicode_to_string(sentBackSet))
+                # str(list(sentBackSet)))
             hold_button = False
 
         data = {'weekstartDate': dates['start'],

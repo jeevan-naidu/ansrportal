@@ -103,19 +103,19 @@ class ActivityForm(forms.Form):
         self.fields['activity_total'].widget.attrs['readonly'] = 'True'
         self.fields['activity'].widget.attrs['class'] = "form-control"
         self.fields['activity_monday'].widget.attrs['class'] = "form-control \
-        days input-field Mon-t"
+        days input-field Mon-t 24hrcheck"
         self.fields['activity_tuesday'].widget.attrs['class'] = "form-control \
-        days input-field Tue-t"
+        days input-field Tue-t 24hrcheck"
         self.fields['activity_wednesday'].widget.attrs['class'] = "form-control \
-        days input-field Wed-t"
+        days input-field Wed-t 24hrcheck"
         self.fields['activity_thursday'].widget.attrs['class'] = "form-control \
-        days input-field Thu-t"
+        days input-field Thu-t 24hrcheck"
         self.fields['activity_friday'].widget.attrs['class'] = "form-control \
-        days input-field Fri-t"
+        days input-field Fri-t 24hrcheck"
         self.fields['activity_saturday'].widget.attrs['class'] = "form-control \
-        days input-field Sat-t"
+        days input-field Sat-t 24hrcheck"
         self.fields['activity_sunday'].widget.attrs['class'] = "form-control \
-        days input-field Sun-t"
+        days input-field Sun-t 24hrcheck"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
         self.fields['activity_monday'].widget.attrs['value'] = 0
@@ -148,17 +148,13 @@ def TimesheetFormset(currentUser,enddate):
             queryset=None,
             required=True
         )
-        chapter = forms.ModelChoiceField(
-            queryset=Chapter.objects.all(),
-            required=False,
-        )
+        chapter = forms.CharField(widget=forms.Select())
+
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
-        task = forms.ModelChoiceField(
-            queryset=Task.objects.filter(active=True),
-            label="Task",
-            required=True,
-        )
+
+        task = forms.CharField(widget=forms.Select())
+
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,

@@ -158,8 +158,11 @@
 
 
 </head>
-
+{%if  request.get_full_path|has_url:'timesheet' %}
+<body id="tables" class="full-layout  nav-right-hide nav-right-start-hide  nav-top-fixed      responsive    clearfix  nav-left-hide remove-navbar nav-left-medium breakpoint-975 pace-done" data-active="tables " data-smooth-scrolling="1">
+{%else%}
 <body id="tables" class="full-layout  nav-right-hide nav-right-start-hide  nav-top-fixed      responsive    clearfix" data-active="tables " data-smooth-scrolling="1">
+{%endif%}
     <div class="vd_body">
         <!-- Header Start -->
         <header class="header-1" id="header">
