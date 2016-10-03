@@ -10,4 +10,5 @@ urlpatterns = patterns(u'',
                        url(r'^booksearch/$', login_required(booksearch), name=u'Library_booksearch'),
                        url(r'^booksearchpage/$', login_required(booksearchpage), name=u'Library_booksearchpage'),
                        url(r'^booksearchbyname/$', login_required(booksearchbyname), name=u'Library_booksearchpagename'),
+                       url(r'^detail/$', login_required(bookdetail), name=u'Library_bookdetail'),
                        )

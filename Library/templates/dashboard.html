@@ -1,4 +1,32 @@
 <!-- row -->
+ <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg details-modal">
+                        <div class="modal-content">
+                            <div class="modal-header vd_bg-blue vd_white">
+
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+                                <h4 class="modal-title text-center" id="myModalLabel">
+								<b> Book Details</b>
+							</h4>
+                            </div>
+                            <div class="modal-body min-height-300" id="modal_body">
+                          loading...............
+                        </div>
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+								Close
+							</button>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
             <div class="panel-body">
    <ul class="nav nav-tabs">
  <li data-toggle="tab"  data-target="#a" class="active"><a href="#">Avaliable Books</a></li>
@@ -48,30 +76,15 @@
                             {% if book.status == 'available' %}
                                 <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.id}}">Apply</button>
                             {% else %}
-                            <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>
+                                <button type="button" class="btn btn-primary btn-sm book-detail" onclick="bookdetails({{ book.id }})">
+ <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">
+    Applied </a></button>
+
                             {% endif %}
                         </td>
                         </tr>
                     {% endfor %}
-{#                    {% for book in bookshelvesordered %}#}
-{#                    <tr>#}
-{#                        <td>{{book.book.title}}</td>#}
-{#                        <td>{{book.book.author.name}} {{book.book.author.surname}}</td>#}
-{#                        <td>{{book.book.publisher.name}}</td>#}
-{#                        <td>{{ book.book.genre }}</td>#}
-{#                        <td>#}
-{#                            {% if book.book.status == 'available' %}#}
-{#                                <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.book.id}}">Apply</button>#}
-{#                            {% else %}#}
-{#                            <button type="button" disabled class="btn btn-primary btn-sm ">Apply</button>#}
-{#                            <div class="booked-by">#}
-{#                        <h4>Loaned By</h4>#}
-{#                        <p>dd</p>#}
-{#                    </div>#}
-{#                            {% endif %}#}
-{#                        </td>#}
-{#                        </tr>#}
-{#                    {% endfor %}#}
+
 
 </table>
 
@@ -265,6 +278,7 @@ $('#book-search').on('input', function(e){
             for(var i=0; i<bookscount; i++) {
                 d1 = data[i]
                 bookdetail = data[i].split(",")
+                $(".results").show();
                     $(".results").append('<li><a onclick=loadbybookname('+bookdetail[0]+')>'+bookdetail[1]+'<br /><span>by '+bookdetail[2]+'</span></a></li>')
 
 
@@ -296,4 +310,30 @@ $('#book-search').on('input', function(e){
     });
          }
    });
+
+     function bookdetails(bookid){
+
+  $.ajax(
+        {
+            type : "GET",
+            url : '/library/detail/',
+            data :{'id':bookid} ,
+            success : function(data)
+            {
+                $("#modal_body").html(data);
+
+
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+              },
+            }
+          );
+          }
+          $(document).mouseup(function() {
+              $(".results").hide();
+          });
 </script>
