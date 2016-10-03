@@ -37,7 +37,7 @@
 
    <div class="pull-right col-sm-6">
            <div class="search">
-		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Author" value="{{ query }}"/>
+		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Author" value="{{ query }}" autocomplete="off"/>
 		 <ul class="results dropdown-menu" >
 		 </ul>
                </div>
@@ -76,9 +76,11 @@
                             {% if book.status == 'available' %}
                                 <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.id}}">Apply</button>
                             {% else %}
-                                <button type="button" class="btn btn-primary btn-sm book-detail" onclick="bookdetails({{ book.id }})">
- <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">
-    Applied </a></button>
+                                <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">
+                                  <button type="button" class="btn btn-primary btn-sm book-detail" onclick="bookdetails({{ book.id }})">
+                                  Applied 
+                                  </button>
+                                </a>
 
                             {% endif %}
                         </td>
