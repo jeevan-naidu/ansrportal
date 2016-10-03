@@ -1,0 +1,33 @@
+{% for book in bookshelvesordered %}
+<div class="table-responsive">
+  <table class="table">
+  <tbody>
+    <tr>
+      <th scope="row">Book Detail</th>
+      <td>{{ book.book.title }}</td>
+
+    </tr>
+    <tr>
+      <th scope="row">Lend By</th>
+      <td>{{ book.lend_by.first_name }} {{ book.lend_by.last_name }}</td>
+
+    </tr>
+    <tr>
+      <th scope="row">Lend Date</th>
+      <td>{{ book.lend_from }}</td>
+
+    </tr>
+    <tr>
+      <th scope="row">Returning Date</th>
+      <td>{{ book.lend_to }}</td>
+
+    </tr>
+   <tr>
+      <th scope="row">Status</th>
+       <td>{%for k,v in  status %} {%if k == book.status %} {{v}} {% endif %}{%endfor%}</td>
+
+    </tr>
+  </tbody>
+</table>
+{% endfor %}
+
