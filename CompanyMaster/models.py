@@ -175,7 +175,7 @@ class Division(models.Model):
 
 class Holiday(models.Model):
     name = models.CharField(verbose_name="Holiday Name",
-                            max_length="100",
+                            max_length=100,
                             null=True,
                             blank=True)
     date = models.DateField(verbose_name="Holiday Date")
@@ -191,7 +191,7 @@ class Holiday(models.Model):
 
 class HRActivity(models.Model):
     name = models.CharField(verbose_name="Event Name",
-                            max_length="100",
+                            max_length=100,
                             default=None)
     date = models.DateField(verbose_name="Event Date")
     createdOn = models.DateTimeField(verbose_name="created Date",
@@ -212,8 +212,8 @@ class BusinessUnit(models.Model):
         verbose_name="Business Unit Name",
         max_length=40,
         blank=False)
-    new_bu_head = models.ManyToManyField(User, null=True, blank=True,
-                                         related_name='New BU Head',
+    new_bu_head = models.ManyToManyField(User, blank=True,
+                                         related_name='New_BU_Head',
                                          verbose_name="Business Unit Head")
     centerType = models.CharField(max_length=2,
                                   choices=CENTERFLAG,

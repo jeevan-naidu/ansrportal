@@ -8,18 +8,25 @@ from Leave.models import LeaveApplications,ShortAttendance, LEAVE_TYPES_CHOICES,
 from employee.models import Employee
 from django.contrib.auth.models import User
 from datetime import date, time
-import autocomplete_light
-autocomplete_light.autodiscover()
+from dal import autocomplete
+
 LEAVE_TYPES_CHOICES = (('', '---------'),) + LEAVE_TYPES_CHOICES
 
 SESSION_STATUS_CHOICES =(('', 'SELECT SESSION'),)+ SESSION_STATUS
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
-class UserListViewForm(autocomplete_light.ModelForm):
-    user = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                  widget=autocomplete_light.ChoiceWidget('UserAutocompleteUserSearch'))
 
-    user.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Employee Name'}
+class UserListViewForm(forms.ModelForm):
+    user = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        # label="Book/Title",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUserSearch', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type  Your Team Member Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
     class Meta:
         model = User
         fields = ['user']
@@ -222,9 +229,7 @@ def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
             return form
 
 
-
-class LeaveListViewForm(autocomplete_light.ModelForm):
-
+class LeaveListViewForm(forms.ModelForm):
     # user = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
     #                               widget=autocomplete_light.ChoiceWidget('UserAutocompleteUser'))
     #

@@ -1,4 +1,3 @@
-import autocomplete_light
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Book, Project
@@ -16,7 +15,6 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
         choices = choices.filter(email__icontains=q)
         return choices
 
-autocomplete_light.register(User, AutocompleteUser)
 
 class AutocompleteBook(autocomplete.Select2QuerySetView):
 
