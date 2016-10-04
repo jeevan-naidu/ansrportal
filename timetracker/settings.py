@@ -201,8 +201,7 @@ ROOT_URLCONF = 'timetracker.urls'
 WSGI_APPLICATION = 'timetracker.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
