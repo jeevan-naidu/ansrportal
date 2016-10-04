@@ -238,7 +238,7 @@ class GrievanceAdminListView(ListView):
         if grievances_page and grievances_page.count > 0:
             self.request.session['grievances_page'] = grievances_page
 
-        if 'grievances_page' not in self.request.session:
+        if 'grievances_page'  in self.request.session:
             del self.request.session['grievances_page']
 
         # if 'grievances_page' in self.request.session:
@@ -266,7 +266,7 @@ def validate_escalation_email(a):
     return a
 
 
-def remove_common_elements(a, b):
+def remove_common_elements(a, b):  # added for grievance admin  remove duplicate email
     for e in a[:]:
         try:
             validate_email(e)

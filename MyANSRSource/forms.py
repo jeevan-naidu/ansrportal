@@ -349,7 +349,7 @@ class ProjectBasicInfoForm(forms.ModelForm):
         required=True, )
     projectManager = forms.ModelChoiceField(
         queryset=User.objects.all(),
-        # label="Book/Title",
+        label="Project Leader",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             # Set some placeholder
             'data-placeholder': 'Type Employee Name ...',
@@ -455,7 +455,16 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 
 class ChangeProjectTeamMemberForm(forms.ModelForm):
     id = forms.IntegerField(label="teamRecId", widget=forms.HiddenInput())
-
+    member = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        # label="Project Leader",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type Employee Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
     class Meta:
         model = ProjectTeamMember
         fields = (
@@ -555,6 +564,17 @@ class ProjectFlagForm(forms.ModelForm):
 
 # Form Class to create milestones for project
 class changeProjectLeaderForm(forms.ModelForm):
+    projectManager = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        # label="Project Leader",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type Employee Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+
     class Meta:
         model = Project
         fields = ('projectManager',)

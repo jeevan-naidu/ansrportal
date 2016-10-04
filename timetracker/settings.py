@@ -198,7 +198,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansrsource",
+        "NAME": "1.9",
         "USER": "root",
         "PASSWORD": "bala",
         "HOST": "localhost",
@@ -212,7 +212,7 @@ BOOTSTRAP3 = {
 }
 
 # Font awesome related settings
-FONTAWESOME_CSS_URL = '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
+FONTAWESOME_CSS_URL = 'http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

@@ -87,7 +87,7 @@
             </tbody>
         </table>
     {% endfor %}
-	{%if eachInfo.projects %}<button type="submit" class="btn btn-info pull-right">Submit Status</button>
+	{%if timesheetInfo|length > 0 %}<button type="submit" class="btn btn-info pull-right">Submit Status</button>
     {%else%} <span > No Projects </span>{% endif %}
 </form>
 </div>
