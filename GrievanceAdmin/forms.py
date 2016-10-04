@@ -2,26 +2,39 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
 from django.contrib.auth.models import User
 from Grievances.models import Grievances, Grievances_category,  STATUS_CHOICES_CLOSED
-import autocomplete_light
-autocomplete_light.autodiscover()
+from dal import autocomplete
 
 dateTimeOption = {"format": "DD/MM/YYYY", "pickTime": False}
 STATUS_CHOICES_EMPTY = (('', '---------'),) + STATUS_CHOICES_CLOSED
 
 
-class FilterGrievanceForm(autocomplete_light.ModelForm):
+class FilterGrievanceForm(forms.ModelForm):
 
-    grievance_id = forms.ModelChoiceField(queryset=Grievances.objects.all(),
-                                          widget=autocomplete_light.ChoiceWidget('GrievancesAutocompleteGrievanceAdmin'))
+    grievance_id = forms.ModelChoiceField(
+        queryset=Grievances.objects.all(),
+        # label="Book/Title",
+        widget=autocomplete.ModelSelect2(url='AutocompleteGrievanceAdmin', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Enter Grievance Id ...',
+            #'class': 'form-control filter_class'
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=False, )
 
-    grievance_id.widget.attrs = {'class': 'form-control filter_class', 'placeholder': 'Enter Grievance Id'}
+    user = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),
+        # label="Book/Title",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Enter Employee Name ...',
+            'class': 'form-control filter_class'
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=False, )
 
-    user = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                  widget=autocomplete_light.ChoiceWidget('UserAutocompleteUser'))
-
-    user.widget.attrs = {'class': 'form-control filter_class', 'placeholder': 'Enter Employee Name'}
-
-    category = forms.ModelChoiceField(queryset=Grievances_category.objects.filter(active=True), empty_label="---------")
+    category = forms.ModelChoiceField(queryset=Grievances_category.objects.filter(active=True))
 
     category.widget.attrs = {'class': 'form-control filter_class'}
 
