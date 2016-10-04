@@ -6,6 +6,8 @@ from django.views.generic import View
 import datetime
 from django.utils import timezone
 from django.utils.encoding import smart_str
+from django.views.decorators.csrf import csrf_exempt
+
 import pytz
 
 
@@ -20,16 +22,18 @@ TimingsList = [ ['08:00-08:30', '08:30-09:00', '09:00-09:30', '09:30-10:00'],
 
 class BookMeetingRoomView(View):
     ''' add or edit grievances '''
-    
+
     def get(self, request):
         if 'for_location' not in request.session:
             request.session['for_location'] = ''
         if 'for_date' not in request.session:
             request.session['for_date'] = ''
         return render(request, 'BookMyRoom/index.html', locals())
-    
+
     def post(self, request):
-        
+        # print request
+        # return None
+
         context_data = {'add' : True, 'record_added' : False, 'success_msg' : None,
                         'html_data' : None, 'errors' : '', 'for_date':'' }
         if not request.POST.get('for_date'):
@@ -47,16 +51,17 @@ class BookMeetingRoomView(View):
                 time_period_list = data_list[1].split("-")
                 from_time = time_period_list[0]
                 to_time = time_period_list[1]
-                
+
                 from_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(from_time), '%Y-%m-%d/%H:%M')
                 to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
+
                 try:
                     booking_obj = MeetingRoomBooking.objects.get(room=room_obj, from_time=from_time_obj, to_time=to_time_obj, status='booked')
-                    
+
                     context_data['errors'] = "Oops! :( Looks like someone else clicked\
                     <b>Submit</b> just before you did. Better luck next time."
                 except:
-                    booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked', 
+                    booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked',
                                                 from_time=from_time_obj, to_time=to_time_obj)
                     booking_obj.save()
                     context_data['record_added'] = True
@@ -65,7 +70,7 @@ class BookMeetingRoomView(View):
 
 
 def GetBookingsView(request):
-    
+
     context_data = {'html_data': '', 'rooms_list': [], 'bookings_list': [],
                     'TimingsList': TimingsList, 'for_date': '', 'errors': '', 'bookings_list': '',
                     'location':''}
@@ -95,21 +100,58 @@ def GetBookingsView(request):
     return JsonResponse(context_data)
 
 
+@csrf_exempt
 def CancelBooking(request):
-    
-    booking_id = request.POST.get('cancel_id', '')
-    context_data = {'record_updated':False, 'user_mismatch':False}
-   
-    booking_obj = MeetingRoomBooking.objects.get(id=int(booking_id))
-    if booking_obj.booked_by == request.user:
-        booking_obj.status = 'cancelled'
-        booking_obj.save()
+    partial_update = False
+    fail = 0
+    import json
+    # import pdb
+    # pdb.set_trace()
+    json_data = json.loads(request.body)  # request.raw_post_data w/ Django < 1.4
+    try:
+        remarks = json_data['remarks']
+        cancel_id = json_data['cancel_id']
+    except KeyError:
+        print "error"
+    tmp_cancel = cancel_id.values()
+    tmp_remark = remarks.keys()
+    context_data = {'record_updated': False, 'user_mismatch': False}
+    if tmp_remark:
+            for i in tmp_cancel[:]:
+                if i in tmp_remark:
+                    tmp_remark.remove(i)
+            actual_remark_ids = tmp_remark
+
+            for i, val in enumerate(actual_remark_ids):
+                print "id" + val
+                print "remark  " + remarks[val]
+                try:
+                    MeetingRoomBooking.objects.filter(id=val).update(remark=remarks[val])
+                except:
+                    print "im failing " + val
+                    fail += 1
+
+    if tmp_cancel:
+        booking_obj = MeetingRoomBooking.objects.filter(id__in=tmp_cancel)
+        print booking_obj.query
+        print booking_obj
+        for obj in booking_obj:
+            if obj.booked_by == request.user:
+                obj.status = 'cancelled'
+                try:
+                    obj.save()
+                except:
+                    partial_update = True
+    print partial_update
+    print fail
+    if not partial_update and fail == 0:
         context_data['record_updated'] = True
     else:
         context_data['user_mismatch'] = True
-    
+    print JsonResponse(context_data)
+
     return JsonResponse(context_data)
-    
+
 
 def GetAllRoomsList(request):
 
@@ -167,5 +209,5 @@ def GetBookingDetails(request):
     context_data['bookings_details'] = bookings_details
     template = render(request, 'BookMyRoom/AppRoomBookingDetails.html', context_data)
     return JsonResponse({'html_data':template.content})
-    
+
 

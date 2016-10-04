@@ -1,27 +1,19 @@
-import autocomplete_light
-from django.contrib.auth.models import User
+from dal import autocomplete
 from django.db.models import Q
 from employee.models import Employee
 
-class AutocompleteUserSearch(autocomplete_light.AutocompleteModelBase):
-    autocomplete_js_attributes = {'placeholder': 'Enter a member name'}
 
-    def choices_for_request(self):
+class AutocompleteUserSearch(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
         user = self.request.user.id
-        emp = Employee.objects.get(user_id = user)
-        if self.request.user.groups.filter(name='LeaveAdmin').exists() or self.request.user.is_superuser:
-            userlist = Employee.objects.filter().values('user_id')
-        else:
-            userlist = Employee.objects.filter(Q(manager_id= emp.employee_assigned_id) | Q(employee_assigned_id= emp.employee_assigned_id) ).values('user_id')
+        emp = Employee.objects.get(user_id=user)
         q = self.request.GET.get('q', '')
-        choices = self.choices.filter(
-            Q(is_superuser=False)
+        if self.request.user.groups.filter(name='myansrsourceHR').exists():
+            user_list = Employee.objects.filter(user__first_name__icontains=q)
+        else:
+            user_list = Employee.objects.filter(Q(user__first_name__icontains=q) &
+                                                (Q(manager_id=emp.employee_assigned_id) |
+                                                  Q(employee_assigned_id=emp.employee_assigned_id)))
 
-        )
-
-        choices = choices.filter(first_name__icontains=q)
-        choices = choices.filter(id__in=userlist)
-        choices = choices.filter(is_active=True)
-        return self.order_choices(choices)[0:self.limit_choices]
-
-autocomplete_light.register(User, AutocompleteUserSearch)
+        return user_list

@@ -9,7 +9,7 @@ from .forms import SurveyForm, FB360RequesteeForm, QuestionForm
 from . import helper
 
 # Miscellaneous imports
-from django.contrib.formtools.wizard.views import SessionWizardView
+from formtools.wizard.views import SessionWizardView
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from datetime import date

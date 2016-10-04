@@ -1,9 +1,7 @@
 from django import forms
 from MyANSRSource.models import Project
-import autocomplete_light
 from bootstrap3_datetime.widgets import DateTimePicker
-
-autocomplete_light.autodiscover()
+from dal import autocomplete
 
 dateTimeOption = {"format": "MM/DD/YYYY", "pickTime": False}
 MILESTONE_CHOICES = (('any', 'Any'), ('financial', 'Financial'), ('non_financial', 'Non-Financial'))
@@ -12,10 +10,10 @@ MILESTONE_STATUS_CHOICES = (('any', 'Any'), ('completed', 'Completed'), ('not_co
 
 class MilestoneReportsForm(forms.Form):
     project = forms.ModelChoiceField(help_text="Leave blank for all", queryset=Project.objects.all(),
-                                     widget=autocomplete_light.ChoiceWidget('ProjectAutocompleteProjects'),
+                                     widget=autocomplete.ModelSelect2(url='AutocompleteProjects'),
                                      required=False)
 
-    project.widget.attrs = {'class': 'form-control', 'placeholder': 'Enter Project Id/Name'}
+    project.widget.attrs = {'class': 'form-control', 'data-placeholder': 'Enter Project Id/Name'}
 
     from_date = forms.DateField(label="From", widget=DateTimePicker(options=dateTimeOption),
     )

@@ -13,7 +13,7 @@
 	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
 
-{% load grievances_template_tags %}{% load permissions %} {% load pagination_tags %}
+{% load grievances_template_tags %}{% load permissions %}
 
 
     <div class="container Lv-themeTxtColor ">
@@ -131,7 +131,7 @@
 
 
 
-                                                 <b style="line-height:30px;">Total : {{leave_list.count}} &nbsp;&nbsp;&nbsp;</b>
+                                                 <b style="line-height:30px;">Total : {{leave_list_count}} &nbsp;&nbsp;&nbsp;</b>
                                               </div>
                                       {% endif %}
 
@@ -185,7 +185,6 @@
                         <th style="width:30%">Status
                         </th>
                     </tr>
-                    {%  autopaginate leave_list 10 %}
                     {% for leave in leave_list %}
 
                     <tr  {%for k,v in  BUTTON_NAME %}
@@ -314,7 +313,21 @@
     {% endif %}
 
         <!-- End content-->
-<div class="text-center">{%if  leave_list %} {% paginate %} </div>{% endif %}
+<div class="text-center">{%if  leave_list %} <div class="pagination">
+    <span class="step-links">
+        {% if leave_list.has_previous %}
+            <a href="?page={{ leave_list.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ leave_list.number }} of {{ leave_list.paginator.num_pages }}.
+        </span>
+
+        {% if leave_list.has_next %}
+            <a href="?page={{ leave_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div> </div>{% endif %}
     </div>
     <!-- End Main Container-->
 {% endblock  %}
