@@ -2,12 +2,12 @@ from django import forms
 from django.contrib.auth.models import User
 from models import Profile, Count, GENDER_CHOICES, REFERENCE_SOURCE, Position, MRF, Process,INTERVIEW_PROCESS
 from bootstrap3_datetime.widgets import DateTimePicker
-import autocomplete_light
-autocomplete_light.autodiscover()
+from dal import autocomplete
+
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 DEPARTMENT = (('','........'),) + tuple([(dep['department'], dep['department']) for dep in Position.objects.filter().values('department').distinct()])
 RESULT_STATUS = (('rejected', 'Rejected'), ('selected', 'Selected'))
-class ProfileForm(autocomplete_light.ModelForm):
+class ProfileForm(forms.ModelForm):
     candidate_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm form-control',
                                                                                   'required': '', 'data-error': 'Please enter candidate name'}))
     mobile_number = forms.RegexField(regex=r'^\+?1?\d{9,15}$',
@@ -24,12 +24,12 @@ class ProfileForm(autocomplete_light.ModelForm):
     source = forms.ChoiceField(choices=REFERENCE_SOURCE)
     source.widget.attrs = {'class': 'width-40', 'required': 'true'}
     refered_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),required=False,
-                                  widget=autocomplete_light.ChoiceWidget('UserAutocompleteUserHireSearch'))
+                                  widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
 
     refered_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Employee Name'
                                }
     requisition_number = forms.ModelChoiceField(queryset=Count.objects.all(),
-                                        widget=autocomplete_light.ChoiceWidget('CountAutoCompleteRequisitionSearch'))
+                                        widget=autocomplete.ModelSelect2('CountAutoCompleteRequisitionSearch'))
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
                                        'placeholder': 'Enter Requisition number'}
@@ -45,7 +45,7 @@ class ProfileForm(autocomplete_light.ModelForm):
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
 
     interview_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                     widget=autocomplete_light.ChoiceWidget('UserAutocompleteUserHireSearch'))
+                                     widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
 
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name',
                                 }
@@ -64,9 +64,9 @@ class ProfileForm(autocomplete_light.ModelForm):
 
 
 
-class MRFForm(autocomplete_light.ModelForm):
+class MRFForm(forms.ModelForm):
     requisition_number = forms.ModelChoiceField(queryset=MRF.objects.all(),
-                                                widget=autocomplete_light.ChoiceWidget(
+                                                widget=autocomplete.ModelSelect2(
                                                     'MRFAutoCompleteRequisitionSearch'))
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
@@ -86,7 +86,7 @@ class MRFForm(autocomplete_light.ModelForm):
         fields = ['requisition_number', 'department', 'designation', 'specialization', 'raised_by', 'count']
 
 
-class NewMRFForm(autocomplete_light.ModelForm):
+class NewMRFForm(forms.ModelForm):
     requisition_number = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'width-50 input-sm', 'required': 'true'}))
     department = forms.ChoiceField(initial='.....', choices=DEPARTMENT)
     department.widget.attrs = {'class': 'width-40', 'required': 'true'}
@@ -97,7 +97,7 @@ class NewMRFForm(autocomplete_light.ModelForm):
                                                 for dep in Position.objects.filter().values('specialization').distinct()])
     specialization.widget.attrs = {'class': 'width-40', 'required': 'true'}
     manager = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                        widget=autocomplete_light.ChoiceWidget('UserAutocompleteUserHireSearch'))
+                                        widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
 
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manger Name',
                                }
@@ -109,10 +109,10 @@ class NewMRFForm(autocomplete_light.ModelForm):
         fields = ['requisition_number', 'department', 'designation', 'specialization', 'manager', 'count']
 
 
-class ProcessForm(autocomplete_light.ModelForm):
+class ProcessForm(forms.ModelForm):
     profile_id = forms.CharField(widget=forms.HiddenInput())
     interview_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                     widget=autocomplete_light.ChoiceWidget('UserAutocompleteUserHireSearch'))
+                                     widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
 
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )

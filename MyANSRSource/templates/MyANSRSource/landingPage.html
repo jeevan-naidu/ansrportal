@@ -112,7 +112,7 @@
 
                       <!-- Wrapper for slides -->
                       <div class="carousel-inner" role="listbox" style="height:100%">
-
+                        {%if birthdays_list %}
 
                         <div id="birthday-greeting" class="text-center">Happy Birthday</div>
                         <div id="birthday-cake"></div>                      
@@ -120,7 +120,7 @@
                         <p class="text-center">Ladislav Kovacs</p>
                         <p class="text-center">Team Natus Vincere</p>
                         </div> -->
-                        <!-- ./name- -->                      
+                        <!-- ./name- -->
                         {% for employee in birthdays_list %}
                             {% if forloop.first %}
                                 <div class="item active">
@@ -147,7 +147,7 @@
                       <a class="right carousel-control hide" href="#myCarousel" role="button" data-slide="next">
                         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                         <span class="sr-only">Next</span>
-                      </a>
+                      </a> {%else%}<div id="birthday-greeting" class="text-center">No One Is Celebrating Their BirthDay Today</div>  {%endif%}
                     </div>
 
 
