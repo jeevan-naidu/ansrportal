@@ -6,6 +6,8 @@ from django.views.generic import View
 import datetime
 from django.utils import timezone
 from django.utils.encoding import smart_str
+from django.views.decorators.csrf import csrf_exempt
+
 import pytz
 
 
@@ -95,6 +97,7 @@ def GetBookingsView(request):
     return JsonResponse(context_data)
 
 
+@csrf_exempt
 def CancelBooking(request):
     
     booking_id = request.POST.get('cancel_id', '')
