@@ -4,7 +4,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from django.utils.safestring import mark_safe
 from django import forms
 from django.contrib.auth.models import User
-from Leave.models import LeaveApplications,ShortAttendance, LEAVE_TYPES_CHOICES, SESSION_STATUS, LeaveSummary
+from Leave.models import LeaveApplications, ShortAttendance, LEAVE_TYPES_CHOICES, SESSION_STATUS, LeaveSummary
 from employee.models import Employee
 from django.contrib.auth.models import User
 from datetime import date, time
@@ -12,7 +12,7 @@ from dal import autocomplete
 
 LEAVE_TYPES_CHOICES = (('', '---------'),) + LEAVE_TYPES_CHOICES
 
-SESSION_STATUS_CHOICES =(('', 'SELECT SESSION'),)+ SESSION_STATUS
+SESSION_STATUS_CHOICES = (('', 'SELECT SESSION'),) + SESSION_STATUS
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 
