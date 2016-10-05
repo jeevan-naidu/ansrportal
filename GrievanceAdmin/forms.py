@@ -16,7 +16,7 @@ class FilterGrievanceForm(forms.ModelForm):
         widget=autocomplete.ModelSelect2(url='AutocompleteGrievanceAdmin', attrs={
             # Set some placeholder
             'data-placeholder': 'Enter Grievance Id ...',
-            #'class': 'form-control filter_class'
+            'class': 'form-control filter_class'
             # Only trigger autocompletion after 3 characters have been typed
             # 'data-minimum-input-length': 3,
         }, ),
@@ -33,7 +33,6 @@ class FilterGrievanceForm(forms.ModelForm):
             # 'data-minimum-input-length': 3,
         }, ),
         required=False, )
-
     category = forms.ModelChoiceField(queryset=Grievances_category.objects.filter(active=True))
 
     category.widget.attrs = {'class': 'form-control filter_class'}

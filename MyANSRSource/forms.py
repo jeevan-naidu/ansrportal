@@ -260,10 +260,12 @@ def TimesheetFormset(currentUser,enddate):
 
             project_id = self.fields['project'].initial\
                          or self.initial.get('project') \
-                         or self.fields['project'].widget.value_from_datadict\
-                             (self.data, self.files, self.add_prefix('project'))
+                         or self.fields['project'].widget.value_from_datadict(self.data, self.files, self.add_prefix('project'))
             if project_id:
-                project_obj = Project.objects.get(id=int(project_id))
+                try:
+                    project_obj = Project.objects.get(id=int(project_id))
+                except:
+                    project_obj = project_id
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
                 self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
             self.fields['location'].queryset = OfficeLocation.objects.filter(
@@ -602,6 +604,7 @@ class changeProjectLeaderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
+
 
 
 class MyRemainderForm(forms.ModelForm):

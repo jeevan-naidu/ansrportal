@@ -1,0 +1,51 @@
+                                 <div id="{{object.id}}" class="grievance_table pad-five" >
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Grievance Id :</b></div>
+
+                                        <div class="col-sm-8 col-md-10">{{object.grievance_id}} </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2" ><b>category :</b></div>
+
+                                        <div class="col-sm-8 col-md-10">{{object.catagory}} </b></i>  </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Subject :</b></div><div class="col-sm-8 col-md-10">{{object.subject}}</div>
+                                    </div>
+                                     <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Grievance :</b></div>  <div class="col-sm-8 col-md-10">{{object.grievance}}</div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Is Escalated :</b></div>
+                                        <div class="col-sm-8 col-md-10">{%if object.escalate == divue %} Yes {%else %} No  {% endif %} </div>
+                                    </div>
+                                     {%if object.action_taken%}
+                                         <div class="col-sm-12">
+                                            <div class="col-sm-4 col-md-2"><b>Action Taken :</b></div>  <div class="col-sm-8 col-md-10">{{object.action_taken}}</div>
+                                         </div>
+                                     {%endif%}
+                                     {%if object.satisfaction_level%} <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Satisfaction Level :</b></div>  <div class="col-sm-8 col-md-10">{{object.satisfaction_level|satisfaction_level}}</div>
+                                    </div>{%endif%}
+                                    <div class="col-sm-12">
+                                      <div class="col-sm-4 col-md-2"><b>Status :</b></div>
+                                        <div class="col-sm-8 col-md-10">
+                                        {% for value, text in grievances_choices %}
+                                            <!--{{value}} -&#45;&#45; {{object.grievance_status }}-->
+                                                {%if object.grievance_status ==  value %}{{ text }}  {%endif%}
+                                            {%endfor%}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-md-2"><b>Created Date :</b></div> <div class="col-sm-8 col-md-10"> {{object.created_date}} </div>
+                                    </div>
+                                     {%if grievances.active == False %}
+                                         <div class="col-sm-12">
+                                            <div class="col-sm-4 col-md-2"><b>User Closure Message :</b></div> <div class="col-sm-8 col-md-10"> {{object.user_closure_message}} </div>
+                                         </div>
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-4 col-md-2"><b>Admin Closure Message :</b></div> <div class="col-sm-8 col-md-10"> {{object.admin_closure_message}} </div>
+                                         </div>
+
+                                     {%endif%}
+                                </div>
