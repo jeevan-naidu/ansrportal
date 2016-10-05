@@ -437,10 +437,10 @@ def Timesheet(request):
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
                                 if v==None:
                                     v=float(0.0)
-                            if k == 'chapter':
-                                v = Chapter.objects.get(pk=v)
-                            if k == 'task':
-                                v = Task.objects.get(pk=v)
+                            # if k == 'chapter':
+                            #     v = Chapter.objects.get(pk=v)
+                            # if k == 'task':
+                            #     v = Task.objects.get(pk=v)
                             setattr(billableTS, k, v)
                     billableTS.save()
                     global dbSave
@@ -524,10 +524,10 @@ def Timesheet(request):
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
                                 if v == None:
                                     v = float(0.0)
-                            if k == 'chapter':
-                                v = Chapter.objects.get(pk=v)
-                            if k == 'task':
-                                v = Task.objects.get(pk=v)
+                            # if k == 'chapter':
+                            #     v = Chapter.objects.get(pk=v)
+                            # if k == 'task':
+                            #     v = Task.objects.get(pk=v)
 
                             setattr(billableTS, k, v)
                     billableTS.save()
