@@ -148,7 +148,6 @@ def TimesheetFormset(currentUser,enddate):
             queryset=None,
             required=True
         )
-        chapter = forms.CharField(widget=forms.Select())
 
         chapter = forms.ModelChoiceField(widget=forms.Select(), queryset=Chapter.objects.none(),label="Chapter",)
         projectType = forms.CharField(label="pt",
