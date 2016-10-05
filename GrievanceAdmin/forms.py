@@ -25,7 +25,7 @@ class FilterGrievanceForm(forms.ModelForm):
     user = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
         # label="Book/Title",
-        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+        widget=autocomplete.ModelSelect2(url='AutocompleteUserGA', attrs={
             # Set some placeholder
             'data-placeholder': 'Enter Employee Name ...',
             'class': 'form-control filter_class'
