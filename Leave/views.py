@@ -182,10 +182,11 @@ class Dashboard(View):
         return render(request, 'User.html', context)
 
     def post(self, request):
-
         userForm = UserListViewForm(request.POST)
         employee_id = userForm['user'].value()
-        user_id = Employee.objects.filter(employee_assigned_id=employee_id).values('user_id')
+        user_id_detail = Employee.objects.filter(employee_assigned_id=employee_id).values('user_id')
+        user_id = user_id_detail[0]['user_id']
+
         LeaveAdmin = False
         userCheck = False
         if not user_id:
