@@ -57,7 +57,7 @@ class FilterGrievanceForm(forms.ModelForm):
     class Meta:
         model = Grievances
         fields = ['category', 'grievance_status', 'created_date', 'closure_date']
-        fields = (
-            'user', 'grievance_id',
-        )
+        # fields = (
+        #     'user', 'grievance_id',
+        # )
 

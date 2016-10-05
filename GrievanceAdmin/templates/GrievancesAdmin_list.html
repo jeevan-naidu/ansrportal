@@ -9,12 +9,21 @@
 
 {% block content  %}
 {% load grievances_template_tags %}
+<link href="/static/css/grievanceAdminStyle.css" rel="stylesheet">
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
 
-    <link href="/static/css/grievanceAdminStyle.css" rel="stylesheet">
-	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
-	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
-	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-    {% load pagination_tags %}
+<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/css/site.min.css" rel="stylesheet">
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+
+
+
   <div class="container-fluid">
 
 
@@ -121,12 +130,12 @@
 					<p {% if message.tags %} class=" alert alert-{{ message.tags }}"{% endif %}>{{ message }}</p>
 					{% endfor %}
 				{% endif %}
-				
+
 				<h4 >
-					{% if not grievances %}
+					{% if not grievances_page %}
 						Total : 0
-					{% elif grievances %}
-						Total : {{grievances.count}}
+					{% elif grievances_page %}
+						Total : {{grievances|length}}
 					{%endif%}
 				</h4>
 			</div>
@@ -136,7 +145,7 @@
 
 
 
-	<p></p>{% if grievances %}
+	<p></p>{% if grievances_page %}
 		<div class="row">
 		<div class="col-md-12 pad-zero">
 
@@ -170,8 +179,7 @@
 					</tr>
 				</thead>
 				<tbody>
-                     {%  autopaginate grievances 10 %}
-                        {%   for object in grievances  %}
+                        {%   for object in grievances_page  %}
 
 <style type="text/css">
   
@@ -299,11 +307,23 @@
 
 				</tbody>
 			</table>
-             {%   for object in grievances  %}
 
+		<div class="text-center"><div class="pagination">
+    <span class="step-links">
+        {% if grievances_page.has_previous %}
+            <a href="?page={{ grievances_page.previous_page_number }}">previous</a>
+        {% endif %}
 
-             {% endfor %}
-			<div class="text-center"> {% paginate %} </div>
+        <span class="current">
+            Page {{ grievances_page.number }} of {{ grievances_page.paginator.num_pages }}.
+        </span>
+
+        {% if grievances_page.has_next %}
+            <a href="?page={{ grievances_page.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+</div>
 
 		</div>
 	</div>
@@ -313,14 +333,32 @@
 {% endblock  %}
 
  {% block page_specific_JS %}
-    <script src="/static/js/date_validation.js"></script><!-- contains date validation -->
 
-   <script>
+     <script src="/static/js/date_validation.js"></script><!-- contains date validation -->
+     <script>
 		$(document).ready( function (){
-        window.history.replaceState( {} , 'Grievance Admin', '/grievances_admin/' );
-		jQuery('.breadcrumb').click(function(){
-           formToDiv();
-        });
+            window.history.replaceState( {} , 'Grievance Admin', '/grievances_admin/' );
+            jQuery('.pagination').click(function(){
+               formToDiv();
+            });
+
+            $('#reset_button').click(function(){
+                $('#filter_form')[0].reset();
+
+                $('.filter_class').each(function() {
+                     input_type = this.tagName ;
+                     if(input_type == 'INPUT')
+                     {
+                        $(this).val('')
+                     }
+                     if(input_type == 'SELECT') {
+                        $(this).prop('selectedIndex',0);
+
+                     }
+                     $(':input[name=grievance_id],[name=user]').empty().trigger('change');
+                });
+
+            });
 
         $('.grievance_ids').click(function(){
             var GrDetails = $(this).siblings(".GrDetails").html();
@@ -328,7 +366,6 @@
         });
 
 
-        $('#id_user ,#id_grievance_id').attr('class','filter_class');
         var none_count = 0;
         <!-- date validation before form submit-->
         $('#submit_button').click(function(){
@@ -381,41 +418,17 @@
 
         });
 
-    	<!-- script to prevent bootstrap filter form from closing when its clicked-->
+    	<!--&lt;!&ndash; script to prevent bootstrap filter form from closing when its clicked&ndash;&gt;-->
 
     	$('.dropdown.keep-open').on({
 			"shown.bs.dropdown": function() {this.closable = false; $('.nav_hide').hide();},
 			"click":             function() {this.closable = true; },
-			"hide.bs.dropdown":  function() {$('.nav_hide').show(); $('#reset_button').trigger('click'); return this.closable;   }
+			"hide.bs.dropdown":  function() {$('.nav_hide').show();
+			 $('#reset_button').trigger('click');
+			return this.closable;   }
 		});
 
-        $('#reset_button').click(function(){
-            $('.filter_class').each(function() {
-                 input_type = this.tagName ;
-                 if(input_type == 'INPUT')
-                 {
-                    $(this).val('')
-                 }
-                 if(input_type == 'SELECT') {
-                    $(this).prop('selectedIndex',0);
-                 }
-                 if(this.id == 'id_user-autocomplete') {
-                    if($("#id_user-deck").is(":visible") == true ) {
-                        $("#id_user-deck").hide();
-                        $('#id_user-autocomplete').show();
-                       document.getElementById("id_user").options.length = 0;
-                    }
-                 }
-                 if(this.id == 'id_grievance_id-autocomplete') {
-                    if($("#id_grievance_id-deck").is(":visible") == true ) {
-                        $("#id_grievance_id-deck").hide();
-                        $('#id_grievance_id-autocomplete').show();
-                       document.getElementById("id_grievance_id").options.length = 0;
-                    }
-                 }
-            });
 
-        });
         function formToDiv() {
             var attrs = { };
 
