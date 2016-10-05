@@ -20,7 +20,7 @@
 
 <body>
 {% load grievances_template_tags %}
-{% load permissions %} {% load pagination_tags %}
+{% load permissions %}
     <!--  Start messages-->
     <div class="container-fluid">
         <div class="row">
@@ -95,12 +95,12 @@
                               <div class="col-sm-4 Lv-Mg-SubMenu">
                                   <div class="pull-left Lv-Mg-SubActive">
                                       <b><a id="open_requests" href="{% url 'manage_leave_list' %}"  title="Open Requests" class="anchor-inherit btn"><b>Open Requests</b></a></b>
-                                      <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
+                                      <span class="Lv-Mg-NotifyCount"> {{open_count}}</span>
 
                                   </div>
                                    <div class="pull-left col-sm-offset-1 Lv-Mg-SubActive active hidden">
                                       <b><a id="open_requests" href="{% url 'Short_Attendance_Manage_View' %}"  title="Open Requests" class="anchor-inherit btn"><b>Short Attendances</b></a></b>
-                                      <span class="Lv-Mg-NotifyCount"> {{open.count}}</span>
+                                      <span class="Lv-Mg-NotifyCount"> {{open_count}}</span>
 
                                   </div>
                                   <div class="pull-left requests-reports hidden">
@@ -176,7 +176,6 @@
                         <th class="text-center">Action</th>
                     </tr>
 
-                    {%  autopaginate open 10 %}
                     {% for leave in open %}
                     <tr {%for k,v in  BUTTON_NAME %}
                                 {%if v|safe == leave.status|safe %} class ="{{k}}" {%endif%}{%endfor%}>
@@ -375,7 +374,23 @@
                     </div>{% endif %}
 
 
-			</div> {%if  leave_list  %}<div class="col-sm-12 text-center mod"> {% paginate %} </div>{% endif %}
+			</div> {%if  open  %}<div class="col-sm-12 text-center mod">
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if open.has_previous %}
+                            <a href="?page={{ open.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ open.number }} of {{ open.paginator.num_pages }}.
+                        </span>
+
+                        {% if open.has_next %}
+                            <a href="?page={{ open.next_page_number }}">next</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>{% endif %}
 
             <div class="row">
                 <div class="col-md-12">
