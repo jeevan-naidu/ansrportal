@@ -263,10 +263,12 @@ def TimesheetFormset(currentUser,enddate):
 
             project_id = self.fields['project'].initial\
                          or self.initial.get('project') \
-                         or self.fields['project'].widget.value_from_datadict\
-                             (self.data, self.files, self.add_prefix('project'))
+                         or self.fields['project'].widget.value_from_datadict(self.data, self.files, self.add_prefix('project'))
             if project_id:
-                project_obj = Project.objects.get(id=int(project_id))
+                try:
+                    project_obj = Project.objects.get(id=int(project_id))
+                except:
+                    project_obj = project_id
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
                 self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
             self.fields['location'].queryset = OfficeLocation.objects.filter(
@@ -620,17 +622,17 @@ class TeamMemberPerfomanceReportForm(autocomplete_light.ModelForm):
         fields = (
             'member',
         )
-        
-    
 
-    
+
+
+
     def __init__(self, *args, **kwargs):
         super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)
         self.fields['member'].widget.attrs['class'] = "form-control"
         self.fields['member'].required = True
         self.fields['startDate'].widget.attrs['class'] = "form-control"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
-        
+
         self.fields['project'].queryset = Project.objects.all().order_by('name')
         self.fields['project'].widget = autocomplete_light.ChoiceWidget('ProjectAutocompleteProjects')
         self.fields['project'].widget.attrs['class'] = "form-control"
