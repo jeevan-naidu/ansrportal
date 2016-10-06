@@ -363,16 +363,13 @@ class ProjectBasicInfoForm(forms.ModelForm):
             # 'data-minimum-input-length': 3,
         }, ),
         required=True, )
-    projectManager = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        label="Project Leader",
-        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
-            # Set some placeholder
-            'data-placeholder': 'Type Employee Name ...',
-            # Only trigger autocompletion after 3 characters have been typed
-            # 'data-minimum-input-length': 3,
-        }, ),
-        required=True, )
+    # projectManager = forms.ModelChoiceField(
+    #     # queryset=User.objects.all(),
+    #     label="Project Leader",
+    #     widget=autocomplete.ModelSelect2Multiple(
+    #         # url='AutocompleteUser'
+    #     ),
+    #     required=True, )
 
     class Meta:
         model = Project
@@ -394,6 +391,9 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
             ),
+        }
+        widgets = {
+
         }
 
     def __init__(self, *args, **kwargs):
