@@ -23,13 +23,20 @@ class ProfileForm(forms.ModelForm):
     date_of_birth.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
     source = forms.ChoiceField(choices=REFERENCE_SOURCE)
     source.widget.attrs = {'class': 'width-40', 'required': 'true'}
-    refered_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),required=False,
-                                  widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
-
+    refered_by = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
+            'data-placeholder': 'Type Member Name ...',
+        }, ), )
     refered_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Employee Name'
                                }
-    requisition_number = forms.ModelChoiceField(queryset=Count.objects.all(),
-                                        widget=autocomplete.ModelSelect2('CountAutoCompleteRequisitionSearch'))
+    requisition_number = forms.ModelChoiceField(
+        queryset=Count.objects.all(),
+        required=True,
+        widget=autocomplete.ModelSelect2(url='hire_requsition_based_on_user', attrs={
+            'data-placeholder': 'Type Requisition Number ...',
+        }, ), )
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
                                        'placeholder': 'Enter Requisition number'}
@@ -44,8 +51,12 @@ class ProfileForm(forms.ModelForm):
 
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
 
-    interview_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                     widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
+    interview_by = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=True,
+        widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
+            'data-placeholder': 'Type Member Name ...',
+        }, ), )
 
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name',
                                 }
@@ -65,9 +76,12 @@ class ProfileForm(forms.ModelForm):
 
 
 class MRFForm(forms.ModelForm):
-    requisition_number = forms.ModelChoiceField(queryset=MRF.objects.all(),
-                                                widget=autocomplete.ModelSelect2(
-                                                    'MRFAutoCompleteRequisitionSearch'))
+    requisition_number = forms.ModelChoiceField(
+        queryset=MRF.objects.all(),
+        required=True,
+        widget=autocomplete.ModelSelect2(url='hire_requsition_based_on_user', attrs={
+            'data-placeholder': 'Type MRF Number ...',
+        }, ), )
 
     requisition_number.widget.attrs = {'class': 'form-control filter_class input-sm',
                                        'placeholder': 'Enter Requisition number'}
@@ -96,8 +110,12 @@ class NewMRFForm(forms.ModelForm):
     specialization = forms.ChoiceField(choices=[(dep['specialization'], dep['specialization'])
                                                 for dep in Position.objects.filter().values('specialization').distinct()])
     specialization.widget.attrs = {'class': 'width-40', 'required': 'true'}
-    manager = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                        widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
+    manager = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=True,
+        widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
+            'data-placeholder': 'Type Manaager Name ...',
+        }, ), )
 
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manger Name',
                                }
@@ -111,8 +129,12 @@ class NewMRFForm(forms.ModelForm):
 
 class ProcessForm(forms.ModelForm):
     profile_id = forms.CharField(widget=forms.HiddenInput())
-    interview_by = forms.ModelChoiceField(queryset=User.objects.filter(is_active=True),
-                                     widget=autocomplete.ModelSelect2('UserAutocompleteUserHireSearch'))
+    interview_by = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=True,
+        widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
+            'data-placeholder': 'Type Interviewer Name ...',
+        }, ), )
 
     interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
