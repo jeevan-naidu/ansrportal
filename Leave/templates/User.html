@@ -55,7 +55,7 @@
 								Please Enter Your Leave
 							</h4>
                         </div>
-                        <div class="modal-body min-height-300" id="modal_body">
+                        <div class="modal-body min-height-400" id="modal_body">
                           loading...............
                         </div>
                         <div class="modal-footer">
@@ -88,7 +88,7 @@
 								Please Enter Your Short Attendance Leave Application
 							</h4>
                         </div>
-                        <div class="modal-body min-height-300" id="modal_body_shortleave">
+                        <div class="modal-body min-height-400" id="modal_body_shortleave">
                           loading...............
                         </div>
                             <div class="form-group">
@@ -124,7 +124,7 @@
 								Please Enter Remark
 							</h4>
                         </div>
-                        <div class="modal-body min-height-300" id="modal_body_dispute">
+                        <div class="modal-body min-height-400" id="modal_body_dispute">
                           loading...............
                         </div>
                             <div class="form-group">
@@ -1403,6 +1403,16 @@ $(window).load(function(){
 </script>
 
 
+<script type="text/javascript">
+    
+$(window).load(function(){
+    $('.select2.select2-container').removeAttr('style');
+})
+
+</script>
+
+
+
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
 
@@ -1433,6 +1443,7 @@ $(window).load(function(){
     margin-bottom: -10px;
 }
 .MyLeavesContainer h4{margin-bottom: 0px;}
+.select2-container .select2-selection--single{height: 30px;}
 </style>
 
 <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />

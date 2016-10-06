@@ -8,7 +8,6 @@ class AutocompleteUserSearch(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         user = self.request.user.id
         emp = Employee.objects.get(user_id=user)
-        print(emp)
         q = self.request.GET.get('q', '')
         if self.request.user.groups.filter(name='myansrsourceHR').exists():
             user_list = Employee.objects.filter(user__is_active=True,
