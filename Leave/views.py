@@ -867,7 +867,7 @@ class ShortAttendanceManageView(View):
         else:
             raise PermissionDenied("Sorry, you don't have permission to access this feature")
 
-
+        context['shortAttendanceOpen'] = paginator_handler(self.request, context['shortAttendanceOpen'])
         return render(request, 'short_attendance_manage.html', context)
 
     def post(self, request, *args, **kwargs):

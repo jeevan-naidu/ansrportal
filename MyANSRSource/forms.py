@@ -660,10 +660,10 @@ class TeamMemberPerfomanceReportForm(forms.ModelForm):
         fields = (
             'member',
         )
-        
-    
 
-    
+
+
+
     def __init__(self, *args, **kwargs):
         super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)
         self.fields['member'].widget.attrs['class'] = "form-control"
