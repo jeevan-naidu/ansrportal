@@ -9,6 +9,7 @@ import datetime
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
 
@@ -86,8 +87,9 @@ class AddGrievanceView(View):
             context_data['form'] = form
         
         return render(request, 'add_grievance.html', context_data)
-             
 
+
+@csrf_exempt
 def RateAndCloseView(request):
     
     context_data = {'errors': [], 'record_added': False, 'object':"", 'success_data_template':""}
