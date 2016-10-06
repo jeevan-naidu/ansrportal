@@ -19,12 +19,8 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 class UserListViewForm(forms.ModelForm):
     user = forms.ModelChoiceField(
         queryset=User.objects.all(),
-        # label="Book/Title",
         widget=autocomplete.ModelSelect2(url='AutocompleteUserSearch', attrs={
-            # Set some placeholder
             'data-placeholder': 'Type  Your Team Member Name ...',
-            # Only trigger autocompletion after 3 characters have been typed
-            # 'data-minimum-input-length': 3,
         }, ),
         required=True, )
     class Meta:
