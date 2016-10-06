@@ -31,7 +31,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <div class="navbar-form navbar-left" role="search">
           <div class="input-group date form-group" id="bookings_date_pickers">
-              <input class="form-control filter_class input-sm" id="id_for_date" name="for_date" type="text">
+              <input class="form-control filter_class input-sm" id="id_for_date" name="for_date" type="text" onkeydown="ifNumber()" maxlength="10">
               <span class="input-group-addon">
                   <span class="glyphicon-calendar glyphicon"></span>
               </span>
@@ -191,6 +191,12 @@ $(document).ready(function(){
 
 })//end of document.ready
 
+
+ifNumber = function(){
+  if ((event.keyCode < 48 || event.keyCode > 57) && event.keyCode != 8) {
+    alert('type number please');
+  }
+}
 
 </script>
 
