@@ -55,7 +55,7 @@
         {% if wizard.steps.prev %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
-                    <i class="fa fa-arrow-circle-right fa-lg"></i>
+                    <i class="fa fa-arrow-circle-left fa-lg"></i>
 		        <b>Choose Project</b>
                     </button>
         {% endif %}
