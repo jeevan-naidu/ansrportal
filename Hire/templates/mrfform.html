@@ -128,9 +128,13 @@ window.onload = function(){
                            document.getElementById("id_department").readOnly = true;
                            document.getElementById("id_designation").readOnly = true;
                            document.getElementById("id_specialization").readOnly = true;
-                           document.getElementById("id_manager").readOnly = true;
+                           document.getElementById("id_raised_by").readOnly = true;
     }
-    $('#id_requisition_number-autocomplete').bind(
+
+    $(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2-id_requisition_number-container]', function() {
+    alert();
+})
+    $('#id_requisition_number').bind(
       'selectChoice',
       function(e, choice, autocomplete) {
           var requsitionno = choice.html()

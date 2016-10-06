@@ -1,0 +1,331 @@
+
+{% extends 'master.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+
+
+{% block ansrMenu %}
+ <li><a href="/myansrsource/dashboard">
+    {% fontawesome_icon 'university' large=True %}
+    Dashboard
+ </a></li>
+ <li class="ansrLogout"><a href="{% url 'logout' %}">
+    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <span class="ansrLogout">Logout</span>
+  </a></li>
+{% endblock %}
+
+{% block content  %}
+
+    <link href="/static/css/style.css" rel="stylesheet">
+	<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+    {% load pagination_tags %}
+  <div class="container-fluid">
+
+		<div class="row">
+			<div class="col-md-12"> {%if message%} voila
+				{% for message in messages %}
+                <p {% if message.tags %} class=" alert alert-{{ message.tags }}"{% endif %}>{{ message }}</p>
+                {% endfor %} {%endif%}
+				<ul class="breadcrumb">
+					<li>
+						<a href="/admin">Admin</a> <span class="divider"></span>
+					</li>
+					<li>
+						<a href="/grievances_admin">Grievances</a> <span class="divider"></span>
+					</li>
+					<li class="active">
+						List
+					</li>
+				</ul>
+				<h3 class="text-center">
+					<b>Grievance list</b>
+				</h3>
+				<h4 class="text-center">
+					<b>( {{grievances.count}} in total )</b>
+				</h4>
+			</div>
+		</div>
+      <!--Don't attempt to change the class of below div,jquery depends on this to stop form from closing on opening -->
+
+
+              <div class="row">
+                  <div class="col-md-12">
+                       <div class="dropdown keep-open" id="filter_form_div">
+                       <form class="form-horizontal " id="filter_form" role="form" method="post" >
+              {% csrf_token %}
+
+                      <ul class="nav ">
+                          <li class="dropdown pull-right">
+                              <a href="#" data-toggle="dropdown" class=""><strong>Filter By &nbsp;&nbsp;</strong><strong class="caret"></strong></a>
+                              <ul class="dropdown-menu">
+                                  <li class="divider"></li>
+                                  <li class="Gr-DropDownpad">
+                                  <h5><b>User</b></h5>
+                                      {{form.user}}
+                                  </li >
+
+                                  <li class="divider"></li>
+                                  <li class="Gr-DropDownpad">
+                                  <h5><b>Category</b></h5>
+                                      {{form.catagory}}
+                                  </li>
+
+                                  <li class="divider"></li>
+                                  <li class="Gr-DropDownpad">
+                                      <h5><b>Status</b></h5>
+                                      {{form.grievance_status}}
+                                  </li>
+
+                                  <li class="divider"></li>
+                                  <li class="Gr-DropDownpad">
+                                      <h5><b>Date from</b></h5>
+                                     {{form.created_date}}
+                                  </li>
+
+                                  <li class="divider"></li>
+                                  <li class="Gr-DropDownpad">
+                                      <h5><b>Date To</b></h5>
+                                      {{form.closure_date}}
+                                  </li>
+
+                                  <li class="divider"></li>
+
+                                  <li class="Gr-DropDownpad"><input type="button"  id = "submit_button" class="btn btn-primary" value="Search">
+                                  <input type="button"  id = "reset_button" class="btn btn-primary" value="Reset"> </li>
+                              </ul>
+                          </li>
+                      </ul>
+                 </form>
+                           </div>
+                  </div>
+              </div>
+
+
+
+	<p></p>{% if grievances.count > 0 %}
+		<div class="row">
+		<div class="col-md-12">
+			<table class="table table-bordered table-hover ">
+				<thead>
+					<tr>
+						<th class="TbHead">
+							ID
+						</th>
+						<th class="TbHead">
+							User
+						</th>
+						<th class="TbHead">
+							Category
+						</th>
+						<th class="TbHead">
+							Subject
+						</th>
+
+						<th class="TbHead">
+							Escalate
+						</th>
+						<th class="TbHead">
+							Status
+						</th>
+						<th class="TbHead">
+							Created Date
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					{%  autopaginate grievances %}
+                    {%   for object in grievances  %}
+					<tr class="warning">
+						<td>
+							<a id="modal-566651" href="#{{object.grievance_id}}"  data-id ={{object.grievance_id}}  role="button" class="btn" data-toggle="modal"><b>{{object.grievance_id}}</b></a>
+							<a href="edit/{{object.id}}"><b>Edit</b></a>
+
+						</td>
+						<td>
+							{{object.user.first_name}}
+						</td>
+						<td>
+							{{object.catagory}}
+						</td>
+						<td>
+							{{object.subject}}
+						</td>
+						<td>
+							{%if object.escalate == True %} Yes {%else %} No  {% endif %}
+						</td>
+
+						<td>
+                            {%if object.active ==  False %}
+										Closed
+
+                            {%else%}
+                                {% for value, text in grievances_choices %}
+                                    {%if object.grievance_status ==  value and  object.active == True%}
+                                        {{ text }}
+                                    {%endif%}
+                                {%endfor%}
+                            {%endif%}
+						</td>
+						<td>
+							{{object.created_date}}
+						</td>
+                    </tr>
+  <div class="container-fluid">
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="modal fade " id="{{object.grievance_id}}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+									x
+								</button>
+								<h4 class="modal-title text-center" id="myModalLabel">
+									<b>View details</b>
+								</h4>
+							</div>
+
+							<div class="modal-body" data-id ="ansr">
+
+								<b>Grievance Id : <i>{{object.grievance_id}} </i>  </b> </br>
+								<b>User : {{object.user.first_name}} </b></br>
+								<b>category :{{object.catagory}} </b></br>
+								<b>Subject : {{object.subject}}</b></br>
+								<b>Is Escalated : {%if object.escalate == true %} Yes {%else %} No  {% endif %} </b></br>
+								<b>Status : {% for value, text in grievances_choices %}  {%if object.grievance_status ==  value %} {{ text }}  {%endif%} {%endfor%} </b></br>
+                                <b>Created Date : {{object.created_date}} </b></br>
+							</div>
+
+							<div class="modal-footer">
+
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+                    {% endfor %}
+
+				</tbody>
+			</table>
+			<div class="text-center"> {% paginate %} </div>
+
+		</div>
+	</div>
+      {%else%} <p class ="alert alert-warning " style = "text-align: center;"> No Records Found</p>
+      {% endif %}
+  </div>
+{% endblock  %}
+
+ {% block page_specific_JS %}
+    <script src="/static/js/date_validation.js"></script><!-- contains date validation -->
+   <script>
+		$(document).ready( function (){
+            $('#id_user').attr('class','filter_class');
+            $('#reset_button').trigger('click');
+            var none_count = 0;
+        <!-- date validation before form submit-->
+        	$('#submit_button').click(function(){
+        	     if($('#id_closure_date').val() != "" || $('#id_created_date').val() != "") {
+
+        	        var frm_date = $('#id_created_date').val().split("/");
+        	        var converted_frm_date = new Date (frm_date[2],frm_date[1]-1,frm_date[0]);
+
+        	        var id_closure_date = $('#id_closure_date').val().split("/");
+        	        var converted_id_closure_date = new Date (id_closure_date[2],id_closure_date[1]-1,id_closure_date[0]);
+
+        	        if(converted_frm_date > converted_id_closure_date) {
+        	            alert("Ending date Cannot Be Greater Than From Date ");
+        	            return false
+        	        }
+
+                    if (isDate($('#id_closure_date').val()) == false || isDate($('#id_created_date').val()) == false ){
+                        alert("Please Enter The Valid Date ");
+                        return false
+                    }
+                 }
+
+                 <!-- looping through input fields to whether at-least one input is selected is or not -->
+
+                 $('.filter_class').each(function() {
+                    if($(this).val() != "none" && $(this).attr('id') != "post_page_count" && $(this).val() !=null && $(this).val() != '') {
+                        none_count+=1;
+                    }
+                 });
+
+                <!-- allow form submission only if at-least one input is changed -->
+                if ( none_count > 0 )  {
+                    <!-- we need the following code to ensure on filter form submission the page value is always 1 to ensure the pagination to work properly-->
+                     window.history.pushState("object or string", "Grievance Admin", "/grievances_admin/?page=1");
+                    $( "#filter_form" ).submit();
+                }
+
+                else if( none_count == 0 )  {
+                    alert("Please Select At-least One Filtering Option");
+                    return false
+                }
+
+            });
+    	})
+
+
+        $('.dropdown.keep-open').on('hide.bs.dropdown', function () {
+            $('#reset_button').trigger('click');
+        });
+        $("#id_user-deck").click(function() {
+           $('.dropdown.keep-open').on('hide.bs.dropdown', function () {
+                $('#reset_button').trigger('click');
+                return false;
+           });
+         });
+
+    	<!-- script to prevent bootstrap filter form from closing when its clicked-->
+
+    	$('.dropdown.keep-open').on({
+			"shown.bs.dropdown": function() {this.closable = false; },
+			"click":             function() {this.closable = true; },
+			"hide.bs.dropdown":  function() {return this.closable; }
+		});
+
+         $('#reset_button').click(function(){
+            $('.filter_class').each(function() {
+                 input_type = this.tagName ;
+                 if(input_type == 'INPUT')
+                 {
+                    $(this).val('')
+                 }
+                 if(input_type == 'SELECT') {
+                    $(this).prop('selectedIndex',0);
+                 }
+                 if(this.id == 'id_user-autocomplete') {
+                    if($("#id_user-deck").is(":visible") == true ) {
+                        $("#id_user-deck").hide();
+                        $('#id_user-autocomplete').show();
+                       document.getElementById("id_user").options.length = 0;
+                    }
+                 }
+            });
+
+        });
+	</script>
+{% endblock  %}
+
+
+
+
+
+
+
+
+

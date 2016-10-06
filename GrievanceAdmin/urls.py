@@ -10,7 +10,7 @@ urlpatterns = [
                        url(r'^edit/(?P<id>[0-9]+)/$', login_required(GrievanceAdminEditView.as_view()),
                            name=u'edit_grievanceAdmin'),
                        url(r'^AutocompleteUser/$',  login_required(AutocompleteUser.as_view()),
-                           name=u'AutocompleteUser'),
+                           name=u'AutocompleteUserGA'),
                        url(r'^AutocompleteGrievanceAdmin/$',  login_required(AutocompleteGrievanceAdmin.as_view()),
                            name=u'AutocompleteGrievanceAdmin'),
                        ]
