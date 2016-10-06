@@ -155,8 +155,8 @@ class Dashboard(View):
             mangerfirstname = manager.first_name + " "+manager.last_name
         else:
             mangerfirstname = ''
-        emp = Employee.objects.get(user_id = user_id)
-        userlist = Employee.objects.filter(manager_id= emp.employee_assigned_id).values('user_id')
+        emp = Employee.objects.get(user_id=user_id)
+        userlist = Employee.objects.filter(manager_id=emp.employee_assigned_id).values('user_id')
         if userlist:
             managerFlag = True
         else:
@@ -185,14 +185,15 @@ class Dashboard(View):
         userForm = UserListViewForm(request.POST)
         employee_id = userForm['user'].value()
         user_id_detail = Employee.objects.filter(employee_assigned_id=employee_id).values('user_id')
-        user_id = user_id_detail[0]['user_id']
+        if user_id_detail:
+            user_id = user_id_detail[0]['user_id']
+        else:
+            user_id = request.user.id
+            LeaveAdmin = True
 
         LeaveAdmin = False
         userCheck = False
-        if not user_id:
-            user_id = request.user.id
-            LeaveAdmin = True
-        elif self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
+        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
             LeaveAdmin = True
         elif  int(user_id) == int(request.user.id):
             userCheck = True

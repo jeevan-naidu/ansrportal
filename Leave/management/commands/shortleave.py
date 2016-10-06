@@ -17,21 +17,16 @@ class Command(BaseCommand):
         shortLeave()
 
 
-#short leave check for every user in db
-
-
 def shortLeave():
-    # import ipdb
-    # ipdb.set_trace()
     tzone = pytz.timezone('Asia/Kolkata')
-    user_list = User.objects.filter(is_active = True)
-    checkdate = date(2016,8,07)
+    user_list = User.objects.filter(is_active=True)
+    checkdate = date.today() - timedelta(days=29)
     FMT = '%H:%M:%S'
 
     dueDate = checkdate + timedelta(days=30)
     morningInTimeLimit = datetime.strptime("10:15:00", FMT)
-    fullDayOfficeStayTimeLimit = timedelta(hours =9, minutes = 00, seconds = 00)
-    halfDayOfficeStayTimeLimit = timedelta(hours =4, minutes = 30, seconds = 00)
+    fullDayOfficeStayTimeLimit = timedelta(hours=9, minutes=00, seconds=00)
+    halfDayOfficeStayTimeLimit = timedelta(hours=4, minutes=30, seconds=00)
 
     for user in user_list:
         try:
@@ -46,7 +41,7 @@ def shortLeave():
             else:
                 manager_d = User.objects.get(id= 35)
             if employee:
-                attendance = Attendance.objects.filter(attdate= checkdate, employee_id = employee[0].employee_assigned_id)
+                attendance = Attendance.objects.filter(attdate=checkdate, employee_id=employee[0].employee_assigned_id)
                 if attendance:
                     swipeIn = attendance[0].swipe_in.astimezone(tzone)
                     swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -84,37 +79,36 @@ def shortLeave():
                     pass
                 else:
                     if shortLeaveType:
-                        ShortAttendance(user = user,
-                        short_leave_type = shortLeaveType,
-                        for_date=checkdate,
-                        status="open",
-                        status_action_by = User.objects.get(id=35),
-                        status_comments = reason,
-                        due_date = dueDate,
-                        dispute = "open",
-                        reason = reason,
-                        stay_time = stayInTime,
-                        apply_to = manager_d,
-                        swipe_in = swipeInTime,
-                        swipe_out = swipeOutTime
-                        ).save()
+                        ShortAttendance.objects.get_or_create(user=user, short_leave_type=shortLeaveType,
+                                                              for_date=checkdate,
+                                                              status="open",
+                                                              status_action_by=User.objects.get(id=35),
+                                                              status_comments=reason,
+                                                              due_date=dueDate,
+                                                              dispute="open",
+                                                              reason=reason,
+                                                              stay_time=stayInTime,
+                                                              apply_to=manager_d,
+                                                              swipe_in=swipeInTime,
+                                                              swipe_out=swipeOutTime
+                                                              )
             else:
                 print(user.first_name + user.last_name + " hr need to take care")
         except:
-            ShortAttendance(user=user,
-                            short_leave_type='full_day',
-                            for_date=checkdate,
-                            status="open",
-                            status_action_by=User.objects.get(id=35),
-                            status_comments="missing record",
-                            due_date=dueDate,
-                            dispute="open",
-                            reason="missing records",
-                            apply_to=manager_d,
-                            swipe_in=time(00,00,00),
-                            swipe_out=time(00,00,00),
-                            stay_time=time(00,00,00),
-                            ).save()
+            ShortAttendance.objects.get_or_create(user=user,
+                                                  short_leave_type='full_day',
+                                                  for_date=checkdate,
+                                                  status="open",
+                                                  status_action_by=User.objects.get(id=35),
+                                                  status_comments="missing record",
+                                                  due_date=dueDate,
+                                                  dispute="open",
+                                                  reason="missing records",
+                                                  apply_to=manager_d,
+                                                  swipe_in=time(00, 00, 00),
+                                                  swipe_out=time(00, 00, 00),
+                                                  stay_time=time(00, 00, 00),
+                                                  ).save()
 
 
 

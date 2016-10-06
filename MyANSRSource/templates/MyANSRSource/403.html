@@ -14,12 +14,13 @@
 		    <h2>Sorry, You don't have permission to access this feature</h2>
             {%if "grievances_admin" not in request.path %}
                 <button class="btn btn-default" onclick="goBack()">
-                    {% fontawesome_icon 'arrow-circle-left' large=True %}
+                <i class="fa fa-arrow-left"></i>
                     Go Back
                 </button>
             {%else%}
                 <a href="/myansrsource/dashboard" class="btn btn-default ">
-                      {% fontawesome_icon 'fa fa-home' large=True %}
+                    <i class="fa fa-home fa-lg"></i>
+                      
 			    home
 		        </a>
             {%endif%}

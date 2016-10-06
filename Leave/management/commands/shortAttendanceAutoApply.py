@@ -1,7 +1,7 @@
 from Leave.models import ShortAttendance, LeaveApplications, LeaveSummary, LeaveType
 from employee.models import Employee
 from django.contrib.auth.models import User
-from datetime import date,datetime, timedelta, time
+from datetime import date, timedelta
 from django.core.management.base import BaseCommand
 import logging
 
@@ -17,8 +17,7 @@ class Command(BaseCommand):
 
 
 def shortAttendanceApply():
-
-    duedate = '2016-08-11'
+    duedate = date.today() + timedelta(days=1)
     shortattendance = ShortAttendance.objects.filter(due_date=duedate,active=True)
     for attendance in shortattendance:
         applyLeave(attendance)
@@ -33,34 +32,38 @@ def applyLeave(attendance):
 
     avaliable_leave = avaliableLeaveCheck(user_id, attendance.short_leave_type)
     if avaliable_leave!=0:
-        leave = LeaveSummary.objects.get(user=user_id, leave_type=avaliable_leave, year=date.today().year)
+        leave = LeaveSummary.objects.get(user=user_id,
+                                         leave_type=avaliable_leave,
+                                         year=date.today().year)
         leavesubmit(attendance, leave, reason, user_id, applied_by)
     else:
-        leave = LeaveSummary.objects.get(user=user_id, leave_type__leave_type='loss_of_pay', year=date.today().year)
-        if not leave:
-            LeaveSummary.objects.create(user=User.objects.get(id=user_id), leave_type=LeaveType.objects.get(leave_type='loss_of_pay'), applied=0, approved=0, balance=0,
-                                            year=date.today().year)
-            leave = LeaveSummary.objects.get(user=user_id, leave_type__leave_type='loss_of_pay', year=date.today().year)
+        leave = LeaveSummary.objects.filter(user=user_id,
+                                         leave_type__leave_type='loss_of_pay',
+                                         year=date.today().year)
+        if leave:
+            leave = leave[0]
+        else:
+            leave, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
+                                        leave_type=LeaveType.objects.get(leave_type='loss_of_pay'),
+                                        applied=0, approved=0,
+                                        balance=0,
+                                        year=date.today().year)
         leavesubmit(attendance, leave, reason, user_id, applied_by)
-
-
-
 
 
 def avaliableLeaveCheck(user_id, short_leave_type):
-    leavesavaliableforapply = ['casual_leave','earned_leave','loss_off_pay']
+    leavesavaliableforapply = ['casual_leave','earned_leave']
     for val in leavesavaliableforapply:
         leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=date.today().year)
-        if short_leave_type == 'full_day' and leave and float((leave[0].balance).encode('utf-8'))>=1:
+        if short_leave_type == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 1:
             return leave[0].leave_type
-        elif leave and leave and float((leave[0].balance).encode('utf-8'))>0:
+        elif leave and leave and float(leave[0].balance.encode('utf-8'))>0:
             return leave[0].leave_type
     return 0
 
-def leavesubmit(attendance,leave,reason,user_id,applied_by):
+
+def leavesubmit(attendance, leave, reason, user_id, applied_by):
     try:
-        # import ipdb
-        # ipdb.set_trace()
         if attendance.short_leave_type == 'full_day':
             leavecount = 1
             fromsession = 'session_first'
@@ -77,8 +80,8 @@ def leavesubmit(attendance,leave,reason,user_id,applied_by):
         applied_by = User.objects.get(id=applied_by)
         LeaveApplications(user=User.objects.get(id=user_id),
                           leave_type=leave.leave_type,
-                          from_date=attendance.due_date,
-                          to_date=attendance.due_date,
+                          from_date=attendance.for_date,
+                          to_date=attendance.for_date,
                           from_session=fromsession,
                           to_session=tosession,
                           days_count=leavecount, reason=reason,
@@ -93,4 +96,4 @@ def leavesubmit(attendance,leave,reason,user_id,applied_by):
 
     except:
         print "please check manager for user id {0}".format(user_id)
-        logger.error("error happen for {0} while putting forced leave manager is not there".format(user_id))
+        # logger.error("error happen for {0} while putting forced leave manager is not there".format(user_id))
