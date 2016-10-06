@@ -11,7 +11,7 @@
 								<b> Book Details</b>
 							</h4>
                             </div>
-                            <div class="modal-body min-height-300" id="modal_body">
+                            <div class="modal-body min-height-400" id="modal_body">
                           loading...............
                         </div>
                             <div class="modal-footer">
@@ -77,7 +77,7 @@
                                 <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.id}}">Apply</button>
                             {% else %}
                                 <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">
-                                  <button type="button" class="btn btn-primary btn-sm book-detail" onclick="bookdetails({{ book.id }})">
+                                  <button type="button" class="btn btn-default btn-sm book-detail" onclick="bookdetails({{ book.id }})">
                                   Applied 
                                   </button>
                                 </a>
@@ -339,3 +339,13 @@ $('#book-search').on('input', function(e){
               $(".results").hide();
           });
 </script>
+
+<style type="text/css">
+  
+.search ul.results {
+    max-height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}  
+
+</style>

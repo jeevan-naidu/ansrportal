@@ -655,7 +655,6 @@ class LeaveListView(ListView):
                 leave_list_export = leave_list
             leave_days = total_leave_days(leave_list_export)
 
-
             fields = ['user__employee__employee_assigned_id', 'user__first_name', 'leave_type__leave_type',
                       'from_date', 'to_date', 'applied_on', 'modified_on',
                       'apply_to__first_name',  'status', 'reason', 'id']
@@ -674,12 +673,11 @@ class LeaveListView(ListView):
 
         if leave_list and leave_list.count > 0:
             self.request.session['leave_list'] = leave_list
+            leave_list = paginator_handler(self.request, self.request.session['leave_list'])
 
         if not leave_list and 'leave_list' in self.request.session:
             del self.request.session['leave_list']
 
-        if 'leave_list' in self.request.session:
-            leave_list = self.request.session['leave_list']
 
         return render(self.request, self.template_name, {'leave_list': leave_list,
                                                          'APPLICATION_STATUS': APPLICATION_STATUS,

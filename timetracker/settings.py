@@ -143,6 +143,7 @@ INSTALLED_APPS = [
     'djcelery',
     'Hire',
     'Library',
+    'formtools',
 
 ]
 
@@ -326,7 +327,7 @@ FEED_DELIMITER = ","
 EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com']
 
 # New Joinee Notifiers
-NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
+NEW_JOINEE_NOTIFIERS = ['shalini.bhagat@ansrsource.com']
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
@@ -344,16 +345,16 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "HR4U@ansrsource.com"
+GRIEVANCES_ADMIN_EMAIL = "shalini.bhagat@ansrsource.com"
 BOOKING_ROOM_ADMIN = "BookingRoomAdmin"
-LEAVE_ADMIN_EMAIL = ['HR4U@ansrsource.com']
+LEAVE_ADMIN_EMAIL = ['shalini.bhagat@ansrsource.com']
 
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
-LEAVE_SHORT_ATTENDANCE_ISACTIVE = False
+LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
 
 HIRE_RECRUITER = 'HireRecruiter'
 HIRE_ADMIN = 'HireAdmin'

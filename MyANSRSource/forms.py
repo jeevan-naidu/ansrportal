@@ -146,13 +146,11 @@ def TimesheetFormset(currentUser,enddate):
             queryset=None,
             required=True
         )
-        chapter = forms.CharField(widget=forms.Select())
 
+        chapter = forms.ModelChoiceField(widget=forms.Select(), queryset=Chapter.objects.none(),label="Chapter",)
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
-
-        task = forms.CharField(widget=forms.Select())
-
+        task = forms.ModelChoiceField(widget=forms.Select(), queryset=Task.objects.none(), label="Task",)
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
@@ -259,6 +257,17 @@ def TimesheetFormset(currentUser,enddate):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             ).order_by('name')
+
+            project_id = self.fields['project'].initial\
+                         or self.initial.get('project') \
+                         or self.fields['project'].widget.value_from_datadict(self.data, self.files, self.add_prefix('project'))
+            if project_id:
+                try:
+                    project_obj = Project.objects.get(id=int(project_id))
+                except:
+                    project_obj = project_id
+                self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
+                self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
             self.fields['location'].queryset = OfficeLocation.objects.filter(
                 active=True)
             self.fields['project'].widget.attrs[
@@ -588,6 +597,7 @@ class changeProjectLeaderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
+
 
 
 class MyRemainderForm(forms.ModelForm):
