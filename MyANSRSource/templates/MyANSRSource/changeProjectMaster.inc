@@ -57,17 +57,17 @@
         {% if wizard.steps.prev %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
-                        {% fontawesome_icon 'arrow-circle-left' large=True %}
+                        <i class="fa fa-arrow-circle-left fa-lg"></i>
 		        <b>Previous</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
-                        {% fontawesome_icon 'upload' large=True %}
+                        <i class="fa fa-upload fa-lg"></i>
 		    <b>Update Project</b>
                 {% else %}
 		    <b>Next</b>
-                    {% fontawesome_icon 'arrow-circle-right' large=True %}
+                    <i class="fa fa-arrow-circle-right fa-lg"></i>
                 {% endif %}
             </button>
         {% endbuttons %}
