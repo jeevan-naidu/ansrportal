@@ -50,6 +50,10 @@ class PeerForm(forms.ModelForm):
     class Meta:
         model = Initiator
         fields = ('respondents',)
+        widgets = {
+
+            'respondents': autocomplete.ModelSelect2Multiple()
+        }
 
     def __init__(self, *args, **kwargs):
         super(PeerForm, self).__init__(*args, **kwargs)
