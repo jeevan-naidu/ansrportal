@@ -7,11 +7,11 @@
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
-    {% fontawesome_icon 'university' large=True %}
+    <i class="fa fa-university"></i>
     Dashboard
  </a></li>
  <li class="ansrLogout"><a href="{% url 'logout' %}">
-    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <i class="fa fa-sign-out" style="color:red"></i>
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
