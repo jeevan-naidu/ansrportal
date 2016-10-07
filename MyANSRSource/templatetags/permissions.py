@@ -1,8 +1,8 @@
 from django import template
 from django.contrib.auth.models import Group
 from django.conf import settings
+import employee
 register = template.Library()
-
 
 
 @register.filter('create_project')
@@ -51,3 +51,12 @@ def IsMilestoneReportsAdmin(user):
 @register.filter('IsActiveShortAttendance')
 def IsActiveShortAttendance(value):
     return settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE
+
+@register.filter(name='isManager')  # added for grievance admin module
+def choose_reportee(user):
+    myReportee = employee.models.Employee.objects.filter(
+        manager=user.employee)
+    is_manager = 0
+    if myReportee:
+        is_manager = 1
+    return is_manager
