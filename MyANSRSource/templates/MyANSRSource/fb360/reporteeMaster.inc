@@ -26,11 +26,11 @@
 
 {% block ansrMenu %}
  <li><a href="/myansrsource/dashboard">
-    {% fontawesome_icon 'university' large=True %}
+    <i class="fa fa-university"></i>
     Dashboard
  </a></li>
  <li class="ansrLogout"><a href="{% url 'logout' %}">
-    {% fontawesome_icon 'sign-out' large=True color='red' %}
+    <i class="fa fa-sign-out" style="color: red"></i>
     <span class="ansrLogout">Logout</span>
   </a></li>
 {% endblock %}
@@ -74,17 +74,17 @@
         {% if wizard.steps.prev %}
                 <button name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
                     type="submit" class="btn btn-info">
-                        {% fontawesome_icon 'arrow-circle-left' large=True %}
+                        <i class="fa fa-arrow-circle-left"></i>
 		        <b>Previous</b>
                     </button>
         {% endif %}
             <button type="submit" value="submit" class="btn btn-info pull-right">
                 {% if wizard.steps.current == wizard.steps.last %}
-                    {% fontawesome_icon 'upload' large=True %}
+                    <i class="fa fa-upload"></i>
 		    <b>Send Request(s)</b>
                 {% else %}
 		    <b>Next</b>
-                    {% fontawesome_icon 'arrow-circle-right' large=True %}
+                    <i class="fa fa-arrow-circle-right"></i>
                 {% endif %}
             </button>
         {% endbuttons %}

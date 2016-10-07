@@ -44,7 +44,6 @@
             <div class="pull-right">
                 <button type="submit" class="btn btn-primary" value="submit" name="click">
                     <input type="hidden" value="generate" name="status" />
-                    <!-- {% fontawesome_icon 'line-chart' large=True %} -->
                     Get Report
                 </button>
                         
@@ -53,7 +52,6 @@
                 {% else %}
                     <button type="submit" class="btn btn-success" disabled>
                 {% endif %}
-                        <!-- {% fontawesome_icon 'file-excel-o' large=True %} -->
                         Export to Excel
                     </button>
             </div>
@@ -75,8 +73,8 @@
                 </tr>
             </table>
             <div class="pull-right">
-                 <small>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %} Timesheet Suubmitted
-                               {% fontawesome_icon 'chevron-circle-down' large=True color='red' %} Timesheet Not-Submitted</small>
+                 <small><i class="fa fa-chevron-circle-up"></i> Timesheet Suubmitted
+                               <i class="fa fa-chevron-circle-down"></i> Timesheet Not-Submitted</small>
             </div>
         {% endif %}
         <table class="table table-condensed">
@@ -142,9 +140,9 @@
                         </td> 
                         <td class="text-right"></td> 
                         {% if eachData.hold %}
-                           <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
+                           <td><i class="fa fa-chevron-circle-up"></i></td>
                         {% else %}
-                           <td>{% fontawesome_icon 'chevron-circle-down' large=True color='red' %}</td>
+                           <td><i class="fa fa-chevron-circle-down"></i></td>
                         {% endif %}
                     </tr>
                 {% endfor %}
@@ -168,9 +166,9 @@
                         <td class="text-right">{{ eachData.maxProd }}</td> 
                         <td class="text-right"></td> 
                         {% if eachData.hold %}
-                           <td>{% fontawesome_icon 'chevron-circle-up' large=True color='green' %}</td>
+                           <td><i class="fa fa-chevron-circle-up"></i></td>
                         {% else %}
-                           <td>{% fontawesome_icon 'chevron-circle-down' large=True color='red' %}</td>
+                           <td><i class="fa fa-chevron-circle-down"></i></td>
                         {% endif %}
                     </tr>
                 {% endfor %}
