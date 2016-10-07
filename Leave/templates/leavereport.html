@@ -1,0 +1,248 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}Leave Dashboard{% endblock %}
+{% block pageTitle %}Leave Report{% endblock %}
+{% block content  %}
+
+
+<link href="http://vendroid.venmond.com/plugins/morris/morris.css" rel="stylesheet" type="text/css">
+<link href="http://vendroid.venmond.com/plugins/dataTables/css/jquery.dataTables.css" rel="stylesheet" type="text/css">
+<link href="http://vendroid.venmond.com/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">  
+
+<div class="row">
+
+              <div class="col-md-4 mgbt-xs-20 mgbt-md-0">
+                <div class="panel widget  light-widget"> 
+                  <div class="panel-body-list">
+                    <h4 class="mgtp--5 pd-25"> <span class="font-semibold">Leave</span> Report </h4>
+                    <div id="bar-placeholder" class="bar-chart" style="height:318px;"></div>
+                  </div>
+                </div>
+                <!-- col-md-6 --> 
+              </div>
+
+
+
+
+
+
+
+
+
+
+              <div class="col-sm-8">
+
+                <div class="panel">
+
+
+                  <div class="panel-body table-responsive">
+                    <table class="table  table-striped leave-report-table" id="data-tables">
+                      <thead>
+                        <tr>
+                          <th>Person</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="gradeX">
+                          <td>Captain America</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator absent"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator absent"></div></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Natalia Romanova</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Tony Stark</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Bruce Banner</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Vision</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Peter Parker</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Bucky Barnes</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Clint Barton</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator absent"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator absent"></div></td>
+                          <td></td>
+                        </tr>
+
+
+                        <tr class="gradeX">
+                          <td>James Rhodes</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Scott Lang</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Nick Fury</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Sam Wilson</td>
+                          <td><div class="indicator absent"></div></td>
+                          <td><div class="indicator absent"></div></td>
+                          <td><div class="indicator absent"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator absent"></div></td>
+                          <td></td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr class="gradeX">
+                          <td>The sum</td>
+                          <td class="text-center">23</td>
+                          <td class="text-center">42</td>
+                          <td class="text-center">12</td>
+                          <td class="text-center">112</td>
+                          <td class="text-center">35</td>
+                          <td>534</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+
+         	
+              </div>
+
+
+
+
+</div><!-- ./row -->
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="http://vendroid.venmond.com/plugins/raphael/raphael.min.js"></script>
+<script type="text/javascript" src="http://vendroid.venmond.com/plugins/morris/morris.min.js"></script>
+<script type="text/javascript" src="http://vendroid.venmond.com/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+
+// The Bar Chart
+
+var barChart = function(){
+
+  "use strict";
+
+  window.barChart = Morris.Bar({
+    element: 'bar-placeholder',
+    data: [
+    { y: 'Week 1', a: 10, b: 90 },
+    { y: 'Week 2', a: 75, b: 25 },
+    { y: 'Week 3', a: 50, b: 50 },
+    { y: 'Week 4', a: 35, b: 65 }
+    ],
+    stacked: true,
+    xkey: 'y',
+    ykeys: ['a', 'b'],
+    labels: ['Series A', 'Series B'],
+    barColors: ["#23709E","#39515f"]
+
+  });
+
+}// Calling Bar Chart 
+
+
+
+		$(document).ready(function() {
+				"use strict";
+				
+        barChart();
+
+
+				$('#data-tables').dataTable({
+          searching: false,
+          scrollCollapse: true
+        });
+
+    $(window).resize(function(){
+      window.barChart.redraw();
+    })
+
+
+		});// End of document ready
+
+
+</script>
+
+{% endblock %}
