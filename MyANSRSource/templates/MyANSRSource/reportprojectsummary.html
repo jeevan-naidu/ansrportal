@@ -29,7 +29,8 @@
                         <td>{{ field }}</td> 
                     {% endfor %}
                     <td class="col-lg-1"><button type="submit" class="btn btn-primary">
-                        {% fontawesome_icon 'line-chart' large=True %}
+                        
+                        <i class="fa fa-line-chart"></i>
                         Get Report
                     </button></td>
                     <td class="col-lg-1">
@@ -38,7 +39,8 @@
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
                         {% endif %}
-                                {% fontawesome_icon 'file-excel-o' large=True %}
+                               
+                                <i class="fa fa-file-excel-o"></i>
                                 Export to Excel
                             </button>
                     </td>
