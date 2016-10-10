@@ -8,6 +8,7 @@ from forms import ProfileForm, MRFForm, NewMRFForm, ProcessForm
 from datetime import date, timedelta
 from django.conf import settings
 import json
+from GrievanceAdmin.views import paginator_handler
 
 def recruitment_form(request):
     return render(request, 'candidateform.html',{})
@@ -208,9 +209,11 @@ def candidatesearch(request):
         candidatelist = Profile.objects.filter().values('id')
     else:
         candidatelist = Profile.objects.filter(requisition_number__recruiter=user).values('id')
+
     for candidate in candidatelist:
         testdetail = Process.objects.filter(profile=candidate['id'])
         context_data['interviewdetial'].append(testdetail)
+    context_data['interviewdetial'] = paginator_handler(request, context_data['interviewdetial'])
     context_data['REFERENCE_SOURCE'] = REFERENCE_SOURCE
     context_data['RESULT_STATUS'] = RESULT_STATUS
     return render(request, 'candidatemanage.html', context_data)

@@ -43,7 +43,6 @@
 
 
     <!--  End update interview pop-->
-{% load pagination_tags %}
         <div class="panel"><!-- row -->
             <div class="panel-body">
 
@@ -63,7 +62,6 @@
                         <th>Recruiter</th>
                         {% endif %}
                     </tr>
-                 {%  autopaginate interviewdetial 10 %}
 
                     {% for interviewlist in interviewdetial %}
                          <tr>
@@ -105,7 +103,21 @@
 </table>
 </div>
 </div>
-<div class="text-center">{% paginate %} </div>
+<div class="text-center"><div class="pagination">
+    <span class="step-links">
+        {% if interviewdetial.has_previous %}
+            <a href="?page={{ interviewdetial.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ interviewdetial.number }} of {{ interviewdetial.paginator.num_pages }}.
+        </span>
+
+        {% if interviewdetial.has_next %}
+            <a href="?page={{ interviewdetial.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div> </div>
 
     <script>
     $("#modal-container-hire").on('shown.bs.modal', function(e){

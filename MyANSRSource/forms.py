@@ -391,10 +391,9 @@ class ProjectBasicInfoForm(forms.ModelForm):
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
             ),
+            'projectManager': autocomplete.ModelSelect2Multiple()
         }
-        widgets = {
 
-        }
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
@@ -661,10 +660,10 @@ class TeamMemberPerfomanceReportForm(forms.ModelForm):
         fields = (
             'member',
         )
-        
-    
 
-    
+
+
+
     def __init__(self, *args, **kwargs):
         super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)
         self.fields['member'].widget.attrs['class'] = "form-control"

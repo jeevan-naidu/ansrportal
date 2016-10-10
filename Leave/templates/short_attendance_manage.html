@@ -20,7 +20,7 @@
 
 <body>
 {% load grievances_template_tags %}
-{% load permissions %} {% load pagination_tags %}
+{% load permissions %}
     <!--  Start messages-->
     <div class="container-fluid">
         <div class="row">
@@ -95,7 +95,7 @@
 {#                                  </div>#}
                                    <div class="pull-left col-sm-offset-1 Lv-Mg-SubActive">
                                       <b><a id="open_requests" href="{% url 'Short_Attendance_Manage_View' %}"  title="Open Requests" class="anchor-inherit btn"><b>Short Attendances</b></a></b>
-                                      <span class="Lv-Mg-NotifyCount"> {{shortAttendanceOpen.count}}</span>
+                                      <span class="Lv-Mg-NotifyCount"> {{shortAttendanceOpen|length}}</span>
 
                                   </div>
                                   <div class="pull-left requests-reports hidden">
@@ -171,7 +171,7 @@
                         <th class="text-center">Action</th>
                     </tr>
 
-                    {%  autopaginate shortAttendanceOpen 10 %}
+
                     {% for leave in shortAttendanceOpen %}
                     <tr class="info">
                         <td>
@@ -326,7 +326,22 @@
                     </div>
 
 
-			</div> <div class="col-sm-12 text-center mod"> {% paginate %} </div>
+			</div>
+            <div class="col-sm-12 text-center mod">  <div class="pagination">
+    <span class="step-links">
+        {% if shortAttendanceOpen.has_previous %}
+            <a href="?page={{ shortAttendanceOpen.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ shortAttendanceOpen.number }} of {{ shortAttendanceOpen.paginator.num_pages }}.
+        </span>
+
+        {% if shortAttendanceOpen.has_next %}
+            <a href="?page={{ shortAttendanceOpen.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div></div>
 
             <div class="row">
                 <div class="col-md-12">

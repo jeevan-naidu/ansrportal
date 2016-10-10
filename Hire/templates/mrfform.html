@@ -11,7 +11,13 @@
   
 .yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}  
 
-</style>
+</style>  <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+
 
 
             <div class="row" id="form-basic">
@@ -131,14 +137,11 @@ window.onload = function(){
                            document.getElementById("id_raised_by").readOnly = true;
     }
 
-    $(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2-id_requisition_number-container]', function() {
-    alert();
-})
-    $('#id_requisition_number').bind(
-      'selectChoice',
-      function(e, choice, autocomplete) {
-          var requsitionno = choice.html()
-          requsitionno = requsitionno.substring(requsitionno.indexOf(' ')+1,requsitionno.length)
+        //attach autocomplete
+        $("#id_requisition_number").change(function(){
+
+       var requsitionno = $("#id_requisition_number option")[0].text;
+            requsitionno = requsitionno.substring(requsitionno.indexOf(' ')+1,requsitionno.length)
            $.ajax(
                    {
                        type : "GET",
@@ -167,7 +170,10 @@ window.onload = function(){
                        }
                    }
            );
-      });
+
+
+        });
+
 
     </script>
 {% endblock %}
