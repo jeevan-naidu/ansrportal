@@ -50,15 +50,14 @@ class ProfileForm(forms.ModelForm):
                                                                            'required': 'true'}))
 
     manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
-
+    # interview_by = forms.ModelChoiceField()
     interview_by = forms.ModelChoiceField(
         queryset=User.objects.all(),
         required=True,
         widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
             'data-placeholder': 'Type Member Name ...',
         }, ), )
-
-    interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name',
+    interview_by.widget.attrs = { 'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Interviewer Name',
                                 }
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
     interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
@@ -72,6 +71,7 @@ class ProfileForm(forms.ModelForm):
         fields = ['candidate_name', 'mobile_number', 'email_id', 'gender', 'date_of_birth', 'source', 'refered_by',
                   'requisition_number', 'department', 'designation', 'specialization',
                   'manager', 'interview_by', 'interview_on', 'interview_status', 'remark']
+
 
 
 
@@ -117,8 +117,9 @@ class NewMRFForm(forms.ModelForm):
             'data-placeholder': 'Type Manaager Name ...',
         }, ), )
 
-    manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manger Name',
-                               }
+
+    # manager.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manger Name',
+    #                            }
     count = forms.CharField(max_length=10, widget=forms.TextInput(
         attrs={'class': 'width-50 input-sm', 'required': 'true', 'type': 'number', 'min':'0'}))
 
