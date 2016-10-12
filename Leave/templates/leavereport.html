@@ -51,7 +51,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr class="gradeX">
+<!--                         <tr class="gradeX">
                           <td>Captain America</td>
                           <td><div class="indicator"></div></td>
                           <td><div class="indicator absent"></div></td>
@@ -160,7 +160,46 @@
                           <td><div class="indicator"></div></td>
                           <td><div class="indicator absent"></div></td>
                           <td></td>
+                        </tr> -->
+
+                        <!-- end of avengers -->
+
+
+                        <tr class="gradeX">
+                          <td>Person 1</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td></td>
                         </tr>
+                        <tr class="gradeX">
+                          <td>Person 2</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Person 3</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td></td>
+                        </tr>
+
+
+
+
+
+
+
+
                       </tbody>
                       <tfoot>
                         <tr class="gradeX">
@@ -253,19 +292,38 @@ var barChart = function(){
 
     var theMonth = {
 
-                      week1:[{"name":"John Johnson","street":"Oslo West 16","phone":"555 1234567"},
-                             {"name":"John","street":"Oslo West ","phone":"555 "},
-                             {"name":"Johnson","street":"Oslo  16","phone":"1234567"}],
+                      person1:[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
+                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],
 
 
-                      week2:[{"name":"John Johnson","street":"Oslo West 16","phone":"555 1234567"},
-                             {"name":"John","street":"Oslo West ","phone":"555 "},
-                             {"name":"Johnson","street":"Oslo  16","phone":"1234567"}]
+                      person2:[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
+                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],
+
+                      person3:[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
+                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]                               
+
+
+                    }
 
 
 
-                             }
+    var populate = function(){
+      $.each($('.leave-report-table tbody td div'),function(){
+        $(this).addClass('absent');
+      })
+    }                    
 
+
+// As td with person does not contain div, use div inside tr
+
+
+    populate();
 
 
 </script>
