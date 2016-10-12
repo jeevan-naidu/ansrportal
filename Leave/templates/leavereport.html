@@ -314,8 +314,13 @@ var barChart = function(){
 
 
     var populate = function(){
-      $.each($('.leave-report-table tbody td div'),function(){
-        $(this).addClass('absent');
+      $.each($('.leave-report-table tbody tr'),function(){
+        i=0;
+        $.each($(this).find('div'),function(){
+          $(this).addClass('absent');
+          console.log(i);
+          i++;
+        })
       })
     }                    
 
