@@ -1,4 +1,4 @@
- {% load book_my_room_template_tags %}
+{% load book_my_room_template_tags %} {% load permissions %}
  <div id="BookingsAjaxLoader" class="ajax_bck_bookings"><div class="ajax_load_image_bookings"></div></div>
   <div class="panel panel-default clearfix room-booking-content">
 
@@ -42,7 +42,7 @@
 
 <form id="BookMeetingForm" method="post" enctype="multipart/form-data">
 		 <!--<form action="{% url 'add_grievance' %}" method="post">-->
-		  {% csrf_token %}
+		  {% csrf_token %} is??? {{request.user.is_superuser}}
   {% for room_obj in rooms_list %}
     <div class="room-and-time clearfix">
         <div class="col-sm-3 col-md-2">{{room_obj.room_name}}</div>
@@ -53,13 +53,15 @@
 
           {% with  res_obj=for_date|Concat:time|BookedBy:room_obj %}
               {% if res_obj %}
-                <span>
+                <span> {% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%}
+                    <input type="checkbox" name="BookingTime" id="{{res_obj.id}}"  onchange="removeClassFunction(this)"  class ="check_box"/>
+                    {%else%}
+                    <input type="checkbox" name="BookingTime" id="{{res_obj.id}}"  disabled  class ="check_box" />
+                    {%endif%}
                         {% if res_obj.booked_by == request.user %}
-                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" class="user-selected" disabled />
-                            <label for="{{room_obj.id}}-{{time}}" data="{{ res_obj }}"></label>
+                            <label for="{{res_obj.id}}" id="label_{{res_obj.id}}" class="user-selected" data="{{ res_obj }}"></label>
                         {% else  %}
-                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
-                            <label for="{{room_obj.id}}-{{time}}" data="{{ res_obj }}"></label>
+                            <label for="{{res_obj.id}}" id="label_{{res_obj.id}}" data="{{ res_obj }}"></label>
                         {% endif %}
                     <div class="booked-by">
                         <h4>Booked By</h4>
@@ -68,7 +70,7 @@
                 </span>
               {% else %}
                 <span>
-                    <input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/>
+                    <input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}" class ="check_box" />
                     <label for="one{{room_obj}}{{time}}"></label>
                 </span>
               {% endif %}
@@ -108,16 +110,25 @@
 
 <div class="row bookings margin-0">
 	<h4>Your Bookings <small> (Only future bookings are displayed here)</small></h4>
-	{% if bookings_list %}
+    <div class="form-inline approve-reject pull-right">
+           {% if bookings_list %}  <div class="checkbox checkbox-success">
+                                          <input id="release_all" type="checkbox" name="release_all" class="release_all">
+                                          <label for="release_all" class="lh-16">
+                                             Release All
+                                          </label>
+                                      </div>{% endif %}
+	{% if bookings_list %}<div class="col-sm-2">
+					<button class=" update btn btn-info btn-sm pull-right" id="update" >Update</button>
+				</div>
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
 				<div class="col-sm-3">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
-				<div class="col-sm-7">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
-{#				<div class="col-sm-4">#}
-{#					<input type="text" name="" class="form-control">#}
-{#				</div>#}
+				<div class="col-sm-3">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
+					<div class="col-sm-3"><textarea rows="1"   name="remark_{{obj.id}}" id="{{obj.id}}" class="form-control remark"  placeholder="Reason For Booking..">{{obj.remark}}</textarea></div>
+
 				<div class="col-sm-2">
-					<button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>
+                    <input type="checkbox" name="release[]" id="release_{{obj.id}}" data-value="{{obj.id}}"  class="form-control release_checkbox">Release
+					<!--<button class="update btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>-->
 				</div>
 			</div>
 		{% endfor %}
@@ -138,8 +149,113 @@
 </div><!--end of panel-->
 
 <script>
+
+    var remarks ={};
+    var cancel_id = {};
+    var not_empty = 0;
+    var not_checked = 0;
+    var initial_elements = {}
+    var admin_override = []
+     function removeClassFunction(ele) {
+         var labelFor = $(ele).attr("id");
+         if(!this.checked) {
+            admin_override.push(ele.id);
+          }
+
+         if ($("label[for=" +labelFor+"]").hasClass("user-selected")) {
+            $('#'+ele.id).prop('checked', false);
+            $("label[for=" +labelFor+"]").removeClass("user-selected");
+         }
+     }
 	$(document).ready(function(){
-		 $('#reset-btn').click(function(){
+	<!--$("input:checkbox.check_box").each(function (index){-->
+        <!--if( $("label[for="+this.id+"]").hasClass('user-selected')) {-->
+            <!--initial_elements[index]=this.id;-->
+        <!--}-->
+	 <!--});-->
+	 console.log(initial_elements);
+
+console.log("initial_elements"+JSON.stringify(initial_elements));
+<!--$('input:checkbox.class').each(function () {-->
+       <!--var sThisVal = (this.checked ? $(this).val() : "");-->
+  <!--});-->
+  	$(".remark").keyup(function() {
+
+        if($(this).val().trim().length != 0 ) {
+        console.log("im in");
+            $("#update").prop('disabled', false);
+        }
+        else {
+            not_empty=0;
+            $(".remark").each(function() {
+                if($(this).val().trim().length != 0) {
+                console.log("count"+not_empty);
+                    not_empty+=1 ;
+                    <!--$("#update").prop('disabled', false);-->
+                }
+            });
+            if(not_empty==0)  {  $("#update").prop('disabled', true);$(".release_checkbox").trigger('change');  }
+        }
+    });
+
+        $("#update").click(function() {
+            console.log("update");
+
+         $(".release_checkbox").each(function(index) {
+         console.log("inside release/");
+            if(this.checked) {
+                <!--$("#update").prop('disabled', false);-->
+                 cancel_id[index]=($(this).attr('data-value'));
+            }
+
+            });
+         $(".remark").each(function() {
+            <!--console.log($(this).val() +'&#45;&#45;'+this.value);-->
+                if($(this).val().trim().length != 0) {
+                    remarks[this.id]=$(this).val();
+                }
+                else {
+                $("#update").prop('disabled', true);
+            }
+                <!--console.log("remarks&#45;&#45;"+remarks);-->
+
+         });
+
+
+        });
+        $("#release_all").change(function() {
+            if(this.checked) {
+                $("#update").prop('disabled', false);
+                $('.release_checkbox').prop('checked', true);
+            }
+            else {
+                $("#update").prop('disabled', true);
+                $('.release_checkbox').prop('checked', false);
+            }
+        });
+
+
+         $(".release_checkbox").change(function() {
+            var id = this.id.split('_');
+            if(this.checked) {
+             $("#update").prop('disabled', false);
+             $('#remark_'+id[1]).prop('readonly', true);
+            }
+            else {
+                not_checked=0;
+                $(".release_checkbox").each(function() {
+                    if(this.checked) {
+                        not_checked+=1 ;
+                    }
+                });
+                if(not_checked==0)  {  $("#update").prop('disabled', true);   $(".remark").trigger('keyup'); }
+                if($('#remark_'+id[1]).prop('readonly')) {
+                    $('#remark_'+id[1]).prop('readonly',false)
+                }
+            }
+        });
+
+		$('#reset-btn').click(function(){
 				$('input[type="checkbox"]').attr('checked', false);
 			});
 		});
@@ -226,12 +342,18 @@
         });
 
 
-				$(".CancelBooking").click(function(){
 
-            var cancel_id = $(this).attr('data-value');
+				$(".update").click(function(){
+				    <!--var condition = $( '#release_all').prop( "checked" );-->
+				    <!--console.log("condition"+condition);-->
+                    <!--if(condition === false) {-->
+                         <!--cancel_id = {};-->
+                         <!--&lt;!&ndash;cancel_data['cancel_id'].push ($(this).attr('data-value'));&ndash;&gt;-->
+
+                    <!--}-->
 
 						swal({   title: "",
-                text: "Are you sure you want to release this meeting room?",
+                text: "Are you sure you want to update your changes?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#00BCD4",
@@ -247,15 +369,24 @@
 											$('.showSweetAlert .sa-button-container button.confirm').html('');
 										$('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
 										$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
-
+<!--remarks = JSON.stringify(remarks);--> console.log("cancel id"+cancel_data);
 														$.ajax({
 																url: '/bookings/cancel/',
 																type: 'POST',
-																 data: {'cancel_id':cancel_id},
-																success: function (data) {
-																		if (data.record_updated == true) {
+																 <!--contentType: "application/json; charset=utf-8",-->
+                                                                 dataType: "json",
+																 data:  JSON.stringify({remarks,cancel_id}),
+																 <!--$.toJSON(myEvent),-->
+                                                                <!--dataType: 'text',-->
+                                                                beforeSend(data){ console.log("remarks = "+JSON.stringify(remarks) +"----"+JSON.stringify(cancel_id));},
+																success(result,status,data) {
+																<!--console.log("result"+JSON.stringify(result))-->
+
+																<!--console.log("status"+status)-->
+																<!--console.log(JSON.stringify(data));-->
+																		if (result.record_updated == true) {
 																			swal({
-																				title:"Meeting room released!!",
+																				title:"Meeting room changes done successfully !!",
 																				type:'success',
 																				text:"The page will refresh automatically",
 																				showConfirmButton: false
@@ -266,7 +397,7 @@
 																				window.location.reload();
 																				}, 2000);
 																		}
-																		if (data.user_mismatch == true) {
+																		if (result.user_mismatch == true) {
 																				swal('Error', "Malicious activity.You cannot cancel other users bookings.");
 																		}
 																},
