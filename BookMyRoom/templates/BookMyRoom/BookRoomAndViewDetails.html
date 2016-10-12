@@ -54,10 +54,11 @@
           {% with  res_obj=for_date|Concat:time|BookedBy:room_obj %}
               {% if res_obj %}
                 <span>
-                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
                         {% if res_obj.booked_by == request.user %}
-                            <label for="{{room_obj.id}}-{{time}}" class="user-selected" data="{{ res_obj }}"></label>
+                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" class="user-selected" disabled />
+                            <label for="{{room_obj.id}}-{{time}}" data="{{ res_obj }}"></label>
                         {% else  %}
+                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
                             <label for="{{room_obj.id}}-{{time}}" data="{{ res_obj }}"></label>
                         {% endif %}
                     <div class="booked-by">
@@ -286,3 +287,139 @@
         });
 
 </script>
+
+<script type="text/javascript">
+
+// var bookings_array = {one : '1', two : '2', three : '3'};
+
+	var bookings_start = [];
+	var bookings_end = [];	
+
+	var loop = [];	
+	var jobject;
+
+	arr_id_load = [];
+	obj_id_load = {};
+
+	arr_id_submit = [];
+	obj_id_submit = {};
+
+
+$(document).ready(function(){
+
+
+
+
+
+
+	// Run on page load
+
+	bookings_init = function(){
+
+		i=0;
+		$('.selectors input[type="checkbox"]').each(function(){
+
+			if ($(this).prop('disabled')) {
+				arr_id_load[i] = this.id;
+				obj_id_load[arr_id_load[i]] = 0;
+				i++;
+			}	
+
+		})// end of each
+
+
+		console.log(obj_id_load);
+
+	}// end of bookings_init
+
+
+
+
+
+
+	// Run on submit
+
+	bookings_submit = function(){
+
+
+		$('#BookMeetingForm input[type="submit"]').click(function(){
+
+			obj_temp_submit = {};
+			arr_id_submit.length = 0;
+			i=0;	
+			$('.selectors input[type="checkbox"]').each(function(){
+				if ($(this).prop('disabled')) {
+					arr_id_submit[i] = this.id;
+					obj_temp_submit[arr_id_submit[i]] = 0;
+					i++;
+				}else if ($(this).prop('checked')) {
+					if($(this).hasClass('released')){
+						arr_id_submit[i] = this.id;
+						obj_temp_submit[arr_id_submit[i]] = 1;
+						i++;
+					}else{
+						arr_id_submit[i] = this.id;
+						obj_temp_submit[arr_id_submit[i]] = 0;
+						i++;
+					}
+				}
+			})
+
+			console.log(obj_temp_submit);
+
+			})
+
+
+
+	}// end of bookings submit
+
+
+
+
+	// Click functions
+
+
+	$('input:disabled + label').click(function(){
+		$(this).parent().find('input[type="checkbox"]').removeAttr('disabled').addClass('released');
+	})	
+	$('input[type="checkbox"].user-selected + label').click(function(){
+		$(this).parent().find('input[type="checkbox"].user-selected').removeClass('user-selected released').removeAttr('disabled');
+	})
+
+
+
+
+
+
+	// Testing area
+
+
+
+/*  L1 = ['a:1','b','c'];
+  L3 = {};
+  for (i=0; i<L1.length; i++) {
+    L3[L1[i]] = 1;
+  }
+*/
+
+  	// Function calls
+
+
+	bookings_init();
+	bookings_submit();
+
+
+
+
+
+
+
+})// end of document.ready
+
+</script>
+
+<style type="text/css">
+	
+input[type="checkbox"] + label{cursor: pointer !important}
+
+</style>
