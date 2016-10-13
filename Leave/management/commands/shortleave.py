@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 import logging
 import pytz
 from string import Formatter
+from CompanyMaster.models import Holiday
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -20,13 +21,15 @@ class Command(BaseCommand):
 def shortLeave():
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
-    checkdate = date.today() - timedelta(days=29)
+    checkdate = date.today() - timedelta(days=30)
     FMT = '%H:%M:%S'
-
+    holiday = Holiday.objects.all().values('date')
     dueDate = checkdate + timedelta(days=30)
     morningInTimeLimit = datetime.strptime("10:15:00", FMT)
     fullDayOfficeStayTimeLimit = timedelta(hours=9, minutes=00, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=4, minutes=30, seconds=00)
+    if checkdate in [datedata['date'] for datedata in holiday] or checkdate.weekday() >= 5:
+        return
 
     for user in user_list:
         try:
@@ -108,7 +111,7 @@ def shortLeave():
                                                   swipe_in=time(00, 00, 00),
                                                   swipe_out=time(00, 00, 00),
                                                   stay_time=time(00, 00, 00),
-                                                  ).save()
+                                                  )
 
 
 

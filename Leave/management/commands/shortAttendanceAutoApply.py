@@ -17,6 +17,7 @@ class Command(BaseCommand):
 
 
 def shortAttendanceApply():
+    #duedate = '2016-10-20'
     duedate = date.today() + timedelta(days=1)
     shortattendance = ShortAttendance.objects.filter(due_date=duedate,active=True)
     for attendance in shortattendance:
@@ -35,7 +36,6 @@ def applyLeave(attendance):
         leave = LeaveSummary.objects.get(user=user_id,
                                          leave_type=avaliable_leave,
                                          year=date.today().year)
-        leavesubmit(attendance, leave, reason, user_id, applied_by)
     else:
         leave = LeaveSummary.objects.filter(user=user_id,
                                          leave_type__leave_type='loss_of_pay',
@@ -48,11 +48,15 @@ def applyLeave(attendance):
                                         applied=0, approved=0,
                                         balance=0,
                                         year=date.today().year)
+    if leavecheckonautoapplydate(attendance, user_id):
         leavesubmit(attendance, leave, reason, user_id, applied_by)
+    else:
+        attendance.active = False
+        attendance.save()
 
 
 def avaliableLeaveCheck(user_id, short_leave_type):
-    leavesavaliableforapply = ['casual_leave','earned_leave']
+    leavesavaliableforapply = ['casual_leave', 'earned_leave']
     for val in leavesavaliableforapply:
         leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=date.today().year)
         if short_leave_type == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 1:
@@ -64,7 +68,18 @@ def avaliableLeaveCheck(user_id, short_leave_type):
 
 def leavesubmit(attendance, leave, reason, user_id, applied_by):
     try:
-        if attendance.short_leave_type == 'full_day':
+        leaveapp = LeaveApplications.objects.filter(from_date__lte=attendance.for_date,
+                                                 to_date__gte=attendance.for_date,
+                                                 user=user_id)
+        if leaveapp and attendance.short_leave_type == 'full_day':
+            leavecount = .5
+            if leaveapp[0].from_session == 'session_first':
+                fromsession = 'session_second'
+                tosession = 'session_second'
+            else:
+                fromsession = 'session_first'
+                tosession = 'session_first'
+        elif attendance.short_leave_type == 'full_day':
             leavecount = 1
             fromsession = 'session_first'
             tosession = 'session_second'
@@ -97,3 +112,17 @@ def leavesubmit(attendance, leave, reason, user_id, applied_by):
     except:
         print "please check manager for user id {0}".format(user_id)
         # logger.error("error happen for {0} while putting forced leave manager is not there".format(user_id))
+
+
+def leavecheckonautoapplydate(attendance, user):
+    leave = LeaveApplications.objects.filter(from_date__lte=attendance.for_date,
+                                             to_date__gte=attendance.for_date,
+                                             user=user)
+    if leave and \
+                    len(leave) > 1 or\
+                    attendance.short_leave_type == 'half_day' and leave or leave and\
+                            leave[0].from_session == 'session_first'\
+            and leave[0].to_session == 'session_second':
+        return False
+    else:
+        return True
