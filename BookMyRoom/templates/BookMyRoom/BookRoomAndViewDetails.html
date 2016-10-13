@@ -120,20 +120,20 @@
     {% if bookings_list %}  
 
     <div class="col-sm-12" style="margin-bottom: 15px;">
-    	<button class=" update btn btn-success btn-sm pull-right" id="update" >Update</button>
       <div class="checkbox checkbox-success pull-right">
-          <label for="release_all" class="lh-16 btn btn-info btn-sm" style="margin-right: 15px">
+          <label for="release_all" class="lh-16 btn btn-info btn-sm">
           <input id="release_all" type="checkbox" name="release_all" class="release_all" style="display: none;">
              Release All
           </label>
       </div>
+    	<button class=" update btn btn-success btn-sm pull-right" id="update"  style="margin-right: 15px">Update</button>
     </div>
 
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
 				<div class="col-sm-3">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
 				<div class="col-sm-3">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
-					<div class="col-sm-5"><textarea rows="1"  style="width:100%" name="remark_{{obj.id}}" id="{{obj.id}}" class="form-control remark"  placeholder="Reason For Booking..">{{obj.remark}}</textarea></div>
+					<div class="col-sm-5"><textarea rows="1"  style="width:100%" name="remark_{{obj.id}}" id="{{obj.id}}" class="form-control remark input-sm"  placeholder="Reason For Booking..">{{obj.remark}}</textarea></div>
 
 				<div class="col-sm-1 no-padding-right">
             <input type="checkbox" name="release[]" id="release_{{obj.id}}" data-value="{{obj.id}}"  class="form-control release_checkbox hidden">
@@ -579,6 +579,10 @@ input[type="checkbox"] + label{cursor: pointer !important}
   user-select: none;
 }
 label.btn{padding-left: 10px !important;}
+label.release-btn{
+  padding: 1px 7px !important;
+  margin-top: 5px;
+}
 input[type="checkbox"]:not(:checked) + label.release-btn{
   background: #eaeaea;
   border-color: #cccccc;
