@@ -7,7 +7,8 @@ import datetime
 from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
-
+import json
+import ast
 import pytz
 
 
@@ -20,49 +21,122 @@ TimingsList = [ ['08:00-08:30', '08:30-09:00', '09:00-09:30', '09:30-10:00'],
                 ['18:00-18:30', '18:30-19:00', '19:00-19:30', '19:30-20:00'] ]
 
 
+class DictDiffer(object):
+    """
+    Calculate the difference between two dictionaries as:
+    (1) items added
+    (2) items removed
+    (3) keys same in both but changed values
+    (4) keys same in both and unchanged values
+    """
+    def __init__(self, current_dict, past_dict):
+        self.current_dict, self.past_dict = current_dict, past_dict
+        self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
+        self.intersect = self.set_current.intersection(self.set_past)
+
+    def added(self):
+        return self.set_current - self.intersect
+
+    def removed(self):
+        return self.set_past - self.intersect
+
+    def changed(self):
+        return set(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
+
+    def unchanged(self):
+        return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
+
+"""
+{"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0}
+{"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"oneThe Enterprises: karle_ground_floor08:00-08:30":0}
+
+addedset([])
+
+removedset(['oneThe Enterprises: karle_ground_floor08:00-08:30']) // new record
+
+unchangedset(['3', '5', '4', '7', '6', '9', '8']) // ignore them
+
+changedset([])
+
+{"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0}
+{"3":0,"4":0,"5":0,"6":1,"7":0,"8":0,"9":0,"10":0}
+addedset([])
+removedset([])
+unchangedset(['10', '3', '5', '4', '7', '9', '8']) // discard
+changedset(['6']) // overridden by admin - update case
+
+{"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0}
+{"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0}
+addedset(['3']) // to be removed
+removedset([])
+unchangedset(['10', '5', '4', '7', '6', '9', '8'])
+changedset([])
+
+"""
+
+
 class BookMeetingRoomView(View):
-    ''' add or edit grievances '''
-    
+
     def get(self, request):
         if 'for_location' not in request.session:
             request.session['for_location'] = ''
         if 'for_date' not in request.session:
             request.session['for_date'] = ''
         return render(request, 'BookMyRoom/index.html', locals())
-    
+
     def post(self, request):
-        
-        context_data = {'add' : True, 'record_added' : False, 'success_msg' : None,
-                        'html_data' : None, 'errors' : '', 'for_date':'' }
+        context_data = {'add': True, 'record_added': False, 'success_msg': None,
+                        'html_data': None, 'errors': '', 'for_date': '' }
+
+        if request.POST.get('on_load'):
+            on_load = ast.literal_eval(request.POST.get('on_load'))
+            on_submit = ast.literal_eval(request.POST.get('on_submit'))
+            s = DictDiffer(on_load, on_submit)
+            if len(s.added()) > 0:
+                MeetingRoomBooking.objects.filter(pk__in=s.added()).delete()  # release room
+                context_data['record_added'] = True
+                context_data['success_msg'] = "Your changes are made successfully"
+            if len(s.added()) == 0 and len(s.removed()) == 0 and len(s.changed()) == 0:
+                is_empty = True
+
         if not request.POST.get('for_date'):
             context_data['errors'] += "\nPlease select date"
         else:
             for_date = request.POST.get('for_date')
         bookings_list = request.POST.getlist('BookingTime')
-        if not bookings_list:
+
+        if not bookings_list and is_empty == True:
             context_data['errors'] += "\nNo room selected."
         if not context_data['errors']:
+            # print request.POST.getlist('BookingTime')
             for element in request.POST.getlist('BookingTime'):
-                data_list = element.split("/")
-                room_id = int(data_list[0])
-                room_obj = RoomDetail.objects.get(id=room_id)
-                time_period_list = data_list[1].split("-")
-                from_time = time_period_list[0]
-                to_time = time_period_list[1]
-                
-                from_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(from_time), '%Y-%m-%d/%H:%M')
-                to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
-                try:
-                    booking_obj = MeetingRoomBooking.objects.get(room=room_obj, from_time=from_time_obj, to_time=to_time_obj, status='booked')
-                    
-                    context_data['errors'] = "Oops! :( Looks like someone else clicked\
-                    <b>Submit</b> just before you did. Better luck next time."
-                except:
-                    booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked', 
-                                                from_time=from_time_obj, to_time=to_time_obj)
-                    booking_obj.save()
-                    context_data['record_added'] = True
-                    context_data['success_msg'] = "Booked"
+                if "/" in element:
+                    data_list = element.split("/")
+                    room_id = int(data_list[0])
+                    room_obj = RoomDetail.objects.get(id=room_id)
+                    time_period_list = data_list[1].split("-")
+                    from_time = time_period_list[0]
+                    to_time = time_period_list[1]
+
+                    from_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(from_time), '%Y-%m-%d/%H:%M')
+                    to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
+                    try:
+                        booking_obj = MeetingRoomBooking.objects.get(room=room_obj,
+                                                                     from_time=from_time_obj,
+                                                                     to_time=to_time_obj, status='booked')
+
+                        context_data['errors'] = "Oops! :( Looks like someone else clicked\
+                        <b>Submit</b> just before you did. Better luck next time."
+                    except:
+                        booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked',
+                                                         from_time=from_time_obj, to_time=to_time_obj)
+                        booking_obj.save()
+
+                else:
+                    # override condition by admin
+                    MeetingRoomBooking.objects.filter(pk=int(element)).update(booked_by=request.user)
+                context_data['record_added'] = True
+                context_data['success_msg'] = "Booked"
         return JsonResponse(context_data)
 
 
@@ -103,7 +177,7 @@ def GetBookingsView(request):
 def CancelBooking(request):
     partial_update = False
     fail = 0
-    import json
+
     # import pdb
     # pdb.set_trace()
     json_data = json.loads(request.body)  # request.raw_post_data w/ Django < 1.4

@@ -42,7 +42,7 @@
 
 <form id="BookMeetingForm" method="post" enctype="multipart/form-data">
 		 <!--<form action="{% url 'add_grievance' %}" method="post">-->
-		  {% csrf_token %} is??? {{request.user.is_superuser}}
+		  {% csrf_token %}
   {% for room_obj in rooms_list %}
     <div class="room-and-time clearfix">
         <div class="col-sm-3 col-md-2">{{room_obj.room_name}}</div>
@@ -53,21 +53,27 @@
 
           {% with  res_obj=for_date|Concat:time|BookedBy:room_obj %}
               {% if res_obj %}
-                <span> {% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%}
-                    <input type="checkbox" name="BookingTime" id="{{res_obj.id}}"  onchange="removeClassFunction(this)"  class ="check_box"/>
-                    {%else%}
-                    <input type="checkbox" name="BookingTime" id="{{res_obj.id}}"  disabled  class ="check_box" />
-                    {%endif%}
-                        {% if res_obj.booked_by == request.user %}
-                            <label for="{{res_obj.id}}" id="label_{{res_obj.id}}" class="user-selected" data="{{ res_obj }}"></label>
-                        {% else  %}
-                            <label for="{{res_obj.id}}" id="label_{{res_obj.id}}" data="{{ res_obj }}"></label>
-                        {% endif %}
+
+                 <span>
+                    <input type="checkbox" name="BookingTime" id="{{res_obj.id}}" disabled {% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%}value="{{res_obj.id}}" {% endif %} />
+
+        <label for="{{res_obj.id}}"{% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%} onclick="removeClassFunction(this)"  {%endif%}  id="label_{{res_obj.id}}" {% if res_obj.booked_by == request.user %} class="user-selected" {%endif%} data="{{ res_obj }}"></label>
+
                     <div class="booked-by">
                         <h4>Booked By</h4>
-                        <p>{{res_obj.booked_by.first_name}} {{res_obj.booked_by.last_name}}</p>
+                        <p >{{res_obj.booked_by.first_name}} {{res_obj.booked_by.last_name}}</p>
+                        {%if res_obj.remark %}<p>For:{{res_obj.remark}}</p>{%endif%}
+
                     </div>
                 </span>
+
+
+
+
+
+
+
+
               {% else %}
                 <span>
                     <input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}" class ="check_box" />
@@ -80,7 +86,7 @@
           </div>
           {% endfor %}
 
-        </div>
+        </div> <input type="hidden" id="is_admin" {% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%} value="true" {%else%} value="false" {%endif%}>
     </div><!--end of room-and-time-->
     {% endfor %}
 
@@ -156,29 +162,20 @@
     var not_checked = 0;
     var initial_elements = {}
     var admin_override = []
+
      function removeClassFunction(ele) {
-         var labelFor = $(ele).attr("id");
-         if(!this.checked) {
-            admin_override.push(ele.id);
-          }
-
-         if ($("label[for=" +labelFor+"]").hasClass("user-selected")) {
-            $('#'+ele.id).prop('checked', false);
-            $("label[for=" +labelFor+"]").removeClass("user-selected");
-         }
+     if ($(ele).hasClass('user-selected')) {
+        $(ele).parent().find('input[type="checkbox"]').removeAttr('disabled');
+        $(ele) .removeClass('user-selected');
      }
-	$(document).ready(function(){
-	<!--$("input:checkbox.check_box").each(function (index){-->
-        <!--if( $("label[for="+this.id+"]").hasClass('user-selected')) {-->
-            <!--initial_elements[index]=this.id;-->
-        <!--}-->
-	 <!--});-->
-	 console.log(initial_elements);
+     else {$(ele).parent().find('input[type="checkbox"]').removeAttr('disabled').addClass('released');}
+     $(ele).next().hide();
+     }
 
-console.log("initial_elements"+JSON.stringify(initial_elements));
-<!--$('input:checkbox.class').each(function () {-->
-       <!--var sThisVal = (this.checked ? $(this).val() : "");-->
-  <!--});-->
+	$(document).ready(function(){
+
+
+
   	$(".remark").keyup(function() {
 
         if($(this).val().trim().length != 0 ) {
@@ -266,15 +263,25 @@ console.log("initial_elements"+JSON.stringify(initial_elements));
 						var for_date = $('#id_for_date').val();
 						var confirmation_text = "";
 						formData.append('for_date', for_date);
-						if ($("input[name=BookingTime]:checked").length <= 0){
-							swal({title:"", text:"Sorry! You haven't selected any meeting room.", type:'warning'});
-							return false;
+						if ($('#is_admin').val() == 'false') {
+                            if ($("input[name=BookingTime]:checked").length <= 0){
+                                swal({title:"", text:"Sorry! You haven't selected any meeting room.", type:'warning'});
+                                return false;
+                            }
+                            else if($("input[name=BookingTime]:checked").length == 1){
+                                confirmation_text = "Are you sure you want to book this room?";
+                            }
+                            else{
+                                confirmation_text = "Are you sure you want to book these rooms?";
+                            }
 						}
-						else if($("input[name=BookingTime]:checked").length == 1){
-							confirmation_text = "Are you sure you want to book this room?";
-						}
-						else{
-							confirmation_text = "Are you sure you want to book these rooms?";
+						else {
+						        confirmation_text = "Are you sure you want to make these changes?";
+
+						        formData.append('on_load', JSON.stringify(obj_id_load));
+						        formData.append('on_submit', JSON.stringify(obj_temp_submit));
+						        <!--formData = formData.serialize()-->
+						        <!--+JSON.stringify({formData,"on_load":JSON.stringify(obj_id_load),'on_submit':obj_temp_submit})-->
 						}
 
 								swal({
@@ -336,7 +343,7 @@ console.log("initial_elements"+JSON.stringify(initial_elements));
 																processData: false
 														});
 
-												}
+												}//if ($('#is_admin').val() == 'true') window.location.reload();
                    });
             return false;
         });
@@ -459,7 +466,7 @@ $(document).ready(function(){
 		})// end of each
 
 
-		console.log(obj_id_load);
+		console.log("dom ready " + JSON.stringify(obj_id_load));
 
 	}// end of bookings_init
 
@@ -496,7 +503,7 @@ $(document).ready(function(){
 				}
 			})
 
-			console.log(obj_temp_submit);
+			console.log("on submit" + JSON.stringify(obj_temp_submit));
 
 			})
 
@@ -507,15 +514,9 @@ $(document).ready(function(){
 
 
 
-	// Click functions
 
 
-	$('input:disabled + label').click(function(){
-		$(this).parent().find('input[type="checkbox"]').removeAttr('disabled').addClass('released');
-	})	
-	$('input[type="checkbox"].user-selected + label').click(function(){
-		$(this).parent().find('input[type="checkbox"].user-selected').removeClass('user-selected released').removeAttr('disabled');
-	})
+
 
 
 
@@ -548,9 +549,16 @@ $(document).ready(function(){
 })// end of document.ready
 
 </script>
+</script>
 
 <style type="text/css">
-	
+
 input[type="checkbox"] + label{cursor: pointer !important}
 
+.is-clipped {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}
 </style>
