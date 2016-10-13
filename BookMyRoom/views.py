@@ -85,6 +85,7 @@ class BookMeetingRoomView(View):
         return render(request, 'BookMyRoom/index.html', locals())
 
     def post(self, request):
+        is_empty = False
         context_data = {'add': True, 'record_added': False, 'success_msg': None,
                         'html_data': None, 'errors': '', 'for_date': '' }
 

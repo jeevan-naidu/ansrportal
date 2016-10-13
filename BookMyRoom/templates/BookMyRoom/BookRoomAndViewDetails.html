@@ -90,7 +90,7 @@
     </div><!--end of room-and-time-->
     {% endfor %}
 
-<div style="margin-top:30px;">
+<div class="col-sm-12" style="margin-top:30px;">
       <div id="legend" class="col-sm-8">
         <p class="pull-left"><span></span>Available</p>
         <p class="pull-left blocked"><span></span>Booked</p>
@@ -116,24 +116,28 @@
 
 <div class="row bookings margin-0">
 	<h4>Your Bookings <small> (Only future bookings are displayed here)</small></h4>
-    <div class="form-inline approve-reject pull-right">
-           {% if bookings_list %}  <div class="checkbox checkbox-success">
-                                          <input id="release_all" type="checkbox" name="release_all" class="release_all">
-                                          <label for="release_all" class="lh-16">
-                                             Release All
-                                          </label>
-                                      </div>{% endif %}
-	{% if bookings_list %}<div class="col-sm-2">
-					<button class=" update btn btn-info btn-sm pull-right" id="update" >Update</button>
-				</div>
+    <div class="form-inline approve-reject">
+    {% if bookings_list %}  
+
+    <div class="col-sm-12" style="margin-bottom: 15px;">
+    	<button class=" update btn btn-success btn-sm pull-right" id="update" >Update</button>
+      <div class="checkbox checkbox-success pull-right">
+          <label for="release_all" class="lh-16 btn btn-info btn-sm" style="margin-right: 15px">
+          <input id="release_all" type="checkbox" name="release_all" class="release_all" style="display: none;">
+             Release All
+          </label>
+      </div>
+    </div>
+
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
 				<div class="col-sm-3">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
 				<div class="col-sm-3">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
-					<div class="col-sm-3"><textarea rows="1"   name="remark_{{obj.id}}" id="{{obj.id}}" class="form-control remark"  placeholder="Reason For Booking..">{{obj.remark}}</textarea></div>
+					<div class="col-sm-5"><textarea rows="1"  style="width:100%" name="remark_{{obj.id}}" id="{{obj.id}}" class="form-control remark"  placeholder="Reason For Booking..">{{obj.remark}}</textarea></div>
 
-				<div class="col-sm-2">
-                    <input type="checkbox" name="release[]" id="release_{{obj.id}}" data-value="{{obj.id}}"  class="form-control release_checkbox">Release
+				<div class="col-sm-1 no-padding-right">
+            <input type="checkbox" name="release[]" id="release_{{obj.id}}" data-value="{{obj.id}}"  class="form-control release_checkbox hidden">
+            <label class="btn btn-xs btn-danger release-btn pull-right" for="release_{{obj.id}}">Release</label>
 					<!--<button class="update btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>-->
 				</div>
 			</div>
@@ -145,7 +149,8 @@
 
 		{% endif %}
 </div>
-
+</div>
+</div>
 
 <!--<div id="submit-section" class="col-sm-12">
   <p class="pull-left booker">V L Nagaraj - Media Team</p>
@@ -553,6 +558,8 @@ $(document).ready(function(){
 
 <style type="text/css">
 
+.no-padding-right{padding-right: 0px;}
+
 input[type="checkbox"] + label{cursor: pointer !important}
 
 .is-clipped {
@@ -561,4 +568,21 @@ input[type="checkbox"] + label{cursor: pointer !important}
   width: 100%;
   white-space: nowrap;
 }
+
+.selectors{
+  cursor: default;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+label.btn{padding-left: 10px !important;}
+input[type="checkbox"]:not(:checked) + label.release-btn{
+  background: #eaeaea;
+  border-color: #cccccc;
+  color: #a7a7a7;
+}
+input[type="checkbox"]:not(:checked) + label.release-btn:active{box-shadow: none !important}
 </style>
