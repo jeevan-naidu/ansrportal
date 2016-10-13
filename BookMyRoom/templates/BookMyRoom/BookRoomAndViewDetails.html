@@ -120,7 +120,7 @@
     {% if bookings_list %}  
 
     <div class="col-sm-12" style="margin-bottom: 15px;">
-    	<button class=" update btn btn-success btn-sm pull-right" id="update" >Update</button>
+    	<button class=" update btn btn-success btn-sm pull-right" id="update"  disabled>Update</button>
       <div class="checkbox checkbox-success pull-right">
           <label for="release_all" class="lh-16 btn btn-info btn-sm" style="margin-right: 15px">
           <input id="release_all" type="checkbox" name="release_all" class="release_all" style="display: none;">
@@ -165,8 +165,8 @@
     var cancel_id = {};
     var not_empty = 0;
     var not_checked = 0;
-    var initial_elements = {}
-    var admin_override = []
+    var remark_count = 0;
+    var release_count = 0;
 
      function removeClassFunction(ele) {
      if ($(ele).hasClass('user-selected')) {
@@ -193,7 +193,7 @@
                 if($(this).val().trim().length != 0) {
                 console.log("count"+not_empty);
                     not_empty+=1 ;
-                    <!--$("#update").prop('disabled', false);-->
+                    $("#update").prop('disabled', false);
                 }
             });
             if(not_empty==0)  {  $("#update").prop('disabled', true);$(".release_checkbox").trigger('change');  }
@@ -206,8 +206,9 @@
          $(".release_checkbox").each(function(index) {
          console.log("inside release/");
             if(this.checked) {
-                <!--$("#update").prop('disabled', false);-->
+                $("#update").prop('disabled', false);
                  cancel_id[index]=($(this).attr('data-value'));
+                 release_count=+1;
             }
 
             });
@@ -215,6 +216,7 @@
             <!--console.log($(this).val() +'&#45;&#45;'+this.value);-->
                 if($(this).val().trim().length != 0) {
                     remarks[this.id]=$(this).val();
+                    remark_count=+1;
                 }
                 else {
                 $("#update").prop('disabled', true);
@@ -258,7 +260,7 @@
         });
 
 		$('#reset-btn').click(function(){
-				$('input[type="checkbox"]').attr('checked', false);
+				$('input[type="checkbox"]').not('.release_checkbox').attr('checked', false);
 			});
 		});
 
@@ -356,13 +358,6 @@
 
 
 				$(".update").click(function(){
-				    <!--var condition = $( '#release_all').prop( "checked" );-->
-				    <!--console.log("condition"+condition);-->
-                    <!--if(condition === false) {-->
-                         <!--cancel_id = {};-->
-                         <!--&lt;!&ndash;cancel_data['cancel_id'].push ($(this).attr('data-value'));&ndash;&gt;-->
-
-                    <!--}-->
 
 						swal({   title: "",
                 text: "Are you sure you want to update your changes?",
@@ -381,21 +376,13 @@
 											$('.showSweetAlert .sa-button-container button.confirm').html('');
 										$('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
 										$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
-<!--remarks = JSON.stringify(remarks);--> console.log("cancel id"+cancel_data);
 														$.ajax({
 																url: '/bookings/cancel/',
 																type: 'POST',
-																 <!--contentType: "application/json; charset=utf-8",-->
                                                                  dataType: "json",
 																 data:  JSON.stringify({remarks,cancel_id}),
-																 <!--$.toJSON(myEvent),-->
-                                                                <!--dataType: 'text',-->
-                                                                beforeSend(data){ console.log("remarks = "+JSON.stringify(remarks) +"----"+JSON.stringify(cancel_id));},
 																success(result,status,data) {
-																<!--console.log("result"+JSON.stringify(result))-->
 
-																<!--console.log("status"+status)-->
-																<!--console.log(JSON.stringify(data));-->
 																		if (result.record_updated == true) {
 																			swal({
 																				title:"Meeting room changes done successfully !!",
