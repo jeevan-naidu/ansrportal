@@ -974,8 +974,6 @@ class ApplyShortLeaveView(View):
             return render(request, 'short_leave_apply_form.html', context_data)
 
     def post(self, request):
-        # import ipdb
-        # ipdb.set_trace()
         user_id = request.POST['name']
         leaveid = request.POST['leave_id']
         if leaveid:
@@ -1014,8 +1012,6 @@ class ApplyShortLeaveView(View):
                 tosession = 'session_second'
                 if leave_selected in ['comp_off_earned', 'pay_off']:
                     duedate = validate['due_date']
-
-
             else:
                 validate=leaveValidation(leave_form, user_id)
                 fromdate = leave_form.cleaned_data['fromDate']
@@ -1040,8 +1036,12 @@ class ApplyShortLeaveView(View):
                     leavesummry_temp = leavesummry[0]
                 else:
                     user = User.objects.get(id=user_id)
-                    leavesummry_temp = LeaveSummary.objects.create(user=user, leave_type=leaveType, applied=0, approved=0, balance=0,
-                                                               year=date.today().year)
+                    leavesummry_temp = LeaveSummary.objects.create(user=user,
+                                                                   leave_type=leaveType,
+                                                                   applied=0,
+                                                                   approved=0,
+                                                                   balance=0,
+                                                                   year=date.today().year)
 
                 if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
                     if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate, user_id):
@@ -1052,28 +1052,49 @@ class ApplyShortLeaveView(View):
                     leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
                     leavesummry_temp.balance = float(leavesummry_temp.balance) - leavecount
 
-
-                    LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                    days_count=leavecount, reason=reason).saveas(user_id, request.user.id)
+                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
+                    LeaveApplications(leave_type=leaveType,
+                                      from_date=fromdate,
+                                      to_date=todate,
+                                      from_session=fromsession,
+                                      to_session=tosession,
+                                      days_count=leavecount,
+                                      reason=reason).saveas(user_id, request.user.id)
                     leavesummry_temp.save()
                     EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 
-                    context_data['success']= 'leave saved'
+                    context_data['success'] = 'leave saved'
                     context_data['record_added'] = 'True'
                 else:
-                    if leave_form.cleaned_data['leave'] in ['comp_off_earned','work_from_home','pay_off','loss_of_pay']:
+                    if leave_form.cleaned_data['leave'] in ['comp_off_earned', 'work_from_home', 'pay_off',
+                                                            'loss_of_pay']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
-
-
-                        LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                        days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id, request.user.id)
+                        ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
+                        LeaveApplications(leave_type=leaveType,
+                                          from_date=fromdate,
+                                          to_date=todate,
+                                          from_session=fromsession,
+                                          to_session=tosession,
+                                          days_count=leavecount,
+                                          reason=reason,
+                                          due_date= duedate).saveas(user_id, request.user.id)
                         leavesummry_temp.save()
-                        EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                        EmailSendTask.delay(request.user,
+                                            manager,
+                                            leave_selected,
+                                            fromdate,
+                                            todate,
+                                            fromsession,
+                                            tosession,
+                                            leavecount,
+                                            reason,
+                                            'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
-                        context_data['errors'].append( 'You do not have the necessary leave balance to avail of this leave.')
+                        context_data['errors'].append(
+                            'You do not have the necessary leave balance to avail of this leave.')
                         context_data['form'] = leave_form
 
                     # return render(request, 'leave_apply.html', context_data)
@@ -1082,7 +1103,7 @@ class ApplyShortLeaveView(View):
                     return render(request, 'short_leave_apply_form.html', context_data)
                 else:
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
-                    ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
+
                     template = render(request, 'short_leave_apply_form.html', context_data)
                     context_data['html_data'] = template.content
                     return JsonResponse(context_data)
@@ -1094,15 +1115,14 @@ class ApplyShortLeaveView(View):
         return render(request, 'short_leave_apply_form.html', context_data)
 
 
-
 #short leave resolution
-def ShortAttendanceResolution(leaveid, fromdate,fromsession, tosession, user):
+def ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user):
     shortLeaves = ShortAttendance.objects.get(id=leaveid)
-    leave =LeaveApplications.objects.filter(from_date__lte = fromdate, to_date__gte =fromdate, user=user)
+    leave = LeaveApplications.objects.filter(from_date__lte=fromdate, to_date__gte=fromdate, user=user)
     if shortLeaves.short_leave_type == 'half_day':
         shortLeaves.active = False
         shortLeaves.save()
-    elif fromsession== 'session_first' and tosession == 'session_second':
+    elif fromsession == 'session_first' and tosession == 'session_second':
         shortLeaves.active = False
         shortLeaves.save()
     elif leave:

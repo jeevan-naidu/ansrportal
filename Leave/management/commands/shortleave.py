@@ -21,7 +21,7 @@ class Command(BaseCommand):
 def shortLeave():
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
-    checkdate = date.today() - timedelta(days=28)
+    checkdate = date.today() - timedelta(days=23)
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
     dueDate = checkdate + timedelta(days=30)
