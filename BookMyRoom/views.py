@@ -46,7 +46,7 @@ class DictDiffer(object):
         return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
 """
- we will be getting two json objects based on their comparison we will be decided what to be
+ we will be getting two json objects based on their comparison(as dict) we will be decided what to be
  deleted using the above function
 
 dom : {"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0}
@@ -92,6 +92,7 @@ class BookMeetingRoomView(View):
                         'html_data': None, 'errors': '', 'for_date': ''}
 
         if request.POST.get('on_load'):
+            # we will be converting unicode to regular string in next two lines for both dict
             on_load = ast.literal_eval(request.POST.get('on_load'))
             on_submit = ast.literal_eval(request.POST.get('on_submit'))
             s = DictDiffer(on_load, on_submit)
