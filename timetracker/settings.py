@@ -354,11 +354,13 @@ MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
+
 LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
 
 HIRE_RECRUITER = 'HireRecruiter'
 HIRE_ADMIN = 'HireAdmin'
 
+MANAGER = 'myansrsourcePM'
 #Broker Settings
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672

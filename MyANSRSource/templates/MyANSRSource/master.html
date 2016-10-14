@@ -541,7 +541,7 @@
 
                                 {% endif %}
 
-{#                            {% if request.user|IsSalesforceAdmin %}#}
+                            {% if request.user|IsManager %}
                                     <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
                                         <span class="menu-icon"><i class="fa fa-th-list"></i></span>
@@ -552,14 +552,14 @@
                                         <ul>
                                             <li>
                                                 <a href="/salesforce/upload-file">
-                                                    <span class="menu-text">Upload Salesforce Data</span>
+                                                    <span class="menu-text">Salesforce Data</span>
                                                 </a>
                                             </li>
                                         </ul>
                                     </div>
                                 </li>
 
-{#                                {% endif  %}#}
+                                {% endif  %}
 
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
