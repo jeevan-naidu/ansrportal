@@ -60,3 +60,8 @@ def choose_reportee(user):
     if myReportee:
         is_manager = 1
     return is_manager
+
+@register.filter('IsManager')
+def IsManager(user):
+    UserGroupsList = user.groups.all().values_list('name', flat=True)
+    return settings.MANAGER in UserGroupsList
