@@ -138,6 +138,7 @@ INSTALLED_APPS = [
     'Leave',
     'export_xls',
     'djcelery',
+    'UserProfile'
 ]
 
 MIDDLEWARE_CLASSES = (

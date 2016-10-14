@@ -1,0 +1,67 @@
+
+
+
+
+
+
+<html>
+<head>
+<title>MyProfile</title>
+</head>
+
+
+<body>
+
+<h1> Profile</h1>
+<form action='' method='GET'>
+<table>
+<!-- <tr><td>User:{{form.user}}{{user}}</td></tr> -->
+<tr><td>User:<input type="text" name="search" value="{{ user }}"></td></tr>
+<tr><td>First Name{{form.first_name}}: {{ firstname}}</td></tr>
+<tr><td>Last Name{{form.last_name}}: {{ lastname }}</td></tr>
+<tr><td>Middle Name{{form.middle_name}}: {{ middlename }}</td></tr>
+<tr><td>Date of Birth(original){{form.date_of_birthO}}: {{ date_of_birthO }}</td></tr>
+<tr><td>Date of Birth(Records){{form.date_of_birthR}}: {{ date_of_birthR }}</td></tr>
+<tr><td>BloodGroup{{form.bloodgroup}}: {{ blood_group }}</td></tr>
+<tr><td>Date Joined{{form.joined}}: {{ joined }}</td></tr>
+<tr><td>Office Location{{form.location}}: {{ officelocation }}</td></tr>
+<tr><td>Designation{{form.designation}}:{{ designation }}</td></tr>
+<tr><td>Business Unit{{form.business_unit}}: {{ business_unit }}</td></tr>
+<tr><td>Mobile Phone{{form.mobilephone}}: {{ mobilephone }}</td></tr>
+<tr><td>Land Phone{{form.landphone}}: {{ landphone }}</td></tr>
+<tr><td>Email{{form.personal_email}}: {{ email }}</td></tr>
+</table>
+
+</form>
+
+
+
+
+<!-- 
+<h1>Details</h1>
+<table>
+<tr><td>User: {{ user }}</td></tr>
+<tr><td>First Name: {{ firstname}}</td></tr>
+<tr><td>Last Name: {{ lastname }}</td></tr>
+<tr><td>Middle Name: {{ middlename }}</td></tr>
+<tr><td>Date of Birth(Original): {{ date_of_birthO }}</td></tr>
+<tr><td>Date of Birth(): {{ date_of_birthR }}</td></tr>
+<tr><td>Blood Group: {{ blood_group }}</td></tr>
+<tr><td>Date Joined: {{ joined }}</td></tr>
+<tr><td>Office Location: {{ officelocation }}</td></tr>
+<tr><td>Designation: {{ designation }}</td></tr>
+<tr><td>Business Unit: {{ business_unit }}</td></tr>
+<tr><td>Mobile Number: {{ mobilephone }}</td></tr>
+<tr><td>Land Number: {{ landphone }}</td></tr>
+<tr><td>Email: {{ email }}</td></tr>
+</table>
+ -->
+
+
+<button type="submit">Update Profile</button>
+
+
+
+
+
+

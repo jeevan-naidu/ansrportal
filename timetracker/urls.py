@@ -26,5 +26,7 @@ urlpatterns = [
                        url(r'^salesforce/', include('Salesforce.urls')),
                        url(r'^bookings/', include('BookMyRoom.urls')),
                        url(r'^leave/', include('Leave.urls')),
+                       url(r'^profile/', include('UserProfile.urls')),
+                       
 
                        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

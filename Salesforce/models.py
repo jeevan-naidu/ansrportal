@@ -24,7 +24,7 @@ class SalesforceData(models.Model):
                                 blank=True, null=True)
     probability = models.IntegerField(blank=True, null=True)
     start_date = models.DateField(verbose_name="Estimated Start Date", blank=True, null=True)
-    end_date = models.DateField(verbose_name="Estimated End Date")
+    end_date = models.DateField(verbose_name="Estimated End Date", default=True)
     status = models.CharField(max_length=100, blank=True, null=True)
     updated_date = models.DateTimeField(verbose_name="Updated Date", default=datetime.now())
     created_date = models.DateTimeField(default=datetime.now())
