@@ -303,41 +303,7 @@ ul{list-style: none;padding-left: 0px;}
                    }
            );
  });
-    //uses for requsition no data population
-    $('#id_requisition_number').bind(
-      'selectChoice',
-      function(e, choice, autocomplete) {
 
-          var requsitionno = choice.html()
-          requsitionno = requsitionno.substring(requsitionno.indexOf(' ')+1,requsitionno.length)
-           $.ajax(
-                   {
-                       type : "GET",
-                       url : '/hire/mrfsearch/',
-                       data :{'requsitionno': requsitionno} ,
-                       success : function(data)
-                       {
-
-                           var json = JSON.parse(data.details)
-                           var requobject = JSON.parse(data.message)
-                           var department = json['department'];
-                           var designation = json['designation']
-                           var hiringmanager = json['manager']
-                           var specialization = json['specialization']
-                           document.getElementById("id_requisition_number-autocomplete").value = requobject;
-                           document.getElementById("id_department").value = department;
-                           document.getElementById("id_department").readOnly = true;
-                           document.getElementById("id_designation").value = designation;
-                           document.getElementById("id_designation").readOnly = true;
-                           document.getElementById("id_specialization").value = specialization;
-                           document.getElementById("id_specialization").readOnly = true;
-                           document.getElementById("id_manager").value = hiringmanager;
-                           document.getElementById("id_manager").readOnly = true;
-
-                       }
-                   }
-           );
-      });
 
     // uses for referel check
     $("#id_source").change(function(){
@@ -363,11 +329,50 @@ $(document).ready(function(){
 
 $('.input-group-addon').click(function(){
   $(this).parent().find('input').focus();
-})
+});
 
 
 
-})
+});
+$('#id_mobile_number').focusout(function() {
+    mobileno = this.value
+$.ajax(
+        {
+            type: "GET",
+            url: '/hire/contactcheck/',
+            data: {'mobileno': mobileno},
+            success: function (data) {
+                if(data.valid){
+                    swal({
+            title: "Record Avaliable",
+            text: "Candidate with same mobile no already given interview",
+            type: "error"
+        });
+
+                }
+            }
+        });
+
+});
+$('#id_email_id').focusout(function() {
+    email = this.value
+$.ajax(
+        {
+            type: "GET",
+            url: '/hire/contactcheck/',
+            data: {'email': email},
+            success: function (data) {
+                if(data.valid){
+                       swal({
+            title: "Record Avaliable",
+            text: "Candidate with same email id already given interview",
+            type: "error"
+        });
+
+                }
+            }
+        });
+});
 
 </script>
 

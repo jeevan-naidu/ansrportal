@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.views.generic import View
@@ -9,6 +9,8 @@ from datetime import date, timedelta
 from django.conf import settings
 import json
 from GrievanceAdmin.views import paginator_handler
+from django.db.models import Q
+from tasks import EmailHireSendTask
 
 def recruitment_form(request):
     return render(request, 'candidateform.html',{})
@@ -46,13 +48,13 @@ class Hire(View):
                 interview_on = form.cleaned_data['interview_on']
                 interview_status = form.cleaned_data['interview_status']
                 remark = form.cleaned_data['remark']
-                mobilenocheck = uniquevalidation(mobile_number)
+                duplicatecheck = uniquevalidation(mobile_number, email_id)
                 if interview_status == 'rejected':
                     candidate_status = 'rejected'
                 else:
                     candidate_status = 'in_progress'
-                if mobilenocheck:
-                    context['error'] = "Candidate with same phone number is already avaliable"
+                if duplicatecheck:
+                    context['error'] = "Candidate with same credential had aleredy applied"
                     context["form"] = form
                     return render(request, "candidateform.html", context)
                 if referred_by:
@@ -244,6 +246,10 @@ class ProcessUpdate(View):
             process.save()
             profile.candidate_status=interview_status
             profile.save()
+            if interview_status == 'selected':
+                EmailHireSendTask.delay(profile.candidate_name,
+                                    profile.email_id,
+                                    profile.requisition_number.requisition_number.position.designation)
             process.interview_by.add(interview_by)
             context['record_added'] = True
             context['success_msg'] = "Updated"
@@ -252,9 +258,19 @@ class ProcessUpdate(View):
         context['form'] = form
         return render(request, "processform.html", context)
 
+def contactcheck(request):
+    context = {}
+    mobileno = request.GET.get('mobileno')
+    email = request.GET.get('email')
+    valid = uniquevalidation(mobileno, email)
+    context['valid'] = valid
+    return JsonResponse(context)
 
-def uniquevalidation(mobileno):
-    candidate = Profile.objects.filter(mobile_number=mobileno)
+
+
+def uniquevalidation(mobileno, email):
+    candidate = Profile.objects.filter(Q(mobile_number=mobileno) |
+                                       Q(email_id=email))
     today = date.today()
     alloweddate = today - timedelta(days=180)
     for val in candidate:

@@ -134,10 +134,10 @@ class ProcessForm(forms.ModelForm):
         queryset=User.objects.all(),
         required=True,
         widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
-            'data-placeholder': 'Type Interviewer Name ...',
+            'data-placeholder': 'Type interviewer Name ...',
         }, ), )
 
-    interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
+    # interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
     interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
