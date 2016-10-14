@@ -291,26 +291,50 @@ var barChart = function(){
     // JSON Testing Area
 
     var theMonth = {
+                      "person1":[
+                               {"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
+                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}
+                              ],
 
-                      person1:[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+
+                      "person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
                                {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
                                {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
                                {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],
 
-
-                      person2:[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
-                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],
-
-                      person3:[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                      "person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
                                {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
                                {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
                                {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]                               
-
-
                     }
 
+                   
+
+
+
+
+
+
+
+
+
+
+
+/*{"person1":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]}
+*/
+ 
+
+
+
+
+
+
+    var xyz = JSON.stringify(theMonth);
+    console.log('the JSON object : ' + xyz);    
+    var zyx = JSON.parse(xyz);
+    console.log('the parsed object : ' + zyx);
 
 
     var populate = function(){
