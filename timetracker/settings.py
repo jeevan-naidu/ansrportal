@@ -199,9 +199,9 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansrsource",
+        "NAME": "1.9",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "bala",
         "HOST": "localhost",
         "PORT": "3306",
     },
@@ -213,7 +213,7 @@ BOOTSTRAP3 = {
 }
 
 # Font awesome related settings
-FONTAWESOME_CSS_URL = '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
+FONTAWESOME_CSS_URL = 'http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -333,6 +333,7 @@ MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
 GRIEVANCES_ADMIN_EMAIL = "sanjay.kunnath@ansrsource.com"
+BOOKING_ROOM_ADMIN = "BookingRoomAdmin"
 # LEAVE_ADMIN_EMAIL = ['balamurugan.rs@ansrsource.com', 'shalini.bhagat@ansrsource.com']
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 

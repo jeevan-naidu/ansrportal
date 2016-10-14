@@ -30,6 +30,15 @@ helper.sumOfArr = function(arr) {
 
     return sum.toFixed(2);
 };
+helper.sumOfArr2 = function(arr) {
+    var sum = 0;
+
+    helper.forEach(arr, function(item) {
+        sum += item;
+    });
+    if(sum.toFixed(2) >24)  return false
+    else return sum;
+};
 
 // argument element must be jQuery element
 helper.getValOrText = function($ele) {
@@ -171,7 +180,7 @@ app.getTaskChapter = function(selValue, currRow) {
             },
 
             error: function(data) {
-                console.log('Error: ' + data);
+//                console.log('Error: ' + data);
                 alert(data.responseText)
             }
         });
@@ -194,7 +203,7 @@ app.getTaskChapter = function(selValue, currRow) {
 
             },
             error: function(data) {
-                console.log('Error: ' + data);
+//                console.log('Error: ' + data);
             }
         });
     } else {
@@ -342,32 +351,32 @@ app.firstTimeTotal = function() {
             $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
 
 
-            for (i = 0; i < cRowItemsLen; i += 1) {
-                cRowItemHour = Number($(cRowHours[i]).text());
-                cRowItemQuestion = Number($(cRowQuestions[i]).text());
-
-                cRowHourTotal += cRowItemHour;
-                cRowQuestionTotal += cRowItemQuestion;
-            }
-
-            // To Dom
-            $cRowTHours.text(cRowHourTotal.toFixed(2));
-            $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
-
-            if (cRowTask === 'I') {
-                idleHoursTotal += cRowHourTotal;
-                idleQuestionTotal += cRowQuestionTotal;
-
-                $cRowBTHoursHidden.val(0);
-                $cRowITHoursHidden.val(cRowHourTotal);
-
-            } else {
-                billableHoursTotal += cRowHourTotal;
-                billableQuestionTotal += cRowQuestionTotal;
-
-                $cRowBTHoursHidden.val(cRowHourTotal);
-                $cRowITHoursHidden.val(0);
-            }
+//            for (i = 0; i < cRowItemsLen; i += 1) {
+//                cRowItemHour = Number($(cRowHours[i]).text());
+//                cRowItemQuestion = Number($(cRowQuestions[i]).text());
+//
+//                cRowHourTotal += cRowItemHour;
+//                cRowQuestionTotal += cRowItemQuestion;
+//            }
+//
+//            // To Dom
+//            $cRowTHours.text(cRowHourTotal.toFixed(2));
+//            $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
+//
+//            if (cRowTask === 'I') {
+//                idleHoursTotal += cRowHourTotal;
+//                idleQuestionTotal += cRowQuestionTotal;
+//
+//                $cRowBTHoursHidden.val(0);
+//                $cRowITHoursHidden.val(cRowHourTotal);
+//
+//            } else {
+//                billableHoursTotal += cRowHourTotal;
+//                billableQuestionTotal += cRowQuestionTotal;
+//
+//                $cRowBTHoursHidden.val(cRowHourTotal);
+//                $cRowITHoursHidden.val(0);
+//            }
         });
 
         helper.forEach(nonBillableTotalItems, function(item) {
@@ -383,7 +392,7 @@ app.firstTimeTotal = function() {
             });
 
             // To Dom
-            $cRowNonBillableTotal.val(cRowNonBillableTotal.toFixed(2));
+            console.log("---------total------");$cRowNonBillableTotal.val(cRowNonBillableTotal.toFixed(2));
 
             nonBillableTotal += cRowNonBillableTotal;
         });
@@ -397,7 +406,7 @@ app.firstTimeTotal = function() {
         $nonBillableTotal.text(nonBillableTotal.toFixed(2));
         $grandTotal.text(grandTotal.toFixed(2));
 
-        app.timeSheetDayTotalHours();
+
     }
 
     billableIdleTotal();
@@ -427,20 +436,20 @@ app.firstTimeTotal = function() {
 
 
 
-    app.timeSheetGrandTotal = function() {
+    app.timeSheetGrandTotal = function() { console.log("timeSheetGrandTotal");
         var billableTotal = Number($('.total-billable-hours').text()),
             idleTotal = Number($('.total-idle-hours').text()),
             notBillableTotal = Number($('.total-non-billable-hours').text()),
             $total = $('.timesheet-grand-total'),
             total = billableTotal + idleTotal + notBillableTotal;
-
+            console.log("val"+$($total).text());
 
         $total.text((total).toFixed(2));
 
         return total;
     };
 
-
+is_valid = true;
     app.timeSheetDayTotalHours = function() {
         var $mon = $('.Mon-t'),
             $tue = $('.Tue-t'),
@@ -460,26 +469,70 @@ app.firstTimeTotal = function() {
         function total($arr, $output) {
             var tempArr = [],
                 tempTotal = 0;
-
+//            console.log($('.Mon-t').attr('id'))
             helper.forEach($arr, function(item) {
-                var curVal = helper.getValOrText($(item));
-                tempArr.push(Number(curVal));
+
+                var curVal = helper.getValOrText($(item));//collection[item.id] = curVal
+
+                tempArr.push(Number(curVal));tempTotal = helper.sumOfArr(tempArr);
+//                 console.log("total -- id -- "+$($cur_txt_box).attr('id'));
+//
+                if (Number(tempTotal) >24) { console.log(" >24");
+//                console.log(Number($($cur_txt_box).val()));
+//                console.log(Number($($cur_txt_box).text()));
+
+                    tempTotal = Number(tempTotal) - Number($($cur_txt_box).val());
+                    $($cur_txt_box).val('0'); $($cur_txt_box).text('');
+                    $cur_txt_box =0;
+//                     if (cur_txt_box == 0 && $(item).hasClass('hrcheck')){
+//                        cur_txt_box= $(item);
+//                     }
+//                     console.log("im in" + JSON.stringify(cur_txt_box));
+//                     hrcheck(cur_txt_box) ;
+                     is_valid = false ;
+               }
             });
 
-            tempTotal = helper.sumOfArr(tempArr);
 
-            $output.text(tempTotal);
+//             if (tempTotal >24) {
+////                is_valid =is_valid +1 ;
+//                return false
+//
+//             }
+//             else {
+//                is_valid ='True'
+//                }
+
+
+//            if (tempTotal >24) {
+//
+//                $($arr).addClass('alert-danger');
+//                $('#saveTS').prop('disabled',true);
+//                $('#submitTS').prop('disabled',true).addClass('disabled');
+//            }
+//            else {
+//                 $($arr).removeClass('alert-danger');
+//            }
+//console.log($output.text())
+            if(is_valid) $output.text(tempTotal);
+//console.log($arr.id)
+//             console.log($arr.getAttribute('id'))
+//             collection[$($arr).id()]=tempTotal
         }
-
-        total($mon, $monTotal);
-        total($tue, $tueTotal);
-        total($wed, $wedTotal);
-        total($thu, $thuTotal);
-        total($fri, $friTotal);
-        total($sat, $satTotal);
-        total($sun, $sunTotal);
-
-
+       total($mon, $monTotal);//console.log(JSON.stringify(collection))
+        total($tue, $tueTotal);//console.log(JSON.stringify(collection))
+        total($wed, $wedTotal);//console.log(JSON.stringify(collection))
+       total($thu, $thuTotal);//console.log(JSON.stringify(collection))
+        total($fri, $friTotal);//console.log(JSON.stringify(collection))
+        total($sat, $satTotal);//console.log(JSON.stringify(collection))
+       total($sun, $sunTotal);//console.log(JSON.stringify(collection))
+       is_valid = true;
+//        console.log(JSON.stringify(collection))
+//        if(!($(".hrcheck").hasClass('alert-danger'))) {
+//            $('#saveTS,#submitTS').prop('disabled',false).removeClass('disabled');
+//        }
+//        console.log("is_valid" +is_valid);
+//        return is_valid
     };
 
     app.tsInputIsValid = function($elem, str) {
@@ -487,7 +540,8 @@ app.firstTimeTotal = function() {
             console.log('Please enter the valid number');
             $elem.addClass('alert-danger');
             return false;
-        } else {
+        }
+        else {
             // check for decimal
             str = Number(str);
             if (str < 0) {
@@ -495,6 +549,14 @@ app.firstTimeTotal = function() {
                 $elem.addClass('alert-danger');
                 return false;
             }
+
+//            else if(str > 24) {
+//                $elem.addClass('alert-danger');
+//                alert("Oops you can't possibly work more than 24 hours in a day")
+//                $($elem).val('');
+//                return false;
+//            }
+
             if (/\./.test(str)) {
                 if (!(/\b\.\d\d?\b/.test(str))) {
                     console.log('Only two decimal is allowed');
@@ -508,8 +570,17 @@ app.firstTimeTotal = function() {
         }
     };
 
-
+//
+//$(function(){ // this will be called when the DOM is ready
+//   $(".hrcheck").on('keyup ,change,click', function(e){
+//        console.log("im called" + this);
+////        $cur_txt_box = this
+//        console.log("id"+this.id)
+//        return true;
+//    });
+//});
     app.init = function() {
+        $cur_txt_box = 0;
         app.getActiveTaskChapter();
         getTastChaptersEachProject();
     };
@@ -519,6 +590,13 @@ app.firstTimeTotal = function() {
     });
 
     $(document).ready(function() {
+
+//jQuery(function($) {
+//    $('input.hrcheck[type="number"]').on('keyup', function() {
+//    console.log("id --   "+this.id);
+//    $cur_txt_box = this;   });
+//});
+
         app.init();
         var $popover = $('.popover');
         app.norms = '0.0 / Day';
@@ -692,7 +770,7 @@ app.firstTimeTotal = function() {
                     app.projectsList = data.data;
                 },
                 error: function(data) {
-                    console.log('Error: ' + data);
+//                    console.log('Error: ' + data);
                 }
             });
 
@@ -880,7 +958,7 @@ app.getSum = function($elements, $outputElement) {
                 if (options.setEditable) {
                     if (options.setEditable.indexOf(index) !== -1) {
                         $element.prop('readonly', false);
-                        //console.log(index + ': setEditable');
+//                        console.log(index + ': setEditable');
                     }
                 }
 
@@ -955,7 +1033,7 @@ app.getSum = function($elements, $outputElement) {
                     var elementType2 = $element.prop('tagName');
                     if (elementType2 === 'SELECT' || elementType2 === 'INPUT') {
                         $element.attr('value', 0);
-                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     } else {
                         $element.text('0');
                     }
@@ -968,7 +1046,7 @@ app.getSum = function($elements, $outputElement) {
                             .remove()
                             .end()
                             .append('<option value>-----</option>');
-                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     }
                 }
 
@@ -982,7 +1060,7 @@ app.getSum = function($elements, $outputElement) {
                 }
 
 
-                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
 
             });
 
@@ -1045,8 +1123,9 @@ app.getSum = function($elements, $outputElement) {
             if (options.daysTotal) {
                 var $days = $table.find('.days');
 
-                var totalDays = function() {
+                var totalDays = function() { console.log("totalDays");
                     var $curEle = $(this),
+
                         $curRow = $curEle.closest('tr'),
                         $curDays = $curRow.find('.days'),
                         $curDaysLen = $curDays.length,
@@ -1063,7 +1142,7 @@ app.getSum = function($elements, $outputElement) {
                         curTotalNonBillable,
                         tempTotalNonBillable = 0,
                         totalNonBillable;
-
+                        $cur_txt_box = $curEle;
                     for (i = 0; i < $curDaysLen; i += 1) {
                         $curDay = Number($($curDays[i]).val());
                         temp += $curDay;
@@ -1077,16 +1156,15 @@ app.getSum = function($elements, $outputElement) {
                         }
 
                         totalNonBillable = tempTotalNonBillable.toFixed(2);
-
-                        $totalNonBillableHours.text(totalNonBillable);
+                         console.log("totalNonBillable");$totalNonBillableHours.text(totalNonBillable);
                     };
 
                     temp = temp.toFixed(2);
                     $curTotal.val(temp);
 
-                    nonBillableTotalFun();
+
                     app.timeSheetGrandTotal();
-                    app.timeSheetDayTotalHours();
+                    app.timeSheetDayTotalHours();  nonBillableTotalFun();
                 };
 
                 $days.on({
@@ -1191,7 +1269,7 @@ app.getSum = function($elements, $outputElement) {
                             $curTotalIdleHoursHidden = $curRow.find('.r-total-idle-hours'),
                             $curTotalBillableHoursHidden = $curRow.find('.r-total-billable-hours');
 
-                        console.log('curTaskType: ' + curTaskType);
+//                        console.log('curTaskType: ' + curTaskType);
 
                         if (curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
@@ -1215,6 +1293,7 @@ app.getSum = function($elements, $outputElement) {
 
                         $totalQuestions.text(questionsTemp.toFixed(2));
                         $totalHours.text(hoursTemp.toFixed(2));
+                        console.log("hoursTemp"+hoursTemp);
 
                         $totalQuestionsHidden.val(questionsTemp.toFixed(2));
                         $totalHoursHidden.val(hoursTemp.toFixed(2));
@@ -1223,7 +1302,7 @@ app.getSum = function($elements, $outputElement) {
                         $curTotalIdleHoursHidden.val(curTotalIdleHours.toFixed(2));
                         $curTotalBillableHoursHidden.val(curTotalBillableHours.toFixed(2));
 
-                        var totalIdleAndBillableHours = function() {
+                        var totalIdleAndBillableHours = function() { console.log("totalIdleAndBillableHours ");
                             var $rTotalIdleHoursList = $table.find('.r-total-idle-hours'),
                                 $rTotalBillableHoursList = $table.find('.r-total-billable-hours'),
                                 rTotalIdleHoursListLen = $rTotalIdleHoursList.length,
@@ -1268,7 +1347,11 @@ app.getSum = function($elements, $outputElement) {
 
                     var inputToView = function() {
                         var curInput = $curHoursInput.val();
-                        console.log(curInput);
+//                        console.log("cur ip"+$curHoursInput.attr('id'));
+//                        hrcheck($curHoursInput);
+                          $cur_txt_box = $curHoursInput;
+//                          console.log("cur_txt_box bill " +$($curHoursInput).attr('class')  );
+//                          console.log($($cur_txt_box).attr('class') );
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
                         if (tsInput) {
                             $curQuestionsView.text($curQuestionsInput.val());
@@ -1277,8 +1360,9 @@ app.getSum = function($elements, $outputElement) {
                             $curQuestionsHidden.val($curQuestionsInput.val());
                             $curHoursHidden.val($curHoursInput.val());
 
-                            calculateTotal();
+                            calculateTotal(); //console.log("s"+calculateTotal);
                         }
+
                     };
 
                     $curQuestionsInput.on({
@@ -1318,7 +1402,7 @@ app.getSum = function($elements, $outputElement) {
                 });
 
                 $rowTotalView.on('focus', function() {
-                    console.log('rTotalView trigged');
+//                    console.log('rTotalView trigged');
                     var $popover = $('.popover');
                     $popover.popover('hide');
                 });
@@ -1445,7 +1529,7 @@ app.workingDaysBetweenDates = function(startDate, endDate) {
         }
     }
 
-    console.log('holidayCount:' + holidayCount);
+//    console.log('holidayCount:' + holidayCount);
 
     return days - holidayCount;
 };
@@ -1645,14 +1729,14 @@ $.fn.getMemberHolidayList = function(options) {
                 }
             }
 
-            console.log(app.holidaysList);
+//            console.log(app.holidaysList);
         },
         error: function(data) {
-            console.log("ERROR:  " + data);
+//            console.log("ERROR:  " + data);
         }
     });
 
-    console.log('Selected Val: ' + selectedVal);
+//    console.log('Selected Val: ' + selectedVal);
 };
 
 helper.clearArray = function(arr) {
@@ -1661,6 +1745,30 @@ helper.clearArray = function(arr) {
     }
 };
 
+//$('input.hrcheck[type="number"]').keyup(function(){ console.log(this.id);
+////    if(this.value >24) {
+////        alert("Oops you can't enter 24 hours in a day")
+////        $(this).val('0.00');
+////        }
+////        console.log("is_valid"+is_valid)
+////    if(is_valid !=0) {
+////        alert("Oops your total hours is more than  24 hours ")
+////        $(this).val('0.00');
+////    return false;
+//
+////    }
+//
+//});
+
+// function hrcheck(ele ){
+// ele.val('0') ;ele.text('0');
+//// console.log("is_valid"+is_valid);
+//alert("Oops your total hours is more than  24 hours ") ;return false;
+////app.timeSheetDayTotalHours();
+////ele.trigger('keyup');
+////
+////     console.log("val "+)
+// }
 
 // function ShowAjaxLoader(element, width, height){
 //     element.show();

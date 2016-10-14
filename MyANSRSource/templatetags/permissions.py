@@ -34,6 +34,14 @@ def has_group(user, group_name):
     return True if group in user.groups.all() else False
 
 
+@register.filter(name='has_url')  # added for grievance admin module
+def has_url(actual_path, url):
+    if url in actual_path:
+        return True
+    else:
+        return False
+
+
 @register.filter('IsMilestoneReportsAdmin')
 def IsMilestoneReportsAdmin(user):
     UserGroupsList = user.groups.all().values_list('name', flat=True)
