@@ -51,7 +51,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr class="gradeX">
+<!--                         <tr class="gradeX">
                           <td>Captain America</td>
                           <td><div class="indicator"></div></td>
                           <td><div class="indicator absent"></div></td>
@@ -160,7 +160,46 @@
                           <td><div class="indicator"></div></td>
                           <td><div class="indicator absent"></div></td>
                           <td></td>
+                        </tr> -->
+
+                        <!-- end of avengers -->
+
+
+                        <tr class="gradeX">
+                          <td>Person 1</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td></td>
                         </tr>
+                        <tr class="gradeX">
+                          <td>Person 2</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td></td>
+                        </tr>
+                        <tr class="gradeX">
+                          <td>Person 3</td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td><div class="indicator"></div></td>
+                          <td></td>
+                        </tr>
+
+
+
+
+
+
+
+
                       </tbody>
                       <tfoot>
                         <tr class="gradeX">
@@ -212,6 +251,7 @@ var barChart = function(){
     { y: 'Week 3', a: 50, b: 50 },
     { y: 'Week 4', a: 35, b: 65 }
     ],
+    hideHover: 'always',
     stacked: true,
     xkey: 'y',
     ykeys: ['a', 'b'],
@@ -241,6 +281,78 @@ var barChart = function(){
 
 
 		});// End of document ready
+
+
+
+
+
+
+
+    // JSON Testing Area
+
+    var theMonth = {
+                      "person1":[
+                               {"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
+                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}
+                              ],
+
+
+                      "person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
+                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],
+
+                      "person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
+                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
+                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]                               
+                    }
+
+                   
+
+
+
+
+
+
+
+
+
+
+
+/*{"person1":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]}
+*/
+ 
+
+
+
+
+
+
+    var xyz = JSON.stringify(theMonth);
+    console.log('the JSON object : ' + xyz);    
+    var zyx = JSON.parse(xyz);
+    console.log('the parsed object : ' + zyx);
+
+
+    var populate = function(){
+      $.each($('.leave-report-table tbody tr'),function(){
+        i=0;
+        $.each($(this).find('div'),function(){
+          $(this).addClass('absent');
+          console.log(i);
+          i++;
+        })
+      })
+    }                    
+
+
+// As td with person does not contain div, use div inside tr
+
+
+    populate();
 
 
 </script>
