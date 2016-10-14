@@ -365,7 +365,7 @@ MANAGER = 'myansrsourcePM'
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = 'root'
-BROKER_PASSWORD = 'root'
+BROKER_PASSWORD = 'Welcome#2677'
 BROKER_VHOST = "ansrvhost"
 
 # Password validation
