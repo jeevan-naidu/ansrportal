@@ -45,7 +45,7 @@ class BookAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         isbn = str(getattr(obj, 'isbn'))
         try:
-            if len(isbn)<13:
+            if len(isbn)<14:
                 for digit in isbn:
                     int(digit)
                 obj.save()
