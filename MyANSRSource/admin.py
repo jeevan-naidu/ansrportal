@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.contrib import messages
 
 from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
@@ -41,6 +42,21 @@ class BookAdmin(admin.ModelAdmin):
     # Inline forms
     inlines = [ChapterInline, ]
 
+    def save_model(self, request, obj, form, change):
+        isbn = str(getattr(obj, 'isbn'))
+        try:
+            if len(isbn)<13:
+                for digit in isbn:
+                    int(digit)
+                obj.save()
+            else:
+                messages.error(request, "Digit need to be less than 13 digit")
+                messages.success(request,"")
+
+
+        except ValueError:
+            messages.error(request, "Please enter only digits")
+            messages.success(request,"")
 
 class ProjectMilestoneInline(admin.TabularInline):
     model = ProjectMilestone
