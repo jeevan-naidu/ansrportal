@@ -415,7 +415,7 @@ class PreviousEmployment(models.Model):
 class Remainder(models.Model):
     user = models.ForeignKey(Employee, default=None)
     name = models.CharField(verbose_name="Event Name",
-                            max_length="100"
+                            max_length=100
                             )
     startDate = models.DateField(verbose_name="Start Date",
                                  default=timezone.now)

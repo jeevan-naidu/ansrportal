@@ -652,8 +652,16 @@ class TeamMemberPerfomanceReportForm(forms.ModelForm):
             'data-placeholder': 'Enter a Project Name /Project Id ...',
             # Only trigger autocompletion after 3 characters have been typed
             # 'data-minimum-input-length': 3,
-        }, ),
-        required=True, )
+        }, ),required=False,)
+    member = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        # label="Project Leader",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type Employee Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),required=True, )
 
     class Meta:
         model = ProjectTeamMember
