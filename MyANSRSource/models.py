@@ -31,7 +31,7 @@ class Book(models.Model):
     author = models.CharField(max_length=100, null=False,
                               verbose_name="Author")
     edition = models.CharField(max_length=30, null=True, blank=True)
-    isbn = models.IntegerField(default=None,
+    isbn = models.CharField(max_length=30,
                                blank=True, null=True,
                                verbose_name="ISBN")
     active = models.BooleanField(
