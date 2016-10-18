@@ -38,7 +38,7 @@ from django.core.exceptions import PermissionDenied
 from tasks import EmailSendTask, ManagerEmailSendTask
 from django.conf import settings
 from GrievanceAdmin.views import paginator_handler
-
+from calendar import monthrange
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -1142,9 +1142,9 @@ class RaiseDispute(View):
         context_data['form'] = form
         return render(request, 'short_attendance_remark.html', context_data)
 
-    def post(self,request):
+    def post(self, request):
         form = ShortAttendanceRemarkForm(request.POST)
-        context_data = {'record_added':False}
+        context_data = {'record_added': False}
         if form.is_valid():
 
             leave_id = form.cleaned_data['leave_id']
@@ -1165,3 +1165,22 @@ class RaiseDispute(View):
             form = ShortAttendanceRemarkForm(request.POST)
             context_data['form'] = form
         return render(request, 'short_attendance_remark.html', context_data)
+
+
+def leavereport(request):
+    leavereport = {}
+
+    user = request.user.id
+    month = request.GET.get('month')
+    manager = Employee.objects.get(user_id=user)
+    userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+    for user in userlist:
+        username = user.user.username
+        leavereport[username] = monthlyleavereport(user, month)
+
+def monthlyleavereport(user, month):
+    leavelist = []
+    userreport = {}
+    montdetail = monthrange(month, date.today().year)
+    previousmonthdays = montdetail[0]
+    dayscount = montdetail[1]
