@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import employee as emp
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.db import IntegrityError, transaction
 from django.core.exceptions import ValidationError
@@ -179,8 +179,8 @@ class Group(models.Model):
     Group to manage question
     """
     name = models.CharField("Name", max_length=100, blank=False)
-    priority = models.IntegerField("Priority",
-                                   validators=[MinValueValidator(0), MaxValueValidator(100)],
+    priority = models.IntegerField("Priority", max_length=100,
+                                   validators=[MinValueValidator(0)],
                                    blank=False)
     fb = models.ManyToManyField(
         FB360,
@@ -201,7 +201,8 @@ class Question(models.Model):
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=256, blank=False)
-    priority = models.IntegerField("Priority", validators=[MinValueValidator(0), MaxValueValidator(100)],
+    priority = models.IntegerField("Priority", max_length=100,
+                                   validators=[MinValueValidator(0)],
                                    blank=False, default=None)
     qtype = models.CharField(
         verbose_name='Type',

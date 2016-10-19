@@ -70,7 +70,8 @@ def leavesubmit(attendance, leave, reason, user_id, applied_by):
     try:
         leaveapp = LeaveApplications.objects.filter(from_date__lte=attendance.for_date,
                                                  to_date__gte=attendance.for_date,
-                                                 user=user_id)
+                                                 user=user_id,
+                                                    status__in=['open', 'approved'])
         if leaveapp and attendance.short_leave_type == 'full_day':
             leavecount = .5
             if leaveapp[0].from_session == 'session_first':

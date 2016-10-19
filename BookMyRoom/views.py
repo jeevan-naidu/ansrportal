@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from models import RoomDetail, MeetingRoomBooking
-from django.template.loader import render_to_string
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views.generic import View
 import datetime
 from django.utils import timezone
 from django.utils.encoding import smart_str
-from django.views.decorators.csrf import csrf_exempt
-
-import pytz
+import json
+import ast
+import logging
+logger = logging.getLogger('MyANSRSource')
 
 
 # Create your views here.
@@ -20,49 +20,128 @@ TimingsList = [ ['08:00-08:30', '08:30-09:00', '09:00-09:30', '09:30-10:00'],
                 ['18:00-18:30', '18:30-19:00', '19:00-19:30', '19:30-20:00'] ]
 
 
+class DictDiffer(object):
+    """
+    Calculate the difference between two dictionaries as:
+    (1) items added
+    (2) items removed
+    (3) keys same in both but changed values
+    (4) keys same in both and unchanged values
+    """
+    def __init__(self, current_dict, past_dict):
+        self.current_dict, self.past_dict = current_dict, past_dict
+        self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
+        self.intersect = self.set_current.intersection(self.set_past)
+
+    def added(self):
+        return self.set_current - self.intersect
+
+    def removed(self):
+        return self.set_past - self.intersect
+
+    def changed(self):
+        return set(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
+
+    def unchanged(self):
+        return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
+
+"""
+ we will be getting two json objects based on their comparison(as dict) we will be decided what to be
+ deleted using the above function
+
+dom : {"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0}
+ submit :{"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"oneThe Enterprises: karle_ground_floor08:00-08:30":0}
+
+addedset([])
+
+removedset(['oneThe Enterprises: karle_ground_floor08:00-08:30']) // new record
+
+unchangedset(['3', '5', '4', '7', '6', '9', '8']) // ignore them
+
+changedset([])
+
+{"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0}
+{"3":0,"4":0,"5":0,"6":1,"7":0,"8":0,"9":0,"10":0}
+addedset([])
+removedset([])
+unchangedset(['10', '3', '5', '4', '7', '9', '8']) // discard
+changedset(['6']) // overridden by admin - update case
+
+{"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0}
+{"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0}
+addedset(['3']) // to be removed
+removedset([])
+unchangedset(['10', '5', '4', '7', '6', '9', '8'])
+changedset([])
+
+"""
+
+
 class BookMeetingRoomView(View):
-    ''' add or edit grievances '''
-    
+
     def get(self, request):
         if 'for_location' not in request.session:
             request.session['for_location'] = ''
         if 'for_date' not in request.session:
             request.session['for_date'] = ''
         return render(request, 'BookMyRoom/index.html', locals())
-    
+
     def post(self, request):
-        
-        context_data = {'add' : True, 'record_added' : False, 'success_msg' : None,
-                        'html_data' : None, 'errors' : '', 'for_date':'' }
+        is_empty = False
+        context_data = {'add': True, 'record_added': False, 'success_msg': None,
+                        'html_data': None, 'errors': '', 'for_date': ''}
+
+        if request.POST.get('on_load'):
+            # we will be converting unicode to regular string in next two lines for both dict
+            on_load = ast.literal_eval(request.POST.get('on_load'))
+            on_submit = ast.literal_eval(request.POST.get('on_submit'))
+            s = DictDiffer(on_load, on_submit)
+
+            if len(s.added()) > 0:
+                MeetingRoomBooking.objects.filter(pk__in=s.added()).delete()  # release room
+                context_data['record_added'] = True
+                context_data['success_msg'] = "Your changes are made successfully"
+
+            if len(s.added()) == 0 and len(s.removed()) == 0 and len(s.changed()) == 0:
+                is_empty = True
+
         if not request.POST.get('for_date'):
             context_data['errors'] += "\nPlease select date"
         else:
             for_date = request.POST.get('for_date')
         bookings_list = request.POST.getlist('BookingTime')
-        if not bookings_list:
+
+        if not bookings_list and is_empty is True:
             context_data['errors'] += "\nNo room selected."
         if not context_data['errors']:
             for element in request.POST.getlist('BookingTime'):
-                data_list = element.split("/")
-                room_id = int(data_list[0])
-                room_obj = RoomDetail.objects.get(id=room_id)
-                time_period_list = data_list[1].split("-")
-                from_time = time_period_list[0]
-                to_time = time_period_list[1]
-                
-                from_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(from_time), '%Y-%m-%d/%H:%M')
-                to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
-                try:
-                    booking_obj = MeetingRoomBooking.objects.get(room=room_obj, from_time=from_time_obj, to_time=to_time_obj, status='booked')
-                    
-                    context_data['errors'] = "Oops! :( Looks like someone else clicked\
-                    <b>Submit</b> just before you did. Better luck next time."
-                except:
-                    booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked', 
-                                                from_time=from_time_obj, to_time=to_time_obj)
-                    booking_obj.save()
-                    context_data['record_added'] = True
-                    context_data['success_msg'] = "Booked"
+                if "/" in element:
+                    data_list = element.split("/")
+                    room_id = int(data_list[0])
+                    room_obj = RoomDetail.objects.get(id=room_id)
+                    time_period_list = data_list[1].split("-")
+                    from_time = time_period_list[0]
+                    to_time = time_period_list[1]
+
+                    from_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(from_time), '%Y-%m-%d/%H:%M')
+                    to_time_obj = datetime.datetime.strptime(str(for_date)+"/"+str(to_time), '%Y-%m-%d/%H:%M')
+                    try:
+                        booking_obj = MeetingRoomBooking.objects.get(room=room_obj,
+                                                                     from_time=from_time_obj,
+                                                                     to_time=to_time_obj, status='booked')
+
+                        context_data['errors'] = "Oops! :( Looks like someone else clicked\
+                        <b>Submit</b> just before you did. Better luck next time."
+                    except:
+                        booking_obj = MeetingRoomBooking(booked_by=request.user, room=room_obj, status='booked',
+                                                         from_time=from_time_obj, to_time=to_time_obj)
+                        booking_obj.save()
+
+                else:
+                    # override condition by admin
+                    MeetingRoomBooking.objects.filter(pk=int(element)).update(booked_by=request.user)
+                context_data['record_added'] = True
+                context_data['success_msg'] = "Booked"
         return JsonResponse(context_data)
 
 
@@ -88,6 +167,7 @@ def GetBookingsView(request):
         bookings_list = MeetingRoomBooking.objects.filter(booked_by=request.user,
                                                           from_time__gte=utcnow_datetime_obj,
                                                           status='booked').order_by('from_time')
+
         context_data['bookings_list'] = bookings_list
         context_data['success_msg'] = "Booked"
         template = render(request, 'BookMyRoom/BookRoomAndViewDetails.html', context_data)
@@ -97,26 +177,64 @@ def GetBookingsView(request):
     return JsonResponse(context_data)
 
 
-@csrf_exempt
 def CancelBooking(request):
-    
-    booking_id = request.POST.get('cancel_id', '')
-    context_data = {'record_updated':False, 'user_mismatch':False}
-   
-    booking_obj = MeetingRoomBooking.objects.get(id=int(booking_id))
-    if booking_obj.booked_by == request.user:
-        booking_obj.status = 'cancelled'
-        booking_obj.save()
+    partial_update = False
+    fail = 0
+    json_data = json.loads(request.body)
+    cancel_id = remarks = {}
+
+    try:
+        remarks = json_data['remarks']
+        cancel_id = json_data['cancel_id']
+    except KeyError:
+        logger.error(
+                        "malformed json data: {0} Date time : {1} ".format(
+                            json_data, timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())))
+
+    tmp_cancel = cancel_id.values()
+    tmp_remark = remarks.keys()
+    context_data = {'record_updated': False, 'user_mismatch': False}
+
+    if tmp_remark:
+            for i in tmp_cancel[:]:
+                if i in tmp_remark:
+                    tmp_remark.remove(i)
+            actual_remark_ids = tmp_remark
+
+            for i, val in enumerate(actual_remark_ids):
+                try:
+                    MeetingRoomBooking.objects.filter(id=val).update(remark=remarks[val])
+                except Exception, e:
+                    logger.error(
+                        "meeting room remark update failed with following exception :"
+                        " {0} Date time : {1} ".format(
+                            str(e), timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())))
+                    fail += 1
+
+    if tmp_cancel:
+        booking_obj = MeetingRoomBooking.objects.filter(id__in=tmp_cancel)
+
+        for obj in booking_obj:
+            if obj.booked_by == request.user:
+                obj.status = 'cancelled'
+                try:
+                    obj.save()
+                except Exception, e:
+                    logger.error(
+                        "meeting room cancellation operation failed partially with following exception :"
+                        " {0} Date time : {1} ".format(
+                            str(e), timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())))
+                    partial_update = True
+
+    if not partial_update and fail == 0:
         context_data['record_updated'] = True
     else:
         context_data['user_mismatch'] = True
-    
+
     return JsonResponse(context_data)
-    
+
 
 def GetAllRoomsList(request):
-
-
 
     get_date = request.GET.get('date')
     get_room = request.GET.get('room')

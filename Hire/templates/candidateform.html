@@ -31,6 +31,9 @@ ul{list-style: none;padding-left: 0px;}
 
 .yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}
 
+#id_requisition_number + .select2-container{min-width: 130px;}
+.select2-container .select2-selection--single{height: 30px;}
+
 </style>
 
 
@@ -372,7 +375,13 @@ $.ajax(
                 }
             }
         });
+
+
+
+$('.select2.select2-container').removeAttr('style');
+
 });
+
 
 </script>
 

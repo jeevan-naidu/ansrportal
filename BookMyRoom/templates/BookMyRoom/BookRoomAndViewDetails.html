@@ -1,4 +1,4 @@
- {% load book_my_room_template_tags %}
+{% load book_my_room_template_tags %} {% load permissions %}
  <div id="BookingsAjaxLoader" class="ajax_bck_bookings"><div class="ajax_load_image_bookings"></div></div>
   <div class="panel panel-default clearfix room-booking-content">
 
@@ -53,21 +53,30 @@
 
           {% with  res_obj=for_date|Concat:time|BookedBy:room_obj %}
               {% if res_obj %}
-                <span>
-                    <input type="checkbox" name="BookingTime" id="{{room_obj.id}}-{{time}}" disabled />
-                        {% if res_obj.booked_by == request.user %}
-                            <label for="{{room_obj.id}}-{{time}}" class="user-selected" data="{{ res_obj }}"></label>
-                        {% else  %}
-                            <label for="{{room_obj.id}}-{{time}}" data="{{ res_obj }}"></label>
-                        {% endif %}
+
+                 <span>
+                    <input type="checkbox" name="BookingTime" id="{{res_obj.id}}" disabled {% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%}value="{{res_obj.id}}" {% endif %} />
+
+        <label for="{{res_obj.id}}"{% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%} onclick="removeClassFunction(this)"  {%endif%}  id="label_{{res_obj.id}}" {% if res_obj.booked_by == request.user %} class="user-selected" {%endif%} data="{{ res_obj }}"></label>
+
                     <div class="booked-by">
                         <h4>Booked By</h4>
-                        <p>{{res_obj.booked_by.first_name}} {{res_obj.booked_by.last_name}}</p>
+                        <p >{{res_obj.booked_by.first_name}} {{res_obj.booked_by.last_name}}</p>
+                        {%if res_obj.remark %}<p>For:{{res_obj.remark}}</p>{%endif%}
+
                     </div>
                 </span>
+
+
+
+
+
+
+
+
               {% else %}
                 <span>
-                    <input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}"/>
+                    <input type="checkbox" name="BookingTime" id="one{{room_obj}}{{time}}" data-value='{{time}}' value="{{room_obj.id}}/{{time}}" class ="check_box" />
                     <label for="one{{room_obj}}{{time}}"></label>
                 </span>
               {% endif %}
@@ -77,11 +86,11 @@
           </div>
           {% endfor %}
 
-        </div>
+        </div> <input type="hidden" id="is_admin" {% if request.user|has_group:"BookingRoomAdmin"  or request.user.is_superuser%} value="true" {%else%} value="false" {%endif%}>
     </div><!--end of room-and-time-->
     {% endfor %}
 
-<div style="margin-top:30px;">
+<div class="col-sm-12" style="margin-top:30px;">
       <div id="legend" class="col-sm-8">
         <p class="pull-left"><span></span>Available</p>
         <p class="pull-left blocked"><span></span>Booked</p>
@@ -107,16 +116,29 @@
 
 <div class="row bookings margin-0">
 	<h4>Your Bookings <small> (Only future bookings are displayed here)</small></h4>
-	{% if bookings_list %}
+    <div class="form-inline approve-reject">
+    {% if bookings_list %}
+
+    <div class="col-sm-12" style="margin-bottom: 15px;">
+      <div class="checkbox checkbox-success pull-right">
+          <label for="release_all" class="lh-16 btn btn-info btn-sm">
+          <input id="release_all" type="checkbox" name="release_all" class="release_all" style="display: none;">
+             Release All
+          </label>
+      </div>
+    	<button class=" update btn btn-success btn-sm pull-right" id="update"  style="margin-right: 15px" disabled>Update</button>
+    </div>
+
 		{% for obj in bookings_list %}
 			<div class="col-sm-12 booking" id="BookingObject-{{obj.id}}">
 				<div class="col-sm-3">{{obj.room.get_location_display}}-{{obj.room.room_name}}</div>
-				<div class="col-sm-7">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
-{#				<div class="col-sm-4">#}
-{#					<input type="text" name="" class="form-control">#}
-{#				</div>#}
-				<div class="col-sm-2">
-					<button class="CancelBooking btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>
+				<div class="col-sm-3">{{obj.from_time|date}}, {{obj.from_time|time:"H:i"}} - {{obj.to_time|time:"H:i"}}</div>
+					<div class="col-sm-5"><textarea rows="1"  style="width:100%" name="remark_{{obj.id}}" id="{{obj.id}}" class="form-control remark input-sm"  placeholder="Reason For Booking..">{{obj.remark}}</textarea></div>
+
+				<div class="col-sm-1 no-padding-right">
+            <input type="checkbox" name="release[]" id="release_{{obj.id}}" data-value="{{obj.id}}"  class="form-control release_checkbox hidden">
+            <label class="btn btn-xs btn-danger release-btn pull-right" for="release_{{obj.id}}">Release</label>
+					<!--<button class="update btn btn-danger btn-sm pull-right" data-value="{{obj.id}}">Release</button>-->
 				</div>
 			</div>
 		{% endfor %}
@@ -127,7 +149,8 @@
 
 		{% endif %}
 </div>
-
+</div>
+</div>
 
 <!--<div id="submit-section" class="col-sm-12">
   <p class="pull-left booker">V L Nagaraj - Media Team</p>
@@ -137,9 +160,105 @@
 </div><!--end of panel-->
 
 <script>
+
+    var remarks ={};
+    var cancel_id = {};
+    var not_empty = 0;
+    var not_checked = 0;
+    var initial_elements = {}
+    var admin_override = []
+
+     function removeClassFunction(ele) {
+     if ($(ele).hasClass('user-selected')) {
+        $(ele).parent().find('input[type="checkbox"]').removeAttr('disabled');
+        $(ele) .removeClass('user-selected');
+     }
+     else {$(ele).parent().find('input[type="checkbox"]').removeAttr('disabled').addClass('released');}
+     $(ele).next().hide();
+     }
+
 	$(document).ready(function(){
-		 $('#reset-btn').click(function(){
-				$('input[type="checkbox"]').attr('checked', false);
+
+
+
+  	$(".remark").keyup(function() {
+
+        if($(this).val().trim().length != 0 ) {
+        console.log("im in");
+            $("#update").prop('disabled', false);
+        }
+        else {
+            not_empty=0;
+            $(".remark").each(function() {
+                if($(this).val().trim().length != 0) {
+                console.log("count"+not_empty);
+                    not_empty+=1 ;
+                    $("#update").prop('disabled', false);
+                }
+            });
+            if(not_empty==0)  {  $("#update").prop('disabled', true);$(".release_checkbox").trigger('change');  }
+        }
+    });
+
+        $("#update").click(function() {
+            console.log("update");
+
+         $(".release_checkbox").each(function(index) {
+         console.log("inside release/");
+            if(this.checked) {
+                $("#update").prop('disabled', false);
+                 cancel_id[index]=($(this).attr('data-value'));
+            }
+
+            });
+         $(".remark").each(function() {
+            <!--console.log($(this).val() +'&#45;&#45;'+this.value);-->
+                if($(this).val().trim().length != 0) {
+                    remarks[this.id]=$(this).val();
+                }
+                else {
+                $("#update").prop('disabled', true);
+            }
+                <!--console.log("remarks&#45;&#45;"+remarks);-->
+
+         });
+
+
+        });
+        $("#release_all").change(function() {
+            if(this.checked) {
+                $("#update").prop('disabled', false);
+                $('.release_checkbox').prop('checked', true);
+            }
+            else {
+                $("#update").prop('disabled', true);
+                $('.release_checkbox').prop('checked', false);
+            }
+        });
+
+
+         $(".release_checkbox").change(function() {
+            var id = this.id.split('_');
+            if(this.checked) {
+             $("#update").prop('disabled', false);
+             $('#remark_'+id[1]).prop('readonly', true);
+            }
+            else {
+                not_checked=0;
+                $(".release_checkbox").each(function() {
+                    if(this.checked) {
+                        not_checked+=1 ;
+                    }
+                });
+                if(not_checked==0)  {  $("#update").prop('disabled', true);   $(".remark").trigger('keyup'); }
+                if($('#remark_'+id[1]).prop('readonly')) {
+                    $('#remark_'+id[1]).prop('readonly',false)
+                }
+            }
+        });
+
+		$('#reset-btn').click(function(){
+				$('input[type="checkbox"]').not('.release_checkbox').attr('checked', false);
 			});
 		});
 
@@ -149,15 +268,25 @@
 						var for_date = $('#id_for_date').val();
 						var confirmation_text = "";
 						formData.append('for_date', for_date);
-						if ($("input[name=BookingTime]:checked").length <= 0){
-							swal({title:"", text:"Sorry! You haven't selected any meeting room.", type:'warning'});
-							return false;
+						if ($('#is_admin').val() == 'false') {
+                            if ($("input[name=BookingTime]:checked").length <= 0){
+                                swal({title:"", text:"Sorry! You haven't selected any meeting room.", type:'warning'});
+                                return false;
+                            }
+                            else if($("input[name=BookingTime]:checked").length == 1){
+                                confirmation_text = "Are you sure you want to book this room?";
+                            }
+                            else{
+                                confirmation_text = "Are you sure you want to book these rooms?";
+                            }
 						}
-						else if($("input[name=BookingTime]:checked").length == 1){
-							confirmation_text = "Are you sure you want to book this room?";
-						}
-						else{
-							confirmation_text = "Are you sure you want to book these rooms?";
+						else {
+						        confirmation_text = "Are you sure you want to make these changes?";
+
+						        formData.append('on_load', JSON.stringify(obj_id_load));
+						        formData.append('on_submit', JSON.stringify(obj_temp_submit));
+						        <!--formData = formData.serialize()-->
+						        <!--+JSON.stringify({formData,"on_load":JSON.stringify(obj_id_load),'on_submit':obj_temp_submit})-->
 						}
 
 								swal({
@@ -219,18 +348,17 @@
 																processData: false
 														});
 
-												}
+												}//if ($('#is_admin').val() == 'true') window.location.reload();
                    });
             return false;
         });
 
 
-				$(".CancelBooking").click(function(){
 
-            var cancel_id = $(this).attr('data-value');
+				$(".update").click(function(){
 
 						swal({   title: "",
-                text: "Are you sure you want to release this meeting room?",
+                text: "Are you sure you want to update your changes?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#00BCD4",
@@ -246,15 +374,16 @@
 											$('.showSweetAlert .sa-button-container button.confirm').html('');
 										$('.showSweetAlert .sa-button-container button.confirm').append("<img style='width:20px;margin: 0px 37px;' src='/static/images/ajax-loader2.gif'>");
 										$('.showSweetAlert .sa-button-container button.confirm, .showSweetAlert .sa-button-container button.cancel').attr('disabled','true');
-
 														$.ajax({
 																url: '/bookings/cancel/',
 																type: 'POST',
-																 data: {'cancel_id':cancel_id},
-																success: function (data) {
-																		if (data.record_updated == true) {
+                                                                 dataType: "json",
+																 data:  JSON.stringify({remarks,cancel_id}),
+																success(result,status,data) {
+
+																		if (result.record_updated == true) {
 																			swal({
-																				title:"Meeting room released!!",
+																				title:"Meeting room changes done successfully !!",
 																				type:'success',
 																				text:"The page will refresh automatically",
 																				showConfirmButton: false
@@ -265,7 +394,7 @@
 																				window.location.reload();
 																				}, 2000);
 																		}
-																		if (data.user_mismatch == true) {
+																		if (result.user_mismatch == true) {
 																				swal('Error', "Malicious activity.You cannot cancel other users bookings.");
 																		}
 																},
@@ -286,3 +415,161 @@
         });
 
 </script>
+
+<script type="text/javascript">
+
+// var bookings_array = {one : '1', two : '2', three : '3'};
+
+	var bookings_start = [];
+	var bookings_end = [];	
+
+	var loop = [];	
+	var jobject;
+
+	arr_id_load = [];
+	obj_id_load = {};
+
+	arr_id_submit = [];
+	obj_id_submit = {};
+
+
+$(document).ready(function(){
+
+
+
+
+
+
+	// Run on page load
+
+	bookings_init = function(){
+
+		i=0;
+		$('.selectors input[type="checkbox"]').each(function(){
+
+			if ($(this).prop('disabled')) {
+				arr_id_load[i] = this.id;
+				obj_id_load[arr_id_load[i]] = 0;
+				i++;
+			}	
+
+		})// end of each
+
+
+		console.log("dom ready " + JSON.stringify(obj_id_load));
+
+	}// end of bookings_init
+
+
+
+
+
+
+	// Run on submit
+
+	bookings_submit = function(){
+
+
+		$('#BookMeetingForm input[type="submit"]').click(function(){
+
+			obj_temp_submit = {};
+			arr_id_submit.length = 0;
+			i=0;	
+			$('.selectors input[type="checkbox"]').each(function(){
+				if ($(this).prop('disabled')) {
+					arr_id_submit[i] = this.id;
+					obj_temp_submit[arr_id_submit[i]] = 0;
+					i++;
+				}else if ($(this).prop('checked')) {
+					if($(this).hasClass('released')){
+						arr_id_submit[i] = this.id;
+						obj_temp_submit[arr_id_submit[i]] = 1;
+						i++;
+					}else{
+						arr_id_submit[i] = this.id;
+						obj_temp_submit[arr_id_submit[i]] = 0;
+						i++;
+					}
+				}
+			})
+
+			console.log("on submit" + JSON.stringify(obj_temp_submit));
+
+			})
+
+
+
+	}// end of bookings submit
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// Testing area
+
+
+
+/*  L1 = ['a:1','b','c'];
+  L3 = {};
+  for (i=0; i<L1.length; i++) {
+    L3[L1[i]] = 1;
+  }
+*/
+
+  	// Function calls
+
+
+	bookings_init();
+	bookings_submit();
+
+
+
+
+
+
+
+})// end of document.ready
+
+</script>
+</script>
+
+<style type="text/css">
+
+.no-padding-right{padding-right: 0px;}
+
+.no-padding-right{padding-right: 0px;}
+
+input[type="checkbox"] + label{cursor: pointer !important}
+
+
+.selectors{
+  cursor: default;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+label.btn{padding-left: 10px !important;}
+
+label.release-btn{
+  padding: 1px 7px !important;
+  margin-top: 5px;
+}
+input[type="checkbox"]:not(:checked) + label.release-btn{
+  background: #eaeaea;
+  border-color: #cccccc;
+  color: #a7a7a7;
+}
+input[type="checkbox"]:not(:checked) + label.release-btn:active{box-shadow: none !important}
+
+</style>

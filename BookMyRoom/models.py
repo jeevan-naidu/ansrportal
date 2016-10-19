@@ -18,13 +18,13 @@ class RoomDetail(models.Model):
 
 
 class MeetingRoomBooking(models.Model):
-    
-    
+
     booked_by = models.ForeignKey(User)
     room = models.ForeignKey(RoomDetail)
     from_time = models.DateTimeField()
     to_time = models.DateTimeField()
-    status = models.CharField(max_length = 100, choices=BOOKING_STATUS)
+    status = models.CharField(max_length=100, choices=BOOKING_STATUS)
+    remark = models.CharField(max_length=100)
     # active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
     created_date = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(verbose_name="last", auto_now=True)

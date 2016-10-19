@@ -7,7 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models.signals import post_save
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MaxValueValidator
+
 fs = FileSystemStorage(location='employee/emp_photo')
 
 GENDER_CHOICES = (
@@ -226,7 +226,7 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     exprience = models.IntegerField(
         "Experience in Months",
-        validators=[MaxValueValidator(3)],
+        max_length=3,
         blank=False)
 
     '''
@@ -256,7 +256,7 @@ class Employee(models.Model):
         blank=True)
     uan = models.IntegerField(
         "Universal account number",
-        validators=[MaxValueValidator(12)],
+        max_length=12,
         blank=True,
         null=True,
         unique=True)
@@ -266,7 +266,7 @@ class Employee(models.Model):
                                    max_length=70, blank=True, null=True)
     bank_account = models.IntegerField(
         "Account Number",
-        validators=[MaxValueValidator(30)],
+        max_length=30,
         blank=True,
         null=True,
         unique=True)
@@ -364,7 +364,7 @@ class Education(models.Model):
     institute = models.CharField("Institution", max_length=50, blank=False)
     overall_marks = models.IntegerField(
         "Total Score/GPA",
-        validators=[MaxValueValidator(50)],
+        max_length=50,
         blank=False)
 
     def __unicode__(self):
