@@ -39,6 +39,7 @@ from tasks import EmailSendTask, ManagerEmailSendTask
 from django.conf import settings
 from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
+import calendar
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -1171,16 +1172,89 @@ def leavereport(request):
     leavereport = {}
 
     user = request.user.id
-    month = request.GET.get('month')
+    # month = request.GET.get('month')
+    month = 7
     manager = Employee.objects.get(user_id=user)
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+    userid = [user.user_id for user in userlist]
+    userlist = User.objects.filter(id__in=userid, is_active=True)
     for user in userlist:
-        username = user.user.username
+        username = user.username
         leavereport[username] = monthlyleavereport(user, month)
+    json_data = json.dumps(leavereport)
+    return HttpResponse(json_data, content_type="application/json")
 
 def monthlyleavereport(user, month):
     leavelist = []
     userreport = {}
-    montdetail = monthrange(month, date.today().year)
-    previousmonthdays = montdetail[0]
+    montdetail = monthrange(date.today().year, month)
+    nextmontdetail = monthrange(date.today().year, month+1)
+    previousmonthdays = nextmontdetail[0]
     dayscount = montdetail[1]
+    weekcount = 1
+    daysinweek = 1
+    for val in range(0, montdetail[0]):
+        key = "adv"+str(weekcount)+str(val)
+        userreport[key] = 4
+    for val in range(1, dayscount+1):
+        date1 = date(year=date.today().year, month=month, day=val)
+        if date1.strftime("%A") == 'Saturday':
+            weekcount += 1
+            daysinweek = 1
+            leavelist.append(userreport)
+            userreport = {}
+        elif date1.strftime("%A") == 'Sunday':
+            pass
+        else:
+            key = "curr" + str(weekcount) + str(daysinweek)
+            userreport[key] = leavecheck(user, date1)
+            daysinweek +=1
+        if val == dayscount and previousmonthdays<5:
+            for val in range(5-previousmonthdays):
+                key = "next" + str(weekcount) + str(val)
+                userreport[key] = 4
+            leavelist.append(userreport)
+        elif val == dayscount:
+            leavelist.append(userreport)
+    return leavelist
+
+def leavecheck(user, date):
+    leaveapplied = LeaveApplications.objects.filter(user=user.id,
+                                                    from_date__lte=date,
+                                                    to_date__gte=date,
+                                                    status__in=['open', 'approved'])
+    holiday = Holiday.objects.all().values('date')
+    if len(leaveapplied) > 1:
+        flag = 2
+    elif leaveapplied and leaveapplied[0].from_date < date and leaveapplied[0].to_date > date:
+        flag = 2
+    elif leaveapplied and\
+                    leaveapplied[0].from_date == date and\
+                    leaveapplied[0].to_date > date and\
+                    leaveapplied[0].from_session == 'session_first':
+        flag = 2
+    elif leaveapplied and\
+                    leaveapplied[0].from_date < date and\
+                    leaveapplied[0].to_date == date and\
+                    leaveapplied[0].to_session == 'session_second':
+        flag = 2
+    elif leaveapplied and\
+                    leaveapplied[0].from_date == date and\
+                    leaveapplied[0].to_date == date and\
+                    leaveapplied[0].from_session == 'session_first'and\
+            leaveapplied[0].to_session == 'session_second':
+        flag = 2
+    elif leaveapplied:
+        flag = 1
+    elif date in [datedata['date'] for datedata in holiday]:
+        flag = 3
+    else:
+        flag = 0
+    return flag
+
+
+
+
+
+
+
