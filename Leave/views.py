@@ -1172,8 +1172,8 @@ def leavereport(request):
     leavereport = {}
 
     user = request.user.id
-    # month = request.GET.get('month')
-    month = 7
+    month = request.GET.get('month')
+    # month = 7
     manager = Employee.objects.get(user_id=user)
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
     userid = [user.user_id for user in userlist]
