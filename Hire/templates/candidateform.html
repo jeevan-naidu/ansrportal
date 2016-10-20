@@ -347,8 +347,12 @@ $.ajax(
             success: function (data) {
                 if(data.valid){
                     swal({
-            title: "Record Avaliable",
-            text: "Candidate with same mobile no already given interview",
+            title: "Candidate with same Mobile No Avaliable",
+            text: 'Name: '+data.name+',\n'+
+            ' Date Of Interview: '+data.interview_on+
+            ',\n'+' MrfNo: '+data.mrf_no+',\n'+
+            'Date of Birth: '+data.date_of_birth+',\n'+
+            ' Recruiter: '+data.recruiter+'\n',
             type: "error"
         },   function(){
                         $("#id_mobile_number").val('');
@@ -370,11 +374,15 @@ $.ajax(
             success: function (data) {
                 if(data.valid){
                        swal({
-            title: "Record Avaliable",
-            text: "Candidate with same email id already given interview",
+            title: "Candidate with same Email ID Avaliable",
+            text: 'Name: '+data.name+',\n'+
+            ' Date Of Interview: '+data.interview_on+
+            ',\n'+' MrfNo: '+data.mrf_no+',\n'+
+            'Date of Birth: '+data.date_of_birth+',\n'+
+            ' Recruiter: '+data.recruiter+'\n',
             type: "error"
         },   function(){
-                        $("#id_email_id").val('');
+                        $("#id_mobile_number").val('');
                     }
         );
 

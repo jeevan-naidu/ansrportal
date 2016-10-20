@@ -34,6 +34,15 @@ BLOOD_GROUP_CHOICES = (
     ('07', 'AB-'),
     )
 
+COLOR_CHOICES = (
+    ('violet', 'Violet'),
+    ('indigo', 'Indigo'),
+    ('blue', 'Blue'),
+    ('green', 'Green'),
+    ('yellow', 'Yellow'),
+    ('orange', 'Orange'),
+    ('red', 'Red')
+)
 
 CATEGORY_CHOICES = (
     ('FT', 'Fulltime Employee'),
@@ -228,6 +237,13 @@ class Employee(models.Model):
         "Experience in Months",
         max_length=3,
         blank=False)
+    color = models.CharField(
+        "Color",
+        max_length=10,
+        choices=COLOR_CHOICES,
+        blank=True,
+        null=True,
+    )
 
     '''
     ============================

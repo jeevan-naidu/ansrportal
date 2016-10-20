@@ -259,11 +259,24 @@ class ProcessUpdate(View):
         return render(request, "processform.html", context)
 
 def contactcheck(request):
+    # import ipdb
+    # ipdb.set_trace()
     context = {}
     mobileno = request.GET.get('mobileno')
     email = request.GET.get('email')
     valid = uniquevalidation(mobileno, email)
-    context['valid'] = valid
+    if valid:
+        process = Process.objects.filter(profile=valid.id)
+        context['valid'] = True
+        context['name'] = valid.candidate_name
+        context['interview_on'] = process[0].interview_on
+        context['mrf_no'] = valid.requisition_number.requisition_number.requisition_number
+        context['date_of_birth'] = valid.date_of_birth
+        context['recruiter'] = process[0].interview_by.all()[0].first_name\
+                               + " " + process[0].interview_by.all()[0].last_name
+
+    else:
+        context['valid'] = valid
     return JsonResponse(context)
 
 
@@ -275,7 +288,7 @@ def uniquevalidation(mobileno, email):
     alloweddate = today - timedelta(days=180)
     for val in candidate:
         if val.created_on > alloweddate:
-            return True
+            return val
     return False
 
 class OfferDetail(View):
