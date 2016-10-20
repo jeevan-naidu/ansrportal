@@ -86,14 +86,14 @@ class Process(models.Model):
     def __unicode__(self):
         return '%s' % self.profile.candidate_name
 
-class Offer(models.Model):
-    profile = models.ForeignKey(Profile, verbose_name='Candidate', related_name='candidate_store')
-    issue_date = models.DateField(null=True, blank=True,)
-    acceptance_date = models.DateField(null=True, blank=True,)
-    date_of_joining = models.DateField(null=True, blank=True,)
-
-    def __unicode__(self):
-        return '%s' % self.profile.candidate_name
+# class Offer(models.Model):
+#     profile = models.ForeignKey(Profile, verbose_name='Candidate', related_name='candidate_store')
+#     issue_date = models.DateField(null=True, blank=True,)
+#     acceptance_date = models.DateField(null=True, blank=True,)
+#     date_of_joining = models.DateField(null=True, blank=True,)
+#
+#     def __unicode__(self):
+#         return '%s' % self.profile.candidate_name
 
 
 
