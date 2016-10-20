@@ -31,12 +31,6 @@ class BaseAssessmentTemplateForm(forms.Form):
         class Meta:
             model = ProjectChapterReviewerRelationship
             fields = ('project', 'chapter', 'author',)
-        #     widgets = {
-        #      'chapter': autocomplete.ModelSelect2(url='AutocompleteChapters',
-        #                                           forward=('project',), attrs={
-        #          'data-placeholder': 'Please Select  Project ...',
-        # },)
-        # }
 
         def __init__(self, *args, **kwargs):
             super(BaseAssessmentTemplateForm, self).__init__(*args, **kwargs)
