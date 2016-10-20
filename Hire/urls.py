@@ -19,4 +19,5 @@ urlpatterns = [
                        url(r'^AutoCompleteRequisitionSearchUser/$', login_required(AutoCompleteRequisitionSearchUser.as_view()),
                            name=u'hire_requsition_based_on_user'),
                        url(r'^contactcheck/$', login_required(contactcheck), name=u'contactcheck'),
+                       url(r'^offerupdate/$', login_required(OfferDetail.as_view()), name=u'OfferDetail'),
                        ]

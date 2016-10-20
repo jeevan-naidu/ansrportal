@@ -3,8 +3,8 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.views.generic import View
 from django.contrib.auth.models import User
-from models import MRF, Count, Position, Profile, Process, RESULT_STATUS, REFERENCE_SOURCE
-from forms import ProfileForm, MRFForm, NewMRFForm, ProcessForm
+from models import MRF, Count, Position, Profile, Process, RESULT_STATUS, REFERENCE_SOURCE, Offer
+from forms import ProfileForm, MRFForm, NewMRFForm, ProcessForm, OfferForm
 from datetime import date, timedelta
 from django.conf import settings
 import json
@@ -277,3 +277,49 @@ def uniquevalidation(mobileno, email):
         if val.created_on > alloweddate:
             return True
     return False
+
+class OfferDetail(View):
+
+    def get(self, request):
+        context = {}
+        profile = request.GET.get('profile')
+        offerdata = Offer.objects.filter(profile=profile)
+        if offerdata:
+            form = OfferForm(initial={'profile_id': profile,
+                                      'issue_date': offerdata[0].issue_date,
+                                      'acceptance_date': offerdata[0].acceptance_date,
+                                      'date_of_joining': offerdata[0].date_of_joining},
+                           )
+        else:
+            form = OfferForm(initial={'profile_id': profile})
+        context['form'] = form
+        return render(request, "offerform.html", context)
+
+    def post(self, request):
+        context = {}
+        form = OfferForm(request.POST)
+        if form.is_valid():
+            issue_date = form.cleaned_data['issue_date']
+            acceptance_date = form.cleaned_data['acceptance_date']
+            date_of_joining = form.cleaned_data['date_of_joining']
+            profile_id = form.cleaned_data['profile_id']
+            profile = Profile.objects.get(id=profile_id)
+            offerdata = Offer.objects.filter(profile=profile)
+            if offerdata:
+                offerdata[0].issue_date = issue_date
+                offerdata[0].acceptance_date = acceptance_date
+                offerdata[0].date_of_joining = date_of_joining
+                offerdata[0].save()
+            else:
+                Offer(issue_date=issue_date,
+                      acceptance_date=acceptance_date,
+                      date_of_joining=date_of_joining,
+                      profile=profile).save()
+
+
+            context['record_added'] = True
+            context['success_msg'] = "Updated"
+            return JsonResponse(context)
+
+        context['form'] = form
+        return render(request, "offerform.html", context)

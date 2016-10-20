@@ -1,0 +1,155 @@
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+
+{% if record_added %}
+<h4> Success</h4>
+{% else %}
+
+<style type="text/css">
+
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+</style>
+
+
+ <div id="ajax_loader_apply_leave" class="ajax_bck"><div class="ajax_load_image"></div></div>
+
+                    <form id="modal-container-hire" class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                          <div class="form-group">
+                              {{ form.interview_on.errors }}
+                        <label class="col-sm-3 control-label">Offer Issue Date</label>
+                        <div class="col-sm-7 controls">
+                          <div class="input-group width-50">
+
+                              {{ form.issue_date }}
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                              {{ form.profile_id }}
+
+
+                            <div class="form-group">
+                              {{ form.interview_status.errors }}
+                        <label class="col-sm-3 control-label">Offer Acceptance Date</label>
+                        <div class="col-sm-7 controls">
+                            <div class="input-group width-50">
+                            {{ form.acceptance_date }}
+                          </div>
+                        </div>
+                      </div>
+
+                           <div class="form-group">
+                               {{ form.interview_by.errors }}
+                        <label class="col-sm-3 control-label">Date of joining</label>
+                        <div class="col-sm-7 controls">
+                            <div class="input-group width-50">
+                            {{ form.date_of_joining }}
+                                </div>
+
+                      </div>
+
+
+
+
+<br/>
+
+                      <div class="form-group form-actions">
+                        <div class="col-sm-3"> </div>
+                        <div class="col-sm-7">
+                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Submit</button>
+                        </div>
+                      </div>
+
+</form>
+
+                    </div>
+                  </div>
+                </div>
+    </div>
+</div>
+
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+<script>
+     function ShowAjaxLoader(element, width, height){
+      element.show();
+      element.width(width).height(height);
+      return false;
+    }
+    function HideAjaxLoader(element){
+      element.fadeOut();
+      return false;
+    }
+
+    $("form#modal-container-hire").submit(function(){
+                         var formData = new FormData($(this)[0]);
+						 form_id = $(this)[0].id;
+						 form_element = $(this);
+						ajax_loader_element = $('#ajax_loader_apply_leave');
+
+						 swal({   title: "Are you sure?",
+							text: "Do you want to submit your Update?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+
+								 ShowAjaxLoader(ajax_loader_element, form_element.width(), form_element.height());
+								 $.ajax({
+									url: "/hire/offerupdate/",
+									type: 'post',
+                                     data: formData,
+									success: function (data) {
+										HideAjaxLoader($('#ajax_loader_apply_leave'));
+                                        if (data.record_added) {
+
+                                                 $("#modal_body").html(data.success_msg);
+                                            window.location.reload();
+
+                                        }
+                                        else{
+                                             $("#modal_body").html(data);
+                                        }
+									},
+									error: function(XMLHttpRequest, textStatus, errorThrown) {
+												$("#LeaveForm_errors").html("Oops! Something went wrong on the server. The details are below: "
+													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
+												HideAjaxLoader(ajax_loader_element);
+											},
+
+									cache: false,
+									contentType: false,
+									processData: false
+								 });
+								}
+							   });
+
+						 return false;
+					 });
+    </script>
+
+
+    <script type="text/javascript">
+
+      $("#id_issue_date_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+    $("#id_acceptance_date_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+    $("#id_date_of_joining_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+
+
+    </script>
+{% endif %}

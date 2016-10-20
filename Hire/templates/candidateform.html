@@ -350,7 +350,10 @@ $.ajax(
             title: "Record Avaliable",
             text: "Candidate with same mobile no already given interview",
             type: "error"
-        });
+        },   function(){
+                        $("#id_mobile_number").val('');
+                    }
+        );
 
                 }
             }
@@ -370,7 +373,10 @@ $.ajax(
             title: "Record Avaliable",
             text: "Candidate with same email id already given interview",
             type: "error"
-        });
+        },   function(){
+                        $("#id_email_id").val('');
+                    }
+        );
 
                 }
             }
