@@ -1,5 +1,6 @@
 
 from django.views.generic import View ,TemplateView
+from django.shortcuts import render
 
 from .forms import *
 import logging
@@ -19,3 +20,10 @@ class AssessmentView(TemplateView):
 
     def post(self, request):
         form = BaseAssessmentTemplateForm(request.POST)
+        if form.is_valid():
+            active_tab = form.cleaned_data['active_tab']
+            project = form.cleaned_data['project']
+            chapter =form.cleaned_data['chapter']
+            author =form.cleaned_data['author']
+
+        return render(self.request, self.template_name, {'form': form})
