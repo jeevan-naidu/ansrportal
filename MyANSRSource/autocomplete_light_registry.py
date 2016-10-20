@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project
+from MyANSRSource.models import Book, Project ,Chapter
 from dal import autocomplete
 
 
@@ -36,3 +36,23 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
         )
         return choices
 
+
+class AutocompleteChapters(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+
+        qs = Chapter.objects.all()
+
+        project = self.forwarded.get('project', None)
+        try:
+            project_obj = Project.objects.get(id=int(project))
+        except:
+            project_obj = None
+
+        if project:
+            qs = qs.filter(book=project_obj.book)
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
