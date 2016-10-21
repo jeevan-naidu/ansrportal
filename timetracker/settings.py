@@ -129,6 +129,7 @@ INSTALLED_APPS = [
     'session_security',  # Django session TimeOut / Security
     'fontawesome',
     'xlsxwriter',
+    'formtools',
     'employee',
     'CompanyMaster',
     'MyANSRSource',
@@ -143,8 +144,7 @@ INSTALLED_APPS = [
     'djcelery',
     'Hire',
     'Library',
-    'formtools',
-
+    'QMS',
 ]
 
 MIDDLEWARE_CLASSES = [
