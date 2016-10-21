@@ -758,15 +758,15 @@ table.dataTable.leave-report-table thead .sorting{
     width: 100%;
     bottom: 0px;
     color: #fff;
-    background-color: #39b54a;
+    background-color: #555;
     margin-bottom: 0px;
     font-family: 'Open sans', sans-serif;
     cursor: pointer;
 }
-.oneteam-violet{background-color: #b22beb;}
-.oneteam-indigo{background-color: #4B0082;}
-.oneteam-blue{background-color: #0072ff;}
-.oneteam-green{background-color: #39b54a;}
-.oneteam-yellow{background-color: #d5cd46;}
-.oneteam-orange{background-color: #fb9836;}
-.oneteam-red{background-color: #fb3f3f;}
+#oneteam-name.oneteam-violet{background-color: #b22beb;}
+#oneteam-name.oneteam-indigo{background-color: #4B0082;}
+#oneteam-name.oneteam-blue{background-color: #0072ff;}
+#oneteam-name.oneteam-green{background-color: #39b54a;}
+#oneteam-name.oneteam-yellow{background-color: #d5cd46;}
+#oneteam-name.oneteam-orange{background-color: #fb9836;}
+#oneteam-name.oneteam-red{background-color: #fb3f3f;}
