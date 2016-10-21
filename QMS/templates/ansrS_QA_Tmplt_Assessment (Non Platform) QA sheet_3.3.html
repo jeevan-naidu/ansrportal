@@ -37,13 +37,13 @@
 
                 <div class="row">
                     <div class="col-sm-12 qms-selectors">
-                        <span>Project : {{ form.project.errors }}</span>{{ form.project}}
+                        <div class="col-sm-3"><span>Project : {{ form.project.errors }}</span>{{ form.project}}</div>
 
-                        <span>Chapter: {{ form.chapter.errors }} </span>{{form.chapter}}
+                        <div class="col-sm-3"><span>Chapter : {{ form.chapter.errors }} </span>{{form.chapter}}</div>
 
-                        <span>Author :{{form.author.errors}}</span>{{form.author}}
+                        <div class="col-sm-3"><span>Author : {{form.author.errors}}</span>{{form.author}}</div>
 
-                        <input type="submit" value="submit" name="" class="btn btn-primary btn-sm">
+                        <div class="col-sm-2"><input type="submit" value="submit" name="" class="btn btn-primary btn-sm" style="margin-top: -1px;"></div>
 
                     </div>
                     <input type="hidden" name="active_tab" id="active_tab" value="er1"/>
@@ -79,11 +79,11 @@
                                     <th>S.No.</th>
                                     <th>Review Item</th>
                                     <th>Defect</th>
-                                    <th>Defect Type</th>
-                                    <th>Defect Severity</th>
-                                    <th>ansr Defect Classification</th>
+                                    <th>Type</th>
+                                    <th>Severity</th>
+                                    <th>Classification</th>
                                     <th>Fixed</th>
-                                    <th>By Whom?</th>
+                                    <th>Fixed By</th>
                                     <th>Remarks</th>
                                     <th>Edit</th>
                                 </tr>
@@ -102,7 +102,7 @@
                                     <td>No comments</td>
                                     <td>
                                         <div class="edit-buttons">
-                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook">
+                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook" data-toggle="modal" data-target="#editModal">
                                                 <i class="fa fa-pencil fa-fw "></i>
                                             </a>
                                             <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
@@ -132,7 +132,31 @@
                                             </a>                 
                                         </div>
                                     </td>
-                                </tr>                        
+                                </tr>    
+
+
+                                <tr class="gradeX">
+                                    <td>2</td>
+                                    <td>" "</td>
+                                    <td>" "</td>
+                                    <td>" "</td>
+                                    <td>" "</td>
+                                    <td>" "</td>
+                                    <td>" "</td>
+                                    <td>" "</td>
+                                    <td>" "</td>
+                                    <td>
+                                        <div class="edit-buttons">
+                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook">
+                                                <i class="fa fa-pencil fa-fw "></i>
+                                            </a>
+                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
+                                                <i class="fa fa-times fa-fw "></i>
+                                            </a>                 
+                                        </div>
+                                    </td>
+                                </tr>    
+                                                                                  
 
                             </tbody>
                         </table>
@@ -156,7 +180,7 @@
             <div class="panel-footer clearfix">
                              
                 <div class="btn btn-info btn-sm pull-right">Review Completed</div> 
-                <div class="btn btn-info btn-sm pull-right">Add Item</div>  
+                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#addModal">Add Item</div>  
 
             </div>
         </div>
@@ -165,6 +189,215 @@
     </div>
 
 </div><!-- ./row main -->
+
+
+
+
+
+<!-- Modal Area -->
+
+<!-- Add Modal -->
+
+<div id="addModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+
+        <form class="form-horizontal">    
+              <div class="modal-header vd_bg-blue vd_white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">The Add Modal</h4>
+              </div>
+              <div class="modal-body">
+
+
+
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">S.No.:</label>
+                    <div class="col-sm-6">
+                        <label class="control-label">132</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Review Item:</label>
+                    <div class="col-sm-6">
+                      <select type="text" class="form-control">
+                          <option>Option 1</option>
+                          <option>Option 2</option>
+                          <option>Option 3</option>
+                          <option>Option 4</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Defect:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Type:</label>
+                    <div class="col-sm-6">
+                      <select type="text" class="form-control">
+                          <option>Type 1</option>
+                          <option>Type 2</option>
+                          <option>Type 3</option>
+                          <option>Type 4</option>
+                      </select>
+                    </div>
+                  </div> 
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Severity:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">Autogenerated</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Classification:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">Autogenerated</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Fixed By:</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Remarks:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control"></textarea>
+                    </div>
+                  </div> 
+
+
+
+
+
+
+              </div>
+              <div class="modal-footer vd_bg-white vd_white">
+              <hr>
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div>
+        </form>
+
+
+    </div>
+
+  </div>
+</div>
+
+
+<div id="editModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+
+        <form class="form-horizontal">
+              <div class="modal-header vd_bg-blue vd_white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">The Edit Modal</h4>
+              </div>
+              <div class="modal-body">
+
+
+
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">S.No.:</label>
+                    <div class="col-sm-6">
+                        <label class="control-label">132</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Review Item:</label>
+                    <div class="col-sm-6">
+                      <select type="text" class="form-control">
+                          <option>Option 1</option>
+                          <option>Option 2</option>
+                          <option>Option 3</option>
+                          <option>Option 4</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Defect:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Type:</label>
+                    <div class="col-sm-6">
+                      <select type="text" class="form-control">
+                          <option>Type 1</option>
+                          <option>Type 2</option>
+                          <option>Type 3</option>
+                          <option>Type 4</option>
+                      </select>
+                    </div>
+                  </div> 
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Severity:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">Autogenerated</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Classification:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">Autogenerated</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Fixed By:</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Remarks:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control"></textarea>
+                    </div>
+                  </div> 
+
+
+
+
+
+              </div>
+              <div class="modal-footer vd_bg-white vd_white">
+              <hr>
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div>
+            </div>
+
+        </form>
+
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <script type="text/javascript" src="http://vendroid.venmond.com/plugins/dataTables/jquery.dataTables.min.js"></script>
@@ -198,6 +431,12 @@
 
 .edit-buttons{width: 65px;}
 .gradeX a.vd_btn{margin-right: 0px !important;}
+
+.select2.select2-container{min-width: 0px !important;width: 150px !important;}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f3f1f1;
+}
 
 </style>
 
