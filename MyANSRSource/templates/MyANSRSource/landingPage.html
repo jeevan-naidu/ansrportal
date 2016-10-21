@@ -308,7 +308,12 @@ $(window).load(function(){
     
     <div id="v-modal-body" class="text-center">
         <h4>Your are now part of</h4>
-        <p id="oneteam-name" class="oneteam-green">TEAM GREEN</p>
+        {% if employee_color %}
+            <p id="oneteam-name" class="oneteam-{{ employee_color }}">TEAM {{ employee_color }}</p>
+        {% else %}
+            <p id="oneteam-name" class="oneteam-{{ employee_color }}">Know Your Team?</p>
+        {% endif %}
+
     </div>
 
 </div><!-- ./vibgyor -->
@@ -330,8 +335,8 @@ var teamnameVar;
             }, 1000);
             
         })
-
-        $('#oneteam-name').hover(function(){
+        {% if employee_color %}
+            $('#oneteam-name').hover(function(){
             teamnameVar = $(this).html();
             console.log(teamnameVar);
             $(this).html('I am in');
@@ -339,8 +344,21 @@ var teamnameVar;
 
         $('#oneteam-name').mouseout(function(){
             $(this).html(teamnameVar);
-            $(this).html('TEAM GREEN');
+            $(this).html('TEAM {{ employee_color }}');
         })
+        {% else %}
+            $('#oneteam-name').hover(function(){
+            teamnameVar = $(this).html();
+            console.log(teamnameVar);
+            $(this).html('Wait');
+        })
+
+        $('#oneteam-name').mouseout(function(){
+            $(this).html(teamnameVar);
+            $(this).html('To be announced soon');
+        })
+        {% endif %}
+
 
     })// ./doc ready
 </script>

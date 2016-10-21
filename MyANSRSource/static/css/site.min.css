@@ -762,6 +762,7 @@ table.dataTable.leave-report-table thead .sorting{
     margin-bottom: 0px;
     font-family: 'Open sans', sans-serif;
     cursor: pointer;
+    text-transform: uppercase;
 }
 #oneteam-name.oneteam-violet{background-color: #b22beb;}
 #oneteam-name.oneteam-indigo{background-color: #4B0082;}
