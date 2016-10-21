@@ -327,15 +327,17 @@ var teamnameVar;
     $(document).ready(function(){
 
 
-        $('#oneteam-name').click(function(){
-            $('#v-modal-body').css('background','none')
+        $('#v-modal-body').click(function(){
+            $('#v-modal-body').css('background','none');
+            $('#v-modal-body h4').css('display','none');
             $('#v-modal-body').addClass('reduce');
             setTimeout(function(){
                 $('#vibgyor').fadeOut();
             }, 1000);
             
         })
-        {% if employee_color %}
+        
+/*        {% if employee_color %}
             $('#oneteam-name').hover(function(){
             teamnameVar = $(this).html();
             console.log(teamnameVar);
@@ -357,7 +359,7 @@ var teamnameVar;
             $(this).html(teamnameVar);
             $(this).html('To be announced soon');
         })
-        {% endif %}
+        {% endif %}*/
 
 
     })// ./doc ready
