@@ -282,4 +282,71 @@ $(window).load(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- vibgyor modal testing -->
+
+
+
+
+
+<div id="vibgyor" class="background">
+    
+    <div id="v-modal-body" class="text-center">
+        <h4>Your are now part of</h4>
+        <p id="oneteam-name" class="oneteam-green">TEAM GREEN</p>
+    </div>
+
+</div><!-- ./vibgyor -->
+
+
+
+<script type="text/javascript">
+
+var teamnameVar;
+
+    $(document).ready(function(){
+
+
+        $('#oneteam-name').click(function(){
+            $('#v-modal-body').css('background','none')
+            $('#v-modal-body').addClass('reduce');
+            setTimeout(function(){
+                $('#vibgyor').fadeOut();
+            }, 1000);
+            
+        })
+
+        $('#oneteam-name').hover(function(){
+            teamnameVar = $(this).html();
+            console.log(teamnameVar);
+            $(this).html('I am in');
+        })
+
+        $('#oneteam-name').mouseout(function(){
+            $(this).html(teamnameVar);
+            $(this).html('TEAM GREEN');
+        })
+
+    })// ./doc ready
+</script>
+
+
+
+
+
 {% endblock  %}

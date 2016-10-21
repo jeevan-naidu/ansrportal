@@ -715,3 +715,51 @@ table.dataTable.leave-report-table thead .sorting{
     text-align: center;
 }
 .dataTables_length{display: none;}/* Removing number of entries to display */
+
+
+
+
+
+
+
+
+
+
+/* ONETEAM */
+
+    
+#vibgyor{
+    position: fixed;
+    z-index: 1050;
+    top:0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: rgba(0, 0, 0, 0.5);
+}
+#v-modal-body{
+    height: 400px;
+    width: 400px;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    margin-top: -200px;
+    left: 50%;
+    margin-left: -200px;
+    background: url('../images/oneteam-hexagon.png')no-repeat center center #fff;
+    transition: all 0.3s ease;
+}
+#v-modal-body.reduce{height: 45px}
+#v-modal-body h4{margin-top: 50px;font-size: 14px;}
+#oneteam-name{
+    position: absolute;
+    font-size: 18px;
+    line-height: 45px;
+    width: 100%;
+    bottom: 0px;
+    color: #fff;
+    background-color: #39b54a;
+    margin-bottom: 0px;
+    font-family: 'Open sans', sans-serif;
+    cursor: pointer;
+}
