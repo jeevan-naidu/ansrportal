@@ -749,7 +749,7 @@ table.dataTable.leave-report-table thead .sorting{
     background: url('../images/oneteam-hexagon.png')no-repeat center center #fff;
     transition: all 0.3s ease;
 }
-#v-modal-body.reduce{height: 45px}
+#v-modal-body.reduce{height: 45px;margin-top: -25px}
 #v-modal-body h4{margin-top: 50px;font-size: 14px;}
 #oneteam-name{
     position: absolute;
@@ -763,3 +763,10 @@ table.dataTable.leave-report-table thead .sorting{
     font-family: 'Open sans', sans-serif;
     cursor: pointer;
 }
+.oneteam-violet{background-color: #b22beb;}
+.oneteam-indigo{background-color: #4B0082;}
+.oneteam-blue{background-color: #0072ff;}
+.oneteam-green{background-color: #39b54a;}
+.oneteam-yellow{background-color: #d5cd46;}
+.oneteam-orange{background-color: #fb9836;}
+.oneteam-red{background-color: #fb3f3f;}
