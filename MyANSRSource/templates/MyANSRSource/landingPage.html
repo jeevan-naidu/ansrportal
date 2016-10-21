@@ -282,4 +282,69 @@ $(window).load(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- vibgyor modal testing -->
+
+
+
+
+
+<div id="vibgyor" class="background">
+    
+    <div id="v-modal-body" class="text-center">
+        <h4>Your are now part of</h4>
+        {% if employee_color %}
+            <p id="oneteam-name" class="oneteam-{{ employee_color }}">TEAM {{ employee_color }}</p>
+        {% else %}
+            <p id="oneteam-name" class="oneteam-{{ employee_color }}">Know Your Team?</p>
+        {% endif %}
+
+    </div>
+
+</div><!-- ./vibgyor -->
+
+
+
+<script type="text/javascript">
+
+var teamnameVar;
+
+    $(document).ready(function(){
+
+
+        $('#v-modal-body').click(function(){
+            $('#v-modal-body').css('background','none');
+            $('#v-modal-body h4').css('display','none');
+            $('#v-modal-body').addClass('reduce');
+            setTimeout(function(){
+                $('#vibgyor').fadeOut();
+            }, 1000);
+            
+        })
+        
+
+
+
+    })// ./doc ready
+</script>
+
+
+
+
+
 {% endblock  %}

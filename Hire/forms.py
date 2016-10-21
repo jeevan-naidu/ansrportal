@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from models import Profile, Count, GENDER_CHOICES, REFERENCE_SOURCE, Position, MRF, Process,INTERVIEW_PROCESS
+from models import Profile, Count, GENDER_CHOICES, REFERENCE_SOURCE, Position, MRF, Process,INTERVIEW_PROCESS, Offer
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal import autocomplete
 
@@ -134,10 +134,10 @@ class ProcessForm(forms.ModelForm):
         queryset=User.objects.all(),
         required=True,
         widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
-            'data-placeholder': 'Type Interviewer Name ...',
+            'data-placeholder': 'Type interviewer Name ...',
         }, ), )
 
-    interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
+    # interview_by.widget.attrs = {'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Manager Name'}
     interview_on = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
     interview_on.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
     interview_status = forms.ChoiceField(choices=RESULT_STATUS)
@@ -148,3 +148,19 @@ class ProcessForm(forms.ModelForm):
     class Meta:
         model = Process
         fields = ['profile_id', 'interview_by', 'interview_on', 'interview_status', 'remark']
+
+
+class OfferForm(forms.ModelForm):
+    profile_id = forms.CharField(widget=forms.HiddenInput())
+    issue_date = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
+    issue_date.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
+    acceptance_date = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
+    acceptance_date.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
+    date_of_joining = forms.DateField(widget=DateTimePicker(options=dateTimeOption), )
+    date_of_joining.widget.attrs = {'class': 'input-sm form-control filter_class', 'required': 'true'}
+
+    class Meta:
+        model = Offer
+        fields = ['profile_id', 'issue_date', 'acceptance_date', 'date_of_joining']
+
+

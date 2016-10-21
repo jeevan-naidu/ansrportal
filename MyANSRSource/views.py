@@ -1360,6 +1360,11 @@ def Dashboard(request):
     myReportee = employee.models.Employee.objects.filter(
         manager=request.user.employee)
     isManager = 0
+    employee_color = Employee.objects.get(user_id=request.user.id)
+    if employee_color.color:
+        employee_color = employee_color.color
+    else:
+        employee_color = ''
     if myReportee:
         isManager = 1
     data = {
@@ -1389,6 +1394,7 @@ def Dashboard(request):
         'isManager': isManager,
         'swipe_display': swipe_display,
         'birthdays_list': birthdays_list,
+        'employee_color':employee_color,
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():

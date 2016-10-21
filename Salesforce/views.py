@@ -10,7 +10,8 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
 def CheckAccessPermissions(request):
-    if not request.user.groups.filter(name=settings.SALESFORCE_ADMIN_GROUP_NAME).exists():
+    if not not request.user.groups.filter(name=settings.SALESFORCE_ADMIN_GROUP_NAME).exists() or\
+    not request.user.groups.filter(name=settings.MANAGER).exists():
             raise PermissionDenied("Sorry, you don't have permission to access this feature")
 
 class UploadSalesforceDataView(View):

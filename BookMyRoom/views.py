@@ -139,7 +139,7 @@ class BookMeetingRoomView(View):
 
                 else:
                     # override condition by admin
-                    MeetingRoomBooking.objects.filter(pk=int(element)).update(booked_by=request.user)
+                    MeetingRoomBooking.objects.filter(pk=int(element)).update(booked_by=request.user,remark='')
                 context_data['record_added'] = True
                 context_data['success_msg'] = "Booked"
         return JsonResponse(context_data)
