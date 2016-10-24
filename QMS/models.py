@@ -75,13 +75,14 @@ class ReviewerGroup(models.Model):
 class DefectSeverityLevel(TimeStampAbstractModel):
 
     project_template = models.ForeignKey(ProjectTemplate)
+    severity_type = models.ForeignKey(DefectTypeMaster)
     severity_level = models.ForeignKey(SeverityLevelMaster)
     defect_classification = models.ForeignKey(DefectClassificationMaster)
     reviewer_group = models.ForeignKey(ReviewerGroup)
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % (str(self.project_template) + ": " +
+        return '%s' % (str(self.severity_type) + ": " +
                        str(self.severity_level) + ": " + str(self.defect_classification))
 
 
