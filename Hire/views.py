@@ -1,14 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.views.generic import View
 from django.contrib.auth.models import User
-from models import MRF, Count, Position, Profile, Process, RESULT_STATUS, REFERENCE_SOURCE
-from forms import ProfileForm, MRFForm, NewMRFForm, ProcessForm
+from models import MRF, Count, Position, Profile, Process, RESULT_STATUS, REFERENCE_SOURCE, Offer
+from forms import ProfileForm, MRFForm, NewMRFForm, ProcessForm, OfferForm
 from datetime import date, timedelta
 from django.conf import settings
 import json
 from GrievanceAdmin.views import paginator_handler
+from django.db.models import Q
+from tasks import EmailHireSendTask
 
 def recruitment_form(request):
     return render(request, 'candidateform.html',{})
@@ -46,13 +48,13 @@ class Hire(View):
                 interview_on = form.cleaned_data['interview_on']
                 interview_status = form.cleaned_data['interview_status']
                 remark = form.cleaned_data['remark']
-                mobilenocheck = uniquevalidation(mobile_number)
+                duplicatecheck = uniquevalidation(mobile_number, email_id)
                 if interview_status == 'rejected':
                     candidate_status = 'rejected'
                 else:
                     candidate_status = 'in_progress'
-                if mobilenocheck:
-                    context['error'] = "Candidate with same phone number is already avaliable"
+                if duplicatecheck:
+                    context['error'] = "Candidate with same credential had aleredy applied"
                     context["form"] = form
                     return render(request, "candidateform.html", context)
                 if referred_by:
@@ -244,6 +246,10 @@ class ProcessUpdate(View):
             process.save()
             profile.candidate_status=interview_status
             profile.save()
+            if interview_status == 'selected':
+                EmailHireSendTask.delay(profile.candidate_name,
+                                    profile.email_id,
+                                    profile.requisition_number.requisition_number.position.designation)
             process.interview_by.add(interview_by)
             context['record_added'] = True
             context['success_msg'] = "Updated"
@@ -252,12 +258,81 @@ class ProcessUpdate(View):
         context['form'] = form
         return render(request, "processform.html", context)
 
+def contactcheck(request):
+    # import ipdb
+    # ipdb.set_trace()
+    context = {}
+    mobileno = request.GET.get('mobileno')
+    email = request.GET.get('email')
+    valid = uniquevalidation(mobileno, email)
+    if valid:
+        process = Process.objects.filter(profile=valid.id)
+        context['valid'] = True
+        context['name'] = valid.candidate_name
+        context['interview_on'] = process[0].interview_on
+        context['mrf_no'] = valid.requisition_number.requisition_number.requisition_number
+        context['date_of_birth'] = valid.date_of_birth
+        context['recruiter'] = process[0].interview_by.all()[0].first_name\
+                               + " " + process[0].interview_by.all()[0].last_name
 
-def uniquevalidation(mobileno):
-    candidate = Profile.objects.filter(mobile_number=mobileno)
+    else:
+        context['valid'] = valid
+    return JsonResponse(context)
+
+
+
+def uniquevalidation(mobileno, email):
+    candidate = Profile.objects.filter(Q(mobile_number=mobileno) |
+                                       Q(email_id=email))
     today = date.today()
     alloweddate = today - timedelta(days=180)
     for val in candidate:
         if val.created_on > alloweddate:
-            return True
+            return val
     return False
+
+class OfferDetail(View):
+
+    def get(self, request):
+        context = {}
+        profile = request.GET.get('profile')
+        offerdata = Offer.objects.filter(profile=profile)
+        if offerdata:
+            form = OfferForm(initial={'profile_id': profile,
+                                      'issue_date': offerdata[0].issue_date,
+                                      'acceptance_date': offerdata[0].acceptance_date,
+                                      'date_of_joining': offerdata[0].date_of_joining},
+                           )
+        else:
+            form = OfferForm(initial={'profile_id': profile})
+        context['form'] = form
+        return render(request, "offerform.html", context)
+
+    def post(self, request):
+        context = {}
+        form = OfferForm(request.POST)
+        if form.is_valid():
+            issue_date = form.cleaned_data['issue_date']
+            acceptance_date = form.cleaned_data['acceptance_date']
+            date_of_joining = form.cleaned_data['date_of_joining']
+            profile_id = form.cleaned_data['profile_id']
+            profile = Profile.objects.get(id=profile_id)
+            offerdata = Offer.objects.filter(profile=profile)
+            if offerdata:
+                offerdata[0].issue_date = issue_date
+                offerdata[0].acceptance_date = acceptance_date
+                offerdata[0].date_of_joining = date_of_joining
+                offerdata[0].save()
+            else:
+                Offer(issue_date=issue_date,
+                      acceptance_date=acceptance_date,
+                      date_of_joining=date_of_joining,
+                      profile=profile).save()
+
+
+            context['record_added'] = True
+            context['success_msg'] = "Updated"
+            return JsonResponse(context)
+
+        context['form'] = form
+        return render(request, "offerform.html", context)

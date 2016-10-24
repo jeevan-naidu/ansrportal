@@ -8,7 +8,12 @@
 {% block content  %}
 
 <link href="/static/css/leave_style.css" rel="stylesheet" type="text/css">
-
+<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
 
 <style type="text/css">
 .yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}
@@ -43,6 +48,37 @@
 
 
     <!--  End update interview pop-->
+
+    <!--  Start update interview popup-->
+
+            <div class="modal fade" id="modal-container-offer" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+              								Please Enter Offer Detail
+              							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body_offer">
+                          loading...............
+                        </div>
+                        <div class="modal-footer vd_bg-white">
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+    <!--  End update interview pop-->
+
         <div class="panel"><!-- row -->
             <div class="panel-body">
 
@@ -92,7 +128,16 @@
                             None</a></td>
                    {% endif %}
            {% endif %}
-                  <td>{%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.profile.candidate_status %} {{v}} {% endif %}{%endfor%}</td>
+                  <td>
+                  {%if interviewlist.0.profile.candidate_status == "selected" %}
+                      <a id="modal-hire-{{ interviewlist.0.profile.id }}" href="#modal-container-offer" data-toggle="modal" title="Update"  bgcolor="#FF0000">
+
+                      {%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.profile.candidate_status %} {{v}} {% endif %}{%endfor%}
+                      </a>
+                  {% else %}
+                      {%for k,v in  RESULT_STATUS %} {%if k == interviewlist.0.profile.candidate_status %} {{v}} {% endif %}{%endfor%}
+                  {% endif %}
+                  </td>
                          {% if request.user|has_group:'HireAdmin' %}
                              <td>{{ interviewlist.0.profile.requisition_number.recruiter.first_name }}
                                  {{ interviewlist.0.profile.requisition_number.recruiter.last_name }}</td>
@@ -142,6 +187,34 @@
                 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
                 HideAjaxLoader(ajax_loader_element);
+              },
+            }
+          );
+          });
+
+        $("#modal-container-offer").on('shown.bs.modal', function(e){
+            button=e.relatedTarget;
+            prof=button.id.substring(11);
+  $.ajax(
+        {
+            type : "GET",
+            url : '/hire/offerupdate/',
+            data :{"profile":prof} ,
+            success : function(data)
+            {
+{#                console.log(data);#}
+                $("#modal_body_offer").html(data);
+                $(function () {
+
+
+                });
+
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body_offer").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
               },
             }
           );

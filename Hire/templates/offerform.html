@@ -7,10 +7,10 @@
 {% else %}
 
 <style type="text/css">
-  
+
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
     padding: 5px 8px;
-}  
+}
 
 </style>
 
@@ -22,11 +22,11 @@
 
                           <div class="form-group">
                               {{ form.interview_on.errors }}
-                        <label class="col-sm-3 control-label">Interview Date</label>
+                        <label class="col-sm-3 control-label">Offer Issue Date</label>
                         <div class="col-sm-7 controls">
                           <div class="input-group width-50">
 
-                              {{ form.interview_on }}
+                              {{ form.issue_date }}
                           </div>
                         </div>
                       </div>
@@ -38,41 +38,33 @@
 
                             <div class="form-group">
                               {{ form.interview_status.errors }}
-                        <label class="col-sm-3 control-label">Interview round face to face</label>
+                        <label class="col-sm-3 control-label">Offer Acceptance Date</label>
                         <div class="col-sm-7 controls">
-                            {{ form.interview_status }}
-                          </select>
+                            <div class="input-group width-50">
+                            {{ form.acceptance_date }}
+                          </div>
                         </div>
                       </div>
 
                            <div class="form-group">
                                {{ form.interview_by.errors }}
-                        <label class="col-sm-3 control-label">Interviewed By</label>
+                        <label class="col-sm-3 control-label">Date of joining</label>
                         <div class="col-sm-7 controls">
-{#                          <input type="text"  class="width-50 input-sm">#}
-                            {{ form.interview_by }}
-                          <span class="help-inline">Enter Interviewer name</span> </div>
+                            <div class="input-group width-50">
+                            {{ form.date_of_joining }}
+                                </div>
+
                       </div>
 
 
 
 
-
-                      <div class="form-group">
-                          {{ form.remark.errors }}
-                        <label class="col-sm-3 control-label">Remarks</label>
-                        <div class="col-sm-7 controls">
-{#                          <textarea rows="3" class="width-50"></textarea>#}
-                            {{ form.remark }}
-                        </div>
-                      </div>
-
-
+<br/>
 
                       <div class="form-group form-actions">
                         <div class="col-sm-3"> </div>
                         <div class="col-sm-7">
-                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Update</button>
+                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Submit</button>
                         </div>
                       </div>
 
@@ -119,20 +111,20 @@
 
 								 ShowAjaxLoader(ajax_loader_element, form_element.width(), form_element.height());
 								 $.ajax({
-									url: "/hire/processupdate/",
+									url: "/hire/offerupdate/",
 									type: 'post',
                                      data: formData,
 									success: function (data) {
 										HideAjaxLoader($('#ajax_loader_apply_leave'));
                                         if (data.record_added) {
-                                            swal("Done!", data.success_msg, "success");
-                                           $("#modal_body").html('');
+
+                                                 $("#modal_body").html(data.success_msg);
                                             window.location.reload();
+
                                         }
                                         else{
-                                            $("#modal_body").html(data);
+                                             $("#modal_body").html(data);
                                         }
-
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
 												$("#LeaveForm_errors").html("Oops! Something went wrong on the server. The details are below: "
@@ -153,8 +145,10 @@
 
 
     <script type="text/javascript">
-      
-      $("#id_interview_on_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+
+      $("#id_issue_date_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+    $("#id_acceptance_date_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+    $("#id_date_of_joining_pickers").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
 
 
     </script>
