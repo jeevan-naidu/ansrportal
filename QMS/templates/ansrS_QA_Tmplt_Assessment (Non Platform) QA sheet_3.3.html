@@ -5,7 +5,7 @@
 {% block content  %}
 
 
-<link href="http://vendroid.venmond.com/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">  
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">  
 <script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
 <script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
 <script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
@@ -73,7 +73,7 @@
 
 
 
-                        <table class="table  table-striped" id="data-tables">
+                        <table class="table  table-striped qa-table" id="data-tables">
                             <thead>
                                 <tr>
                                     <th>S.No.</th>
@@ -92,14 +92,42 @@
 
                                 <tr class="gradeX">
                                     <td>1</td>
-                                    <td>Item to be reviewed</td>
-                                    <td>No punctuation</td>
-                                    <td>Carelessness</td>
-                                    <td>Damn serious</td>
-                                    <td>typical</td>
-                                    <td>No</td>
-                                    <td>Not fixed dude!</td>
-                                    <td>No comments</td>
+                                    <td class="qa-editable">
+                                      <p class="">Item to be reviewed</p>
+                                      <select placeholder="Item to be reviewed" class="input-sm hidden">
+                                        <option>Item to be reviewed</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                        <option>Option 4</option>
+                                      </select>
+                                    </td>
+                                    <td class="qa-editable">
+                                      <p>No punctuation</p>
+                                      <input type="text" placeholder="No punctuations" class="input-sm hidden">                                      
+                                    </td>
+                                    <td class="qa-editable">
+                                      <p>Carelessness</p>
+                                      <select placeholder="Select Option" class="input-sm hidden">
+                                        <option>Carelessness</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                        <option>Option 4</option>
+                                      </select>
+                                    </td>
+                                    <td class=""><p>Damn serious</p></td>
+                                    <td class=""><p>typical</p></td>
+                                    <td class="qa-editable">
+                                      <p>No</p>
+                                      <input type="text" placeholder="No" class="input-sm hidden"> 
+                                    </td>
+                                    <td class="qa-editable">
+                                    <p>Not fixed dude!</p>
+                                    <input type="text" placeholder="Not fixed dude!" class="input-sm hidden">
+                                    </td>
+                                    <td class="qa-editable">
+                                      <p>No comments</p>
+                                      <input type="text" placeholder="No Comments" class="input-sm hidden">
+                                    </td>
                                     <td>
                                         <div class="edit-buttons">
                                             <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook" data-toggle="modal" data-target="#editModal">
@@ -400,7 +428,7 @@
 
 
 
-<script type="text/javascript" src="http://vendroid.venmond.com/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 
 
 <script type="text/javascript">
@@ -437,8 +465,25 @@
 .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #f3f1f1;
 }
+.qa-editable{cursor: pointer;}
+.qa-table td p{margin-bottom: 0px; line-height: 30px;}
 
 </style>
+
+<script type="text/javascript">
+// UI Scripts
+
+
+$(document).ready(function(){
+
+  $('td.qa-editable').click(function(){
+    $(this).find('.hidden').removeClass('hidden');
+    $(this).find('p').addClass('hidden');
+  })
+
+})// ./ doc.ready 
+
+</script>
 
 
 
