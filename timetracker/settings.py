@@ -146,6 +146,7 @@ INSTALLED_APPS = [
     'Library',
     'QMS',
     'admin_reorder',
+    'smart_selects',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -391,7 +392,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # refer this link to configure https://pypi.python.org/pypi/django-modeladmin-reorder/
 ADMIN_REORDER = (
-    {'app': 'QMS', 'models': ('QMS.TemplateMaster', 'QMS.ProjectTemplate','v.DefectTypeMaster',
+    {'app': 'QMS', 'models': ('QMS.TemplateMaster', 'QMS.ProjectTemplate','QMS.DefectTypeMaster',
                               'QMS.SeverityLevelMaster','QMS.DefectClassificationMaster', 'QMS.ReviewerMaster',
                               'QMS.ReviewerGroup', 'QMS.DefectSeverityLevel',
                               'QMS.ProjectChapterReviewerRelationship', 'QMS.ReviewerReport')},

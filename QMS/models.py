@@ -48,9 +48,19 @@ class DefectTypeMaster(NameMasterAbstractModel, TimeStampAbstractModel):
     pass
 
 
+def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % self.name
+
+
 class SeverityLevelMaster(NameMasterAbstractModel, TimeStampAbstractModel):
 
     pass
+
+
+def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % self.name
 
 
 class DefectClassificationMaster(NameMasterAbstractModel, TimeStampAbstractModel):
@@ -58,9 +68,19 @@ class DefectClassificationMaster(NameMasterAbstractModel, TimeStampAbstractModel
     pass
 
 
+def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % self.name
+
+
 class ReviewerMaster(NameMasterAbstractModel):
 
     pass
+
+
+def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % self.name
 
 
 class ReviewerGroup(models.Model):
@@ -74,31 +94,34 @@ class ReviewerGroup(models.Model):
 
 class DefectSeverityLevel(TimeStampAbstractModel):
 
-    project_template = models.ForeignKey(ProjectTemplate)
+    template = models.ForeignKey(TemplateMaster)
     severity_type = models.ForeignKey(DefectTypeMaster)
     severity_level = models.ForeignKey(SeverityLevelMaster)
     defect_classification = models.ForeignKey(DefectClassificationMaster)
     reviewer_group = models.ForeignKey(ReviewerGroup)
 
-    def __unicode__(self):
-        """ return unicode strings """
-        return '%s' % (str(self.severity_type) + ": " +
-                       str(self.severity_level) + ": " + str(self.defect_classification))
+    # def __unicode__(self):
+    #     """ return unicode strings """
+    #     return '%s' % ( str(self.severity_type)+": " + str(self.severity_level) + ": "
+    #
+    #                    + str(self.defect_classification))
 
 
 class ProjectChapterReviewerRelationship(TimeStampAbstractModel):
     project = models.ForeignKey(Project)
     chapter = models.ForeignKey(Chapter, blank=False,
                                 verbose_name="Chapter/Subtitle", null=True)
+    questions = models.IntegerField(default=0)
     author = models.ForeignKey(User, related_name='project_chapter_reviewer_relationship_author')
     review_group = models.ForeignKey(ReviewerGroup)
     reviewed_by = models.ForeignKey(User, related_name='project_chapter_reviewer_relationship_reviewed_by')
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % (str(self.project) + ": " +
-                       str(self.chapter) +
-                       ": " + str(self.author) + ": " + str(self.review_group) + ": " + str(self.reviewed_by))
+        return '%s' % (str(self.project) +
+                       " : " + str(self.review_group) +
+                       " : " + str(self.chapter)
+                       )
 
 
 class ReviewerReport(TimeStampAbstractModel):

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Book, Project ,Chapter
+from QMS.models import ProjectChapterReviewerRelationship
 from dal import autocomplete
 
 
@@ -54,5 +55,28 @@ class AutocompleteChapters(autocomplete.Select2QuerySetView):
 
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
+
+class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+
+        qs = User.objects.all()
+
+        project = self.forwarded.get('project', None)
+        chapter = self.forwarded.get('chapter', None)
+        try:
+            user = ProjectChapterReviewerRelationship.objects.filter\
+                (project=project, chapter=chapter).values_list('author', flat=True)
+            qs = qs.filter(pk=user)
+
+        except Exception,e:
+            # print str(e)
+            qs = None
+        #
+        # if self.q:
+        #     qs = qs.filter(pk=user)
 
         return qs

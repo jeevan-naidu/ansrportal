@@ -3,6 +3,8 @@ from .models import *
 # Register your models here.
 
 
+
+
 admin.site.register(TemplateMaster)
 admin.site.register(ProjectTemplate)
 admin.site.register(DefectTypeMaster)

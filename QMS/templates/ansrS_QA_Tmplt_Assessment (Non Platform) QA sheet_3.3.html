@@ -29,6 +29,16 @@
             <div class="panel-heading vd_bg-grey">
 
                 <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
+                    {% if messages %}
+            {% for message in messages %}
+                {% if message.tags %}
+                    <div class= "alert alert-{{ message.tags }}">
+                        <a class="panel-close close" data-dismiss="alert">x</a>
+                        <p >{{ message }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
             </div>
             <div class="panel-body table-responsive">
@@ -47,6 +57,7 @@
 
                     </div>
                     <input type="hidden" name="active_tab" id="active_tab" value="er1"/>
+                    <input type="hidden" name="template_name" id="template_id" value="{{template_id}}"/>
                 </div><!-- ./qms-selectors row -->
 
                 <div class="qms-summary">
@@ -89,104 +100,49 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <form>
+                                    {{ review_formset.management_form }}
+                                    {% for form in review_formset %}
+                                    <tr class="gradeX">
+                                        <td>{{forloop.counter}}</td>
+                                        <td class="qa-editable">
+                                          <p class="">{{form.review_item}}</p>
+                                            <input type="{{form.review_item}}" placeholder="{{form.review_item}}"  value="{{form.review_item}}"    class="input-sm hidden">
+                                                              </td>
+                                        <td class="qa-editable">
+                                          <p>{{form.defect}}</p>
+                                          <input type="text" placeholder="{{form.defect}}" value="{{form.defect}}"  class="input-sm hidden">
+                                        </td>
+                                        <td class="qa-editable"> {{form.severity_type}}
 
-                                <tr class="gradeX">
-                                    <td>1</td>
-                                    <td class="qa-editable">
-                                      <p class="">Item to be reviewed</p>
-                                      <select placeholder="Item to be reviewed" class="input-sm hidden">
-                                        <option>Item to be reviewed</option>
-                                        <option>Option 2</option>
-                                        <option>Option 3</option>
-                                        <option>Option 4</option>
-                                      </select>
-                                    </td>
-                                    <td class="qa-editable">
-                                      <p>No punctuation</p>
-                                      <input type="text" placeholder="No punctuations" class="input-sm hidden">                                      
-                                    </td>
-                                    <td class="qa-editable">
-                                      <p>Carelessness</p>
-                                      <select placeholder="Select Option" class="input-sm hidden">
-                                        <option>Carelessness</option>
-                                        <option>Option 2</option>
-                                        <option>Option 3</option>
-                                        <option>Option 4</option>
-                                      </select>
-                                    </td>
-                                    <td class=""><p>Damn serious</p></td>
-                                    <td class=""><p>typical</p></td>
-                                    <td class="qa-editable">
-                                      <p>No</p>
-                                      <input type="text" placeholder="No" class="input-sm hidden"> 
-                                    </td>
-                                    <td class="qa-editable">
-                                    <p>Not fixed dude!</p>
-                                    <input type="text" placeholder="Not fixed dude!" class="input-sm hidden">
-                                    </td>
-                                    <td class="qa-editable">
-                                      <p>No comments</p>
-                                      <input type="text" placeholder="No Comments" class="input-sm hidden">
-                                    </td>
-                                    <td>
-                                        <div class="edit-buttons">
-                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook" data-toggle="modal" data-target="#editModal">
-                                                <i class="fa fa-pencil fa-fw "></i>
-                                            </a>
-                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
-                                                <i class="fa fa-times fa-fw "></i>
-                                            </a>                 
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td class="" id="level_"><p>{{form.severity_level}}</p></td>
+                                        <td class="" id="classification_"><p>{{form.defect_classification}}</p></td>
+                                        <td class="qa-editable">
+                                          <p>{{form.is_fixed|yesno:"Yes,No"}}</p>
+                                          <input type="text" placeholder="{{form.is_fixed|yesno:'Yes,No'}}" class="input-sm hidden">
+                                        </td>
+                                        <td class="">
+                                        <p>{{form.fixed_by.first_name}} {{form.fixed_by.last_name}}</p>
+                                        </td>
+                                        <td class="qa-editable">
+                                          <p>{{form.remarks}}</p>
+                                          <input type="text" placeholder="{{form.remarks}}"  value="{{form.remarks}}" class="input-sm hidden">
+                                        </td>
+                                        <td>
+                                            <div class="edit-buttons">
 
-                                <tr class="gradeX">
-                                    <td>2</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>
-                                        <div class="edit-buttons">
-                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook">
-                                                <i class="fa fa-pencil fa-fw "></i>
-                                            </a>
-                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
-                                                <i class="fa fa-times fa-fw "></i>
-                                            </a>                 
-                                        </div>
-                                    </td>
-                                </tr>    
-
-
-                                <tr class="gradeX">
-                                    <td>2</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>" "</td>
-                                    <td>
-                                        <div class="edit-buttons">
-                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook">
-                                                <i class="fa fa-pencil fa-fw "></i>
-                                            </a>
-                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
-                                                <i class="fa fa-times fa-fw "></i>
-                                            </a>                 
-                                        </div>
-                                    </td>
-                                </tr>    
-                                                                                  
-
+                                                <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
+                                                    <i class="fa fa-times fa-fw "></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </form>
                             </tbody>
+
+
                         </table>
 
 
@@ -321,98 +277,7 @@
 </div>
 
 
-<div id="editModal" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-lg">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-
-
-        <form class="form-horizontal">
-              <div class="modal-header vd_bg-blue vd_white">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">The Edit Modal</h4>
-              </div>
-              <div class="modal-body">
-
-
-
-
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">S.No.:</label>
-                    <div class="col-sm-6">
-                        <label class="control-label">132</label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Review Item:</label>
-                    <div class="col-sm-6">
-                      <select type="text" class="form-control">
-                          <option>Option 1</option>
-                          <option>Option 2</option>
-                          <option>Option 3</option>
-                          <option>Option 4</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Defect:</label>
-                    <div class="col-sm-6">
-                      <textarea type="text" class="form-control"></textarea>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Type:</label>
-                    <div class="col-sm-6">
-                      <select type="text" class="form-control">
-                          <option>Type 1</option>
-                          <option>Type 2</option>
-                          <option>Type 3</option>
-                          <option>Type 4</option>
-                      </select>
-                    </div>
-                  </div> 
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Severity:</label>
-                    <div class="col-sm-6">
-                      <label class="control-label">Autogenerated</label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Classification:</label>
-                    <div class="col-sm-6">
-                      <label class="control-label">Autogenerated</label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Fixed By:</label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Remarks:</label>
-                    <div class="col-sm-6">
-                      <textarea type="text" class="form-control"></textarea>
-                    </div>
-                  </div> 
-
-
-
-
-
-              </div>
-              <div class="modal-footer vd_bg-white vd_white">
-              <hr>
-                <button type="submit" class="btn btn-default">Submit</button>
-              </div>
-            </div>
-
-        </form>
-
-
-  </div>
-</div>
 
 
 
@@ -440,7 +305,11 @@
             $('#active_tab').val(this.id);
         });
 
-
+        $('.edit_button').click(function(){ console.log("edit clicked");
+            var edit_record = $(this).siblings(".edit_record").html();
+            console.log(edit_record);
+            $(".edit_body").html(edit_record);
+        });
         $('#data-tables').dataTable({
           searching: false,
           scrollCollapse: true
@@ -448,6 +317,21 @@
 
         });// End of document ready
 
+$('.defect').change(function(){
+    var obj_id = this.id.split('_');
+    $.ajax({
+            url: 'fetch_severity/',
+            type: 'GET',
+            dataType :'json',
+            data: {"template_id": $('#template_id').val() , "severity_type" :  $('#severityType_'+obj_id[1]).val()},
+            success: function (data) {
+                $('#level_'+obj_id[1]).text(data.severity_level);
+                $('#classification_'+obj_id[1]).text(data.defect_classification);
+
+            },
+
+    });
+});
 </script>
 
 
