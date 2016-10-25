@@ -56,9 +56,9 @@ def review_report_base(template_id, project):
         severity_type = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=DefectTypeMaster.objects.all(), )
         severity_level = forms.ModelChoiceField(widget=forms.Select(),
-                                               queryset=SeverityLevelMaster.objects.all(), )
+                                               queryset=SeverityLevelMaster.objects.none(), )
         defect_classification = forms.ModelChoiceField(widget=forms.Select(),
-                                               queryset=DefectClassificationMaster.objects.all(), )
+                                               queryset=DefectClassificationMaster.objects.none(), )
 
         class Meta:
             model = ProjectChapterReviewerRelationship
@@ -66,7 +66,7 @@ def review_report_base(template_id, project):
 
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
-            self.fields['severity_type'].attrs['class'] = ''
+            self.fields['severity_type'].widget.attrs['class'] = 'defect'
             # defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_id)
             # print defect_type_master_obj
             # self.fields['severity_type'].queryset = defect_type_master_obj

@@ -318,15 +318,29 @@
         });// End of document ready
 
 $('.defect').change(function(){
-    var obj_id = this.id.split('_');
+    var obj_id = this.id.split('-');
     $.ajax({
             url: 'fetch_severity/',
             type: 'GET',
             dataType :'json',
-            data: {"template_id": $('#template_id').val() , "severity_type" :  $('#severityType_'+obj_id[1]).val()},
+            data: {"template_id": $('#template_id').val() , "severity_type" :  $(this).val() },
             success: function (data) {
-                $('#level_'+obj_id[1]).text(data.severity_level);
-                $('#classification_'+obj_id[1]).text(data.defect_classification);
+                var output = [];
+            console.log(data);
+            $.each(data.severity_level, function(key, value)
+            {
+              output.push('<option value="'+ key +'">'+ value +'</option>');
+            });
+
+             $('#'+obj_id[0]+'-'+severity_level).html(output.join(''));
+
+             $.each(data.defect_classification, function(key, value)
+            {
+              output.push('<option value="'+ key +'">'+ value +'</option>');
+            });
+
+             $('#'+obj_id[0]+'-'+defect_classification).html(output.join(''));
+
 
             },
 
