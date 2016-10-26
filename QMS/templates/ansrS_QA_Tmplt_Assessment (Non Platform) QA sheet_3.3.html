@@ -96,7 +96,7 @@
                                     <th>Fixed</th>
                                     <th>Fixed By</th>
                                     <th>Remarks</th>
-                                    <th>Edit</th>
+                                    <th>Delete</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -131,10 +131,10 @@
                                         </td>
                                         <td>
                                             <div class="edit-buttons">
-
-                                                <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
-                                                    <i class="fa fa-times fa-fw "></i>
-                                                </a>
+                                            {{form.DELETE}}
+                                                <!--<a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">-->
+                                                    <!--<i class="fa fa-times fa-fw "></i>-->
+                                                <!--</a>-->
                                             </div>
                                         </td>
                                     </tr>
@@ -319,6 +319,7 @@
 
 $('.defect').change(function(){
     var obj_id = this.id.split('-');
+    console.log(obj_id);
     $.ajax({
             url: 'fetch_severity/',
             type: 'GET',
@@ -326,20 +327,33 @@ $('.defect').change(function(){
             data: {"template_id": $('#template_id').val() , "severity_type" :  $(this).val() },
             success: function (data) {
                 var output = [];
-            console.log(data);
-            $.each(data.severity_level, function(key, value)
-            {
-              output.push('<option value="'+ key +'">'+ value +'</option>');
-            });
 
-             $('#'+obj_id[0]+'-'+severity_level).html(output.join(''));
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
 
-             $.each(data.defect_classification, function(key, value)
-            {
-              output.push('<option value="'+ key +'">'+ value +'</option>');
-            });
+                    if(key == 'severity_level'){
 
-             $('#'+obj_id[0]+'-'+defect_classification).html(output.join(''));
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
+                            value: data[key],
+                            text: data[key],
+                            selected :'selected',
+                        }));
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('disabled',true);
+                    }
+
+                    if(key == 'defect_classification'){
+
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                            value: data[key],
+                            text: data[key],
+                            selected :'selected',
+                        }));
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('disabled',true);
+                    }
+
+                }
+            }
+
 
 
             },

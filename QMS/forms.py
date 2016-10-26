@@ -54,7 +54,7 @@ class BaseAssessmentTemplateForm(forms.Form):
 def review_report_base(template_id, project):
     class ReviewReportForm(forms.Form):
         severity_type = forms.ModelChoiceField(widget=forms.Select(),
-                                               queryset=DefectTypeMaster.objects.all(), )
+                                               queryset=DefectTypeMaster.objects.none(), )
         severity_level = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=SeverityLevelMaster.objects.none(), )
         defect_classification = forms.ModelChoiceField(widget=forms.Select(),
@@ -67,9 +67,12 @@ def review_report_base(template_id, project):
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
-            # defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_id)
+            defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_id)
+            self.fields['severity_type'].queryset = DefectTypeMaster.objects.filter(id__in=defect_type_master_obj)
+            self.fields['severity_level'].queryset = SeverityLevelMaster.objects.filter(id__in=defect_type_master_obj)
+            self.fields['severity_level'].queryset = DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)
             # print defect_type_master_obj
-            # self.fields['severity_type'].queryset = defect_type_master_obj
+            # self.fields['severity_type'].queryset = DefectTypeMaster.filter(id__in=[defect_type_master_obj])
             # severity_type_id = self.fields['severity_type'].initial\
             #              or self.initial.get('severity_type') \
             #              or self.fields['severity_type'].widget.value_from_datadict\
