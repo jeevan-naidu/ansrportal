@@ -7,194 +7,129 @@
 {% block content  %}
 
 
-<link href="http://vendroid.venmond.com/plugins/morris/morris.css" rel="stylesheet" type="text/css">
-<link href="http://vendroid.venmond.com/plugins/dataTables/css/jquery.dataTables.css" rel="stylesheet" type="text/css">
-<link href="http://vendroid.venmond.com/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">  
+<link href="/static/plugins/morris/morris.css" rel="stylesheet" type="text/css">
+<!-- <link href="/static/plugins/dataTables/css/jquery.dataTables.css" rel="stylesheet" type="text/css"> -->
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
 <div class="row">
 
-              <div class="col-md-4 mgbt-xs-20 mgbt-md-0">
-                <div class="panel widget  light-widget"> 
-                  <div class="panel-body-list">
-                    <h4 class="mgtp--5 pd-25"> <span class="font-semibold">Leave</span> Report </h4>
-                    <div id="bar-placeholder" class="bar-chart" style="height:318px;"></div>
-                  </div>
-                </div>
-                <!-- col-md-6 --> 
-              </div>
 
 
 
 
 
 
-
-
-
-
-              <div class="col-sm-8">
+              <div class="col-sm-7">
 
                 <div class="panel">
 
 
-                  <div class="panel-body table-responsive">
+                  <div class="panel-body table-responsive jsh3">
+
+                  <div class="row">
+
+                    <div class="col-sm-12">
+<!--                       <select id="monthSelector" class="form-inline input-sm width-20">
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                      </select> -->
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Month<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+
+                          <li><a href="#">January</a></li>
+                          <li><a href="#">February</a></li>
+                          <li><a href="#">March</a></li>
+                          <li><a href="#">April</a></li>
+                          <li><a href="#">May</a></li>
+                          <li><a href="#">June</a></li>
+                          <li><a href="#">July</a></li>
+                          <li><a href="#">August</a></li>
+                          <li><a href="#">September</a></li>
+                          <li><a href="#">October</a></li>
+                          <li><a href="#">November</a></li>
+                          <li><a href="#">December</a></li>
+
+                        </ul>
+                      </div>
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Week<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+
+                          <li><a href="#">Week 1</a></li>
+                          <li><a href="#">Week 2</a></li>
+                          <li><a href="#">Week 3</a></li>
+                          <li><a href="#">Week 4</a></li>
+
+                        </ul>
+                      </div>
+
+
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Team<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">My Team</a></li>
+                          <li><a href="#">My Peers</a></li>
+                        </ul>
+                      </div>
+
+
+                      <div class="inline-block font-bold pull-right month-week">August &nbsp; (16 - 23)</div>
+
+                    </div>
+
+
+                  </div>
+                    <hr style="margin-top: -10px;margin-bottom: 10px;">
+
                     <table class="table  table-striped leave-report-table" id="data-tables">
                       <thead>
                         <tr>
-                          <th>Person</th>
+                          <th>Person  (24)</th>
                           <th>Mon</th>
                           <th>Tue</th>
                           <th>Wed</th>
                           <th>Thu</th>
                           <th>Fri</th>
-                          <th>Total</th>
                         </tr>
                       </thead>
                       <tbody>
-<!--                         <tr class="gradeX">
-                          <td>Captain America</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Natalia Romanova</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Tony Stark</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Bruce Banner</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Vision</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Peter Parker</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Bucky Barnes</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Clint Barton</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td></td>
-                        </tr>
-
+                 {% for person in leavereport%}
 
                         <tr class="gradeX">
-                          <td>James Rhodes</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Scott Lang</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Nick Fury</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Sam Wilson</td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td></td>
-                        </tr> -->
+                          <td>{{ person.0 }}</td>
+                            {% for val1 in  person.1%}
+                                {% if val1 == 0 %}
+                                    <td><div class="indicator"></div></td>
+                                {% elif val1 == 1 %}
+                                    <td><div class="indicator half-day"></div></td>
+                                {% elif val1 == 2 %}
+                                    <td><div class="indicator absent"></div></td>
+                                {% elif val1 == 3 %}
+                                    <td><div class="indicator holiday"></div></td>
+                                {% endif %}
 
-                        <!-- end of avengers -->
+{% endfor %}
+<td></td>
 
-
-                        <tr class="gradeX">
-                          <td>Person 1</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td></td>
                         </tr>
-                        <tr class="gradeX">
-                          <td>Person 2</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Person 3</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td></td>
-                        </tr>
-
-
-
+                        {% endfor %}
 
 
 
@@ -209,15 +144,48 @@
                           <td class="text-center">12</td>
                           <td class="text-center">112</td>
                           <td class="text-center">35</td>
-                          <td>534</td>
                         </tr>
                       </tfoot>
                     </table>
                   </div>
                 </div>
 
-         	
-              </div>
+
+              </div><!-- ./col-sm -->
+
+
+
+
+              <div class="col-md-5 mgbt-xs-20 mgbt-md-0">
+                <div class="panel widget  light-widget">
+                  <div class="panel-body-list jsh4">
+                    <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :<span class="font-semibold legend-available">4</span> </p>
+                    <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-holiday">1</span> </p>
+<!-- Bar chart -->
+                    <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
+
+                    <div class="col-sm-12 pd-25">
+
+                    <h4>Leave Report Summary</h4>
+
+                      <table class="lr-summary-table">
+                          {% for val in  weekreport%}
+                        <tr>
+                          <td>Week {{ forloop.counter }}</td>
+                          <td class="available">{{ val.available }}</td>
+                          <td class="holiday">{{ val.holiday }}</td>
+                          <td class="absent">{{ val.unavailable }}</td>
+                        </tr>
+                          {% endfor %}
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!-- col-md-6 -->
+              </div><!-- ./col -->
+
+
 
 
 
@@ -231,56 +199,176 @@
 
 
 
-<script type="text/javascript" src="http://vendroid.venmond.com/plugins/raphael/raphael.min.js"></script>
-<script type="text/javascript" src="http://vendroid.venmond.com/plugins/morris/morris.min.js"></script>
-<script type="text/javascript" src="http://vendroid.venmond.com/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript" src="/static/plugins/raphael/raphael.min.js"></script>
+<script type="text/javascript" src="/static/plugins/morris/morris.min.js"></script>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
 
-// The Bar Chart
 
-var barChart = function(){
 
-  "use strict";
+  // Variables Declared
+  var d = new Date();
+  var theMonth = d.getMonth() + 1;
 
-  window.barChart = Morris.Bar({
-    element: 'bar-placeholder',
-    data: [
-    { y: 'Week 1', a: 10, b: 90 },
-    { y: 'Week 2', a: 75, b: 25 },
-    { y: 'Week 3', a: 50, b: 50 },
-    { y: 'Week 4', a: 35, b: 65 }
-    ],
-    hideHover: 'always',
-    stacked: true,
-    xkey: 'y',
-    ykeys: ['a', 'b'],
-    labels: ['Series A', 'Series B'],
-    barColors: ["#23709E","#39515f"]
-
-  });
-
-}// Calling Bar Chart 
+  var ajaxVar;
 
 
 
-		$(document).ready(function() {
-				"use strict";
-				
+
+
+
+  // The Bar Chart
+
+  var barChart = function(){
+
+    "use strict";
+
+    window.barChart = Morris.Bar({
+      element: 'bar-placeholder',
+       data: [{% for val in  weekreport%}
+      { y: 'Week {{ forloop.counter }}', a: {{ val.available }}, b: {{ val.unavailable }}, c: {{ val.holiday }} },
+          {% endfor %}
+      ],
+      hideHover: 'always',
+      stacked: true,
+      xkey: 'y',
+      ykeys: ['a', 'b', 'c'],
+      labels: ['Series A', 'Series B', 'Series C'],
+      barColors: ["#759273", "#acc1ab","#e8e8e8"]
+    });
+
+  }// Calling Bar Chart
+
+  // End of Bar-Chart
+
+
+
+  // Select Box Function
+
+
+    $('#monthSelector').on('change',function(){
+      theMonth = $(this).val();
+      TheAjaxCall();
+    })
+
+
+
+
+
+  // The Ajax Call
+
+  function TheAjaxCall() {
+      //console.log('refeshing..');
+  $.ajax({
+      url: '/leave/leavereport/',
+      type: 'GET',
+      data: {'month':theMonth},
+      success: function (data) {
+          ajaxVar = data;
+          // console.log(ajaxVar);
+          ajaxVar = JSON.stringify(ajaxVar);
+          ajaxVar = JSON.parse(ajaxVar);
+          // console.log(ajaxVar);
+          decon(ajaxVar);
+      },
+      error: function() {
+        alert("Server error!");
+      },
+    });
+  }
+
+
+
+
+  // Decontructor Function
+
+
+  var decon = function(e){
+    $.each(e, function (index, value) {
+      $.each(value, function (index, value) {
+
+        $.each(value, function (index, value) {
+
+          // console.log(index, value);
+
+        });
+
+      });
+    });
+  }
+
+
+    // Height Function
+
+
+
+  var heightFunction2 = function(){
+      hgt3=$('.jsh3').css('height');
+      $('.jsh4').css('min-height', hgt3);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).ready(function() {
+        "use strict";
+
         barChart();
 
 
-				$('#data-tables').dataTable({
+        $('#data-tables').dataTable({
           searching: false,
           scrollCollapse: true
         });
 
-    $(window).resize(function(){
-      window.barChart.redraw();
-    })
+        $(window).resize(function(){
+          window.barChart.redraw();
+          heightFunction2();
+        })
 
 
-		});// End of document ready
+
+
+
+    // Function Calls
+
+    TheAjaxCall();
+    heightFunction2();
+
+
+
+
+});// End of document ready
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -289,52 +377,6 @@ var barChart = function(){
 
 
     // JSON Testing Area
-
-    var theMonth = {
-                      "person1":[
-                               {"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
-                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}
-                              ],
-
-
-                      "person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
-                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],
-
-                      "person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
-                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]                               
-                    }
-
-                   
-
-
-
-
-
-
-
-
-
-
-
-/*{"person1":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]}
-*/
- 
-
-
-
-
-
-
-    var xyz = JSON.stringify(theMonth);
-    console.log('the JSON object : ' + xyz);    
-    var zyx = JSON.parse(xyz);
-    console.log('the parsed object : ' + zyx);
 
 
     var populate = function(){
@@ -346,15 +388,79 @@ var barChart = function(){
           i++;
         })
       })
-    }                    
-
+    }
 
 // As td with person does not contain div, use div inside tr
 
-
-    populate();
-
-
 </script>
+
+
+
+<style type="text/css">
+
+/* Imported from site.min */
+
+/* Leave Report */
+
+.leave-report-table{margin-top: 0px !important;}
+.leave-report-table div.indicator{
+    background: #759273;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: auto;
+}
+.table.leave-report-table tr>td, .table.leave-report-table tfoot{border: 1px solid #efefef;}
+.table.leave-report-table tfoot, .table.leave-report-table td:last-child{background: #fdfdfd}
+
+/*#bar-placeholder{margin-top: 10%}*/
+div.indicator.absent{background-color: #e8e8e8;}
+div.indicator.holiday{background-color: #acc1ab}
+table.dataTable.leave-report-table thead .sorting{
+    text-align: center;
+}
+.dataTables_length{display: none;}/* Removing number of entries to display */
+
+.month-week{
+  color: #733b3b;
+  font-size: 14px;
+/*  background: #ffd1d1;*/
+  padding: 0px 10px;
+  line-height: 30px;
+  border-radius: 2px;
+  cursor: default;
+/*  border: 1px solid #733b3b;*/
+}
+[class*="legend"]{
+  background: #e6e6e6;
+  padding: 2px 15px;
+  border-radius: 15px;
+  margin-left: 5px;
+  border: 1px solid #aaa;
+  color: #fff;
+}
+.legend-available{background: #759273;border-color: #5d805a;}
+.legend-holiday{background: #acc1ab;border-color: #93af91;}
+
+.lr-week-details{margin-bottom: 15px;}
+.lr-week-details p{
+  margin-bottom: 0px;
+  margin-left: 15px;
+}
+.lr-summary-table{
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+}
+.lr-summary-table td{
+  width: 25%;
+  border: 1px solid #e4e4e4;
+  padding: 2px 5px;
+}
+.lr-summary-table td.available{text-align:center; background: #759273;}
+.lr-summary-table td.holiday{text-align:center; background: #acc1ab;}
+.lr-summary-table td.absent{text-align:center; background: #e8e8e8}
+.inline-block{display: inline-block}
+</style>
 
 {% endblock %}

@@ -26,6 +26,6 @@ urlpatterns = [
                        url(r'^raisedispute/$', login_required(RaiseDispute.as_view()), name=u'raise_dispute'),
                        url(r'^AutocompleteUserSearch/$', login_required(AutocompleteUserSearch.as_view()),
                            name=u'AutocompleteUserSearch'),
-                       url(r'^leavereport/$', login_required(leavereport), name=u'leavereport'),
-
+                       url(r'^leavereport/$', login_required(leavereport), name=u'report'),
+                       url(r'^report/$', login_required(report), name=u'leave_report'),
                        ]
