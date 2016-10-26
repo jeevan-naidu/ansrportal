@@ -55,22 +55,31 @@ def review_report_base(template_id, project):
     class ReviewReportForm(forms.Form):
         severity_type = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=DefectTypeMaster.objects.none(), )
-        severity_level = forms.ModelChoiceField(widget=forms.Select(),
+        # defect_severity_level = forms.CharField()
+        # defect_classification = forms.CharField()
+        review_item = forms.CharField()
+        defect_severity_level = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=SeverityLevelMaster.objects.none(), )
         defect_classification = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=DefectClassificationMaster.objects.none(), )
-
+        remarks = forms.CharField()
+        is_fixed = forms.CharField()
+        fixed_by = forms.CharField()
         class Meta:
             model = ProjectChapterReviewerRelationship
-            fields = ('review_item', 'defect', 'is_fixed')
+            fields = ('review_item', 'defect', 'is_fixed','fixed_by','remarks')
 
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
             defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_id)
             self.fields['severity_type'].queryset = DefectTypeMaster.objects.filter(id__in=defect_type_master_obj)
-            self.fields['severity_level'].queryset = SeverityLevelMaster.objects.filter(id__in=defect_type_master_obj)
-            self.fields['severity_level'].queryset = DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)
+            # self.fields['defect_severity_level'].widget.attrs['disabled'] = True
+            self.fields['remarks'].widget.attrs['readonly'] = True
+            self.fields['is_fixed'].widget.attrs['readonly'] = True
+            self.fields['fixed_by'].widget.attrs['readonly'] = True
+            self.fields['defect_severity_level'].queryset = SeverityLevelMaster.objects.filter(id__in=defect_type_master_obj)
+            self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)
             # print defect_type_master_obj
             # self.fields['severity_type'].queryset = DefectTypeMaster.filter(id__in=[defect_type_master_obj])
             # severity_type_id = self.fields['severity_type'].initial\
