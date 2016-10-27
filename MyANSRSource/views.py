@@ -39,6 +39,7 @@ from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 from Grievances.models import Grievances
 from Leave.models import LeaveApplications
+from Leave.views import leavecheck, daterange
 
 
 from ldap import LDAPError
@@ -493,7 +494,8 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
-                        nonbillableTS.save()
+                            if str(eachActivity['activity']) not in ['Leave', 'Holiday']:
+                                nonbillableTS.save()
                         global dbSave
                         dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
@@ -809,33 +811,61 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
         atDataList.append(atData.copy())
         atData.clear()
     locationId = request.user.employee.location
-    holidayList = Holiday.objects.filter(
-        location=locationId
-    ).values('name', 'date')
-    leaveList = LeaveApplications.objects.filter()
-    atData['activity'] = 19
-    atData['activity_monday'] = 2
-    atData['activity_tuesday'] = 2
-    atData['activity_wednesday'] = 2
-    atData['activity_thursday'] = 2
-    atData['activity_friday'] = 2
-    atData['activity_saturday'] = 2
-    atData['activity_sunday'] = 2
-    atData['activity_total'] = 2
-    atData['feedback'] = "fff"
-    atDataList.append(atData.copy())
-    atData['activity'] = 25
-    atData['activity_monday'] = 2
-    atData['activity_tuesday'] = 2
-    atData['activity_wednesday'] = 2
-    atData['activity_thursday'] = 2
-    atData['activity_friday'] = 2
-    atData['activity_saturday'] = 2
-    atData['activity_sunday'] = 2
-    atData['activity_total'] = 2
-    atData['feedback'] = "fff"
-    atDataList.append(atData.copy())
+    leavedetial = leaveappliedinweek(request.user, weekstartDate, ansrEndDate)
+    holidaydetail = holidayinweek(locationId, weekstartDate, ansrEndDate)
+    if 8 in leavedetial or 4 in leavedetial:
+        atData['activity'] = 19
+        atData['activity_monday'] = leavedetial[0]
+        atData['activity_tuesday'] = leavedetial[1]
+        atData['activity_wednesday'] = leavedetial[2]
+        atData['activity_thursday'] = leavedetial[3]
+        atData['activity_friday'] = leavedetial[4]
+        atData['activity_saturday'] = 0
+        atData['activity_sunday'] = 0
+        atData['activity_total'] = 0
+        atData['feedback'] = ''
+        atDataList.append(atData.copy())
+        atData.clear()
+    if 8 in holidaydetail:
+        atData['activity'] = 25
+        atData['activity_monday'] = holidaydetail[0]
+        atData['activity_tuesday'] = holidaydetail[1]
+        atData['activity_wednesday'] = holidaydetail[2]
+        atData['activity_thursday'] = holidaydetail[3]
+        atData['activity_friday'] = holidaydetail[4]
+        atData['activity_saturday'] = 0
+        atData['activity_sunday'] = 0
+        atData['activity_total'] = 0
+        atData['feedback'] = ''
+        atDataList.append(atData.copy())
+        atData.clear()
+
+
     return {'tsData': tsDataList, 'atData': atDataList}
+
+def leaveappliedinweek(user, wkstart, wkend):
+    weekleave = []
+    for single_date in daterange(wkstart, wkend):
+        flag = leavecheck(user, single_date)
+        if flag == 1:
+            weekleave.append(4)
+        elif flag == 2:
+            weekleave.append(8)
+        else:
+            weekleave.append(0)
+    return weekleave
+
+def holidayinweek(locationId, wksatrt, wkend):
+    weekleave = []
+    holiday = Holiday.objects.filter(
+        location=locationId
+    ).values('date')
+    for single_date in daterange(wksatrt, wkend):
+        if single_date in [datedata['date'] for datedata in holiday]:
+            weekleave.append(8);
+        else:
+            weekleave.append(0);
+    return weekleave
 
 
 def renderTimesheet(request, data):
