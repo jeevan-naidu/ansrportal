@@ -812,8 +812,19 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
     holidayList = Holiday.objects.filter(
         location=locationId
     ).values('name', 'date')
-    leaveList = LeaveApplications.object.filter()
+    leaveList = LeaveApplications.objects.filter()
     atData['activity'] = 19
+    atData['activity_monday'] = 2
+    atData['activity_tuesday'] = 2
+    atData['activity_wednesday'] = 2
+    atData['activity_thursday'] = 2
+    atData['activity_friday'] = 2
+    atData['activity_saturday'] = 2
+    atData['activity_sunday'] = 2
+    atData['activity_total'] = 2
+    atData['feedback'] = "fff"
+    atDataList.append(atData.copy())
+    atData['activity'] = 25
     atData['activity_monday'] = 2
     atData['activity_tuesday'] = 2
     atData['activity_wednesday'] = 2

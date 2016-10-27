@@ -1168,6 +1168,7 @@ class RaiseDispute(View):
             context_data['form'] = form
         return render(request, 'short_attendance_remark.html', context_data)
 
+
 def report(request):
     context = {}
     month = date.today().month
@@ -1177,7 +1178,10 @@ def report(request):
     userid = [user.user_id for user in userlist]
     userlist = User.objects.filter(id__in=userid, is_active=True)
     context['weekreport'] = weekwisereport(month, userlist)
-    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, 3)
+    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, 1)
+    context['startdate'] = weekdetail(1, month)
+    context['enddate'] = context['startdate'] + timedelta(5)
+    context['month'] = month
     return render(request, 'leavereport.html', context)
 
 
@@ -1223,13 +1227,10 @@ def weekwisereport(month, userlist):
     currentmontdetail = monthrange(date.today().year, month)
     if month == 1:
         previousmontdetail = monthrange(date.today().year, 12)
-        nextmontdetail = monthrange(date.today().year, month + 1)
     elif month == 12:
         previousmontdetail = monthrange(date.today().year, month - 1)
-        nextmontdetail = monthrange(date.today().year, 1)
     else:
         previousmontdetail = monthrange(date.today().year, month - 1)
-        nextmontdetail = monthrange(date.today().year, month + 1)
 
     previousmonthdays = previousmontdetail[1]
     dayscount = currentmontdetail[1]
@@ -1319,7 +1320,6 @@ def monthlyleavereport(user, month):
         key = "adv"+str(weekcount)+str(val)
         userreport[key] = 4
     for val in range(1, dayscount+1):
-        print val
         date1 = date(year=date.today().year, month=month, day=val)
         if date1.strftime("%A") == 'Saturday':
             weekcount += 1
@@ -1343,7 +1343,6 @@ def monthlyleavereport(user, month):
 
 
 def leavecheck(user, date):
-    print date
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
                                                     to_date__gte=date,
@@ -1373,12 +1372,39 @@ def leavecheck(user, date):
     elif leaveapplied:
         flag = 1
     elif date in [datedata['date'] for datedata in holiday]:
-        print date
         flag = 3
     else:
         flag = 0
     return flag
 
+def monthwisedata(request):
+    month = int(request.GET.get('month'))
+    context = {}
+    user = request.user.id
+    manager = Employee.objects.get(user_id=user)
+    userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+    userid = [user.user_id for user in userlist]
+    userlist = User.objects.filter(id__in=userid, is_active=True)
+    context['weekreport'] = weekwisereport(month, userlist)
+    context['startdate'] = weekdetail(1, month)
+    context['enddate'] = context['startdate'] + timedelta(5)
+    return render(request, 'monthlyreport.html', context)
+
+def weekwisedata(request):
+    context = {}
+    week = int(request.GET.get('week'))
+    month = int(request.GET.get('month'))
+    user = request.user.id
+    manager = Employee.objects.get(user_id=user)
+    userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+    userid = [user.user_id for user in userlist]
+    userlist = User.objects.filter(id__in=userid, is_active=True)
+    context['weekreport'] = weekwisereport(month, userlist)
+    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, week)
+    context['startdate'] = weekdetail(week, month)
+    context['enddate'] = context['startdate'] + timedelta(5)
+    context['month'] = month
+    return render(request, 'weeklyreport.html', context)
 
 
 

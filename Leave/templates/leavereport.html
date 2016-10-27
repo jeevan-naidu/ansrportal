@@ -8,17 +8,10 @@
 
 
 <link href="/static/plugins/morris/morris.css" rel="stylesheet" type="text/css">
-<!-- <link href="/static/plugins/dataTables/css/jquery.dataTables.css" rel="stylesheet" type="text/css"> -->
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
 <div class="row">
-
-
-
-
-
-
-
+<div id="user-leave-report">
               <div class="col-sm-7">
 
                 <div class="panel">
@@ -29,38 +22,24 @@
                   <div class="row">
 
                     <div class="col-sm-12">
-<!--                       <select id="monthSelector" class="form-inline input-sm width-20">
-                        <option value="0">January</option>
-                        <option value="1">February</option>
-                        <option value="2">March</option>
-                        <option value="3">April</option>
-                        <option value="4">May</option>
-                        <option value="5">June</option>
-                        <option value="6">July</option>
-                        <option value="7">August</option>
-                        <option value="8">September</option>
-                        <option value="9">October</option>
-                        <option value="10">November</option>
-                        <option value="11">December</option>
-                      </select> -->
 
 
                       <div class="btn-group">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Month<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
 
-                          <li><a href="#">January</a></li>
-                          <li><a href="#">February</a></li>
-                          <li><a href="#">March</a></li>
-                          <li><a href="#">April</a></li>
-                          <li><a href="#">May</a></li>
-                          <li><a href="#">June</a></li>
-                          <li><a href="#">July</a></li>
-                          <li><a href="#">August</a></li>
-                          <li><a href="#">September</a></li>
-                          <li><a href="#">October</a></li>
-                          <li><a href="#">November</a></li>
-                          <li><a href="#">December</a></li>
+                          <li><a onclick="monthchange(1)">January</a></li>
+                          <li><a onclick="monthchange(2)">February</a></li>
+                          <li><a onclick="monthchange(3)">March</a></li>
+                          <li><a onclick="monthchange(4)">April</a></li>
+                          <li><a onclick="monthchange(5)">May</a></li>
+                          <li><a onclick="monthchange(6)">June</a></li>
+                          <li><a onclick="monthchange(7)">July</a></li>
+                          <li><a onclick="monthchange(8)">August</a></li>
+                          <li><a onclick="monthchange(9)">September</a></li>
+                          <li><a onclick="monthchange(10)">October</a></li>
+                          <li><a onclick="monthchange(11)">November</a></li>
+                          <li><a onclick="monthchange(12)">December</a></li>
 
                         </ul>
                       </div>
@@ -69,16 +48,12 @@
                       <div class="btn-group">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Week<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
-
-                          <li><a href="#">Week 1</a></li>
-                          <li><a href="#">Week 2</a></li>
-                          <li><a href="#">Week 3</a></li>
-                          <li><a href="#">Week 4</a></li>
+                            {% for val in  weekreport%}
+                          <li><a onclick="weekchange({{ forloop.counter }}, {{ month }})">Week {{ forloop.counter }}</a></li>
+                            {% endfor %}
 
                         </ul>
                       </div>
-
-
 
 
                       <div class="btn-group">
@@ -90,7 +65,7 @@
                       </div>
 
 
-                      <div class="inline-block font-bold pull-right month-week">August &nbsp; (16 - 23)</div>
+                      <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div>
 
                     </div>
 
@@ -101,7 +76,7 @@
                     <table class="table  table-striped leave-report-table" id="data-tables">
                       <thead>
                         <tr>
-                          <th>Person  (24)</th>
+                          <th>Person  ({{ leavereport|length }})</th>
                           <th>Mon</th>
                           <th>Tue</th>
                           <th>Wed</th>
@@ -126,7 +101,7 @@
                                 {% endif %}
 
 {% endfor %}
-<td></td>
+
 
                         </tr>
                         {% endfor %}
@@ -139,28 +114,30 @@
                       <tfoot>
                         <tr class="gradeX">
                           <td>The sum</td>
-                          <td class="text-center">23</td>
-                          <td class="text-center">42</td>
-                          <td class="text-center">12</td>
-                          <td class="text-center">112</td>
-                          <td class="text-center">35</td>
+                          <td class="text-center" id="mon-total">0</td>
+                          <td class="text-center" id="tue-total">0</td>
+                          <td class="text-center" id="wed-total">0</td>
+                          <td class="text-center" id="thr-total">0</td>
+                          <td class="text-center" id="fri-total">0</td>
                         </tr>
                       </tfoot>
                     </table>
+
                   </div>
                 </div>
 
 
               </div><!-- ./col-sm -->
 
+</div>
 
-
-
+<div id="monthly-leave-report">
               <div class="col-md-5 mgbt-xs-20 mgbt-md-0">
                 <div class="panel widget  light-widget">
                   <div class="panel-body-list jsh4">
-                    <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :<span class="font-semibold legend-available">4</span> </p>
-                    <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-holiday">1</span> </p>
+                    <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :<span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> </p>
+                    <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> </p>
+                  <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> </p>
 <!-- Bar chart -->
                     <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
 
@@ -189,16 +166,9 @@
 
 
 
+</div>
 
 </div><!-- ./row -->
-
-
-
-
-
-
-
-
 
 
 <script type="text/javascript" src="/static/plugins/raphael/raphael.min.js"></script>
@@ -206,20 +176,6 @@
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
-
-
-
-  // Variables Declared
-  var d = new Date();
-  var theMonth = d.getMonth() + 1;
-
-  var ajaxVar;
-
-
-
-
-
-
   // The Bar Chart
 
   var barChart = function(){
@@ -246,81 +202,16 @@
 
 
 
-  // Select Box Function
-
-
-    $('#monthSelector').on('change',function(){
-      theMonth = $(this).val();
-      TheAjaxCall();
-    })
-
-
-
-
-
-  // The Ajax Call
-
-  function TheAjaxCall() {
-      //console.log('refeshing..');
-  $.ajax({
-      url: '/leave/leavereport/',
-      type: 'GET',
-      data: {'month':theMonth},
-      success: function (data) {
-          ajaxVar = data;
-          // console.log(ajaxVar);
-          ajaxVar = JSON.stringify(ajaxVar);
-          ajaxVar = JSON.parse(ajaxVar);
-          // console.log(ajaxVar);
-          decon(ajaxVar);
-      },
-      error: function() {
-        alert("Server error!");
-      },
-    });
-  }
-
-
-
-
-  // Decontructor Function
-
-
-  var decon = function(e){
-    $.each(e, function (index, value) {
-      $.each(value, function (index, value) {
-
-        $.each(value, function (index, value) {
-
-          // console.log(index, value);
-
-        });
-
-      });
-    });
-  }
 
 
     // Height Function
 
 
 
-  var heightFunction2 = function(){
-      hgt3=$('.jsh3').css('height');
-      $('.jsh4').css('min-height', hgt3);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
+{#  var heightFunction2 = function(){#}
+{#      hgt3=$('.jsh3').css('height');#}
+{#      $('.jsh4').css('min-height', hgt3);#}
+{#    }#}
 
 
 
@@ -338,16 +229,51 @@ $(document).ready(function() {
         $(window).resize(function(){
           window.barChart.redraw();
           heightFunction2();
-        })
+        });
+    var mondayTotal = 0;
+    var tuesdayTotal = 0;
+    var wednesTotal = 0;
+    var thursdayTotal = 0;
+    var fridayTotal = 0;
+    {% for person in leavereport%}
+        {% if  person.1.0 == 0 %}
+            mondayTotal += 1
+        {% elif person.1.0 == 1 %}
+            mondayTotal += .5
+        {% endif %}
 
+        {% if person.1.1 == 0 %}
+            tuesdayTotal += 1
+            {% elif person.1.0 == 1 %}
+            tuesdayTotal += .5
+        {% endif %}
 
+        {% if person.1.2 == 0 %}
+            wednesTotal += 1
+            {% elif person.1.0 == 1 %}
+            wednesTotal += .5
+        {% endif %}
 
+        {% if person.1.3 == 0 %}
+            thursdayTotal += 1
+        {% elif person.1.0 == 1 %}
+            thursdayTotal += .5
+        {% endif %}
 
+         {% if person.1.4 == 0 %}
+            fridayTotal += 1
+         {% elif person.1.0 == 1 %}
+            fridayTotal += .5
+        {% endif %}
+        console.log({{ person.1 }})
+    {% endfor %}
 
-    // Function Calls
+    $("#mon-total").text(mondayTotal);
+    $("#tue-total").text(tuesdayTotal);
+    $("#wed-total").text(wednesTotal);
+    $("#thr-total").text(thursdayTotal);
+    $("#fri-total").text(fridayTotal);
 
-    TheAjaxCall();
-    heightFunction2();
 
 
 
@@ -355,42 +281,43 @@ $(document).ready(function() {
 });// End of document ready
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // JSON Testing Area
-
-
-    var populate = function(){
-      $.each($('.leave-report-table tbody tr'),function(){
-        i=0;
-        $.each($(this).find('div'),function(){
-          $(this).addClass('absent');
-          console.log(i);
-          i++;
-        })
-      })
-    }
-
 // As td with person does not contain div, use div inside tr
+function monthchange(month){
+    weekchange(1, month);
+      $.ajax({
+          type: "GET",
+                url: '/leave/monthwisedata/',
+                data: {'month': month},
+                success: function (data) {
+
+                    $('#monthly-leave-report').text('');
+                    $('#monthly-leave-report').append(data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+                },
+      });
+  }
+
+  function weekchange(week, month){
+      $.ajax({
+          type: "GET",
+                url: '/leave/weekwisedata/',
+                data: {'week': week, 'month':month},
+                success: function (data) {
+                    $('#user-leave-report').text('');
+                    $('#user-leave-report').append(data);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+                },
+      });
+  }
 
 </script>
 
@@ -432,12 +359,12 @@ table.dataTable.leave-report-table thead .sorting{
 /*  border: 1px solid #733b3b;*/
 }
 [class*="legend"]{
-  background: #e6e6e6;
-  padding: 2px 15px;
-  border-radius: 15px;
-  margin-left: 5px;
-  border: 1px solid #aaa;
-  color: #fff;
+    background: #e8e8e8;
+    padding: 2px 15px;
+    border-radius: 15px;
+    margin-left: 5px;
+    border: 1px solid #d4d4d4;
+    color: #fff;
 }
 .legend-available{background: #759273;border-color: #5d805a;}
 .legend-holiday{background: #acc1ab;border-color: #93af91;}
@@ -461,6 +388,11 @@ table.dataTable.leave-report-table thead .sorting{
 .lr-summary-table td.holiday{text-align:center; background: #acc1ab;}
 .lr-summary-table td.absent{text-align:center; background: #e8e8e8}
 .inline-block{display: inline-block}
+
+/* Added */
+
+.jsh3{min-height: 400px;}
+.lr-invisible{visibility: hidden}
 </style>
 
 {% endblock %}
