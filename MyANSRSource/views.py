@@ -406,7 +406,8 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
-                        nonbillableTS.save()
+                            if str(eachActivity['activity']) not in ['Leave', 'Holiday']:
+                                nonbillableTS.save()
                         global dbSave
                         dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
