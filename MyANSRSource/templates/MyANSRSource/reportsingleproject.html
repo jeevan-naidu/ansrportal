@@ -26,19 +26,22 @@
                 </tr>
                 <tr>
                     {% for field in form %}
-                        <td class="col-lg-10">{{ field }}</td> 
+                        <td class="col-lg-2 col-md-3">{{ field }}</td>
                     {% endfor %}
-                    <td><button type="submit" id="submit" name="click" class="btn btn-primary">
-                        Get Report
-                    </button></td>
                     <td>
+
                         {% if fresh == 0 %}
-                            <button type="submit" id="generate" name="generate" class="btn btn-success">
+                            <button type="submit" id="generate" name="generate" class="btn btn-success pull-right">
                         {% else %}
-                            <button type="submit" class="btn btn-success" disabled>
+                            <button type="submit" class="btn btn-success pull-right" disabled>
                         {% endif %}
                                 Export to Excel
                             </button>
+
+
+                        <button type="submit" id="submit" name="click" class="btn btn-primary pull-right" style="margin-right:15px">
+                        Get Report
+                    </button>
                     </td>
                 </tr>
             </table>
@@ -303,5 +306,11 @@
 </div>
 </div>
 </div>
+
+<style>
+
+.select2-container .select2-selection--single{height:34px}
+
+</style>
 
 {% endblock %}
