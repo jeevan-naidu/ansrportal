@@ -47,15 +47,17 @@
 
                 <div class="row">
                     <div class="col-sm-12 qms-selectors">
-                        <div class="col-sm-3"><span>Project : {{ form.project.errors }}</span>{{ form.project}}</div>
+                        <div class="col-sm-9">
+                          <span>{{ form.project.errors }}</span>{{ form.project}}
 
-                        <div class="col-sm-3"><span>Chapter : {{ form.chapter.errors }} </span>{{form.chapter}}</div>
+                          <span>{{ form.chapter.errors }} </span>{{form.chapter}}
 
-                        <div class="col-sm-3"><span>Author : {{form.author.errors}}</span>{{form.author}}</div>
+                          <span>{{form.author.errors}}</span>{{form.author}}
+                        </div>
 
                         <div class="col-sm-3">
-                          <input type="submit" value="submit" name="" class="btn btn-primary btn-sm" style="margin-top: -1px;">
-                          <button class="btn btn-danger btn-sm" style="margin-top: -1px;">Summary</button>
+                          <input type="submit" value="Submit" name="" class="btn btn-primary btn-sm pull-right" style="margin-top: -1px;">
+                          <button id="open-summary" class="btn btn-danger btn-sm pull-right" style="margin-top: -1px;">Summary</button>
                         </div>
 
                     </div>
@@ -63,8 +65,8 @@
                     <input type="hidden" name="template_name" id="template_id" value="{{template_id}}"/>
                 </div><!-- ./qms-selectors row -->
 
-                <div id="qms-summary">
-<hr>
+                <div id="qms-summary" class="collapsed">
+
                   <table class="table-responsive table-striped width-100">
                     <tr>
                       <th>Severity Levels</th>
@@ -242,7 +244,7 @@
 
 
                   </table>
-<hr>
+
                 </div>
 
 
@@ -556,13 +558,22 @@ $('.defect').change(function(){
 .edit-buttons{width: 65px;}
 .gradeX a.vd_btn{margin-right: 0px !important;}
 
-.select2.select2-container{min-width: 0px !important;width: 150px !important;}
+.select2.select2-container{min-width: 0px !important;width: 150px !important;margin-right: 15px;}
 
 .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #f3f1f1;
 }
 .qa-editable{cursor: pointer;}
 .qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+#qms-summary{
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  padding: 15px 0px;
+  margin-bottom: 15px;
+  transition: all 0.5s ease;   
+}
+#qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
 
 #qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
 
@@ -574,10 +585,25 @@ $('.defect').change(function(){
 
 $(document).ready(function(){
 
+  $('#open-summary').click(function(e){
+    e.preventDefault();
+    if($(this).hasClass('btn-danger')){
+      $(this).removeClass('btn-danger');
+      $(this).addClass('btn-default');
+      $('#qms-summary').removeClass('collapsed');
+    }else if($(this).hasClass('btn-default')){
+      $(this).removeClass('btn-default');
+      $(this).addClass('btn-danger');
+      $('#qms-summary').addClass('collapsed');
+    }
+  })
+
   $('td.qa-editable').click(function(){
     $(this).find('.hidden').removeClass('hidden');
     $(this).find('p').addClass('hidden');
   })
+
+
 
 })// ./ doc.ready 
 
