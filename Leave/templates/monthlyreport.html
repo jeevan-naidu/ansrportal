@@ -1,0 +1,78 @@
+ <div class="col-md-5 mgbt-xs-20 mgbt-md-0">
+                <div class="panel widget  light-widget">
+                  <div class="panel-body-list jsh4">
+                    <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :<span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> </p>
+                    <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> </p>
+                  <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> </p>
+<!-- Bar chart -->
+                    <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
+
+                    <div class="col-sm-12 pd-25">
+
+                    <h4>Leave Report Summary</h4>
+
+                      <table class="lr-summary-table">
+                          {% for val in  weekreport%}
+                        <tr>
+                          <td>Week {{ forloop.counter }}</td>
+                          <td class="available">{{ val.available }}</td>
+                          <td class="holiday">{{ val.holiday }}</td>
+                          <td class="absent">{{ val.unavailable }}</td>
+                        </tr>
+                          {% endfor %}
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!-- col-md-6 -->
+              </div><!-- ./col -->
+
+<script type="text/javascript" src="/static/plugins/raphael/raphael.min.js"></script>
+<script type="text/javascript" src="/static/plugins/morris/morris.min.js"></script>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+  // The Bar Chart
+
+  var barChart = function(){
+
+    "use strict";
+
+    window.barChart = Morris.Bar({
+      element: 'bar-placeholder',
+       data: [{% for val in  weekreport%}
+      { y: 'Week {{ forloop.counter }}', a: {{ val.available }}, b: {{ val.unavailable }}, c: {{ val.holiday }} },
+          {% endfor %}
+      ],
+      hideHover: 'always',
+      stacked: true,
+      xkey: 'y',
+      ykeys: ['a', 'b', 'c'],
+      labels: ['Series A', 'Series B', 'Series C'],
+      barColors: ["#759273", "#acc1ab","#e8e8e8"]
+    });
+
+  }// Calling Bar Chart
+
+
+
+
+
+$(document).ready(function() {
+    "use strict";
+
+    barChart();
+
+
+    $('#data-tables').dataTable({
+        searching: false,
+        scrollCollapse: true
+    });
+
+    $(window).resize(function () {
+        window.barChart.redraw();
+
+    });
+});
+</script>

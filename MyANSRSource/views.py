@@ -38,6 +38,7 @@ import employee
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 from Grievances.models import Grievances
+from Leave.models import LeaveApplications
 
 
 from ldap import LDAPError
@@ -807,6 +808,33 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
                 atData['atId'] = v
         atDataList.append(atData.copy())
         atData.clear()
+    locationId = request.user.employee.location
+    holidayList = Holiday.objects.filter(
+        location=locationId
+    ).values('name', 'date')
+    leaveList = LeaveApplications.objects.filter()
+    atData['activity'] = 19
+    atData['activity_monday'] = 2
+    atData['activity_tuesday'] = 2
+    atData['activity_wednesday'] = 2
+    atData['activity_thursday'] = 2
+    atData['activity_friday'] = 2
+    atData['activity_saturday'] = 2
+    atData['activity_sunday'] = 2
+    atData['activity_total'] = 2
+    atData['feedback'] = "fff"
+    atDataList.append(atData.copy())
+    atData['activity'] = 25
+    atData['activity_monday'] = 2
+    atData['activity_tuesday'] = 2
+    atData['activity_wednesday'] = 2
+    atData['activity_thursday'] = 2
+    atData['activity_friday'] = 2
+    atData['activity_saturday'] = 2
+    atData['activity_sunday'] = 2
+    atData['activity_total'] = 2
+    atData['feedback'] = "fff"
+    atDataList.append(atData.copy())
     return {'tsData': tsDataList, 'atData': atDataList}
 
 
