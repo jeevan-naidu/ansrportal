@@ -615,7 +615,10 @@ def Timesheet(request):
                 'tsErrorList': tsErrorList,
                 'atErrorList': atErrorList,
                 'tsFormList': tsContent,
-                'atFormList': atContent}
+                'atFormList': atContent,
+                'holidaysum': 0,
+                'leavesum': 0
+                }
         global dbSave
         if dbSave:
             getRelativeUrl = request.META['HTTP_REFERER']
@@ -636,16 +639,21 @@ def Timesheet(request):
         extra = 0
 
         tsFormList, atFormList = [], []
-
+        holidaysum = 0
+        leavesum = 0
         # Approved TS data
         if len(tsDataList['tsData']) and len(tsDataList['atData']):
             tsFormList = tsDataList['tsData']
             atFormList = tsDataList['atData']
+            holidaysum = tsDataList['holidaysum']
+            leavesum = tsDataList['leavesum']
         elif len(tsDataList['tsData']):
             tsFormList = tsDataList['tsData']
         elif len(tsDataList['atData']):
             defaulLocation = [{'location': request.user.employee.location.id}]
             atFormList = tsDataList['atData']
+            holidaysum = tsDataList['holidaysum']
+            leavesum = tsDataList['leavesum']
 
         # Fresh TS data
         else:
@@ -699,7 +707,9 @@ def Timesheet(request):
                 'extra': extra,
                 'hold_button': hold_button,
                 'tsFormList': tsFormList,
-                'atFormList': atFormList}
+                'atFormList': atFormList,
+                'holidaysum': holidaysum,
+                'leavesum': leavesum}
         return renderTimesheet(request, data)
 
 
@@ -814,7 +824,11 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
     locationId = request.user.employee.location
     leavedetial = leaveappliedinweek(request.user, weekstartDate, ansrEndDate)
     holidaydetail = holidayinweek(locationId, weekstartDate, ansrEndDate)
+    holidaysum = 0
+    leavesum = 0
     if 8 in leavedetial or 4 in leavedetial:
+        for leave in leavedetial:
+            leavesum += leave
         atData['activity'] = 19
         atData['activity_monday'] = leavedetial[0]
         atData['activity_tuesday'] = leavedetial[1]
@@ -828,6 +842,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
         atDataList.append(atData.copy())
         atData.clear()
     if 8 in holidaydetail:
+        for holiday in holidaydetail:
+            holidaysum += holiday
         atData['activity'] = 25
         atData['activity_monday'] = holidaydetail[0]
         atData['activity_tuesday'] = holidaydetail[1]
@@ -842,7 +858,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
         atData.clear()
 
 
-    return {'tsData': tsDataList, 'atData': atDataList}
+    return {'tsData': tsDataList, 'atData': atDataList, 'holidaysum' : holidaysum, 'leavesum' : leavesum}
 
 def leaveappliedinweek(user, wkstart, wkend):
     weekleave = []
@@ -1049,7 +1065,6 @@ def renderTimesheet(request, data):
                 prevWeekBlock = True
             elif pwActivityData[0]['hold']:
                 prevWeekBlock = True
-
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
@@ -1069,7 +1084,9 @@ def renderTimesheet(request, data):
                  'atFormset': atFormset,
                  'mondays_list': mondays_list,
                  'ts_week_info_dict': ts_week_info_dict,
-                 'ts_final_list':ts_final_list
+                 'ts_final_list':ts_final_list,
+                 'holidaysum': data['holidaysum'],
+                 'leavesum': data['leavesum'],
                  }
     if 'tsErrorList' in data:
         finalData['tsErrorList'] = data['tsErrorList']

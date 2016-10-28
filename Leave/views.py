@@ -1346,7 +1346,7 @@ def leavecheck(user, date):
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
                                                     to_date__gte=date,
-                                                    status__in=['open', 'approved'])
+                                                    status__in=['open', 'approved']).exclude(leave_type=11)
     holiday = Holiday.objects.all().values('date')
 
     if len(leaveapplied) > 1:
