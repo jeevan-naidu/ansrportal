@@ -231,9 +231,9 @@
 .badge{
 -webkit-transform:scale(0.83);
 }
-.input-group-btn .btn{
+/*.input-group-btn .btn{
 	height:38px;
-}
+}*/
 .colorpicker .colorpicker_hex input, .colorpicker .colorpicker_field input{
 	height:17px;
 	margin-top:-4px;
