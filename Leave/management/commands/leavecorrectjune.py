@@ -7,8 +7,8 @@ from employee.models import Employee
 from Leave.models import LeaveType, LeaveSummary
 
 logger = logging.getLogger('MyANSRSource')
-# FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data/"
-FEED_DIR = "/home/vivekpradhan/Documents/"
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data/"
+# FEED_DIR = "/home/vivekpradhan/Documents/"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
