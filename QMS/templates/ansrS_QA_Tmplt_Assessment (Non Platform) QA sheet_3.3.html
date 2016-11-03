@@ -47,22 +47,203 @@
 
                 <div class="row">
                     <div class="col-sm-12 qms-selectors">
-                        <div class="col-sm-3"><span>Project : {{ form.project.errors }}</span>{{ form.project}}</div>
+                        <div class="col-sm-9">
+                          <span>{{ form.project.errors }}</span>{{ form.project}}
 
-                        <div class="col-sm-3"><span>Chapter : {{ form.chapter.errors }} </span>{{form.chapter}}</div>
+                          <span>{{ form.chapter.errors }} </span>{{form.chapter}}
 
-                        <div class="col-sm-3"><span>Author : {{form.author.errors}}</span>{{form.author}}</div>
+                          <span>{{form.author.errors}}</span>{{form.author}}
+                        </div>
 
-                        <div class="col-sm-2"><input type="submit" value="submit" name="" class="btn btn-primary btn-sm" style="margin-top: -1px;"></div>
+                        <div class="col-sm-3">
+                          <input type="submit" value="Submit" name="" class="btn btn-primary btn-sm pull-right" style="margin-top: -1px;">
+                          <button id="open-summary" class="btn btn-danger btn-sm pull-right" style="margin-top: -1px;">Summary</button>
+                        </div>
 
                     </div>
                     <input type="hidden" name="active_tab" id="active_tab" value="er1"/>
                     <input type="hidden" name="template_name" id="template_id" value="{{template_id}}"/>
                 </div><!-- ./qms-selectors row -->
 
-                <div class="qms-summary">
+                <div id="qms-summary" class="collapsed">
+
+                  <table class="table-responsive table-striped width-100">
+                    <tr>
+                      <th>Severity Levels</th>
+                      <th>Index</th>
+                      <th>ER1</th>
+                      <th>ER2</th>
+                      <th>ER3</th>
+                      <th>EA</th>
+                      <th>CE1</th>
+                      <th>CE2</th>
+                      <th>EU Testing</th>
+                      <th>QA</th>
+                      <th>Feedback</th>
+                      <th>Total</th>
+                    </tr>
+
+                    <tr>
+                      <td rowspan="4"></td>
+                      <td>No: of questions reviewed</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                    </tr> 
+
+                    <tr>
+                      <td>Total Defects</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                    </tr> 
+
+                    <tr>
+                      <td>Overall QA Score</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                    </tr> 
 
 
+                    <tr>
+                      <td>Overall Performance</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td></td>
+                    </tr> 
+
+                    <!-- End of first section -->
+
+<!-- Severity 1 -->
+
+                    <tr>
+                      <td rowspan="2">Severity 1</td>
+                      <td>No of Defects</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                    </tr> 
+
+                    <tr>
+                      <td>Defect Density</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td></td>
+                    </tr> 
+
+
+<!-- Severity 2 -->
+
+                    <tr>
+                      <td rowspan="2">Severity 2</td>
+                      <td>No of Defects</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                    </tr> 
+
+                    <tr>
+                      <td>Defect Density</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td></td>
+                    </tr>
+
+
+
+<!-- Severity 3 -->
+
+                    <tr>
+                      <td rowspan="2">Severity 3</td>
+                      <td>No of Defects</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                    </tr> 
+
+                    <tr>
+                      <td>Defect Density</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td>0.00%</td>
+                      <td></td>
+                    </tr> 
+
+
+
+
+
+                  </table>
 
                 </div>
 
@@ -71,6 +252,7 @@
                 <ul class="nav nav-tabs" >
                     <li class="active review " id="er1" ><a href="#tab1" data-toggle="tab" >ER1</a></li>
                     <li class="review" id="er2" ><a href="#tab2" data-toggle="tab" >ER2</a></li>
+                    <li class="review disabled" id="er2" ><a href="#tab3" >CE1</a></li>
                 </ul><!-- ./tab -->
 
 
@@ -148,9 +330,15 @@
                     </div><!-- ./tab -->
 
 
-                    <div class="tab-pane" id="tab2"></div><!-- ./tab -->
+                    <div class="tab-pane" id="tab2">
+                      
 
+                    </div><!-- ./tab -->
 
+                    <div class="tab-pane" id="tab3">
+                      
+                      
+                    </div><!-- ./tab -->
 
                 </div><!-- ./ .tab-content -->
                 <div class="panel-footer clearfix">
@@ -369,13 +557,24 @@ $('.defect').change(function(){
 .edit-buttons{width: 65px;}
 .gradeX a.vd_btn{margin-right: 0px !important;}
 
-.select2.select2-container{min-width: 0px !important;width: 150px !important;}
+.select2.select2-container{min-width: 0px !important;width: 150px !important;margin-right: 15px;}
 
 .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #f3f1f1;
 }
 .qa-editable{cursor: pointer;}
 .qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+#qms-summary{
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  padding: 15px 0px;
+  margin-bottom: 15px;
+  transition: all 0.5s ease;   
+}
+#qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
+
+#qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
 
 </style>
 
@@ -385,10 +584,25 @@ $('.defect').change(function(){
 
 $(document).ready(function(){
 
+  $('#open-summary').click(function(e){
+    e.preventDefault();
+    if($(this).hasClass('btn-danger')){
+      $(this).removeClass('btn-danger');
+      $(this).addClass('btn-default');
+      $('#qms-summary').removeClass('collapsed');
+    }else if($(this).hasClass('btn-default')){
+      $(this).removeClass('btn-default');
+      $(this).addClass('btn-danger');
+      $('#qms-summary').addClass('collapsed');
+    }
+  })
+
   $('td.qa-editable').click(function(){
     $(this).find('.hidden').removeClass('hidden');
     $(this).find('p').addClass('hidden');
   })
+
+
 
 })// ./ doc.ready 
 
