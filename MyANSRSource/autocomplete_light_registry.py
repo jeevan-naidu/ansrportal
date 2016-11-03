@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Book, Project ,Chapter
-from QMS.models import ProjectChapterReviewerRelationship
+from QMS.models import QASheetHeader
 from dal import autocomplete
 
 
@@ -68,7 +68,7 @@ class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
         project = self.forwarded.get('project', None)
         chapter = self.forwarded.get('chapter', None)
         try:
-            user = ProjectChapterReviewerRelationship.objects.filter\
+            user = QASheetHeader.objects.filter\
                 (project=project, chapter=chapter).values_list('author', flat=True)
             qs = qs.filter(pk=user)
 

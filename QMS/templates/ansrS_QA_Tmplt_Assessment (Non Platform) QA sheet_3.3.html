@@ -108,14 +108,13 @@
                                         <td class="qa-editable">
                                           <p class="">{{form.review_item}}</p>
 
-                                        <td class="qa-editable">
+                                        <td class="">
                                           <p>{{form.defect}}</p>
-                                          <input type="text" placeholder="{{form.defect}}" value="{{form.defect}}"  class="input-sm hidden">
                                         </td>
-                                        <td class="qa-editable"> {{form.severity_type}}
+                                        <td class=""><p> {{form.severity_type}}</p>
 
                                         </td>
-                                        <td class="" id="level_"><p>{{form.defect_severity_level}}</p></td>
+                                        <td class="" id="level_"><p>{{form.severity_level}}</p></td>
                                         <td class="" id="classification_"><p>{{form.defect_classification}}</p></td>
                                         <td class="qa-editable">
                                           <p>{{form.is_fixed|yesno:"Yes,No"}}</p>
@@ -124,7 +123,7 @@
                                         <td class="">
                                         <p>{{form.fixed_by}} </p>
                                         </td>
-                                        <td class="qa-editable">
+                                        <td >
                                           <p>{{form.remarks}}</p>
                                         </td>
                                         <td>
@@ -154,17 +153,17 @@
 
 
                 </div><!-- ./ .tab-content -->
+                <div class="panel-footer clearfix">
+                 <input type="submit" class="btn btn-info btn-sm pull-right"/>
+                <div class="btn btn-info btn-sm pull-right">Review Completed</div>
+                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#addModal">Add Item</div>
 
+            </div>
 
                 </form>
 
             </div><!-- ./panel body -->
-            <div class="panel-footer clearfix">
-                             
-                <div class="btn btn-info btn-sm pull-right">Review Completed</div> 
-                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#addModal">Add Item</div>  
 
-            </div>
         </div>
 
                 
@@ -331,12 +330,12 @@ $('.defect').change(function(){
 
                     if(key == 'severity_level'){
 
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_severity_level').append($('<option>', {
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
                             value: data[key],
                             text: data[key],
                             selected :'selected',
                         }));
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_severity_level').prop('disabled',true);
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('disabled',true);
                     }
 
                     if(key == 'defect_classification'){

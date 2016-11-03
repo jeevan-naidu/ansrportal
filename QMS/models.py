@@ -37,6 +37,11 @@ class ProjectTemplate(TimeStampAbstractModel):
 
     project = models.ForeignKey(Project)
     template = models.ForeignKey(TemplateMaster)
+    lead_review_status = models.BooleanField(
+        default=False,
+        null=False,
+        verbose_name=" Is Lead Review Completed "
+    )
 
     def __unicode__(self):
         """ return unicode strings """
@@ -48,19 +53,9 @@ class DefectTypeMaster(NameMasterAbstractModel, TimeStampAbstractModel):
     pass
 
 
-def __unicode__(self):
-        """ return unicode strings """
-        return '%s' % self.name
-
-
 class SeverityLevelMaster(NameMasterAbstractModel, TimeStampAbstractModel):
 
     pass
-
-
-def __unicode__(self):
-        """ return unicode strings """
-        return '%s' % self.name
 
 
 class DefectClassificationMaster(NameMasterAbstractModel, TimeStampAbstractModel):
@@ -68,24 +63,18 @@ class DefectClassificationMaster(NameMasterAbstractModel, TimeStampAbstractModel
     pass
 
 
-def __unicode__(self):
-        """ return unicode strings """
-        return '%s' % self.name
-
-
-class ReviewerMaster(NameMasterAbstractModel):
+class ReviewMaster(NameMasterAbstractModel):
 
     pass
 
 
-def __unicode__(self):
-        """ return unicode strings """
-        return '%s' % self.name
+class WorkPacketMaster(NameMasterAbstractModel, TimeStampAbstractModel):
+    pass
 
 
-class ReviewerGroup(models.Model):
+class ReviewGroup(models.Model):
     name = models.CharField(max_length=100)
-    review_master = models.ForeignKey(ReviewerMaster)
+    review_master = models.ForeignKey(ReviewMaster)
 
     def __unicode__(self):
         """ return unicode strings """
@@ -98,23 +87,33 @@ class DefectSeverityLevel(TimeStampAbstractModel):
     severity_type = models.ForeignKey(DefectTypeMaster)
     severity_level = models.ForeignKey(SeverityLevelMaster)
     defect_classification = models.ForeignKey(DefectClassificationMaster)
-    reviewer_group = models.ForeignKey(ReviewerGroup)
+    review_group = models.ForeignKey(ReviewGroup)
 
-    # def __unicode__(self):
-    #     """ return unicode strings """
-    #     return '%s' % ( str(self.severity_type)+": " + str(self.severity_level) + ": "
-    #
-    #                    + str(self.defect_classification))
+    def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % (str(self.severity_type)+": " + str(self.severity_level) + ": "
+                       + str(self.defect_classification))
 
 
-class ProjectChapterReviewerRelationship(TimeStampAbstractModel):
+class QASheetHeader(TimeStampAbstractModel):
     project = models.ForeignKey(Project)
     chapter = models.ForeignKey(Chapter, blank=False,
                                 verbose_name="Chapter/Subtitle", null=True)
-    questions = models.IntegerField(default=0)
-    author = models.ForeignKey(User, related_name='project_chapter_reviewer_relationship_author')
-    review_group = models.ForeignKey(ReviewerGroup)
-    reviewed_by = models.ForeignKey(User, related_name='project_chapter_reviewer_relationship_reviewed_by')
+    work_packet = models.ForeignKey(WorkPacketMaster, verbose_name="work packet (output)")
+    count = models.IntegerField(verbose_name="work packet count", default=0)
+    author = models.ForeignKey(User, related_name='QASheetHeader_author')
+    review_group = models.ForeignKey(ReviewGroup)
+    reviewed_by = models.ForeignKey(User, related_name='QASheetHeader_reviewed_by')
+    review_group_status = models.BooleanField(
+        default=False,
+        null=False,
+        verbose_name=" Is Review Completed "
+    )
+    author_feedback_status = models.BooleanField(
+        default=False,
+        null=False,
+        verbose_name=" Is author feedback Completed "
+    )
 
     def __unicode__(self):
         """ return unicode strings """
@@ -124,19 +123,19 @@ class ProjectChapterReviewerRelationship(TimeStampAbstractModel):
                        )
 
 
-class ReviewerReport(TimeStampAbstractModel):
-    project_chapter_reviewer_relationship = models.ForeignKey(ProjectChapterReviewerRelationship)
+class ReviewReport(TimeStampAbstractModel):
+    QA_sheet_header = models.ForeignKey(QASheetHeader)
     review_item = models.CharField(max_length=100)
     defect = models.TextField()
     defect_severity_level = models.ForeignKey(DefectSeverityLevel)
-    is_fixed = models.BooleanField(blank=False, default=True, verbose_name="Is Fixed?")
-    fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by')
-
-    remarks = models.TextField()
+    is_fixed = models.BooleanField(blank=False, default=False, verbose_name="Is Fixed?")
+    fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by', blank=True, null=True,)
+    remarks = models.TextField(blank=True, null=True,)
+    is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % str(self.project_chapter_reviewer_relationship)
+        return '%s' % str(self.QA_sheet_header)
 
 
 

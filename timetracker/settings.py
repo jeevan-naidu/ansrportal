@@ -392,16 +392,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # refer this link to configure https://pypi.python.org/pypi/django-modeladmin-reorder/
 ADMIN_REORDER = (
-    {'app': 'QMS', 'models': ('QMS.TemplateMaster', 'QMS.ProjectTemplate','QMS.DefectTypeMaster',
-                              'QMS.SeverityLevelMaster','QMS.DefectClassificationMaster', 'QMS.ReviewerMaster',
-                              'QMS.ReviewerGroup', 'QMS.DefectSeverityLevel',
-                              'QMS.ProjectChapterReviewerRelationship', 'QMS.ReviewerReport')},
+    {'app': 'QMS', 'models': ('QMS.TemplateMaster', 'QMS.ProjectTemplate', 'QMS.DefectTypeMaster',
+                              'QMS.SeverityLevelMaster', 'QMS.DefectClassificationMaster', 'QMS.ReviewMaster',
+                              'QMS.ReviewGroup', 'QMS.DefectSeverityLevel', 'QMS.WorkPacket',
+                              'QMS.QASheetHeader', 'QMS.ReviewReport')},
     # Keep original label and models
     'employee',
     'CompanyMaster',
     'MyANSRSource',
     'Salesforce',
-
     'Leave',
     'Reports',
     'Hire',
