@@ -21,7 +21,7 @@ class Command(BaseCommand):
 def shortLeave():
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
-    checkdate = date.today() - timedelta(days=30)
+    checkdate = date.today() - timedelta(days=0)
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
     dueDate = checkdate + timedelta(days=30)
@@ -63,6 +63,14 @@ def shortLeave():
                         reason = "you came at {0}, you came late".format(morningInTime.time().isoformat())
                         shortLeaveType = 'half_day'
                 else:
+                    swipeIn = datetime.now(pytz.timezone("Asia/Kolkata"))\
+                        .replace(hour=0, minute=0, second=0, microsecond=0)\
+                        .astimezone(pytz.utc)
+                    swipeOut = datetime.now(pytz.timezone("Asia/Kolkata"))\
+                        .replace(hour=0, minute=0, second=0, microsecond=0)\
+                        .astimezone(pytz.utc)
+                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
                     tdelta = timedelta(hours=0, minutes=0, seconds=0)
                     stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                     reason = "you were absent"

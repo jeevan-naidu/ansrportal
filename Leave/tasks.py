@@ -111,20 +111,23 @@ class ShortAttendanceManagerActionEmailSendTask(Task):
 
 
 class ShortAttendanceDisputeEmailSendTask(Task):
-    def run(self, user, leavetype, status, fordate, duedate, status_comments):
+    def run(self, user, leavetype, status, fordate, duedate, status_comments, remark):
         manager = mangerdetail(user)
         msg_html = render_to_string('email_templates/short_attendance_dispute.html',
-                                    {'user': user.first_name,
+                                    {'user': manager.first_name,
+                                     'firstname': user.first_name,
+                                     'lastname' : user.last_name,
                                      'leaveType': shortattendancetype[leavetype],
                                      'fordate': fordate,
                                      'duedate': duedate,
                                      'reason': status_comments,
-                                     'status': status
+                                     'status': status,
+                                     'remark':remark
                                      })
 
         mail_obj = EmailMessage('Short Attendance Dispute Raised',
-                                msg_html, settings.EMAIL_HOST_USER, [user.email],
-                                cc=[manager.email])
+                                msg_html, settings.EMAIL_HOST_USER, [manager.email],
+                                cc=[user.email])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()

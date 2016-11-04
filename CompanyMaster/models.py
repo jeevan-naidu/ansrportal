@@ -184,6 +184,12 @@ class Holiday(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+    remark = models.CharField(verbose_name="remark",
+                              max_length=100,
+                              default=None,
+                              null=True,
+                              blank=True
+                              )
 
     def __unicode__(self):
         return unicode(self.name)

@@ -9,11 +9,12 @@
 
 <p>Hi {{user}},</p>
 
-<p>You have raised dispute against your short attendance. </p>
+<p>{{ firstname }} {{ lastname }} is disputing for short-attendance record dated, {{fordate}}. </p>
 <p>Short Attendance Type : {{leaveType}} </p>
 <p>For Date : {{fordate}}</p>
 <p>Due Date : {{duedate}}</p>
-{% if reason %} <p> Reason : {{reason}} </p> {% endif %}
+{% if remark %} <p> Reason : {{remark}} </p> {% endif %}
+<p>Remark : {{ reason }}</p>
 
 <p></p><p></p>
 <p>Regards,<br>

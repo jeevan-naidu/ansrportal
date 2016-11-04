@@ -10,7 +10,7 @@ from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS,\
-    BUTTON_NAME, LeaveSummary
+    BUTTON_NAME, LeaveSummary, SHORT_ATTENDANCE_TYPE
 from CompanyMaster.models import *
 from django.contrib.auth.models import User
 import datetime
@@ -830,7 +830,7 @@ def ShortAttendanceDetail(request):
     leave_id = request.GET.get('leaveid')
     leave = ShortAttendance.objects.get(id=leave_id)
     return render(request, 'short_leave_details.html',
-                  {'leave': leave})
+                  {'leave': leave, 'SHORT_ATTENDANCE_TYPE': SHORT_ATTENDANCE_TYPE})
 
 
 def ShortAttendanceLock(*args, **kwargs):
@@ -1156,7 +1156,8 @@ class RaiseDispute(View):
                                                       shortAttendance.status,
                                                       shortAttendance.for_date,
                                                       shortAttendance.due_date,
-                                                      status_comment)
+                                                      status_comment,
+                                                      shortAttendance.reason)
             context_data['record_added'] = True
             context_data['success_msg'] = "Your short attendance had sent for manager approval."
             template = render(request, 'short_attendance_remark.html', context_data)
