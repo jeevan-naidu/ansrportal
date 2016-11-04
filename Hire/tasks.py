@@ -15,9 +15,9 @@ class EmailHireSendTask(Task):
                                      'position': position,
                                  })
 
-        mail_obj = EmailMessage('Congrats you are selected',
-                                msg_html, settings.EMAIL_HOST_USER, ['vivek.pradhan@ansrsource.com'],
-                                cc=['vivek.pradhan@ansrsource.com'])
+        mail_obj = EmailMessage('Ansr Source Recruitment Status',
+                                msg_html, settings.EMAIL_HOST_USER, [email],
+                                cc=[''])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()

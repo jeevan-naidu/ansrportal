@@ -1,41 +1,28 @@
-from django.shortcuts import render
 from django.views.generic import View
-from django.views.generic.list import ListView
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import JsonResponse
 from forms import *
-from django.conf import settings
 from models import *
-from django.db.models import Q
 import json
-from datetime import date
-from validations import leaveValidation, leave_calculation, oneTimeLeaveValidation, newJoineeValidation, compOffAvailibilityCheck
-import employee
-import calendar
-from calendar import monthrange
+from validations import leaveValidation, oneTimeLeaveValidation, newJoineeValidation, compOffAvailibilityCheck
 from django.shortcuts import render
-# from datetime import datetime, date
 from decimal import *
-from datetime import date,timedelta
-from django.utils import timezone
 from django.views.generic.list import ListView
-from django.views.generic import TemplateView
-from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
-from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME,LeaveSummary
+from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS,\
+    BUTTON_NAME, LeaveSummary
 from CompanyMaster.models import *
 from django.contrib.auth.models import User
-from export_xls.views import export_xlwt
 import datetime
 from datetime import date
 from employee.models import Employee
 import logging
 import xlwt
 from django.template.defaultfilters import slugify
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
-from tasks import EmailSendTask, ManagerEmailSendTask
+from tasks import EmailSendTask, ManagerEmailSendTask,\
+    ShortAttendanceDisputeEmailSendTask,\
+    ShortAttendanceManagerActionEmailSendTask
 from django.conf import settings
 from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
@@ -48,11 +35,12 @@ leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
 leaveSessionDictionary = dict(SESSION_STATUS)
 leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home']
 
+
 def LeaveTransaction(request):
     statusType = request.GET.get('type')
     user_id = request.GET.get('user_id')
     loggedInUser = request.user.id
-    statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Open':'open'}
+    statusDict = {'Approved': 'approved' , 'Rejected': 'rejected', 'Cancelled': 'cancelled', 'Open': 'open'}
     if statusType == 'All':
         Leave_transact=LeaveApplications.objects.filter(user=user_id,
         leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
@@ -930,6 +918,12 @@ def UpdateShortAttendance(request, status):
 
     try:
         short_attendance.save()
+        ShortAttendanceManagerActionEmailSendTask.delay(short_attendance.user,
+                                                        short_attendance.short_leave_type,
+                                                        short_attendance.status,
+                                                        short_attendance.for_date,
+                                                        short_attendance.due_date,
+                                                        remark_tmp)
         # ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
         # leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
         return True
@@ -1151,11 +1145,18 @@ class RaiseDispute(View):
             leave_id = form.cleaned_data['leave_id']
             status_comment = form.cleaned_data['Reason']
             user_id = request.user.id
+            user = User.objects.get(id=user_id)
             shortAttendance = ShortAttendance.objects.get(id=leave_id)
             shortAttendance.dispute = 'raised'
-            shortAttendance.status_action_by = User.objects.get(id=user_id)
+            shortAttendance.status_action_by = user
             shortAttendance.status_comments = status_comment
             shortAttendance.save()
+            ShortAttendanceDisputeEmailSendTask.delay(user,
+                                                      shortAttendance.short_leave_type,
+                                                      shortAttendance.status,
+                                                      shortAttendance.for_date,
+                                                      shortAttendance.due_date,
+                                                      status_comment)
             context_data['record_added'] = True
             context_data['success_msg'] = "Your short attendance had sent for manager approval."
             template = render(request, 'short_attendance_remark.html', context_data)

@@ -12,7 +12,7 @@ APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', '
 SESSION_STATUS = (('session_first', 'First Half'), ('session_second', 'Second Half'))
 BUTTON_NAME = (('success', 'approved'), ('info', 'open'), ('danger', 'rejected'), ('warning', 'cancelled'))
 SHORT_ATTENDANCE_STATUS = (('open','Open'),('closed','Closed'),('accepted','Accepted'))
-SHORT_ATTENDANCE_TYPE = (('half_day','HALF'),('full_day','FULL'))
+SHORT_ATTENDANCE_TYPE = (('half_day','HALF DAY'),('full_day','FULL DAY'))
 DISPUTE_STATUS = (('open','Open'),('raised', 'Raised'), ('approved', 'Approved'), ('rejected', 'Rejected'))
 
 # def content_file_name(instance, filename):

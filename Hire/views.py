@@ -246,7 +246,7 @@ class ProcessUpdate(View):
             process.save()
             profile.candidate_status=interview_status
             profile.save()
-            if interview_status == 'selected':
+            if interview_status == 'rejected':
                 EmailHireSendTask.delay(profile.candidate_name,
                                     profile.email_id,
                                     profile.requisition_number.requisition_number.position.designation)

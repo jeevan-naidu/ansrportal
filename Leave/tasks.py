@@ -4,15 +4,25 @@ from celery.registry import tasks
 from celery.task import Task
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-from Leave.models import LeaveApplications, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME
+from Leave.models import LEAVE_TYPES_CHOICES, SESSION_STATUS, SHORT_ATTENDANCE_TYPE
 import datetime
-from datetime import date,timedelta
 from django.utils import timezone
+from employee.models import Employee
+from django.contrib.auth.models import User
 import logging
 logger = logging.getLogger('MyANSRSource')
 
 leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
 leaveSessionDictionary = dict(SESSION_STATUS)
+shortattendancetype = dict(SHORT_ATTENDANCE_TYPE)
+
+
+def mangerdetail(user):
+    useremployeedetail = Employee.objects.get(user_id=user.id)
+    mangeremployeedetail = Employee.objects.get(employee_assigned_id=useremployeedetail.manager_id)
+    user = User.objects.get(id=mangeremployeedetail.user_id)
+    return user
+
 
 class EmailSendTask(Task):
     def run(self, user, manager, leave_selected, fromdate, todate, fromsession, tosession, count, reason, flag):
@@ -73,5 +83,61 @@ class ManagerEmailSendTask(Task):
             logger.debug('send successful')
 
 
+class ShortAttendanceManagerActionEmailSendTask(Task):
+    def run(self, user, leavetype, status, fordate, duedate, status_comments):
+        manager = mangerdetail(user)
+        msg_html = render_to_string('email_templates/short_attendance_manager_action.html',
+                                    {'user': user.first_name,
+                                     'leaveType': shortattendancetype[leavetype],
+                                     'fordate': fordate,
+                                     'duedate': duedate,
+                                     'action': status,
+                                     'reason': status_comments,
+                                     'action_taken_by': manager.first_name})
+
+        mail_obj = EmailMessage('Short Attendance Dispute Action',
+                                msg_html, settings.EMAIL_HOST_USER, [user.email],
+                                cc=[manager.email])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Leave Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
+class ShortAttendanceDisputeEmailSendTask(Task):
+    def run(self, user, leavetype, status, fordate, duedate, status_comments):
+        manager = mangerdetail(user)
+        msg_html = render_to_string('email_templates/short_attendance_dispute.html',
+                                    {'user': user.first_name,
+                                     'leaveType': shortattendancetype[leavetype],
+                                     'fordate': fordate,
+                                     'duedate': duedate,
+                                     'reason': status_comments,
+                                     'status': status
+                                     })
+
+        mail_obj = EmailMessage('Short Attendance Dispute Raised',
+                                msg_html, settings.EMAIL_HOST_USER, [user.email],
+                                cc=[manager.email])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Leave Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
 tasks.register(EmailSendTask)
 tasks.register(ManagerEmailSendTask)
+tasks.register(ShortAttendanceDisputeEmailSendTask)
+tasks.register(ShortAttendanceManagerActionEmailSendTask)

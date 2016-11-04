@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>Page Title</title>
 </head>
+
 <body>
-$END$
+
+<p>Hi {{user}},</p>
+
+<p>Your manager have taken action against your dispute for short attendance. </p>
+<p>Short Attendance Type : {{leaveType}} </p>
+<p>For Date : {{fordate}}</p>
+<p>Due Date : {{duedate}}</p>
+<p>Action: {{ action }}</p>
+{% if reason %} <p> Reason : {{reason}} </p> {% endif %}
+
+<p></p><p></p>
+<p>Regards,<br>
+ HR Support<br>
 </body>
-</html>
