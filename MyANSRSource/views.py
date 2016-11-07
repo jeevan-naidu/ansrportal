@@ -266,6 +266,7 @@ def Timesheet(request):
                     del(timesheet.cleaned_data['sunday'])
                     del(timesheet.cleaned_data['total'])
                     approved = False
+
                     for k, v in timesheet.cleaned_data.iteritems():
                         if k == 'tsId':
                             if v:

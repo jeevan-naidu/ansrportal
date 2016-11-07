@@ -1,20 +1,22 @@
 {% extends 'master.html' %}
-{% load static from staticfiles %}
+{% load static from staticfiles %}{% load static %}
+{% load bootstrap_dynamic_formsets %}
 {% block siteTitle %}QMS{% endblock %}
 {% block pageTitle %}QMS{% endblock %}
 {% block content  %}
 
 
-<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">  
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
 <script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
 <script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
 <script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-
 <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
 
 <div class="row">
 
@@ -29,6 +31,11 @@
             <div class="panel-heading vd_bg-grey">
 
                 <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
+                {% for dict in formset.errors %}
+    {% for error in dict.values %}
+        {{ error }}
+    {% endfor %}
+{% endfor %}
                     {% if messages %}
             {% for message in messages %}
                 {% if message.tags %}
@@ -61,9 +68,10 @@
                         </div>
 
                     </div>
-                    <input type="hidden" name="active_tab" id="active_tab" value="er1"/>
-                    <input type="hidden" name="template_name" id="template_id" value="{{template_id}}"/>
+                    <input type="hidden" name="active_tab" id="active_tab" value="1"/>
+                    <input type="hidden" name="template_name" id="template_id" value="{{request.session.template_id}}"/>
                 </div><!-- ./qms-selectors row -->
+            </form>
 
                 <div id="qms-summary" class="collapsed">
 
@@ -250,9 +258,9 @@
 
 
                 <ul class="nav nav-tabs" >
-                    <li class="active review " id="er1" ><a href="#tab1" data-toggle="tab" >ER1</a></li>
-                    <li class="review" id="er2" ><a href="#tab2" data-toggle="tab" >ER2</a></li>
-                    <li class="review disabled" id="er2" ><a href="#tab3" >CE1</a></li>
+                    <li class="active review " id="1" ><a href="#tab1" data-toggle="tab" >ER1</a></li>
+                    <li class="review" id="2" ><a href="#tab2" data-toggle="tab" >ER2</a></li>
+                    <li class="review disabled" id="3" ><a href="#tab3" >CE1</a></li>
                 </ul><!-- ./tab -->
 
 
@@ -264,9 +272,9 @@
                 <div class="tab-content mgbt-xs-20">
                     <div class="tab-pane active" id="tab1">
 
-
-
-                        <table class="table  table-striped qa-table" id="data-tables">
+                     <form role="form"  id="review_report_form" method="post" action="{% url 'edit_review' %}">
+                        {% csrf_token %}
+                        <table class="table  table-striped qa-table" id="review_report_table">
                             <thead>
                                 <tr>
                                     <th>S.No.</th>
@@ -281,48 +289,58 @@
                                     <th>Delete</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <form>
-                                    {{ review_formset.management_form }}
-                                    {% for form in review_formset %}
-                                    <tr class="gradeX">
-                                        <td>{{forloop.counter}}</td>
-                                        <td class="qa-editable">
-                                          <p class="">{{form.review_item}}</p>
+                            <tbody> {%if reports%}{%if review_formset %}
 
-                                        <td class="">
-                                          <p>{{form.defect}}</p>
+                                {{review_formset.management_form}}
+                             {%comment%} {% bootstrap_dynamic_formset review_formset can_order=True can_delete=True layout="horizontal" %}{%endcomment%}
+
+
+                                    {% for form_obj in review_formset%}
+                                    <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
+                                        <td id="sr-{{forloop.counter}}-td">{{forloop.counter}}</td>
+                                        <td class="" id="review_item-{{forloop.counter}}-td">
+                                          <p class="">{{form_obj.review_item}}</p>
+                                        <p> {{form_obj.qms_id}}</p></td>
+
+                                        <td class="" id="defect-{{forloop.counter}}-td">
+                                          <p>{{form_obj.defect}}</p>
                                         </td>
-                                        <td class=""><p> {{form.severity_type}}</p>
+                                        <td class="" id="severity_type-{{forloop.counter}}-td"><p> {{form_obj.severity_type}}</p>
 
                                         </td>
-                                        <td class="" id="level_"><p>{{form.severity_level}}</p></td>
-                                        <td class="" id="classification_"><p>{{form.defect_classification}}</p></td>
-                                        <td class="qa-editable">
-                                          <p>{{form.is_fixed|yesno:"Yes,No"}}</p>
-                                          <input type="text" placeholder="{{form.is_fixed|yesno:'Yes,No'}}" class="input-sm hidden">
+                                        <td class="" id="severity_level-{{forloop.counter}}-td"><p>{{form_obj.severity_level}}</p></td>
+                                        <td class="" id="defect_classification-{{forloop.counter}}-td"><p>{{form_obj.defect_classification}}</p></td>
+                                        <td class="qa-editable" id="is_fixed-{{forloop.counter}}-td">
+                                          <p>{{form_obj.is_fixed|yesno:"Yes,No"}}</p>
+                                          <input type="text" placeholder="{{form_obj.is_fixed|yesno:'Yes,No'}}" class="input-sm hidden">
                                         </td>
-                                        <td class="">
-                                        <p>{{form.fixed_by}} </p>
+                                        <td class="" id="fixed_by-{{forloop.counter}}-td">
+                                        <p>{{form_obj.fixed_by}} </p>
+                                        </td>
+                                        <td id="remarks-{{forloop.counter}}-td">
+                                          <p>{{form_obj.remarks}}</p>
                                         </td>
                                         <td >
-                                          <p>{{form.remarks}}</p>
-                                        </td>
-                                        <td>
                                             <div class="edit-buttons">
-                                            {{form.DELETE}}
+                                            {{form_obj.DELETE}}
                                                 <!--<a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">-->
                                                     <!--<i class="fa fa-times fa-fw "></i>-->
                                                 <!--</a>-->
                                             </div>
                                         </td>
                                     </tr>
-                                {% endfor %}
-                                </form>
+                                {% endfor %} {%else%} oiiii {%endif %}{%endif %}
                             </tbody>
 
 
                         </table>
+                         <div class="panel-footer clearfix">
+                 <input type="submit"  id="form-submit"  value="submit" class="btn btn-info btn-sm pull-right"/>
+                <div class="btn btn-info btn-sm pull-right">Review Completed</div>
+                <input type="button" class="btn btn-info btn-sm pull-right" id="add_button" value="Add Item" />
+
+            </div>
+</form>
 
 
 
@@ -341,14 +359,14 @@
                     </div><!-- ./tab -->
 
                 </div><!-- ./ .tab-content -->
-                <div class="panel-footer clearfix">
-                 <input type="submit" class="btn btn-info btn-sm pull-right"/>
-                <div class="btn btn-info btn-sm pull-right">Review Completed</div>
-                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#addModal">Add Item</div>
+                <!--<div class="panel-footer clearfix">-->
+                 <!--<input type="submit" value="submit" class="btn btn-info btn-sm pull-right"/>-->
+                <!--<div class="btn btn-info btn-sm pull-right">Review Completed</div>-->
+                <!--<div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#addModal">Add Item</div>-->
 
-            </div>
+            <!--</div>-->
 
-                </form>
+
 
             </div><!-- ./panel body -->
 
@@ -374,7 +392,7 @@
     <div class="modal-content">
 
 
-        <form class="form-horizontal">    
+        <form class="form-horizontal">
               <div class="modal-header vd_bg-blue vd_white">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">The Add Modal</h4>
@@ -417,7 +435,7 @@
                           <option>Type 4</option>
                       </select>
                     </div>
-                  </div> 
+                  </div>
                   <div class="form-group">
                     <label class="control-label col-sm-3" for="email">Severity:</label>
                     <div class="col-sm-6">
@@ -441,7 +459,7 @@
                     <div class="col-sm-6">
                       <textarea type="text" class="form-control"></textarea>
                     </div>
-                  </div> 
+                  </div>
 
 
 
@@ -486,6 +504,45 @@
 
         $(function() {
 
+        $("#add_button").on('click', function() { console.log("im clicked");
+            var $tr    = $('#review_report_table tr:last')
+            var $clone = $tr.clone( true, true );
+            $clone.find(':text').val('');
+            var increment_id = 0;
+            $tr.after($clone);
+
+             $clone.find("td,input, select, textarea").each(function(index) {
+             <!--console.log("index "+index);-->
+             if (index==0) { console.log("sr"+ $(this).text());
+                var val = $(this).text(); //console.log("var"+val);
+                sr_no = parseInt(val)+1;// console.log("sr_no "+sr_no);
+                $(this).text(sr_no);
+             }
+             tmp_id = this.id; //console.log("tmp_id"+tmp_id);
+             id=tmp_id.split('-');
+             increment_id = parseInt(id[1]); //console.log((increment_id) )
+              increment_id =++increment_id;
+              //console.log((increment_id) )
+             new_id = id[0]+'-'+increment_id+'-'+id[2]
+
+             <!--console.log(this.id);-->
+             <!--console.log("new id " + new_id)-->
+             $(this).attr('id',new_id);
+             var new_name = new_id.substring(3)
+             $(this).attr('name',new_id);
+
+             if(id[2] == 'qms_id') $(this).val(0)
+             if (this.nodeName != "TD")  $(this).attr('name',new_name);
+
+             <!--$(this).closest('td').attr('id',new_id);-->
+            });
+            total_form = ++increment_id;
+              $('#id_form-TOTAL_FORMS').val(increment_id)
+             // console.log($('#id_form-TOTAL_FORMS').val())
+        });
+
+
+
         $('.review').click(function(){
             $('#active_tab').val(this.id);
         });
@@ -503,10 +560,11 @@
         });// End of document ready
 
 $('.defect').change(function(){
+console.log("im clicked");
     var obj_id = this.id.split('-');
     console.log(obj_id);
     $.ajax({
-            url: 'fetch_severity/',
+            url: '/qms/fetch_severity/',
             type: 'GET',
             dataType :'json',
             data: {"template_id": $('#template_id').val() , "severity_type" :  $(this).val() },
@@ -523,7 +581,7 @@ $('.defect').change(function(){
                             text: data[key],
                             selected :'selected',
                         }));
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('disabled',true);
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('readonly',true);
                     }
 
                     if(key == 'defect_classification'){
@@ -533,7 +591,7 @@ $('.defect').change(function(){
                             text: data[key],
                             selected :'selected',
                         }));
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('disabled',true);
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('readonly',true);
                     }
 
                 }

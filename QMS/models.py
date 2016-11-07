@@ -101,7 +101,7 @@ class QASheetHeader(TimeStampAbstractModel):
                                 verbose_name="Chapter/Subtitle", null=True)
     work_packet = models.ForeignKey(WorkPacketMaster, verbose_name="work packet (output)")
     count = models.IntegerField(verbose_name="work packet count", default=0)
-    author = models.ForeignKey(User, related_name='QASheetHeader_author')
+    author = models.ForeignKey(User, related_name='QASheetHeader_author', blank=True, null=True,)
     review_group = models.ForeignKey(ReviewGroup)
     reviewed_by = models.ForeignKey(User, related_name='QASheetHeader_reviewed_by')
     review_group_status = models.BooleanField(
@@ -128,7 +128,7 @@ class ReviewReport(TimeStampAbstractModel):
     review_item = models.CharField(max_length=100)
     defect = models.TextField()
     defect_severity_level = models.ForeignKey(DefectSeverityLevel)
-    is_fixed = models.BooleanField(blank=False, default=False, verbose_name="Is Fixed?")
+    is_fixed = models.BooleanField(blank=True, default=False, verbose_name="Is Fixed?")
     fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by', blank=True, null=True,)
     remarks = models.TextField(blank=True, null=True,)
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")

@@ -53,23 +53,33 @@ class BaseAssessmentTemplateForm(forms.Form):
 
 def review_report_base(template_id, project_id):
     class ReviewReportForm(forms.Form):
-        severity_type = forms.ModelChoiceField(widget=forms.Select(),
-                                               queryset=DefectTypeMaster.objects.none(), )
-        # defect_severity_level = forms.CharField()
-        # defect_classification = forms.CharField()
         review_item = forms.CharField()
-        severity_level = forms.ModelChoiceField(widget=forms.Select(),
-                                                queryset=SeverityLevelMaster.objects.none(), )
-        defect_classification = forms.ModelChoiceField(widget=forms.Select(),
-                                                queryset=DefectClassificationMaster.objects.none(), )
-        remarks = forms.CharField()
-        is_fixed = forms.CharField()
-        fixed_by = forms.CharField()
+        qms_id = forms.IntegerField(label="id",
+                                  required=False,
+                                  widget=forms.HiddenInput())
         defect = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 1, 'cols': 30}))
 
+        severity_type = forms.ModelChoiceField(widget=forms.Select(),
+                                               queryset=DefectTypeMaster.objects.all(), )
+        # defect_severity_level = forms.CharField()
+        # defect_classification = forms.CharField()
+
+        severity_level = forms.ModelChoiceField(widget=forms.Select(),
+                                                queryset=SeverityLevelMaster.objects.all(),required=False, )
+        defect_classification = forms.ModelChoiceField(widget=forms.Select(),
+                                                queryset=DefectClassificationMaster.objects.all(),required=False, )
+        severity_level = forms.ModelChoiceField(widget=forms.Select(),
+                                                queryset=SeverityLevelMaster.objects.all(),required=False, )
+        defect_classification = forms.ModelChoiceField(widget=forms.Select(),
+                                                queryset=DefectClassificationMaster.objects.all(),required=False, )
+
+        is_fixed = forms.CharField(required=False,)
+        fixed_by = forms.CharField(required=False,)
+        remarks = forms.CharField(required=False,)
+
         class Meta:
-            model = QASheetHeader
-            fields = ('review_item', 'defect', 'is_fixed','fixed_by','remarks')
+            model = ReviewReport
+            fields = ('review_item', 'defect', 'is_fixed', 'fixed_by', 'remarks', 'qms_id')
 
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
@@ -77,16 +87,18 @@ def review_report_base(template_id, project_id):
             template_obj = ProjectTemplate.objects.get(project=project_id)
             defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
             # print defect_type_master_obj
-            self.fields['severity_type'].queryset = DefectTypeMaster.objects.all()
+            # self.fields['severity_type'].queryset = DefectTypeMaster.objects.all()
+            self.fields['qms_id'].widget.attrs['class'] = "set-zero"
+            self.fields['qms_id'].widget.attrs['value'] = 0
             # self.fields['severity_type'].queryset = DefectTypeMaster.objects.filter\
             #     (id__in=defect_type_master_obj.severity_type)
             # self.fields['defect_severity_level'].widget.attrs['disabled'] = True
             self.fields['is_fixed'].widget.attrs['readonly'] = True
             self.fields['fixed_by'].widget.attrs['readonly'] = True
-            self.fields['severity_level'].queryset = SeverityLevelMaster.objects.all()
+            # self.fields['severity_level'].queryset = SeverityLevelMaster.objects.all()
             # self.fields['severity_level'].queryset = SeverityLevelMaster.objects.filter\
             #     (id=defect_type_master_obj.severity_level)
-            self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.all()
+            # self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.all()
             # self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.filter\
             #     (id=defect_type_master_obj.defect_classification)
             # print DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)

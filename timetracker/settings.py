@@ -147,6 +147,8 @@ INSTALLED_APPS = [
     'QMS',
     'admin_reorder',
     'smart_selects',
+    'django_bootstrap_dynamic_formsets',
+    'dynamic_formsets',
 ]
 
 MIDDLEWARE_CLASSES = [

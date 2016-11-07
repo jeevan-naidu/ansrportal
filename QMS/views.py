@@ -10,8 +10,20 @@ from django.http import HttpResponseRedirect, HttpResponse
 import json
 from .forms import *
 from django.forms.formsets import formset_factory
+from django.core.urlresolvers import reverse
 import logging
 logger = logging.getLogger('MyANSRSource')
+
+
+def get_review(obj):
+    return ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True).\
+        values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
+               'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
+               'is_fixed', 'fixed_by__username', 'remarks')
+
+
+def qa_sheet_header_obj(project, chapter, author):
+    return QASheetHeader.objects.get(project=project, chapter=chapter, author=author)
 
 
 class AssessmentView(TemplateView):
@@ -27,6 +39,7 @@ class AssessmentView(TemplateView):
 
     def post(self, request):
         form = BaseAssessmentTemplateForm(request.POST)
+        # print request.POST
         reports = None
 
         if form.is_valid():
@@ -36,25 +49,24 @@ class AssessmentView(TemplateView):
             chapter = form.cleaned_data['chapter']
             author = form.cleaned_data['author']
             try:
-                obj = QASheetHeader.objects.get(project=project, chapter=chapter, author=author)
-                template_obj = get_object_or_404(ProjectTemplate, project=obj.project)
-                template_id = template_obj.id
-                request.session['pk'] = obj.id
                 request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
                 request.session['active_tab'] = active_tab
+                obj = qa_sheet_header_obj(project, chapter, author)
+                template_obj = get_object_or_404(ProjectTemplate, project=obj.project)
+                template_id = request.session['template_id'] = template_obj.id
+                request.session['QA_sheet_header_id'] = obj.id
                 defect_master = DefectTypeMaster.objects.all()
                 try:
-                    reports = ReviewReport.objects.filter(QA_sheet_header=obj.id).values(
-                        'review_item', 'defect', 'defect_severity_level__severity_type',
-                        'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
-                        'is_fixed', 'fixed_by__username', 'remarks')
+                    reports = get_review(obj)
+                    print reports
+                    # request.session['reports'] = list(reports)
 
                 except reports.ObjectDoesNotExist, e:
                     print "error " + str(e)
                     reports = None
-                    template_id = None
+                    request.session['template_id'] = template_id = None
 
             except ObjectDoesNotExist:
                 messages.error(self.request, "Sorry No Records Found")
@@ -64,82 +76,129 @@ class AssessmentView(TemplateView):
 
         qmsData = {}
         qmsDataList = []
-        for eachData in reports:
-            for k, v in eachData.iteritems():
-                qmsData[k] = v
-                if k == 'review_item':
-                    qmsData['review_item'] = v
+        if len(reports) != 0:
+            # print"im in"
+            for eachData in reports:
+                for k, v in eachData.iteritems():
+                    qmsData[k] = v
+                    if k == 'id':
+                        qmsData['qms_id'] = v
+                    if k == 'review_item':
+                        qmsData['review_item'] = v
 
-                if k == 'defect':
-                    qmsData['defect'] = v
+                    if k == 'defect':
+                        qmsData['defect'] = v
 
-                if k == 'defect_severity_level__severity_type':
-                    qmsData['severity_type'] = v
+                    if k == 'defect_severity_level__severity_type':
+                        qmsData['severity_type'] = v
 
-                if k == 'defect_severity_level__severity_level':
-                    qmsData['severity_level'] = v
+                    if k == 'defect_severity_level__severity_level':
+                        qmsData['severity_level'] = v
 
-                if k == 'defect_severity_level__defect_classification':
-                    qmsData['defect_classification'] = v
+                    if k == 'defect_severity_level__defect_classification':
+                        qmsData['defect_classification'] = v
 
-                if k == 'is_fixed':
-                    qmsData['is_fixed'] = v
+                    if k == 'is_fixed':
+                        qmsData['is_fixed'] = v
 
-                if k == 'fixed_by__username':
-                    qmsData['fixed_by'] = v
+                    if k == 'fixed_by__username':
+                        qmsData['fixed_by'] = v
 
-                if k == 'remarks':
-                    qmsData['remarks'] = v
-            # print qmsData
-            qmsDataList.append(qmsData.copy())
+                    if k == 'remarks':
+                        qmsData['remarks'] = v
+                # print qmsData
+                qmsDataList.append(qmsData.copy())
 
-        qmsData.clear()
+            qmsData.clear()
         # print qmsDataList
         qms_formset = formset_factory(
-            qms_form, extra=3, max_num=10, can_delete=True
+            qms_form, max_num=1, can_delete=True
         )
 
         qms_formset = qms_formset(initial=qmsDataList)
+
         return render(self.request, self.template_name, {'form': form, 'defect_master': defect_master,
                                                          'reports': reports, 'review_formset': qms_formset,
                                                          'template_id': template_id})
 
 
-class ReviewReportManipulationView(View) :
+class ReviewReportManipulationView(AssessmentView):
+
     def post(self, request):
+        # print request.POST
+        fail = 0
         qmsData = {}
         qmsDataList = []
-        form = BaseAssessmentTemplateForm(request.POST)
-        if form.is_valid():
-            for form_data in form:
-                if form_data.cleaned_data['DELETE'] is True:
-                    ReviewReport.object.filter(id=form_data.cleaned_data['id']).update(is_active=False)
-                for k, v in form.cleaned_data.iteritems():
-                    qmsData[k] = v
-                qmsDataList.append(qmsData.copy())
-                qmsData.clear()
+        qms_form = review_report_base(request.session['template_id'], request.session['project'])
+        qms_formset = formset_factory(
+            qms_form,  max_num=1, can_delete=True
+        )
+        # my_post_dict = request.POST.copy()
+        # my_post_dict['form-TOTAL_FORMS'] = 1
+        # my_post_dict['form-INITIAL_FORMS'] = 2
+        # my_post_dict['form-MAX_NUM_FORMS'] = 3
+        # myformset = qms_formset(my_post_dict)
+        q_form = qms_formset(request.POST)
+        if q_form.is_valid():
 
+            for form_elements in q_form:
+                # print form_elements
+                if form_elements.cleaned_data['DELETE'] is True:
+                    # form_elements.cleaned_data['DELETE']
+                    ReviewReport.objects.filter(id=form_elements.cleaned_data['qms_id']).update(is_active=False)
+                else:
+                    del(form_elements.cleaned_data['DELETE'])
+                    for k, v in form_elements.cleaned_data.iteritems():
+                        qmsData[k] = v
+                    qmsDataList.append(qmsData.copy())
+                    qmsData.clear()
+                    print qmsDataList
+                for obj in qmsDataList:
+                    if obj['qms_id'] > 0:
+                        report = ReviewReport.objects.get(id=obj['qms_id'])
+                        print obj['qms_id']
+                    else:
+                        print obj['qms_id']
+                        report = ReviewReport()
+                        report.created_by = request.user
+                    report.review_item = obj['review_item']
+                    report.defect = obj['defect']
+                    report.is_fixed = obj['is_fixed']
+                    report.remarks = obj['remarks']
+                    # print request.session['template_id']
+                    #
+                    # print request.session['active_tab']
+                    # import ipdb
+                    # ipdb.set_trace()
+                    defect_obj = DefectSeverityLevel.objects.get(template_id=request.session['template_id'],
+                                                                 severity_type=obj['severity_type'],
+                                                                 review_group_id=request.session['active_tab'])
 
+                    report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
+                    report.QA_sheet_header = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
+                    report.updated_by = request.user
+                    try:
+                        report.save()
+                    except Exception, e:
+                        logger.error(" {0} ".format(str(e)))
+                        fail += 1
 
+        else:
+            # print q_form.errors
+            messages.error(request, q_form.errors)
+            # context = {'form': BaseAssessmentTemplateForm(), 'review_formset': qms_formset}
+        if fail == 0:
+            messages.info(request, "successfully saved")
+        else:
+            messages.warning(request, "partially saved")
 
-class AssessmentReviewCreateView(CreateView):
-    model = ReviewReport
-    template_name_suffix = '_create_form'
-    fields = ['review_item', 'defect', 'defect_severity_level', 'is_fixed', 'fixed_by']
+        return HttpResponseRedirect(reverse('qms'))
+        obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'])
 
-    def form_valid(self, form):
-        form.instance.project_chapter_reviewer_relationship = self.request.session['pk']
-        return super(ReviewReport, self).form_valid(form)
-
-
-class AssessmentReviewEditView(UpdateView):
-    model = ReviewReport
-    template_name_suffix = '_update_form'
-    fields = ['review_item', 'defect', 'defect_severity_level', 'is_fixed', 'fixed_by']
-
-    def form_valid(self, form):
-        form.instance.project_chapter_reviewer_relationship = self.request.session['pk']
-        return super(ReviewReport, self).form_valid(form)
+        return render(self.request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html", {
+            'form': BaseAssessmentTemplateForm(),
+            'review_formset': qms_formset(request.POST), 'reports':  get_review(obj),
+        })
 
 
 def fetch_severity(request):
