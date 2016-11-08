@@ -1,5 +1,6 @@
 {% extends 'master.html' %}
-{% load static from staticfiles %}{% load static %}
+{% load static from staticfiles %}
+
 {% block siteTitle %}QMS{% endblock %}
 {% block pageTitle %}QMS{% endblock %}
 {% block content  %}
@@ -71,185 +72,46 @@
                 </div><!-- ./qms-selectors row -->
             </form>
 
+
                 <div id="qms-summary" class="collapsed">
 
-                  <table class="table-responsive table-striped width-100">
+                    <table class="table-responsive table-striped width-100">
                     <tr>
-                      <th>Severity Levels</th>
-                      <th>Index</th>
-                      <th>ER1</th>
-                      <th>ER2</th>
-                      <th>ER3</th>
-                      <th>EA</th>
-                      <th>CE1</th>
-                      <th>CE2</th>
-                      <th>EU Testing</th>
-                      <th>QA</th>
-                      <th>Feedback</th>
-                      <th>Total</th>
+                        <th>Defect Analysis</th>
+                        <th>Defect Severity</th>
+                        <th>Counts</th>
+                        <th>Score</th>
+                        <th>Defect Density</th>
                     </tr>
 
                     <tr>
-                      <td rowspan="4"></td>
-                      <td>No: of questions reviewed</td>
+                        <td></td>
+                        <td>S1</td>
                       <td>0</td>
                       <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                    </tr> 
-
-                    <tr>
-                      <td>Total Defects</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                    </tr> 
-
-                    <tr>
-                      <td>Overall QA Score</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
+                      <td>0.00%</td>
                     </tr> 
 
 
                     <tr>
-                      <td>Overall Performance</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td></td>
-                    </tr> 
-
-                    <!-- End of first section -->
-
-<!-- Severity 1 -->
-
-                    <tr>
-                      <td rowspan="2">Severity 1</td>
-                      <td>No of Defects</td>
+                        <td></td>
+                        <td>S2</td>
                       <td>0</td>
                       <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                    </tr> 
-
-                    <tr>
-                      <td>Defect Density</td>
                       <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td></td>
-                    </tr> 
-
-
-<!-- Severity 2 -->
-
-                    <tr>
-                      <td rowspan="2">Severity 2</td>
-                      <td>No of Defects</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                    </tr> 
-
-                    <tr>
-                      <td>Defect Density</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td></td>
                     </tr>
 
 
-
-<!-- Severity 3 -->
-
                     <tr>
-                      <td rowspan="2">Severity 3</td>
-                      <td>No of Defects</td>
+                        <td></td>
+                        <td>S3</td>
                       <td>0</td>
                       <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0</td>
-                    </tr> 
-
-                    <tr>
-                      <td>Defect Density</td>
                       <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td>0.00%</td>
-                      <td></td>
-                    </tr> 
+                    </tr>
 
 
-
-
-
-                  </table>
+                    </table>
 
                 </div>
 
@@ -287,6 +149,8 @@
                                     <th>Delete</th>
                                 </tr>
                             </thead>
+
+
                             <tbody> {%if reports%}{%if review_formset %}
 
                                 {{review_formset.management_form}}
@@ -297,38 +161,92 @@
                                     <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
                                         <td id="sr-{{forloop.counter}}-td">{{forloop.counter}}</td>
                                         <td class="" id="review_item-{{forloop.counter}}-td">
-                                          <p class="">{{form_obj.review_item}}</p>
-                                        <p> {{form_obj.qms_id}}</p></td>
+                                            {{form_obj.review_item}}
+                                            {{form_obj.qms_id}}
+                                        </td>
 
                                         <td class="" id="defect-{{forloop.counter}}-td">
-                                          <p>{{form_obj.defect}}</p>
+                                            {{form_obj.defect}}
                                         </td>
-                                        <td class="" id="severity_type-{{forloop.counter}}-td"><p> {{form_obj.severity_type}}</p>
+                                        <td class="" id="severity_type-{{forloop.counter}}-td">
+                                            {{form_obj.severity_type}}
 
                                         </td>
-                                        <td class="" id="severity_level-{{forloop.counter}}-td"><p>{{form_obj.severity_level}}</p></td>
-                                        <td class="" id="defect_classification-{{forloop.counter}}-td"><p>{{form_obj.defect_classification}}</p></td>
+                                        <td class="" id="severity_level-{{forloop.counter}}-td">
+                                            {{form_obj.severity_level}}
+                                        </td>
+                                        <td class="" id="defect_classification-{{forloop.counter}}-td">
+                                            {{form_obj.defect_classification}}
+                                        </td>
                                         <td class="qa-editable" id="is_fixed-{{forloop.counter}}-td">
-                                          <p>{{form_obj.is_fixed|yesno:"Yes,No"}}</p>
+                                            {{form_obj.is_fixed|yesno:"Yes,No"}}
                                           <input type="text" placeholder="{{form_obj.is_fixed|yesno:'Yes,No'}}" class="input-sm hidden">
                                         </td>
                                         <td class="" id="fixed_by-{{forloop.counter}}-td">
-                                        <p>{{form_obj.fixed_by}} </p>
+                                            {{form_obj.fixed_by}}
                                         </td>
                                         <td id="remarks-{{forloop.counter}}-td">
-                                          <p>{{form_obj.remarks}}</p>
+                                            {{form_obj.remarks}}
                                         </td>
                                         <td >
                                             <div class="edit-buttons">
                                             {{form_obj.DELETE}}
-                                                <!--<a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">-->
-                                                    <!--<i class="fa fa-times fa-fw "></i>-->
-                                                <!--</a>-->
+
+                                                comment
                                             </div>
                                         </td>
                                     </tr>
                                 {% endfor %} {%else%} oiiii {%endif %}{%endif %}
                             </tbody>
+
+
+                            <!--<a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">-->
+                            <!--<i class="fa fa-times fa-fw "></i>-->
+                            <!--</a>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                         </table>
@@ -551,10 +469,10 @@
             console.log(edit_record);
             $(".edit_body").html(edit_record);
         });
-        <!--$('#review_report_table').dataTable({-->
-          <!--searching: false,-->
-          <!--scrollCollapse: true-->
-        <!--});-->
+/*        $('#review_report_table').dataTable({
+          searching: false,
+          scrollCollapse: true
+        });*/
 
         });// End of document ready
 

@@ -158,7 +158,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
-    'admin_reorder.middleware.ModelAdminReorder',
+    # 'admin_reorder.middleware.ModelAdminReorder',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p
@@ -390,39 +390,40 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # refer this link to configure https://pypi.python.org/pypi/django-modeladmin-reorder/
-ADMIN_REORDER = (
-    {'app': 'QMS', 'models': ('QMS.TemplateMaster', 'QMS.ProjectTemplate', 'QMS.DefectTypeMaster',
-                              'QMS.SeverityLevelMaster', 'QMS.DefectClassificationMaster', 'QMS.ReviewMaster',
-                              'QMS.ReviewGroup', 'QMS.DefectSeverityLevel', 'QMS.WorkPacket',
-                              'QMS.QASheetHeader', 'QMS.ReviewReport')},
-    # Keep original label and models
-    'employee',
-    'CompanyMaster',
-    'MyANSRSource',
-    'Salesforce',
-    'Leave',
-    'Reports',
-    'Hire',
-    'BookMyRoom',
-    'Library',
-
-    # # Rename app
-    # {'app': 'auth', 'label': 'Authorisation'},
-
-    # Reorder app models
-
-    'fb360',
-    'Grievances',
-    'GrievanceAdmin',
-    # # Exclude models
-    # {'app': 'auth', 'models': ('auth.User', )},
-    #
-    # # Cross-linked models
-    # {'app': 'auth', 'models': ('auth.User', 'sites.Site')},
-    #
-    # # models with custom name
-    # {'app': 'auth', 'models': (
-    #     'auth.Group',
-    #     {'model': 'auth.User', 'label': 'Staff'},
-    # )},
-)
+# ADMIN_REORDER = (
+#     {'app': 'QMS', 'models': ('QMS.TemplateMaster', 'QMS.ProjectTemplate', 'QMS.DefectTypeMaster',
+#                               'QMS.SeverityLevelMaster', 'QMS.DefectClassificationMaster', 'QMS.ReviewMaster',
+#                               'QMS.ReviewGroup', 'QMS.DefectSeverityLevel', 'QMS.WorkPacket',
+#                               'QMS.QASheetHeader', 'QMS.ReviewReport')},'auth',
+#     # Keep original label and models
+#     'sites',
+#     'employee',
+#     'CompanyMaster',
+#     'MyANSRSource',
+#     'Salesforce',
+#     'Leave',
+#     'Reports',
+#     'Hire',
+#     'BookMyRoom',
+#     'Library',
+#
+#     # # Rename app
+#     # {'app': 'auth', 'label': 'Authorisation'},
+#
+#     # Reorder app models
+#
+#     'fb360',
+#     'Grievances',
+#     'GrievanceAdmin',
+#     # # Exclude models
+#     # {'app': 'auth', 'models': ('auth.User', )},
+#     #
+#     # # Cross-linked models
+#     # {'app': 'auth', 'models': ('auth.User', 'sites.Site')},
+#     #
+#     # # models with custom name
+#     # {'app': 'auth', 'models': (
+#     #     'auth.Group',
+#     #     {'model': 'auth.User', 'label': 'Staff'},
+#     # )},
+# )
