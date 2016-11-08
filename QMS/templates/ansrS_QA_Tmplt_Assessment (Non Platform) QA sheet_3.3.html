@@ -13,10 +13,9 @@
 <script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
 <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
-
-    <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
 
 <div class="row">
 
@@ -507,7 +506,7 @@
         $("#add_button").on('click', function() { console.log("im clicked");
             var $tr    = $('#review_report_table tr:last')
             var $clone = $tr.clone( true, true );
-            $clone.find(':text').val('');
+            $clone.find('text , input , textarea').val('');
             var increment_id = 0;
             $tr.after($clone);
 
@@ -530,6 +529,7 @@
              $(this).attr('id',new_id);
              var new_name = new_id.substring(3)
              $(this).attr('name',new_id);
+             $(this).val('');
 
              if(id[2] == 'qms_id') $(this).val(0)
              if (this.nodeName != "TD")  $(this).attr('name',new_name);
@@ -552,17 +552,15 @@
             console.log(edit_record);
             $(".edit_body").html(edit_record);
         });
-        $('#data-tables').dataTable({
-          searching: false,
-          scrollCollapse: true
-        });
+        <!--$('#review_report_table').dataTable({-->
+          <!--searching: false,-->
+          <!--scrollCollapse: true-->
+        <!--});-->
 
         });// End of document ready
 
 $('.defect').change(function(){
-console.log("im clicked");
     var obj_id = this.id.split('-');
-    console.log(obj_id);
     $.ajax({
             url: '/qms/fetch_severity/',
             type: 'GET',

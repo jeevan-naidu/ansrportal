@@ -152,36 +152,36 @@ class ReviewReportManipulationView(AssessmentView):
                         qmsData[k] = v
                     qmsDataList.append(qmsData.copy())
                     qmsData.clear()
-                    print qmsDataList
-                for obj in qmsDataList:
-                    if obj['qms_id'] > 0:
-                        report = ReviewReport.objects.get(id=obj['qms_id'])
-                        print obj['qms_id']
-                    else:
-                        print obj['qms_id']
-                        report = ReviewReport()
-                        report.created_by = request.user
-                    report.review_item = obj['review_item']
-                    report.defect = obj['defect']
-                    report.is_fixed = obj['is_fixed']
-                    report.remarks = obj['remarks']
-                    # print request.session['template_id']
-                    #
-                    # print request.session['active_tab']
-                    # import ipdb
-                    # ipdb.set_trace()
-                    defect_obj = DefectSeverityLevel.objects.get(template_id=request.session['template_id'],
-                                                                 severity_type=obj['severity_type'],
-                                                                 review_group_id=request.session['active_tab'])
+                    # print qmsDataList
+            for obj in qmsDataList:
+                if obj['qms_id'] > 0:
+                    report = ReviewReport.objects.get(id=obj['qms_id'])
+                    # print obj['qms_id']
+                else:
+                    # print obj['qms_id']
+                    report = ReviewReport()
+                    report.created_by = request.user
+                report.review_item = obj['review_item']
+                report.defect = obj['defect']
+                report.is_fixed = obj['is_fixed']
+                report.remarks = obj['remarks']
+                # print request.session['template_id']
+                #
+                # print request.session['active_tab']
+                # import ipdb
+                # ipdb.set_trace()
+                defect_obj = DefectSeverityLevel.objects.get(template_id=request.session['template_id'],
+                                                             severity_type=obj['severity_type'],
+                                                             review_group_id=request.session['active_tab'])
 
-                    report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
-                    report.QA_sheet_header = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
-                    report.updated_by = request.user
-                    try:
-                        report.save()
-                    except Exception, e:
-                        logger.error(" {0} ".format(str(e)))
-                        fail += 1
+                report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
+                report.QA_sheet_header = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
+                report.updated_by = request.user
+                try:
+                    report.save()
+                except Exception, e:
+                    logger.error(" {0} ".format(str(e)))
+                    fail += 1
 
         else:
             # print q_form.errors
