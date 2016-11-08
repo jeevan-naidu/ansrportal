@@ -69,6 +69,11 @@ def LeaveTransaction(request):
         if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and int(loggedInUser) == int(user_id):
             data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
+        elif request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() and leave['status'] in ['open', 'approved']:
+            statusflag = lambda: 1 if leave['status'] == 'open' else 0
+            data1 = data1 + '<a  role="button" onclick="AdminCancelLeave({0},{1},{2})" >Cancel</a></div>\
+                        </td></tr>'.format(leave['id'], leave['days_count'],
+                                           statusflag())
         else:
             data1 = data1 + '</div></td></tr>'
     json_data = json.dumps(data1)
@@ -1253,6 +1258,43 @@ def leavecheck(user, date):
     else:
         flag = 0
     return flag
+
+
+def adminleavecancel(request):
+    user_id=request.user.id
+    leave_id = request.GET.get('leaveid')
+    leavecount = request.GET.get('leavecount')
+    status = request.GET.get('status')
+    leave = LeaveApplications.objects.get(id = leave_id)
+    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=leave.user_id, year=date.today().year)
+    onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
+    if leave.leave_type.leave_type in leaveWithoutBalance:
+        leavededuct = float(leavecount)
+
+    elif leave.leave_type.leave_type in onetimeLeave:
+        leaveSummary.balance = float(leavecount)
+        leavededuct = 0
+
+    else:
+        leaveSummary.balance = float(leaveSummary.balance) + float(leavecount)
+        leavededuct = float(leavecount)
+
+    if status == 1:
+        leaveSummary.applied = float(leaveSummary.applied) - float(leavededuct)
+    else:
+        leaveSummary.approved = float(leaveSummary.approved) - float(leavededuct)
+    leaveSummary.save()
+    leave.status = 'cancelled'
+    leave.status_action_on = date.today()
+    leave.status_action_by = User.objects.get(id=user_id)
+    leave.status_comments = "Leave cancelled by admin"
+    leave.update()
+    manager = managerCheck(user_id)
+    # EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+    #  leave.to_session, leave.days_count, leave.reason, 'cancel')
+    data1 = "leave cancelled"
+    json_data = json.dumps(data1)
+    return HttpResponse(json_data, content_type="application/json")
 
 
 

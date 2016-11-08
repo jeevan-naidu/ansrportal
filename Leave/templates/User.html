@@ -1327,7 +1327,50 @@ var ajax_loader_element = $('#ajax_loader_cancel_leave');
     });
 }
 
+function AdminCancelLeave(val, leavecount, status){
 
+    	swal({
+    		title: "Are you sure?",
+    		text: "Do you want to cancel your leave?",
+    		type: "warning",
+    		showCancelButton: true,
+    		confirmButtonColor: "#DD6B55",
+    		confirmButtonText: "Yes, cancel.",
+    		closeOnConfirm: true,
+    		cancelButtonText: "No, return to previous page.",
+    		closeOnCancel: true
+    	},
+    	function(isConfirm) {
+    		if (isConfirm) {
+           ShowAjaxLoader(ajax_loader_element, 1200, 1200);
+              $.ajax(
+                    {
+                        type : "GET",
+                        url : '/leave/admincancel/',
+                        data :{'leaveid':val, 'leavecount':leavecount, 'status': status} ,
+                        success : function(data)
+                        {
+
+                            swal("Done!", "Your leave is cancelled", "success");
+
+                            window.location.reload();
+                            HideAjaxLoader(ajax_loader_element);
+                          },
+                          error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                              HideAjaxLoader(ajax_loader_element);
+                          },
+                        }
+                      );
+
+
+    		}
+    		else
+    				swal("Please click ok", "We have canceled your operation :). Thank You.", "success");
+
+    });
+}
 
 
 
@@ -1449,5 +1492,7 @@ $(window).load(function(){
 <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+
 
 {% endblock %}
