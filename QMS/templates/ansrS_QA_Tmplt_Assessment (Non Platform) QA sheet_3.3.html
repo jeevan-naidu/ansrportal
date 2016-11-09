@@ -197,18 +197,20 @@
                                         <td id="remarks-{{forloop.counter}}-td">
                                             {{form_obj.remarks}}
                                         </td>
-                                        <td >
+<!--                                         <td >
                                             <div class="edit-buttons">
                                             {{form_obj.DELETE}}
 
                                             </div>
-                                        </td>
+                                        </td> -->
                                         <td class="menu-action">
-                                            <a data-original-title="view" data-placement="top"
-                                               class="btn menu-icon vd_green" data-toggle="modal"
-                                               data-target="#addModal">
+                                            <a data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btn menu-icon vd_red"> 
+                                              <i class="fa fa-times"></i> 
+                                            </a>
+                                            <a data-original-title="view" data-placement="top" class="btn menu-icon vd_green" data-toggle="modal" data-target="#addModal">
                                                 <i class="fa fa-eye"></i>
                                             </a>
+
                                         </td>
                                     </tr>
                                 {% endfor %} {%else%} oiiii {%endif %}{%endif %}
