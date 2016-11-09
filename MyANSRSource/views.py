@@ -1408,7 +1408,6 @@ def Dashboard(request):
 def checkUser(userName, password, request, form):
     try:
         user = authenticate(username=userName, password=password)
-        print user
         if user is not None:
             if user.is_active:
                 if hasattr(user, 'employee'):
@@ -1426,20 +1425,17 @@ def checkUser(userName, password, request, form):
                         context = {'username': user.username}
                         for eachRecp in senderEmail:
                             SendMail(context, eachRecp, 'newjoinee')
-                        return render(request, 'MyANSRSource/welcome.html')
+                        return render(request, 'MyANSRSource/welcome.html', {})
                 else:
                     logger.error(
                         u'User {0} has no employee data'.format(
                             user.username)
                     )
-                    # senderEmail = settings.NEW_JOINEE_NOTIFIERS
-                    # context = {'username': user.username}
-                    # for eachRecp in senderEmail:
-                    #     SendMail(context, eachRecp, 'newjoinee')
-                    try:
-                        return render(request, 'MyANSRSource/welcome.html', {})
-                    except Exception, e:
-                        print str(e)
+                    senderEmail = settings.NEW_JOINEE_NOTIFIERS
+                    context = {'username': user.username}
+                    for eachRecp in senderEmail:
+                        SendMail(context, eachRecp, 'newjoinee')
+                    return render(request, 'MyANSRSource/welcome.html', {})
             else:
                 messages.error(request, 'Sorry this user is not active.')
                 return loginResponse(request, form, 'MyANSRSource/index.html')
@@ -1454,8 +1450,7 @@ def checkUser(userName, password, request, form):
             request,
             'This user has LDAP setup issue:' + str(e))
         return loginResponse(request, form, 'MyANSRSource/index.html')
-    except Exception, e:
-        print str(e)
+    except:
         messages.error(
             request,
             'Unknown Active directory error occured.\
