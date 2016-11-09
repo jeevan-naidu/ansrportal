@@ -134,7 +134,15 @@
 
                      <form role="form"  id="review_report_form" method="post" action="{% url 'edit_review' %}">
                         {% csrf_token %}
-                        <table class="table  table-striped qa-table" id="review_report_table">
+
+
+                         <div class="no_questions">
+                             <label>Enter the number of questions : </label>
+                             <input type="text" style="width:50px;height:25px">
+                         </div>
+
+
+                         <table class="table  table-striped qa-table" id="review_report_table">
                             <thead>
                                 <tr>
                                     <th>S.No.</th>
@@ -147,6 +155,7 @@
                                     <th>Fixed By</th>
                                     <th>Remarks</th>
                                     <th>Delete</th>
+                                    <th></th>
                                 </tr>
                             </thead>
 
@@ -192,8 +201,14 @@
                                             <div class="edit-buttons">
                                             {{form_obj.DELETE}}
 
-                                                comment
                                             </div>
+                                        </td>
+                                        <td class="menu-action">
+                                            <a data-original-title="view" data-placement="top"
+                                               class="btn menu-icon vd_green" data-toggle="modal"
+                                               data-target="#addModal">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {% endfor %} {%else%} oiiii {%endif %}{%endif %}
@@ -549,6 +564,14 @@ $('.defect').change(function(){
 
 #qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
 
+    #review_report_form{position:relative}
+    #review_report_form td input[type="text"], #review_report_form td select{height:25px}
+    .no_questions{
+    position: absolute;
+    top: -55px;
+    right: 15px;
+    }
+    .table .menu-action{padding-top:7px !important;}
 </style>
 
 <script type="text/javascript">
