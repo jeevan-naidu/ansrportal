@@ -1350,10 +1350,8 @@ function AdminCancelLeave(val, leavecount, status){
                         data :{'leaveid':val, 'leavecount':leavecount, 'status': status} ,
                         success : function(data)
                         {
-
-                            swal("Done!", "Your leave is cancelled", "success");
-
-                            window.location.reload();
+                            swal("Done!", "Your leave is cancelled", "success")
+                            window.location=window.location;
                             HideAjaxLoader(ajax_loader_element);
                           },
                           error: function(XMLHttpRequest, textStatus, errorThrown) {
