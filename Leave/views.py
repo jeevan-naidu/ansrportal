@@ -1279,7 +1279,7 @@ def adminleavecancel(request):
         leaveSummary.balance = float(leaveSummary.balance) + float(leavecount)
         leavededuct = float(leavecount)
 
-    if status == 1:
+    if int(status) == 1:
         leaveSummary.applied = float(leaveSummary.applied) - float(leavededuct)
     else:
         leaveSummary.approved = float(leaveSummary.approved) - float(leavededuct)
