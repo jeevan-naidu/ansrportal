@@ -2152,6 +2152,16 @@ def saveProject(request):
             pr.customer.seqNumber = pr.customer.seqNumber + 1
             pr.customer.save()
 
+            pci = ProjectChangeInfo()
+            pci.project = pr
+            pci.crId = u"BL-{0}".format(pr.id)
+            pci.reason = 'Base Line data'
+            pci.endDate = endDate
+            pci.revisedEffort = int(request.POST.get('plannedEffort'))
+            pci.revisedTotal = float(request.POST.get('totalValue'))
+            pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
+            pci.save()
+
             for eachId in eval(request.POST.get('pm')):
                 pm = ProjectManager()
                 pm.user = User.objects.get(pk=eachId)
