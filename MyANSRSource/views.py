@@ -1365,6 +1365,7 @@ def Dashboard(request):
         employee_color = employee_color.color
     else:
         employee_color = ''
+    request.session['color'] = employee_color
     if myReportee:
         isManager = 1
     data = {
@@ -1394,7 +1395,6 @@ def Dashboard(request):
         'isManager': isManager,
         'swipe_display': swipe_display,
         'birthdays_list': birthdays_list,
-        'employee_color':employee_color,
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
