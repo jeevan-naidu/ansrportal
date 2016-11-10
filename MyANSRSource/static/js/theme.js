@@ -103,12 +103,12 @@ jQuery(document).ready(function($)
 					
 				/* Tool Tips. 
 				   Used: < data-toggle = "tooltip" > */
-				/*$('[data-toggle^="tooltip"]').tooltip();*/   /* commented out */	
+				$('[data-toggle^="tooltip"]').tooltip();   /* commented out */	
 				
 				
 				/* Pop Over. 
 				   Used: < data-toggle = "popover" > */	
-				/*$('[data-toggle^="popover"]').popover();*/   /* commented out */
+				$('[data-toggle^="popover"]').popover();   /* commented out */
 		
 					
 				/* Pretty Photo. 
