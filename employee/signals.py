@@ -13,8 +13,3 @@ def update_color(sender, instance, **kwargs):
 
 
 
-
-
-
-
-
