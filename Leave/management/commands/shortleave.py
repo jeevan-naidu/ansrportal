@@ -37,7 +37,10 @@ def shortLeave():
             reason = ""
             shortLeaveType = ""
             employee = Employee.objects.filter(user_id = user.id)
-            appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=checkdate, to_date__gte=checkdate, user=user.id)
+            appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=checkdate,
+                                                                 to_date__gte=checkdate,
+                                                                 user=user.id,
+                                                                 status__in=['open', 'approved'])
             manager_id = Employee.objects.filter(user_id=user).values('manager_id')
             manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
             if manager:
