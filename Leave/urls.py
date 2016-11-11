@@ -27,5 +27,6 @@ urlpatterns = [
                        url(r'^AutocompleteUserSearch/$', login_required(AutocompleteUserSearch.as_view()),
                            name=u'AutocompleteUserSearch'),
                        url(r'^leavereport/$', login_required(leavereport), name=u'leavereport'),
+                       url(r'^admincancel/$', login_required(adminleavecancel), name=u'admin_leave_cancel'),
 
                        ]

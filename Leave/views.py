@@ -22,7 +22,8 @@ from django.template.defaultfilters import slugify
 from django.core.exceptions import PermissionDenied
 from tasks import EmailSendTask, ManagerEmailSendTask,\
     ShortAttendanceDisputeEmailSendTask,\
-    ShortAttendanceManagerActionEmailSendTask
+    ShortAttendanceManagerActionEmailSendTask,\
+    ApproveLeaveCancelEmailSendTask
 from django.conf import settings
 from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
@@ -69,6 +70,11 @@ def LeaveTransaction(request):
         if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and int(loggedInUser) == int(user_id):
             data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
+        elif request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() and leave['status'] in ['open', 'approved']:
+            statusflag = lambda: 1 if leave['status'] == 'open' else 0
+            data1 = data1 + '<a  role="button" onclick="AdminCancelLeave({0},{1},{2})" >Cancel</a></div>\
+                        </td></tr>'.format(leave['id'], leave['days_count'],
+                                           statusflag())
         else:
             data1 = data1 + '</div></td></tr>'
     json_data = json.dumps(data1)
@@ -1113,7 +1119,10 @@ class ApplyShortLeaveView(View):
 #short leave resolution
 def ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user):
     shortLeaves = ShortAttendance.objects.get(id=leaveid)
-    leave = LeaveApplications.objects.filter(from_date__lte=fromdate, to_date__gte=fromdate, user=user)
+    leave = LeaveApplications.objects.filter(from_date__lte=fromdate,
+                                             to_date__gte=fromdate,
+                                             user=user,
+                                             status__in=['open', 'approved'])
     if shortLeaves.short_leave_type == 'half_day':
         shortLeaves.active = False
         shortLeaves.save()
@@ -1253,6 +1262,51 @@ def leavecheck(user, date):
     else:
         flag = 0
     return flag
+
+
+def adminleavecancel(request):
+    user_id=request.user.id
+    leave_id = request.GET.get('leaveid')
+    leavecount = request.GET.get('leavecount')
+    status = request.GET.get('status')
+    leave = LeaveApplications.objects.get(id = leave_id)
+    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=leave.user_id, year=date.today().year)
+    onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
+    if leave.leave_type.leave_type in leaveWithoutBalance:
+        leavededuct = float(leavecount)
+
+    elif leave.leave_type.leave_type in onetimeLeave:
+        leaveSummary.balance = float(leavecount)
+        leavededuct = 0
+
+    else:
+        leaveSummary.balance = float(leaveSummary.balance) + float(leavecount)
+        leavededuct = float(leavecount)
+
+    if int(status) == 1:
+        leaveSummary.applied = float(leaveSummary.applied) - float(leavededuct)
+    else:
+        leaveSummary.approved = float(leaveSummary.approved) - float(leavededuct)
+    leaveSummary.save()
+    leave.status = 'cancelled'
+    leave.status_action_on = date.today()
+    leave.status_action_by = User.objects.get(id=user_id)
+    leave.status_comments = "Leave cancelled by admin"
+    leave.update()
+    candidate = User.objects.get(id=leave.user_id)
+    ApproveLeaveCancelEmailSendTask.delay(candidate,
+                                          leave.leave_type.leave_type,
+                                          leave.status,
+                                          leave.from_date,
+                                          leave.to_date,
+                                          leave.from_session,
+                                          leave.to_session,
+                                          leave.days_count,
+                                          leave.reason,
+                                          request.user)
+    data1 = "leave cancelled"
+    json_data = json.dumps(data1)
+    return HttpResponse(json_data, content_type="application/json")
 
 
 

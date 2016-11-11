@@ -9,10 +9,12 @@
 
 <p>Hi, {{registered_by}},</p>
 
-<p>Admin has raised Short Attendance. </p>
+<p>Admin has cancelled your leave application. </p>
 <p>Leave Type : {{leaveType}} </p>
-<p>For Date : {{fordate}}</p>
-<p>Due Date : {{duedate}}</p>
+<p>From Date : {{from_date}}</p>
+<p>To Date : {{to_date}}</p>
+<p>Status : {{ status }}</p>
+<p>No. of days : {{count}}</p>
 {% if reason %} <p> Reason : {{reason}} </p> {% endif %}
 
 <p></p><p></p>

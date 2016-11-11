@@ -84,7 +84,7 @@
 
         <!--      My Leaves Start -->
 
-    <form method="post">
+    <form method="post" id="leave_manage">
 
         <!--	Start Menu -->
         <div class="row">
@@ -450,9 +450,14 @@
 {#    <script src="/static/js/scripts.js"></script>#}
 
     <script>
+
+    $( "#leave_manage" ).submit(function( event ) {
+        $('.btn-ansr-orange').hide();
+    });
+
     jQuery(document).ready( function (){
 
-
+        $('#btn-ansr-orange').popover('show');
     	$('.remarks').attr('maxlength','');
 						var text_max = 500;
 						var text_length = $('.remarks').val().length;

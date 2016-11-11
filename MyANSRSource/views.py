@@ -1365,6 +1365,7 @@ def Dashboard(request):
         employee_color = employee_color.color
     else:
         employee_color = ''
+    request.session['color'] = employee_color
     if myReportee:
         isManager = 1
     data = {
@@ -1394,7 +1395,6 @@ def Dashboard(request):
         'isManager': isManager,
         'swipe_display': swipe_display,
         'birthdays_list': birthdays_list,
-        'employee_color':employee_color,
     }
     # the following added for grievance administration module
     if request.user.groups.filter(name='myansrsourceGrievanceAdmin').exists():
@@ -2151,6 +2151,16 @@ def saveProject(request):
             pr.save()
             pr.customer.seqNumber = pr.customer.seqNumber + 1
             pr.customer.save()
+
+            pci = ProjectChangeInfo()
+            pci.project = pr
+            pci.crId = u"BL-{0}".format(pr.id)
+            pci.reason = 'Base Line data'
+            pci.endDate = endDate
+            pci.revisedEffort = int(request.POST.get('plannedEffort'))
+            pci.revisedTotal = float(request.POST.get('totalValue'))
+            pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
+            pci.save()
 
             for eachId in eval(request.POST.get('pm')):
                 pm = ProjectManager()

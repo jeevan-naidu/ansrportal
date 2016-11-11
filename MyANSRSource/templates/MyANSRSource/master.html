@@ -142,7 +142,6 @@
 
 
 
-
      <!-- Custom CSS -->
     <link href="/static/custom/custom.css" rel="stylesheet" type="text/css">
 
@@ -278,7 +277,9 @@
                     </div>
                 </div>
                 <!-- container -->
-            </div>
+                <div id="oneteam-ribbon" class="oneteam-{{ request.session.color }}"></div>
+
+            </div><!-- ./vd_top-menu-wrapper -->
             <!-- vd_primary-menu-wrapper -->
 
         </header>
@@ -305,6 +306,7 @@
                             <div class="vd_mega-menu-wrapper">
                                 <!-- Top left round buttons -->
                                 <div class="vd_mega-menu" data-intro="<strong>Tabs Menu</strong><br/>Can be placed for dropdown menu, tabs, or user profile. Responsive for medium and small size navigation." data-step=2>
+                                    {% if not user.is_anonymous %}
                                     <ul class="mega-ul">
                                         <li id="home" class="one-icon mega-li" title="Home" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Home Button</strong><br/>Return to the homepage" data-step=3>
                                             <a class="mega-link  vd_bg-red" href="/">
@@ -342,6 +344,7 @@
                                             </a>
                                         </li>
                                     </ul>
+                                    {%endif%}
                                 </div>
                             </div>
                         </div>
@@ -353,7 +356,7 @@
             </span>
                         </div>
                         <h3 class="menu-title hide-nav-medium hide-nav-small invisible">UI Features</h3>
-                        <div class="vd_menu">
+                        <div class="vd_menu">{% if not user.is_anonymous %}
                             <ul>
                                 <li>
                                     <a href="javascript:void(0);" data-action="click-trigger">
@@ -716,6 +719,7 @@
                                 </li>
 
                             </ul>
+                            {% endif %}
                             <!-- Head menu search form ends -->
                         </div>
                     </div>
