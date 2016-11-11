@@ -185,7 +185,7 @@ class ShortAttendanceRaisedEmailSendTask(Task):
 
         mail_obj = EmailMessage('Short Attendance Raised',
                                 msg_html, settings.EMAIL_HOST_USER, [user.email],
-                                cc=[manager.email])
+                                cc=[])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
