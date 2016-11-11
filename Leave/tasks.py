@@ -125,9 +125,67 @@ class ShortAttendanceDisputeEmailSendTask(Task):
                                      'remark':remark
                                      })
 
-        mail_obj = EmailMessage('Short Attendance Dispute Raised',
+        mail_obj = EmailMessage('Short Attendance Raised',
                                 msg_html, settings.EMAIL_HOST_USER, [manager.email],
                                 cc=[user.email])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Leave Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
+class ApproveLeaveCancelEmailSendTask(Task):
+    def run(self, user, leavetype, status, from_date, to_date, from_session, to_session, count, status_comments):
+        manager = mangerdetail(user)
+        fromdate = str(from_date) + ' Session: ' + leaveSessionDictionary[from_session]
+        todate = str(to_date) + ' Session: ' + leaveSessionDictionary[to_session]
+        msg_html = render_to_string('email_templates/admin_leave_cancel.html',
+                                    {'registered_by': user.first_name,
+                                     'leaveType': leaveTypeDictionary[leavetype],
+                                     'status': status,
+                                     'from_date': from_date,
+                                     'to_date': to_date,
+                                     'count': count,
+                                     'reason': status_comments,
+                                     })
+
+        mail_obj = EmailMessage('Leave Application Status',
+                                msg_html, settings.EMAIL_HOST_USER, [user.email],
+                                cc=[manager.email])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Leave Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
+
+class ShortAttendanceRaisedEmailSendTask(Task):
+    def run(self, user, leavetype, status, fordate, duedate, status_comments):
+        manager = mangerdetail(user)
+        msg_html = render_to_string('email_templates/short_attendance_raised.html',
+                                    {'registered_by': manager.first_name,
+                                     'leaveType': shortattendancetype[leavetype],
+                                     'fordate': fordate,
+                                     'duedate': duedate,
+                                     'reason': status_comments,
+                                     'status': status,
+                                     })
+
+        mail_obj = EmailMessage('Short Attendance Dispute Raised',
+                                msg_html, settings.EMAIL_HOST_USER, [user.email],
+                                cc=[manager.email])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -144,3 +202,5 @@ tasks.register(EmailSendTask)
 tasks.register(ManagerEmailSendTask)
 tasks.register(ShortAttendanceDisputeEmailSendTask)
 tasks.register(ShortAttendanceManagerActionEmailSendTask)
+tasks.register(ApproveLeaveCancelEmailSendTask)
+tasks.register(ShortAttendanceRaisedEmailSendTask)

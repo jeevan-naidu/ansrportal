@@ -22,7 +22,8 @@ from django.template.defaultfilters import slugify
 from django.core.exceptions import PermissionDenied
 from tasks import EmailSendTask, ManagerEmailSendTask,\
     ShortAttendanceDisputeEmailSendTask,\
-    ShortAttendanceManagerActionEmailSendTask
+    ShortAttendanceManagerActionEmailSendTask,\
+    ApproveLeaveCancelEmailSendTask
 from django.conf import settings
 from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
@@ -1289,9 +1290,16 @@ def adminleavecancel(request):
     leave.status_action_by = User.objects.get(id=user_id)
     leave.status_comments = "Leave cancelled by admin"
     leave.update()
-    manager = managerCheck(user_id)
-    # EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
-    #  leave.to_session, leave.days_count, leave.reason, 'cancel')
+    candidate = User.objects.get(id=leave.user_id)
+    ApproveLeaveCancelEmailSendTask.delay(candidate,
+                                          leave.leave_type.leave_type,
+                                          leave.status,
+                                          leave.from_date,
+                                          leave.to_date,
+                                          leave.from_session,
+                                          leave.to_session,
+                                          leave.days_count,
+                                          leave.reason)
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")

@@ -7,6 +7,7 @@ import logging
 import pytz
 from string import Formatter
 from CompanyMaster.models import Holiday
+from Leave.tasks import ShortAttendanceRaisedEmailSendTask
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -103,6 +104,12 @@ def shortLeave():
                                                               swipe_in=swipeInTime,
                                                               swipe_out=swipeOutTime
                                                               )
+                        ShortAttendanceRaisedEmailSendTask.delay(user,
+                                                                 shortLeaveType,
+                                                                 "open",
+                                                                 checkdate,
+                                                                 dueDate,
+                                                                 reason)
             else:
                 print(user.first_name + user.last_name + " hr need to take care")
         except:
