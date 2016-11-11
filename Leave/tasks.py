@@ -141,7 +141,7 @@ class ShortAttendanceDisputeEmailSendTask(Task):
 
 
 class ApproveLeaveCancelEmailSendTask(Task):
-    def run(self, user, leavetype, status, from_date, to_date, from_session, to_session, count, status_comments):
+    def run(self, user, leavetype, status, from_date, to_date, from_session, to_session, count, status_comments, admin):
         manager = mangerdetail(user)
         fromdate = str(from_date) + ' Session: ' + leaveSessionDictionary[from_session]
         todate = str(to_date) + ' Session: ' + leaveSessionDictionary[to_session]
@@ -157,7 +157,7 @@ class ApproveLeaveCancelEmailSendTask(Task):
 
         mail_obj = EmailMessage('Leave Application Status',
                                 msg_html, settings.EMAIL_HOST_USER, [user.email],
-                                cc=[manager.email])
+                                cc=[manager.email,admin.email])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -175,7 +175,7 @@ class ShortAttendanceRaisedEmailSendTask(Task):
     def run(self, user, leavetype, status, fordate, duedate, status_comments):
         manager = mangerdetail(user)
         msg_html = render_to_string('email_templates/short_attendance_raised.html',
-                                    {'registered_by': manager.first_name,
+                                    {'registered_by': user.first_name,
                                      'leaveType': shortattendancetype[leavetype],
                                      'fordate': fordate,
                                      'duedate': duedate,
@@ -183,7 +183,7 @@ class ShortAttendanceRaisedEmailSendTask(Task):
                                      'status': status,
                                      })
 
-        mail_obj = EmailMessage('Short Attendance Dispute Raised',
+        mail_obj = EmailMessage('Short Attendance Raised',
                                 msg_html, settings.EMAIL_HOST_USER, [user.email],
                                 cc=[manager.email])
 

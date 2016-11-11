@@ -1299,7 +1299,8 @@ def adminleavecancel(request):
                                           leave.from_session,
                                           leave.to_session,
                                           leave.days_count,
-                                          leave.reason)
+                                          leave.reason,
+                                          request.user)
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
