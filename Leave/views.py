@@ -1119,7 +1119,10 @@ class ApplyShortLeaveView(View):
 #short leave resolution
 def ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user):
     shortLeaves = ShortAttendance.objects.get(id=leaveid)
-    leave = LeaveApplications.objects.filter(from_date__lte=fromdate, to_date__gte=fromdate, user=user)
+    leave = LeaveApplications.objects.filter(from_date__lte=fromdate,
+                                             to_date__gte=fromdate,
+                                             user=user,
+                                             status__in=['open', 'approved'])
     if shortLeaves.short_leave_type == 'half_day':
         shortLeaves.active = False
         shortLeaves.save()
