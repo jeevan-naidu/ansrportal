@@ -7,6 +7,60 @@ from MyANSRSource.models import Project, Chapter
 from dal import autocomplete
 
 
+#
+# class AssignProjectMember(forms.Form):
+#     project = forms.ModelChoiceField(
+#                 queryset=Project.objects.all(),
+#                 widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
+#                  'data-placeholder': 'Type project Name ...',
+#         }, ),
+#                 required=True, )
+#     template = forms.ModelChoiceField(
+#                 queryset=TemplateMaster.objects.all(),
+#                 widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', attrs={
+#                  'data-placeholder': 'Type Template Name ...',
+#         }, ),
+#                 required=True, )
+#     qms_process_model = forms.ModelChoiceField(
+#                 queryset=QMSProcessModel.objects.all(),
+#                  ),
+#
+#     author = forms.ModelChoiceField(
+#             queryset=User.objects.all(),
+#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
+#              'data-placeholder': 'Type Author Name ...',
+#     }, ),
+#             required=True, )
+#     ER = forms.ModelChoiceField(
+#             queryset=User.objects.all(),
+#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
+#              'data-placeholder': 'Type EA Name ...',
+#     }, ),
+#             required=True, )
+#
+#     EA = forms.ModelChoiceField(
+#             queryset=User.objects.all(),
+#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
+#              'data-placeholder': 'Type EA Name ...',
+#     }, ),
+#             required=True, )
+#
+#     CE = forms.ModelChoiceField(
+#             queryset=User.objects.all(),
+#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
+#              'data-placeholder': 'Type CE Name ...',
+#     }, ),
+#             required=True, )
+#
+#     QA = forms.ModelChoiceField(
+#             queryset=User.objects.all(),
+#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',), attrs={
+#              'data-placeholder': 'Type QA Name ...',
+#     }, ),
+#             required=True, )
+
+
+
 class BaseAssessmentTemplateForm(forms.Form):
     project = forms.ModelChoiceField(
                 queryset=Project.objects.all(),
@@ -46,9 +100,37 @@ class BaseAssessmentTemplateForm(forms.Form):
         #     #     except:
         #     #         project_obj = project_id
         # #     self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
-        # self.fields['project'].widget.attrs['class'] = "form-inline input-sm width-3"
-        # self.fields['project'].widget.attrs['class'] = "form-inline input-sm width-3"
-        # self.fields['project'].widget.attrs['class'] = "form-inline input-sm width-3"
+        self.fields['project'].widget.attrs['class'] = "filter_form"
+        self.fields['chapter'].widget.attrs['class'] = "filter_form"
+        self.fields['author'].widget.attrs['class'] = "filter_form"
+
+
+class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
+    qms_process_model = forms.ModelChoiceField(
+        queryset=QMSProcessModel.objects.all(),
+        widget=autocomplete.ModelSelect2(url='AutocompleteProcessModel', attrs={
+            'data-placeholder': 'Type Process Model Name ...',
+        }, ),
+        required=True, )
+    template = forms.ModelChoiceField(
+        queryset=TemplateMaster.objects.all(),
+        widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', attrs={
+            'data-placeholder': 'Type Template Name ...',
+        }, ),
+        required=True, )
+    review_group = forms.ModelMultipleChoiceField(queryset=ReviewGroup.objects.all(),
+                                                  widget=forms.CheckboxSelectMultiple(), required=False)
+    author = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project', 'chapter'),
+                                         attrs={
+                                             'data-placeholder': 'Type Author Name ...',
+                                         }, ),
+        required=True, )
+
+    def __init__(self, *args, **kwargs):
+        super(ChooseMandatoryTabsForm, self).__init__(*args, **kwargs)
+        # self.field_order['process_model', 'template', 'review_group', 'project', 'chapter', 'author']
 
 
 def review_report_base(template_id, project_id):

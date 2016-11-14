@@ -1,12 +1,11 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project, Chapter, ProjectTeamMember
-from QMS.models import QASheetHeader
+from MyANSRSource.models import ProjectTeamMember
+from .models import *
 from dal import autocomplete
 
 
 class AutocompleteUser(autocomplete.Select2QuerySetView):
-
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = User.objects.filter(
@@ -17,19 +16,7 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
         return choices
 
 
-class AutocompleteBook(autocomplete.Select2QuerySetView):
-
-    def get_queryset(self):
-        q = self.request.GET.get('q', '')
-        choices = Book.objects.filter(
-            name__icontains=q,
-            active=True
-        )
-        return choices
-
-
 class AutocompleteProjects(autocomplete.Select2QuerySetView):
-
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = Project.objects.filter(
@@ -38,8 +25,28 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
         return choices
 
 
-class AutocompleteChapters(autocomplete.Select2QuerySetView):
+class AutocompleteTemplates(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = TemplateMaster.objects.filter(name__icontains=q)
+        return choices
 
+
+class AutocompleteProcessModel(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = QMSProcessModel.objects.filter(name__icontains=q)
+        return choices
+
+
+class AutocompleteReviewGroup(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = ReviewGroup.objects.filter(name__icontains=q)
+        return choices
+
+
+class AutocompleteChapters(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
         qs = Chapter.objects.all()
@@ -61,7 +68,6 @@ class AutocompleteChapters(autocomplete.Select2QuerySetView):
 
 # for second screen in qms
 class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
-
     def get_queryset(self):
 
         qs = User.objects.all()

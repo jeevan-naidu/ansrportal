@@ -33,7 +33,11 @@ class TemplateMaster(NameMasterAbstractModel, TimeStampAbstractModel):
     pass
 
 
-class ProjectTemplate(TimeStampAbstractModel):
+class QMSProcessModel(NameMasterAbstractModel, TimeStampAbstractModel):
+    pass
+
+
+class ProjectTemplateProcessModel(TimeStampAbstractModel):
 
     project = models.ForeignKey(Project)
     template = models.ForeignKey(TemplateMaster)
@@ -42,10 +46,12 @@ class ProjectTemplate(TimeStampAbstractModel):
         null=False,
         verbose_name=" Is Lead Review Completed "
     )
+    qms_process_model = models.ForeignKey(QMSProcessModel)
 
     def __unicode__(self):
         """ return unicode strings """
         return '%s' % (str(self.project) + " - " + str(self.template))
+
 
 
 class DefectTypeMaster(NameMasterAbstractModel, TimeStampAbstractModel):
@@ -138,4 +144,8 @@ class ReviewReport(TimeStampAbstractModel):
         return '%s' % str(self.QA_sheet_header)
 
 
-
+class TemplateProcessReview(TimeStampAbstractModel):
+    template = models.ForeignKey(TemplateMaster)
+    qms_process_model = models.ForeignKey(QMSProcessModel)
+    review_group = models.ForeignKey(ReviewGroup)
+    is_mandatory = models.BooleanField(default=False, verbose_name="Is Mandatory")

@@ -1,15 +1,250 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'master.html' %}
+{% load static from staticfiles %}
 
-<form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save" />
-</form>
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
 
-</body>
-</html>
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all"
+      rel="stylesheet"/>
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet"/>
+
+<div class="row">
+
+
+    <div class="col-sm-12">
+
+
+        <div class="panel widget">
+            <div class="panel-heading vd_bg-grey">
+
+                <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
+                {% for dict in formset.errors %}
+                {% for error in dict.values %}
+                {{ error }}
+                {% endfor %}
+                {% endfor %}
+                {% if messages %}
+                {% for message in messages %}
+                {% if message.tags %}
+                <div class="alert alert-{{ message.tags }}">
+                    <a class="panel-close close" data-dismiss="alert">x</a>
+                    <p>{{ message }}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+            </div>
+            <div class="panel-body table-responsive">
+                <form class="form-horizontal " id="filter_form" role="form" method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-sm-12 qms-selectors">
+                            <div class="col-sm-9">
+                                <span>{{ form.project.errors }}</span>{{ form.project}}
+                                <span>{{ form.qms_process_model.errors }}</span>{{ form.qms_process_model}}
+
+                                <span>{{ form.template.errors }} </span>{{form.template}}
+
+                                <span>{{form.review_group.errors}}</span>{{form.review_group}}
+
+
+                                <span>{{ form.chapter.errors }} </span>{{form.chapter}}
+
+                                <span>{{form.author.errors}}</span>{{form.author}}
+                            </div>
+
+                            <div class="col-sm-3">
+                                <input type="submit" value="Submit" name="" class="btn btn-primary btn-sm pull-right"
+                                       style="margin-top: -1px;">
+                                <button id="open-summary" class="btn btn-danger btn-sm pull-right"
+                                        style="margin-top: -1px;">Summary
+                                </button>
+                            </div>
+
+                        </div>
+                        <input type="hidden" name="active_tab" id="active_tab" value="1"/>
+                        <input type="hidden" name="template_name" id="template_id"
+                               value="{{request.session.template_id}}"/>
+                    </div><!-- ./qms-selectors row -->
+                </form>
+
+
+                <br>
+
+
+            </div><!-- ./panel body -->
+
+        </div>
+
+
+    </div>
+
+</div><!-- ./row main -->
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript">
+    
+
+        $(function() {
+            $("#add_button").on('click', function() {
+                var $tr    = $('#review_report_table tr:last')
+                var $clone = $tr.clone( true, true );
+                $clone.find('text , input , textarea').val('');
+                var increment_id = 0;
+                $tr.after($clone);
+                 $clone.find("td,input, select, textarea").each(function(index) {
+                 <!--console.log("index "+index);-->
+                 if (index==0) { console.log("sr"+ $(this).text());
+                    var val = $(this).text(); //console.log("var"+val);
+                    sr_no = parseInt(val)+1;// console.log("sr_no "+sr_no);
+                    $(this).text(sr_no);
+                 }
+                 tmp_id = this.id; //console.log("tmp_id"+tmp_id);
+                 id=tmp_id.split('-');
+                 increment_id = parseInt(id[1]); //console.log((increment_id) )
+                  increment_id =++increment_id;
+                  //console.log((increment_id) )
+                 new_id = id[0]+'-'+increment_id+'-'+id[2]
+
+                 <!--console.log(this.id);-->
+                 <!--console.log("new id " + new_id)-->
+                 $(this).attr('id',new_id);
+                 var new_name = new_id.substring(3)
+                 $(this).attr('name',new_id);
+                 $(this).val('');
+
+                 if(id[2] == 'qms_id') $(this).val(0)
+                 if (this.nodeName != "TD")  $(this).attr('name',new_name);
+
+                 <!--$(this).closest('td').attr('id',new_id);-->
+                });
+                total_form = ++increment_id;
+                  $('#id_form-TOTAL_FORMS').val(increment_id)
+                 // console.log($('#id_form-TOTAL_FORMS').val())
+            });
+
+
+
+        $('.review').click(function(){
+           is_set = 0
+           $('#active_tab , #active_tab1').val(this.id);
+           $('.filter_form').each(function(i, obj) {
+                if (obj.value != '') is_set++;
+
+           });
+           if (is_set!=0 && is_set==3 )   $('#filter_form').submit();
+        });
+
+        $('.edit_button').click(function(){ console.log("edit clicked");
+            var edit_record = $(this).siblings(".edit_record").html();
+            console.log(edit_record);
+            $(".edit_body").html(edit_record);
+        });
+/*        $('#review_report_table').dataTable({
+          searching: false,
+          scrollCollapse: true
+        });*/
+
+        });// End of document ready
+
+$('.defect').change(function(){
+    var obj_id = this.id.split('-');
+    $.ajax({
+            url: '/qms/fetch_severity/',
+            type: 'GET',
+            dataType :'json',
+            data: {"template_id": $('#template_id').val() , "severity_type" :  $(this).val() ,"active_tab" :$('#active_tab').val() },
+            success: function (data) {
+                var output = [];
+
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+
+                    if(key == 'severity_level'){
+
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
+                            value: data[key],
+                            text: data[key],
+                            selected :'selected',
+                        }));
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('readonly',true);
+                    }
+
+                    if(key == 'defect_classification'){
+
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                            value: data[key],
+                            text: data[key],
+                            selected :'selected',
+                        }));
+                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('readonly',true);
+                    }
+
+                }
+            }
+
+
+
+            },
+
+    });
+});
+
+</script>
+
+
+<style type="text/css">
+
+    .btn.pull-right{margin-left: 15px}
+
+    .qms-selectors .form-inline{margin-right: 30px;}
+
+    .edit-buttons{width: 65px;}
+    .gradeX a.vd_btn{margin-right: 0px !important;}
+
+    .select2.select2-container{min-width: 0px !important;width: 150px !important;margin-right: 15px;}
+
+    .table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f3f1f1;
+    }
+    .qa-editable{cursor: pointer;}
+    .qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+    #qms-summary{
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 15px 0px;
+    margin-bottom: 15px;
+    transition: all 0.5s ease;
+    }
+    #qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
+
+    #qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
+
+    #review_report_form{position:relative}
+    #review_report_form td input[type="text"], #review_report_form td select{height:25px}
+    .no_questions{
+    position: absolute;
+    top: -55px;
+    right: 15px;
+    }
+    .table .menu-action{padding-top:7px !important;}
+</style>
+
+
+{% endblock %}

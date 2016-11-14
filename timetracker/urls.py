@@ -30,4 +30,5 @@ urlpatterns = [
                        url(r'^library/', include('Library.urls')),
                        url(r'^qms/', include('QMS.urls')),
                        url(r'^chaining/', include('smart_selects.urls')),
+                  # url(r"^notifications/", include("pinax.notifications.urls"))
                        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

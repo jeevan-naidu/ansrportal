@@ -1,6 +1,6 @@
 
 from django.views.generic import View , TemplateView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.shortcuts import render
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,6 +15,23 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 
 
+class ChooseTabs(FormView):
+    template_name = 'reviewreport_create_form.html'
+    form_class = ChooseMandatoryTabsForm
+    success_url = ''
+
+    def form_valid(self, form):
+        ProjectTemplate.objects.create(template=form.cleaned_data['template'],
+                                       project=form.cleaned_data['project'],
+                                       qms_process_model=form.cleaned_data['username'])
+
+        for reviewer in form.cleaned_data['review_group']:
+            QASheetHeader.objects.create(project=form.cleaned_data['project'], chapter=form.cleaned_data['chapter'],
+                                         review_group=reviewer)
+
+        return super(ChooseTabs, self).form_valid(form)
+
+
 def get_review(obj):
     return ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True).\
         values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
@@ -22,8 +39,18 @@ def get_review(obj):
                'is_fixed', 'fixed_by__username', 'remarks')
 
 
-def qa_sheet_header_obj(project, chapter, author):
-    return QASheetHeader.objects.get(project=project, chapter=chapter, author=author)
+def qa_sheet_header_obj(project, chapter, author, active_tab):
+    try:
+        result = QASheetHeader.objects.get(project=project, chapter=chapter, author=author,
+                                           review_group=ReviewGroup.objects.get(id=active_tab))
+        print result
+    except ObjectDoesNotExist:
+        result = None
+    return result
+
+
+def get_review_group():
+    return ReviewGroup.objects.all()
 
 
 class AssessmentView(TemplateView):
@@ -34,33 +61,37 @@ class AssessmentView(TemplateView):
 
         form = BaseAssessmentTemplateForm()
         context['form'] = form
+        context['review_group'] = get_review_group()
 
         return context
 
     def post(self, request):
         form = BaseAssessmentTemplateForm(request.POST)
         # print request.POST
-        reports = None
-
+        reports = template_id = None
+        active_tab = request.session['active_tab'] = request.POST.get('active_tab')
         if form.is_valid():
 
-            active_tab = request.POST.get('active_tab')
             project = form.cleaned_data['project']
             chapter = form.cleaned_data['chapter']
             author = form.cleaned_data['author']
             try:
+                print "try"
                 request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
-                request.session['active_tab'] = active_tab
-                obj = qa_sheet_header_obj(project, chapter, author)
+                obj = qa_sheet_header_obj(project, chapter, author, active_tab)
+                # if obj is None:
+                #     messages.error(self.request, "Sorry No Records Found")
+                #     return HttpResponseRedirect(reverse('qms'))
+
                 template_obj = get_object_or_404(ProjectTemplate, project=obj.project)
                 template_id = request.session['template_id'] = template_obj.id
                 request.session['QA_sheet_header_id'] = obj.id
                 defect_master = DefectTypeMaster.objects.all()
                 try:
                     reports = get_review(obj)
-                    print reports
+                    # print reports
                     # request.session['reports'] = list(reports)
 
                 except reports.ObjectDoesNotExist, e:
@@ -72,7 +103,7 @@ class AssessmentView(TemplateView):
                 messages.error(self.request, "Sorry No Records Found")
         else:
             form = BaseAssessmentTemplateForm()
-        qms_form = review_report_base(template_id, obj.project)
+        qms_form = review_report_base(template_id, project)
 
         qmsData = {}
         qmsDataList = []
@@ -119,16 +150,20 @@ class AssessmentView(TemplateView):
 
         return render(self.request, self.template_name, {'form': form, 'defect_master': defect_master,
                                                          'reports': reports, 'review_formset': qms_formset,
-                                                         'template_id': template_id})
+                                                         'template_id': template_id,
+                                                         'review_group': get_review_group(), 'questions': obj.count})
 
 
 class ReviewReportManipulationView(AssessmentView):
 
     def post(self, request):
         # print request.POST
+        print "im in formset post"
         fail = 0
         qmsData = {}
         qmsDataList = []
+        request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
+        print request.POST.get('active_tab1')
         qms_form = review_report_base(request.session['template_id'], request.session['project'])
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
@@ -168,20 +203,28 @@ class ReviewReportManipulationView(AssessmentView):
                 # print request.session['template_id']
                 #
                 # print request.session['active_tab']
+                # print obj['severity_type']
                 # import ipdb
                 # ipdb.set_trace()
                 defect_obj = DefectSeverityLevel.objects.get(template_id=request.session['template_id'],
                                                              severity_type=obj['severity_type'],
-                                                             review_group_id=request.session['active_tab'])
+                                                             review_group_id=active_tab)
+                # print defect_obj.query
 
                 report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
-                report.QA_sheet_header = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
+                qa_obj = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
+                report.QA_sheet_header = qa_obj
                 report.updated_by = request.user
                 try:
                     report.save()
                 except Exception, e:
                     logger.error(" {0} ".format(str(e)))
                     fail += 1
+                finally:
+                    print request.POST.get('questions')
+                    qa_obj.count = int(request.POST.get('questions'))
+                    qa_obj.save()
+
 
         else:
             # print q_form.errors
@@ -193,11 +236,12 @@ class ReviewReportManipulationView(AssessmentView):
             messages.warning(request, "partially saved")
 
         return HttpResponseRedirect(reverse('qms'))
-        obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'])
+        obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'],
+                                  active_tab)
 
         return render(self.request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html", {
             'form': BaseAssessmentTemplateForm(),
-            'review_formset': qms_formset(request.POST), 'reports':  get_review(obj),
+            'review_formset': qms_formset(request.POST), 'reports': get_review(obj), 'review_group': get_review_group()
         })
 
 
@@ -205,6 +249,7 @@ def fetch_severity(request):
 
     template_id = request.GET.get('template_id')
     severity = request.GET.get('severity_type')
+    request.session['active_tab'] = request.GET.get('active_tab')
     obj = DefectSeverityLevel.objects.get(template=template_id, severity_type=severity)
     context_data = {'severity_level': str(obj.severity_level), 'defect_classification': str(obj.defect_classification)}
 

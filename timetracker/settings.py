@@ -146,6 +146,7 @@ INSTALLED_APPS = [
     'Library',
     'QMS',
     'admin_reorder',
+    # "pinax.notifications",
 ]
 
 MIDDLEWARE_CLASSES = [
