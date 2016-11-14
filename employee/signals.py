@@ -8,7 +8,10 @@ def update_color(sender, instance, **kwargs):
     color_list = ['violet', 'indigo', 'blue', 'green', 'yellow', 'orange', 'red']
     colorindex = int(instance.user_id) % 7
     color = color_list[colorindex]
-    instance.color = color
+    if instance.color:
+        instance.color = instance.color
+    else:
+        instance.color = color
 
 
 
