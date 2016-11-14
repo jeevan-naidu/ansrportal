@@ -28,18 +28,11 @@ jQuery(document).ready(function($){
 	}
 
 
-
-
-
-
-
+	// Function Calls
 
 
 	navHeight();
 	heightFunction();
-
-
-
 
 
 	$(window).resize(function(){
