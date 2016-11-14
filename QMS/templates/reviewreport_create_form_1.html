@@ -1,0 +1,196 @@
+{% extends 'master.html' %}
+{% load static from staticfiles %}
+
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all"
+      rel="stylesheet"/>
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet"/>
+
+<div class="row">
+
+
+    <div class="col-sm-12">
+
+
+        <div class="panel widget">
+            <div class="panel-heading vd_bg-grey">
+
+                <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
+                {% for dict in formset.errors %}
+                {% for error in dict.values %}
+                {{ error }}
+                {% endfor %}
+                {% endfor %}
+                {% if messages %}
+                {% for message in messages %}
+                {% if message.tags %}
+                <div class="alert alert-{{ message.tags }}">
+                    <a class="panel-close close" data-dismiss="alert">x</a>
+                    <p>{{ message }}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+            </div>
+            <div class="panel-body table-responsive">
+                <form class="form-horizontal " id="filter_form" role="form" method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-sm-12 qms-selectors">
+
+                                <span>{{ form.project.errors }}</span>{{ form.project}}
+                                <span>{{ form.qms_process_model.errors }}</span>{{ form.qms_process_model}}
+
+                                <span>{{ form.template.errors }} </span>{{form.template}}
+
+                                <!-- <span>{{form.review_group.errors}}</span>{{form.review_group}} -->
+
+
+                                <span>{{ form.chapter.errors }} </span>{{form.chapter}}
+
+                                <span>{{form.author.errors}}</span>{{form.author}}
+
+
+
+
+                        </div>
+
+                    </div><!-- ./qms-selectors row -->
+                    <hr>
+
+
+                    <div class="row">
+                        <div class="col-sm-12 qms-allocators">
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <form class="form-horizontal" action="#" role="form" id="register-form" novalidate="novalidate">
+                  <div class="alert alert-danger vd_hidden">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
+                    <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>Oh snap!</strong> Change a few things up and try submitting again. </div>
+                  <div class="alert alert-success vd_hidden">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
+                    <span class="vd_alert-icon"><i class="fa fa-check-circle vd_green"></i></span><strong>Well done!</strong>. </div>
+                  <div class="form-group">
+                    <div class="col-md-12">
+                      <label class="control-label  col-sm-2">First Name <span class="vd_red">*</span></label>
+                      <div id="first-name-input-wrapper" class="controls col-sm-6">
+                        <input type="text" placeholder="John" class="width-60 required" name="name" id="name" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-md-12">
+                      <label class="control-label  col-sm-2">Company Name <span class="vd_red">*</span></label>
+                      <div id="company-input-wrapper" class="controls col-sm-6">
+                        <input type="text" placeholder="Your Company Co, Ltd." class="width-60 required" required="" name="company" id="company">
+                      </div>
+                    </div>
+                  </div>
+                </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            
+                        </div>
+                    </div>
+
+
+
+
+
+                </form>
+
+
+                <br>
+
+
+            </div><!-- ./panel body -->
+
+        </div>
+
+
+    </div>
+
+</div><!-- ./row main -->
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+
+
+
+<style type="text/css">
+
+    .btn.pull-right{margin-left: 15px}
+
+    .qms-selectors .form-inline{margin-right: 30px;}
+
+    .edit-buttons{width: 65px;}
+    .gradeX a.vd_btn{margin-right: 0px !important;}
+
+    .select2.select2-container{min-width: 0px !important;width: 150px !important;margin-right: 15px;}
+
+    .table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f3f1f1;
+    }
+    .qa-editable{cursor: pointer;}
+    .qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+    #qms-summary{
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 15px 0px;
+    margin-bottom: 15px;
+    transition: all 0.5s ease;
+    }
+    #qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
+
+    #qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
+
+    #review_report_form{position:relative}
+    #review_report_form td input[type="text"], #review_report_form td select{height:25px}
+    .no_questions{
+    position: absolute;
+    top: -55px;
+    right: 15px;
+    }
+    .table .menu-action{padding-top:7px !important;}
+</style>
+
+
+{% endblock %}
