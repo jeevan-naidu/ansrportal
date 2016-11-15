@@ -159,12 +159,32 @@ $(document).ready(function(){
 
     $('#qms-add-field').click(function(e){
         e.preventDefault();
-        theField = $('#select-field').val();
-        $('#select-field option:selected').remove();
-        console.log('the selected value is ' + theField);
+        optCount = $('#select-field > option').length;
+        console.log('the number of options is ' + optCount);
 
-        theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
-        $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
+
+        if (optCount > 1) {
+
+            theField = $('#select-field').val();
+            $('#select-field option:selected').remove();
+            console.log('the selected value is ' + theField);
+
+            theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
+            $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
+
+        }else if (optCount == 1) {
+            console.log('option count is none');
+            theField = $('#select-field').val();
+            $('#select-field option:selected').remove();
+            console.log('the selected value is ' + theField);
+
+            theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
+            $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
+
+            $('#select-field').html('The end');
+            $('#qms-add-field').prop('disabled', true);
+
+        }
     })
 
 })//./doc.ready    
