@@ -166,7 +166,7 @@ def review_report_base(template_id, project_id):
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
-            template_obj = ProjectTemplate.objects.get(project=project_id)
+            template_obj = ProjectTemplateProcessModel.objects.get(project=project_id)
             defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
             # print defect_type_master_obj
             # self.fields['severity_type'].queryset = DefectTypeMaster.objects.all()

@@ -95,20 +95,20 @@ class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
 class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
-        qs = User.objects.all()
+        # qs = User.objects.all()
 
         project = self.forwarded.get('project', None)
 
         try:
-            user = ProjectTeamMember.objects.filter \
-                (project=project).values_list('member_id', flat=True)
-            qs = qs.filter(pk=user)
+            user = ProjectTeamMember.objects.filter(project=project)
+
+            # qs = qs.filter(pk=user.member_id)
 
         except Exception, e:
             print str(e)
-            qs = None
+            user = None
         #
         # if self.q:
         #     qs = qs.filter(pk=user)
 
-        return qs
+        return user

@@ -91,20 +91,6 @@
                               </div>
                             </div>
                           </div>
-                          <div class="form-group">
-                            <div class="col-md-12">
-                              <label class="control-label  col-sm-2 field-name"><span>Field 2</span><span class="vd_red">*</span></label>
-                              <div class="controls col-sm-6">
-                                <select type="select" class="width-60 input-sm" name="company" >
-                                    <option>Option 1</option>
-                                    <option>Option 2</option>
-                                    <option>Option 3</option>
-                                    <option>Option 4</option>
-                                    <option>Option 5</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
 
 
                             
@@ -154,8 +140,50 @@
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
-    
+
+
 $(document).ready(function(){
+
+    var optional ={}
+    var mandatory ={}
+    var users ={}
+    $(':input[name$=author]').on('change', function()  {
+    if($(this).val() !='') {
+          $.ajax({
+            url: '/qms/get_template_process_review/',
+            type: 'GET',
+            dataType :'json',
+            data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val() },
+            success: function (data) {
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        if(key == 'tabs'){
+                            for (var tabs_key in data[key]) {
+                                console.log(typeof(data[key][tabs_key]) +'--'+ data[key][tabs_key] )
+                                if(data[key][tabs_key] == false){
+                                    optional[data['tab_name'][tabs_key]] = tabs_key
+                                }
+                                else {
+                                    mandatory[data['tab_name'][tabs_key]] = tabs_key
+                                }
+                            }
+
+                        }
+
+                        if(key == 'team_members'){
+                           for (var tabs_key in data[key]) {
+                               users[tabs_key] =data[key][tabs_key]
+                           }
+                        }
+
+                    }
+                }
+
+            },
+
+    });
+    }
+});
 
     $('#qms-add-field').click(function(e){
         e.preventDefault();

@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
 import json
 from .forms import *
+from MyANSRSource.models import ProjectTeamMember
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse
 import logging
@@ -16,14 +17,14 @@ logger = logging.getLogger('MyANSRSource')
 
 
 class ChooseTabs(FormView):
-    template_name = 'reviewreport_create_form.html'
+    template_name = 'reviewreport_create_form_1.html'
     form_class = ChooseMandatoryTabsForm
     success_url = ''
 
     def form_valid(self, form):
-        ProjectTemplate.objects.create(template=form.cleaned_data['template'],
-                                       project=form.cleaned_data['project'],
-                                       qms_process_model=form.cleaned_data['username'])
+        ProjectTemplateProcessModel.objects.create(template=form.cleaned_data['template'],
+                                                   project=form.cleaned_data['project'],
+                                                   qms_process_model=form.cleaned_data['username'])
 
         for reviewer in form.cleaned_data['review_group']:
             QASheetHeader.objects.create(project=form.cleaned_data['project'], chapter=form.cleaned_data['chapter'],
@@ -51,6 +52,34 @@ def qa_sheet_header_obj(project, chapter, author, active_tab):
 
 def get_review_group():
     return ReviewGroup.objects.all()
+
+
+def get_template_process_review(request):
+    project = request.GET.get('project_id')
+    template = request.GET.get('template_id')
+    qms_process_model = request.GET.get('qms_process_model')
+    tabs = {}
+    tab_name = {}
+    team_members = {}
+    try:
+
+        obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model)
+        members_obj = ProjectTeamMember.objects.filter(project=project)
+        for members in members_obj:
+            team_members[int(members.id)] = str(members.member.username)
+        # print members_obj.query
+        # print members_obj
+        for ele in obj:
+            tabs[str(ele.review_group)] = bool(ele.is_mandatory)
+            tab_name[str(ele.review_group)] = int(ele.review_group.id)
+    except ObjectDoesNotExist:
+        tabs = team_members = tab_name = ''
+    context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members}
+    print context_data
+    return HttpResponse(
+        json.dumps(context_data),
+        content_type="application/json"
+    )
 
 
 class AssessmentView(TemplateView):
@@ -85,7 +114,7 @@ class AssessmentView(TemplateView):
                 #     messages.error(self.request, "Sorry No Records Found")
                 #     return HttpResponseRedirect(reverse('qms'))
 
-                template_obj = get_object_or_404(ProjectTemplate, project=obj.project)
+                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=obj.project)
                 template_id = request.session['template_id'] = template_obj.id
                 request.session['QA_sheet_header_id'] = obj.id
                 defect_master = DefectTypeMaster.objects.all()
@@ -224,7 +253,6 @@ class ReviewReportManipulationView(AssessmentView):
                     print request.POST.get('questions')
                     qa_obj.count = int(request.POST.get('questions'))
                     qa_obj.save()
-
 
         else:
             # print q_form.errors
