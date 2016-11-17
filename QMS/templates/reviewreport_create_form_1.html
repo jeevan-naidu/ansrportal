@@ -149,7 +149,7 @@ var theObj = {
         "team_members": {"256": "SumukhShamnur", "257": "KanakaPrakash", "253": "AkshayFernandes", "254": "Bhaviya", "255": "RaviKumar"}
     }
 
-var domObj = $('.form-group').html();
+var domObj = $('.qms-allocators').html();
 
 
 
@@ -185,6 +185,7 @@ var populateForm2 = function(){
 
 var populateForm = function(){
 
+    clearDom();
 
     for (var key in theObj['tabs']) {
       if (theObj['tabs'].hasOwnProperty(key)) {     // opening object
@@ -192,6 +193,7 @@ var populateForm = function(){
         console.log('name of assignee is = ' + theObj['tab_name'][key]);       // the value
         console.log('name of field is = ' + key);       // the key
 
+        $('.qms-allocators').append(domObj);
 
       }
     }    
@@ -235,7 +237,7 @@ $(document).ready(function(){
 
 // populateDom();
 // populateDom2();
-populateForm();
+// populateForm();
 
 $('.select2-container').click(function(){
     populateNames();
