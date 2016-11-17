@@ -154,34 +154,6 @@ var domObj = $('.qms-allocators').html();
 
 
 
-/*var populateDom = function(){
-    for (var key in theObj) {
-      if (theObj.hasOwnProperty(key)) {
-        console.log(key + " -> " + theObj[key]);
-      }
-    }
-}
-
-var populateDom2 = function(){
-    for (var key in theObj['tabs']) {
-      if (theObj['tabs'].hasOwnProperty(key)) {
-        console.log(key + " -> " + theObj['tabs'][key]);
-      }
-    }
-}*/
-
-
-var populateForm2 = function(){
-    for (var key in theObj) {
-      if (theObj.hasOwnProperty(key)) {     // opening object
-        console.log(theObj[key]);       // the value
-        console.log(key);       // the key
-
-
-      }
-    }
-}
-
 
 var populateForm = function(){
 
@@ -191,13 +163,18 @@ var populateForm = function(){
       if (theObj['tabs'].hasOwnProperty(key)) {     // opening object
         console.log('which list is = ' + theObj['tabs'][key]);       // the value
         console.log('name of assignee is = ' + theObj['tab_name'][key]);       // the value
+        var assigneeName = theObj['tab_name'][key];
+        console.log('The name of the assignee is ' + assigneeName);
         console.log('name of field is = ' + key);       // the key
 
         $('.qms-allocators').append(domObj);
         $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
 
 
-        // populateNames();
+        populateNames();
+
+        $('.qms-allocators .form-group:last-child .select-name option[value="256"]').prop('selected', true);
+        console.log('');
 
       }
     }    
@@ -241,11 +218,11 @@ $(document).ready(function(){
 
 // populateDom();
 // populateDom2();
-// populateForm();
+populateForm();
 
-$('.select2-container').click(function(){
+/*$('.select2-container').click(function(){
     populateNames();
-})
+})*/
 
 
 
