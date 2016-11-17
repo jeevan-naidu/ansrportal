@@ -171,9 +171,32 @@ var populateDom2 = function(){
 }*/
 
 
-var populateFormFields = function(){
+var populateForm2 = function(){
+    for (var key in theObj) {
+      if (theObj.hasOwnProperty(key)) {     // opening object
+        console.log(theObj[key]);       // the value
+        console.log(key);       // the key
 
+
+      }
+    }
 }
+
+
+var populateForm = function(){
+
+
+    for (var key in theObj['tabs']) {
+      if (theObj['tabs'].hasOwnProperty(key)) {     // opening object
+        console.log('which list is = ' + theObj['tabs'][key]);       // the value
+        console.log('name of assignee is = ' + theObj['tab_name'][key]);       // the value
+        console.log('name of field is = ' + key);       // the key
+
+
+      }
+    }    
+}
+
 
 
 
@@ -192,8 +215,7 @@ var populateNames = function(){
 }
 
 
-var getDom = function(){
-    
+var clearDom = function(){
     $('.form-group').remove();
 }
 
@@ -213,6 +235,7 @@ $(document).ready(function(){
 
 // populateDom();
 // populateDom2();
+populateForm();
 
 $('.select2-container').click(function(){
     populateNames();
