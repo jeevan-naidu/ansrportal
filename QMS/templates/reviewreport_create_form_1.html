@@ -161,20 +161,29 @@ var populateForm = function(){
 
     for (var key in theObj['tabs']) {
       if (theObj['tabs'].hasOwnProperty(key)) {     // opening object
-        console.log('which list is = ' + theObj['tabs'][key]);       // the value
-        console.log('name of assignee is = ' + theObj['tab_name'][key]);       // the value
-        var assigneeName = theObj['tab_name'][key];
-        console.log('The name of the assignee is ' + assigneeName);
-        console.log('name of field is = ' + key);       // the key
 
-        $('.qms-allocators').append(domObj);
-        $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
+        if (theObj['tabs'][key] == true) {
+
+            console.log('which list is = ' + theObj['tabs'][key]);       // the value
+            console.log('name of assignee is = ' + theObj['tab_name'][key]);       // the value
+            var assigneeName = theObj['tab_name'][key];
+            console.log('The name of the assignee is ' + assigneeName);
+            console.log('name of field is = ' + key);       // the key
+
+            $('.qms-allocators').append(domObj);
+            $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
 
 
-        populateNames();
+            populateNames();
 
-        $('.qms-allocators .form-group:last-child .select-name option[value="256"]').prop('selected', true);
-        console.log('');
+            $('.qms-allocators .form-group:last-child .select-name option[value="254"]').prop('selected', true);
+            console.log('');
+
+        }else{
+            $('select#select-field').html('');
+            $('select#select-field').append("<option>" + key + "</option>");
+        }
+
 
       }
     }    
