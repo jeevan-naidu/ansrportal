@@ -169,7 +169,7 @@ class ProjectTeamMemberAdmin(admin.ModelAdmin):
                     'startDate', 'plannedEffort')
 
 def update_timesheet(modeladmin, request, queryset):
-    queryset.update(approved=0)
+    queryset.update(approved=0, hold=0)
 update_timesheet.short_description = "Cancel Approved Timesheet"
 
 class TimeSheetEntryAdmin(admin.ModelAdmin):
