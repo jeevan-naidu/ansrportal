@@ -7,15 +7,7 @@
 
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
-<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
-<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
-<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
-<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
-<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-
-<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
-<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+{{form.media}}
 
 <div class="row">
 
@@ -207,12 +199,97 @@
                                             </div>
                                         </td>
                                         <td class="menu-action" style="min-width:90px;">
-                                            <!--<a data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btn menu-icon vd_red"> -->
-                                            <!--<i class="fa fa-times"></i> -->
-                                            <!--</a>-->
-                                            <a data-original-title="view" data-placement="top" class="btn menu-icon vd_green" data-toggle="modal" data-target="#addModal">
+                                            <div class="view_details" style="display:none">
+                                                <div class="modal-dialog modal-lg">
+
+                                                    <!-- Modal content-->
+                                                    <div class="modal-content">
+
+
+                                                        <div class="modal-header vd_bg-blue vd_white">
+                                                            <button type="button" class="close"
+                                                                    data-dismiss="modal">&times;</button>
+                                                            <h4 class="modal-title">View Details</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+
+                                                            <div class="">
+                                                                <label class="control-label col-sm-3"
+                                                                       for="email">S.No.:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{forloop.counter}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="">
+                                                                <label class="control-label col-sm-3" for="email">Review
+                                                                    Item Number.:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">
+                                                                        {{form_obj.review_item.value}} </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Defect
+                                                                    Description:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{form_obj.defect.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Defect
+                                                                    Type:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{form_obj.severity_type.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Severity:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{form_obj.severity_level.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Defect
+                                                                    Classification:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{form_obj.defect_classification.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Is
+                                                                    Fixed:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{form_obj.is_fixed|yesno:"Yes,No"}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Fixed
+                                                                    By:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{form_obj.fixed_by.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Remarks:</label>
+                                                                <div class="col-sm-6">
+                                                                    <label class="control-label">{{form_obj.remarks.value}}</label>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <a data-original-title="view" data-placement="top"
+                                               class="btn menu-icon vd_green view_button" data-toggle="modal"
+                                               data-target="#viewModal">
                                                 <i class="fa fa-eye"></i>
                                             </a>
+
 
                                         </td>
                                     </tr>
@@ -272,98 +349,8 @@
 
 <!-- Add Modal -->
 
-<div id="addModal" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-lg">
+<div id="viewModal" class="modal fade" role="dialog">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-
-
-        <form class="form-horizontal">
-              <div class="modal-header vd_bg-blue vd_white">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">The Add Modal</h4>
-              </div>
-              <div class="modal-body">
-
-
-
-
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">S.No.:</label>
-                    <div class="col-sm-6">
-                        <label class="control-label">132</label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Review Item:</label>
-                    <div class="col-sm-6">
-                      <select type="text" class="form-control">
-                          <option>Option 1</option>
-                          <option>Option 2</option>
-                          <option>Option 3</option>
-                          <option>Option 4</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Defect:</label>
-                    <div class="col-sm-6">
-                      <textarea type="text" class="form-control"></textarea>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Type:</label>
-                    <div class="col-sm-6">
-                      <select type="text" class="form-control">
-                          <option>Type 1</option>
-                          <option>Type 2</option>
-                          <option>Type 3</option>
-                          <option>Type 4</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Severity:</label>
-                    <div class="col-sm-6">
-                      <label class="control-label">Autogenerated</label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Classification:</label>
-                    <div class="col-sm-6">
-                      <label class="control-label">Autogenerated</label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Fixed By:</label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="email">Remarks:</label>
-                    <div class="col-sm-6">
-                      <textarea type="text" class="form-control"></textarea>
-                    </div>
-                  </div>
-
-
-
-
-
-
-              </div>
-              <div class="modal-footer vd_bg-white vd_white">
-              <hr>
-                <button type="submit" class="btn btn-default">Submit</button>
-              </div>
-        </form>
-
-
-    </div>
-
-  </div>
 </div>
 
 
@@ -390,6 +377,11 @@
     
 
         $(function() {
+
+         $('.view_button').click(function(){
+            var view_details = $(this).siblings(".view_details").html();
+            $("#viewModal").html(view_details);
+        });
             $("#add_button").on('click', function() {
                 var $tr    = $('#review_report_table tr:last')
                 var $clone = $tr.clone( true, true );

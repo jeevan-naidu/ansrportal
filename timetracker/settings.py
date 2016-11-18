@@ -147,6 +147,7 @@ INSTALLED_APPS = [
     'QMS',
     'admin_reorder',
     # "pinax.notifications",
+    'simple_history',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -160,6 +161,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
     # 'admin_reorder.middleware.ModelAdminReorder',
+    'simple_history.middleware.HistoryRequestMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p

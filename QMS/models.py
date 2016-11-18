@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from MyANSRSource.models import Project, Chapter
+from simple_history.models import HistoricalRecords
 
 
 class TimeStampAbstractModel(models.Model):
@@ -51,7 +52,6 @@ class ProjectTemplateProcessModel(TimeStampAbstractModel):
     def __unicode__(self):
         """ return unicode strings """
         return '%s' % (str(self.project) + " - " + str(self.template))
-
 
 
 class DefectTypeMaster(NameMasterAbstractModel, TimeStampAbstractModel):
@@ -120,6 +120,7 @@ class QASheetHeader(TimeStampAbstractModel):
         null=False,
         verbose_name=" Is author feedback Completed "
     )
+    history = HistoricalRecords()
 
     def __unicode__(self):
         """ return unicode strings """
@@ -138,6 +139,7 @@ class ReviewReport(TimeStampAbstractModel):
     fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by', blank=True, null=True,)
     remarks = models.TextField(blank=True, null=True,)
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
+    history = HistoricalRecords()
 
     def __unicode__(self):
         """ return unicode strings """
