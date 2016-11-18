@@ -181,7 +181,7 @@ class TimeSheetEntryAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(TimeSheetEntryAdmin, self).get_queryset(request).distinct()
-        qs = qs.filter(approved=1)
+        qs = qs.filter(approved=1, hold=1)
         return qs
 
 
