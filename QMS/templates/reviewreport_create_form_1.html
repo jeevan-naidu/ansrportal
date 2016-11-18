@@ -149,7 +149,7 @@ var clearDom = function(){
 }
 
 // 
-var populateNames = function(){
+ function populateNames(theObj){
 
     $('.qms-allocators select').html('');
 
@@ -167,8 +167,8 @@ var populateNames = function(){
 
 
 
-// Main funtion : populating the DOM
-var populateForm = function(){
+// Main function : populating the DOM
+function populateForm (theObj){
 
     clearDom();
 
@@ -187,7 +187,7 @@ var populateForm = function(){
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
 
 
-            populateNames();
+            populateNames(theObj);
 
             $('.qms-allocators .form-group:last-child .select-name option[value="254"]').prop('selected', true);
             console.log('');
@@ -207,49 +207,21 @@ var populateForm = function(){
 
 $(document).ready(function(){
 
-
-
-
-/*    var optional ={}
-    var mandatory ={}
-    var users ={}
     $(':input[name$=author]').on('change', function()  {
-    if($(this).val() !='') {
-          $.ajax({
-            url: '/qms/get_template_process_review/',
-            type: 'GET',
-            dataType :'json',
-            data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val() },
-            success: function (data) {
-                for (var key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        if(key == 'tabs'){
-                            for (var tabs_key in data[key]) {
-                                console.log(typeof(data[key][tabs_key]) +'--'+ data[key][tabs_key] )
-                                if(data[key][tabs_key] == false){
-                                    optional[data['tab_name'][tabs_key]] = tabs_key
-                                }
-                                else {
-                                    mandatory[data['tab_name'][tabs_key]] = tabs_key
-                                }
-                            }
+        if($(this).val() !='') {
+              $.ajax({
+                url: '/qms/get_template_process_review/',
+                type: 'GET',
+                dataType :'json',
+                data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
+                success: function (data) {
+                    console.log(data);
+                    populateForm(data);
+                },
 
-                        }
-
-                        if(key == 'team_members'){
-                           for (var tabs_key in data[key]) {
-                               users[tabs_key] =data[key][tabs_key]
-                           }
-                        }
-
-                    }
-                }
-
-            },
-
+              });
+        }
     });
-    }
-});*/
 
 
 
@@ -290,7 +262,7 @@ $(document).ready(function(){
     // Function Calls
 
 
-    populateForm();
+
 
 
 

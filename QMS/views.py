@@ -40,11 +40,14 @@ def get_review(obj):
                'is_fixed', 'fixed_by__username', 'remarks')
 
 
-def qa_sheet_header_obj(project, chapter, author, active_tab):
+def qa_sheet_header_obj(project, chapter, author, active_tab=None):
     try:
-        result = QASheetHeader.objects.get(project=project, chapter=chapter, author=author,
-                                           review_group=ReviewGroup.objects.get(id=active_tab))
-        print result
+        if active_tab is not None:
+            result = QASheetHeader.objects.get(project=project, chapter=chapter, author=author,
+                                               review_group=ReviewGroup.objects.get(id=active_tab))
+        else:
+            result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
+
     except ObjectDoesNotExist:
         result = None
     return result
@@ -58,24 +61,40 @@ def get_template_process_review(request):
     project = request.GET.get('project_id')
     template = request.GET.get('template_id')
     qms_process_model = request.GET.get('qms_process_model')
+    chapter = request.GET.get('chapter')
+    author = request.GET.get('author')
     tabs = {}
     tab_name = {}
     team_members = {}
+    user_tab = {}
     try:
 
-        obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model)
+        obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
+            order_by('id')
         members_obj = ProjectTeamMember.objects.filter(project=project)
+        qa_obj = qa_sheet_header_obj(project, chapter, author=author)
+
         for members in members_obj:
             team_members[int(members.id)] = str(members.member.username)
-        # print members_obj.query
-        # print members_obj
+
         for ele in obj:
             tabs[str(ele.review_group)] = bool(ele.is_mandatory)
             tab_name[str(ele.review_group)] = int(ele.review_group.id)
+            if qa_obj.count() > 0:
+                try:
+                    tab_user = qa_obj.get(review_group=ele.review_group)
+                    print tab_user
+                except ObjectDoesNotExist:
+                    tab_user = None
+                if tab_user is not None:
+                    user_tab[str(ele.review_group)] = int(tab_user.reviewed_by.id)
+                else:
+                    user_tab[str(ele.review_group)] = None
+
     except ObjectDoesNotExist:
         tabs = team_members = tab_name = ''
-    context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members}
-    print context_data
+    context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab}
+    # print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
