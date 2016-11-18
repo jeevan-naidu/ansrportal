@@ -71,7 +71,7 @@ def get_template_process_review(request):
 
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
             order_by('id')
-        print obj
+        # print obj
         members_obj = ProjectTeamMember.objects.filter(project=project)
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
 
@@ -80,12 +80,13 @@ def get_template_process_review(request):
                 team_members[int(members.id)] = str(members.member.username)
 
         for ele in obj:
+            print ele.review_group
             tabs[str(ele.review_group)] = bool(ele.is_mandatory)
             tab_name[str(ele.review_group)] = int(ele.review_group.id)
             if qa_obj.count() > 0:
                 try:
                     tab_user = qa_obj.get(review_group=ele.review_group)
-                    print tab_user
+                    # print tab_user
                 except ObjectDoesNotExist:
                     tab_user = None
                 if tab_user is not None:
@@ -95,8 +96,9 @@ def get_template_process_review(request):
 
     except ObjectDoesNotExist:
         tabs = team_members = tab_name = ''
+    print tab_name
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab}
-    print context_data
+    # print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"

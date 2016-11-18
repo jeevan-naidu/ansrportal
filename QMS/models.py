@@ -151,3 +151,7 @@ class TemplateProcessReview(TimeStampAbstractModel):
     qms_process_model = models.ForeignKey(QMSProcessModel)
     review_group = models.ForeignKey(ReviewGroup)
     is_mandatory = models.BooleanField(default=False, verbose_name="Is Mandatory")
+
+    def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % self.id

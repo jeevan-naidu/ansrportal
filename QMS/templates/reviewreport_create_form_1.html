@@ -133,8 +133,8 @@
 
 // Sample object
 var theObj = {
-        "tabs": {"Editor Review 2": false, "Editor Review 3": true, "Editor Review 1": true}, 
-        "tab_name": {"Editor Review 2": 2, "Editor Review 3": 3, "Editor Review 1": 1}, 
+        "tabs": {"Editor Review 2": false, "Editor Review 3": true, "Editor Review 1": true},
+        "tab_name": {"Editor Review 4": 4, "Editor Review 3": 3, "Editor Review 1": 1 ,"Editor Review 2": 2 , "Editor Review 5": 5},
         "team_members": {"256": "SumukhShamnur", "257": "KanakaPrakash", "253": "AkshayFernandes", "254": "Bhaviya", "255": "RaviKumar"}
     }
 
@@ -155,7 +155,7 @@ var clearDom = function(){
 
     for (var key in theObj['team_members']) {
       if (theObj['team_members'].hasOwnProperty(key)) {
-        console.log(theObj['team_members'][key]);
+        <!--console.log(theObj['team_members'][key]);-->
 
         // changes all the select boxes simultaneously
         $('.qms-allocators select').append("<option value="+ key +">" + theObj['team_members'][key] + "</option>");
@@ -163,45 +163,49 @@ var clearDom = function(){
     }
 }
 
+function array_flip( trans )
+{
+    var key, tmp_ar = {};
 
+    for ( key in trans )
+    {
+        if ( trans.hasOwnProperty( key ) )
+        {
+            tmp_ar[trans[key]] = key;
+        }
+    }
 
+    return tmp_ar;
+}
 
 
 // Main function : populating the DOM
 function populateForm (theObj){
 
+    var i = 0 ;
     clearDom();
 
-    for (var key in theObj['tabs']) {
-      if (theObj['tabs'].hasOwnProperty(key)) {     // opening object
 
-        if (theObj['tabs'][key] == true) {
+theObj['tab_name'] = array_flip(theObj['tab_name'])
 
-            console.log('which list is = ' + theObj['tabs'][key]);       // the value
-            console.log('name of assignee is = ' + theObj['tab_name'][key]);       // the value
-            var assigneeName = theObj['tab_name'][key];
-            console.log('The name of the assignee is ' + assigneeName);
-            console.log('name of field is = ' + key);       // the key
+    for (var key in theObj['tab_name']) { console.log(theObj['tabs'])
+      if (theObj['tab_name'].hasOwnProperty(key)) {     // opening object
 
+        if (theObj['tabs'][theObj['tab_name'][key]] == true) {
             $('.qms-allocators').append(domObj);
-            $('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key]);
-            $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
+            <!--$('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key]);-->
 
+            $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 
             populateNames(theObj);
 
-            // Select the name of the team member
-            $('.qms-allocators .form-group:last-child .select-name option[value="254"]').prop('selected', true);
-            console.log('');
-
         }else{
             $('select#select-field').html('');
-            $('select#select-field').append("<option>" + key + "</option>");
+            $('select#select-field').append("<option>" + theObj['tab_name'][key] + "</option>");
         }
 
-
       }
-    }    
+    }
 }
 
 
@@ -217,7 +221,7 @@ $(document).ready(function(){
                 dataType :'json',
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
-                    console.log(data);
+                    <!--console.log(data);-->
                     populateForm(data);
                 },
 
