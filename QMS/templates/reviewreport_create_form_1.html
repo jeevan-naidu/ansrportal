@@ -135,8 +135,19 @@
 var theObj = {
         "tabs": {"Editor Review 2": false, "Editor Review 3": true, "Editor Review 1": true}, 
         "tab_name": {"Editor Review 2": 2, "Editor Review 3": 3, "Editor Review 1": 1}, 
-        "team_members": {"256": "SumukhShamnur", "257": "KanakaPrakash", "253": "AkshayFernandes", "254": "Bhaviya", "255": "RaviKumar"}
+        "team_members": {"256": "SumukhShamnur", "257": "KanakaPrakash", "253": "AkshayFernandes", "254": "Bhaviya", "255": "RaviKumar"}, 
+        "user_tab": {"Editor Review 2": "None", "Editor Review 3": "None", "Editor Review 1": 476}
     }
+
+
+/*var theObj = {
+    'tabs': {'Editor Review 2': False, 'Editor Review 3': True, 'Editor Review 1': True}, 
+    'tab_name': {'Editor Review 2': 2, 'Editor Review 3': 3, 'Editor Review 1': 1}, 
+    'team_members': {256: 'SumukhShamnur', 257: 'KanakaPrakash', 254: 'Bhaviya', 255: 'RaviKumar'}, 
+    'user_tab': {'Editor Review 2': None, 'Editor Review 3': None, 'Editor Review 1': 476}
+}*/
+
+
 
 
 
@@ -151,7 +162,8 @@ var clearDom = function(){
 // 
  function populateNames(theObj){
 
-    $('.qms-allocators select').html('');
+    // Place Default in select box
+    $('.qms-allocators select').html("<option>------------------------</option>");
 
     for (var key in theObj['team_members']) {
       if (theObj['team_members'].hasOwnProperty(key)) {
@@ -168,7 +180,7 @@ var clearDom = function(){
 
 
 // Main function : populating the DOM
-function populateForm (theObj){
+function populateForm (/*theObj*/){
 
     clearDom();
 
@@ -184,7 +196,7 @@ function populateForm (theObj){
             console.log('name of field is = ' + key);       // the key
 
             $('.qms-allocators').append(domObj);
-            $('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key]);
+            $('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key] + "_user");
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
 
 
@@ -218,7 +230,7 @@ $(document).ready(function(){
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
                     console.log(data);
-                    populateForm(data);
+                    /*populateForm(data);*/
                 },
 
               });
@@ -264,7 +276,7 @@ $(document).ready(function(){
     // Function Calls
 
 
-
+    populateForm();
 
 
 
