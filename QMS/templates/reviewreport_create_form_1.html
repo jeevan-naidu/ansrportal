@@ -136,7 +136,7 @@ var theObj = {
         "tabs": {"Editor Review 2": false, "Editor Review 3": true, "Editor Review 1": true}, 
         "tab_name": {"Editor Review 2": 2, "Editor Review 3": 3, "Editor Review 1": 1}, 
         "team_members": {"256": "SumukhShamnur", "257": "KanakaPrakash", "253": "AkshayFernandes", "254": "Bhaviya", "255": "RaviKumar"}, 
-        "user_tab": {"Editor Review 2": "None", "Editor Review 3": "None", "Editor Review 1": 476}
+        "user_tab": {"Editor Review 2": "None", "Editor Review 3": "None", "Editor Review 1": "257"}
     }
 
 
@@ -193,7 +193,6 @@ function populateForm (/*theObj*/){
             console.log('name of assignee is = ' + theObj['tab_name'][key]);       // the value
             var assigneeName = theObj['tab_name'][key];
             console.log('The name of the assignee is ' + assigneeName);
-            console.log('name of field is = ' + key);       // the key
 
             $('.qms-allocators').append(domObj);
             $('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key] + "_user");
@@ -202,8 +201,18 @@ function populateForm (/*theObj*/){
 
             populateNames(theObj);
 
-            // Select the name of the team member
-            $('.qms-allocators .form-group:last-child .select-name option[value="254"]').prop('selected', true);
+
+            if (theObj['user_tab'][key] != "none") {
+                console.log('the final value is ' + theObj['user_tab'][key]);
+                console.log('this is the not none value');
+                $('.qms-allocators .form-group:last-child .select-name option[value="256"]').prop('selected', true); 
+            }else{
+                console.log('the final value is ' + theObj['user_tab'][key]);
+                console.log('this is the none value');
+                $('.qms-allocators .form-group:last-child .select-name option[value="253"]').prop('selected', true); 
+            }
+
+
             console.log('');
 
         }else{
