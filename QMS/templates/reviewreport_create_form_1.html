@@ -71,7 +71,7 @@
                             <div class="col-md-12">
                               <label class="control-label col-sm-2 field-name"><span>Field 1</span><span class="vd_red"> *</span></label>
                               <div class="controls col-sm-6">
-                                <select type="select" class="width-60 input-sm select-name" name="name" >
+                                <select type="select" class="width-50 input-sm select-name" name="name" >
                                     <option>Option 1</option>
                                     <option>Option 2</option>
                                     <option>Option 3</option>
@@ -184,11 +184,13 @@ function populateForm (theObj){
             console.log('name of field is = ' + key);       // the key
 
             $('.qms-allocators').append(domObj);
+            $('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key]);
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
 
 
             populateNames(theObj);
 
+            // Select the name of the team member
             $('.qms-allocators .form-group:last-child .select-name option[value="254"]').prop('selected', true);
             console.log('');
 
