@@ -65,20 +65,20 @@ class BaseAssessmentTemplateForm(forms.Form):
     project = forms.ModelChoiceField(
                 queryset=Project.objects.all(),
                 widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
-                 'data-placeholder': 'Type project Name ...',
+                 'data-placeholder': 'Project ',
         }, ),
                 required=True, )
 
     chapter = forms.ModelChoiceField(
             queryset=Chapter.objects.all(),
             widget=autocomplete.ModelSelect2(url='AutocompleteChapters', forward=('project',), attrs={
-             'data-placeholder': 'Type Chapter Name...',
+             'data-placeholder': 'Chapter ',
     }, ),
             required=True, )
     author = forms.ModelChoiceField(
             queryset=User.objects.all(),
             widget=autocomplete.ModelSelect2(url='AutoCompleteUserProjectSpecific', forward=('project', 'chapter'),attrs={
-             'data-placeholder': 'Type Author Name ...',
+             'data-placeholder': 'Author ',
     }, ),
             required=True, )
 
@@ -109,13 +109,13 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
     qms_process_model = forms.ModelChoiceField(
         queryset=QMSProcessModel.objects.all(),
         widget=autocomplete.ModelSelect2(url='AutocompleteProcessModel', attrs={
-            'data-placeholder': 'Type Process Model Name ...',
+            'data-placeholder': 'Process Model ',
         }, ),
         required=True, )
     template = forms.ModelChoiceField(
         queryset=TemplateMaster.objects.all(),
         widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', attrs={
-            'data-placeholder': 'Type Template Name ...',
+            'data-placeholder': 'Template ',
         }, ),
         required=True, )
     review_group = forms.ModelMultipleChoiceField(queryset=ReviewGroup.objects.all(),
@@ -124,7 +124,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
         queryset=User.objects.all(),
         widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project', 'chapter'),
                                          attrs={
-                                             'data-placeholder': 'Type Author Name ...',
+                                             'data-placeholder': 'Author',
                                          }, ),
         required=True, )
 

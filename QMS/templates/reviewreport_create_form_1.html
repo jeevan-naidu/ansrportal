@@ -140,21 +140,43 @@
 
 <script type="text/javascript">
 
-// Sample objects
-
-
+// Sample object
 var theObj = {
         "tabs": {"Editor Review 2": false, "Editor Review 3": true, "Editor Review 1": true}, 
         "tab_name": {"Editor Review 2": 2, "Editor Review 3": 3, "Editor Review 1": 1}, 
         "team_members": {"256": "SumukhShamnur", "257": "KanakaPrakash", "253": "AkshayFernandes", "254": "Bhaviya", "255": "RaviKumar"}
     }
 
+
+
+// Get the html for .form-group
 var domObj = $('.qms-allocators').html();
 
+// Clear the existing html in .form-group
+var clearDom = function(){
+    $('.form-group').remove();
+}
+
+// 
+var populateNames = function(){
+
+    $('.qms-allocators select').html('');
+
+    for (var key in theObj['team_members']) {
+      if (theObj['team_members'].hasOwnProperty(key)) {
+        console.log(theObj['team_members'][key]);
+
+        // changes all the select boxes simultaneously
+        $('.qms-allocators select').append("<option value="+ key +">" + theObj['team_members'][key] + "</option>");
+      }
+    }
+}
 
 
 
 
+
+// Main funtion : populating the DOM
 var populateForm = function(){
 
     clearDom();
@@ -192,48 +214,7 @@ var populateForm = function(){
 
 
 
-var populateNames = function(){
-
-    $('.qms-allocators select').html('');
-
-    for (var key in theObj['team_members']) {
-      if (theObj['team_members'].hasOwnProperty(key)) {
-        console.log(theObj['team_members'][key]);
-
-        // changes all the select boxes simultaneously
-        $('.qms-allocators select').append("<option value="+ key +">" + theObj['team_members'][key] + "</option>");
-      }
-    }
-}
-
-
-var clearDom = function(){
-    $('.form-group').remove();
-}
-
-
-
-
-
-
-
-
-
-
 $(document).ready(function(){
-
-
-
-
-// populateDom();
-// populateDom2();
-populateForm();
-
-/*$('.select2-container').click(function(){
-    populateNames();
-})*/
-
-
 
 
 
@@ -284,18 +265,6 @@ populateForm();
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     $('#qms-add-field').click(function(e){
         e.preventDefault();
         optCount = $('#select-field > option').length;
@@ -325,6 +294,15 @@ populateForm();
 
         }
     })
+
+
+    // Function Calls
+
+
+    populateForm();
+
+
+
 
 })//./doc.ready    
 
