@@ -60,7 +60,6 @@ from dal import autocomplete
 #             required=True, )
 
 
-
 class BaseAssessmentTemplateForm(forms.Form):
     project = forms.ModelChoiceField(
                 queryset=Project.objects.all(),
@@ -118,8 +117,14 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
             'data-placeholder': 'Template ',
         }, ),
         required=True, )
-    review_group = forms.ModelMultipleChoiceField(queryset=ReviewGroup.objects.all(),
-                                                  widget=forms.CheckboxSelectMultiple(), required=False)
+    # review_group = forms.ModelMultipleChoiceField(queryset=ReviewGroup.objects.all(),
+    #                                               widget=forms.CheckboxSelectMultiple(), required=False)
+    component = forms.ModelChoiceField(
+        queryset=ComponentMaster.objects.all(),
+        widget=autocomplete.ModelSelect2(url='AutocompleteComponents',
+                                         attrs={
+                                             'data-placeholder': 'Component',
+                                         }, ), required=True, )
     author = forms.ModelChoiceField(
         queryset=User.objects.all(),
         widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project', 'chapter'),

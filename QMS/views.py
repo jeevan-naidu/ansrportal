@@ -11,7 +11,7 @@ import json
 from .forms import *
 from MyANSRSource.models import ProjectTeamMember
 from django.forms.formsets import formset_factory
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 import logging
 logger = logging.getLogger('MyANSRSource')
 
@@ -19,17 +19,41 @@ logger = logging.getLogger('MyANSRSource')
 class ChooseTabs(FormView):
     template_name = 'reviewreport_create_form_1.html'
     form_class = ChooseMandatoryTabsForm
-    success_url = ''
+    success_url = reverse_lazy('choose_tabs')
 
     def form_valid(self, form):
-        ProjectTemplateProcessModel.objects.create(template=form.cleaned_data['template'],
-                                                   project=form.cleaned_data['project'],
-                                                   qms_process_model=form.cleaned_data['username'])
+        user_tab = {}
 
-        for reviewer in form.cleaned_data['review_group']:
-            QASheetHeader.objects.create(project=form.cleaned_data['project'], chapter=form.cleaned_data['chapter'],
-                                         review_group=reviewer)
+        users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
+        print users
+        for k, v in users.iteritems():
+            tab_id = k.split('_')
+            user_tab[tab_id[1]] = v
 
+        # {u'user_3': u'256', u'user_1': u'255'}
+
+        try:
+            ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
+                                                              project=form.cleaned_data['project'],
+                                                              qms_process_model=form.cleaned_data['qms_process_model'])
+        except:
+            pass
+
+        obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
+                                                                        component=form.cleaned_data['component'],
+                                                                        defaults={'created_by': self.request.user}, )
+
+        for k, v in user_tab.iteritems():
+            obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
+                                                                  chapter=form.cleaned_data['chapter'],
+                                                                  author=form.cleaned_data['author'],
+                                                                  chapter_component_id=obj.id,
+                                                                  review_group_id=k,
+                                                                  defaults={'reviewed_by_id': v,
+                                                                            'created_by': self.request.user}, )
+            if not created:
+                obj.updated_by = self.request.user
+        messages.info(self.request, "Successfully Saved")
         return super(ChooseTabs, self).form_valid(form)
 
 
@@ -80,7 +104,7 @@ def get_template_process_review(request):
                 team_members[int(members.id)] = str(members.member.username)
 
         for ele in obj:
-            print ele.review_group
+            # print ele.review_group
             tabs[str(ele.review_group)] = bool(ele.is_mandatory)
             tab_name[str(ele.review_group)] = int(ele.review_group.id)
             if qa_obj.count() > 0:
@@ -96,7 +120,6 @@ def get_template_process_review(request):
 
     except ObjectDoesNotExist:
         tabs = team_members = tab_name = ''
-    print tab_name
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab}
     # print context_data
     return HttpResponse(

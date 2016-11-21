@@ -66,6 +66,13 @@ class AutocompleteChapters(autocomplete.Select2QuerySetView):
         return qs
 
 
+class AutocompleteComponents(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = ComponentMaster.objects.filter(name__icontains=q)
+        return choices
+
+
 # for second screen in qms
 class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
     def get_queryset(self):
@@ -81,8 +88,7 @@ class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
                 (project=project, chapter=chapter).values_list('author', flat=True)[0]
             qs = qs.filter(pk=user)
 
-        except Exception, e:
-            print str(e)
+        except:
             qs = None
         #
         # if self.q:
@@ -104,8 +110,7 @@ class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
 
             # qs = qs.filter(pk=user.member_id)
 
-        except Exception, e:
-            print str(e)
+        except:
             user = None
         #
         # if self.q:

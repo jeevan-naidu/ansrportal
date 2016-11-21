@@ -7,11 +7,12 @@ from simple_history.models import HistoricalRecords
 
 fixed_status = (('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
 
+
 class TimeStampAbstractModel(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
     updated_on = models.DateTimeField(auto_now=True)
-    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -121,7 +122,7 @@ class QASheetHeader(TimeStampAbstractModel):
                                 verbose_name="Chapter/Subtitle", null=True)
     chapter_component = models.ForeignKey(ChapterComponent, blank=True, verbose_name="Chapter&Component", null=True)
 
-    work_packet = models.ForeignKey(WorkPacketMaster, verbose_name="work packet (output)")
+    work_packet = models.ForeignKey(WorkPacketMaster, verbose_name="work packet (output)", blank=True, null=True, )
     count = models.IntegerField(verbose_name="work packet count", default=0)
     author = models.ForeignKey(User, related_name='QASheetHeader_author', blank=True, null=True,)
     review_group = models.ForeignKey(ReviewGroup)

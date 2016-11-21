@@ -52,6 +52,8 @@
 
 
                                 <span>{{ form.chapter.errors }} </span>{{form.chapter}}
+                            <span>{{ form.component.errors }} </span>{{form.component}}
+
 
                                 <span>{{form.author.errors}}</span>{{form.author}}
 
@@ -193,7 +195,7 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
         if (theObj['tabs'][theObj['tab_name'][key]] == true) {
             $('.qms-allocators').append(domObj);
-           $('.qms-allocators .form-group:last-child select').attr('name', key+"_user");
+           $('.qms-allocators .form-group:last-child select').attr('name', "user_"+key);
 
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 

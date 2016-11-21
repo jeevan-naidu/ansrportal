@@ -29,6 +29,12 @@ urlpatterns = [
                             name='AutocompleteChapters',
                         ),
     url(
+        r'^AutocompleteComponents/$',
+        AutocompleteComponents.as_view(),
+        name='AutocompleteComponents',
+    ),
+
+    url(
         r'^AutocompleteProcessModel/$',
         AutocompleteProcessModel.as_view(),
         name='AutocompleteProcessModel',
