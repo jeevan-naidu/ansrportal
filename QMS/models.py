@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Project, Chapter
 from simple_history.models import HistoricalRecords
 
+fixed_status = (('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
 
 class TimeStampAbstractModel(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
@@ -78,6 +79,10 @@ class WorkPacketMaster(NameMasterAbstractModel, TimeStampAbstractModel):
     pass
 
 
+class ComponentMaster(NameMasterAbstractModel, TimeStampAbstractModel):
+    pass
+
+
 class ReviewGroup(models.Model):
     name = models.CharField(max_length=100)
     review_master = models.ForeignKey(ReviewMaster)
@@ -101,10 +106,21 @@ class DefectSeverityLevel(TimeStampAbstractModel):
                        + str(self.defect_classification))
 
 
+class ChapterComponent(TimeStampAbstractModel):
+    chapter = models.ForeignKey(Chapter, blank=False, verbose_name="Chapter/Subtitle", null=False)
+    component = models.ForeignKey(ComponentMaster, blank=False, verbose_name="Component", null=False)
+
+    def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % self.id
+
+
 class QASheetHeader(TimeStampAbstractModel):
     project = models.ForeignKey(Project)
     chapter = models.ForeignKey(Chapter, blank=False,
                                 verbose_name="Chapter/Subtitle", null=True)
+    chapter_component = models.ForeignKey(ChapterComponent, blank=True, verbose_name="Chapter&Component", null=True)
+
     work_packet = models.ForeignKey(WorkPacketMaster, verbose_name="work packet (output)")
     count = models.IntegerField(verbose_name="work packet count", default=0)
     author = models.ForeignKey(User, related_name='QASheetHeader_author', blank=True, null=True,)
@@ -135,7 +151,7 @@ class ReviewReport(TimeStampAbstractModel):
     review_item = models.CharField(max_length=100)
     defect = models.TextField()
     defect_severity_level = models.ForeignKey(DefectSeverityLevel)
-    is_fixed = models.BooleanField(blank=True, default=False, verbose_name="Is Fixed?")
+    is_fixed = models.CharField(max_length=50, blank=True, null=True, choices=fixed_status, verbose_name="Is Fixed?")
     fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by', blank=True, null=True,)
     remarks = models.TextField(blank=True, null=True,)
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")

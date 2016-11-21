@@ -193,7 +193,7 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
         if (theObj['tabs'][theObj['tab_name'][key]] == true) {
             $('.qms-allocators').append(domObj);
-            <!--$('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key]);-->
+            $('.qms-allocators .form-group:last-child .field-name').attr('name', theObj['tab_name'][key]);
 
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 
