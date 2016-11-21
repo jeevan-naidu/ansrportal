@@ -110,18 +110,14 @@
 
                 <ul class="nav nav-tabs"> {% for groups in review_group %}
                     <li {% if request.session.active_tab|add:
-                    "0" == groups.id|add:"0" %} class="active review" {% else %} class="review" {% endif
-                    %}id={{groups.id}} ><a href="#tab1" data-toggle="tab">{{groups}}</a></li>
+                    "0" == groups.id|add:"0" %} class="active review" {% else %} class="review" {% endif %}
+                    id={{groups.id}} ><a href="#tab1" data-toggle="tab">{{groups}}</a></li>
                     <!--<li class="review disabled" id="3" ><a href="#tab3" >CE1</a></li> -->
                     {% endfor %}
                 </ul><!-- ./tab -->
 
 
-
-
-
-
-            <br>               
+                <br>
                 <div class="tab-content mgbt-xs-20">
                     <div class="tab-pane active" id="tab1">
 
@@ -183,7 +179,9 @@
                                             {{form_obj.defect_classification}}
                                         </td>
                                         <td class="qa-editable" id="is_fixed-{{forloop.counter}}-td">
-                                            {{form_obj.is_fixed}}
+                                            {{form_obj.is_fixed|yesno:"Yes,No"}}
+                                            <input type="text" placeholder="{{form_obj.is_fixed|yesno:'Yes,No'}}"
+                                                   class="input-sm hidden">
                                         </td>
                                         <td class="" id="fixed_by-{{forloop.counter}}-td">
                                             {{form_obj.fixed_by}}
@@ -258,7 +256,7 @@
                                                                 <label class="control-label col-sm-3" for="email">Is
                                                                     Fixed:</label>
                                                                 <div class="col-sm-6">
-                                                                    <label class="control-label">{{form_obj.is_fixed.value}}</label>
+                                                                    <label class="control-label">{{form_obj.is_fixed|yesno:"Yes,No"}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
