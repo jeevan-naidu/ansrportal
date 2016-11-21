@@ -201,7 +201,7 @@ function populateForm (/*theObj*/){
             console.log('The name of the assignee is ' + assigneeName);
 
             $('.qms-allocators').append(domObj);
-            $('.qms-allocators .form-group:last-child .field-name').attr('id', theObj['tab_name'][key] + "_user");
+            $('.qms-allocators .form-group:last-child select').attr('name', theObj['tab_name'][key] + "_user");
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(key);
 
 
