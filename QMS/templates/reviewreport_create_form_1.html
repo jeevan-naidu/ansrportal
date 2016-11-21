@@ -87,7 +87,7 @@
                         </div>
                     </div>
 
-                    <hr>
+                    <!-- <hr> -->
 
                     <div class="row">
                         
@@ -105,6 +105,12 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    <div class="row">
+                            <div class="col-sm-12">
+                                <input type="submit" class="btn btn-danger btn-sm pull-right" value="Submit">
+                            </div>
                     </div>
 
 
@@ -159,11 +165,11 @@ var clearDom = function(){
     $('.form-group').remove();
 }
 
-// 
- function populateNames(theObj){
+
+ function populateNames(/*theObj*/){
 
     // Place Default in select box
-    $('.qms-allocators select').html("<option>------------------------</option>");
+    $('.qms-allocators select').html("<option value=" + 0 + ">------------------------</option>"); //Bug
 
     for (var key in theObj['team_members']) {
       if (theObj['team_members'].hasOwnProperty(key)) {
@@ -202,7 +208,10 @@ function populateForm (/*theObj*/){
             populateNames(theObj);
 
 
-            if (theObj['user_tab'][key] != "none") {
+            // $('.qms-allocators .form-group:last-child .select-name option[value="255"]').prop('selected', true); 
+
+
+/*            if (theObj['user_tab'][key] != "none") {
                 console.log('the final value is ' + theObj['user_tab'][key]);
                 console.log('this is the not none value');
                 $('.qms-allocators .form-group:last-child .select-name option[value="256"]').prop('selected', true); 
@@ -210,7 +219,7 @@ function populateForm (/*theObj*/){
                 console.log('the final value is ' + theObj['user_tab'][key]);
                 console.log('this is the none value');
                 $('.qms-allocators .form-group:last-child .select-name option[value="253"]').prop('selected', true); 
-            }
+            }*/
 
 
             console.log('');
