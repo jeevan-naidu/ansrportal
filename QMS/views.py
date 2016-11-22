@@ -25,7 +25,7 @@ class ChooseTabs(FormView):
         user_tab = {}
 
         users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
-        print users
+        # print users
         for k, v in users.iteritems():
             tab_id = k.split('_')
             user_tab[tab_id[1]] = v
@@ -39,15 +39,19 @@ class ChooseTabs(FormView):
         except:
             pass
 
-        obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
-                                                                        component=form.cleaned_data['component'],
-                                                                        defaults={'created_by': self.request.user}, )
+        cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
+                                                                           component=form.cleaned_data['component'],
+                                                                           defaults={'created_by': self.request.user}, )
+
+        # print cm_obj
+        # print chapter_component
 
         for k, v in user_tab.iteritems():
+            print form.cleaned_data['author']
             obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
-                                                                  chapter_component_id=obj.id,
+                                                                  chapter_component=cm_obj,
                                                                   review_group_id=k,
                                                                   defaults={'reviewed_by_id': v,
                                                                             'created_by': self.request.user}, )
@@ -58,6 +62,8 @@ class ChooseTabs(FormView):
 
 
 def get_review(obj):
+    print "obj"
+    print obj
     return ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True).\
         values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
                'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
@@ -65,14 +71,33 @@ def get_review(obj):
 
 
 def qa_sheet_header_obj(project, chapter, author, active_tab=None):
+    # chapter
+    # u'9635'
+    # author
+    # u'253'
+    # template_name
+    # u'1'
+    # project
+    # u'79'
+    # active_tab
+    # u'2'
     try:
+        print chapter, "chapter"
+        print active_tab, "active_tab", project, chapter, author
         if active_tab is not None:
-            result = QASheetHeader.objects.get(project=project, chapter=chapter, author=author,
+            try:
+                result = QASheetHeader.objects.get(project=project, chapter=chapter, author=author,
                                                review_group=ReviewGroup.objects.get(id=active_tab))
+            except Exception, e:
+                print str(e)
+                # print "if"
+                # print result
         else:
+            print "else"
             result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
 
     except ObjectDoesNotExist:
+        print "except"
         result = None
     return result
 
@@ -143,7 +168,7 @@ class AssessmentView(TemplateView):
     def post(self, request):
         form = BaseAssessmentTemplateForm(request.POST)
         # print request.POST
-        reports = template_id = None
+        # reports = template_id = None
         active_tab = request.session['active_tab'] = request.POST.get('active_tab')
         if form.is_valid():
 
@@ -151,16 +176,19 @@ class AssessmentView(TemplateView):
             chapter = form.cleaned_data['chapter']
             author = form.cleaned_data['author']
             try:
-                print "try"
+                print "im in try"
+                print project, chapter, author, active_tab
+
                 request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
                 obj = qa_sheet_header_obj(project, chapter, author, active_tab)
+                print obj
                 # if obj is None:
                 #     messages.error(self.request, "Sorry No Records Found")
                 #     return HttpResponseRedirect(reverse('qms'))
 
-                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=obj.project)
+                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=project)
                 template_id = request.session['template_id'] = template_obj.id
                 request.session['QA_sheet_header_id'] = obj.id
                 defect_master = DefectTypeMaster.objects.all()
@@ -182,7 +210,7 @@ class AssessmentView(TemplateView):
 
         qmsData = {}
         qmsDataList = []
-        if len(reports) != 0:
+        if reports and len(reports) != 0:
             # print"im in"
             for eachData in reports:
                 for k, v in eachData.iteritems():
@@ -223,7 +251,7 @@ class AssessmentView(TemplateView):
 
         qms_formset = qms_formset(initial=qmsDataList)
 
-        return render(self.request, self.template_name, {'form': form, 'defect_master': defect_master,
+        return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
                                                          'template_id': template_id,
                                                          'review_group': get_review_group(), 'questions': obj.count})
@@ -233,12 +261,12 @@ class ReviewReportManipulationView(AssessmentView):
 
     def post(self, request):
         # print request.POST
-        print "im in formset post"
+        # print "im in formset post"
         fail = 0
         qmsData = {}
         qmsDataList = []
         request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
-        print request.POST.get('active_tab1')
+        # print request.POST.get('active_tab1')
         qms_form = review_report_base(request.session['template_id'], request.session['project'])
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
@@ -281,12 +309,23 @@ class ReviewReportManipulationView(AssessmentView):
                 # print obj['severity_type']
                 # import ipdb
                 # ipdb.set_trace()
-                defect_obj = DefectSeverityLevel.objects.get(template_id=request.session['template_id'],
-                                                             severity_type=obj['severity_type'],
-                                                             review_group_id=active_tab)
-                # print defect_obj.query
 
-                report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
+                # import ipdb
+                # ipdb.set_trace()
+
+                try:
+                    defect_obj = DefectSeverityLevel.objects.get(template_id=request.session['template_id'],
+                                                                 severity_type=obj['severity_type'],
+                                                                 review_group_id=active_tab)
+                    print defect_obj.query
+                except:
+                    print request.session['template_id']
+                    print obj['severity_type']
+                    print active_tab
+                    print "--------------------"
+
+                report.defect_severity_level = defect_obj
+                # report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
                 qa_obj = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
                 report.QA_sheet_header = qa_obj
                 report.updated_by = request.user
@@ -296,7 +335,7 @@ class ReviewReportManipulationView(AssessmentView):
                     logger.error(" {0} ".format(str(e)))
                     fail += 1
                 finally:
-                    print request.POST.get('questions')
+                    # print request.POST.get('questions')
                     qa_obj.count = int(request.POST.get('questions'))
                     qa_obj.save()
 

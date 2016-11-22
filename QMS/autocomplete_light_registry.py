@@ -86,6 +86,7 @@ class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
         try:
             user = QASheetHeader.objects.filter \
                 (project=project, chapter=chapter).values_list('author', flat=True)[0]
+
             qs = qs.filter(pk=user)
 
         except:
@@ -106,14 +107,23 @@ class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
         project = self.forwarded.get('project', None)
 
         try:
-            user = ProjectTeamMember.objects.filter(project=project)
+            print project
 
-            # qs = qs.filter(pk=user.member_id)
+            user = ProjectTeamMember.objects.filter(project=project).values_list('member_id')
+            print user
+            try:
+                qs = User.objects.filter(pk__in=user)
+            except Exception, e:
+                print str(e)
+                # # for i in user:
+                # #     print i.member_id
+                #
+                # # qs = qs.filter(pk=user.member_id)
 
         except:
-            user = None
+            qs = None
         #
         # if self.q:
         #     qs = qs.filter(pk=user)
 
-        return user
+        return qs

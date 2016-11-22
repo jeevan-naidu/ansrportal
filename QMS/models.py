@@ -103,6 +103,7 @@ class DefectSeverityLevel(TimeStampAbstractModel):
 
     def __unicode__(self):
         """ return unicode strings """
+        return '%s' % self.id
         return '%s' % (str(self.severity_type)+": " + str(self.severity_level) + ": "
                        + str(self.defect_classification))
 

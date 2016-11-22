@@ -127,7 +127,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
                                          }, ), required=True, )
     author = forms.ModelChoiceField(
         queryset=User.objects.all(),
-        widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project', 'chapter'),
+        widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),
                                          attrs={
                                              'data-placeholder': 'Author',
                                          }, ),

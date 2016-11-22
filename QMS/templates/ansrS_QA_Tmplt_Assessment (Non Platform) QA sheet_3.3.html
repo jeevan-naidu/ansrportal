@@ -414,8 +414,10 @@
                  <!--$(this).closest('td').attr('id',new_id);-->
                 });
                 total_form = ++increment_id;
-                  $('#id_form-TOTAL_FORMS').val(increment_id)
-                 // console.log($('#id_form-TOTAL_FORMS').val())
+                 var  current_count = parseInt($('#id_form-TOTAL_FORMS').val()) ;
+                 current_count +=1 ;
+                 $('#id_form-TOTAL_FORMS').val(current_count);
+                 console.log($('#id_form-TOTAL_FORMS').val())
             });
 
 
