@@ -11,10 +11,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS,\
     BUTTON_NAME, LeaveSummary, SHORT_ATTENDANCE_TYPE
-from CompanyMaster.models import *
 from django.contrib.auth.models import User
 import datetime
-from datetime import date
+from datetime import date, timedelta
 from employee.models import Employee
 import logging
 import xlwt
@@ -28,6 +27,7 @@ from django.conf import settings
 from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
 import calendar
+from CompanyMaster.models import Holiday
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -1138,7 +1138,7 @@ def ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user):
 class RaiseDispute(View):
     '''raise dispute form for comments'''
 
-    def get(self,request):
+    def get(self, request):
         context_data = {'record_added': False}
         leaveid = request.GET.get('leaveid')
         shortAttendance = ShortAttendance.objects.get(id=leaveid)
@@ -1179,12 +1179,133 @@ class RaiseDispute(View):
         return render(request, 'short_attendance_remark.html', context_data)
 
 
+def report(request):
+    context = {}
+    month = date.today().month
+    user = request.user.id
+    manager = Employee.objects.get(user_id=user)
+    userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+    userid = [user.user_id for user in userlist]
+    userlist = User.objects.filter(id__in=userid, is_active=True)
+    context['weekreport'] = weekwisereport(month, userlist)
+    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, 1)
+    context['startdate'] = weekdetail(1, month)
+    context['enddate'] = context['startdate'] + timedelta(5)
+    context['month'] = month
+    return render(request, 'leavereport.html', context)
+
+
+def leavereportweeklybasedonuser(month, userlist, week):
+    weekreport = []
+    userdata = []
+    for user in userlist:
+        userdata.append(user.first_name + " " + user.last_name)
+        userdata.append(userweeklyleavereport(user, week, month))
+        weekreport.append(userdata)
+        userdata = []
+    return weekreport
+
+
+def userweeklyleavereport(user, week, month):
+    leavelist = []
+    startdate = weekdetail(week, month)
+    enddate = startdate + timedelta(5)
+    for single_date in daterange(startdate, enddate):
+        leavelist.append(leavecheck(user, single_date))
+    return leavelist
+
+
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + timedelta(n)
+
+
+def weekdetail(week, month):
+    currentmontdetail = monthrange(date.today().year, month)
+    daysinpreviousmonth = currentmontdetail[0]
+    startdate = date(year=date.today().year,
+                                 month=month,
+                                 day=1+7*(week-1)) - timedelta(daysinpreviousmonth)
+    return startdate
+
+
+
+
+def weekwisereport(month, userlist):
+    weekreport = []
+    weekreportdetail = {}
+    currentmontdetail = monthrange(date.today().year, month)
+    if month == 1:
+        previousmontdetail = monthrange(date.today().year, 12)
+    elif month == 12:
+        previousmontdetail = monthrange(date.today().year, month - 1)
+    else:
+        previousmontdetail = monthrange(date.today().year, month - 1)
+
+    previousmonthdays = previousmontdetail[1]
+    dayscount = currentmontdetail[1]
+    available = 0
+    unavailable = 0
+    holiday = 0
+    for val in range(0, currentmontdetail[0]):
+        datecheck = date(year=date.today().year, month=month-1, day=previousmonthdays-val)
+        for user in userlist:
+            check = leavecheck(user, datecheck)
+            if check == 0:
+                available += 1
+            elif check == 1:
+                available += .5
+                unavailable += .5
+            elif check == 2:
+                unavailable += 1
+            else:
+                holiday += 1
+    for val in range(1, dayscount+1):
+        date1 = date(year=date.today().year, month=month, day=val)
+        if date1.strftime("%A") == 'Saturday':
+            weekreportdetail['available'] = available
+            weekreportdetail['unavailable'] = unavailable
+            weekreportdetail['holiday'] = holiday
+            weekreport.append(weekreportdetail)
+            available = 0
+            unavailable = 0
+            holiday = 0
+            weekreportdetail = {}
+
+        elif date1.strftime("%A") == 'Sunday':
+            pass
+        elif val == dayscount+1:
+            weekreportdetail['available'] = available
+            weekreportdetail['unavailable'] = unavailable
+            weekreportdetail['holiday'] = holiday
+            weekreport.append(weekreportdetail)
+            available = 0
+            unavailable = 0
+            holiday = 0
+            weekreportdetail = {}
+
+
+        else:
+            for user in userlist:
+                check = leavecheck(user, date1)
+                if check == 0:
+                    available += 1
+                elif check == 1:
+                    available += .5
+                    unavailable += .5
+                elif check == 2:
+                    unavailable += 1
+                else:
+                    holiday += 1
+
+    return weekreport
+
+
 def leavereport(request):
     leavereport = {}
-
     user = request.user.id
-    month = request.GET.get('month')
-    # month = 7
+    # month = int(request.GET.get('month'))
+    month = 7
     manager = Employee.objects.get(user_id=user)
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
     userid = [user.user_id for user in userlist]
@@ -1194,6 +1315,7 @@ def leavereport(request):
         leavereport[username] = monthlyleavereport(user, month)
     json_data = json.dumps(leavereport)
     return HttpResponse(json_data, content_type="application/json")
+
 
 def monthlyleavereport(user, month):
     leavelist = []
@@ -1229,12 +1351,14 @@ def monthlyleavereport(user, month):
             leavelist.append(userreport)
     return leavelist
 
+
 def leavecheck(user, date):
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
                                                     to_date__gte=date,
-                                                    status__in=['open', 'approved'])
+                                                    status__in=['open', 'approved']).exclude(leave_type=11)
     holiday = Holiday.objects.all().values('date')
+
     if len(leaveapplied) > 1:
         flag = 2
     elif leaveapplied and leaveapplied[0].from_date < date and leaveapplied[0].to_date > date:
@@ -1263,6 +1387,34 @@ def leavecheck(user, date):
         flag = 0
     return flag
 
+def monthwisedata(request):
+    month = int(request.GET.get('month'))
+    context = {}
+    user = request.user.id
+    manager = Employee.objects.get(user_id=user)
+    userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+    userid = [user.user_id for user in userlist]
+    userlist = User.objects.filter(id__in=userid, is_active=True)
+    context['weekreport'] = weekwisereport(month, userlist)
+    context['startdate'] = weekdetail(1, month)
+    context['enddate'] = context['startdate'] + timedelta(5)
+    return render(request, 'monthlyreport.html', context)
+
+def weekwisedata(request):
+    context = {}
+    week = int(request.GET.get('week'))
+    month = int(request.GET.get('month'))
+    user = request.user.id
+    manager = Employee.objects.get(user_id=user)
+    userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+    userid = [user.user_id for user in userlist]
+    userlist = User.objects.filter(id__in=userid, is_active=True)
+    context['weekreport'] = weekwisereport(month, userlist)
+    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, week)
+    context['startdate'] = weekdetail(week, month)
+    context['enddate'] = context['startdate'] + timedelta(5)
+    context['month'] = month
+    return render(request, 'weeklyreport.html', context)
 
 def adminleavecancel(request):
     user_id=request.user.id
