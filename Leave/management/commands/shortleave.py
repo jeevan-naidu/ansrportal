@@ -7,6 +7,7 @@ import logging
 import pytz
 from string import Formatter
 from CompanyMaster.models import Holiday
+from Leave.tasks import ShortAttendanceRaisedEmailSendTask
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -21,7 +22,7 @@ class Command(BaseCommand):
 def shortLeave():
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
-    checkdate = date.today() - timedelta(days=30)
+    checkdate = date.today() - timedelta(days=4)
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
     dueDate = checkdate + timedelta(days=30)
@@ -36,7 +37,10 @@ def shortLeave():
             reason = ""
             shortLeaveType = ""
             employee = Employee.objects.filter(user_id = user.id)
-            appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=checkdate, to_date__gte=checkdate, user=user.id)
+            appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=checkdate,
+                                                                 to_date__gte=checkdate,
+                                                                 user=user.id,
+                                                                 status__in=['open', 'approved'])
             manager_id = Employee.objects.filter(user_id=user).values('manager_id')
             manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
             if manager:
@@ -63,6 +67,14 @@ def shortLeave():
                         reason = "you came at {0}, you came late".format(morningInTime.time().isoformat())
                         shortLeaveType = 'half_day'
                 else:
+                    swipeIn = datetime.now(pytz.timezone("Asia/Kolkata"))\
+                        .replace(hour=0, minute=0, second=0, microsecond=0)\
+                        .astimezone(pytz.utc)
+                    swipeOut = datetime.now(pytz.timezone("Asia/Kolkata"))\
+                        .replace(hour=0, minute=0, second=0, microsecond=0)\
+                        .astimezone(pytz.utc)
+                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
                     tdelta = timedelta(hours=0, minutes=0, seconds=0)
                     stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                     reason = "you were absent"
@@ -95,6 +107,12 @@ def shortLeave():
                                                               swipe_in=swipeInTime,
                                                               swipe_out=swipeOutTime
                                                               )
+                        ShortAttendanceRaisedEmailSendTask.delay(user,
+                                                                 shortLeaveType,
+                                                                 "open",
+                                                                 checkdate,
+                                                                 dueDate,
+                                                                 reason)
             else:
                 print(user.first_name + user.last_name + " hr need to take care")
         except:

@@ -22,11 +22,17 @@ jQuery(document).ready(function($){
 		$('.vd_content-wrapper').css('min-height', vph + 'px' );
 	}
 
+
+	extendRibbon = function(){
+		$('#oneteam-ribbon').addClass('extended');
+	}
+
+
+	// Function Calls
+
+
 	navHeight();
 	heightFunction();
-
-
-
 
 
 	$(window).resize(function(){
@@ -36,6 +42,9 @@ jQuery(document).ready(function($){
 
 	$(window).load(function(){
 		heightFunction();
+		setTimeout(function(){ 
+			extendRibbon(); 
+		}, 1000);
 	})
 
 

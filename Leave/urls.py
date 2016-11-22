@@ -30,4 +30,6 @@ urlpatterns = [
                        url(r'^report/$', login_required(report), name=u'leave_report'),
                        url(r'^monthwisedata/$', login_required(monthwisedata), name=u'month_wise_data'),
                        url(r'^weekwisedata/$', login_required(weekwisedata), name=u'week_wise_data'),
+                       url(r'^admincancel/$', login_required(adminleavecancel), name=u'admin_leave_cancel'),
+
                        ]

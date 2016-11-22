@@ -1,41 +1,29 @@
-from django.shortcuts import render
 from django.views.generic import View
-from django.views.generic.list import ListView
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import JsonResponse
 from forms import *
-from django.conf import settings
 from models import *
-from django.db.models import Q
 import json
-from datetime import date
-from validations import leaveValidation, leave_calculation, oneTimeLeaveValidation, newJoineeValidation, compOffAvailibilityCheck
-import employee
-import calendar
-from calendar import monthrange
+from validations import leaveValidation, oneTimeLeaveValidation, newJoineeValidation, compOffAvailibilityCheck
 from django.shortcuts import render
-# from datetime import datetime, date
 from decimal import *
-from datetime import date,timedelta
-from django.utils import timezone
 from django.views.generic.list import ListView
-from django.views.generic import TemplateView
-from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
-from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS, BUTTON_NAME,LeaveSummary
+from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS,\
+    BUTTON_NAME, LeaveSummary, SHORT_ATTENDANCE_TYPE
 from CompanyMaster.models import *
 from django.contrib.auth.models import User
-from export_xls.views import export_xlwt
 import datetime
 from datetime import date
 from employee.models import Employee
 import logging
 import xlwt
 from django.template.defaultfilters import slugify
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
-from tasks import EmailSendTask, ManagerEmailSendTask
+from tasks import EmailSendTask, ManagerEmailSendTask,\
+    ShortAttendanceDisputeEmailSendTask,\
+    ShortAttendanceManagerActionEmailSendTask,\
+    ApproveLeaveCancelEmailSendTask
 from django.conf import settings
 from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
@@ -49,11 +37,12 @@ leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
 leaveSessionDictionary = dict(SESSION_STATUS)
 leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home']
 
+
 def LeaveTransaction(request):
     statusType = request.GET.get('type')
     user_id = request.GET.get('user_id')
     loggedInUser = request.user.id
-    statusDict = {  'Approved':'approved' , 'Rejected':'rejected', 'Cancelled':'cancelled', 'Open':'open'}
+    statusDict = {'Approved': 'approved' , 'Rejected': 'rejected', 'Cancelled': 'cancelled', 'Open': 'open'}
     if statusType == 'All':
         Leave_transact=LeaveApplications.objects.filter(user=user_id,
         leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
@@ -82,6 +71,11 @@ def LeaveTransaction(request):
         if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and int(loggedInUser) == int(user_id):
             data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
+        elif request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() and leave['status'] in ['open', 'approved']:
+            statusflag = lambda: 1 if leave['status'] == 'open' else 0
+            data1 = data1 + '<a  role="button" onclick="AdminCancelLeave({0},{1},{2})" >Cancel</a></div>\
+                        </td></tr>'.format(leave['id'], leave['days_count'],
+                                           statusflag())
         else:
             data1 = data1 + '</div></td></tr>'
     json_data = json.dumps(data1)
@@ -843,7 +837,7 @@ def ShortAttendanceDetail(request):
     leave_id = request.GET.get('leaveid')
     leave = ShortAttendance.objects.get(id=leave_id)
     return render(request, 'short_leave_details.html',
-                  {'leave': leave})
+                  {'leave': leave, 'SHORT_ATTENDANCE_TYPE': SHORT_ATTENDANCE_TYPE})
 
 
 def ShortAttendanceLock(*args, **kwargs):
@@ -931,6 +925,12 @@ def UpdateShortAttendance(request, status):
 
     try:
         short_attendance.save()
+        ShortAttendanceManagerActionEmailSendTask.delay(short_attendance.user,
+                                                        short_attendance.short_leave_type,
+                                                        short_attendance.status,
+                                                        short_attendance.for_date,
+                                                        short_attendance.due_date,
+                                                        remark_tmp)
         # ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
         # leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
         return True
@@ -1120,7 +1120,10 @@ class ApplyShortLeaveView(View):
 #short leave resolution
 def ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user):
     shortLeaves = ShortAttendance.objects.get(id=leaveid)
-    leave = LeaveApplications.objects.filter(from_date__lte=fromdate, to_date__gte=fromdate, user=user)
+    leave = LeaveApplications.objects.filter(from_date__lte=fromdate,
+                                             to_date__gte=fromdate,
+                                             user=user,
+                                             status__in=['open', 'approved'])
     if shortLeaves.short_leave_type == 'half_day':
         shortLeaves.active = False
         shortLeaves.save()
@@ -1152,11 +1155,19 @@ class RaiseDispute(View):
             leave_id = form.cleaned_data['leave_id']
             status_comment = form.cleaned_data['Reason']
             user_id = request.user.id
+            user = User.objects.get(id=user_id)
             shortAttendance = ShortAttendance.objects.get(id=leave_id)
             shortAttendance.dispute = 'raised'
-            shortAttendance.status_action_by = User.objects.get(id=user_id)
+            shortAttendance.status_action_by = user
             shortAttendance.status_comments = status_comment
             shortAttendance.save()
+            ShortAttendanceDisputeEmailSendTask.delay(user,
+                                                      shortAttendance.short_leave_type,
+                                                      shortAttendance.status,
+                                                      shortAttendance.for_date,
+                                                      shortAttendance.due_date,
+                                                      status_comment,
+                                                      shortAttendance.reason)
             context_data['record_added'] = True
             context_data['success_msg'] = "Your short attendance had sent for manager approval."
             template = render(request, 'short_attendance_remark.html', context_data)
@@ -1405,6 +1416,51 @@ def weekwisedata(request):
     context['enddate'] = context['startdate'] + timedelta(5)
     context['month'] = month
     return render(request, 'weeklyreport.html', context)
+
+def adminleavecancel(request):
+    user_id=request.user.id
+    leave_id = request.GET.get('leaveid')
+    leavecount = request.GET.get('leavecount')
+    status = request.GET.get('status')
+    leave = LeaveApplications.objects.get(id = leave_id)
+    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=leave.user_id, year=date.today().year)
+    onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
+    if leave.leave_type.leave_type in leaveWithoutBalance:
+        leavededuct = float(leavecount)
+
+    elif leave.leave_type.leave_type in onetimeLeave:
+        leaveSummary.balance = float(leavecount)
+        leavededuct = 0
+
+    else:
+        leaveSummary.balance = float(leaveSummary.balance) + float(leavecount)
+        leavededuct = float(leavecount)
+
+    if int(status) == 1:
+        leaveSummary.applied = float(leaveSummary.applied) - float(leavededuct)
+    else:
+        leaveSummary.approved = float(leaveSummary.approved) - float(leavededuct)
+    leaveSummary.save()
+    leave.status = 'cancelled'
+    leave.status_action_on = date.today()
+    leave.status_action_by = User.objects.get(id=user_id)
+    leave.status_comments = "Leave cancelled by admin"
+    leave.update()
+    candidate = User.objects.get(id=leave.user_id)
+    ApproveLeaveCancelEmailSendTask.delay(candidate,
+                                          leave.leave_type.leave_type,
+                                          leave.status,
+                                          leave.from_date,
+                                          leave.to_date,
+                                          leave.from_session,
+                                          leave.to_session,
+                                          leave.days_count,
+                                          leave.reason,
+                                          request.user)
+    data1 = "leave cancelled"
+    json_data = json.dumps(data1)
+    return HttpResponse(json_data, content_type="application/json")
+
 
 
 

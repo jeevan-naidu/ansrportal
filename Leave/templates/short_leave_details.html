@@ -14,7 +14,7 @@
      </tr>
      <tr >
          <td>Leave Type : </td>
-         <td>{{ leave.short_leave_type }}</td>
+         <td>{%for k,v in  SHORT_ATTENDANCE_TYPE %} {%if k == leave.short_leave_type %} {{v}} {% endif %}{%endfor%}</td>
      </tr>
 
      <tr >

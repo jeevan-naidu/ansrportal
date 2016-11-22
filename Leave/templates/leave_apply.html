@@ -197,7 +197,7 @@
 									   if (data.record_added) {
 											 swal("Done!", data.success_msg, "success");
 											$("#modal_body").html('');
-											window.location.reload();
+                                           window.location=window.location;
 										 }
 									   else{
 										$("#modal_body").html(data);
