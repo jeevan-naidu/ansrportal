@@ -203,7 +203,7 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
         }else{
             $('select#select-field').html('');
-            $('select#select-field').append("<option>" + theObj['tab_name'][key] + "</option>");
+            $('select#select-field').append("<option name=" + key + " >" + theObj['tab_name'][key] + "</option>");
         }
 
       }
@@ -234,27 +234,31 @@ $(document).ready(function(){
 
     $('#qms-add-field').click(function(e){
         e.preventDefault();
-        optCount = $('#select-field > option').length;
+        optCount = $('#select-field > option').length; // The bug
         console.log('the number of options is ' + optCount);
 
 
         if (optCount > 1) {
 
             theField = $('#select-field').val();
+            theID = $('#select-field option:selected').attr('name');
             $('#select-field option:selected').remove();
             console.log('the selected value is ' + theField);
 
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
+            $('.qms-allocators .form-group:last-child').find('select').attr('name',theID + '_user');
 
         }else if (optCount == 1) {
             console.log('option count is none');
             theField = $('#select-field').val();
+            theID = $('#select-field option:selected').attr('name');
             $('#select-field option:selected').remove();
             console.log('the selected value is ' + theField);
 
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
+            $('.qms-allocators .form-group:last-child').find('select').attr('name',theID + '_user');
 
             $('#select-field').html('The end');
             $('#qms-add-field').prop('disabled', true);
