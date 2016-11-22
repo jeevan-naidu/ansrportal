@@ -179,7 +179,7 @@ class Group(models.Model):
     Group to manage question
     """
     name = models.CharField("Name", max_length=100, blank=False)
-    priority = models.IntegerField("Priority", max_length=100,
+    priority = models.IntegerField("Priority",
                                    validators=[MinValueValidator(0)],
                                    blank=False)
     fb = models.ManyToManyField(
@@ -201,7 +201,7 @@ class Question(models.Model):
     QA assigned with its respective category
     """
     qst = models.CharField("Question", max_length=256, blank=False)
-    priority = models.IntegerField("Priority", max_length=100,
+    priority = models.IntegerField("Priority",
                                    validators=[MinValueValidator(0)],
                                    blank=False, default=None)
     qtype = models.CharField(

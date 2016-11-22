@@ -23,6 +23,21 @@ class CustomerType(models.Model):
         return self.name
 
 
+class CustomerGroup(models.Model):
+    customer_group_code = models.CharField(verbose_name="customer group code",
+                                           max_length=20)
+    customer_group_name = models.CharField(verbose_name="customer group name",
+                                           max_length=50)
+    is_active = models.BooleanField(default=True,
+                                    verbose_name="Is Active?")
+
+    def __unicode__(self):
+        return self.customer_group_name
+
+    class Meta:
+        verbose_name = 'Customer Group'
+
+
 class Customer(models.Model):
     name = models.CharField(verbose_name='Customer Name',
                             max_length=100,
@@ -77,6 +92,10 @@ class Customer(models.Model):
         default=None,
         max_length=100,
         blank=False)
+    customergroup = models.ForeignKey(CustomerGroup,
+                                      verbose_name="Customer Group",
+                                      null=True,
+                                      blank=True)
     createdon = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
@@ -255,3 +274,104 @@ class DataPoint(models.Model):
     class Meta:
         verbose_name = 'Service Line'
         verbose_name_plural = 'Service Lines'
+
+
+class Region(models.Model):
+    region_code = models.CharField(verbose_name="region code",
+                                   max_length=10)
+    region_name = models.CharField(verbose_name="region name",
+                                   max_length=50)
+    is_active = models.BooleanField(default=True,
+                                    verbose_name="Is Active?")
+
+    def __unicode__(self):
+        return self.region_code
+
+    class Meta:
+        verbose_name = 'Region'
+        verbose_name_plural = 'Regions'
+
+
+class Currency(models.Model):
+    currency_code = models.CharField(verbose_name="currency code",
+                                     max_length=10)
+    currency_name = models.CharField(verbose_name="currency name",
+                                     max_length=50)
+    default = models.BooleanField(default=True,
+                                  verbose_name="Default"
+                                  )
+    is_active = models.BooleanField(default=True,
+                                    verbose_name="Is Active?")
+
+    def __unicode__(self):
+        return self.currency_name
+
+    class Meta:
+        verbose_name = 'Currency'
+        verbose_name_plural = 'Currencies'
+
+
+class Country(models.Model):
+    country_code = models.CharField(verbose_name="Country Code",
+                                    max_length=20)
+    country_name = models.CharField(verbose_name="Country Name",
+                                    max_length=50)
+    region_code = models.ForeignKey(Region,
+                                    verbose_name="Region code")
+    is_active = models.BooleanField(default=True,
+                                    verbose_name="Is Active?")
+    privacy_rule = models.CharField(verbose_name="Privacy Rule",
+                                    max_length=10,
+                                    null=True,
+                                    blank=True
+                                    )
+    currency_code = models.ForeignKey(Currency,
+                                      verbose_name="Currency Code")
+
+    def __unicode__(self):
+        return self.country_name
+
+    class Meta:
+        verbose_name = 'Country'
+        verbose_name_plural = 'Countries'
+
+
+class Company(models.Model):
+    company_name = models.CharField(verbose_name="comapny name",
+                                    max_length=20)
+    company_legal_name = models.CharField(verbose_name="conpany legal name",
+                                          max_length=50)
+    country = models.ForeignKey(Country,
+                                verbose_name="country")
+    legal_HQ_address = models.CharField(verbose_name="legal head quarter address",
+                                        max_length=50,
+                                        null=True,
+                                        blank=True
+                                        )
+    legal_HQ_city = models.CharField(verbose_name="legal head quarter city",
+                                     max_length=20,
+                                     null=True,
+                                     blank=True
+                                     )
+    legal_HQ_state = models.CharField(verbose_name="legal head quarter state",
+                                      max_length=20,
+                                      null=True,
+                                      blank=True
+                                      )
+    legal_HQ_zipcode = models.CharField(verbose_name="legal head quarter zipcode",
+                                        max_length=10,
+                                        null=True,
+                                        blank=True
+                                        )
+
+    def __unicode__(self):
+        return self.company_name
+
+    class Meta:
+        verbose_name = 'Company'
+        verbose_name_plural = 'Companies'
+
+
+
+
+

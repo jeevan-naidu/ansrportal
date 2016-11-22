@@ -191,17 +191,20 @@ class Employee(models.Model):
         "Emergency Contact Number",
         max_length=15,
         unique=True,
-        blank=False)
+        null=True,
+        blank=True)
     personal_email = models.EmailField(
         "Personal E-mail",
         max_length=250,
-        blank=False,
+        null=True,
+        blank=True,
         unique=True)
     passport_number = models.CharField(
         "Passport Number",
         max_length=10,
         unique=True,
-        null=True, blank=True)
+        null=True,
+        blank=True)
 
     photo = models.ImageField(storage=fs,
                               verbose_name="Employee Photo")
@@ -235,7 +238,6 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     exprience = models.IntegerField(
         "Experience in Months",
-        max_length=3,
         blank=False)
     color = models.CharField(
         "Color",
@@ -264,7 +266,8 @@ class Employee(models.Model):
     PAN = models.CharField(
         "PAN Number",
         max_length=10,
-        blank=False,
+        null=True,
+        blank=True,
         unique=True)
     PF_number = models.CharField(
         "Provident Fund Number",
@@ -272,7 +275,6 @@ class Employee(models.Model):
         blank=True)
     uan = models.IntegerField(
         "Universal account number",
-        max_length=12,
         blank=True,
         null=True,
         unique=True)
@@ -282,7 +284,6 @@ class Employee(models.Model):
                                    max_length=70, blank=True, null=True)
     bank_account = models.IntegerField(
         "Account Number",
-        max_length=30,
         blank=True,
         null=True,
         unique=True)
@@ -380,7 +381,6 @@ class Education(models.Model):
     institute = models.CharField("Institution", max_length=50, blank=False)
     overall_marks = models.IntegerField(
         "Total Score/GPA",
-        max_length=50,
         blank=False)
 
     def __unicode__(self):
