@@ -392,10 +392,6 @@ app.firstTimeTotal = function() {
 
 
         // To Dom
-        totalholidays = $('.total-holiday-hours').text();
-        totalleave = $('.total-leave-hours').text();
-        nonBillableTotal -= Number(totalholidays)
-        nonBillableTotal -= Number(totalleave)
         $totalBillableHours.text(billableHoursTotal.toFixed(2));
         $totalIdleHours.text(idleHoursTotal.toFixed(2));
         $nonBillableTotal.text(nonBillableTotal.toFixed(2));
@@ -1079,10 +1075,7 @@ app.getSum = function($elements, $outputElement) {
 
                             tempTotalNonBillable += curTotalNonBillable;
                         }
-                        totalholidays = $('.total-holiday-hours').text();
-                    totalleave = $('.total-leave-hours').text();
-                    tempTotalNonBillable -= Number(totalholidays)
-                    tempTotalNonBillable -= Number(totalleave)
+
                         totalNonBillable = tempTotalNonBillable.toFixed(2);
 
                         $totalNonBillableHours.text(totalNonBillable);

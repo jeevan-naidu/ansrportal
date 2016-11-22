@@ -390,12 +390,9 @@
 					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label %}
-							{% if holdData.value or prevWeekBlockor%}
+							{% if holdData.value or prevWeekBlock %}
 								<td class="ansr-disabled">{{ data }}</td>
-
-							{% elif 25 == data.value %}
-                                <td class="ansr-disabled">{{ data }}</td>
-                                {% else %}
+							{% else %}
 								<td>{{ data }}</td>
 							{% endif %}
 						{% endif %}
@@ -465,14 +462,6 @@
                 <tr>
                     <td>Non-Billable</td>
 		    <td class="total-non-billable-hours text-right">{{ othersTotal }}</td>
-                </tr>
-                <tr>
-                    <td>Holiday</td>
-		    <td class="total-holiday-hours text-right">{{ holidaysum|floatformat:2 }}</td>
-                </tr>
-                <tr>
-                    <td>Leave</td>
-		    <td class="total-leave-hours text-right">{{ leavesum|floatformat:2 }}</td>
                 </tr>
 				<tr>
 					<td>Total</td>

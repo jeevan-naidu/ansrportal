@@ -38,8 +38,6 @@ import employee
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 from Grievances.models import Grievances
-from Leave.models import LeaveApplications
-from Leave.views import leavecheck, daterange
 
 
 from ldap import LDAPError
@@ -406,8 +404,7 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
-                            if str(eachActivity['activity']) not in ['Leave', 'Holiday']:
-                                nonbillableTS.save()
+                        nonbillableTS.save()
                         global dbSave
                         dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
@@ -495,8 +492,7 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
-                            if str(eachActivity['activity']) not in ['Leave', 'Holiday']:
-                                nonbillableTS.save()
+                        nonbillableTS.save()
                         global dbSave
                         dbSave = True
                         eachActivity['atId'] = nonbillableTS.id
@@ -615,10 +611,7 @@ def Timesheet(request):
                 'tsErrorList': tsErrorList,
                 'atErrorList': atErrorList,
                 'tsFormList': tsContent,
-                'atFormList': atContent,
-                'holidaysum': 0,
-                'leavesum': 0
-                }
+                'atFormList': atContent}
         global dbSave
         if dbSave:
             getRelativeUrl = request.META['HTTP_REFERER']
@@ -639,21 +632,16 @@ def Timesheet(request):
         extra = 0
 
         tsFormList, atFormList = [], []
-        holidaysum = 0
-        leavesum = 0
+
         # Approved TS data
         if len(tsDataList['tsData']) and len(tsDataList['atData']):
             tsFormList = tsDataList['tsData']
             atFormList = tsDataList['atData']
-            holidaysum = tsDataList['holidaysum']
-            leavesum = tsDataList['leavesum']
         elif len(tsDataList['tsData']):
             tsFormList = tsDataList['tsData']
         elif len(tsDataList['atData']):
             defaulLocation = [{'location': request.user.employee.location.id}]
             atFormList = tsDataList['atData']
-            holidaysum = tsDataList['holidaysum']
-            leavesum = tsDataList['leavesum']
 
         # Fresh TS data
         else:
@@ -707,9 +695,7 @@ def Timesheet(request):
                 'extra': extra,
                 'hold_button': hold_button,
                 'tsFormList': tsFormList,
-                'atFormList': atFormList,
-                'holidaysum': holidaysum,
-                'leavesum': leavesum}
+                'atFormList': atFormList}
         return renderTimesheet(request, data)
 
 
@@ -821,68 +807,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
                 atData['atId'] = v
         atDataList.append(atData.copy())
         atData.clear()
-    locationId = request.user.employee.location
-    leavedetial = leaveappliedinweek(request.user, weekstartDate, ansrEndDate)
-    holidaydetail = holidayinweek(locationId, weekstartDate, ansrEndDate)
-    holidaysum = 0
-    leavesum = 0
-    if 8 in leavedetial or 4 in leavedetial:
-        for leave in leavedetial:
-            leavesum += leave
-        atData['activity'] = 19
-        atData['activity_monday'] = leavedetial[0]
-        atData['activity_tuesday'] = leavedetial[1]
-        atData['activity_wednesday'] = leavedetial[2]
-        atData['activity_thursday'] = leavedetial[3]
-        atData['activity_friday'] = leavedetial[4]
-        atData['activity_saturday'] = 0
-        atData['activity_sunday'] = 0
-        atData['activity_total'] = 0
-        atData['feedback'] = ''
-        atDataList.append(atData.copy())
-        atData.clear()
-    if 8 in holidaydetail:
-        for holiday in holidaydetail:
-            holidaysum += holiday
-        atData['activity'] = 25
-        atData['activity_monday'] = holidaydetail[0]
-        atData['activity_tuesday'] = holidaydetail[1]
-        atData['activity_wednesday'] = holidaydetail[2]
-        atData['activity_thursday'] = holidaydetail[3]
-        atData['activity_friday'] = holidaydetail[4]
-        atData['activity_saturday'] = 0
-        atData['activity_sunday'] = 0
-        atData['activity_total'] = 0
-        atData['feedback'] = ''
-        atDataList.append(atData.copy())
-        atData.clear()
-
-
-    return {'tsData': tsDataList, 'atData': atDataList, 'holidaysum' : holidaysum, 'leavesum' : leavesum}
-
-def leaveappliedinweek(user, wkstart, wkend):
-    weekleave = []
-    for single_date in daterange(wkstart, wkend):
-        flag = leavecheck(user, single_date)
-        if flag == 1:
-            weekleave.append(4)
-        elif flag == 2:
-            weekleave.append(8)
-        else:
-            weekleave.append(0)
-    return weekleave
-
-def holidayinweek(locationId, wksatrt, wkend):
-    weekleave = []
-    holiday = Holiday.objects.filter(
-        location=locationId
-    ).values('date')
-    for single_date in daterange(wksatrt, wkend):
-        if single_date in [datedata['date'] for datedata in holiday]:
-            weekleave.append(8);
-        else:
-            weekleave.append(0);
-    return weekleave
+    return {'tsData': tsDataList, 'atData': atDataList}
 
 
 def renderTimesheet(request, data):
@@ -1065,6 +990,7 @@ def renderTimesheet(request, data):
                 prevWeekBlock = True
             elif pwActivityData[0]['hold']:
                 prevWeekBlock = True
+
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
@@ -1084,9 +1010,7 @@ def renderTimesheet(request, data):
                  'atFormset': atFormset,
                  'mondays_list': mondays_list,
                  'ts_week_info_dict': ts_week_info_dict,
-                 'ts_final_list':ts_final_list,
-                 'holidaysum': data['holidaysum'],
-                 'leavesum': data['leavesum'],
+                 'ts_final_list':ts_final_list
                  }
     if 'tsErrorList' in data:
         finalData['tsErrorList'] = data['tsErrorList']

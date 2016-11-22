@@ -11,10 +11,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS,\
     BUTTON_NAME, LeaveSummary, SHORT_ATTENDANCE_TYPE
-from CompanyMaster.models import *
 from django.contrib.auth.models import User
 import datetime
-from datetime import date
+from datetime import date, timedelta
 from employee.models import Employee
 import logging
 import xlwt
