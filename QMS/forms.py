@@ -1,7 +1,7 @@
 from django import forms
 from .models import *
 from django.contrib.auth.models import User
-from MyANSRSource.models import Project, Chapter
+from MyANSRSource.models import Project, Chapter, ProjectTeamMember
 
 
 from dal import autocomplete
@@ -125,13 +125,14 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
                                          attrs={
                                              'data-placeholder': 'Component',
                                          }, ), required=True, )
-    author = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),
-                                         attrs={
-                                             'data-placeholder': 'Author',
-                                         }, ),
-        required=True, )
+    # author = forms.ModelChoiceField(
+    #     queryset=User.objects.all(),
+    #     widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project', 'chapter'),
+    #                                      attrs={
+    #                                          'data-placeholder': 'Author',
+    #                                      }, ),
+    #     required=True, )
+    author = forms.ModelChoiceField(widget=forms.Select(), queryset=User.objects.none())
 
     def __init__(self, *args, **kwargs):
         super(ChooseMandatoryTabsForm, self).__init__(*args, **kwargs)
@@ -173,6 +174,20 @@ def review_report_base(template_id, project_id):
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
             template_obj = ProjectTemplateProcessModel.objects.get(project=project_id)
             defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
+            project_id_field = self.fields['project'].initial \
+                               or self.initial.get('project') \
+                               or self.fields['project'].widget.value_from_datadict(self.data, self.files,
+                                                                                    self.add_prefix('project'))
+            if project_id_field:
+
+                if project_id:
+                    try:
+                        project_obj = Project.objects.get(id=int(project_id_field))
+                    except:
+                        project_obj = project_id_field
+                    self.fields['author'].queryset = ProjectTeamMember.objects.filter(project=project_obj).values(
+                        'member_id')
+            print self.fields['author'].queryset
             # print defect_type_master_obj
             # self.fields['severity_type'].queryset = DefectTypeMaster.objects.all()
             self.fields['qms_id'].widget.attrs['class'] = "set-zero"

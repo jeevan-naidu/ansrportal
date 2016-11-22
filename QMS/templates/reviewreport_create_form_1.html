@@ -192,7 +192,7 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
         if (theObj['tabs'][theObj['tab_name'][key]] == true) {
             $('.qms-allocators').append(domObj);
-           $('.qms-allocators .form-group:last-child select').attr('name', key + "_user");
+           $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
 
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 
@@ -209,12 +209,12 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
 
 
-var something = {
-    'tabs': {'Editor Review 2': False, 'Editor Review 3': True, 'Editor Review 1': True}, 
-    'tab_name': {'Editor Review 2': 2, 'Editor Review 3': 3, 'Editor Review 1': 1}, 
-    'team_members': {256: 'SumukhShamnur', 257: 'KanakaPrakash', 254: 'Bhaviya', 255: 'RaviKumar'}, 
-    'user_tab': {'Editor Review 2': None, 'Editor Review 3': None, 'Editor Review 1': 476}
-}
+<!--var something = {-->
+    <!--'tabs': {'Editor Review 2': False, 'Editor Review 3': True, 'Editor Review 1': True}, -->
+    <!--'tab_name': {'Editor Review 2': 2, 'Editor Review 3': 3, 'Editor Review 1': 1}, -->
+    <!--'team_members': {256: 'SumukhShamnur', 257: 'KanakaPrakash', 254: 'Bhaviya', 255: 'RaviKumar'}, -->
+    <!--'user_tab': {'Editor Review 2': None, 'Editor Review 3': None, 'Editor Review 1': 476}-->
+<!--}-->
 
 
 
@@ -242,7 +242,39 @@ $(document).ready(function(){
             });
         }
     });
+$(':input[name$=chapter]').change(function(){
+    var obj_id = this.id.split('-');
+    $.ajax({
+            url: '/qms/fetch_author/',
+            type: 'GET',
+            dataType :'json',
+            data: {"project_id" :  $(':input[name$=project]').val() , "chapter_id" :  $(this).val() },
+            success: function (data) { alert(JSON.stringify(data));
+                var output = [];
+console.log("data"+data); console.log("dnflsdnf");
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
 
+
+                    if(key == 'team_members'){
+
+                        $(':input[name$=author]').append($('<option>', {
+                            value: data[key],
+                            text: data[key],
+                            <!--selected :'selected',-->
+                        }));
+                    }
+
+
+                }
+            }
+
+
+
+            },
+
+    });
+});
 
     $('#qms-add-field').click(function(e){
         e.preventDefault();

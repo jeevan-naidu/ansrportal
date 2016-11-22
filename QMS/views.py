@@ -23,7 +23,7 @@ class ChooseTabs(FormView):
 
     def form_valid(self, form):
         user_tab = {}
-
+        print self.request.POST
         users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
         # print users
         for k, v in users.iteritems():
@@ -45,9 +45,9 @@ class ChooseTabs(FormView):
 
         # print cm_obj
         # print chapter_component
-
+        print user_tab
         for k, v in user_tab.iteritems():
-            print form.cleaned_data['author']
+            # print form.cleaned_data['author']
             obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
@@ -55,6 +55,7 @@ class ChooseTabs(FormView):
                                                                   review_group_id=k,
                                                                   defaults={'reviewed_by_id': v,
                                                                             'created_by': self.request.user}, )
+            print obj, created
             if not created:
                 obj.updated_by = self.request.user
         messages.info(self.request, "Successfully Saved")
@@ -82,8 +83,8 @@ def qa_sheet_header_obj(project, chapter, author, active_tab=None):
     # active_tab
     # u'2'
     try:
-        print chapter, "chapter"
-        print active_tab, "active_tab", project, chapter, author
+        # print chapter, "chapter"
+        # print active_tab, "active_tab", project, chapter, author
         if active_tab is not None:
             try:
                 result = QASheetHeader.objects.get(project=project, chapter=chapter, author=author,
@@ -93,11 +94,11 @@ def qa_sheet_header_obj(project, chapter, author, active_tab=None):
                 # print "if"
                 # print result
         else:
-            print "else"
+            # print "else"
             result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
 
     except ObjectDoesNotExist:
-        print "except"
+        # print "except"
         result = None
     return result
 
@@ -125,8 +126,8 @@ def get_template_process_review(request):
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
 
         for members in members_obj:
-            if int(members.id) != int(author):
-                team_members[int(members.id)] = str(members.member.username)
+            if int(members.member_id) != int(author):
+                team_members[int(members.member_id)] = str(members.member.username)
 
         for ele in obj:
             # print ele.review_group
@@ -370,3 +371,45 @@ def fetch_severity(request):
             json.dumps(context_data),
             content_type="application/json"
         )
+
+
+# def check_for_author(project, chapter):
+#     qs = User.objects.all()
+#
+#     try:
+#         user = QASheetHeader.objects.filter \
+#             (project=project, chapter=chapter).values_list('author', flat=True)[0]
+#
+#         qs = qs.filter(pk=user)
+#
+#     except:
+#         qs = None
+#
+#     return qs
+
+
+def fetch_members(project):
+    user = ProjectTeamMember.objects.filter(project=project)
+    qs = User.objects.filter(pk__in=user)
+    return user
+
+
+def fetch_author(request):
+    project_id = request.GET.get('project_id')
+    chapter_id = request.GET.get('chapter_id')
+    try:
+        author = QASheetHeader.objects.filter \
+            (project=project_id, chapter=chapter_id).values_list('author', flat=True)[0]
+    except:
+        author = None
+    # obj = User.objects.get(pk=user)
+    team_members = {}
+    team = fetch_members(project_id)
+    for members in team:
+        team_members[int(members.member_id)] = str(members.member.username)
+    context_data = {'author': str(author), 'team_members': team_members}
+    # print context_data
+    return HttpResponse(
+        json.dumps(context_data),
+        content_type="application/json"
+    )
