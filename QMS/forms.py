@@ -132,11 +132,30 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
     #                                          'data-placeholder': 'Author',
     #                                      }, ),
     #     required=True, )
-    author = forms.ModelChoiceField(widget=forms.Select(), queryset=User.objects.none())
+    # author = forms.ModelChoiceField(widget=forms.Select(), queryset=User.objects.none())
+    author = forms.ModelChoiceField(widget=forms.Select(), queryset=User.objects.filter(is_active=True))
 
     def __init__(self, *args, **kwargs):
+        print"init"
         super(ChooseMandatoryTabsForm, self).__init__(*args, **kwargs)
-        # self.field_order['process_model', 'template', 'review_group', 'project', 'chapter', 'author']
+        self.fields['author'].widget.attrs['class'] = 'author_dropdown'
+        # project_id_field = self.fields['project'].initial \
+        #                    or self.initial.get('project') \
+        #                    or self.fields['project'].widget.value_from_datadict(self.data, self.files,
+        #                                                                         self.add_prefix('project'))
+        # print"project" , project_id_field
+        # if project_id_field:
+        #     print "if"
+        #     try:
+        #         project_obj = Project.objects.get(id=int(project_id_field))
+        #     except:
+        #         project_obj = project_id_field
+        #     self.fields['author'].queryset = ProjectTeamMember.objects.filter(project=project_obj,
+        #                                                                       member__is_active=True)
+        # else:
+        #     print "else"
+        #     self.fields['author'].queryset = User.objects.filter(is_active=True)
+        # # self.field_order['process_model', 'template', 'review_group', 'project', 'chapter', 'author']
 
 
 def review_report_base(template_id, project_id):
@@ -174,20 +193,20 @@ def review_report_base(template_id, project_id):
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
             template_obj = ProjectTemplateProcessModel.objects.get(project=project_id)
             defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
-            project_id_field = self.fields['project'].initial \
-                               or self.initial.get('project') \
-                               or self.fields['project'].widget.value_from_datadict(self.data, self.files,
-                                                                                    self.add_prefix('project'))
-            if project_id_field:
-
-                if project_id:
-                    try:
-                        project_obj = Project.objects.get(id=int(project_id_field))
-                    except:
-                        project_obj = project_id_field
-                    self.fields['author'].queryset = ProjectTeamMember.objects.filter(project=project_obj).values(
-                        'member_id')
-            print self.fields['author'].queryset
+            # project_id_field = self.fields['project'].initial \
+            #                    or self.initial.get('project') \
+            #                    or self.fields['project'].widget.value_from_datadict(self.data, self.files,
+            #                                                                         self.add_prefix('project'))
+            # if project_id_field:
+            #
+            #     if project_id:
+            #         try:
+            #             project_obj = Project.objects.get(id=int(project_id_field))
+            #         except:
+            #             project_obj = project_id_field
+            #         self.fields['author'].queryset = ProjectTeamMember.objects.filter(project=project_obj).values(
+            #             'member_id')
+            # print self.fields['author'].queryset
             # print defect_type_master_obj
             # self.fields['severity_type'].queryset = DefectTypeMaster.objects.all()
             self.fields['qms_id'].widget.attrs['class'] = "set-zero"
@@ -206,6 +225,8 @@ def review_report_base(template_id, project_id):
             # print DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)
             self.fields['defect_classification'].widget.attrs['disabled'] = True
             self.fields['severity_level'].widget.attrs['disabled'] = True
+            self.fields['author'].widget.attrs['class'] = 'author_dropdown'
+
             # print defect_type_master_obj
             # self.fields['severity_type'].queryset = DefectTypeMaster.filter(id__in=[defect_type_master_obj])
             # severity_type_id = self.fields['severity_type'].initial\

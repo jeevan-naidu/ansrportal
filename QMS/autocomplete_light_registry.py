@@ -109,7 +109,7 @@ class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
         try:
             print project
 
-            user = ProjectTeamMember.objects.filter(project=project).values_list('member_id')
+            user = ProjectTeamMember.objects.filter(project=project, member__is_active=True).values_list('member_id')
             print user
             try:
                 qs = User.objects.filter(pk__in=user)

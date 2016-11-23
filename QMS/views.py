@@ -122,9 +122,9 @@ def get_template_process_review(request):
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
             order_by('id')
         # print obj
-        members_obj = ProjectTeamMember.objects.filter(project=project)
+        members_obj = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
-
+        # print "count" ,qa_obj.count()
         for members in members_obj:
             if int(members.member_id) != int(author):
                 team_members[int(members.member_id)] = str(members.member.username)
@@ -136,7 +136,6 @@ def get_template_process_review(request):
             if qa_obj.count() > 0:
                 try:
                     tab_user = qa_obj.get(review_group=ele.review_group)
-                    # print tab_user
                 except ObjectDoesNotExist:
                     tab_user = None
                 if tab_user is not None:
@@ -389,7 +388,7 @@ def fetch_severity(request):
 
 
 def fetch_members(project):
-    user = ProjectTeamMember.objects.filter(project=project)
+    user = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
     qs = User.objects.filter(pk__in=user)
     return user
 
@@ -397,9 +396,13 @@ def fetch_members(project):
 def fetch_author(request):
     project_id = request.GET.get('project_id')
     chapter_id = request.GET.get('chapter_id')
+    component_id = request.GET.get('component_id')
+
     try:
-        author = QASheetHeader.objects.filter \
-            (project=project_id, chapter=chapter_id).values_list('author', flat=True)[0]
+        chapter_component = ChapterComponent.objects.get(chapter=chapter_id, component=component_id)
+        author = QASheetHeader.objects.filter(project=project_id,
+                                              chapter_component=chapter_component).values_list('author', flat=True)[0]
+
     except:
         author = None
     # obj = User.objects.get(pk=user)

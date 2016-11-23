@@ -227,6 +227,12 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
 $(document).ready(function(){
 
+   $(':input[name$=chapter]').on('change', function()  {
+        if($(':input[name$=component]').val()!='') {
+            $(':input[name$=component]').trigger('change');
+         }
+    });
+
     $(':input[name$=author]').on('change', function()  {
         if($(this).val() !='') {
               $.ajax({
@@ -235,6 +241,7 @@ $(document).ready(function(){
                 dataType :'json',
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
+                console.log("author");
                     console.log(data);
                     populateForm(data);
                 },
@@ -242,36 +249,44 @@ $(document).ready(function(){
             });
         }
     });
-$(':input[name$=chapter]').change(function(){
-    var obj_id = this.id.split('-');
+$(':input[name$=component]').change(function(){
     $.ajax({
             url: '/qms/fetch_author/',
             type: 'GET',
             dataType :'json',
-            data: {"project_id" :  $(':input[name$=project]').val() , "chapter_id" :  $(this).val() },
-            success: function (data) { alert(JSON.stringify(data));
-                var output = [];
-console.log("data"+data); console.log("dnflsdnf");
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
+            data: {"project_id" :  $(':input[name$=project]').val() , "component_id" :  $(this).val() ,"chapter_id" :  $(':input[name$=chapter]').val() },
+            beforeSend : function(data) { $(':input[name$=author]').empty() ; $('.select-name ').empty() ;},
+            success: function (data) {
+            console.log("component");console.log(data);
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
 
-
-                    if(key == 'team_members'){
-
-                        $(':input[name$=author]').append($('<option>', {
-                            value: data[key],
-                            text: data[key],
-                            <!--selected :'selected',-->
-                        }));
+                        if(key == 'team_members'){
+                            $(':input[name$=author]').append($('<option>', {
+                                    value: "",
+                                    text: "-------",
+                                }));
+                            for (var k in data[key]){
+                                $(':input[name$=author]').append($('<option>', {
+                                    value: k,
+                                    text: data['team_members'][k],
+                                }));
+                            }
+                        }
                     }
 
-
                 }
-            }
+                    console.log(typeof(data['author'] ) +'--'+ data['author']);
+                if(data['author'] != 'None' || data['author'] != '' ) { console.log("if cond");
+                    $('#id_author option[value='+data['author']+']').prop("selected", true);
+                }
+                else if (data['author'] == 'None'){ console.log("im in else if");
 
-
+                                 $('#id_author option[value=""]').prop("selected", true);
+                }else{console.log("else");}
 
             },
+            complete: function (data) { $(':input[name$=author]').trigger('change');}
 
     });
 });
@@ -291,7 +306,7 @@ console.log("data"+data); console.log("dnflsdnf");
 
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
-            $('.qms-allocators .form-group:last-child').find('select').attr('name',theID + '_user');
+            $('.qms-allocators .form-group:last-child').find('select').attr('name', 'user_'+theID);
 
         }else if (optCount == 1) {
             console.log('option count is none');
@@ -302,7 +317,7 @@ console.log("data"+data); console.log("dnflsdnf");
 
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
-            $('.qms-allocators .form-group:last-child').find('select').attr('name',theID + '_user');
+            $('.qms-allocators .form-group:last-child').find('select').attr('name','user_'+theID);
 
             $('#select-field').html('The end');
             $('#qms-add-field').prop('disabled', true);
@@ -335,8 +350,8 @@ console.log("data"+data); console.log("dnflsdnf");
     .edit-buttons{width: 65px;}
     .gradeX a.vd_btn{margin-right: 0px !important;}
 
-    .select2.select2-container{min-width: 0px !important;width: 150px !important;margin-right: 15px;}
-
+    .select2.select2-container {min-width: 0px !important;width: 150px !important;margin-right: 15px;}
+    .author_dropdown {min-width: 0px !important;width: 150px !important;margin-right: 15px;}
     .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #f3f1f1;
     }
