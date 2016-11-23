@@ -175,6 +175,12 @@ function array_flip( trans )
     return tmp_ar;
 }
 
+function resetBtn(){
+    if($('#select-field > option').length > 0){
+        $('#qms-add-field').removeAttr('disabled');
+    }
+}
+
 
 // Main function : populating the DOM
 function populateForm (theObj){
@@ -205,7 +211,10 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
       }
     }
-}
+
+    resetBtn();
+
+} // end of populate form
 
 
 
