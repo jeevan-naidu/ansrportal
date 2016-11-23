@@ -138,6 +138,7 @@
           <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
             <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
           </p>
+          <button id="get-summary" class="btn btn-danger pull-right">Summary</button>
         </div>
                 </div><!-- ./panel -->
 
@@ -155,11 +156,11 @@
         <div class="col-sm-12">
           <h4 style="margin-top: 15px">Leave Report Summary</h4>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
           <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
         </div>
 
-        <div class="col-sm-8 pd-25">
+        <div class="col-sm-6 pd-25">
 
 
           <table class="lr-summary-table">
@@ -210,7 +211,7 @@
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
       labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#759273", "#acc1ab","#e8e8e8"]
+      barColors: ["#1595a9", "#f56b6b","#929292"]
     });
 
   }// Calling Bar Chart
@@ -293,6 +294,12 @@ $(document).ready(function() {
 
 
 
+
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
+    })
 
 
 });// End of document ready
@@ -413,11 +420,13 @@ table.dataTable.leave-report-table thead .sorting{
   padding: 2px 5px;
 }
 .lr-summary-table td.available{text-align:center; background: #1595a9;}
-.lr-summary-table td.holiday{text-align:center; background: #acc1ab;}
-.lr-summary-table td.absent{text-align:center; background: #e8e8e8}
+.lr-summary-table td.holiday{text-align:center; background: #929292;}
+.lr-summary-table td.absent{text-align:center; background: #f56b6b}
 .inline-block{display: inline-block}
 
 .dropdown-menu a{cursor: pointer;}
+
+#get-summary{margin:19px;}
 
 /* Added */
 
