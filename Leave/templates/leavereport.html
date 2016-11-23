@@ -350,17 +350,19 @@ function monthchange(month){
 .leave-report-table div.indicator{
     background: #759273;
     background: #78a915;
+    background: #1595a9;
     width: 20px;
     height: 20px;
     border-radius: 50%;
     margin: auto;
 }
 .table.leave-report-table tr>td, .table.leave-report-table tfoot{border: 1px solid #efefef;}
-.table.leave-report-table tfoot, .table.leave-report-table td:last-child{background: #fdfdfd}
+.table.leave-report-table tfoot{background: #fdfdfd}
 
 /*#bar-placeholder{margin-top: 10%}*/
 div.indicator.absent{background-color: #e8e8e8;}
-div.indicator.holiday{background-color: #f793a6}
+div.indicator.halfday{background-color: #5eddf1;}
+div.indicator.holiday{background-color: #929292}
 table.dataTable.leave-report-table thead .sorting{
     text-align: center;
 }
@@ -387,11 +389,13 @@ table.dataTable.leave-report-table thead .sorting{
     border-radius: 15px;
     margin-left: 5px;
     border: 1px solid #d4d4d4;
+    border: 1px solid #bfbfbf;
     color: #fff;
 }
-.legend-available{background: #78a915;border-color: #5d805a;}
-.legend-halfday{background: #c7f765;border-color: #5d805a;}
-.legend-holiday{background: #f793a6;border-color: #f793a6;}
+.legend-available{background: #1595a9;border-color: #1595a9;}
+.legend-halfday{background: #5eddf1;border-color: #5eddf1;}
+.legend-holiday{background: #929292;border-color:#929292;}
+.legend-absent{background: #f56b6b;border-color: #f56b6b;}
 
 .lr-week-details{margin-bottom: 15px;}
 .lr-week-details p{
@@ -408,7 +412,7 @@ table.dataTable.leave-report-table thead .sorting{
   border: 1px solid #e4e4e4;
   padding: 2px 5px;
 }
-.lr-summary-table td.available{text-align:center; background: #759273;}
+.lr-summary-table td.available{text-align:center; background: #1595a9;}
 .lr-summary-table td.holiday{text-align:center; background: #acc1ab;}
 .lr-summary-table td.absent{text-align:center; background: #e8e8e8}
 .inline-block{display: inline-block}
