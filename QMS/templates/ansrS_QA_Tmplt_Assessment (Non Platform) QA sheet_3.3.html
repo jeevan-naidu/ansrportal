@@ -380,6 +380,7 @@
          $('.view_button').click(function(){
             var view_details = $(this).siblings(".view_details").html();
             $("#viewModal").html(view_details);
+            $('.modal-body').addClass('clearfix');
         });
             $("#add_button").on('click', function() {
                 var $tr    = $('#review_report_table tr:last')
