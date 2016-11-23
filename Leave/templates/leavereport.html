@@ -124,6 +124,21 @@
                     </table>
 
                   </div><!-- ./panel-body -->
+
+        <div id="lr-legend">
+          <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :
+            <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> 
+          </p>
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Half Day :
+            <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span> 
+          </p>          
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
+            <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
+          </p>
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
+            <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
+          </p>
+        </div>
                 </div><!-- ./panel -->
 
 
@@ -135,24 +150,17 @@
   <div class="col-md-12 mgbt-xs-20 mgbt-md-0">
     <div class="panel widget  light-widget">
       <div class="panel-body-list jsh4">
-        <div id="lr-legend">
-          <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :
-            <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> 
-          </p>
-          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
-            <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
-          </p>
-          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
-            <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
-          </p>
-        </div>
 <!-- Bar chart -->
 
-        <div class="col-sm-4"><div id="bar-placeholder" class="bar-chart" style="height: 300px"></div></div>
+        <div class="col-sm-12">
+          <h4 style="margin-top: 15px">Leave Report Summary</h4>
+        </div>
+        <div class="col-sm-4">
+          <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
+        </div>
 
         <div class="col-sm-8 pd-25">
 
-        <h4>Leave Report Summary</h4>
 
           <table class="lr-summary-table">
               {% for val in  weekreport%}
@@ -381,6 +389,7 @@ table.dataTable.leave-report-table thead .sorting{
     color: #fff;
 }
 .legend-available{background: #759273;border-color: #5d805a;}
+.legend-halfday{background: #31652e;border-color: #5d805a;}
 .legend-holiday{background: #acc1ab;border-color: #93af91;}
 
 .lr-week-details{margin-bottom: 15px;}
@@ -403,10 +412,14 @@ table.dataTable.leave-report-table thead .sorting{
 .lr-summary-table td.absent{text-align:center; background: #e8e8e8}
 .inline-block{display: inline-block}
 
+.dropdown-menu a{cursor: pointer;}
+
 /* Added */
 
 .jsh3{min-height: 400px;}
 .lr-invisible{visibility: hidden}
+
+
 </style>
 
 {% endblock %}
