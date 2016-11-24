@@ -175,6 +175,12 @@ function array_flip( trans )
     return tmp_ar;
 }
 
+function resetBtn(){
+    if($('#select-field > option').length > 0){
+        $('#qms-add-field').removeAttr('disabled');
+    }
+}
+
 
 // Main function : populating the DOM
 function populateForm (theObj){
@@ -205,7 +211,10 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
       }
     }
-}
+
+    resetBtn();
+
+} // end of populate form
 
 
 
@@ -350,8 +359,17 @@ $(':input[name$=component]').change(function(){
     .edit-buttons{width: 65px;}
     .gradeX a.vd_btn{margin-right: 0px !important;}
 
-    .select2.select2-container {min-width: 0px !important;width: 150px !important;margin-right: 15px;}
-    .author_dropdown {min-width: 0px !important;width: 150px !important;margin-right: 15px;}
+    .select2.select2-container {min-width: 0px !important;width: 150px !important;margin-right: 10px;}
+    .author_dropdown {
+        min-width: 0px !important;
+        width: 150px !important;
+        margin-right: 15px;
+        border: 1px solid #aaaaaa;
+        border-radius: 4px;
+        position: relative;
+        top: 1px;
+        /* color: #999; */
+    }
     .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #f3f1f1;
     }
