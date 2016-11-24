@@ -156,9 +156,6 @@
                              <tbody> {%if review_formset %}
 
                                 {{review_formset.management_form}}
-                             {%comment%} {% bootstrap_dynamic_formset review_formset can_order=True can_delete=True layout="horizontal" %}{%endcomment%}
-
-
                                     {% for form_obj in review_formset%}
                                     <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
                                         <td id="sr-{{forloop.counter}}-td">{{forloop.counter}}</td>

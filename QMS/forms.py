@@ -164,7 +164,7 @@ def review_report_base(template_id, project_id):
         qms_id = forms.IntegerField(label="id",
                                   required=False,
                                   widget=forms.HiddenInput())
-        defect = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 1, 'cols': 30}))
+        defect = forms.CharField(required=False, )
 
         severity_type = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=DefectTypeMaster.objects.all(), )
@@ -225,7 +225,7 @@ def review_report_base(template_id, project_id):
             # print DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)
             self.fields['defect_classification'].widget.attrs['disabled'] = True
             self.fields['severity_level'].widget.attrs['disabled'] = True
-            self.fields['author'].widget.attrs['class'] = 'author_dropdown'
+            # self.fields['author'].widget.attrs['class'] = 'author_dropdown'
 
             # print defect_type_master_obj
             # self.fields['severity_type'].queryset = DefectTypeMaster.filter(id__in=[defect_type_master_obj])
