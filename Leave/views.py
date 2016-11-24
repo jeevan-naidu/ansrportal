@@ -1232,6 +1232,8 @@ def weekdetail(week, month):
 
 
 def weekwisereport(month, userlist):
+    # import ipdb;
+    # ipdb.set_trace()
     weekreport = []
     weekreportdetail = {}
     currentmontdetail = monthrange(date.today().year, month)
@@ -1248,7 +1250,12 @@ def weekwisereport(month, userlist):
     unavailable = 0
     holiday = 0
     for val in range(0, currentmontdetail[0]):
-        datecheck = date(year=date.today().year, month=month-1, day=previousmonthdays-val)
+        if month == 1:
+            datecheck = date(year=date.today().year-1, month=12, day=previousmonthdays - val)
+        elif month == 12:
+            datecheck = date(year=date.today().year+1, month=1, day=previousmonthdays - val)
+        else:
+            datecheck = date(year=date.today().year, month=month - 1, day=previousmonthdays - val)
         for user in userlist:
             check = leavecheck(user, datecheck)
             if check == 0:
@@ -1304,8 +1311,8 @@ def weekwisereport(month, userlist):
 def leavereport(request):
     leavereport = {}
     user = request.user.id
-    # month = int(request.GET.get('month'))
-    month = 7
+    month = int(request.GET.get('month'))
+    # month = 7
     manager = Employee.objects.get(user_id=user)
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
     userid = [user.user_id for user in userlist]
@@ -1388,6 +1395,7 @@ def leavecheck(user, date):
     return flag
 
 def monthwisedata(request):
+    # import ipdb; ipdb.set_trace()
     month = int(request.GET.get('month'))
     context = {}
     user = request.user.id
@@ -1409,6 +1417,7 @@ def weekwisedata(request):
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
     userid = [user.user_id for user in userlist]
     userlist = User.objects.filter(id__in=userid, is_active=True)
+    # import ipdb; ipdb.set_trace()
     context['weekreport'] = weekwisereport(month, userlist)
     context['leavereport'] = leavereportweeklybasedonuser(month, userlist, week)
     context['startdate'] = weekdetail(week, month)
@@ -1459,10 +1468,3 @@ def adminleavecancel(request):
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
-
-
-
-
-
-
-

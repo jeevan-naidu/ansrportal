@@ -69,7 +69,9 @@ $(document).ready(function() {
 
     $('#data-tables').dataTable({
         searching: false,
-        scrollCollapse: true
+        scrollCollapse: true,
+        destroy: true,
+
     });
 
     $(window).resize(function () {
