@@ -12,7 +12,7 @@
 
 <div class="row">
 <div id="user-leave-report">
-              <div class="col-sm-7">
+              <div class="col-sm-12">
 
                 <div class="panel">
 
@@ -49,7 +49,7 @@
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Week<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
-                          <li><a onclick="weekchange({{ forloop.counter }}, {{ month }})">Week {{ forloop.counter }}</a></li>
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }})">Week {{ forloop.counter }}</a></li>
                             {% endfor %}
 
                         </ul>
@@ -123,8 +123,24 @@
                       </tfoot>
                     </table>
 
-                  </div>
-                </div>
+                  </div><!-- ./panel-body -->
+
+        <div id="lr-legend">
+          <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :
+            <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> 
+          </p>
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Half Day :
+            <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span> 
+          </p>          
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
+            <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
+          </p>
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
+            <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
+          </p>
+          <button id="get-summary" class="btn btn-danger pull-right">Summary</button>
+        </div>
+                </div><!-- ./panel -->
 
 
               </div><!-- ./col-sm -->
@@ -132,35 +148,37 @@
 </div>
 
 <div id="monthly-leave-report">
-              <div class="col-md-5 mgbt-xs-20 mgbt-md-0">
-                <div class="panel widget  light-widget">
-                  <div class="panel-body-list jsh4">
-                    <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :<span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> </p>
-                    <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> </p>
-                  <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> </p>
+  <div class="col-md-12 mgbt-xs-20 mgbt-md-0">
+    <div class="panel widget  light-widget">
+      <div class="panel-body-list jsh4">
 <!-- Bar chart -->
-                    <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
 
-                    <div class="col-sm-12 pd-25">
+        <div class="col-sm-12">
+          <h4 style="margin-top: 15px">Leave Report Summary</h4>
+        </div>
+        <div class="col-sm-6">
+          <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
+        </div>
 
-                    <h4>Leave Report Summary</h4>
+        <div class="col-sm-6 pd-25">
 
-                      <table class="lr-summary-table">
-                          {% for val in  weekreport%}
-                        <tr>
-                          <td>Week {{ forloop.counter }}</td>
-                          <td class="available">{{ val.available }}</td>
-                          <td class="holiday">{{ val.holiday }}</td>
-                          <td class="absent">{{ val.unavailable }}</td>
-                        </tr>
-                          {% endfor %}
 
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <!-- col-md-6 -->
-              </div><!-- ./col -->
+          <table class="lr-summary-table">
+              {% for val in  weekreport%}
+            <tr>
+              <td>Week {{ forloop.counter }}</td>
+              <td class="available">{{ val.available }}</td>
+              <td class="holiday">{{ val.holiday }}</td>
+              <td class="absent">{{ val.unavailable }}</td>
+            </tr>
+              {% endfor %}
+
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- col-md-6 -->
+  </div><!-- ./col -->
 
 
 
@@ -193,7 +211,7 @@
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
       labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#759273", "#acc1ab","#e8e8e8"]
+      barColors: ["#1595a9", "#f56b6b","#929292"]
     });
 
   }// Calling Bar Chart
@@ -277,6 +295,12 @@ $(document).ready(function() {
 
 
 
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
+    })
+
 
 });// End of document ready
 
@@ -332,17 +356,20 @@ function monthchange(month){
 .leave-report-table{margin-top: 0px !important;}
 .leave-report-table div.indicator{
     background: #759273;
+    background: #78a915;
+    background: #1595a9;
     width: 20px;
     height: 20px;
     border-radius: 50%;
     margin: auto;
 }
 .table.leave-report-table tr>td, .table.leave-report-table tfoot{border: 1px solid #efefef;}
-.table.leave-report-table tfoot, .table.leave-report-table td:last-child{background: #fdfdfd}
+.table.leave-report-table tfoot{background: #fdfdfd}
 
 /*#bar-placeholder{margin-top: 10%}*/
 div.indicator.absent{background-color: #e8e8e8;}
-div.indicator.holiday{background-color: #acc1ab}
+div.indicator.halfday{background-color: #5eddf1;}
+div.indicator.holiday{background-color: #929292}
 table.dataTable.leave-report-table thead .sorting{
     text-align: center;
 }
@@ -358,16 +385,24 @@ table.dataTable.leave-report-table thead .sorting{
   cursor: default;
 /*  border: 1px solid #733b3b;*/
 }
+
+/* Bottom Section */
+
+#lr-legend{background: #f9f9f9}
+
 [class*="legend"]{
     background: #e8e8e8;
-    padding: 2px 15px;
+    padding: 2px 6px;
     border-radius: 15px;
     margin-left: 5px;
     border: 1px solid #d4d4d4;
+    border: 1px solid #bfbfbf;
     color: #fff;
 }
-.legend-available{background: #759273;border-color: #5d805a;}
-.legend-holiday{background: #acc1ab;border-color: #93af91;}
+.legend-available{background: #1595a9;border-color: #1595a9;}
+.legend-halfday{background: #5eddf1;border-color: #5eddf1;}
+.legend-holiday{background: #929292;border-color:#929292;}
+.legend-absent{background: #f56b6b;border-color: #f56b6b;}
 
 .lr-week-details{margin-bottom: 15px;}
 .lr-week-details p{
@@ -384,15 +419,21 @@ table.dataTable.leave-report-table thead .sorting{
   border: 1px solid #e4e4e4;
   padding: 2px 5px;
 }
-.lr-summary-table td.available{text-align:center; background: #759273;}
-.lr-summary-table td.holiday{text-align:center; background: #acc1ab;}
-.lr-summary-table td.absent{text-align:center; background: #e8e8e8}
+.lr-summary-table td.available{text-align:center; background: #1595a9;}
+.lr-summary-table td.holiday{text-align:center; background: #929292;}
+.lr-summary-table td.absent{text-align:center; background: #f56b6b}
 .inline-block{display: inline-block}
+
+.dropdown-menu a{cursor: pointer;}
+
+#get-summary{margin:19px;}
 
 /* Added */
 
 .jsh3{min-height: 400px;}
 .lr-invisible{visibility: hidden}
+
+
 </style>
 
 {% endblock %}
