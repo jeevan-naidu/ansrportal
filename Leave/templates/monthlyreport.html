@@ -1,32 +1,34 @@
- <div class="col-md-5 mgbt-xs-20 mgbt-md-0">
-                <div class="panel widget  light-widget">
-                  <div class="panel-body-list jsh4">
-                    <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :<span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> </p>
-                    <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> </p>
-                  <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :<span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> </p>
+  <div class="col-md-12 mgbt-xs-20 mgbt-md-0">
+    <div class="panel widget  light-widget">
+      <div class="panel-body-list jsh4">
 <!-- Bar chart -->
-                    <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
 
-                    <div class="col-sm-12 pd-25">
+        <div class="col-sm-12">
+          <h4 style="margin-top: 15px">Leave Report Summary</h4>
+        </div>
+        <div class="col-sm-6">
+          <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
+        </div>
 
-                    <h4>Leave Report Summary</h4>
+        <div class="col-sm-6 pd-25">
 
-                      <table class="lr-summary-table">
-                          {% for val in  weekreport%}
-                        <tr>
-                          <td>Week {{ forloop.counter }}</td>
-                          <td class="available">{{ val.available }}</td>
-                          <td class="holiday">{{ val.holiday }}</td>
-                          <td class="absent">{{ val.unavailable }}</td>
-                        </tr>
-                          {% endfor %}
 
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <!-- col-md-6 -->
-              </div><!-- ./col -->
+          <table class="lr-summary-table">
+              {% for val in  weekreport%}
+            <tr>
+              <td>Week {{ forloop.counter }}</td>
+              <td class="available">{{ val.available }}</td>
+              <td class="holiday">{{ val.holiday }}</td>
+              <td class="absent">{{ val.unavailable }}</td>
+            </tr>
+              {% endfor %}
+
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- col-md-6 -->
+  </div><!-- ./col -->
 
 <script type="text/javascript" src="/static/plugins/raphael/raphael.min.js"></script>
 <script type="text/javascript" src="/static/plugins/morris/morris.min.js"></script>
@@ -50,7 +52,7 @@
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
       labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#759273", "#acc1ab","#e8e8e8"]
+      barColors: ["#1595a9", "#f56b6b","#929292"]
     });
 
   }// Calling Bar Chart
@@ -74,5 +76,14 @@ $(document).ready(function() {
         window.barChart.redraw();
 
     });
+
+
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
+    })
+
+    
 });
 </script>

@@ -111,13 +111,40 @@
                       </tfoot>
                     </table>
 
-                  </div>
-                </div>
+                  </div><!-- ./panel-body -->
+                
+                    <div id="lr-legend">
+                      <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :
+                        <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> 
+                      </p>
+                      <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Half Day :
+                        <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span> 
+                      </p>          
+                      <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
+                        <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
+                      </p>
+                      <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
+                        <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
+                      </p>
+                      <button id="get-summary" class="btn btn-danger pull-right">Summary</button>
+                    </div>
 
-
-              </div><!-- ./col-sm -->
+                </div><!-- ./panel -->
+                </div><!-- ./col-sm -->
 <script>
 $(document).ready(function() {
+
+        $('#data-tables').dataTable({
+          searching: false,
+          scrollCollapse: true
+        });
+
+        $(window).resize(function(){
+          window.barChart.redraw();
+          heightFunction2();
+        });
+
+
        var mondayTotal = 0;
     var tuesdayTotal = 0;
     var wednesTotal = 0;
@@ -161,5 +188,14 @@ $(document).ready(function() {
     $("#wed-total").text(wednesTotal);
     $("#thr-total").text(thursdayTotal);
     $("#fri-total").text(fridayTotal);
+
+
+
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
+    })
+    
 });
     </script>

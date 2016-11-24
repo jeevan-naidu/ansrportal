@@ -4,10 +4,12 @@
 <head>
     <title>Page Title</title>
     <style>
-table, th, td {
-    border: 1px solid black;
-}
-</style>
+        th, td {
+            padding: 5px;
+            width: 25%;
+        }
+        td .x_MsoNormal:nth-child(2){display: none;}
+    </style>
 </head>
 
 <body style="margin: 0; padding: 0;">
@@ -15,16 +17,15 @@ table, th, td {
 <p>Hi, {{registered_by}}</p>
 
 <p>TimeSheet Report for week from {{ startdate }} to {{ enddate }} of your team.</p>
-<table style="width:100%">
-<tr>
-    <th><b>Candidate Name</b></th>
-    <th><b>Status</b></th>
-</tr>
-<br/>
+<table border="1" cellspacing="0">
+        <tr>
+            <th><b>Candidate Name</b></th>
+            <th><b>Status</b></th>
+        </tr>
     {% for report in timesheet_report_list %}
         <tr>
-        <td>{{ report.name }}</td>
-        <td>{{ report.status }}</td>
+            <td>{{ report.name }}</td>
+            <td style="text-align: center;">{{ report.status }}</td>
         </tr>
     {% endfor %}
     </table>
