@@ -139,11 +139,11 @@
                             <thead>
                                 <tr>
                                     <th>S.No.</th>
-                                    <th> Review Item Number</th>
-                                    <th>Defect Description</th>
-                                    <th>Defect Type</th>
+                                    <th>#</th>
+                                    <th><!-- Defect  -->Description</th>
+                                    <th><!-- Defect  -->Type</th>
                                     <th>Severity</th>
-                                    <th>Defect Classification</th>
+                                    <th><!-- Defect  -->Classification</th>
                                     <th>Fixed?</th>
                                     <th>Fixed By</th>
                                     <th>Remarks</th>
@@ -177,7 +177,7 @@
                                         <td class="" id="defect_classification-{{forloop.counter}}-td">
                                             {{form_obj.defect_classification}}
                                         </td>
-                                        <td class="qa-editable" id="is_fixed-{{forloop.counter}}-td">
+                                        <td class="e" id="is_fixed-{{forloop.counter}}-td">
                                             {{form_obj.is_fixed|yesno:"Yes,No"}}
                                             <input type="text" placeholder="{{form_obj.is_fixed|yesno:'Yes,No'}}"
                                                    class="input-sm hidden">
@@ -207,73 +207,70 @@
                                                                     data-dismiss="modal">&times;</button>
                                                             <h4 class="modal-title">View Details</h4>
                                                         </div>
+
                                                         <div class="modal-body">
 
-                                                            <div class="">
-                                                                <label class="control-label col-sm-3"
-                                                                       for="email">S.No.:</label>
-                                                                <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">S.No :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{forloop.counter}}</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="">
-                                                                <label class="control-label col-sm-3" for="email">Review
-                                                                    Item Number.:</label>
-                                                                <div class="col-sm-6">
-                                                                    <label class="control-label">
-                                                                        {{form_obj.review_item.value}} </label>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Review Item Number :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">{{form_obj.review_item.value}} </label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Defect
-                                                                    Description:</label>
-                                                                <div class="col-sm-6">
+                                                                <label class="control-label col-sm-3" for="email">Defect Description :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.defect.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Defect
-                                                                    Type:</label>
-                                                                <div class="col-sm-6">
+                                                                <label class="control-label col-sm-3" for="email">Defect Type :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.severity_type.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Severity:</label>
-                                                                <div class="col-sm-6">
+                                                                <label class="control-label col-sm-3" for="email">Severity :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.severity_level.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Defect
-                                                                    Classification:</label>
-                                                                <div class="col-sm-6">
+                                                                <label class="control-label col-sm-3" for="email">Defect Classification :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.defect_classification.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Is
-                                                                    Fixed:</label>
-                                                                <div class="col-sm-6">
+                                                                <label class="control-label col-sm-3" for="email">Is Fixed :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.is_fixed|yesno:"Yes,No"}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Fixed
-                                                                    By:</label>
-                                                                <div class="col-sm-6">
+                                                                <label class="control-label col-sm-3" for="email">Fixed By :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.fixed_by.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Remarks:</label>
-                                                                <div class="col-sm-6">
+                                                                <label class="control-label col-sm-3" for="email">Remarks :</label>
+                                                                <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.remarks.value}}</label>
                                                                 </div>
                                                             </div>
 
 
+                                                        </div><!-- ./modal body -->
+                                                        <div class="modal-footer background-login">
+                                                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
                                                         </div>
+
 
 
                                                     </div>
@@ -296,12 +293,11 @@
                         </table>
                          <div class="panel-footer clearfix">
                  <input type="submit"  id="form-submit"  value="submit" class="btn btn-info btn-sm pull-right"/>
-                <div class="btn btn-info btn-sm pull-right">Review Completed</div>
+                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#reviewComplete">Review Completed</div>
                 <input type="button" class="btn btn-info btn-sm pull-right" id="add_button" value="Add Item" />
 
             </div>
 </form>
-
 
 
 
@@ -351,6 +347,39 @@
 
 
 
+<!-- Review Completed Modal -->
+
+ <!-- Modal -->
+                  <div class="modal fade" id="reviewComplete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Review Completed</h4>
+                        </div>
+                        <div class="modal-body"> 
+                            <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Field Name : </label>
+                              <div class="col-sm-7 controls">
+                              <textarea class="input-border-btm" ></textarea>
+                              </div>
+
+                            </div>
+                            
+                          </form>
+                        
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save changes</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content --> 
+                    </div>
+                    <!-- /.modal-dialog --> 
+                  </div>
+                  <!-- /.modal --> 
 
 
 
@@ -523,6 +552,16 @@ $('.defect').change(function(){
     right: 15px;
     }
     .table .menu-action{padding-top:7px !important;}
+
+    #viewModal .form-group > label{text-align: right; font-weight: bold !important;}
+
+
+#review_report_table.table>thead>tr>th, #review_report_table.table>tbody>tr>th, #review_report_table.table>tfoot>tr>th, #review_report_table.table>thead>tr>td, #review_report_table.table>tbody>tr>td, #review_report_table.table>tfoot>tr>td{padding: 4px 15px }
+#review_report_table{margin-bottom: 0px;}
+#review_report_table.table .menu-action .menu-icon{margin-top: -3px;}
+
+td[id*='review_item'] input{width: 40px;}
+
 </style>
 
 <script type="text/javascript">
