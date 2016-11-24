@@ -6,7 +6,7 @@ from employee.models import Employee
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
-import argparse
+
 
 class Command(BaseCommand):
     help = 'Send Timesheet status to project manager'
@@ -45,9 +45,7 @@ def report_based_on_manger(user_list, manager, week):
     today = datetime.now().date()
     startweek = today - timedelta(days=today.weekday())
     start = startweek - timedelta(days=day)
-    #start = startweek - timedelta(days=14)
     end = start + timedelta(days=6)
-    print str(start) + " " + str(end)
     timesheet_report_list = []
     user_report = {'name': '', 'status': ''}
     for user in user_list:
@@ -58,6 +56,7 @@ def report_based_on_manger(user_list, manager, week):
             user_report['status'] = timesheet_status(timesheet_entry)
             timesheet_report_list.append(user_report)
             user_report = {'name': '', 'status': ''}
+    timesheet_report_list = sorted(timesheet_report_list, key=lambda k: k['status'])
     msg_html = render_to_string('email/timesheetreport.html',
                                 {'registered_by': manager.first_name, 'startdate': start,
                                  'enddate': end, 'timesheet_report_list': timesheet_report_list})
