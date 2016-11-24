@@ -6,23 +6,27 @@ from employee.models import Employee
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
-
+import argparse
 
 class Command(BaseCommand):
     help = 'Send Timesheet status to project manager'
 
+    def add_arguments(self, parser):
+        parser.add_argument('week', type=int)
+
     def handle(self, *args, **options):
-        timesheet_report()
+        week = options['week']
+        timesheet_report(week)
 
 
-def timesheet_report():
+def timesheet_report(week):
 
     manager_list = Employee.objects.all().values('manager').distinct()
     for manager in manager_list:
         manager_id = manager_check(manager)
         if manager_id:
             user_list = Employee.objects.filter(manager=manager['manager'])
-            report_based_on_manger(user_list, manager_id)
+            report_based_on_manger(user_list, manager_id, week)
 
 
 def manager_check(manager):
@@ -33,10 +37,14 @@ def manager_check(manager):
         return False
 
 
-def report_based_on_manger(user_list, manager):
+def report_based_on_manger(user_list, manager, week):
+    try:
+        day = 7 * int(week)
+    except:
+        print "please enter integer value"
     today = datetime.now().date()
     startweek = today - timedelta(days=today.weekday())
-    start = startweek - timedelta(days=49)
+    start = startweek - timedelta(days=day)
     #start = startweek - timedelta(days=14)
     end = start + timedelta(days=6)
     print str(start) + " " + str(end)
@@ -50,18 +58,19 @@ def report_based_on_manger(user_list, manager):
             user_report['status'] = timesheet_status(timesheet_entry)
             timesheet_report_list.append(user_report)
             user_report = {'name': '', 'status': ''}
-    msg_html = render_to_string('email_templates/TimeSheetReport.html',
+    msg_html = render_to_string('email/timesheetreport.html',
                                 {'registered_by': manager.first_name, 'startdate': start,
                                  'enddate': end, 'timesheet_report_list': timesheet_report_list})
 
     mail_obj = EmailMessage('TimeSheet Status Report for Week ' + str(start), msg_html,
-                            settings.EMAIL_HOST_USER, ['shalini.bhagat@ansrsource.com'], cc=[])
+                            settings.EMAIL_HOST_USER, ['vivek.pradhan@ansrsource.com'], cc=[])
     mail_obj.content_subtype = 'html'
-    email_status = mail_obj.send()
+    if timesheet_report_list:
+        email_status = mail_obj.send()
 
 
 def timesheet_status(timesheet_entry):
-    if timesheet_entry and timesheet_entry[0].hold:
+    if timesheet_entry and timesheet_entry[0].hold == 1:
         return "Submitted"
     elif timesheet_entry:
         return "Incomplete"
