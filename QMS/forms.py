@@ -180,7 +180,7 @@ def review_report_base(template_id, project_id):
         defect_classification = forms.ModelChoiceField(widget=forms.Select(),
                                                 queryset=DefectClassificationMaster.objects.all(),required=False, )
 
-        is_fixed = forms.CharField(required=False,)
+        is_fixed = forms.ChoiceField(required=False, )
         fixed_by = forms.CharField(required=False,)
         remarks = forms.CharField(required=False,)
 
