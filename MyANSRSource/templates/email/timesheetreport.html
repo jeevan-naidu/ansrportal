@@ -8,6 +8,8 @@
             padding: 5px;
             width: 25%;
         }
+
+        td .x_MsoNormal:nth-child(2){display: none;}
     </style>
 </head>
 
@@ -17,15 +19,14 @@
 
 <p>TimeSheet Report for week from {{ startdate }} to {{ enddate }} of your team.</p>
 <table border="1" cellspacing="0">
-<tr>
-    <th><b>Candidate Name</b></th>
-    <th><b>Status</b></th>
-</tr>
-<br/>
+        <tr>
+            <th><b>Candidate Name</b></th>
+            <th><b>Status</b></th>
+        </tr>
     {% for report in timesheet_report_list %}
         <tr>
-        <td>{{ report.name }}</td>
-        <td style="text-align: center;">{{ report.status }}</td>
+            <td>{{ report.name }}</td>
+            <td style="text-align: center;">{{ report.status }}</td>
         </tr>
     {% endfor %}
     </table>
@@ -34,3 +35,5 @@
  MyAnsrSource HelpDesk<br>
 </body>
 </html>
+
+
