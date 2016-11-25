@@ -74,6 +74,15 @@ class BaseAssessmentTemplateForm(forms.Form):
              'data-placeholder': 'Chapter ',
     }, ),
             required=True, )
+
+    component = forms.ModelChoiceField(
+        queryset=ComponentMaster.objects.all(),
+        widget=autocomplete.ModelSelect2(url='AutoCompleteChapterSpecificComponent', forward=('project', 'chapter',),
+                                         attrs={
+                                             'data-placeholder': 'Component ',
+                                         }, ),
+        required=True, )
+
     author = forms.ModelChoiceField(
             queryset=User.objects.all(),
             widget=autocomplete.ModelSelect2(url='AutoCompleteUserProjectSpecific', forward=('project', 'chapter'),attrs={

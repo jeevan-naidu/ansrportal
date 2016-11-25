@@ -127,3 +127,17 @@ class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
         #     qs = qs.filter(pk=user)
 
         return qs
+
+
+class AutoCompleteChapterSpecificComponent(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        project = self.forwarded.get('project', None)
+        chapter = self.forwarded.get('chapter', None)
+        try:
+            obj = QASheetHeader.objects.filter(project=project, chapter=chapter)[0]
+            component = ComponentMaster.objects.filter(pk=obj.chapter_component.component.id)
+
+        except:
+            component = None
+
+        return component

@@ -71,7 +71,7 @@ def get_review(obj):
                'is_fixed', 'fixed_by__username', 'remarks')
 
 
-def qa_sheet_header_obj(project, chapter, author, active_tab=None):
+def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=None):
     # chapter
     # u'9635'
     # author
@@ -85,10 +85,12 @@ def qa_sheet_header_obj(project, chapter, author, active_tab=None):
     try:
         # print chapter, "chapter"
         # print active_tab, "active_tab", project, chapter, author
-        if active_tab is not None:
+        if active_tab and component is not None:
             try:
-                result = QASheetHeader.objects.get(project=project, chapter=chapter, author=author,
-                                               review_group=ReviewGroup.objects.get(id=active_tab))
+                chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
+                result = QASheetHeader.objects.get(project=project, chapter_component=chapter_component_obj,
+                                                   author=author,
+                                                   review_group=ReviewGroup.objects.get(id=active_tab))
             except Exception, e:
                 print str(e)
                 # print "if"
@@ -175,6 +177,7 @@ class AssessmentView(TemplateView):
             project = form.cleaned_data['project']
             chapter = form.cleaned_data['chapter']
             author = form.cleaned_data['author']
+            component = form.cleaned_data['component']
             try:
                 print "im in try"
                 print project, chapter, author, active_tab
@@ -182,7 +185,8 @@ class AssessmentView(TemplateView):
                 request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
-                obj = qa_sheet_header_obj(project, chapter, author, active_tab)
+                request.session['component'] = component
+                obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 print obj
                 # if obj is None:
                 #     messages.error(self.request, "Sorry No Records Found")
@@ -210,9 +214,11 @@ class AssessmentView(TemplateView):
 
         qmsData = {}
         qmsDataList = []
+        severity_count = {}
         if reports and len(reports) != 0:
             # print"im in"
             for eachData in reports:
+                count = 0
                 for k, v in eachData.iteritems():
                     qmsData[k] = v
                     if k == 'id':
@@ -228,6 +234,7 @@ class AssessmentView(TemplateView):
 
                     if k == 'defect_severity_level__severity_level':
                         qmsData['severity_level'] = v
+                        severity_count[v] = count + 1
 
                     if k == 'defect_severity_level__defect_classification':
                         qmsData['defect_classification'] = v
@@ -254,7 +261,8 @@ class AssessmentView(TemplateView):
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
                                                          'template_id': template_id,
-                                                         'review_group': get_review_group(), 'questions': obj.count})
+                                                         'review_group': get_review_group(), 'questions': obj.count,
+                                                         'severity_count': severity_count})
 
 
 class ReviewReportManipulationView(AssessmentView):
@@ -416,3 +424,7 @@ def fetch_author(request):
         json.dumps(context_data),
         content_type="application/json"
     )
+
+
+def calculate_summary(project, chapter, component):
+    print chapter_no, project_id
