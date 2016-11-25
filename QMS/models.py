@@ -62,7 +62,8 @@ class DefectTypeMaster(NameMasterAbstractModel, TimeStampAbstractModel):
 
 
 class SeverityLevelMaster(NameMasterAbstractModel, TimeStampAbstractModel):
-
+    penalty_count = models.DecimalField(blank=False, decimal_places=1, max_digits=2, verbose_name="Penalty Count",
+                                        null=False)
     pass
 
 
