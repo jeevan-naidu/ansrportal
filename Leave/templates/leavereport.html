@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block siteTitle %}Leave Dashboard{% endblock %}
+{% block siteTitle %}Leave Report{% endblock %}
 {% block pageTitle %}Leave Report{% endblock %}
 {% block content  %}
 
@@ -369,7 +369,7 @@ div.indicator.absent{background-color: #e8e8e8;}
 div.indicator.halfday{background-color: #5eddf1;}
 div.indicator.holiday{background-color: #929292}
 table.dataTable.leave-report-table thead .sorting{
-    text-align: center;
+    text-align: left;
 }
 .dataTables_length{display: none;}/* Removing number of entries to display */
 
@@ -426,10 +426,18 @@ table.dataTable.leave-report-table thead .sorting{
 
 #get-summary{margin:19px;}
 
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus{background-color: #337ab7}
 /* Added */
 
 .jsh3{min-height: 400px;}
 .lr-invisible{visibility: hidden}
+
+/* Temp section - to be changed */
+
+#data-tables_info{float: left;}
+div.dataTables_paginate{margin-top: 10px;}
+
+ul.dropdown-menu{z-index: 994} /* To be moved to main stylesheet */
 
 
 </style>
