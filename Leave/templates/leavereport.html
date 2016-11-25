@@ -113,7 +113,7 @@
                       </tbody>
                       <tfoot>
                         <tr class="gradeX">
-                          <td>The sum</td>
+                          <td><b>Total</b></td>
                           <td class="text-center" id="mon-total">0</td>
                           <td class="text-center" id="tue-total">0</td>
                           <td class="text-center" id="wed-total">0</td>
@@ -131,14 +131,14 @@
           </p>
           <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Half Day :
             <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span> 
+          </p>
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
+            <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
           </p>          
           <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
             <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
           </p>
-          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
-            <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
-          </p>
-          <button id="get-summary" class="btn btn-danger pull-right">Summary</button>
+          <button id="get-summary" class="btn btn-primary pull-right">Summary</button>
         </div>
                 </div><!-- ./panel -->
 
@@ -168,8 +168,8 @@
             <tr>
               <td>Week {{ forloop.counter }}</td>
               <td class="available">{{ val.available }}</td>
-              <td class="holiday">{{ val.holiday }}</td>
               <td class="absent">{{ val.unavailable }}</td>
+              <td class="holiday">{{ val.holiday }}</td>
             </tr>
               {% endfor %}
 
@@ -365,9 +365,9 @@ function monthchange(month){
 .table.leave-report-table tfoot{background: #fdfdfd}
 
 /*#bar-placeholder{margin-top: 10%}*/
-div.indicator.absent{background-color: #e8e8e8;}
+div.indicator.absent{background-color: #f56b6b;}
 div.indicator.halfday{background-color: #5eddf1;}
-div.indicator.holiday{background-color: #929292}
+div.indicator.holiday{background-color: #929292;}
 table.dataTable.leave-report-table thead .sorting{
     text-align: left;
 }
