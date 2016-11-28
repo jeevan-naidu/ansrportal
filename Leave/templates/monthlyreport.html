@@ -22,7 +22,7 @@
 </tr>
               {% for val in  weekreport%}
             <tr>
-              <td>Week {{ forloop.counter }}</td>
+              <td>{{ forloop.counter }}</td>
               <td>{{ val.available }}</td>
               <td>{{ val.unavailable }}</td>
               <td>{{ val.holiday }}</td>

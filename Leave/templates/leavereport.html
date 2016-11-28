@@ -172,7 +172,7 @@
 </tr>
               {% for val in  weekreport%}
             <tr>
-              <td>Week {{ forloop.counter }}</td>
+              <td>{{ forloop.counter }}</td>
               <td>{{ val.available }}</td>
               <td>{{ val.unavailable }}</td>
               <td>{{ val.holiday }}</td>
@@ -423,6 +423,11 @@ table.dataTable.leave-report-table thead .sorting{
   width: 100%;
   max-width: 500px;
   margin: auto;
+  text-align: center;
+}
+.lr-summary-table tr:first-child{
+  background-color: #444444;
+  color: #fff;
 }
 .lr-summary-table td{
   width: 25%;
