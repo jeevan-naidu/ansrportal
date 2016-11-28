@@ -164,14 +164,26 @@
 
 
           <table class="lr-summary-table">
+<tr>
+              <td>Week</td>
+              <td>Available</td>
+              <td>Absent</td>
+              <td>Holiday</td>  
+</tr>
               {% for val in  weekreport%}
             <tr>
               <td>Week {{ forloop.counter }}</td>
-              <td class="available">{{ val.available }}</td>
-              <td class="absent">{{ val.unavailable }}</td>
-              <td class="holiday">{{ val.holiday }}</td>
+              <td>{{ val.available }}</td>
+              <td>{{ val.unavailable }}</td>
+              <td>{{ val.holiday }}</td>
             </tr>
               {% endfor %}
+<tr>
+              <td>&nbsp;</td>
+              <td class="available"></td>
+              <td class="absent"></td>
+              <td class="holiday"></td>  
+</tr>
 
           </table>
         </div>
@@ -211,7 +223,7 @@
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
       labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#1595a9", "#f56b6b","#929292"]
+      barColors: ["#1595a9", "#f56b6b","#e2e2e2"]
     });
 
   }// Calling Bar Chart
@@ -367,7 +379,7 @@ function monthchange(month){
 /*#bar-placeholder{margin-top: 10%}*/
 div.indicator.absent{background-color: #f56b6b;}
 div.indicator.halfday{background-color: #5eddf1;}
-div.indicator.holiday{background-color: #929292;}
+div.indicator.holiday{background-color: #e2e2e2;}
 table.dataTable.leave-report-table thead .sorting{
     text-align: left;
 }
@@ -399,7 +411,7 @@ table.dataTable.leave-report-table thead .sorting{
 }
 .legend-available{background: #1595a9;border-color: #1595a9;}
 .legend-halfday{background: #5eddf1;border-color: #5eddf1;}
-.legend-holiday{background: #929292;border-color:#929292;}
+.legend-holiday{background: #e2e2e2;border-color:#e2e2e2;}
 .legend-absent{background: #f56b6b;border-color: #f56b6b;}
 
 .lr-week-details{margin-bottom: 15px;}
@@ -418,7 +430,7 @@ table.dataTable.leave-report-table thead .sorting{
   padding: 2px 5px;
 }
 .lr-summary-table td.available{text-align:center; background: #1595a9;}
-.lr-summary-table td.holiday{text-align:center; background: #929292;}
+.lr-summary-table td.holiday{text-align:center; background: #e2e2e2;}
 .lr-summary-table td.absent{text-align:center; background: #f56b6b}
 .inline-block{display: inline-block}
 
