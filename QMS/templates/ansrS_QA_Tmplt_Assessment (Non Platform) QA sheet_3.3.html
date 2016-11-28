@@ -572,7 +572,7 @@ td[id*='review_item'] input{width: 40px;}
 
 $(document).ready(function(){
 
-  $('#open-summary').click(function(e){
+    $('#open-summary').click(function(e){
     e.preventDefault();
     if($(this).hasClass('btn-danger')){
       $(this).removeClass('btn-danger');
@@ -583,13 +583,17 @@ $(document).ready(function(){
       $(this).addClass('btn-danger');
       $('#qms-summary').addClass('collapsed');
     }
-  })
+    })
 
-  $('td.qa-editable').click(function(){
+    $('td.qa-editable').click(function(){
     $(this).find('.hidden').removeClass('hidden');
     $(this).find('p').addClass('hidden');
-  })
+    })
 
+
+    $(document).ready(function(){
+        $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+    })
 
 
 })// ./ doc.ready 
