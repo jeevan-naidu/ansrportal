@@ -14,14 +14,27 @@
 
 
           <table class="lr-summary-table">
+<tr>
+              <td>Week</td>
+              <td>Available</td>
+              <td>Absent</td>
+              <td>Holiday</td>  
+</tr>
               {% for val in  weekreport%}
             <tr>
               <td>Week {{ forloop.counter }}</td>
-              <td class="available">{{ val.available }}</td>
-              <td class="holiday">{{ val.holiday }}</td>
-              <td class="absent">{{ val.unavailable }}</td>
+              <td>{{ val.available }}</td>
+              <td>{{ val.unavailable }}</td>
+              <td>{{ val.holiday }}</td>
             </tr>
               {% endfor %}
+<tr>
+              <td>&nbsp;</td>
+              <td class="available"></td>
+              <td class="absent"></td>
+              <td class="holiday"></td>  
+</tr>
+
 
           </table>
         </div>
@@ -52,7 +65,7 @@
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
       labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#1595a9", "#f56b6b","#929292"]
+      barColors: ["#4d8468", "#fd3c3c","#e2e2e2"]
     });
 
   }// Calling Bar Chart
