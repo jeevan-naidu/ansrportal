@@ -145,7 +145,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
     author = forms.ModelChoiceField(widget=forms.Select(), queryset=User.objects.filter(is_active=True))
 
     def __init__(self, *args, **kwargs):
-        print"init"
+        # print"init"
         super(ChooseMandatoryTabsForm, self).__init__(*args, **kwargs)
         self.fields['author'].widget.attrs['class'] = 'author_dropdown'
         # project_id_field = self.fields['project'].initial \
