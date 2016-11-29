@@ -21,7 +21,7 @@ class TimeStampAbstractModel(models.Model):
 class NameMasterAbstractModel(models.Model):
 
     name = models.CharField(max_length=100)
-    active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
+    is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
 
     class Meta:
         abstract = True

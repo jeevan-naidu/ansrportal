@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
 {% load static from staticfiles %}
-
+{% load qms_tags %}
 {% block siteTitle %}QMS{% endblock %}
 {% block pageTitle %}QMS{% endblock %}
 {% block content  %}
@@ -21,7 +21,8 @@
         <div class="panel widget">
             <div class="panel-heading vd_bg-grey">
 
-                <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
+                <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet
+                    {{severity_count}} </h3>
                 {% for dict in formset.errors %}
     {% for error in dict.values %}
         {{ error }}
@@ -67,7 +68,7 @@
 
 
                 <div id="qms-summary" class="collapsed">
-
+                    {% if review_formset %}
                     <table class="table-responsive table-striped width-100">
                     <tr>
                         <th>Defect Analysis</th>
@@ -76,35 +77,29 @@
                         <th>Score</th>
                         <th>Defect Density</th>
                     </tr>
-
+                        {% for element in severity_level %}
                     <tr>
                         <td></td>
-                        <td>S1</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0.00%</td>
-                    </tr> 
+                        <td>{{element.0}}</td>
+                        {% with sev_count=severity_count|get_item:element.1 %}
+                        <td> {{sev_count}}</td>
+                        <td> {{score|get_item:element.1 }}</td>
+                        {% endwith %}
+                        <td>{{defect_density|get_item:element.1 }}%</td>
 
-
-                    <tr>
-                        <td></td>
-                        <td>S2</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0.00%</td>
                     </tr>
-
-
-                    <tr>
-                        <td></td>
-                        <td>S3</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>0.00%</td>
-                    </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>Quality Score</td>
+                            <td></td>
+                            <td>{{total_count}}</td>
+                            <td>{{total_score}}</td>
+                            <td>{{total_defect_density}}</td>
+                        </tr>
 
 
                     </table>
+                    {% endif %}
 
                 </div>
 

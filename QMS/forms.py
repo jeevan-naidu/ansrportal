@@ -1,7 +1,7 @@
 from django import forms
 from .models import *
 from django.contrib.auth.models import User
-from MyANSRSource.models import Project, Chapter, ProjectTeamMember
+from MyANSRSource.models import Project, Chapter, ProjectManager
 
 
 from dal import autocomplete
@@ -96,7 +96,13 @@ class BaseAssessmentTemplateForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(BaseAssessmentTemplateForm, self).__init__(*args, **kwargs)
-        #     # self.fields['project'].queryset = Project.objects.all()
+        # user = kwargs.pop('user', None)
+        # print user
+        # self.fields['project'].queryset = Project.objects.filter(
+        #     id__in=ProjectManager.objects.filter(
+        #         user=user
+        #     ).values('project')
+        # )
         #     #
         #     # project_id = self.fields['project'].initial\
         #     #              or self.initial.get('project') \
@@ -116,13 +122,13 @@ class BaseAssessmentTemplateForm(forms.Form):
 class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
     qms_process_model = forms.ModelChoiceField(
         queryset=QMSProcessModel.objects.all(),
-        widget=autocomplete.ModelSelect2(url='AutocompleteProcessModel', attrs={
+        widget=autocomplete.ModelSelect2(url='AutocompleteProcessModel', forward=('project',), attrs={
             'data-placeholder': 'Process Model ',
         }, ),
         required=True, )
     template = forms.ModelChoiceField(
         queryset=TemplateMaster.objects.all(),
-        widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', attrs={
+        widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', forward=('project', 'qms_process_model'), attrs={
             'data-placeholder': 'Template ',
         }, ),
         required=True, )

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import ProjectTeamMember
+from MyANSRSource.models import ProjectTeamMember, ProjectManager
 from .models import *
 from dal import autocomplete
 
@@ -20,22 +20,39 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = Project.objects.filter(
-            Q(name__icontains=q) | Q(projectId__icontains=q)
+            id__in=ProjectManager.objects.filter(
+                user=self.request.user
+            ).values('project')
         )
+        choices = choices.filter(name__icontains=q)
         return choices
 
 
 class AutocompleteTemplates(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = TemplateMaster.objects.filter(name__icontains=q)
+        project = self.forwarded.get('project', None)
+        qms_process_model = self.forwarded.get('qms_process_model', None)
+        try:
+            obj = ProjectTemplateProcessModel.objects.get(project=project, qms_process_model=qms_process_model)
+            choices = TemplateMaster.objects.filter(id=obj.template_id)
+        except:
+            choices = TemplateMaster.objects.filter(name__icontains=q)
+            # print choices
+
         return choices
 
 
 class AutocompleteProcessModel(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = QMSProcessModel.objects.filter(name__icontains=q)
+        project = self.forwarded.get('project', None)
+        try:
+            obj = ProjectTemplateProcessModel.objects.get(project=project)
+            choices = QMSProcessModel.objects.filter(id=obj.qms_process_model_id)
+
+        except:
+            choices = QMSProcessModel.objects.filter(name__icontains=q)
         return choices
 
 
@@ -107,10 +124,10 @@ class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
         project = self.forwarded.get('project', None)
 
         try:
-            print project
+            # print project
 
             user = ProjectTeamMember.objects.filter(project=project, member__is_active=True).values_list('member_id')
-            print user
+            # print user
             try:
                 qs = User.objects.filter(pk__in=user)
             except Exception, e:

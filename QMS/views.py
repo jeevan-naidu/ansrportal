@@ -148,7 +148,7 @@ def get_template_process_review(request):
     except ObjectDoesNotExist:
         tabs = team_members = tab_name = ''
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab}
-    # print context_data
+    print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
@@ -160,7 +160,7 @@ class AssessmentView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AssessmentView, self).get_context_data(**kwargs)
-
+        print "user", self.request.user
         form = BaseAssessmentTemplateForm()
         context['form'] = form
         context['review_group'] = get_review_group()
@@ -218,7 +218,7 @@ class AssessmentView(TemplateView):
         if reports and len(reports) != 0:
             # print"im in"
             for eachData in reports:
-                count = 0
+                # count = 0
                 for k, v in eachData.iteritems():
                     qmsData[k] = v
                     if k == 'id':
@@ -234,7 +234,12 @@ class AssessmentView(TemplateView):
 
                     if k == 'defect_severity_level__severity_level':
                         qmsData['severity_level'] = v
-                        severity_count[v] = count + 1
+                        if v in severity_count:
+                            v = int(v)
+                            severity_count[v] += 1
+                        else:
+                            severity_count[v] = 1
+                            # print count, severity_count, v
 
                     if k == 'defect_severity_level__defect_classification':
                         qmsData['defect_classification'] = v
@@ -257,12 +262,31 @@ class AssessmentView(TemplateView):
         )
 
         qms_formset = qms_formset(initial=qmsDataList)
+        score = {}
+        tmp_weight = {}
+        defect_density = {}
+        print severity_count
+        s = SeverityLevelMaster.objects.filter(is_active=True)
+        for k, v in severity_count.iteritems():
+            severity_level_obj = s.get(id=int(k))
+            tmp_weight[k] = float(severity_level_obj.penalty_count) * v
+            score[k] = 100 - (tmp_weight[k])
+            defect_density[k] = (tmp_weight[k] / obj.count) * 100
 
+        total_count = sum(severity_count.itervalues())
+        total_score = 100 - sum(tmp_weight.itervalues())
+        total_defect_density = sum(defect_density.itervalues())
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
                                                          'template_id': template_id,
                                                          'review_group': get_review_group(), 'questions': obj.count,
-                                                         'severity_count': severity_count})
+                                                         'severity_count': severity_count,
+                                                         'score': score, 'total_score': total_score,
+                                                         'total_count': total_count, 'defect_density': defect_density,
+                                                         'total_defect_density': total_defect_density,
+                                                         'severity_level':
+                                                             SeverityLevelMaster.objects.filter(is_active=True)
+                      .values_list('name', 'id', )})
 
 
 class ReviewReportManipulationView(AssessmentView):
@@ -425,6 +449,4 @@ def fetch_author(request):
         content_type="application/json"
     )
 
-
-def calculate_summary(project, chapter, component):
-    print chapter_no, project_id
+# BaseAssessmentTemplateForm

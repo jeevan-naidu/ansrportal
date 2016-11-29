@@ -11,12 +11,12 @@
 
 <div class="row">
 
-
     <div class="col-sm-12">
 
 
         <div class="panel widget">
             <div class="panel-heading vd_bg-grey">
+                {{context_data}}
 
                 <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
                 {% for dict in formset.errors %}
@@ -96,14 +96,12 @@
                         <div class="col-sm-12 qms-add-field" style="display:none">
                             <div class="col-sm-2 controls">
                                 <select id="select-field" type="select" class="input-sm" >
-                                    <option>Add Field 1</option>
-                                    <option>Add Field 2</option>
-                                    <option>Add Field 3</option>
-                                    <option>Add Field 4</option>
+
                                 </select>
                             </div>
                             <div class="col-sm-10">
-                                <button id="qms-add-field" class="btn btn-primary btn-sm">Add This Field</button>
+                                <button id="qms-add-field" class="btn btn-primary btn-sm" disabled>Add This Field
+                                </button>
                             </div>
                         </div>
 
@@ -145,7 +143,6 @@ var clearDom = function(){
     $('.form-group').remove();
 }
 
-//
  function populateNames(theObj){
 
     $('.qms-allocators select').html('');
@@ -155,7 +152,15 @@ var clearDom = function(){
 
         // changes all the select boxes simultaneously
         $('.qms-allocators select').append("<option value="+ key +">" + theObj['team_members'][key] + "</option>");
-        $('.qms-allocators,.qms-add-field ,.submit').show();
+        var option_length = $('#select-field> option').length;
+
+        if(option_length>0) {
+             $('.qms-allocators,.qms-add-field ,.submit').show();
+
+        }
+        else { $('.qms-allocators,.submit').show();
+
+        }
       }
     }
 }
@@ -191,12 +196,11 @@ function populateForm (theObj){
 
 theObj['tab_name'] = array_flip(theObj['tab_name'])
 
-    for (var key in theObj['tab_name']) { 
+    for (var key in theObj['tab_name']) {
 
 
       if (theObj['tab_name'].hasOwnProperty(key)) {     // opening object
-
-        if (theObj['tabs'][theObj['tab_name'][key]] == true) {
+        if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {
             $('.qms-allocators').append(domObj);
            $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
 
@@ -217,23 +221,6 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 } // end of populate form
 
 
-
-<!--var something = {-->
-    <!--'tabs': {'Editor Review 2': False, 'Editor Review 3': True, 'Editor Review 1': True}, -->
-    <!--'tab_name': {'Editor Review 2': 2, 'Editor Review 3': 3, 'Editor Review 1': 1}, -->
-    <!--'team_members': {256: 'SumukhShamnur', 257: 'KanakaPrakash', 254: 'Bhaviya', 255: 'RaviKumar'}, -->
-    <!--'user_tab': {'Editor Review 2': None, 'Editor Review 3': None, 'Editor Review 1': 476}-->
-<!--}-->
-
-
-
-
-
-
-
-
-
-
 $(document).ready(function(){
 
    $(':input[name$=chapter]').on('change', function()  {
@@ -250,14 +237,13 @@ $(document).ready(function(){
                 dataType :'json',
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
-                console.log("author");
-                    console.log(data);
                     populateForm(data);
                 },
 
             });
         }
     });
+
 $(':input[name$=component]').change(function(){
     $.ajax({
             url: '/qms/fetch_author/',
@@ -266,7 +252,6 @@ $(':input[name$=component]').change(function(){
             data: {"project_id" :  $(':input[name$=project]').val() , "component_id" :  $(this).val() ,"chapter_id" :  $(':input[name$=chapter]').val() },
             beforeSend : function(data) { $(':input[name$=author]').empty() ; $('.select-name ').empty() ;},
             success: function (data) {
-            console.log("component");console.log(data);
                 for (var key in data) {
                     if (data.hasOwnProperty(key)) {
 
@@ -285,15 +270,12 @@ $(':input[name$=component]').change(function(){
                     }
 
                 }
-                    console.log(typeof(data['author'] ) +'--'+ data['author']);
-                if(data['author'] != 'None' || data['author'] != '' ) { console.log("if cond");
+                if(data['author'] != 'None' || data['author'] != '' ) {
                     $('#id_author option[value='+data['author']+']').prop("selected", true);
                 }
-                else if (data['author'] == 'None'){ console.log("im in else if");
-
-                                 $('#id_author option[value=""]').prop("selected", true);
-                }else{console.log("else");}
-
+                else if (data['author'] == 'None'){
+                     $('#id_author option[value=""]').prop("selected", true);
+                }
             },
             complete: function (data) { $(':input[name$=author]').trigger('change');}
 
@@ -303,31 +285,23 @@ $(':input[name$=component]').change(function(){
     $('#qms-add-field').click(function(e){
         e.preventDefault();
         optCount = $('#select-field > option').length; // The bug
-        console.log('the number of options is ' + optCount);
-
 
         if (optCount > 1) {
 
             theField = $('#select-field').val();
             theID = $('#select-field option:selected').attr('name');
             $('#select-field option:selected').remove();
-            console.log('the selected value is ' + theField);
-
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
             $('.qms-allocators .form-group:last-child').find('select').attr('name', 'user_'+theID);
 
         }else if (optCount == 1) {
-            console.log('option count is none');
             theField = $('#select-field').val();
             theID = $('#select-field option:selected').attr('name');
             $('#select-field option:selected').remove();
-            console.log('the selected value is ' + theField);
-
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
             $('.qms-allocators .form-group:last-child').find('select').attr('name','user_'+theID);
-
             $('#select-field').html('The end');
             $('#qms-add-field').prop('disabled', true);
 

@@ -37,8 +37,6 @@ def has_group(user, group_name):
 @register.filter(name='has_url')  # added for timesheet entry module
 def has_url(actual_path, url):
     if url in actual_path:
-        print actual_path
-        print "yup"
         return True
     else:
         return False
