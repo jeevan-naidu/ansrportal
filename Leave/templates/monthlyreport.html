@@ -57,10 +57,14 @@
     window.barChart = Morris.Bar({
       element: 'bar-placeholder',
        data: [{% for val in  weekreport%}
-      { y: 'Week {{ forloop.counter }}', a: {{ val.available }}, b: {{ val.unavailable }}, c: {{ val.holiday }} },
+      { y: 'Week {{ forloop.counter }}', 
+      a: ({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}), 
+      b: ({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}), 
+      c: ({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}) 
+    },
           {% endfor %}
       ],
-      hideHover: 'always',
+      hideHover: 'true',
       stacked: true,
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
