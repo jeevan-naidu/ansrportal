@@ -190,9 +190,10 @@ function resetBtn(){
 function assignMandatory(theObj){
     for (var key in theObj['user_tab']){
         if(theObj['user_tab'].hasOwnProperty(key)){
-            console.log('the key is ' + key + ' and the value is ' + theObj['user_tab'][key]);
-            the_form_group = $('.form-group span:contains('+ key +')');
+            // console.log('the key is ' + key + ' and the value is ' + theObj['user_tab'][key]);
+            $('.form-group span:contains('+ key +')').parent().parent().find('select option[value=' + theObj['user_tab'][key] + ']').prop("selected", true);
             // console.log(the_form_group);
+            // $('#id_author option[value=""]').prop("selected", true);
         }
     }
 } 
