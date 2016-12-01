@@ -159,14 +159,14 @@
                                     <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
                                         <td id="sr-{{forloop.counter}}-td">{{forloop.counter}}</td>
                                         <td class="" id="review_item-{{forloop.counter}}-td">
-                                            {% if request.session.author_logged_in %} {{form_obj.review_item.value}}
-                                            {%else %} {{form_obj.review_item}} {%endif %}
+                                            {% if request.session.author_logged_in %}
+                                            {{form_obj.review_item.value}}{%else %} {{form_obj.review_item}} {%endif %}
                                             {{form_obj.qms_id}}
                                         </td>
 
                                         <td class="" id="defect-{{forloop.counter}}-td">
-                                            {% if request.session.author_logged_in %} {{form_obj.defect.value}} {%
-                                            else%} {{form_obj.defect}} {%endif %}
+                                            {% if request.session.author_logged_in %} {{form_obj.defect.value}} {%else%}
+                                            {{form_obj.defect}} {%endif %}
                                         </td>
                                         <td class="" id="severity_type-{{forloop.counter}}-td">
                                             {{form_obj.severity_type}}
@@ -258,9 +258,8 @@
                                                                 <label class="control-label col-sm-3" for="email">Fixed By :</label>
                                                                 <div class="col-sm-9">
                                                                     <label class="control-label">{% if
-                                                                        form_obj.fixed_by.value
-                                                                        %}{{form_obj.fixed_by.value}} {% endif
-                                                                        %}</label>
+                                                                        form_obj.fixed_by.value%}{{form_obj.fixed_by.value}}
+                                                                        {% endif%}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
