@@ -16,7 +16,7 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
         return choices
 
 
-class AutocompleteProjects(autocomplete.Select2QuerySetView):
+class AutocompleteProjectsManager(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = Project.objects.filter(
@@ -24,6 +24,20 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
                 user=self.request.user
             ).values('project')
         )
+        choices = choices.filter(name__icontains=q)
+        return choices
+
+
+class AutocompleteProjects(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Project.objects.filter(
+            closed=False,
+            id__in=ProjectTeamMember.objects.filter(
+                Q(member=self.request.user) |
+                Q(project__projectManager=self.request.user)
+            ).values('project')
+        ).order_by('name')
         choices = choices.filter(name__icontains=q)
         return choices
 

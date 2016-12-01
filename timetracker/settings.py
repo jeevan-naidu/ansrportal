@@ -163,6 +163,7 @@ MIDDLEWARE_CLASSES = [
     # 'admin_reorder.middleware.ModelAdminReorder',
     'simple_history.middleware.HistoryRequestMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
+    'QMS.middleware.qms_middleware.QMSPermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p
 TEMPLATES = [

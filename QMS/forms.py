@@ -188,14 +188,11 @@ def review_report_base(template_id, project_id):
 
         severity_level = forms.ModelChoiceField(widget=forms.Select(),
                                                 queryset=SeverityLevelMaster.objects.all(),required=False, )
-        defect_classification = forms.ModelChoiceField(widget=forms.Select(),
-                                                queryset=DefectClassificationMaster.objects.all(),required=False, )
-        severity_level = forms.ModelChoiceField(widget=forms.Select(),
-                                                queryset=SeverityLevelMaster.objects.all(),required=False, )
+
         defect_classification = forms.ModelChoiceField(widget=forms.Select(),
                                                 queryset=DefectClassificationMaster.objects.all(),required=False, )
 
-        is_fixed = forms.ChoiceField(required=False, )
+        is_fixed = forms.ChoiceField(required=False, choices=fixed_status, )
         fixed_by = forms.CharField(required=False,)
         remarks = forms.CharField(required=False,)
 

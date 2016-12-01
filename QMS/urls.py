@@ -3,10 +3,10 @@ from django.contrib.auth.decorators import login_required
 from .views import *
 from .autocomplete_light_registry import *
 urlpatterns = [
-    url(r'^$', (login_required(AssessmentView.as_view())), name=u'qms'),
+    url(r'^$', (AssessmentView.as_view()), name=u'qms'),
     # url(r'^/edit(?P<pk>\d+)/$', login_required(AssessmentReviewEditView.as_view()), name=u'edit_review'),
     url(r'^edit/$', (ReviewReportManipulationView.as_view()), name='edit_review'),
-    url(r'^choose_tabs/$', login_required((ChooseTabs.as_view())), name='choose_tabs'),
+    url(r'^choose_tabs/$', (ChooseTabs.as_view()), name='choose_tabs'),
     url(r'^fetch_severity/$', fetch_severity, name=u'fetch_severity'),
     url(r'^fetch_author/$', fetch_author, name=u'fetch_author'),
     url(r'^get_template_process_review/$', get_template_process_review,

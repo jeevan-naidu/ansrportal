@@ -22,7 +22,7 @@
             <div class="panel-heading vd_bg-grey">
 
                 <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet
-                    {{severity_count}} </h3>
+                </h3>
                 {% for dict in formset.errors %}
     {% for error in dict.values %}
         {{ error }}
@@ -61,7 +61,8 @@
                         </div>
 
                     </div>
-                    <input type="hidden" name="active_tab" id="active_tab" value="1"/>
+                    <input type="hidden" name="active_tab" id="active_tab" {% if request.session.active_tab %}
+                           value={{request.session.active_tab}} {% else %} value="1" {% endif %}/>
                     <input type="hidden" name="template_name" id="template_id" value="{{request.session.template_id}}"/>
                 </div><!-- ./qms-selectors row -->
             </form>
@@ -121,6 +122,8 @@
 
                      <form role="form"  id="review_report_form" method="post" action="{% url 'edit_review' %}">
                         {% csrf_token %}
+                         <input type="hidden" name="is_author" id="is_author"
+                                value="{{request.session.author_logged_in}}"/>
                          <input type="hidden" name="active_tab1" id="active_tab1" {% if request.session.active_tab %}
                                 value={{request.session.active_tab}} {% else %} value="1" {% endif %}/>
 
@@ -136,10 +139,10 @@
                                 <tr>
                                     <th>S.No.</th>
                                     <th>Review Item Number</th>
-                                    <th>Defect Description</th>
-                                    <th>Defect Type</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
                                     <th>Severity</th>
-                                    <th>Defect Classification</th>
+                                    <th>Classification</th>
                                     <th>Fixed?</th>
                                     <th>Fixed By</th>
                                     <th>Remarks</th>
@@ -151,18 +154,19 @@
 
 
                              <tbody> {%if review_formset %}
-
                                 {{review_formset.management_form}}
                                     {% for form_obj in review_formset%}
                                     <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
                                         <td id="sr-{{forloop.counter}}-td">{{forloop.counter}}</td>
                                         <td class="" id="review_item-{{forloop.counter}}-td">
-                                            {{form_obj.review_item}}
+                                            {% if request.session.author_logged_in %} {{form_obj.review_item.value}} {%
+                                            else %} {{form_obj.review_item}} {%endif %}
                                             {{form_obj.qms_id}}
                                         </td>
 
                                         <td class="" id="defect-{{forloop.counter}}-td">
-                                            {{form_obj.defect}}
+                                            {% if request.session.author_logged_in %} {{form_obj.defect.value}} {% else
+                                            %} {{form_obj.defect}} {%endif %}
                                         </td>
                                         <td class="" id="severity_type-{{forloop.counter}}-td">
                                             {{form_obj.severity_type}}
@@ -174,13 +178,12 @@
                                         <td class="" id="defect_classification-{{forloop.counter}}-td">
                                             {{form_obj.defect_classification}}
                                         </td>
-                                        <td class="e" id="is_fixed-{{forloop.counter}}-td">
-                                            {{form_obj.is_fixed|yesno:"Yes,No"}}
-                                            <input type="text" placeholder="{{form_obj.is_fixed|yesno:'Yes,No'}}"
-                                                   class="input-sm hidden">
+                                        <td class="" id="is_fixed-{{forloop.counter}}-td">
+                                            {{form_obj.is_fixed}}
+
                                         </td>
                                         <td class="" id="fixed_by-{{forloop.counter}}-td">
-                                            {{form_obj.fixed_by}}
+                                            {% if form_obj.fixed_by.value %}{{form_obj.fixed_by.value}} {% endif %}
                                         </td>
                                         <td id="remarks-{{forloop.counter}}-td">
                                             {{form_obj.remarks}}
@@ -230,35 +233,34 @@
                                                                 <label class="control-label col-sm-3" for="email">Defect Type :</label>
                                                                 <div class="col-sm-9">
                                                                     <label class="control-label">
-                                                                        {{form_obj.severity_type.value|get_severity_type:form_obj.severity_type.value
-                                                                        }}</label>
+                                                                        {{form_obj.severity_type.value|get_severity_type:form_obj.severity_type.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Severity :</label>
                                                                 <div class="col-sm-9">
-                                                                    <label class="control-label">{{form_obj.severity_level.value|get_severity_level:form_obj.severity_level.value
-                                                                        }}</label>
+                                                                    <label class="control-label">{{form_obj.severity_level.value|get_severity_level:form_obj.severity_level.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Defect Classification :</label>
-                                                                <div class="col-sm-9">
-                                                                    <label class="control-label">{{form_obj.defect_classification.value|get_severity_classification:form_obj.defect_classification.value
-                                                                        }}</label>
+                                                                <div class="col-sm-9"><label class="control-label">{{form_obj.defect_classification.value|get_severity_classification:form_obj.defect_classification.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Is Fixed :</label>
                                                                 <div class="col-sm-9">
-                                                                    <label class="control-label">{{form_obj.is_fixed|yesno:"Yes,No"}}</label>
+                                                                    <label class="control-label">
+                                                                        {{form_obj.is_fixed.value|get_fixed_status:form_obj.is_fixed.value}}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Fixed By :</label>
                                                                 <div class="col-sm-9">
-                                                                    <label class="control-label">{{form_obj.fixed_by.value|default:"--"
-                                                                        }}</label>
+                                                                    <label class="control-label">{% if
+                                                                        form_obj.fixed_by.value
+                                                                        %}{{form_obj.fixed_by.value}} {% endif
+                                                                        %}</label>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -295,9 +297,11 @@
 
                         </table>
                          <div class="panel-footer clearfix">
-                 <input type="submit"  id="form-submit"  value="submit" class="btn btn-info btn-sm pull-right"/>
+                             <input type="submit" id="form-submit" value="submit"
+                                    class="btn btn-info btn-sm pull-right"/>
                 <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#reviewComplete">Review Completed</div>
-                <input type="button" class="btn btn-info btn-sm pull-right" id="add_button" value="Add Item" />
+                             <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                    value="Add Item" {% if request.session.author_logged_in %} disabled {% endif %}/>
 
             </div>
 </form>
@@ -402,7 +406,6 @@
 
 
 <script type="text/javascript">
-    
 
         $(function() {
 
@@ -472,50 +475,56 @@
           scrollCollapse: true
         });*/
 
-        });// End of document ready
 
-$('.defect').change(function(){
-    var obj_id = this.id.split('-');
-    $.ajax({
-            url: '/qms/fetch_severity/',
-            type: 'GET',
-            dataType :'json',
-            data: {"template_id": $('#template_id').val() , "severity_type" :  $(this).val() ,"active_tab" :$('#active_tab').val() },
-            success: function (data) {
-                var output = [];
+$('.defect').change(function(e){
+    if( $('#is_author').val()) {
+           $('.defect').prop('selectedIndex',1);
+           alert("Sorry You can't Change Severity Type");
+    }
+    else {
+        var obj_id = this.id.split('-');
+        $.ajax({
+                url: '/qms/fetch_severity/',
+                type: 'GET',
+                dataType :'json',
+                data: {"template_id": $('#template_id').val() , "severity_type" :  $(this).val() ,"active_tab" :$('#active_tab').val() },
+                success: function (data) {
+                    var output = [];
 
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
 
-                    if(key == 'severity_level'){
+                        if(key == 'severity_level'){
 
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
-                            value: data[key],
-                            text: data[key],
-                            selected :'selected',
-                        }));
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('readonly',true);
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
+                                value: data[key],
+                                text: data[key],
+                                selected :'selected',
+                            }));
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('readonly',true);
+                        }
+
+                        if(key == 'defect_classification'){
+
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                                value: data[key],
+                                text: data[key],
+                                selected :'selected',
+                            }));
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('readonly',true);
+                        }
+
                     }
-
-                    if(key == 'defect_classification'){
-
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
-                            value: data[key],
-                            text: data[key],
-                            selected :'selected',
-                        }));
-                        $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('readonly',true);
-                    }
-
                 }
-            }
 
 
 
-            },
+                },
 
-    });
+        });
+    }
 });
+ });// End of document ready
 </script>
 
 

@@ -100,7 +100,7 @@ class DefectSeverityLevel(TimeStampAbstractModel):
     severity_type = models.ForeignKey(DefectTypeMaster)
     severity_level = models.ForeignKey(SeverityLevelMaster)
     defect_classification = models.ForeignKey(DefectClassificationMaster)
-    review_group = models.ForeignKey(ReviewGroup)
+    review_master = models.ForeignKey(ReviewMaster)
 
     def __unicode__(self):
         """ return unicode strings """
