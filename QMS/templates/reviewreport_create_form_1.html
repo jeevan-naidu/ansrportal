@@ -187,12 +187,24 @@ function resetBtn(){
 }
 
 
+function assignMandatory(theObj){
+    for (var key in theObj['user_tab']){
+        if(theObj['user_tab'].hasOwnProperty(key)){
+            console.log('the key is ' + key + ' and the value is ' + theObj['user_tab'][key]);
+            the_form_group = $('.form-group span:contains('+ key +')');
+            // console.log(the_form_group);
+        }
+    }
+} 
+
+
 // Main function : populating the DOM
 function populateForm (theObj){
 
     var i = 0 ;
     clearDom();
 
+    console.log(theObj);
 
 theObj['tab_name'] = array_flip(theObj['tab_name'])
 
@@ -238,6 +250,7 @@ $(document).ready(function(){
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
                     populateForm(data);
+                    assignMandatory(data);
                 },
 
             });
