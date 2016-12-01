@@ -158,7 +158,7 @@ var clearDom = function(){
              $('.qms-allocators,.qms-add-field ,.submit').show();
 
         }
-        else { $('.qms-allocators,.submit').show();
+        else { $('.qms-allocators,.submit,.qms-add-field').show();
 
         }
       }
@@ -243,6 +243,13 @@ $(document).ready(function(){
     });
 
     $(':input[name$=author]').on('change', function()  {
+
+        // Clearing the optional fields list
+
+        $('#select-field').html('The end');
+        $('#qms-add-field').prop('disabled', true);
+
+
         if($(this).val() !='') {
               $.ajax({
                 url: '/qms/get_template_process_review/',
