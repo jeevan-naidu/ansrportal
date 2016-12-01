@@ -156,7 +156,7 @@
         <div class="col-sm-12">
           <h4 style="margin-top: 15px">Leave Report Summary</h4>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
           <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
         </div>
 
@@ -167,7 +167,7 @@
 <tr>
               <td>Week</td>
               <td>Available</td>
-              <td>Absent</td>
+              <td>Leave</td>
               <td>Holiday</td>  
 </tr>
               {% for val in  weekreport%}
@@ -226,8 +226,8 @@
       stacked: true,
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
-      labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#4d8468", "#fd3c3c","#e2e2e2"]
+      labels: ['Available', 'Leave', 'Holiday'],
+      barColors: ["#006400", "#e95427","#F4A460"]
     });
 
   }// Calling Bar Chart
@@ -375,7 +375,7 @@ function monthchange(month){
 
 .leave-report-table{margin-top: 0px !important;}
 .leave-report-table div.indicator{
-    background: #4d8468;
+    background: #006400;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -385,9 +385,9 @@ function monthchange(month){
 .table.leave-report-table tfoot{background: #fdfdfd}
 
 /*#bar-placeholder{margin-top: 10%}*/
-div.indicator.absent{background-color: #fd3c3c;}
-div.indicator.halfday{background-color: #99d0b4;}
-div.indicator.holiday{background-color: #e2e2e2;}
+div.indicator.absent{background-color: #e95427;}
+div.indicator.halfday{background-color: #55b439;}
+div.indicator.holiday{background-color: #F4A460;}
 table.dataTable.leave-report-table thead .sorting{
     text-align: left;
 }
@@ -417,10 +417,10 @@ table.dataTable.leave-report-table thead .sorting{
     border: 1px solid #bfbfbf;
     color: #fff;
 }
-.legend-available{background: #4d8468;border-color: #4d8468;}
-.legend-halfday{background: #99d0b4;border-color: #99d0b4;}
-.legend-holiday{background: #e2e2e2;border-color:#e2e2e2;}
-.legend-absent{background: #fd3c3c;border-color: #fd3c3c;}
+.legend-available{background: #006400;border-color: #006400;}
+.legend-halfday{background: #55b439;border-color: #55b439;}
+.legend-holiday{background: #F4A460;border-color:#F4A460;}
+.legend-absent{background: #e95427;border-color: #e95427;}
 
 .lr-week-details{margin-bottom: 15px;}
 .lr-week-details p{
@@ -442,9 +442,9 @@ table.dataTable.leave-report-table thead .sorting{
   border: 1px solid #e4e4e4;
   padding: 2px 5px;
 }
-.lr-summary-table td.available{text-align:center; background: #4d8468;}
-.lr-summary-table td.holiday{text-align:center; background: #e2e2e2;}
-.lr-summary-table td.absent{text-align:center; background: #fd3c3c}
+.lr-summary-table td.available{text-align:center; background: #006400;}
+.lr-summary-table td.holiday{text-align:center; background: #F4A460;}
+.lr-summary-table td.absent{text-align:center; background: #e95427}
 .inline-block{display: inline-block}
 
 .dropdown-menu a{cursor: pointer;}

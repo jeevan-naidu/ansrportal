@@ -6,7 +6,7 @@
         <div class="col-sm-12">
           <h4 style="margin-top: 15px">Leave Report Summary</h4>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
           <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
         </div>
 
@@ -17,7 +17,7 @@
 <tr>
               <td>Week</td>
               <td>Available</td>
-              <td>Absent</td>
+              <td>Leave</td>
               <td>Holiday</td>  
 </tr>
               {% for val in  weekreport%}
@@ -68,8 +68,8 @@
       stacked: true,
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
-      labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#4d8468", "#fd3c3c","#e2e2e2"]
+      labels: ['Available', 'Leave', 'Holiday'],
+      barColors: ["#006400", "#e95427","#F4A460"]
     });
 
   }// Calling Bar Chart
