@@ -343,7 +343,7 @@ class ReviewReportManipulationView(AssessmentView):
                     report.review_item = obj['review_item']
                     report.defect = obj['defect']
                     #  below is backend check preventing author from changing severity type
-                    obj['severity_type'] = report.severity_type
+                    # obj['severity_type'] = report.defect_severity_level.severity_type
                 report.is_fixed = obj['is_fixed']
                 report.remarks = obj['remarks']
                 if len(obj['remarks']) > 0:
