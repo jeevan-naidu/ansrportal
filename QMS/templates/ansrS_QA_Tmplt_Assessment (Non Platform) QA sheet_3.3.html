@@ -167,7 +167,7 @@
                                         <td class="" id="defect-{{forloop.counter}}-td">
                                             {{form_obj.defect}}
                                         </td>
-                                        <td class="disabled-defect" id="severity_type-{{forloop.counter}}-td">
+                                        <td id="severity_type-{{forloop.counter}}-td">
                                             {{form_obj.severity_type}}
                                             <div></div>
 
@@ -257,7 +257,8 @@
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Fixed By :</label>
                                                                 <div class="col-sm-9">
-                                                                    <label class="control-label">{% if
+                                                                    <label class="control-label">
+                                                                        {% if
                                                                         form_obj.fixed_by.value%}{{form_obj.fixed_by.value}}{%
                                                                         endif%}</label>
                                                                 </div>
@@ -409,12 +410,13 @@
         $(function() {
             if( $('#is_author').val() === 'True') {
                 $('[name$=review_item], [name$=defect]').prop('readonly',true);
+                $('[id^=severity_type]').addClass('disabled-defect');
             }
-         $('.view_button').click(function(){
+            $('.view_button').click(function(){
             var view_details = $(this).siblings(".view_details").html();
             $("#viewModal").html(view_details);
             $('.modal-body').addClass('clearfix');
-        });
+            });
             $("#add_button").on('click', function() {
                 var $tr    = $('#review_report_table tr:last')
                 var $clone = $tr.clone( true, true );
