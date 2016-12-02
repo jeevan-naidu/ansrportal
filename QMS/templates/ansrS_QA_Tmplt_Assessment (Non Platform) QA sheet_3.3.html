@@ -157,7 +157,9 @@
                                 {{review_formset.management_form}}
                                     {% for form_obj in review_formset%}
                                     <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
-                                        <td id="sr-{{forloop.counter}}-td">{{forloop.counter}}</td>
+                                        <td id="sr-{{forloop.counter}}-td">
+                                            {{forloop.counter}}
+                                        </td>
                                         <td class="" id="review_item-{{forloop.counter}}-td">
                                             {{form_obj.review_item}} {{form_obj.qms_id}}
                                         </td>
@@ -165,8 +167,9 @@
                                         <td class="" id="defect-{{forloop.counter}}-td">
                                             {{form_obj.defect}}
                                         </td>
-                                        <td class="" id="severity_type-{{forloop.counter}}-td">
+                                        <td class="disabled-defect" id="severity_type-{{forloop.counter}}-td">
                                             {{form_obj.severity_type}}
+                                            <div></div>
 
                                         </td>
                                         <td class="" id="severity_level-{{forloop.counter}}-td">
@@ -565,6 +568,17 @@ $('.defect').change(function(e){
 #review_report_table.table>thead>tr>th, #review_report_table.table>tbody>tr>th, #review_report_table.table>tfoot>tr>th, #review_report_table.table>thead>tr>td, #review_report_table.table>tbody>tr>td, #review_report_table.table>tfoot>tr>td{padding: 4px 15px }
 #review_report_table{margin-bottom: 0px;}
 #review_report_table.table .menu-action .menu-icon{margin-top: -3px;}
+
+/* Disabling defect type */
+
+td.disabled-defect{position: relative;}
+td.disabled-defect div{
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
 
 td[id*='review_item'] input{width: 40px;}
 
