@@ -92,7 +92,7 @@ class BaseAssessmentTemplateForm(forms.Form):
 
     class Meta:
         model = QASheetHeader
-        fields = ('project', 'chapter', 'author',)
+        fields = ('project', 'chapter', 'author', 'order')
 
     def __init__(self, *args, **kwargs):
         super(BaseAssessmentTemplateForm, self).__init__(*args, **kwargs)

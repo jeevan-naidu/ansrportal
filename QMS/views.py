@@ -36,8 +36,8 @@ class ChooseTabs(FormView):
             ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
                                                               project=form.cleaned_data['project'],
                                                               qms_process_model=form.cleaned_data['qms_process_model'])
-        except:
-            pass
+        except Exception, e:
+            logger.error(" {0} ".format(str(e)))
 
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
                                                                            component=form.cleaned_data['component'],
@@ -69,7 +69,7 @@ def get_review(obj):
         s = ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True). \
             values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
                    'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
-                   'is_fixed', 'fixed_by__username', 'remarks')
+                   'is_fixed', 'fixed_by__username', 'remarks', 'order')
     except Exception, e:
         s = None
         print str(e)
@@ -124,6 +124,7 @@ def get_template_process_review(request):
     tab_name = {}
     team_members = {}
     user_tab = {}
+    tab_order = {}
     try:
 
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
@@ -147,13 +148,16 @@ def get_template_process_review(request):
                     tab_user = None
                 if tab_user is not None:
                     user_tab[str(ele.review_group)] = int(tab_user.reviewed_by.id)
+                    tab_order[str(ele.review_group)] = int(tab_user.order)
                 else:
                     user_tab[str(ele.review_group)] = None
+                    tab_order[str(ele.review_group)] = None
 
     except ObjectDoesNotExist:
         tabs = team_members = tab_name = ''
-    context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab}
-    # print context_data
+    context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
+                    'tab_order': tab_order}
+    print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"

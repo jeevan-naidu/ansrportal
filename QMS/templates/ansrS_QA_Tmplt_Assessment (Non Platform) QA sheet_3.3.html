@@ -295,7 +295,8 @@
                             </tbody>
 
 
-                        </table>
+                         </table>
+                         {%if review_formset %}
                          <div class="panel-footer clearfix">
                              <input type="submit" id="form-submit" value="submit"
                                     class="btn btn-info btn-sm pull-right"/>
@@ -303,7 +304,8 @@
                              <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
                                     value="Add Item" {% if request.session.author_logged_in %} disabled {% endif %}/>
 
-            </div>
+                         </div>
+                         {%endif %}
 </form>
 
 
