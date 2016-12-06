@@ -13,31 +13,31 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">July<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
 
-                          <li><a onclick="monthchange(1)">January</a></li>
-                          <li><a onclick="monthchange(2)">February</a></li>
-                          <li><a onclick="monthchange(3)">March</a></li>
-                          <li><a onclick="monthchange(4)">April</a></li>
-                          <li><a onclick="monthchange(5)">May</a></li>
-                          <li><a onclick="monthchange(6)">June</a></li>
-                          <li><a onclick="monthchange(7)">July</a></li>
-                          <li><a onclick="monthchange(8)">August</a></li>
-                          <li><a onclick="monthchange(9)">September</a></li>
-                          <li><a onclick="monthchange(10)">October</a></li>
-                          <li><a onclick="monthchange(11)">November</a></li>
-                          <li><a onclick="monthchange(12)">December</a></li>
+                        <li><a onclick="monthchange(1, '{{ team }}')">January</a></li>
+                          <li><a onclick="monthchange(2, '{{ team }}')">February</a></li>
+                          <li><a onclick="monthchange(3, '{{ team }}')">March</a></li>
+                          <li><a onclick="monthchange(4, '{{ team }}')">April</a></li>
+                          <li><a onclick="monthchange(5, '{{ team }}')">May</a></li>
+                          <li><a onclick="monthchange(6, '{{ team }}')">June</a></li>
+                          <li><a onclick="monthchange(7, '{{ team }}')">July</a></li>
+                          <li><a onclick="monthchange(8, '{{ team }}')">August</a></li>
+                          <li><a onclick="monthchange(9, '{{ team }}')">September</a></li>
+                          <li><a onclick="monthchange(10, '{{ team }}')">October</a></li>
+                          <li><a onclick="monthchange(11, '{{ team }}')">November</a></li>
+                          <li><a onclick="monthchange(12, '{{ team }}')">December</a></li>
 
                         </ul>
                       </div>
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Week 2<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">{{ week_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
-                          <li><a onclick="weekchange({{ forloop.counter }}, {{ month }})">Week {{ forloop.counter }}</a></li>
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')">Week {{ forloop.counter }}</a></li>
                             {% endfor %}
 
                         </ul>
@@ -45,10 +45,10 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">My Peers<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
-                          <li><a href="#">My Team</a></li>
-                          <li><a href="#">My Peers</a></li>
+                         <li><a onclick="monthchange({{ month }}, 'myteam')">My Team</a></li>
+                          <li><a onclick="monthchange({{ month }}, 'peers')">My Peers</a></li>
                         </ul>
                       </div>
 

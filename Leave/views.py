@@ -1192,7 +1192,16 @@ def report(request):
     context['startdate'] = weekdetail(1, month)
     context['enddate'] = context['startdate'] + timedelta(5)
     context['month'] = month
+    context['month_in_english'] = month_in_english(month)
+    context['week_in_english'] = "Week 1"
+    context['team_data'] = "My Team"
     return render(request, 'leavereport.html', context)
+
+
+def month_in_english(month):
+    month_list = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+                  'September', 'October', 'November', 'December']
+    return month_list[month]
 
 
 def leavereportweeklybasedonuser(month, userlist, week):
@@ -1232,8 +1241,6 @@ def weekdetail(week, month):
 
 
 def weekwisereport(month, userlist):
-    # import ipdb;
-    # ipdb.set_trace()
     weekreport = []
     weekreportdetail = {}
     currentmontdetail = monthrange(date.today().year, month)
@@ -1395,10 +1402,13 @@ def leavecheck(user, date):
     return flag
 
 def monthwisedata(request):
-    # import ipdb; ipdb.set_trace()
     month = int(request.GET.get('month'))
     context = {}
     user = request.user.id
+    team = request.GET.get('team')
+    if team == 'peers':
+        manager_detail = Employee.objects.get(user_id=user)
+        user = Employee.objects.get(employee_assigned_id=manager_detail.manager.employee_assigned_id).user_id
     manager = Employee.objects.get(user_id=user)
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
     userid = [user.user_id for user in userlist]
@@ -1406,6 +1416,7 @@ def monthwisedata(request):
     context['weekreport'] = weekwisereport(month, userlist)
     context['startdate'] = weekdetail(1, month)
     context['enddate'] = context['startdate'] + timedelta(5)
+    context['team'] = team
     return render(request, 'monthlyreport.html', context)
 
 def weekwisedata(request):
@@ -1413,6 +1424,12 @@ def weekwisedata(request):
     week = int(request.GET.get('week'))
     month = int(request.GET.get('month'))
     user = request.user.id
+    team = request.GET.get('team')
+    context['team_data'] = "My Team"
+    if team == 'peers':
+        manager_detail = Employee.objects.get(user_id=user)
+        user = Employee.objects.get(employee_assigned_id=manager_detail.manager.employee_assigned_id).user_id
+        context['team_data'] = "My Peers"
     manager = Employee.objects.get(user_id=user)
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
     userid = [user.user_id for user in userlist]
@@ -1423,6 +1440,9 @@ def weekwisedata(request):
     context['startdate'] = weekdetail(week, month)
     context['enddate'] = context['startdate'] + timedelta(5)
     context['month'] = month
+    context['team'] = team
+    context['month_in_english'] = month_in_english(month)
+    context['week_in_english'] = "Week 1"
     return render(request, 'weeklyreport.html', context)
 
 def adminleavecancel(request):
