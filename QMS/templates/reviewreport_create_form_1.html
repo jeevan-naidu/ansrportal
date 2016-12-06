@@ -342,6 +342,10 @@ $(':input[name$=component]').change(function(){
 
 })//./doc.ready    
 
+$(':input[name$=project]').on('change', function() {
+        $('.reset_field ').val(null).trigger('change');
+        $(".qms-allocators").empty();
+});
 </script>
 
 

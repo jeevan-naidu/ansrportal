@@ -114,9 +114,9 @@ class BaseAssessmentTemplateForm(forms.Form):
         #     #     except:
         #     #         project_obj = project_id
         # #     self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
-        self.fields['project'].widget.attrs['class'] = "filter_form"
-        self.fields['chapter'].widget.attrs['class'] = "filter_form"
-        self.fields['author'].widget.attrs['class'] = "filter_form"
+        self.fields['project'].widget.attrs['class'] = " filter_form"
+        self.fields['chapter'].widget.attrs['class'] = "reset_field , filter_form"
+        self.fields['author'].widget.attrs['class'] = " reset_field ,filter_form"
 
 
 class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
@@ -154,6 +154,8 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
         # print"init"
         super(ChooseMandatoryTabsForm, self).__init__(*args, **kwargs)
         self.fields['author'].widget.attrs['class'] = 'author_dropdown'
+        self.fields['qms_process_model'].widget.attrs['class'] = 'reset_field ,author_dropdown'
+        self.fields['template'].widget.attrs['class'] = 'reset_field , author_dropdown'
         # project_id_field = self.fields['project'].initial \
         #                    or self.initial.get('project') \
         #                    or self.fields['project'].widget.value_from_datadict(self.data, self.files,

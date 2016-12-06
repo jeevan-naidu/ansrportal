@@ -205,7 +205,7 @@ class AssessmentView(TemplateView):
                 #     messages.error(self.request, "Sorry No Records Found")
                 #     return HttpResponseRedirect(reverse('qms'))
 
-                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=project)
+                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=request.session['project'])
                 template_id = request.session['template_id'] = template_obj.id
                 request.session['QA_sheet_header_id'] = obj.id
                 defect_master = DefectTypeMaster.objects.all()
@@ -290,7 +290,11 @@ class AssessmentView(TemplateView):
                 defect_density[k] = 0
 
         total_count = sum(severity_count.itervalues())
-        total_score = 100 - sum(tmp_weight.itervalues())
+        weight = sum(tmp_weight.itervalues())
+        if weight != 0:
+            total_score = 100 - sum(tmp_weight.itervalues())
+        else:
+            total_score = 0
         total_defect_density = sum(defect_density.itervalues())
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
