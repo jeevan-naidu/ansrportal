@@ -62,7 +62,7 @@ def report_based_on_manger(user_list, manager, week):
                                  'enddate': end, 'timesheet_report_list': timesheet_report_list})
 
     mail_obj = EmailMessage('TimeSheet Status Report for Week ' + str(start), msg_html,
-                            settings.EMAIL_HOST_USER, ['shalini.bhagat@ansrsource.com'], cc=['vivek.pradhan@ansrsource.com'])
+                            settings.EMAIL_HOST_USER, [manager.email], cc=[])
     mail_obj.content_subtype = 'html'
     if timesheet_report_list:
         email_status = mail_obj.send()
