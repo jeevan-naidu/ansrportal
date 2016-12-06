@@ -1,7 +1,8 @@
 from django.contrib import admin
 from CompanyMaster.models import OfficeLocation, CustomerType,\
     DataPoint, Division, BusinessUnit, Holiday, Customer, Training, HRActivity,\
-    Country, Currency, Region, Company, CustomerGroup
+    Country, Currency, Region, Company, CustomerGroup, Department, PnL, Practice,\
+    SubPractice, CareerBand, Role, Designation, KRA
 
 
 class DivisionInline(admin.TabularInline):
@@ -67,6 +68,38 @@ class CompanyAdmin(admin.ModelAdmin):
 class CustomerGroupAdmin(admin.ModelAdmin):
     list_display = ('customer_group_code', 'customer_group_name', 'is_active')
 
+
+class PnLAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'owner', 'is_active')
+
+
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'is_active')
+
+
+class PracticeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'department', 'head', 'sub_practice', 'is_active')
+
+
+class DesignationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'role', 'career_band_code', 'is_active')
+
+
+class KRAAdmin(admin.ModelAdmin):
+    list_display = ('designation', 'series', 'narration', 'is_active')
+
+
+class CareerBandAdmin(admin.ModelAdmin):
+    list_display = ('code', 'description', 'is_active')
+
+
+class SubPracticeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'practice', 'is_active')
+
+
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'head', 'billable', 'practices', 'is_active')
+
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(CustomerType, CustomerTypeAdmin)
 admin.site.register(Holiday, HolidayAdmin)
@@ -80,4 +113,14 @@ admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Company, CompanyAdmin)
 admin.site.register(CustomerGroup, CustomerGroupAdmin)
+admin.site.register(PnL, PnLAdmin)
+admin.site.register(Role, RoleAdmin)
+admin.site.register(Practice, PracticeAdmin)
+admin.site.register(Designation, DesignationAdmin)
+admin.site.register(KRA, KRAAdmin)
+admin.site.register(CareerBand, CareerBandAdmin)
+admin.site.register(SubPractice, SubPracticeAdmin)
+admin.site.register(Department, DepartmentAdmin)
+
+
 

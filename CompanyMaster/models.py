@@ -7,6 +7,14 @@ CENTERFLAG = (
     ('C', 'Cost Center'),
 )
 
+class UpdateDate(models.Model):
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+
+    class Meta:
+        abstract = True
 
 # Create your models here.
 class CustomerType(models.Model):
@@ -163,15 +171,28 @@ class Training(models.Model):
         return self.exercise + ' - ' + self.batch
 
 
-class Department(models.Model):
+class Department(UpdateDate):
+    code = models.CharField(
+        verbose_name="Department Code",
+        max_length=10,
+    )
     name = models.CharField(
         verbose_name="Department Name",
-        max_length=40,
+        max_length=20,
         blank=False)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
+    head = models.ForeignKey(
+        User,
+        verbose_name="Department Head"
+    )
+    billable = models.BooleanField(
+        verbose_name="Is Billable",
+    )
+    practices = models.BooleanField(
+        verbose_name="Is Practices",
+    )
+    is_active = models.BooleanField(
+        verbose_name="Is Active",
+    )
 
     def __unicode__(self):
         return self.name
@@ -370,6 +391,169 @@ class Company(models.Model):
     class Meta:
         verbose_name = 'Company'
         verbose_name_plural = 'Companies'
+
+
+class PnL(models.Model):
+    name = models.CharField(
+        verbose_name="PnL Name",
+        max_length=20,
+    )
+    description = models.CharField(
+        verbose_name="PnL Description",
+        max_length=40,
+        blank=True,
+        null=True
+    )
+    owner = models.ForeignKey(User)
+    is_active = models.BooleanField(
+        verbose_name="Is Active"
+    )
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'PNL'
+        verbose_name_plural = 'PNLS'
+
+
+class Practice(models.Model):
+    code = models.CharField(
+        verbose_name="Practice Code",
+        max_length=10,
+    )
+    name = models.CharField(
+        verbose_name="Practice Name",
+        max_length=20,
+    )
+    department = models.ForeignKey(Department,
+                                   blank=True,
+                                   null=True
+                                   )
+    head = models.ForeignKey(User)
+    sub_practice = models.BooleanField(
+        verbose_name="Sub Practice",
+    )
+    is_active = models.BooleanField(
+        verbose_name="Is Active",
+        max_length=40,
+    )
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Practice'
+        verbose_name_plural = 'Practices'
+
+
+class SubPractice(models.Model):
+    code = models.CharField(
+        verbose_name="Sub Practice Code",
+        max_length=40,
+    )
+    name = models.CharField(
+        verbose_name="Sub Practice Name",
+        max_length=40,
+    )
+    practice = models.ForeignKey(Practice)
+    is_active = models.BooleanField(
+        verbose_name="Is Active"
+    )
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Sub Practice'
+        verbose_name_plural = 'Sub Practices'
+
+class CareerBand(models.Model):
+    code = models.CharField(
+        verbose_name="Career Band Code",
+        max_length=40,
+    )
+    description = models.CharField(
+        verbose_name="Career Band Name",
+        max_length=40,
+        blank=True,
+        null=True
+    )
+    is_active = models.BooleanField(
+        verbose_name="Is Active",
+    )
+
+    def __unicode__(self):
+        return self.code
+
+    class Meta:
+        verbose_name = 'Career Band'
+        verbose_name_plural = 'Career Bands'
+
+
+class Role(models.Model):
+    code = models.CharField(
+        verbose_name="Role Code",
+        max_length=10,
+    )
+    name = models.CharField(
+        verbose_name="Role Name",
+        max_length=20,
+    )
+    is_active = models.BooleanField(
+        verbose_name="Is Active",
+    )
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Role'
+        verbose_name_plural = 'Roles'
+
+
+class Designation(models.Model):
+    name = models.CharField(
+        verbose_name="Designation Name",
+        max_length=40,
+    )
+    role = models.ForeignKey(Role)
+    career_band_code = models.CharField(
+        verbose_name="Career Band Code",
+        max_length=10,
+    )
+    is_active = models.BooleanField(
+        verbose_name="Is Active",
+    )
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Designation'
+        verbose_name_plural = 'Designations'
+
+class KRA(models.Model):
+    designation = models.ForeignKey(Designation)
+    series = models.IntegerField()
+    narration = models.CharField(
+        verbose_name="KRA Narration",
+        max_length=40,
+    )
+    is_active = models.BooleanField(
+        verbose_name="Is Active"
+    )
+
+    def __unicode__(self):
+        return self.narration
+
+    class Meta:
+        verbose_name = 'KRA'
+        verbose_name_plural = 'KRAs'
+
+
+
+
 
 
 
