@@ -92,7 +92,7 @@ class BaseAssessmentTemplateForm(forms.Form):
 
     class Meta:
         model = QASheetHeader
-        fields = ('project', 'chapter', 'author', 'order')
+        fields = ('project', 'chapter', 'author', 'order_number')
 
     def __init__(self, *args, **kwargs):
         super(BaseAssessmentTemplateForm, self).__init__(*args, **kwargs)
@@ -154,6 +154,8 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
         # print"init"
         super(ChooseMandatoryTabsForm, self).__init__(*args, **kwargs)
         self.fields['author'].widget.attrs['class'] = 'author_dropdown'
+        self.fields['author'].widget.attrs['disabled'] = True
+
         self.fields['qms_process_model'].widget.attrs['class'] = 'reset_field ,author_dropdown'
         self.fields['template'].widget.attrs['class'] = 'reset_field , author_dropdown'
         # project_id_field = self.fields['project'].initial \

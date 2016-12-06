@@ -275,7 +275,7 @@ $(':input[name$=component]').change(function(){
             success: function (data) {
                 for (var key in data) {
                     if (data.hasOwnProperty(key)) {
-
+                        $(':input[name$=author]').removeAttr("disabled");
                         if(key == 'team_members'){
                             $(':input[name$=author]').append($('<option>', {
                                     value: "",

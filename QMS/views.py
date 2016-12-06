@@ -69,7 +69,7 @@ def get_review(obj):
         s = ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True). \
             values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
                    'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
-                   'is_fixed', 'fixed_by__username', 'remarks', 'order')
+                   'is_fixed', 'fixed_by__username', 'remarks', 'order_number')
     except Exception, e:
         s = None
         print str(e)
@@ -148,7 +148,7 @@ def get_template_process_review(request):
                     tab_user = None
                 if tab_user is not None:
                     user_tab[str(ele.review_group)] = int(tab_user.reviewed_by.id)
-                    tab_order[str(ele.review_group)] = int(tab_user.order)
+                    tab_order[str(ele.review_group)] = int(tab_user.order_number)
                 else:
                     user_tab[str(ele.review_group)] = None
                     tab_order[str(ele.review_group)] = None
@@ -190,8 +190,8 @@ class AssessmentView(TemplateView):
             try:
                 # print "im in try"
                 # print project, chapter, author, active_tab
-
-                request.session['project'] = project
+                if project:
+                    request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
                 request.session['component'] = component

@@ -139,8 +139,8 @@ class QASheetHeader(TimeStampAbstractModel):
         null=False,
         verbose_name=" Is author feedback Completed "
     )
-    order = models.IntegerField(blank=False,
-                                verbose_name="Review tab Order", null=False)
+    order_number = models.IntegerField(blank=False,
+                                       verbose_name="Review tab Order", null=False)
     history = HistoricalRecords()
 
     def __unicode__(self):
