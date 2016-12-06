@@ -13,7 +13,7 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Month<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">July<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
 
                           <li><a onclick="monthchange(1)">January</a></li>
@@ -34,7 +34,7 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Week<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Week 2<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
                           <li><a onclick="weekchange({{ forloop.counter }}, {{ month }})">Week {{ forloop.counter }}</a></li>
@@ -45,7 +45,7 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Team<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">My Peers<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                           <li><a href="#">My Team</a></li>
                           <li><a href="#">My Peers</a></li>

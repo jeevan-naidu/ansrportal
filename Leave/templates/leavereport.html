@@ -25,7 +25,7 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Month<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">July<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
 
                           <li><a onclick="monthchange(1)">January</a></li>
@@ -46,7 +46,7 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Week<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Week 2<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
                               <li><a onclick="weekchange({{ forloop.counter }}, {{ month }})">Week {{ forloop.counter }}</a></li>
@@ -57,7 +57,7 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Select Team<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">My Peers<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                           <li><a href="#">My Team</a></li>
                           <li><a href="#">My Peers</a></li>
@@ -227,7 +227,7 @@
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
       labels: ['Available', 'Leave', 'Holiday'],
-      barColors: ["#006400", "#e95427","#F4A460"]
+      barColors: ["#55b439", "#e95427","#F4A460"]
     });
 
   }// Calling Bar Chart
@@ -375,7 +375,7 @@ function monthchange(month){
 
 .leave-report-table{margin-top: 0px !important;}
 .leave-report-table div.indicator{
-    background: #006400;
+    background: #55b439;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -386,7 +386,7 @@ function monthchange(month){
 
 /*#bar-placeholder{margin-top: 10%}*/
 div.indicator.absent{background-color: #e95427;}
-div.indicator.halfday{background-color: #55b439;}
+div.indicator.halfday{background-color: #b7efa7;}
 div.indicator.holiday{background-color: #F4A460;}
 table.dataTable.leave-report-table thead .sorting{
     text-align: left;
@@ -417,8 +417,8 @@ table.dataTable.leave-report-table thead .sorting{
     border: 1px solid #bfbfbf;
     color: #fff;
 }
-.legend-available{background: #006400;border-color: #006400;}
-.legend-halfday{background: #55b439;border-color: #55b439;}
+.legend-available{background: #55b439;border-color: #55b439;}
+.legend-halfday{background: #b7efa7;border-color: #b7efa7;}
 .legend-holiday{background: #F4A460;border-color:#F4A460;}
 .legend-absent{background: #e95427;border-color: #e95427;}
 
@@ -442,7 +442,7 @@ table.dataTable.leave-report-table thead .sorting{
   border: 1px solid #e4e4e4;
   padding: 2px 5px;
 }
-.lr-summary-table td.available{text-align:center; background: #006400;}
+.lr-summary-table td.available{text-align:center; background: #55b439;}
 .lr-summary-table td.holiday{text-align:center; background: #F4A460;}
 .lr-summary-table td.absent{text-align:center; background: #e95427}
 .inline-block{display: inline-block}
