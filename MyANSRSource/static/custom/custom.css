@@ -269,3 +269,8 @@ legend{border:none !important;}
 /* Hire Module */
 
 span.mandatory-field{color: red}
+
+/* Leave report */
+
+#bar-placeholder .morris-hover.morris-default-style{background: rgb(24, 51, 14)}
+#bar-placeholder .morris-hover-row-label{display: none;}

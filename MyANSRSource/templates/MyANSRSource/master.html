@@ -596,11 +596,6 @@
                                                                     <span class="menu-text">View Requests</span>
                                                                 </a>
                                                             </li>
-                                                            <li>
-                                                                <a href="{% url 'leave_report' %}">
-                                                                    <span class="menu-text">Leave Report</span>
-                                                                </a>
-                                                            </li>
 
                                                             {% if 'check'|IsActiveShortAttendance %}
                                                                 <li>
@@ -609,7 +604,11 @@
 							</a>
                                                             </li>
                                                                         {% endif %}
-
+                                                            <li>
+                                                                <a href="{% url 'leave_report' %}">
+                                                                    <span class="menu-text">Leave Report</span>
+                                                                </a>
+                                                            </li>
                                                         {% endif %}
                                                     </ul>
                                                 </div>

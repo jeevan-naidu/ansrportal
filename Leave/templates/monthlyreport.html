@@ -6,7 +6,7 @@
         <div class="col-sm-12">
           <h4 style="margin-top: 15px">Leave Report Summary</h4>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
           <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
         </div>
 
@@ -14,14 +14,27 @@
 
 
           <table class="lr-summary-table">
+<tr>
+              <td>Week</td>
+              <td>Available</td>
+              <td>Leave</td>
+              <td>Holiday</td>  
+</tr>
               {% for val in  weekreport%}
             <tr>
-              <td>Week {{ forloop.counter }}</td>
-              <td class="available">{{ val.available }}</td>
-              <td class="holiday">{{ val.holiday }}</td>
-              <td class="absent">{{ val.unavailable }}</td>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ val.available }}</td>
+              <td>{{ val.unavailable }}</td>
+              <td>{{ val.holiday }}</td>
             </tr>
               {% endfor %}
+<tr>
+              <td>&nbsp;</td>
+              <td class="available"></td>
+              <td class="absent"></td>
+              <td class="holiday"></td>  
+</tr>
+
 
           </table>
         </div>
@@ -44,15 +57,19 @@
     window.barChart = Morris.Bar({
       element: 'bar-placeholder',
        data: [{% for val in  weekreport%}
-      { y: 'Week {{ forloop.counter }}', a: {{ val.available }}, b: {{ val.unavailable }}, c: {{ val.holiday }} },
+      { y: 'Week {{ forloop.counter }}', 
+      a: ({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}), 
+      b: ({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}), 
+      c: ({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}) 
+    },
           {% endfor %}
       ],
-      hideHover: 'always',
+      hideHover: 'true',
       stacked: true,
       xkey: 'y',
       ykeys: ['a', 'b', 'c'],
-      labels: ['Series A', 'Series B', 'Series C'],
-      barColors: ["#1595a9", "#f56b6b","#929292"]
+      labels: ['Available', 'Leave', 'Holiday'],
+      barColors: ["#006400", "#e95427","#F4A460"]
     });
 
   }// Calling Bar Chart
