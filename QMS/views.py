@@ -190,8 +190,7 @@ class AssessmentView(TemplateView):
             try:
                 # print "im in try"
                 # print project, chapter, author, active_tab
-                if project:
-                    request.session['project'] = project
+                request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
                 request.session['component'] = component
@@ -205,7 +204,7 @@ class AssessmentView(TemplateView):
                 #     messages.error(self.request, "Sorry No Records Found")
                 #     return HttpResponseRedirect(reverse('qms'))
 
-                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=request.session['project'])
+                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=project)
                 template_id = request.session['template_id'] = template_obj.id
                 request.session['QA_sheet_header_id'] = obj.id
                 defect_master = DefectTypeMaster.objects.all()

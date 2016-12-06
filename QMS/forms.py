@@ -7,59 +7,6 @@ from MyANSRSource.models import Project, Chapter, ProjectManager
 from dal import autocomplete
 
 
-#
-# class AssignProjectMember(forms.Form):
-#     project = forms.ModelChoiceField(
-#                 queryset=Project.objects.all(),
-#                 widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
-#                  'data-placeholder': 'Type project Name ...',
-#         }, ),
-#                 required=True, )
-#     template = forms.ModelChoiceField(
-#                 queryset=TemplateMaster.objects.all(),
-#                 widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', attrs={
-#                  'data-placeholder': 'Type Template Name ...',
-#         }, ),
-#                 required=True, )
-#     qms_process_model = forms.ModelChoiceField(
-#                 queryset=QMSProcessModel.objects.all(),
-#                  ),
-#
-#     author = forms.ModelChoiceField(
-#             queryset=User.objects.all(),
-#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
-#              'data-placeholder': 'Type Author Name ...',
-#     }, ),
-#             required=True, )
-#     ER = forms.ModelChoiceField(
-#             queryset=User.objects.all(),
-#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
-#              'data-placeholder': 'Type EA Name ...',
-#     }, ),
-#             required=True, )
-#
-#     EA = forms.ModelChoiceField(
-#             queryset=User.objects.all(),
-#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
-#              'data-placeholder': 'Type EA Name ...',
-#     }, ),
-#             required=True, )
-#
-#     CE = forms.ModelChoiceField(
-#             queryset=User.objects.all(),
-#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',),attrs={
-#              'data-placeholder': 'Type CE Name ...',
-#     }, ),
-#             required=True, )
-#
-#     QA = forms.ModelChoiceField(
-#             queryset=User.objects.all(),
-#             widget=autocomplete.ModelSelect2(url='AutoCompleteAssignUserProjectSpecific', forward=('project',), attrs={
-#              'data-placeholder': 'Type QA Name ...',
-#     }, ),
-#             required=True, )
-
-
 class BaseAssessmentTemplateForm(forms.Form):
     project = forms.ModelChoiceField(
                 queryset=Project.objects.all(),
@@ -92,7 +39,7 @@ class BaseAssessmentTemplateForm(forms.Form):
 
     class Meta:
         model = QASheetHeader
-        fields = ('project', 'chapter', 'author', 'order_number')
+        fields = ('project', 'chapter', 'author', 'component', 'order_number')
 
     def __init__(self, *args, **kwargs):
         super(BaseAssessmentTemplateForm, self).__init__(*args, **kwargs)
@@ -115,8 +62,13 @@ class BaseAssessmentTemplateForm(forms.Form):
         #     #         project_obj = project_id
         # #     self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
         self.fields['project'].widget.attrs['class'] = " filter_form"
-        self.fields['chapter'].widget.attrs['class'] = "reset_field , filter_form"
-        self.fields['author'].widget.attrs['class'] = " reset_field ,filter_form"
+        self.fields['chapter'].widget.attrs['class'] = "reset_field filter_form"
+        self.fields['author'].widget.attrs['class'] = " reset_field filter_form author_dropdown"
+        self.fields['project'].widget.attrs['required'] = True
+        self.fields['chapter'].widget.attrs['required'] = True
+        self.fields['author'].widget.attrs['required'] = True
+        self.fields['component'].widget.attrs['class'] = "filter_form"
+        self.fields['component'].widget.attrs['required'] = True
 
 
 class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
@@ -153,11 +105,14 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
     def __init__(self, *args, **kwargs):
         # print"init"
         super(ChooseMandatoryTabsForm, self).__init__(*args, **kwargs)
-        self.fields['author'].widget.attrs['class'] = 'author_dropdown'
+        # self.fields['author'].widget.attrs['class'] = 'author_dropdown'
         self.fields['author'].widget.attrs['disabled'] = True
 
-        self.fields['qms_process_model'].widget.attrs['class'] = 'reset_field ,author_dropdown'
-        self.fields['template'].widget.attrs['class'] = 'reset_field , author_dropdown'
+        self.fields['qms_process_model'].widget.attrs['class'] = 'reset_field author_dropdown '
+        self.fields['template'].widget.attrs['class'] = 'reset_field author_dropdown'
+        self.fields['qms_process_model'].widget.attrs['required'] = True
+        self.fields['template'].widget.attrs['required'] = True
+
         # project_id_field = self.fields['project'].initial \
         #                    or self.initial.get('project') \
         #                    or self.fields['project'].widget.value_from_datadict(self.data, self.files,
