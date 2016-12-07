@@ -357,7 +357,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
 
 $(':input[name$=project]').on('change', function() {
        if(check_input()) {
-            $('.reset_field ').val(null).trigger('change');
+            $('.reset_field ').not(this).val(null).trigger('change');
             $(".qms-allocators").empty();
        }
 });
