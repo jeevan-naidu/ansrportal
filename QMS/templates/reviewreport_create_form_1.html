@@ -136,6 +136,22 @@
 
 <script type="text/javascript">
 
+var obj_tab_order_1 = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"Editor Review 1":true},
+                "tab_name":{"1":"Editor Review 1","2":"Editor Review 2","3":"Editor Review 3"},
+                "tab_order":{"Editor Review 1":"2","Editor Review 3":"3","Editor Review 2":"0"},
+                "team_members":{"130":"Bhaviya","354":"AkshayFernandes"},
+                "user_tab":{}
+            }
+
+var obj_tab_order = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"Editor Review 1":true},
+                    "tab_name":{"1":"Editor Review 1","2":"Editor Review 2","3":"Editor Review 3"},
+                    "tab_order":{"Editor Review 2":"2","Editor Review 3":"5","Editor Review 1":"4"},
+                    "team_members":{"352":"KanakaPrakash","354":"AkshayFernandes"},
+                    "user_tab":{"Editor Review 2":354,"Editor Review 3":352,"Editor Review 1":354}
+                }                
+
+
+
 // Get the html for .form-group
 var domObj = $('.qms-allocators').html();
 
@@ -251,8 +267,8 @@ function getTabOrder(){
         }
 
         globalObj.tab_order[tab_order_key] = tab_order_value;
-        console.log(globalObj);
     })
+        console.log(globalObj);
 }
 
 // Function to order the tabs
