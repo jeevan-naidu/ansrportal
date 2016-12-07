@@ -172,27 +172,27 @@ class Training(models.Model):
 
 
 class Department(UpdateDate):
-    code = models.CharField(
-        verbose_name="Department Code",
-        max_length=10,
-    )
+    # code = models.CharField(
+    #     verbose_name="Department Code",
+    #     max_length=10,
+    # )
     name = models.CharField(
         verbose_name="Department Name",
         max_length=20,
         blank=False)
-    head = models.ForeignKey(
-        User,
-        verbose_name="Department Head"
-    )
-    billable = models.BooleanField(
-        verbose_name="Is Billable",
-    )
-    practices = models.BooleanField(
-        verbose_name="Is Practices",
-    )
-    is_active = models.BooleanField(
-        verbose_name="Is Active",
-    )
+    # head = models.ForeignKey(
+    #     User,
+    #     verbose_name="Department Head"
+    # )
+    # billable = models.BooleanField(
+    #     verbose_name="Is Billable",
+    # )
+    # practices = models.BooleanField(
+    #     verbose_name="Is Practices",
+    # )
+    # is_active = models.BooleanField(
+    #     verbose_name="Is Active",
+    # )
 
     def __unicode__(self):
         return self.name

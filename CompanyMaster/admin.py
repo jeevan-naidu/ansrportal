@@ -120,7 +120,7 @@ admin.site.register(Designation, DesignationAdmin)
 admin.site.register(KRA, KRAAdmin)
 admin.site.register(CareerBand, CareerBandAdmin)
 admin.site.register(SubPractice, SubPracticeAdmin)
-admin.site.register(Department, DepartmentAdmin)
+# admin.site.register(Department, DepartmentAdmin)
 
 
 
