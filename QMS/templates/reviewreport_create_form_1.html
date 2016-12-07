@@ -240,7 +240,7 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 function getTabOrder(){
     $('.qms-allocators .form-group').each(function(){
         var tab_order_key = $(this).find('.field-name span').html();
-        if(!$(this).find('input.order').val()){
+        if(!$(this).find('input.order-number').val()){
             console.log('has no value ' + $(this).find('input.order-number').val());
         }else {
             console.log('has a value which is ' + $(this).find('input.order-number').val());
@@ -338,6 +338,7 @@ $(':input[name$=component]').change(function(){
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
             $('.qms-allocators .form-group:last-child').find('select').attr('name', 'user_'+theID);
+            $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
 
         }else if (optCount == 1) {
             theField = $('#select-field').val();
@@ -346,6 +347,7 @@ $(':input[name$=component]').change(function(){
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
             $('.qms-allocators .form-group:last-child').find('select').attr('name','user_'+theID);
+            $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
             $('#select-field').html('The end');
             $('#qms-add-field').prop('disabled', true);
 
