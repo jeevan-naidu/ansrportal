@@ -250,7 +250,8 @@ function getTabOrder(){
             console.log('tab_order_value is ' + tab_order_value);
         }
 
-        console.log(tab_order_key);
+        globalObj.tab_order[tab_order_key] = tab_order_value;
+        console.log(globalObj);
     })
 }
 
