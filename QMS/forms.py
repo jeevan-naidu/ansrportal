@@ -67,7 +67,7 @@ class BaseAssessmentTemplateForm(forms.Form):
         self.fields['project'].widget.attrs['required'] = True
         self.fields['chapter'].widget.attrs['required'] = True
         self.fields['author'].widget.attrs['required'] = True
-        self.fields['component'].widget.attrs['class'] = "filter_form"
+        self.fields['component'].widget.attrs['class'] = "filter_form reset_field"
         self.fields['component'].widget.attrs['required'] = True
 
 
