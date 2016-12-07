@@ -226,7 +226,7 @@ function populateForm (theObj){
 
     console.log(theObj);
 
-theObj['tab_name'] = array_flip(theObj['tab_name'])
+    theObj['tab_name'] = array_flip(theObj['tab_name'])
 
     for (var key in theObj['tab_name']) {
 
@@ -257,13 +257,13 @@ function getTabOrder(){
     $('.qms-allocators .form-group').each(function(){
         var tab_order_key = $(this).find('.field-name span').html();
         if(!$(this).find('input.order-number').val()){
-            console.log('has no value ' + $(this).find('input.order-number').val());
+            /*console.log('has no value ' + $(this).find('input.order-number').val());*/
             var tab_order_value = '0';
-            console.log('tab_order_value is ' + tab_order_value);
+            /*console.log('tab_order_value is ' + tab_order_value);*/
         }else {
-            console.log('has a value which is ' + $(this).find('input.order-number').val());
+            /*console.log('has a value which is ' + $(this).find('input.order-number').val());*/
             var tab_order_value = $(this).find('input.order-number').val();
-            console.log('tab_order_value is ' + tab_order_value);
+            /*console.log('tab_order_value is ' + tab_order_value);*/
         }
 
         globalObj.tab_order[tab_order_key] = tab_order_value;
@@ -278,6 +278,16 @@ function orderTabs(){
 
 
 $(document).ready(function(){
+
+
+$('.fa-magic').click(function(){
+        $('.qms-allocators,.submit,.qms-add-field').show();
+        $('#select-field').html('The end');
+        $('#qms-add-field').prop('disabled', true);
+        populateForm(obj_tab_order);
+        assignMandatory(obj_tab_order);
+})
+
 
    $(':input[name$=chapter]').on('change', function()  {
         if($(':input[name$=component]').val()!='') {
