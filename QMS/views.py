@@ -52,7 +52,7 @@ class ChooseTabs(FormView):
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
                                                                   chapter_component=cm_obj,
-                                                                  review_group_id=k,
+                                                                  review_group_id=k, order_number=0,
                                                                   defaults={'reviewed_by_id': v,
                                                                             'created_by': self.request.user}, )
             # print obj, created

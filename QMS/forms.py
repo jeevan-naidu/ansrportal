@@ -61,7 +61,7 @@ class BaseAssessmentTemplateForm(forms.Form):
         #     #     except:
         #     #         project_obj = project_id
         # #     self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
-        self.fields['project'].widget.attrs['class'] = " filter_form"
+        self.fields['project'].widget.attrs['class'] = " reset_field filter_form"
         self.fields['chapter'].widget.attrs['class'] = "reset_field filter_form"
         self.fields['author'].widget.attrs['class'] = " reset_field filter_form author_dropdown"
         self.fields['project'].widget.attrs['required'] = True
