@@ -52,7 +52,7 @@
 
 
                                 <span>{{ form.chapter.errors }} </span>{{form.chapter}}
-                            <span>{{ form.component.errors }} </span>{{form.component}}
+                                <span>{{ form.component.errors }} </span>{{form.component}}
 
 
                                 <span>{{form.author.errors}}</span>{{form.author}}
@@ -109,9 +109,9 @@
                     </div>
 
 
-                    <div class="row submit" style="display:none">
+                    <div class="row submit" style="display:block">
                         <div class="col-sm-12">
-                            <input type="submit" class="btn btn-danger btn-sm pull-right" value="Submit">
+                            <input type="submit" id="qms-submit" class="btn btn-danger btn-sm pull-right" value="Submit">
                         </div>
                     </div>
 
@@ -138,6 +138,8 @@
 
 // Get the html for .form-group
 var domObj = $('.qms-allocators').html();
+
+var globalObj;
 
 // Clear the existing html in .form-group
 var clearDom = function(){
@@ -235,6 +237,25 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 } // end of populate form
 
 
+function getTabOrder(){
+    $('.qms-allocators .form-group').each(function(){
+        var tab_order_key = $(this).find('.field-name span').html();
+        if(!$(this).find('input.order').val()){
+            console.log('has no value ' + $(this).find('input.order-number').val());
+        }else {
+            console.log('has a value which is ' + $(this).find('input.order-number').val());
+        }
+
+        console.log(tab_order_key);
+    })
+}
+
+// Function to order the tabs
+function orderTabs(){
+
+} // end of order tabs functions
+
+
 $(document).ready(function(){
 
    $(':input[name$=chapter]').on('change', function()  {
@@ -260,6 +281,7 @@ $(document).ready(function(){
                 success: function (data) {
                     populateForm(data);
                     assignMandatory(data);
+                    globalObj = data;
                 },
 
             });
@@ -331,13 +353,17 @@ $(':input[name$=component]').change(function(){
     })
 
 
+    
+
+    $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+
+
+
     // Function Calls
 
-
-
-        $(document).ready(function(){
-            $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
-        })
+    $('#qms-submit').mouseover(function(e){
+        getTabOrder();
+    })
 
 
 
