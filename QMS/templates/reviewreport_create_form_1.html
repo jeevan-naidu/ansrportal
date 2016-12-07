@@ -233,7 +233,18 @@ theObj['tab_name'] = array_flip(theObj['tab_name'])
 
 } // end of populate form
 
+function check_input() {
+    var is_set=0;
+    $('.filter_form').each(function(i, obj) {
+            console.log(obj.name+'--'+obj.value);
+            if (obj.value != '') is_set++;
 
+       });
+       if (is_set!=0 && is_set==$('.filter_form').length) return true;
+       else return false;
+
+
+}
 $(document).ready(function(){
 
    $(':input[name$=chapter]').on('change', function()  {
@@ -250,7 +261,7 @@ $(document).ready(function(){
         $('#qms-add-field').prop('disabled', true);
 
 
-        if($(this).val() !='') {
+        if(check_input()) {
               $.ajax({
                 url: '/qms/get_template_process_review/',
                 type: 'GET',
@@ -343,8 +354,10 @@ $(':input[name$=component]').change(function(){
 })//./doc.ready    
 
 $(':input[name$=project]').on('change', function() {
-        $('.reset_field ').val(null).trigger('change');
-        $(".qms-allocators").empty();
+       if(check_input()) {
+            $('.reset_field ').val(null).trigger('change');
+            $(".qms-allocators").empty();
+       }
 });
 </script>
 
