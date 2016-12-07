@@ -242,8 +242,12 @@ function getTabOrder(){
         var tab_order_key = $(this).find('.field-name span').html();
         if(!$(this).find('input.order-number').val()){
             console.log('has no value ' + $(this).find('input.order-number').val());
+            var tab_order_value = '0';
+            console.log('tab_order_value is ' + tab_order_value);
         }else {
             console.log('has a value which is ' + $(this).find('input.order-number').val());
+            var tab_order_value = $(this).find('input.order-number').val();
+            console.log('tab_order_value is ' + tab_order_value);
         }
 
         console.log(tab_order_key);
