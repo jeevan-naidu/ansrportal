@@ -1,4 +1,3 @@
-
 from django.views.generic import View , TemplateView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.shortcuts import render
@@ -25,12 +24,18 @@ class ChooseTabs(FormView):
 
     def form_valid(self, form):
         user_tab = {}
+        order_number = {}
         # print self.request.POST
         users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
+        order = {k: v for k, v in self.request.POST.items() if k.startswith('order_')}
         # print users
         for k, v in users.iteritems():
             tab_id = k.split('_')
             user_tab[tab_id[1]] = v
+
+        for k, v in order.iteritems():
+            order_id = k.split('_')
+            order_number[order_id[1]] = v
 
         # {u'user_3': u'256', u'user_1': u'255'}
 
@@ -54,7 +59,7 @@ class ChooseTabs(FormView):
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
                                                                   chapter_component=cm_obj,
-                                                                  review_group_id=k, order_number=0,
+                                                                  review_group_id=k, order_number=order_number[k],
                                                                   defaults={'reviewed_by_id': v,
                                                                             'created_by': self.request.user}, )
             # print obj, created
@@ -65,30 +70,19 @@ class ChooseTabs(FormView):
 
 
 def get_review(obj):
-    # print "obj"
-    # print obj
     try:
         s = ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True). \
             values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
                    'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
                    'is_fixed', 'fixed_by__username', 'remarks', 'screen_shot')
-    except Exception, e:
+    except Exception as e:
         s = None
-        print str(e)
+        logger.error(" {0} ".format(str(e)))
     return s
 
 
 def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=None):
-    # chapter
-    # u'9635'
-    # author
-    # u'253'
-    # template_name
-    # u'1'
-    # project
-    # u'79'
-    # active_tab
-    # u'2'
+
     try:
         # print chapter, "chapter"
         # print active_tab, "active_tab", project, chapter, author
@@ -98,8 +92,8 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
                 result = QASheetHeader.objects.get(project=project, chapter_component=chapter_component_obj,
                                                    author=author,
                                                    review_group=ReviewGroup.objects.get(id=active_tab))
-            except Exception, e:
-                print str(e)
+            except Exception as e:
+                logger.error(" {0} ".format(str(e)))
                 # print "if"
                 # print result
         else:
@@ -215,8 +209,8 @@ class AssessmentView(TemplateView):
                     print reports
                     # request.session['reports'] = list(reports)
 
-                except reports.ObjectDoesNotExist, e:
-                    print "error " + str(e)
+                except reports.ObjectDoesNotExist as e:
+                    logger.error(" {0} ".format(str(e)))
                     reports = None
                     request.session['template_id'] = template_id = None
 
@@ -226,8 +220,8 @@ class AssessmentView(TemplateView):
             form = BaseAssessmentTemplateForm()
         qms_form = review_report_base(template_id, project)
 
-        qmsData = {}
-        qmsDataList = []
+        qms_data = {}
+        qms_data_list = []
         severity_count = {}
         if reports and len(reports) != 0:
             # print"im in"
@@ -235,26 +229,26 @@ class AssessmentView(TemplateView):
                 # print eachData
                 # count = 0
                 for k, v in eachData.iteritems():
-                    qmsData[k] = v
+                    qms_data[k] = v
                     if k == 'id':
                         r_obj = ReviewReport.objects.get(id=int(v))
                         if r_obj.screen_shot:
-                            qmsData['screen_shot_url'] = r_obj.screen_shot.url
+                            qms_data['screen_shot_url'] = r_obj.screen_shot.url
                             print r_obj.screen_shot.path
                         else:
-                            qmsData['screen_shot_url'] = None
-                        qmsData['qms_id'] = v
+                            qms_data['screen_shot_url'] = None
+                        qms_data['qms_id'] = v
                     if k == 'review_item':
-                        qmsData['review_item'] = v
+                        qms_data['review_item'] = v
 
                     if k == 'defect':
-                        qmsData['defect'] = v
+                        qms_data['defect'] = v
 
                     if k == 'defect_severity_level__severity_type':
-                        qmsData['severity_type'] = v
+                        qms_data['severity_type'] = v
 
                     if k == 'defect_severity_level__severity_level':
-                        qmsData['severity_level'] = v
+                        qms_data['severity_level'] = v
                         if v in severity_count:
                             v = int(v)
                             severity_count[v] += 1
@@ -263,33 +257,33 @@ class AssessmentView(TemplateView):
                             # print count, severity_count, v
 
                     if k == 'defect_severity_level__defect_classification':
-                        qmsData['defect_classification'] = v
+                        qms_data['defect_classification'] = v
 
                     if k == 'is_fixed':
-                        qmsData['is_fixed'] = v
+                        qms_data['is_fixed'] = v
 
                     if k == 'screen_shot':
                         # url = ReviewReport.objects.get(id=obj.id)
-                        qmsData['screen_shot'] = v
+                        qms_data['screen_shot'] = v
                         # if v:
-                        #     qmsData['screen_shot_url'] = v
+                        #     qms_data['screen_shot_url'] = v
 
                     if k == 'fixed_by__username':
-                        qmsData['fixed_by'] = v
+                        qms_data['fixed_by'] = v
 
                     if k == 'remarks':
-                        qmsData['remarks'] = v
-                    # qmsData['clear_screen_shot'] = False
-                # print qmsData
-                qmsDataList.append(qmsData.copy())
+                        qms_data['remarks'] = v
+                    # qms_data['clear_screen_shot'] = False
+                # print qms_data
+                qms_data_list.append(qms_data.copy())
 
-            qmsData.clear()
-        print qmsDataList
+            qms_data.clear()
+        print qms_data_list
         qms_formset = formset_factory(
             qms_form, max_num=1, can_delete=True
         )
 
-        qms_formset = qms_formset(initial=qmsDataList)
+        qms_formset = qms_formset(initial=qms_data_list)
         score = {}
         tmp_weight = {}
         defect_density = {}
@@ -331,15 +325,17 @@ class ReviewReportManipulationView(AssessmentView):
         # print request.FILES
         # print "im in formset post"
         fail = 0
-        qmsData = {}
-        qmsDataList = []
+        qms_data = {}
+        qms_data_list = []
         request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
         # print request.POST.get('active_tab1')
         qms_form = review_report_base(request.session['template_id'], request.session['project'])
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
         )
+
         AllowedFileTypes = ['jpg', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml', 'zip', 'gz', '7z']
+
 
         forbidden_file_type = False
 
@@ -354,11 +350,11 @@ class ReviewReportManipulationView(AssessmentView):
                 else:
                     del(form_elements.cleaned_data['DELETE'])
                     for k, v in form_elements.cleaned_data.iteritems():
-                        qmsData[k] = v
-                    qmsDataList.append(qmsData.copy())
-                    qmsData.clear()
-                    # print qmsDataList
-            for obj in qmsDataList:
+                        qms_data[k] = v
+                    qms_data_list.append(qms_data.copy())
+                    qms_data.clear()
+                    # print qms_data_list
+            for obj in qms_data_list:
                 print obj
                 if obj['qms_id'] > 0:
                     report = ReviewReport.objects.get(id=obj['qms_id'])
@@ -375,10 +371,12 @@ class ReviewReportManipulationView(AssessmentView):
                 if obj['screen_shot']:
                     # extension = os.path.splitext(obj['screen_shot'])[1]
 
+
                     # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in AllowedFileTypes:
                     if obj['screen_shot'].name.split(".")[-1] not in AllowedFileTypes:
 
                         messages.error(request, "You can't upload this file type")
+
 
                         forbidden_file_type = True
 
@@ -420,10 +418,10 @@ class ReviewReportManipulationView(AssessmentView):
                     try:
                         qa_obj.count = int(request.POST.get('questions'))
                         qa_obj.save()
-                    except:
-                        pass
+                    except Exception as e:
+                        logger.error(" {0} ".format(str(e)))
 
-                except DefectSeverityLevel.DoesNotExist, e:
+                except DefectSeverityLevel.DoesNotExist as e:
                     logger.error(" {0} ".format(str(e)))
                     fail += 1
 
@@ -465,21 +463,6 @@ def fetch_severity(request):
         )
 
 
-# def check_for_author(project, chapter):
-#     qs = User.objects.all()
-#
-#     try:
-#         user = QASheetHeader.objects.filter \
-#             (project=project, chapter=chapter).values_list('author', flat=True)[0]
-#
-#         qs = qs.filter(pk=user)
-#
-#     except:
-#         qs = None
-#
-#     return qs
-
-
 def fetch_members(project):
     user = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
     qs = User.objects.filter(pk__in=user)
@@ -495,7 +478,6 @@ def fetch_author(request):
         chapter_component = ChapterComponent.objects.get(chapter=chapter_id, component=component_id)
         author = QASheetHeader.objects.filter(project=project_id,
                                               chapter_component=chapter_component).values_list('author', flat=True)[0]
-
     except:
         author = None
     # obj = User.objects.get(pk=user)
@@ -510,4 +492,3 @@ def fetch_author(request):
         content_type="application/json"
     )
 
-# BaseAssessmentTemplateForm
