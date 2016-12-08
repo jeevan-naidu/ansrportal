@@ -173,6 +173,7 @@ class Training(models.Model):
 
 class Department(UpdateDate):
     code = models.CharField(
+        unique=True,
         verbose_name="Department Code",
         max_length=10,
     )
@@ -419,6 +420,7 @@ class PnL(models.Model):
 
 class Practice(models.Model):
     code = models.CharField(
+        unique=True,
         verbose_name="Practice Code",
         max_length=10,
     )
@@ -449,6 +451,7 @@ class Practice(models.Model):
 
 class SubPractice(models.Model):
     code = models.CharField(
+        unique=True,
         verbose_name="Sub Practice Code",
         max_length=40,
     )
@@ -470,6 +473,7 @@ class SubPractice(models.Model):
 
 class CareerBand(models.Model):
     code = models.CharField(
+        unique=True,
         verbose_name="Career Band Code",
         max_length=40,
     )
@@ -493,6 +497,7 @@ class CareerBand(models.Model):
 
 class Role(models.Model):
     code = models.CharField(
+        unique=True,
         verbose_name="Role Code",
         max_length=10,
     )
@@ -518,9 +523,8 @@ class Designation(models.Model):
         max_length=40,
     )
     role = models.ForeignKey(Role)
-    career_band_code = models.CharField(
-        verbose_name="Career Band Code",
-        max_length=10,
+    career_band_code = models.ForeignKey(
+        CareerBand
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
