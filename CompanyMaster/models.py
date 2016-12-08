@@ -529,6 +529,7 @@ class Designation(models.Model):
     is_active = models.BooleanField(
         verbose_name="Is Active",
     )
+    steps = models.IntegerField(verbose_name="Ladder Step")
 
     def __unicode__(self):
         return self.name
