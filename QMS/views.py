@@ -15,6 +15,23 @@ import logging
 logger = logging.getLogger('MyANSRSource')
 import os.path
 
+try:
+    dict.iteritems
+except AttributeError:
+    # Python 3
+    def itervalues(d):
+        return iter(d.values())
+
+    def iteritems(d):
+        return iter(d.items())
+else:
+    # Python 2
+    def itervalues(d):
+        return d.itervalues()
+
+    def iteritems(d):
+        return d.iteritems()
+
 
 class ChooseTabs(FormView):
     template_name = 'reviewreport_create_form_1.html'
