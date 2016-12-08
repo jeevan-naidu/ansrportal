@@ -234,8 +234,8 @@ function populateForm (theObj){
       if (theObj['tab_name'].hasOwnProperty(key)) {     // opening object
         if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {
             $('.qms-allocators').append(domObj);
-           $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
-
+            $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
+            $('.qms-allocators .form-group:last-child input.order-number').attr('name',  "order_"+key);
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 
             populateNames(theObj);
@@ -464,6 +464,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
             $('.qms-allocators .form-group:last-child').find('select').attr('name', 'user_'+theID);
+            $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
 
         }else if (optCount == 1) {
@@ -473,6 +474,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
             $('.qms-allocators .form-group:last-child').find('select').attr('name','user_'+theID);
+            $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
             $('#select-field').html('The end');
             $('#qms-add-field').prop('disabled', true);
