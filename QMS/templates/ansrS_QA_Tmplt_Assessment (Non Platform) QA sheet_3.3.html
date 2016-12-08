@@ -4,7 +4,7 @@
 {% block siteTitle %}QMS{% endblock %}
 {% block pageTitle %}QMS{% endblock %}
 {% block content  %}
-
+{% load grievances_template_tags %}
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 {{form.media}}
@@ -120,7 +120,7 @@
                 <div class="tab-content mgbt-xs-20">
                     <div class="tab-pane active" id="tab1">
 
-                     <form role="form"  id="review_report_form" method="post" action="{% url 'edit_review' %}">
+                     <form role="form"  id="review_report_form" method="post" enctype="multipart/form-data"  action="{% url 'edit_review' %}">
                         {% csrf_token %}
                          <input type="hidden" name="is_author" id="is_author"
                                 value="{{request.session.author_logged_in}}"/>
@@ -143,6 +143,7 @@
                                     <th>Type</th>
                                     <th>Severity</th>
                                     <th>Classification</th>
+                                     <th>Screen Shot</th>
                                     <th>Fixed?</th>
                                     <th>Fixed By</th>
                                     <th>Remarks</th>
@@ -177,6 +178,13 @@
                                         </td>
                                         <td class="" id="defect_classification-{{forloop.counter}}-td">
                                             {{form_obj.defect_classification}}
+                                        </td>
+                                         <td class="" id="screen_shot-{{forloop.counter}}-td">
+                                            {{form_obj.screen_shot}}
+                                       {% comment %} {% if form_obj.screen_shot_url.value %}
+                                             <label>clear screen shot </label><span>{{form_obj.clear_screen_shot}}</span> {% endif %}{% endcomment %}
+
+
                                         </td>
                                         <td class="" id="is_fixed-{{forloop.counter}}-td">
                                             {{form_obj.is_fixed}}
@@ -248,6 +256,45 @@
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Screen Shot:</label>
+                                                                <div class="col-sm-9">
+                                                                    {% if form_obj.screen_shot_url.value %}
+                                                                    <label class="control-label">
+                        <a target="_blank" href="{{form_obj.screen_shot_url.value}}">
+                        {% if form_obj.screen_shot_url.value|GetFileTypeFromName == 'xls' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'xlsx' %}
+                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'pdf' %}
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'doc' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'docx'  %}
+                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpeg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'png' %}
+                            <img alt="A jpeg file" src="{{form_obj.screen_shot_url.value }}" height="50px" width="50px">
+                            {% elif  form_obj.screen_shot_url.value|GetFileTypeFromName == 'zip'  or  form_obj.screen_shot_url.value|GetFileTypeFromName == '7z' %}
+                            <img alt="A zip file" src="/static/images/file_type_icons/zip_icon.png" height="50px" width="50px">
+                            {% elif  form_obj.screen_shot_url.value|GetFileTypeFromName == 'gz' %}
+                            <img alt="A gz file" src="/static/images/file_type_icons/gz_icon.png" height="50px" width="50px">
+
+                        {% endif %}
+                    </a>
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                    </label>
+                                                                    {% else %}
+                                                                        <label>--</label> {% endif %}
+
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Is Fixed :</label>
                                                                 <div class="col-sm-9">
                                                                     <label class="control-label">
@@ -257,10 +304,9 @@
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Fixed By :</label>
                                                                 <div class="col-sm-9">
-                                                                    <label class="control-label">
-                                                                        {% if
-                                                                        form_obj.fixed_by.value%}{{form_obj.fixed_by.value}}{%
-                                                                        endif%}</label>
+                                                                  {% if form_obj.fixed_by.value%}  <label class="control-label">
+                                                                    {{form_obj.fixed_by.value}}</label>
+                                                                    {% else %}<label class="control-label"> --</label>{%endif%}
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -584,7 +630,9 @@ td.disabled-defect div{
     left: 0px;
     right: 0px;
 }
-
+ input[type=file]{
+        color:transparent;
+    }
 td[id*='review_item'] input{width: 40px;}
 
 </style>

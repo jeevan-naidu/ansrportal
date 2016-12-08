@@ -8,12 +8,14 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
 import json
+import magic
 from .forms import *
 from MyANSRSource.models import ProjectTeamMember
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse, reverse_lazy
 import logging
 logger = logging.getLogger('MyANSRSource')
+import os.path
 
 
 class ChooseTabs(FormView):
@@ -69,7 +71,7 @@ def get_review(obj):
         s = ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True). \
             values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
                    'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
-                   'is_fixed', 'fixed_by__username', 'remarks', 'order_number')
+                   'is_fixed', 'fixed_by__username', 'remarks', 'screen_shot')
     except Exception, e:
         s = None
         print str(e)
@@ -210,7 +212,7 @@ class AssessmentView(TemplateView):
                 defect_master = DefectTypeMaster.objects.all()
                 try:
                     reports = get_review(obj)
-                    # print reports
+                    print reports
                     # request.session['reports'] = list(reports)
 
                 except reports.ObjectDoesNotExist, e:
@@ -230,10 +232,17 @@ class AssessmentView(TemplateView):
         if reports and len(reports) != 0:
             # print"im in"
             for eachData in reports:
+                # print eachData
                 # count = 0
                 for k, v in eachData.iteritems():
                     qmsData[k] = v
                     if k == 'id':
+                        r_obj = ReviewReport.objects.get(id=int(v))
+                        if r_obj.screen_shot:
+                            qmsData['screen_shot_url'] = r_obj.screen_shot.url
+                            print r_obj.screen_shot.path
+                        else:
+                            qmsData['screen_shot_url'] = None
                         qmsData['qms_id'] = v
                     if k == 'review_item':
                         qmsData['review_item'] = v
@@ -259,16 +268,23 @@ class AssessmentView(TemplateView):
                     if k == 'is_fixed':
                         qmsData['is_fixed'] = v
 
+                    if k == 'screen_shot':
+                        # url = ReviewReport.objects.get(id=obj.id)
+                        qmsData['screen_shot'] = v
+                        # if v:
+                        #     qmsData['screen_shot_url'] = v
+
                     if k == 'fixed_by__username':
                         qmsData['fixed_by'] = v
 
                     if k == 'remarks':
                         qmsData['remarks'] = v
+                    # qmsData['clear_screen_shot'] = False
                 # print qmsData
                 qmsDataList.append(qmsData.copy())
 
             qmsData.clear()
-        # print qmsDataList
+        print qmsDataList
         qms_formset = formset_factory(
             qms_form, max_num=1, can_delete=True
         )
@@ -312,6 +328,7 @@ class ReviewReportManipulationView(AssessmentView):
 
     def post(self, request):
         # print request.POST
+        # print request.FILES
         # print "im in formset post"
         fail = 0
         qmsData = {}
@@ -322,8 +339,8 @@ class ReviewReportManipulationView(AssessmentView):
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
         )
-
-        q_form = qms_formset(request.POST)
+        AllowedFileTypes = ['jpg', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml', 'zip', 'gz', '7z']
+        q_form = qms_formset(request.POST, request.FILES)
         if q_form.is_valid():
 
             for form_elements in q_form:
@@ -339,6 +356,7 @@ class ReviewReportManipulationView(AssessmentView):
                     qmsData.clear()
                     # print qmsDataList
             for obj in qmsDataList:
+                print obj
                 if obj['qms_id'] > 0:
                     report = ReviewReport.objects.get(id=obj['qms_id'])
                     # print obj['qms_id']
@@ -351,6 +369,16 @@ class ReviewReportManipulationView(AssessmentView):
                     report.defect = obj['defect']
                     #  below is backend check preventing author from changing severity type
                     # obj['severity_type'] = report.defect_severity_level.severity_type
+                if obj['screen_shot']:
+                    # extension = os.path.splitext(obj['screen_shot'])[1]
+
+                    # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in AllowedFileTypes:
+                    if obj['screen_shot'].name.split(".")[-1] not in AllowedFileTypes:
+                        messages.error(request, "You can't upload this file type")
+                    else:
+                        report.screen_shot = obj['screen_shot']
+                # if obj['clear_screen_shot']:
+                #     report.screen_shot = None
                 report.is_fixed = obj['is_fixed']
                 report.remarks = obj['remarks']
                 if len(obj['remarks']) > 0:

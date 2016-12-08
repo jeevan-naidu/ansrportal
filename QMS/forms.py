@@ -139,6 +139,9 @@ def review_report_base(template_id, project_id):
                                   required=False,
                                   widget=forms.HiddenInput())
         defect = forms.CharField(required=False, )
+        screen_shot_url = forms.CharField(required=False, )
+
+        # clear_screen_shot = forms.BooleanField(label='clear screen shot', required=False, initial=False)
 
         severity_type = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=DefectTypeMaster.objects.all(), )
@@ -146,18 +149,20 @@ def review_report_base(template_id, project_id):
         # defect_classification = forms.CharField()
 
         severity_level = forms.ModelChoiceField(widget=forms.Select(),
-                                                queryset=SeverityLevelMaster.objects.all(),required=False, )
+                                                queryset=SeverityLevelMaster.objects.all(), required=False, )
 
         defect_classification = forms.ModelChoiceField(widget=forms.Select(),
-                                                queryset=DefectClassificationMaster.objects.all(),required=False, )
+                                                       queryset=DefectClassificationMaster.objects.all(),
+                                                       required=False,)
 
         is_fixed = forms.ChoiceField(required=False, choices=fixed_status, )
         fixed_by = forms.CharField(required=False,)
         remarks = forms.CharField(required=False,)
+        screen_shot = forms.FileField(required=False,)
 
         class Meta:
             model = ReviewReport
-            fields = ('review_item', 'defect', 'is_fixed', 'fixed_by', 'remarks', 'qms_id')
+            fields = ('review_item', 'defect', 'is_fixed', 'fixed_by', 'remarks', 'qms_id', 'screen_shot')
 
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
