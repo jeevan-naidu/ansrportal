@@ -145,7 +145,7 @@ var obj_tab_order_1 = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"E
 
 var obj_tab_order = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"Editor Review 1":true},
                     "tab_name":{"1":"Editor Review 1","2":"Editor Review 2","3":"Editor Review 3"},
-                    "tab_order":{"Editor Review 2":"2","Editor Review 3":"5","Editor Review 1":"4"},
+                    "tab_order":{"Editor Review 2":"0","Editor Review 3":"5","Editor Review 1":"4"},
                     "team_members":{"352":"KanakaPrakash","354":"AkshayFernandes"},
                     "user_tab":{"Editor Review 2":354,"Editor Review 3":352,"Editor Review 1":354}
                 }                
@@ -220,7 +220,7 @@ function assignMandatory(theObj){
 
 // Main function : populating the DOM
 function populateForm (theObj){
-debugger
+// debugger
     var i = 0 ;
     clearDom();
 
@@ -232,7 +232,8 @@ debugger
 
 
       if (theObj['tab_name'].hasOwnProperty(key)) {     // opening object
-        if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {
+        /*if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {*/
+        if (theObj['tabs'][theObj['tab_name'][key]] == true || theObj['user_tab'].hasOwnProperty(key)) {
             $('.qms-allocators').append(domObj);
            $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
 
@@ -260,8 +261,6 @@ function check_input() {
        });
        if (is_set!=0 && is_set==$('.filter_form').length) return true;
        else return false;
-
-
 }
 
 
@@ -284,8 +283,23 @@ function getTabOrder(){
 }
 
 // Function to order the tabs
-function orderTabs(){
+function orderTabs(theObj){
+    theObj['tab_order'] = array_flip(theObj['tab_order'])
 
+// order_key  = 0
+
+    for (var order_key in theObj['tab_order']){
+        if(theObj['tab_order'].hasOwnProperty(order_key)){
+            console.log(order_key, theObj['tab_order'][order_key]);
+            if(order_key > 0){
+                $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').val(order_key);
+            }
+        }
+    }
+
+
+    // Flipping again so that submit function doesn't add keys that were values before flipping
+    theObj['tab_order'] = array_flip(theObj['tab_order'])    
 } // end of order tabs functions
 
 
@@ -297,8 +311,11 @@ $('.fa-magic').click(function(){
         $('.qms-allocators,.submit,.qms-add-field').show();
         $('#select-field').html('The end');
         $('#qms-add-field').prop('disabled', true);
+        obj_tab_order['tab_name'] = array_flip(obj_tab_order['tab_name'])
         populateForm(obj_tab_order);
         assignMandatory(obj_tab_order);
+        orderTabs(obj_tab_order);
+        globalObj = obj_tab_order;
 })
 
 
@@ -474,7 +491,7 @@ $(':input[name$=project]').on('change', function() {
     }
     .table .menu-action{padding-top:7px !important;}
     .select-name{float: left;}
-    .order-number{width: 50px !important;margin-left:15px;float: left;background-color: #f4fff1}
+    .order-number{width: 50px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;}
 </style>
 
 
