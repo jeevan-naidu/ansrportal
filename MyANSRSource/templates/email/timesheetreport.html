@@ -21,11 +21,13 @@
         <tr>
             <th><b>Candidate Name</b></th>
             <th><b>Status</b></th>
+            <th><b>Total Hour</b></th>
         </tr>
     {% for report in timesheet_report_list %}
         <tr>
             <td>{{ report.name }}</td>
             <td style="text-align: center;">{{ report.status }}</td>
+        <td style="text-align: center;">{{ report.total }}</td>
         </tr>
     {% endfor %}
     </table>
