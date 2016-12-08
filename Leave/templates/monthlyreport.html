@@ -3,9 +3,12 @@
       <div class="panel-body-list jsh4">
 <!-- Bar chart -->
 
-        <div class="col-sm-12">
-          <h4 style="margin-top: 15px">Leave Report Summary</h4>
+        <div class="col-sm-4">
+          <h4 style="margin-top: 15px">Leave Report Summary (%)</h4>
         </div>
+        <div class="col-sm-6">
+          <h4 style="margin-top: 15px">Weekly Data</h4>
+        </div> 
         <div class="col-sm-4">
           <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
         </div>
@@ -58,15 +61,16 @@
       element: 'bar-placeholder',
        data: [{% for val in  weekreport%}
       { y: 'Week {{ forloop.counter }}', 
-      a: ({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}), 
-      b: ({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}), 
-      c: ({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}) 
+      a: (Math.round({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }})),
+      b: (Math.round({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }})), 
+      c: (Math.round({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }})) 
     },
           {% endfor %}
       ],
       hideHover: 'true',
       stacked: true,
       xkey: 'y',
+      xLabelMargin: 5,
       ykeys: ['a', 'b', 'c'],
       labels: ['Available', 'Leave', 'Holiday'],
       barColors: ["#55b439", "#e95427","#F4A460"]
