@@ -232,8 +232,7 @@ function populateForm (theObj){
 
 
       if (theObj['tab_name'].hasOwnProperty(key)) {     // opening object
-        /*if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {*/
-        if (theObj['tabs'][theObj['tab_name'][key]] == true || theObj['user_tab'].hasOwnProperty(key)) {
+        if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {
             $('.qms-allocators').append(domObj);
            $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
 
