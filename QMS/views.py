@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
 import json
+import magic
 from .forms import *
 from MyANSRSource.models import ProjectTeamMember
 from django.forms.formsets import formset_factory
@@ -349,8 +350,12 @@ class ReviewReportManipulationView(AssessmentView):
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
         )
-        allowed_file_types = ['jpg', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml', 'zip', 'gz', '7z']
+
+        AllowedFileTypes = ['jpg', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml', 'zip', 'gz', '7z']
+
+
         forbidden_file_type = False
+
         q_form = qms_formset(request.POST, request.FILES)
         if q_form.is_valid():
 
@@ -383,9 +388,15 @@ class ReviewReportManipulationView(AssessmentView):
                 if obj['screen_shot']:
                     # extension = os.path.splitext(obj['screen_shot'])[1]
 
-                    # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in allowed_file_types:
-                    if obj['screen_shot'].name.split(".")[-1] not in allowed_file_types:
+
+                    # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in AllowedFileTypes:
+                    if obj['screen_shot'].name.split(".")[-1] not in AllowedFileTypes:
+
+                        messages.error(request, "You can't upload this file type")
+
+
                         forbidden_file_type = True
+
                     else:
                         report.screen_shot = obj['screen_shot']
                 # if obj['clear_screen_shot']:

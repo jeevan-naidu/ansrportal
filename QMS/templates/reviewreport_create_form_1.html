@@ -148,9 +148,9 @@ var obj_tab_order = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"Edi
                     "tab_order":{"Editor Review 2":"0","Editor Review 3":"3","Editor Review 1":"4"},
                     "team_members":{"352":"KanakaPrakash","354":"AkshayFernandes"},
                     "user_tab":{"Editor Review 2":354,"Editor Review 3":352,"Editor Review 1":354}
-                }                
+                }    */            
 
-*/
+
 
 // Get the html for .form-group
 var domObj = $('.qms-allocators').html();
@@ -297,7 +297,7 @@ function orderTabs(theObj){
             }
         }
     }
-    debugger
+    /*debugger*/
 
     // Re-arranging
 
@@ -323,7 +323,7 @@ function orderTabs(theObj){
             $('.qms-allocators .form-group.marked').remove();
             $('.qms-allocators').append('<div class="form-group"></div>');
             $('.qms-allocators .form-group:last-child').html(the_form_group);
-            debugger
+            /*debugger*/
             
         }
     }
@@ -336,7 +336,7 @@ function orderTabs(theObj){
             $('.qms-allocators .form-group.marked').remove();
             $('.qms-allocators').append('<div class="form-group"></div>');
             $('.qms-allocators .form-group:last-child').html(the_form_group);
-            debugger
+           /* debugger*/
             
         }
     }
@@ -349,6 +349,7 @@ function orderTabs(theObj){
             console.log(order_key, theObj['tab_order'][order_key]);
             if(order_key > 0){
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').val(order_key);
+                $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').attr('name', 'order_'+order_key);
             }
         }
     }
@@ -400,7 +401,7 @@ $(document).ready(function(){
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
                     populateForm(data);
-                    /*orderTabs()*/
+                    orderTabs()
                     assignMandatory(data);
 
                     // globalObj to capture the order of tabs
@@ -489,9 +490,9 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
 
     // Function Calls
 
-    $('#qms-submit').mouseover(function(e){
+/*    $('#qms-submit').mouseover(function(e){
         getTabOrder();
-    })
+    })*/
 
 
 
