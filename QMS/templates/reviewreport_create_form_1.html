@@ -252,6 +252,18 @@ debugger
 
 } // end of populate form
 
+function check_input() {
+    var is_set=0;
+    $('.filter_form').each(function(i, obj) {
+            console.log(obj.name+'--'+obj.value);
+            if (obj.value != '') is_set++;
+       });
+       if (is_set!=0 && is_set==$('.filter_form').length) return true;
+       else return false;
+
+
+}
+
 
 function getTabOrder(){
     $('.qms-allocators .form-group').each(function(){
@@ -275,6 +287,7 @@ function getTabOrder(){
 function orderTabs(){
 
 } // end of order tabs functions
+
 
 
 $(document).ready(function(){
@@ -303,7 +316,7 @@ $('.fa-magic').click(function(){
         $('#qms-add-field').prop('disabled', true);
 
 
-        if($(this).val() !='') {
+        if(check_input()) {
               $.ajax({
                 url: '/qms/get_template_process_review/',
                 type: 'GET',
@@ -320,41 +333,43 @@ $('.fa-magic').click(function(){
     });
 
 $(':input[name$=component]').change(function(){
-    $.ajax({
-            url: '/qms/fetch_author/',
-            type: 'GET',
-            dataType :'json',
-            data: {"project_id" :  $(':input[name$=project]').val() , "component_id" :  $(this).val() ,"chapter_id" :  $(':input[name$=chapter]').val() },
-            beforeSend : function(data) { $(':input[name$=author]').empty() ; $('.select-name ').empty() ;},
-            success: function (data) {
-                for (var key in data) {
-                    if (data.hasOwnProperty(key)) {
-
-                        if(key == 'team_members'){
-                            $(':input[name$=author]').append($('<option>', {
-                                    value: "",
-                                    text: "-------",
-                                }));
-                            for (var k in data[key]){
+if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !='') {
+        $.ajax({
+                url: '/qms/fetch_author/',
+                type: 'GET',
+                dataType :'json',
+                data: {"project_id" :  $(':input[name$=project]').val() , "component_id" :  $(this).val() ,"chapter_id" :  $(':input[name$=chapter]').val() },
+                beforeSend : function(data) { $(':input[name$=author]').empty() ; $('.select-name ').empty() ;},
+                success: function (data) {
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            $(':input[name$=author]').removeAttr("disabled");
+                            if(key == 'team_members'){
                                 $(':input[name$=author]').append($('<option>', {
-                                    value: k,
-                                    text: data['team_members'][k],
-                                }));
+                                        value: "",
+                                        text: "-------",
+                                    }));
+                                for (var k in data[key]){
+                                    $(':input[name$=author]').append($('<option>', {
+                                        value: k,
+                                        text: data['team_members'][k],
+                                    }));
+                                }
                             }
                         }
+
                     }
+                    if(data['author'] != 'None' || data['author'] != '' ) {
+                        $('#id_author option[value='+data['author']+']').prop("selected", true);
+                    }
+                    else if (data['author'] == 'None'){
+                         $('#id_author option[value=""]').prop("selected", true);
+                    }
+                },
+                complete: function (data) { $(':input[name$=author]').trigger('change');}
 
-                }
-                if(data['author'] != 'None' || data['author'] != '' ) {
-                    $('#id_author option[value='+data['author']+']').prop("selected", true);
-                }
-                else if (data['author'] == 'None'){
-                     $('#id_author option[value=""]').prop("selected", true);
-                }
-            },
-            complete: function (data) { $(':input[name$=author]').trigger('change');}
-
-    });
+        });
+    }
 });
 
     $('#qms-add-field').click(function(e){
@@ -402,6 +417,12 @@ $(':input[name$=component]').change(function(){
 
 })//./doc.ready    
 
+$(':input[name$=project]').on('change', function() {
+       if(check_input()) {
+            $('.reset_field ').not(this).val(null).trigger('change');
+            $(".qms-allocators").empty();
+       }
+});
 </script>
 
 

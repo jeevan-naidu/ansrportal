@@ -464,10 +464,11 @@
            is_set = 0
            $('#active_tab , #active_tab1').val(this.id);
            $('.filter_form').each(function(i, obj) {
+                console.log(obj.name+'--'+obj.value);
                 if (obj.value != '') is_set++;
 
            });
-           if (is_set!=0 && is_set==3 )   $('#filter_form').submit();
+           if (is_set!=0 && is_set==$('.filter_form').length)   $('#filter_form').submit();
         });
 
         $('.edit_button').click(function(){ console.log("edit clicked");

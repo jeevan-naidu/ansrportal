@@ -52,7 +52,7 @@ class ChooseTabs(FormView):
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
                                                                   chapter_component=cm_obj,
-                                                                  review_group_id=k,
+                                                                  review_group_id=k, order_number=0,
                                                                   defaults={'reviewed_by_id': v,
                                                                             'created_by': self.request.user}, )
             # print obj, created
@@ -69,7 +69,7 @@ def get_review(obj):
         s = ReviewReport.objects.filter(QA_sheet_header=obj.id, is_active=True). \
             values('id', 'review_item', 'defect', 'defect_severity_level__severity_type',
                    'defect_severity_level__severity_level', 'defect_severity_level__defect_classification',
-                   'is_fixed', 'fixed_by__username', 'remarks', 'order')
+                   'is_fixed', 'fixed_by__username', 'remarks', 'order_number')
     except Exception, e:
         s = None
         print str(e)
@@ -148,7 +148,7 @@ def get_template_process_review(request):
                     tab_user = None
                 if tab_user is not None:
                     user_tab[str(ele.review_group)] = int(tab_user.reviewed_by.id)
-                    tab_order[str(ele.review_group)] = int(tab_user.order)
+                    tab_order[str(ele.review_group)] = int(tab_user.order_number)
                 else:
                     user_tab[str(ele.review_group)] = None
                     tab_order[str(ele.review_group)] = None
@@ -190,7 +190,6 @@ class AssessmentView(TemplateView):
             try:
                 # print "im in try"
                 # print project, chapter, author, active_tab
-
                 request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
@@ -290,7 +289,11 @@ class AssessmentView(TemplateView):
                 defect_density[k] = 0
 
         total_count = sum(severity_count.itervalues())
-        total_score = 100 - sum(tmp_weight.itervalues())
+        weight = sum(tmp_weight.itervalues())
+        if weight != 0:
+            total_score = 100 - sum(tmp_weight.itervalues())
+        else:
+            total_score = 0
         total_defect_density = sum(defect_density.itervalues())
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,

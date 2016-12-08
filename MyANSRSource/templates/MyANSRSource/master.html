@@ -727,6 +727,7 @@
                                                 </a>
                                                 <div class="child-menu" data-action="click-target"
                                                      style="display: block;">
+                                                    {% if request.user|has_group:"myansrsourcePM" or request.user.is_superuser%}
                                                     <ul class="clearfix">
                                                         <li>
                                                             <a href="/qms/choose_tabs">
@@ -735,6 +736,7 @@
                                                         </li>
 
                                                     </ul>
+                                                    {% endif %}
                                                     <ul class="clearfix">
                                                         <li>
                                                             <a href="/qms">
