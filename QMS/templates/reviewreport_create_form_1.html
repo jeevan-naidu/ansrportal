@@ -349,6 +349,7 @@ function orderTabs(theObj){
             console.log(order_key, theObj['tab_order'][order_key]);
             if(order_key > 0){
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').val(order_key);
+                $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').attr('name', order_key);
             }
         }
     }
