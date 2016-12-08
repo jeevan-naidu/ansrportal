@@ -400,7 +400,7 @@ $(document).ready(function(){
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
                     populateForm(data);
-                    orderTabs()
+                    orderTabs(data);
                     assignMandatory(data);
 
                     // globalObj to capture the order of tabs

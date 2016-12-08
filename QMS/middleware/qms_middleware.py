@@ -19,8 +19,9 @@ def log_qms(request):
 
 class QMSPermissionCheckMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if 'qms' in request.path and not request.user.is_authenticated() \
-                or ('qms/choose_tab' in request.path and not request.user.groups.filter(
-                    name='myansrsourcePM').exists()):
-            log_qms(request)
-            raise PermissionDenied("Sorry You Don't Have Permission To Access This Feature")  # raise 403 error
+        pass
+        # if 'qms' in request.path and not request.user.is_authenticated() \
+        #         or ('qms/choose_tab' in request.path and not request.user.groups.filter(
+        #             name='myansrsourcePM').exists()):
+        #     log_qms(request)
+        #     raise PermissionDenied("Sorry You Don't Have Permission To Access This Feature")  # raise 403 error

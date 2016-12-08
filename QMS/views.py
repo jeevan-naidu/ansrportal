@@ -72,12 +72,12 @@ class ChooseTabs(FormView):
         # print user_tab
         for k, v in user_tab.iteritems():
             # print form.cleaned_data['author']
-            k = int(k)
+            # k = int(k)
             obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
                                                                   chapter_component=cm_obj,
-                                                                  review_group_id=k, order_number=order_number[k],
+                                                                  review_group_id=int(k), order_number=order_number[k],
                                                                   defaults={'reviewed_by_id': int(v),
                                                                             'created_by': self.request.user}, )
             # print obj, created
