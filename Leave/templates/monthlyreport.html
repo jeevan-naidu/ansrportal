@@ -61,9 +61,9 @@
       element: 'bar-placeholder',
        data: [{% for val in  weekreport%}
       { y: 'Week {{ forloop.counter }}', 
-      a: (Math.round({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }})),
-      b: (Math.round({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }})), 
-      c: (Math.round({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }})) 
+      a: (Math.round(({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))),
+      b: (Math.round(({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))), 
+      c: (Math.round(({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))) 
     },
           {% endfor %}
       ],
