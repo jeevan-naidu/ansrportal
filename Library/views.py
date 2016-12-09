@@ -4,7 +4,6 @@ from datetime import date, timedelta
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db.models import Q
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 def dashboard(request):
@@ -25,6 +24,7 @@ def bookrent(request):
     context['is_added'] = True
     context['success_msg'] = 'your request raised for admin approval'
     return JsonResponse(context)
+
 
 def adminaction(request):
     context = {}
@@ -87,6 +87,7 @@ def bookreturn(request):
     context['success_msg'] = 'your return request raised for admin approval'
     return JsonResponse(context)
 
+
 def booksearch(request):
     context = {}
     searchtext = request.GET.get('searchtext')
@@ -110,30 +111,32 @@ def booksearchpage(request):
     userid = request.user.id
     if category == 'Author':
         bookshelves = Book.objects.filter(Q(author__name__icontains=searchtext)| Q(author__surname__icontains=searchtext),)
-        lendbook = BookApplication.objects.filter( Q(book__author__name__icontains=searchtext)
-                                                                    | Q(book__author__surname__icontains=searchtext),
-                                                                        lend_by=userid)
+        lendbook = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
+                                                  | Q(book__author__surname__icontains=searchtext), lend_by=userid
+                                                  ).order_by('status')
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
             context['orderedbook'] = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
                                                                     | Q(book__author__surname__icontains=searchtext),
-                                                                    status__in=['applied', 'appliedreturned'])
+                                                                    status__in=['applied', 'appliedreturned']).order_by('status')
         else:
             context['is_admin'] = False
     else:
         bookshelves = Book.objects.filter(title__icontains=searchtext,)
-        lendbook = BookApplication.objects.filter(lend_by=userid, book__title__icontains=searchtext)
+        lendbook = BookApplication.objects.filter(lend_by=userid, book__title__icontains=searchtext).order_by('status')
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
             context['orderedbook'] = BookApplication.objects.filter(status__in=['applied', 'appliedreturned'],
-                                                                    book__title__icontains=searchtext)
+                                                                    book__title__icontains=searchtext).order_by('status')
         else:
             context['is_admin'] = False
     context['query'] = searchtext
     context['category'] = category
     context['status'] = RESULT_STATUS
-    context['bookshelves'] = bookshelves
+    context['bookshelves'] = bookshelves.order_by('status')
     context['lendbook'] = lendbook
+    context['lend_history'] = applied_book_history_check(userid)
+    context['book_count'] = library_book_count()
     return render(request, 'dashboard.html', context)
 
 
@@ -153,12 +156,9 @@ def booksearchbyname(request):
                                                                 , book__id=bookid)
     else:
         context['is_admin'] = False
-
-
     context['query'] = searchtext
     context['category'] = category
     context['bookshelves'] = bookshelves
-    # context['bookshelvesordered'] = bookshelvesordered
     context['lendbook'] = lendbook
     context['status'] = RESULT_STATUS
     return render(request, 'dashboard.html', context)
@@ -171,3 +171,20 @@ def bookdetail(request):
     context['status'] = RESULT_STATUS
     context['bookshelvesordered'] = bookshelvesordered
     return render(request, 'detail.html', context)
+
+
+def applied_book_history_check(user):
+    book_list = BookApplication.objects.filter(lend_by=user, status__in=['applied', 'appliedreturned', 'approved'])
+    if book_list:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+def library_book_count():
+    book_count = dict()
+    book_count['applied'] = Book.objects.filter(status='unavailable').count()
+    book_count['available'] = Book.objects.filter(status='available').count()
+    book_count['total'] = book_count['applied'] + book_count['available']
+    return book_count

@@ -2,199 +2,109 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block siteTitle %}Leave Dashboard{% endblock %}
+{% block siteTitle %}Leave Report{% endblock %}
 {% block pageTitle %}Leave Report{% endblock %}
 {% block content  %}
 
 
-<link href="http://vendroid.venmond.com/plugins/morris/morris.css" rel="stylesheet" type="text/css">
-<link href="http://vendroid.venmond.com/plugins/dataTables/css/jquery.dataTables.css" rel="stylesheet" type="text/css">
-<link href="http://vendroid.venmond.com/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">  
+<link href="/static/plugins/morris/morris.css" rel="stylesheet" type="text/css">
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
 <div class="row">
-
-              <div class="col-md-4 mgbt-xs-20 mgbt-md-0">
-                <div class="panel widget  light-widget"> 
-                  <div class="panel-body-list">
-                    <h4 class="mgtp--5 pd-25"> <span class="font-semibold">Leave</span> Report </h4>
-                    <div id="bar-placeholder" class="bar-chart" style="height:318px;"></div>
-                  </div>
-                </div>
-                <!-- col-md-6 --> 
-              </div>
-
-
-
-
-
-
-
-
-
-
-              <div class="col-sm-8">
+<div id="user-leave-report">
+              <div class="col-sm-12">
 
                 <div class="panel">
 
 
-                  <div class="panel-body table-responsive">
+                  <div class="panel-body table-responsive jsh3">
+
+                  <div class="row">
+
+                    <div class="col-sm-12">
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+
+                         <li><a onclick="monthchange(1, '{{ team }}')">January</a></li>
+                          <li><a onclick="monthchange(2, '{{ team }}')">February</a></li>
+                          <li><a onclick="monthchange(3, '{{ team }}')">March</a></li>
+                          <li><a onclick="monthchange(4, '{{ team }}')">April</a></li>
+                          <li><a onclick="monthchange(5, '{{ team }}')">May</a></li>
+                          <li><a onclick="monthchange(6, '{{ team }}')">June</a></li>
+                          <li><a onclick="monthchange(7, '{{ team }}')">July</a></li>
+                          <li><a onclick="monthchange(8, '{{ team }}')">August</a></li>
+                          <li><a onclick="monthchange(9, '{{ team }}')">September</a></li>
+                          <li><a onclick="monthchange(10, '{{ team }}')">October</a></li>
+                          <li><a onclick="monthchange(11, '{{ team }}')">November</a></li>
+                          <li><a onclick="monthchange(12, '{{ team }}')">December</a></li>
+
+                        </ul>
+                      </div>
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">{{ week_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+                            {% for val in  weekreport%}
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')">Week {{ forloop.counter }}</a></li>
+                            {% endfor %}
+
+                        </ul>
+                      </div>
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+                           <li><a onclick="monthchange({{ month }}, 'myteam')">My Team</a></li>
+                          <li><a onclick="monthchange({{ month }}, 'peers')">My Peers</a></li>
+                        </ul>
+                      </div>
+
+
+                      <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div>
+
+                    </div>
+
+
+                  </div>
+                    <hr style="margin-top: -10px;margin-bottom: 10px;">
+
                     <table class="table  table-striped leave-report-table" id="data-tables">
                       <thead>
                         <tr>
-                          <th>Person</th>
+                          <th>Person  ({{ leavereport|length }})</th>
                           <th>Mon</th>
                           <th>Tue</th>
                           <th>Wed</th>
                           <th>Thu</th>
                           <th>Fri</th>
-                          <th>Total</th>
                         </tr>
                       </thead>
                       <tbody>
-<!--                         <tr class="gradeX">
-                          <td>Captain America</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Natalia Romanova</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Tony Stark</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Bruce Banner</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Vision</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Peter Parker</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Bucky Barnes</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Clint Barton</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td></td>
-                        </tr>
-
+                 {% for person in leavereport%}
 
                         <tr class="gradeX">
-                          <td>James Rhodes</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Scott Lang</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Nick Fury</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Sam Wilson</td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator absent"></div></td>
-                          <td></td>
-                        </tr> -->
+                          <td>{{ person.0 }}</td>
+                            {% for val1 in  person.1%}
+                                {% if val1 == 0 %}
+                                    <td><div class="indicator"></div></td>
+                                {% elif val1 == 1 %}
+                                    <td><div class="indicator halfday"></div></td>
+                                {% elif val1 == 2 %}
+                                    <td><div class="indicator absent"></div></td>
+                                {% elif val1 == 3 %}
+                                    <td><div class="indicator holiday"></div></td>
+                                {% endif %}
 
-                        <!-- end of avengers -->
+{% endfor %}
 
 
-                        <tr class="gradeX">
-                          <td>Person 1</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td></td>
                         </tr>
-                        <tr class="gradeX">
-                          <td>Person 2</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td></td>
-                        </tr>
-                        <tr class="gradeX">
-                          <td>Person 3</td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td><div class="indicator"></div></td>
-                          <td></td>
-                        </tr>
-
-
-
+                        {% endfor %}
 
 
 
@@ -203,158 +113,366 @@
                       </tbody>
                       <tfoot>
                         <tr class="gradeX">
-                          <td>The sum</td>
-                          <td class="text-center">23</td>
-                          <td class="text-center">42</td>
-                          <td class="text-center">12</td>
-                          <td class="text-center">112</td>
-                          <td class="text-center">35</td>
-                          <td>534</td>
+                          <td><b>Total</b></td>
+                          <td class="text-center" id="mon-total">0</td>
+                          <td class="text-center" id="tue-total">0</td>
+                          <td class="text-center" id="wed-total">0</td>
+                          <td class="text-center" id="thr-total">0</td>
+                          <td class="text-center" id="fri-total">0</td>
                         </tr>
                       </tfoot>
                     </table>
-                  </div>
-                </div>
 
-         	
-              </div>
+                  </div><!-- ./panel-body -->
+
+        <div id="lr-legend">
+          <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :
+            <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> 
+          </p>
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Half Day :
+            <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span> 
+          </p>
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
+            <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
+          </p>          
+          <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
+            <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
+          </p>
+          <button id="get-summary" class="btn btn-primary pull-right">Summary</button>
+        </div>
+                </div><!-- ./panel -->
+
+
+              </div><!-- ./col-sm -->
+
+</div>
+
+<div id="monthly-leave-report">
+  <div class="col-md-12 mgbt-xs-20 mgbt-md-0">
+    <div class="panel widget  light-widget">
+      <div class="panel-body-list jsh4">
+<!-- Bar chart -->
+
+        <div class="col-sm-4">
+          <h4 style="margin-top: 15px">Leave Report Summary (%)</h4>
+        </div>
+        <div class="col-sm-6">
+          <h4 style="margin-top: 15px">Weekly Data</h4>
+        </div>        
+        <div class="col-sm-4">
+          <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
+        </div>
+
+        <div class="col-sm-6 pd-25">
+
+
+          <table class="lr-summary-table">
+<tr>
+              <td>Week</td>
+              <td>Available</td>
+              <td>Leave</td>
+              <td>Holiday</td>  
+</tr>
+              {% for val in  weekreport%}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ val.available }}</td>
+              <td>{{ val.unavailable }}</td>
+              <td>{{ val.holiday }}</td>
+            </tr>
+              {% endfor %}
+<tr>
+              <td>&nbsp;</td>
+              <td class="available"></td>
+              <td class="absent"></td>
+              <td class="holiday"></td>  
+</tr>
+
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- col-md-6 -->
+  </div><!-- ./col -->
 
 
 
+
+
+</div>
 
 </div><!-- ./row -->
 
 
-
-
-
-
-
-
-<script type="text/javascript" src="http://vendroid.venmond.com/plugins/raphael/raphael.min.js"></script>
-<script type="text/javascript" src="http://vendroid.venmond.com/plugins/morris/morris.min.js"></script>
-<script type="text/javascript" src="http://vendroid.venmond.com/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/plugins/raphael/raphael.min.js"></script>
+<script type="text/javascript" src="/static/plugins/morris/morris.min.js"></script>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
 <script type="text/javascript">
+  // The Bar Chart
 
-// The Bar Chart
+  var barChart = function(){
 
-var barChart = function(){
+    "use strict";
 
-  "use strict";
+    window.barChart = Morris.Bar({
+      element: 'bar-placeholder',
+       data: [{% for val in  weekreport%}
+      { y: 'Week {{ forloop.counter }}', 
+      a: (Math.round(({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))),
+      b: (Math.round(({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))), 
+      c: (Math.round(({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))) 
+    },
+          {% endfor %}
+      ],
+      hideHover: 'true',
+      stacked: true,
+      xkey: 'y',
+      xLabelMargin: 5,
+      ykeys: ['a', 'b', 'c'],
+      labels: ['Available', 'Leave', 'Holiday'],
+      barColors: ["#55b439", "#e95427","#F4A460"]
+    });
 
-  window.barChart = Morris.Bar({
-    element: 'bar-placeholder',
-    data: [
-    { y: 'Week 1', a: 10, b: 90 },
-    { y: 'Week 2', a: 75, b: 25 },
-    { y: 'Week 3', a: 50, b: 50 },
-    { y: 'Week 4', a: 35, b: 65 }
-    ],
-    hideHover: 'always',
-    stacked: true,
-    xkey: 'y',
-    ykeys: ['a', 'b'],
-    labels: ['Series A', 'Series B'],
-    barColors: ["#23709E","#39515f"]
+  }// Calling Bar Chart
 
-  });
-
-}// Calling Bar Chart 
+  // End of Bar-Chart
 
 
 
-		$(document).ready(function() {
-				"use strict";
-				
+
+
+    // Height Function
+
+
+
+{#  var heightFunction2 = function(){#}
+{#      hgt3=$('.jsh3').css('height');#}
+{#      $('.jsh4').css('min-height', hgt3);#}
+{#    }#}
+
+
+
+$(document).ready(function() {
+{% for val in  weekreport%}
+console.log("this are the logged values " , {{ val.available }}, {{ val.unavailable }}, {{ val.holiday }} );
+
+{% endfor %}  
+        "use strict";
+
         barChart();
 
 
-				$('#data-tables').dataTable({
+        $('#data-tables').dataTable({
           searching: false,
           scrollCollapse: true
         });
 
-    $(window).resize(function(){
-      window.barChart.redraw();
+        $(window).resize(function(){
+          window.barChart.redraw();
+          heightFunction2();
+        });
+    var mondayTotal = 0;
+    var tuesdayTotal = 0;
+    var wednesTotal = 0;
+    var thursdayTotal = 0;
+    var fridayTotal = 0;
+    {% for person in leavereport%}
+        {% if  person.1.0 == 0 %}
+            mondayTotal += 1
+        {% elif person.1.0 == 1 %}
+            mondayTotal += .5
+        {% endif %}
+
+        {% if person.1.1 == 0 %}
+            tuesdayTotal += 1
+            {% elif person.1.1 == 1 %}
+            tuesdayTotal += .5
+        {% endif %}
+
+        {% if person.1.2 == 0 %}
+            wednesTotal += 1
+            {% elif person.1.2 == 1 %}
+            wednesTotal += .5
+        {% endif %}
+
+        {% if person.1.3 == 0 %}
+            thursdayTotal += 1
+        {% elif person.1.3 == 1 %}
+            thursdayTotal += .5
+        {% endif %}
+
+         {% if person.1.4 == 0 %}
+            fridayTotal += 1
+         {% elif person.1.4 == 1 %}
+            fridayTotal += .5
+        {% endif %}
+        console.log({{ person.1 }})
+    {% endfor %}
+
+    $("#mon-total").text(mondayTotal);
+    $("#tue-total").text(tuesdayTotal);
+    $("#wed-total").text(wednesTotal);
+    $("#thr-total").text(thursdayTotal);
+    $("#fri-total").text(fridayTotal);
+
+
+
+
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
     })
 
 
-		});// End of document ready
-
-
-
-
-
-
-
-    // JSON Testing Area
-
-    var theMonth = {
-                      "person1":[
-                               {"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
-                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}
-                              ],
-
-
-                      "person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
-                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],
-
-                      "person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},
-                               {"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},
-                               {"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]                               
-                    }
-
-                   
-
-
-
-
-
-
-
-
-
-
-
-/*{"person1":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person2":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}],"person3":[{"mon":"1","tue":"1","wed":"1","thu":"2","fri":"2"},{"mon":"1","tue":"0","wed":"0","thu":"2","fri":"2"},{"mon":"2","tue":"0","wed":"1","thu":"2","fri":"2"},{"mon":"0","tue":"0","wed":"0","thu":"2","fri":"2"}]}
-*/
- 
-
-
-
-
-
-
-    var xyz = JSON.stringify(theMonth);
-    console.log('the JSON object : ' + xyz);    
-    var zyx = JSON.parse(xyz);
-    console.log('the parsed object : ' + zyx);
-
-
-    var populate = function(){
-      $.each($('.leave-report-table tbody tr'),function(){
-        i=0;
-        $.each($(this).find('div'),function(){
-          $(this).addClass('absent');
-          console.log(i);
-          i++;
-        })
-      })
-    }                    
+});// End of document ready
 
 
 // As td with person does not contain div, use div inside tr
+function monthchange(month, team){
+    weekchange(1, month, team);
+      $.ajax({
+          type: "GET",
+                url: '/leave/monthwisedata/',
+                data: {'month': month, 'team': team},
+                success: function (data) {
 
+                    $('#monthly-leave-report').text('');
+                    $('#monthly-leave-report').append(data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
 
-    populate();
+                },
+      });
+  }
 
+  function weekchange(week, month, team){
+      $.ajax({
+          type: "GET",
+                url: '/leave/weekwisedata/',
+                data: {'week': week, 'month':month, 'team': team},
+                success: function (data) {
+                    $('#user-leave-report').text('');
+                    $('#user-leave-report').append(data);
+                    $('#week-button').text("Week " + week);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                            + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take" +
+                            " a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'>" +
+                            " MyAnsrSource Help Desk</a></p>");
+
+                },
+      });
+  }
 
 </script>
+
+
+
+<style type="text/css">
+
+/* Imported from site.min */
+
+/* Leave Report */
+
+.leave-report-table{margin-top: 0px !important;}
+.leave-report-table div.indicator{
+    background: #55b439;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: auto;
+}
+.table.leave-report-table tr>td, .table.leave-report-table tfoot{border: 1px solid #efefef;}
+.table.leave-report-table tfoot{background: #fdfdfd}
+
+/*#bar-placeholder{margin-top: 10%}*/
+div.indicator.absent{background-color: #e95427;}
+div.indicator.halfday{background-color: #b7efa7;}
+div.indicator.holiday{background-color: #F4A460;}
+table.dataTable.leave-report-table thead .sorting{
+    text-align: left;
+}
+.dataTables_length{display: none;}/* Removing number of entries to display */
+
+.month-week{
+  color: #733b3b;
+  font-size: 14px;
+/*  background: #ffd1d1;*/
+  padding: 0px 10px;
+  line-height: 30px;
+  border-radius: 2px;
+  cursor: default;
+/*  border: 1px solid #733b3b;*/
+}
+
+/* Bottom Section */
+
+#lr-legend{background: #f9f9f9}
+
+[class*="legend"]{
+    background: #e8e8e8;
+    padding: 2px 6px;
+    border-radius: 15px;
+    margin-left: 5px;
+    border: 1px solid #d4d4d4;
+    border: 1px solid #bfbfbf;
+    color: #fff;
+}
+.legend-available{background: #55b439;border-color: #55b439;}
+.legend-halfday{background: #b7efa7;border-color: #b7efa7;}
+.legend-holiday{background: #F4A460;border-color:#F4A460;}
+.legend-absent{background: #e95427;border-color: #e95427;}
+
+.lr-week-details{margin-bottom: 15px;}
+.lr-week-details p{
+  margin-bottom: 0px;
+  margin-left: 15px;
+}
+.lr-summary-table{
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  text-align: center;
+}
+.lr-summary-table tr:first-child{
+  background-color: #444444;
+  color: #fff;
+}
+.lr-summary-table td{
+  width: 25%;
+  border: 1px solid #e4e4e4;
+  padding: 2px 5px;
+}
+.lr-summary-table td.available{text-align:center; background: #55b439;}
+.lr-summary-table td.holiday{text-align:center; background: #F4A460;}
+.lr-summary-table td.absent{text-align:center; background: #e95427}
+.inline-block{display: inline-block}
+
+.dropdown-menu a{cursor: pointer;}
+
+#get-summary{margin:19px;}
+
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus{background-color: #337ab7}
+/* Added */
+
+.jsh3{min-height: 400px;}
+.lr-invisible{visibility: hidden}
+
+/* Temp section - to be changed */
+
+#data-tables_info{float: left;}
+div.dataTables_paginate{margin-top: 10px;}
+
+ul.dropdown-menu{z-index: 994} /* To be moved to main stylesheet */
+
+
+</style>
 
 {% endblock %}

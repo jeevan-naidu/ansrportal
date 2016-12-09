@@ -593,7 +593,7 @@
                                                             </li>
                                                             <li>
                                                                 <a href="{% url 'list_leave' %}">
-                                                                    <span class="menu-text">View Requests</span>{{ IsActiveShortAttendance }}
+                                                                    <span class="menu-text">View Requests</span>
                                                                 </a>
                                                             </li>
 
@@ -604,7 +604,11 @@
 							</a>
                                                             </li>
                                                                         {% endif %}
-
+                                                            <li>
+                                                                <a href="{% url 'leave_report' %}">
+                                                                    <span class="menu-text">Leave Report</span>
+                                                                </a>
+                                                            </li>
                                                         {% endif %}
                                                     </ul>
                                                 </div>

@@ -1,0 +1,202 @@
+
+
+              <div class="col-sm-12">
+
+                <div class="panel">
+
+
+                  <div class="panel-body table-responsive jsh3">
+
+                  <div class="row">
+
+                    <div class="col-sm-12">
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+
+                        <li><a onclick="monthchange(1, '{{ team }}')">January</a></li>
+                          <li><a onclick="monthchange(2, '{{ team }}')">February</a></li>
+                          <li><a onclick="monthchange(3, '{{ team }}')">March</a></li>
+                          <li><a onclick="monthchange(4, '{{ team }}')">April</a></li>
+                          <li><a onclick="monthchange(5, '{{ team }}')">May</a></li>
+                          <li><a onclick="monthchange(6, '{{ team }}')">June</a></li>
+                          <li><a onclick="monthchange(7, '{{ team }}')">July</a></li>
+                          <li><a onclick="monthchange(8, '{{ team }}')">August</a></li>
+                          <li><a onclick="monthchange(9, '{{ team }}')">September</a></li>
+                          <li><a onclick="monthchange(10, '{{ team }}')">October</a></li>
+                          <li><a onclick="monthchange(11, '{{ team }}')">November</a></li>
+                          <li><a onclick="monthchange(12, '{{ team }}')">December</a></li>
+
+                        </ul>
+                      </div>
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">{{ week_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+                            {% for val in  weekreport%}
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')">Week {{ forloop.counter }}</a></li>
+                            {% endfor %}
+
+                        </ul>
+                      </div>
+
+
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <ul class="dropdown-menu" role="menu">
+                         <li><a onclick="monthchange({{ month }}, 'myteam')">My Team</a></li>
+                          <li><a onclick="monthchange({{ month }}, 'peers')">My Peers</a></li>
+                        </ul>
+                      </div>
+
+
+                      <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div>
+
+                    </div>
+
+
+                  </div>
+                    <hr style="margin-top: -10px;margin-bottom: 10px;">
+
+                    <table class="table  table-striped leave-report-table" id="data-tables">
+                      <thead>
+                        <tr>
+                          <th>Person  ({{ leavereport|length }})</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                 {% for person in leavereport%}
+
+                        <tr class="gradeX">
+                          <td>{{ person.0 }}</td>
+                            {% for val1 in  person.1%}
+                                {% if val1 == 0 %}
+                                    <td><div class="indicator"></div></td>
+                                {% elif val1 == 1 %}
+                                    <td><div class="indicator halfday"></div></td>
+                                {% elif val1 == 2 %}
+                                    <td><div class="indicator absent"></div></td>
+                                {% elif val1 == 3 %}
+                                    <td><div class="indicator holiday"></div></td>
+                                {% endif %}
+
+{% endfor %}
+
+
+                        </tr>
+                        {% endfor %}
+
+
+
+
+
+                      </tbody>
+                      <tfoot>
+                        <tr class="gradeX">
+                          <td><b>Total</b></td>
+                          <td class="text-center" id="mon-total">0</td>
+                          <td class="text-center" id="tue-total">0</td>
+                          <td class="text-center" id="wed-total">0</td>
+                          <td class="text-center" id="thr-total">0</td>
+                          <td class="text-center" id="fri-total">0</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+
+                  </div><!-- ./panel-body -->
+                
+                    <div id="lr-legend">
+                      <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :
+                        <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> 
+                      </p>
+                      <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Half Day :
+                        <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span> 
+                      </p>
+                      <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
+                        <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
+                      </p>          
+                      <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
+                        <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
+                      </p>
+                      <button id="get-summary" class="btn btn-primary pull-right">Summary</button>
+                    </div>
+
+                </div><!-- ./panel -->
+                </div><!-- ./col-sm -->
+<script>
+$(document).ready(function() {
+
+        $('#data-tables').dataTable({
+          searching: false,
+          scrollCollapse: true,
+            destroy: true,
+        });
+
+        $(window).resize(function(){
+          window.barChart.redraw();
+          heightFunction2();
+        });
+
+
+       var mondayTotal = 0;
+    var tuesdayTotal = 0;
+    var wednesTotal = 0;
+    var thursdayTotal = 0;
+    var fridayTotal = 0;
+    {% for person in leavereport%}
+        {% if  person.1.0 == 0 %}
+            mondayTotal += 1
+        {% elif person.1.0 == 1 %}
+            mondayTotal += .5
+        {% endif %}
+
+        {% if person.1.1 == 0 %}
+            tuesdayTotal += 1
+            {% elif person.1.1 == 1 %}
+            tuesdayTotal += .5
+        {% endif %}
+
+        {% if person.1.2 == 0 %}
+            wednesTotal += 1
+            {% elif person.1.2 == 1 %}
+            wednesTotal += .5
+        {% endif %}
+
+        {% if person.1.3 == 0 %}
+            thursdayTotal += 1
+        {% elif person.1.3 == 1 %}
+            thursdayTotal += .5
+        {% endif %}
+
+         {% if person.1.4 == 0 %}
+            fridayTotal += 1
+         {% elif person.1.4 == 1 %}
+            fridayTotal += .5
+        {% endif %}
+        console.log({{ person.1 }})
+    {% endfor %}
+
+    $("#mon-total").text(mondayTotal);
+    $("#tue-total").text(tuesdayTotal);
+    $("#wed-total").text(wednesTotal);
+    $("#thr-total").text(thursdayTotal);
+    $("#fri-total").text(fridayTotal);
+
+
+
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
+    })
+    
+});
+    </script>

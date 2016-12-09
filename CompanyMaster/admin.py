@@ -1,6 +1,8 @@
 from django.contrib import admin
 from CompanyMaster.models import OfficeLocation, CustomerType,\
-    DataPoint, Division, BusinessUnit, Holiday, Customer, Training, HRActivity
+    DataPoint, Division, BusinessUnit, Holiday, Customer, Training, HRActivity,\
+    Country, Currency, Region, Company, CustomerGroup, Department, PnL, Practice,\
+    SubPractice, CareerBand, Role, Designation, KRA
 
 
 class DivisionInline(admin.TabularInline):
@@ -18,7 +20,7 @@ class CustomerTypeAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'customerCode')
+    list_display = ('name', 'customerCode', 'customergroup')
 
 
 class DepartmentAdmin(admin.ModelAdmin):
@@ -46,6 +48,138 @@ class DataPointsAdmin(admin.ModelAdmin):
     list_display = ('name', )
 
 
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ('country_code', 'country_name', 'region_code', 'privacy_rule', 'currency_code', 'is_active')
+
+
+class CurrencyAdmin(admin.ModelAdmin):
+    fields = ['currency_code', 'currency_name', 'default', 'is_active']
+    list_display = ('currency_code', 'currency_name', 'default', 'is_active')
+
+
+class RegionAdmin(admin.ModelAdmin):
+    fields = ['region_code', 'region_name', 'is_active']
+    list_display = ('region_code', 'region_name', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        region_code = obj.region_code
+        obj.user = request.user
+        region = Region.objects.filter(region_code=region_code)
+        if region:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(RegionAdmin, self).save_model(request, obj, form, change)
+
+
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('company_name', 'company_legal_name', 'country', 'legal_HQ_address', 'legal_HQ_city',
+                    'legal_HQ_state', 'legal_HQ_zipcode')
+
+
+class CustomerGroupAdmin(admin.ModelAdmin):
+    list_display = ('customer_group_code', 'customer_group_name', 'is_active')
+
+
+class PnLAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'owner', 'is_active')
+
+
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'is_active')
+
+
+class PracticeAdmin(admin.ModelAdmin):
+    fields = ['code', 'name', 'department', 'head', 'sub_practice', 'is_active']
+    list_display = ('code', 'name', 'department', 'head', 'sub_practice', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        code = obj.code
+        obj.user = request.user
+        practice = Practice.objects.filter(code=code)
+        if practice:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(PracticeAdmin, self).save_model(request, obj, form, change)
+
+
+class DesignationAdmin(admin.ModelAdmin):
+    fields = ['name', 'role', 'career_band_code', 'steps', 'is_active']
+    list_display = ('name', 'role', 'career_band_code', 'steps', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        name = obj.name
+        obj.user = request.user
+        designation = Designation.objects.filter(name=name)
+        if designation:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(DesignationAdmin, self).save_model(request, obj, form, change)
+
+
+class KRAAdmin(admin.ModelAdmin):
+    fields = ['designation', 'series', 'narration', 'is_active']
+    list_display = ('designation', 'series', 'narration', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        designation = obj.designation
+        obj.user = request.user
+        series = obj.series
+        kra = KRA.objects.filter(designation=designation, series=series)
+        if kra:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(KRAAdmin, self).save_model(request, obj, form, change)
+
+
+class CareerBandAdmin(admin.ModelAdmin):
+    list_display = ('code', 'description', 'is_active')
+
+
+class SubPracticeAdmin(admin.ModelAdmin):
+    fields = ['code', 'name', 'practice', 'is_active',]
+    list_display = ('code', 'name', 'practice', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        code = obj.code
+        obj.user = request.user
+        sub_practice = SubPractice.objects.filter(code=code)
+        if sub_practice:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(SubPracticeAdmin, self).save_model(request, obj, form, change)
+
+
+class DepartmentAdmin(admin.ModelAdmin):
+    fields = ['name', 'code', 'head', 'billable', 'practices', 'is_active']
+    list_display = ('name', 'code', 'head', 'billable', 'practices', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        code = obj.code
+        user = obj.user = request.user
+        department = Department.objects.filter(code=code)
+        if department:
+            obj.updatedby = user.id
+        else:
+            obj.createdby = user.id
+            obj.updatedby = user.id
+
+        super(DepartmentAdmin, self).save_model(request, obj, form, change)
+
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(CustomerType, CustomerTypeAdmin)
 admin.site.register(Holiday, HolidayAdmin)
@@ -54,3 +188,19 @@ admin.site.register(BusinessUnit, BusinessUnitAdmin)
 admin.site.register(OfficeLocation, OfficeLocatonAdmin)
 admin.site.register(DataPoint, DataPointsAdmin)
 admin.site.register(Training, TrainingAdmin)
+admin.site.register(Country, CountryAdmin)
+admin.site.register(Currency, CurrencyAdmin)
+admin.site.register(Region, RegionAdmin)
+admin.site.register(Company, CompanyAdmin)
+admin.site.register(CustomerGroup, CustomerGroupAdmin)
+admin.site.register(PnL, PnLAdmin)
+admin.site.register(Role, RoleAdmin)
+admin.site.register(Practice, PracticeAdmin)
+admin.site.register(Designation, DesignationAdmin)
+admin.site.register(KRA, KRAAdmin)
+admin.site.register(CareerBand, CareerBandAdmin)
+admin.site.register(SubPractice, SubPracticeAdmin)
+admin.site.register(Department, DepartmentAdmin)
+
+
+

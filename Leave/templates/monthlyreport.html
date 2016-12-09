@@ -1,0 +1,112 @@
+  <div class="col-md-12 mgbt-xs-20 mgbt-md-0">
+    <div class="panel widget  light-widget">
+      <div class="panel-body-list jsh4">
+<!-- Bar chart -->
+
+        <div class="col-sm-4">
+          <h4 style="margin-top: 15px">Leave Report Summary (%)</h4>
+        </div>
+        <div class="col-sm-6">
+          <h4 style="margin-top: 15px">Weekly Data</h4>
+        </div> 
+        <div class="col-sm-4">
+          <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
+        </div>
+
+        <div class="col-sm-6 pd-25">
+
+
+          <table class="lr-summary-table">
+<tr>
+              <td>Week</td>
+              <td>Available</td>
+              <td>Leave</td>
+              <td>Holiday</td>  
+</tr>
+              {% for val in  weekreport%}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ val.available }}</td>
+              <td>{{ val.unavailable }}</td>
+              <td>{{ val.holiday }}</td>
+            </tr>
+              {% endfor %}
+<tr>
+              <td>&nbsp;</td>
+              <td class="available"></td>
+              <td class="absent"></td>
+              <td class="holiday"></td>  
+</tr>
+
+
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- col-md-6 -->
+  </div><!-- ./col -->
+
+<script type="text/javascript" src="/static/plugins/raphael/raphael.min.js"></script>
+<script type="text/javascript" src="/static/plugins/morris/morris.min.js"></script>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+  // The Bar Chart
+
+  var barChart = function(){
+
+    "use strict";
+
+    window.barChart = Morris.Bar({
+      element: 'bar-placeholder',
+       data: [{% for val in  weekreport%}
+      { y: 'Week {{ forloop.counter }}', 
+      a: (Math.round(({{ val.available }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))),
+      b: (Math.round(({{ val.unavailable }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))), 
+      c: (Math.round(({{ val.holiday }} * 100)/({{ val.available }}+{{ val.unavailable }}+{{ val.holiday }}))) 
+    },
+          {% endfor %}
+      ],
+      hideHover: 'true',
+      stacked: true,
+      xkey: 'y',
+      xLabelMargin: 5,
+      ykeys: ['a', 'b', 'c'],
+      labels: ['Available', 'Leave', 'Holiday'],
+      barColors: ["#55b439", "#e95427","#F4A460"]
+    });
+
+  }// Calling Bar Chart
+
+
+
+
+
+$(document).ready(function() {
+    "use strict";
+
+    barChart();
+
+
+    $('#data-tables').dataTable({
+        searching: false,
+        scrollCollapse: true,
+        destroy: true,
+
+    });
+
+    $(window).resize(function () {
+        window.barChart.redraw();
+
+    });
+
+
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
+    })
+
+    
+});
+</script>

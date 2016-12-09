@@ -700,24 +700,6 @@ span:hover .booked-by{display: block}
 
 /* Leave Report */
 
-.leave-report-table{margin-top: 0px !important;}
-.leave-report-table div.indicator{
-    background: #56cc56;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin: auto;
-}
-div.indicator.absent{
-    background-color: #cc5656;
-}
-table.dataTable.leave-report-table thead .sorting{
-    text-align: center;
-}
-.dataTables_length{display: none;}/* Removing number of entries to display */
-
-
-
 
 
 

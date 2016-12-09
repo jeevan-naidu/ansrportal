@@ -26,7 +26,10 @@
                     </div>
 
                 </div>
-
+  {% if is_admin %}
+Available Books:{{ book_count.available }} &nbsp;&nbsp;&nbsp; Applied Books: {{ book_count.applied }} &nbsp;&nbsp;&nbsp;
+      Total Books:{{ book_count.total }}
+    {% endif %}
             <div class="panel-body">
    <ul class="nav nav-tabs">
  <li data-toggle="tab"  data-target="#a" class="active"><a href="#">Avaliable Books</a></li>
@@ -73,7 +76,9 @@
                         <td>{{book.publisher.name}}</td>
                     <td>{{ book.genre }}</td>
                         <td>
-                            {% if book.status == 'available' %}
+                            {% if book.status == 'available' and lend_history %}
+                                <button type="button" class="btn btn-primary btn-sm lend-book btn-disabled" id="{{book.id}}" disabled>Apply</button>
+                                {% elif  book.status == 'available'%}
                                 <button type="button" class="btn btn-primary btn-sm lend-book" id="{{book.id}}">Apply</button>
                             {% else %}
                                 <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="View Details" class="mw-120 list_view mod">
