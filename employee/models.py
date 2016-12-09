@@ -162,15 +162,18 @@ class Employee(models.Model):
     date_of_birthO = models.DateField("Official DOB", blank=False, default=None)
     date_of_birthR = models.DateField(
         "Alternate DOB",
-        blank=False,
-        default=None)
+        blank=True,
+        null=True,
+        )
     # Can we make this a choice field?
     nationality = models.CharField("Nationality", max_length=30, blank=False)
     marital_status = models.CharField(
         "Marital Status",
         max_length=10,
         choices=MARITAL_CHOICES,
-        blank=False)
+        blank=True,
+        null=True
+    )
     wedding_date = models.DateField(verbose_name='Wedding Date',
                                     null=True,
                                     blank=True)
@@ -238,7 +241,9 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     exprience = models.IntegerField(
         "Experience in Months",
-        blank=False)
+        blank=True,
+        null=True
+    )
     color = models.CharField(
         "Color",
         max_length=10,
