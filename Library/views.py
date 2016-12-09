@@ -111,29 +111,29 @@ def booksearchpage(request):
     userid = request.user.id
     if category == 'Author':
         bookshelves = Book.objects.filter(Q(author__name__icontains=searchtext)| Q(author__surname__icontains=searchtext),)
-        lendbook = BookApplication.objects.filter( Q(book__author__name__icontains=searchtext)
-                                                                    | Q(book__author__surname__icontains=searchtext),
-                                                                        lend_by=userid)
+        lendbook = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
+                                                  | Q(book__author__surname__icontains=searchtext), lend_by=userid
+                                                  ).order_by('status')
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
             context['orderedbook'] = BookApplication.objects.filter(Q(book__author__name__icontains=searchtext)
                                                                     | Q(book__author__surname__icontains=searchtext),
-                                                                    status__in=['applied', 'appliedreturned'])
+                                                                    status__in=['applied', 'appliedreturned']).order_by('status')
         else:
             context['is_admin'] = False
     else:
         bookshelves = Book.objects.filter(title__icontains=searchtext,)
-        lendbook = BookApplication.objects.filter(lend_by=userid, book__title__icontains=searchtext)
+        lendbook = BookApplication.objects.filter(lend_by=userid, book__title__icontains=searchtext).order_by('status')
         if request.user.groups.filter(name='LibraryAdmin'):
             context['is_admin'] = True
             context['orderedbook'] = BookApplication.objects.filter(status__in=['applied', 'appliedreturned'],
-                                                                    book__title__icontains=searchtext)
+                                                                    book__title__icontains=searchtext).order_by('status')
         else:
             context['is_admin'] = False
     context['query'] = searchtext
     context['category'] = category
     context['status'] = RESULT_STATUS
-    context['bookshelves'] = bookshelves
+    context['bookshelves'] = bookshelves.order_by('status')
     context['lendbook'] = lendbook
     context['lend_history'] = applied_book_history_check(userid)
     context['book_count'] = library_book_count()
