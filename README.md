@@ -63,6 +63,6 @@ sudo apt-get install rabbitmq-server
 Setting RabbitMQ
 ------------------
 1) user creation --- rabbitmqctl add_user root root
-2) add host -- rabbitmqctl add_vhost ansr
+2) add host -- rabbitmqctl add_vhost /ansr
 3) providing access for user for host --- rabbitmqctl set_permissions -p /ansr root "^root-.*" ".*" ".*"
 
