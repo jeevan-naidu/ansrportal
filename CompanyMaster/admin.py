@@ -20,7 +20,7 @@ class CustomerTypeAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'customerCode')
+    list_display = ('name', 'customerCode', 'customergroup')
 
 
 class DepartmentAdmin(admin.ModelAdmin):
@@ -53,11 +53,25 @@ class CountryAdmin(admin.ModelAdmin):
 
 
 class CurrencyAdmin(admin.ModelAdmin):
+    fields = ['currency_code', 'currency_name', 'default', 'is_active']
     list_display = ('currency_code', 'currency_name', 'default', 'is_active')
 
 
 class RegionAdmin(admin.ModelAdmin):
+    fields = ['region_code', 'region_name', 'is_active']
     list_display = ('region_code', 'region_name', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        region_code = obj.region_code
+        obj.user = request.user
+        region = Region.objects.filter(region_code=region_code)
+        if region:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(RegionAdmin, self).save_model(request, obj, form, change)
 
 
 class CompanyAdmin(admin.ModelAdmin):
@@ -78,15 +92,55 @@ class RoleAdmin(admin.ModelAdmin):
 
 
 class PracticeAdmin(admin.ModelAdmin):
+    fields = ['code', 'name', 'department', 'head', 'sub_practice', 'is_active']
     list_display = ('code', 'name', 'department', 'head', 'sub_practice', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        code = obj.code
+        obj.user = request.user
+        practice = Practice.objects.filter(code=code)
+        if practice:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(PracticeAdmin, self).save_model(request, obj, form, change)
 
 
 class DesignationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'role', 'career_band_code', 'is_active')
+    fields = ['name', 'role', 'career_band_code', 'steps', 'is_active']
+    list_display = ('name', 'role', 'career_band_code', 'steps', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        name = obj.name
+        obj.user = request.user
+        designation = Designation.objects.filter(name=name)
+        if designation:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(DesignationAdmin, self).save_model(request, obj, form, change)
 
 
 class KRAAdmin(admin.ModelAdmin):
+    fields = ['designation', 'series', 'narration', 'is_active']
     list_display = ('designation', 'series', 'narration', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        designation = obj.designation
+        obj.user = request.user
+        series = obj.series
+        kra = KRA.objects.filter(designation=designation, series=series)
+        if kra:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(KRAAdmin, self).save_model(request, obj, form, change)
 
 
 class CareerBandAdmin(admin.ModelAdmin):
@@ -94,11 +148,37 @@ class CareerBandAdmin(admin.ModelAdmin):
 
 
 class SubPracticeAdmin(admin.ModelAdmin):
+    fields = ['code', 'name', 'practice', 'is_active',]
     list_display = ('code', 'name', 'practice', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        code = obj.code
+        obj.user = request.user
+        sub_practice = SubPractice.objects.filter(code=code)
+        if sub_practice:
+            obj.updatedby = obj.user.id
+        else:
+            obj.createdby = obj.user.id
+            obj.updatedby = obj.user.id
+
+        super(SubPracticeAdmin, self).save_model(request, obj, form, change)
 
 
 class DepartmentAdmin(admin.ModelAdmin):
+    fields = ['name', 'code', 'head', 'billable', 'practices', 'is_active']
     list_display = ('name', 'code', 'head', 'billable', 'practices', 'is_active')
+
+    def save_model(self, request, obj, form, change):
+        code = obj.code
+        user = obj.user = request.user
+        department = Department.objects.filter(code=code)
+        if department:
+            obj.updatedby = user.id
+        else:
+            obj.createdby = user.id
+            obj.updatedby = user.id
+
+        super(DepartmentAdmin, self).save_model(request, obj, form, change)
 
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(CustomerType, CustomerTypeAdmin)

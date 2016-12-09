@@ -16,6 +16,14 @@ class UpdateDate(models.Model):
     class Meta:
         abstract = True
 
+class UpdateBy(models.Model):
+    createdby = models.CharField(verbose_name='Created By', max_length=20)
+    updatedby = models.CharField(verbose_name='Updated By', max_length=20)
+
+    class Meta:
+        abstract = True
+
+
 # Create your models here.
 class CustomerType(models.Model):
     name = models.CharField(
@@ -31,9 +39,9 @@ class CustomerType(models.Model):
         return self.name
 
 
-class CustomerGroup(models.Model):
+class CustomerGroup(UpdateDate):
     customer_group_code = models.CharField(verbose_name="customer group code",
-                                           max_length=20)
+                                           max_length=20, unique=True)
     customer_group_name = models.CharField(verbose_name="customer group name",
                                            max_length=50)
     is_active = models.BooleanField(default=True,
@@ -50,7 +58,8 @@ class Customer(models.Model):
     name = models.CharField(verbose_name='Customer Name',
                             max_length=100,
                             null=False,
-                            blank=False)
+                            blank=False,
+                            unique=True)
     internal = models.BooleanField(
         blank=False,
         default=False,
@@ -171,7 +180,7 @@ class Training(models.Model):
         return self.exercise + ' - ' + self.batch
 
 
-class Department(UpdateDate):
+class Department(UpdateDate, UpdateBy):
     code = models.CharField(
         unique=True,
         verbose_name="Department Code",
@@ -189,7 +198,7 @@ class Department(UpdateDate):
         verbose_name="Is Billable",
     )
     practices = models.BooleanField(
-        verbose_name="Is Practices",
+        verbose_name="Has Practices",
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
@@ -298,9 +307,10 @@ class DataPoint(models.Model):
         verbose_name_plural = 'Service Lines'
 
 
-class Region(models.Model):
+class Region(UpdateDate, UpdateBy):
     region_code = models.CharField(verbose_name="region code",
-                                   max_length=10)
+                                   max_length=10,
+                                   unique=True)
     region_name = models.CharField(verbose_name="region name",
                                    max_length=50)
     is_active = models.BooleanField(default=True,
@@ -314,9 +324,10 @@ class Region(models.Model):
         verbose_name_plural = 'Regions'
 
 
-class Currency(models.Model):
+class Currency(UpdateDate):
     currency_code = models.CharField(verbose_name="currency code",
-                                     max_length=10)
+                                     max_length=10,
+                                     unique=True)
     currency_name = models.CharField(verbose_name="currency name",
                                      max_length=50)
     default = models.BooleanField(default=True,
@@ -333,9 +344,10 @@ class Currency(models.Model):
         verbose_name_plural = 'Currencies'
 
 
-class Country(models.Model):
+class Country(UpdateDate):
     country_code = models.CharField(verbose_name="Country Code",
-                                    max_length=20)
+                                    max_length=20,
+                                    unique=True)
     country_name = models.CharField(verbose_name="Country Name",
                                     max_length=50)
     region_code = models.ForeignKey(Region,
@@ -358,7 +370,7 @@ class Country(models.Model):
         verbose_name_plural = 'Countries'
 
 
-class Company(models.Model):
+class Company(UpdateDate):
     company_name = models.CharField(verbose_name="comapny name",
                                     max_length=20)
     company_legal_name = models.CharField(verbose_name="conpany legal name",
@@ -394,10 +406,11 @@ class Company(models.Model):
         verbose_name_plural = 'Companies'
 
 
-class PnL(models.Model):
+class PnL(UpdateDate):
     name = models.CharField(
         verbose_name="PnL Name",
         max_length=20,
+        unique=True
     )
     description = models.CharField(
         verbose_name="PnL Description",
@@ -418,7 +431,7 @@ class PnL(models.Model):
         verbose_name_plural = 'PNLS'
 
 
-class Practice(models.Model):
+class Practice(UpdateDate, UpdateBy):
     code = models.CharField(
         unique=True,
         verbose_name="Practice Code",
@@ -449,7 +462,7 @@ class Practice(models.Model):
         verbose_name_plural = 'Practices'
 
 
-class SubPractice(models.Model):
+class SubPractice(UpdateDate, UpdateBy):
     code = models.CharField(
         unique=True,
         verbose_name="Sub Practice Code",
@@ -471,7 +484,7 @@ class SubPractice(models.Model):
         verbose_name = 'Sub Practice'
         verbose_name_plural = 'Sub Practices'
 
-class CareerBand(models.Model):
+class CareerBand(UpdateDate):
     code = models.CharField(
         unique=True,
         verbose_name="Career Band Code",
@@ -495,7 +508,7 @@ class CareerBand(models.Model):
         verbose_name_plural = 'Career Bands'
 
 
-class Role(models.Model):
+class Role(UpdateDate):
     code = models.CharField(
         unique=True,
         verbose_name="Role Code",
@@ -517,10 +530,11 @@ class Role(models.Model):
         verbose_name_plural = 'Roles'
 
 
-class Designation(models.Model):
+class Designation(UpdateDate, UpdateBy):
     name = models.CharField(
         verbose_name="Designation Name",
         max_length=40,
+        unique=True,
     )
     role = models.ForeignKey(Role)
     career_band_code = models.ForeignKey(
@@ -538,7 +552,7 @@ class Designation(models.Model):
         verbose_name = 'Designation'
         verbose_name_plural = 'Designations'
 
-class KRA(models.Model):
+class KRA(UpdateDate, UpdateBy):
     designation = models.ForeignKey(Designation)
     series = models.IntegerField()
     narration = models.CharField(
