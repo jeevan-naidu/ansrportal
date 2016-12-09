@@ -224,7 +224,7 @@ function populateForm (theObj){
     var i = 0 ;
     clearDom();
 
-    console.log(theObj);
+    <!--console.log(theObj);-->
 
     theObj['tab_name'] = array_flip(theObj['tab_name'])
 
@@ -234,6 +234,7 @@ function populateForm (theObj){
       if (theObj['tab_name'].hasOwnProperty(key)) {     // opening object
         if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {
             $('.qms-allocators').append(domObj);
+             console.log('user_'+key +'---'+'order_'+key)
             $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
             $('.qms-allocators .form-group:last-child input.order-number').attr('name',  "order_"+key);
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
@@ -255,7 +256,7 @@ function populateForm (theObj){
 function check_input() {
     var is_set=0;
     $('.filter_form').each(function(i, obj) {
-            console.log(obj.name+'--'+obj.value);
+            <!--console.log(obj.name+'&#45;&#45;'+obj.value);-->
             if (obj.value != '') is_set++;
        });
        if (is_set!=0 && is_set==$('.filter_form').length) return true;
@@ -278,7 +279,7 @@ function getTabOrder(){
 
         globalObj.tab_order[tab_order_key] = tab_order_value;
     })
-        console.log(globalObj);
+        <!--console.log(globalObj);-->
 }
 
 // Function to order the tabs
@@ -289,7 +290,7 @@ function orderTabs(theObj){
 
     for (var order_key in theObj['tab_order']){
         if(theObj['tab_order'].hasOwnProperty(order_key)){
-            console.log(order_key, theObj['tab_order'][order_key]);
+            <!--console.log(order_key, theObj['tab_order'][order_key]);-->
             if(order_key > 0){
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').val(order_key);
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').addClass('tab-order-'+order_key);
@@ -318,7 +319,7 @@ function orderTabs(theObj){
         if(theObj['tab_order'].hasOwnProperty(order_key) && order_key > 0){
             $('input.order-number.tab-order-' + order_key + '').closest('.form-group').addClass('marked');
             var the_form_group = $('.qms-allocators .form-group.marked').html();
-            console.log(the_form_group);
+            <!--console.log(the_form_group);-->
             $('.qms-allocators .form-group.marked').remove();
             $('.qms-allocators').append('<div class="form-group"></div>');
             $('.qms-allocators .form-group:last-child').html(the_form_group);
@@ -331,7 +332,7 @@ function orderTabs(theObj){
         if(theObj['tab_order'].hasOwnProperty(order_key) && order_key == 0){
             $('input.order-number.tab-order-' + order_key + '').closest('.form-group').addClass('marked');
             var the_form_group = $('.qms-allocators .form-group.marked').html();
-            console.log(the_form_group);
+            <!--console.log(the_form_group);-->
             $('.qms-allocators .form-group.marked').remove();
             $('.qms-allocators').append('<div class="form-group"></div>');
             $('.qms-allocators .form-group:last-child').html(the_form_group);
@@ -345,7 +346,7 @@ function orderTabs(theObj){
 
     for (var order_key in theObj['tab_order']){
         if(theObj['tab_order'].hasOwnProperty(order_key)){
-            console.log(order_key, theObj['tab_order'][order_key]);
+            <!--console.log(order_key, theObj['tab_order'][order_key]);-->
             if(order_key > 0){
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').val(order_key);
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').attr('name', 'order_'+order_key);
@@ -427,7 +428,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
                             if(key == 'team_members'){
                                 $(':input[name$=author]').append($('<option>', {
                                         value: "",
-                                        text: "-------",
+                                        text: "Select An Author",
                                     }));
                                 for (var k in data[key]){
                                     $(':input[name$=author]').append($('<option>', {
@@ -463,6 +464,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             $('#select-field option:selected').remove();
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
+            console.log('user_'+theID +'---'+'order_'+theID)
             $('.qms-allocators .form-group:last-child').find('select').attr('name', 'user_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
@@ -473,6 +475,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             $('#select-field option:selected').remove();
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
+            console.log('user_'+theID +'---'+'order_'+theID)
             $('.qms-allocators .form-group:last-child').find('select').attr('name','user_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').val('');

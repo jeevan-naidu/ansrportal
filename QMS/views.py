@@ -55,17 +55,21 @@ class ChooseTabs(FormView):
             order_number[order_id[1]] = v
 
         # {u'user_3': u'256', u'user_1': u'255'}
+        print users
+        print order
 
         try:
             ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
                                                               project=form.cleaned_data['project'],
-                                                              qms_process_model=form.cleaned_data['qms_process_model'])
-        except Exception, e:
+                                                              qms_process_model=form.cleaned_data['qms_process_model'],
+                                                              created_by=self.request.user)
+        except Exception as e:
+            print (str(e))
             logger.error(" {0} ".format(str(e)))
 
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
                                                                            component=form.cleaned_data['component'],
-                                                                           defaults={'created_by': self.request.user}, )
+                                                                           created_by=self.request.user, )
 
         # print cm_obj
         # print chapter_component
@@ -73,13 +77,15 @@ class ChooseTabs(FormView):
         for k, v in user_tab.iteritems():
             # print form.cleaned_data['author']
             # k = int(k)
+            print k, order_number[k]
             obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
                                                                   chapter_component=cm_obj,
-                                                                  review_group_id=int(k), order_number=order_number[k],
+                                                                  review_group_id=int(k),
                                                                   defaults={'reviewed_by_id': int(v),
-                                                                            'created_by': self.request.user}, )
+                                                                            'created_by': self.request.user,
+                                                                            'order_number': order_number[k]}, )
             # print obj, created
             if not created:
                 obj.updated_by = self.request.user
@@ -171,7 +177,7 @@ def get_template_process_review(request):
         tabs = team_members = tab_name = ''
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order}
-    print context_data
+    # print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
