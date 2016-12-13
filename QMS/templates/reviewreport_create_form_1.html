@@ -60,6 +60,7 @@
 
 
 
+
                         </div>
 
                     </div><!-- ./qms-selectors row -->
@@ -237,6 +238,8 @@ function populateForm (theObj){
              console.log('user_'+key +'---'+'order_'+key)
             $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
             $('.qms-allocators .form-group:last-child input.order-number').attr('name',  "order_"+key);
+                        $('.qms-allocators .form-group:last-child input.order-number').attr('required',  true);
+
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 
             populateNames(theObj);

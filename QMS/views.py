@@ -52,7 +52,13 @@ class ChooseTabs(FormView):
 
         for k, v in order.iteritems():
             order_id = k.split('_')
-            order_number[order_id[1]] = v
+            if v:
+                v = int(v)
+            if v and v != 0:
+                order_number[order_id[1]] = v
+            else:
+                messages.error(self.request, 'Order Number Cannot Be 0')
+            return super(ChooseTabs, self).form_valid(form)
 
         # {u'user_3': u'256', u'user_1': u'255'}
         print users
