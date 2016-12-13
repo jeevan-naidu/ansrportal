@@ -69,7 +69,6 @@ class BaseAssessmentTemplateForm(forms.Form):
         self.fields['author'].widget.attrs['required'] = True
         self.fields['component'].widget.attrs['class'] = "filter_form reset_field"
         self.fields['component'].widget.attrs['required'] = True
-        self.fields['order_number'].widget.attrs['required'] = True
 
 
 class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
