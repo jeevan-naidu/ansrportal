@@ -150,12 +150,7 @@ class QASheetHeader(TimeStampAbstractModel):
                        " : " + str(self.chapter)
                        )
 
-    def clean(self):
-        print "im in clean"
-        from django.core.exceptions import ValidationError
-        print self.order_number
-        if self.order_number == 0:
-            raise ValidationError('Order Number Cannot Be 0')
+
 
 
 class ReviewReport(TimeStampAbstractModel):
