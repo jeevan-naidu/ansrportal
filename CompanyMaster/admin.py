@@ -226,6 +226,11 @@ class DepartmentAdmin(admin.ModelAdmin):
 
         super(DepartmentAdmin, self).save_model(request, obj, form, change)
 
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'practice':
+            kwargs["queryset"] = Practice.objects.filter(sub_practice=True)
+        return super(DepartmentAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(CustomerType, CustomerTypeAdmin)
 admin.site.register(Holiday, HolidayAdmin)
