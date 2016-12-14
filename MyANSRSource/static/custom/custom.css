@@ -276,3 +276,8 @@ span.mandatory-field{color: red}
 #bar-placeholder .morris-hover-row-label{display: none;}
 
 #user-leave-report .dropdown-toggle{min-width: 0px;}
+
+.week-number{
+    color: #8e2c2c;
+    font-weight: bold;
+}

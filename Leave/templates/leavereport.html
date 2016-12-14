@@ -48,19 +48,20 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">{{ week_in_english }}
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">
+                          <span class="week-number">{{ week_in_english }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span>
                           <i class="fa fa-caret-down prepend-icon"></i> 
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
-                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')">Week {{ forloop.counter }}</a></li>
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')"><span class="week-number">Week {{ forloop.counter }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span></a></li>
                             {% endfor %}
 
                         </ul>
                       </div>
 
 
-                      <div class="btn-group">
+                      <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}<i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                            <li><a onclick="monthchange({{ month }}, 'myteam')">My Team</a></li>
@@ -69,7 +70,7 @@
                       </div>
 
 
-                      <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div>
+                      <!-- <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div> -->
 
                     </div>
 
@@ -362,7 +363,7 @@ function monthchange(month, team){
                 success: function (data) {
                     $('#user-leave-report').text('');
                     $('#user-leave-report').append(data);
-                    $('#week-button').text("Week " + week);
+                    $('#week-button span.week-number').text("Week " + week + " : ");
 
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
