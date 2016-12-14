@@ -186,8 +186,9 @@ class Department(UpdateDate, UpdateBy):
         verbose_name="Department Code",
         max_length=10,
     )
-    name = models.TextField(
+    name = models.CharField(
         verbose_name="Department Name",
+        max_length=40,
         blank=False)
     head = models.ForeignKey(
         User,

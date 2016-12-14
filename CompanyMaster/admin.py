@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
 from CompanyMaster.models import OfficeLocation, CustomerType,\
     DataPoint, Division, BusinessUnit, Holiday, Customer, Training, HRActivity,\
     Country, Currency, Region, Company, CustomerGroup, Department, PnL, Practice,\
     SubPractice, CareerBand, Role, Designation, KRA
+from forms import UserChoiceField
 
 
 class DivisionInline(admin.TabularInline):
@@ -27,9 +29,21 @@ class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('name',)
     inlines = [DivisionInline, ]
 
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'head':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        return super(DepartmentAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class BusinessUnitAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'new_bu_head':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        return super(BusinessUnitAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class HolidayAdmin(admin.ModelAdmin):
@@ -43,9 +57,21 @@ class HRActivityAdmin(admin.ModelAdmin):
 class TrainingAdmin(admin.ModelAdmin):
     list_display = ('batch', 'trainingDate', 'endDate')
 
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'trainer':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        return super(TrainingAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class DataPointsAdmin(admin.ModelAdmin):
     list_display = ('name', )
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'lead':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        return super(DataPointsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class CountryAdmin(admin.ModelAdmin):
@@ -86,6 +112,12 @@ class CustomerGroupAdmin(admin.ModelAdmin):
 class PnLAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'owner', 'is_active')
 
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'owner':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        return super(PnLAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'is_active')
@@ -106,6 +138,15 @@ class PracticeAdmin(admin.ModelAdmin):
             obj.updatedby = obj.user.id
 
         super(PracticeAdmin, self).save_model(request, obj, form, change)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'department':
+            kwargs["queryset"] = Department.objects.filter(practices=True)
+        if db_field.name == 'head':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        return super(PracticeAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 class DesignationAdmin(admin.ModelAdmin):
@@ -162,6 +203,11 @@ class SubPracticeAdmin(admin.ModelAdmin):
             obj.updatedby = obj.user.id
 
         super(SubPracticeAdmin, self).save_model(request, obj, form, change)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'practice':
+            kwargs["queryset"] = Practice.objects.filter(sub_practice=True)
+        return super(SubPracticeAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class DepartmentAdmin(admin.ModelAdmin):
