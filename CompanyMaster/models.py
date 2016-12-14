@@ -186,9 +186,8 @@ class Department(UpdateDate, UpdateBy):
         verbose_name="Department Code",
         max_length=10,
     )
-    name = models.CharField(
+    name = models.TextField(
         verbose_name="Department Name",
-        max_length=20,
         blank=False)
     head = models.ForeignKey(
         User,
@@ -202,6 +201,7 @@ class Department(UpdateDate, UpdateBy):
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -371,14 +371,13 @@ class Country(UpdateDate):
 
 
 class Company(UpdateDate):
-    company_name = models.CharField(verbose_name="comapny name",
+    company_name = models.CharField(verbose_name="company name",
                                     max_length=20)
-    company_legal_name = models.CharField(verbose_name="conpany legal name",
+    company_legal_name = models.CharField(verbose_name="company legal name",
                                           max_length=50)
     country = models.ForeignKey(Country,
                                 verbose_name="country")
-    legal_HQ_address = models.CharField(verbose_name="legal head quarter address",
-                                        max_length=50,
+    legal_HQ_address = models.TextField(verbose_name="legal head quarter address",
                                         null=True,
                                         blank=True
                                         )
@@ -420,6 +419,7 @@ class PnL(UpdateDate):
     )
     owner = models.ForeignKey(User)
     is_active = models.BooleanField(
+        default=True,
         verbose_name="Is Active"
     )
 
@@ -447,11 +447,11 @@ class Practice(UpdateDate, UpdateBy):
                                    )
     head = models.ForeignKey(User)
     sub_practice = models.BooleanField(
-        verbose_name="Sub Practice",
+        verbose_name="Has Sub Practice",
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
-        max_length=40,
+        default=True,
     )
 
     def __unicode__(self):
@@ -474,7 +474,8 @@ class SubPractice(UpdateDate, UpdateBy):
     )
     practice = models.ForeignKey(Practice)
     is_active = models.BooleanField(
-        verbose_name="Is Active"
+        verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -498,6 +499,7 @@ class CareerBand(UpdateDate):
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -520,6 +522,7 @@ class Role(UpdateDate):
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -555,12 +558,12 @@ class Designation(UpdateDate, UpdateBy):
 class KRA(UpdateDate, UpdateBy):
     designation = models.ForeignKey(Designation)
     series = models.IntegerField()
-    narration = models.CharField(
+    narration = models.TextField(
         verbose_name="KRA Narration",
-        max_length=40,
     )
     is_active = models.BooleanField(
-        verbose_name="Is Active"
+        verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
