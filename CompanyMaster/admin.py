@@ -229,6 +229,9 @@ class DepartmentAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'practice':
             kwargs["queryset"] = Practice.objects.filter(sub_practice=True)
+        if db_field.name == 'head':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
         return super(DepartmentAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(Customer, CustomerAdmin)
