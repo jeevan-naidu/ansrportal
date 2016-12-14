@@ -36,7 +36,9 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">{{ week_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">{{ week_in_english }}
+                          <i class="fa fa-caret-down prepend-icon"></i> 
+                        </button>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
                               <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')">Week {{ forloop.counter }}</a></li>
