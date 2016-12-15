@@ -1,41 +1,28 @@
-<!-- row -->
- <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg details-modal">
-                        <div class="modal-content">
-                            <div class="modal-header vd_bg-blue vd_white">
 
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-								x
-							</button>
-                                <h4 class="modal-title text-center" id="myModalLabel">
-								<b> Book Details</b>
-							</h4>
-                            </div>
-                            <div class="modal-body min-height-400" id="modal_body">
-                          loading...............
-                        </div>
-                            <div class="modal-footer">
+{% if is_admin %}
 
-                                <button type="button" class="btn btn-default" data-dismiss="modal">
-								Close
-							</button>
 
-                            </div>
-                        </div>
 
-                    </div>
+{% endif %}
 
-                </div>
-  {% if is_admin %}
-Available Books:{{ book_count.available }} &nbsp;&nbsp;&nbsp; Applied Books: {{ book_count.applied }} &nbsp;&nbsp;&nbsp;
-      Total Books:{{ book_count.total }}
-    {% endif %}
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title clearfix"> 
+                      <span class="library-book-count pull-right">Applied : {{ book_count.applied }}</span>
+                      <span class="library-book-count pull-right">Available :{{ book_count.available }}</span>
+                      <span class="library-book-count pull-right">Total :{{ book_count.total }}</span>
+                    </h3>
+                  </div>
+
+
+
+
+
             <div class="panel-body">
    <ul class="nav nav-tabs">
  <li data-toggle="tab"  data-target="#a" class="active"><a href="#">Avaliable Books</a></li>
   <li data-toggle="tab"  data-target="#b" ><a href="#">Lend History</a></li>
        {% if is_admin %}
-  <li data-toggle="tab"  data-target="#c"  ><a href="#">ADMIN</a></li>
+  <li data-toggle="tab"  data-target="#c"  ><a href="#">Admin</a></li>
        {% endif %}
 
    <div class="pull-right col-sm-6">
@@ -166,6 +153,40 @@ Available Books:{{ book_count.available }} &nbsp;&nbsp;&nbsp; Applied Books: {{ 
      </div>
 
 </div>
+
+
+<!-- Modal Area -->
+
+
+ <div class="modal fade" id="modal-container-252304" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg details-modal">
+                        <div class="modal-content">
+                            <div class="modal-header vd_bg-blue vd_white">
+
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                x
+              </button>
+                                <h4 class="modal-title text-center" id="myModalLabel">
+                <b> Book Details</b>
+              </h4>
+                            </div>
+                            <div class="modal-body min-height-400" id="modal_body">
+                          loading...............
+                        </div>
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                Close
+              </button>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
 
 <script>
     function loadbybookname(value){
