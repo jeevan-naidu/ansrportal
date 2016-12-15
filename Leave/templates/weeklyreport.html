@@ -36,12 +36,12 @@
 
 
                       <div class="btn-group">
-                        <a href="" id="prev" class="btn btn-default btn-sm"><</a>
+                        <a href="" id="lr-prev" class="btn btn-default btn-sm"><</a>
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">
                           <span class="week-number">{{ week_in_english }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span>
                           <i class="fa fa-caret-down prepend-icon"></i> 
                         </button>
-                        <a href="" id="next" class="btn btn-default btn-sm">></a>
+                        <a href="" id="lr-next" class="btn btn-default btn-sm right-border-mod">></a>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
                               <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')"><span class="week-number">Week {{ forloop.counter }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span></a></li>
