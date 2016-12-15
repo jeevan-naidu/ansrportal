@@ -260,13 +260,13 @@ class TimeSheetEntry(models.Model):
                                verbose_name="Week Start")
     wkend = models.DateField(default=None, blank=True, verbose_name="Week End")
 
-    location = models.ForeignKey(
-        CompanyMaster.models.OfficeLocation,
-        verbose_name="Location",
-        null=True
-    )
-    chapter = models.ForeignKey(Chapter, blank=False,
-                                verbose_name="Chapter/Subtitle", null=True)
+    # location = models.ForeignKey(
+    #     CompanyMaster.models.OfficeLocation,
+    #     verbose_name="Location",
+    #     null=True
+    # )
+    # chapter = models.ForeignKey(Chapter, blank=False,
+    #                             verbose_name="Chapter/Subtitle", null=True)
     activity = models.ForeignKey(Activity, blank=False,
                                  verbose_name="Activity", null=True)
     task = models.ForeignKey(Task, blank=False,
