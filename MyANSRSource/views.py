@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 from employee.models import Employee
-from Leave.views import leavecheck
+from Leave.views import leavecheck, daterange
 
 from fb360.models import Respondent
 
@@ -762,7 +762,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
              'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
              'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
              'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
-             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code',
+             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue'
              )
 
     # Changing data TS data
@@ -772,11 +772,15 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
     non_zero=0
     for eachData in cwTimesheetData:
         for k, v in eachData.iteritems():
+            print k,v
             tsData[k] = v
             if k == 'managerFeedback':
                 tsData['feedback'] = v
             if k == 'id':
                 tsData['tsId'] = v
+            if k == 'project__totalValue':
+                tsData['project_value'] = v
+
             if k == 'project__projectType__code':
                 tsData['projectType'] = v
 
@@ -815,8 +819,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
 
 
 def leaveappliedinweek(user, wkstart, wkend):
-   weekleave = []
-   for single_date in daterange(wkstart, wkend):
+    weekleave = []
+    for single_date in daterange(wkstart, wkend):
        flag = leavecheck(user, single_date)
        if flag == 1:
            weekleave.append(4)
@@ -824,7 +828,9 @@ def leaveappliedinweek(user, wkstart, wkend):
            weekleave.append(8)
        else:
            weekleave.append(0)
-   return weekleave
+    return weekleave
+
+
 def renderTimesheet(request, data):
 
     mondays_list = [x for x in get_mondays_list_till_date()]
@@ -891,7 +897,7 @@ def renderTimesheet(request, data):
         else:
             non_zero_value += billable['totalH']
         bTotal += billable['totalH']
-    print zero_value, non_zero_value
+    # print zero_value, non_zero_value
     idleTotal = 0
     for idle in idleHours:
         idleTotal += idle['totalH']

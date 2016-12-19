@@ -1,7 +1,6 @@
 /* Global namespace for entire application */
 var app = app || {};
 var helper = helper || {};
-
 // Helper
 helper.range = function(start, end) {
     var result = [];
@@ -1125,6 +1124,7 @@ app.getSum = function($elements, $outputElement) {
                     var $curDayBtn = $(this),
                         $curRow = $curDayBtn.closest('tr'),
                         $curRowQuestions = $curRow.find('.b-questions'),
+                        $curRowProjectValue = $curRow.find('.project_value'),
                         $curRowHours = $curRow.find('.b-hours'),
                         $totalQuestions = $curRow.find('.t-questions'),
                         $totalHours = $curRow.find('.t-hours'),
@@ -1178,8 +1178,74 @@ app.getSum = function($elements, $outputElement) {
                     projectUnitViewToPopUp();
 
                     viewToInput();
+                     function update_hours() {
+//                        var zero_value = 0.0 ;
+//                        var non_zero_value=0.0;
+//                        $('.project_value').each(function(i, obj) {
+//                            console.log("im callwes")
+//                            if (obj.value!=0)
+//                                non_zero_value+=obj.value
+//                            else
+//                                zero_value +=obj.value;
+//                        });
+//                        $('.non_zero_value').text(non_zero_value);
+//                        $('.zero_value').text(zero_value);
+
+                    }
+                    var  current_hour  = 0.0
+                    $('input').on('focusin', function(){
+                        console.log("Saving value " + $(this).val());
+                        current_hour  = $(this).data('val', $(this).val());
+                    });
+                    var prev = 0;
+                    var current = 0;
+                    $('input').on('change', function(){
+                        prev = parseFloat($(this).data('val'));
+                        current = parseFloat($(this).val());
+                        console.log("Prev value " + prev);
+                        console.log("New value " + current);
+                         var project_value =parseFloat( $curRowProjectValue.get(0).value);
+                        var non_zero = parseFloat($('.non_zero_value').text());
+                        var zero = parseFloat($('.zero_value').text());
+//                        var new_value = 0.0
+                        var current_hour_value= current_hour.get(0).value
+//                        console.log(non_zero +'--'+zero+'---'+project_value+'--'+current_hour_value +'---'+curInput)
+                        if (prev > current) { console.log("if");
+                            if(current==0)
+                                new_value = current-prev;
+                            else
+                                new_value = prev - current;
+                            console.log("new_value"+new_value);
+                            if(project_value > 0) {
+                                var new_val = parseFloat(non_zero) + parseFloat(new_value);
+                                console.log("1"+new_val +typeof(new_val));
+                                $('.non_zero_value').text(new_val);
+                            }
+                            else { console.log("else new val"+new_value);
+                                var new_val = parseFloat(zero) + parseFloat(new_value);
+                                 console.log("new_value"+new_value);
+                                console.log("2"+new_val +typeof(new_val));
+                                $('.zero_value').text(new_val);
+                            }
+                        }
+                        else if (current > prev){
+                            new_value = parseFloat(current) - parseFloat(prev);
+                            console.log("else 1 new_value" +new_value);
+                            if(project_value > 0) {
+                                var new_val = parseFloat(non_zero) + parseFloat(new_value);
+                                console.log("3"+new_val +typeof(new_val));
+                                 $('.non_zero_value').text(new_val);
+                            }
+                            else {
+                                var new_val = parseFloat(zero) + parseFloat(new_value);
+                                console.log("4"+new_val +typeof(new_val));
+                                $('.zero_value').text(new_val);
+                            }
+                        }
+                    });
 
                     var calculateTotal = function() {
+//                        console.log("id"+$curRowProjectValue.get(0).value)
                         var questionsTemp = 0,
                             hoursTemp = 0,
                             curQuestions,
@@ -1191,7 +1257,7 @@ app.getSum = function($elements, $outputElement) {
                             $curTotalIdleHoursHidden = $curRow.find('.r-total-idle-hours'),
                             $curTotalBillableHoursHidden = $curRow.find('.r-total-billable-hours');
 
-                        console.log('curTaskType: ' + curTaskType);
+//                        console.log('curTaskType: ' + curTaskType);
 
                         if (curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
@@ -1202,7 +1268,7 @@ app.getSum = function($elements, $outputElement) {
                         for (i = 0; i < curRowQuestionsLen; i += 1) {
                             curQuestions = Number($($curRowQuestions[i]).text());
                             curHours = Number($($curRowHours[i]).text());
-
+//                            console.log("val"+$($curRowProjectValue[i]).val())
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
 
@@ -1212,7 +1278,14 @@ app.getSum = function($elements, $outputElement) {
                                 curTotalBillableHours += curHours;
                             }
                         }
-
+//                        console.log("value"+$curRow.find('.project_value').get(0).value)
+//                        $('.project_value').each(function(i, obj) {
+//                            console.log("im callwes")
+//                            if (obj.value!=0)
+//                                var non_zero_value+=obj.value
+//                            else
+//                                var zero_value +=obj.value;
+//                        });
                         $totalQuestions.text(questionsTemp.toFixed(2));
                         $totalHours.text(hoursTemp.toFixed(2));
 
@@ -1265,10 +1338,24 @@ app.getSum = function($elements, $outputElement) {
                     };
 
                     calculateTotal();
-
+//                    function update_hours() {
+//                        var zero_value = 0.0 ;
+//                        var non_zero_value=0.0;
+//                        $('.project_value').each(function(i, obj) {
+//                            console.log("im callwes")
+//                            if (obj.value!=0)
+//                                non_zero_value+=obj.value
+//                            else
+//                                zero_value +=obj.value;
+//                        });
+//                        $('.non_zero_value').text(non_zero_value);
+//                        $('.zero_value').text(zero_value);
+//
+//                    }
                     var inputToView = function() {
                         var curInput = $curHoursInput.val();
-                        console.log(curInput);
+
+
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
                         if (tsInput) {
                             $curQuestionsView.text($curQuestionsInput.val());
@@ -1277,7 +1364,7 @@ app.getSum = function($elements, $outputElement) {
                             $curQuestionsHidden.val($curQuestionsInput.val());
                             $curHoursHidden.val($curHoursInput.val());
 
-                            calculateTotal();
+                            calculateTotal();update_hours();
                         }
                     };
 

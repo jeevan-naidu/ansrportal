@@ -241,6 +241,11 @@ def TimesheetFormset(currentUser,enddate):
         tsId = forms.IntegerField(label="id",
                                   required=False,
                                   widget=forms.HiddenInput())
+
+        project_value = forms.DecimalField(label="project_value",
+                                  required=False,
+                                  widget=forms.HiddenInput())
+
         approved = forms.BooleanField(label="approved",
                                       required=False)
         hold = forms.BooleanField(label="hold",
@@ -347,6 +352,8 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['totalQ'].widget.attrs['value'] = 0.0
             self.fields['tsId'].widget.attrs['value'] = 0
+            self.fields['project_value'].widget.attrs['value'] = 0.0
+            self.fields['project_value'].widget.attrs['class'] = 'project_value'
             self.fields['projectType'].widget.attrs['value'] = 'Q'
     return TimeSheetEntryForm
 
