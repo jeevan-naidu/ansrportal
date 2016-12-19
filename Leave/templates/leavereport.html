@@ -56,7 +56,8 @@
                         <a href="" id="lr-next" class="btn btn-default btn-sm right-border-mod">></a>
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  weekreport%}
-                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')"><span class="week-number">Week {{ forloop.counter }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span></a></li>
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')"><span class="week-number">
+                                  Week {{ forloop.counter }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span></a></li>
                             {% endfor %}
 
                         </ul>
