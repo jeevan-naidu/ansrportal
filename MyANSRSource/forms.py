@@ -142,12 +142,12 @@ def TimesheetFormset(currentUser,enddate):
             label="Project",
             required=True,
         )
-        location = forms.ModelChoiceField(
-            queryset=None,
-            required=True
-        )
-
-        chapter = forms.ModelChoiceField(widget=forms.Select(), queryset=Chapter.objects.none(),label="Chapter",)
+        # location = forms.ModelChoiceField(
+        #     queryset=None,
+        #     required=True
+        # )
+        #
+        # chapter = forms.ModelChoiceField(widget=forms.Select(), queryset=Chapter.objects.none(),label="Chapter",)
         projectType = forms.CharField(label="pt",
                                       widget=forms.HiddenInput())
         task = forms.ModelChoiceField(widget=forms.Select(), queryset=Task.objects.none(), label="Task",)
@@ -266,19 +266,19 @@ def TimesheetFormset(currentUser,enddate):
                     project_obj = Project.objects.get(id=int(project_id))
                 except:
                     project_obj = project_id
-                self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
+                # self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
                 self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
-            self.fields['location'].queryset = OfficeLocation.objects.filter(
-                active=True)
+            # self.fields['location'].queryset = OfficeLocation.objects.filter(
+            #     active=True)
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
             self.fields['tsId'].widget.attrs['class'] = "set-zero"
-            self.fields['location'].widget.attrs['class'] = \
-                "form-control d-item set-zero"
-            self.fields['chapter'].widget.attrs[
-                'class'] = "form-control d-item b-chapter \
-                remove-sel-options set-zero"
+            # self.fields['location'].widget.attrs['class'] = \
+            #     "form-control d-item set-zero"
+            # self.fields['chapter'].widget.attrs[
+            #     'class'] = "form-control d-item b-chapter \
+            #     remove-sel-options set-zero"
             self.fields['task'].widget.attrs[
                 'class'
             ] = "form-control d-item b-task remove-sel-options set-zero"

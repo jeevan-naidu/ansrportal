@@ -18,7 +18,7 @@ from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
 from employee.models import Employee
-
+from Leave.views import leavecheck
 
 from fb360.models import Respondent
 
@@ -758,16 +758,18 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
             teamMember=request.user,
             activity__isnull=True
         )
-    ).values('id', 'project', 'location', 'chapter', 'task', 'mondayH',
+    ).values('id', 'project',  'task', 'mondayH',
              'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
              'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
              'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
-             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code'
+             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code',
              )
 
     # Changing data TS data
     tsData = {}
     tsDataList = []
+    zero=0
+    non_zero=0
     for eachData in cwTimesheetData:
         for k, v in eachData.iteritems():
             tsData[k] = v
@@ -777,6 +779,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
                 tsData['tsId'] = v
             if k == 'project__projectType__code':
                 tsData['projectType'] = v
+
         tsDataList.append(tsData.copy())
         tsData.clear()
     atData = {}
@@ -810,6 +813,18 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
     return {'tsData': tsDataList, 'atData': atDataList}
 
 
+
+def leaveappliedinweek(user, wkstart, wkend):
+   weekleave = []
+   for single_date in daterange(wkstart, wkend):
+       flag = leavecheck(user, single_date)
+       if flag == 1:
+           weekleave.append(4)
+       elif flag == 2:
+           weekleave.append(8)
+       else:
+           weekleave.append(0)
+   return weekleave
 def renderTimesheet(request, data):
 
     mondays_list = [x for x in get_mondays_list_till_date()]
@@ -858,7 +873,7 @@ def renderTimesheet(request, data):
     billableHours = tsObj.filter(
         activity__isnull=True,
         task__taskType__in=['B','N']
-    ).values('totalH')
+    ).values('totalH', 'project__totalValue')
     idleHours = tsObj.filter(
         activity__isnull=True,
         task__taskType='I'
@@ -867,8 +882,16 @@ def renderTimesheet(request, data):
         project__isnull=True
     ).values('totalH')
     bTotal = 0
+    zero_value=0
+    non_zero_value=0
     for billable in billableHours:
+        # print billable
+        if billable['project__totalValue'] == 0:
+            zero_value += billable['totalH']
+        else:
+            non_zero_value += billable['totalH']
         bTotal += billable['totalH']
+    print zero_value, non_zero_value
     idleTotal = 0
     for idle in idleHours:
         idleTotal += idle['totalH']
@@ -999,6 +1022,8 @@ def renderTimesheet(request, data):
                  'hold_button': data['hold_button'],
                  'billableHours': billableHours,
                  'idleHours': idleHours,
+                 'zero_value': zero_value,
+                 'non_zero_value': non_zero_value,
                  'bTotal': bTotal,
                  'idleTotal': idleTotal,
                  'attendance': attendance,

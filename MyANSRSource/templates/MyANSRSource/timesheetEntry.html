@@ -64,7 +64,7 @@
 		{% if forloop.first %}
 		<thead>
 		<tr>
-			<td colspan="4" class="text-right">
+			<td colspan="2" class="text-right">
 				<h6>
                     <strong>Swipe Card Hours</strong>
 				</h6>
@@ -76,7 +76,7 @@
 			{% endfor %}
 		</tr>
 		<tr>
-			<td colspan="4" class="text-right">
+			<td colspan="2" class="text-right">
 				<strong>Timesheet Hours</strong>
 			</td>
 			<td class="text-center">
@@ -110,16 +110,14 @@
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 4 %}
+				{% if forloop.counter <= 2 %}
 					<th class="res-14-per">
 				{% else %}
 					<th>
 				{% endif %}
-				{% if 'Chapter' in data.label %}
-					Chapter/Subtitle
-				{% else %}
+
 				{{ data.label }}
-				{% endif %}
+
 				{% if data.field.required %}
 					<span class="required">*</span>
 				{% endif %}
@@ -452,11 +450,19 @@
                 </thead>
                 <tbody>
                 <tr>
-		    <td>Billable</td>
-		    <td class="total-billable-hours text-right">{{ bTotal }}</td>
+		    <td>Billable  $ >0 </td>
+		    <td class="non_zero_value text-right"> {{non_zero_value}}</td>
                 </tr>
-                <tr>
-                    <td>Idle</td>
+				 <tr>
+		    <td>Billable  $ == 0 </td>
+		    <td class="zero_value text-right"> {{zero_value}}</td>
+                </tr>
+				  <!--<tr>-->
+		    <!--<td>Billable </td>-->
+		    <!--<td class="total-billable-hours text-right"> {{ bTotal }}</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <td>Leave</td>
 		    <td class="total-idle-hours text-right">{{ idleTotal }}</td>
                 </tr>
                 <tr>
