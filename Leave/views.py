@@ -1188,16 +1188,63 @@ def report(request):
     userid = [user.user_id for user in userlist]
     userlist = User.objects.filter(id__in=userid, is_active=True)
     context['weekreport'] = weekwisereport(month, userlist)
-
     context['leavereport'] = leavereportweeklybasedonuser(month, userlist, 1)
     current_week_no = current_week()
+    context['current_week_no'] = current_week_no
     context['startdate'] = weekdetail(current_week_no, month)
     context['enddate'] = context['startdate'] + timedelta(5)
+    no_of_avaliable_week = len(context['weekreport'])
+    context['current_month_week_details'] = current_month_week_details(no_of_avaliable_week, month)
     context['month'] = month
     context['month_in_english'] = month_in_english(month)
     context['week_in_english'] = "Week " + str(current_week_no)
     context['team_data'] = "My Team"
+    context['next_week'] = next_week_detail(no_of_avaliable_week, current_week_no, month)
+    if month == 1:
+        previous_month_detail = weekwisereport(12, userlist)
+    else:
+        previous_month_detail = weekwisereport(month-1, userlist)
+    context['previous_week'] = previous_week_detail(len(previous_month_detail), current_week_no, month)
     return render(request, 'leavereport.html', context)
+
+
+def next_week_detail(no_of_avaliable_week, current_week_no, month):
+    week_detail = [0, 0]
+    if current_week_no == no_of_avaliable_week and month == 12:
+        week_detail[0] = 1
+        week_detail[1] = 1
+    elif current_week_no == no_of_avaliable_week:
+        week_detail[0] = 1
+        week_detail[1] = month + 1
+    else:
+        week_detail[0] = current_week_no + 1
+        week_detail[1] = month
+    return week_detail
+
+
+def previous_week_detail(no_of_avaliable_week, current_week_no, month):
+    week_detail = [0, 0]
+    if current_week_no == 1 and month == 1:
+        week_detail[0] = 1
+        week_detail[1] = 12
+    elif current_week_no == 1:
+        week_detail[0] = no_of_avaliable_week
+        week_detail[1] = month - 1
+    else:
+        week_detail[0] = current_week_no - 1
+        week_detail[1] = month
+    return week_detail
+
+
+def current_month_week_details(no_of_week, month):
+    weeks_detail = []
+    week_detail = [0, 0]
+    for val in range(1, no_of_week+1):
+        week_detail[0] = weekdetail(val, month)
+        week_detail[1] = week_detail[0] + timedelta(5)
+        weeks_detail.append(week_detail)
+        week_detail = [0, 0]
+    return weeks_detail
 
 
 def month_in_english(month):
@@ -1435,15 +1482,23 @@ def weekwisedata(request):
     userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
     userid = [user.user_id for user in userlist]
     userlist = User.objects.filter(id__in=userid, is_active=True)
-    # import ipdb; ipdb.set_trace()
     context['weekreport'] = weekwisereport(month, userlist)
     context['leavereport'] = leavereportweeklybasedonuser(month, userlist, week)
+    no_of_avaliable_week = len(context['weekreport'])
+    context['current_month_week_details'] = current_month_week_details(no_of_avaliable_week, month)
     context['startdate'] = weekdetail(week, month)
     context['enddate'] = context['startdate'] + timedelta(5)
     context['month'] = month
     context['team'] = team
     context['month_in_english'] = month_in_english(month)
-    context['week_in_english'] = "Week 1"
+    context['next_week'] = next_week_detail(no_of_avaliable_week, week, month)
+    if month == 1:
+        previous_month_detail = weekwisereport(12, userlist)
+    else:
+        previous_month_detail = weekwisereport(month-1, userlist)
+    context['previous_week'] = previous_week_detail(len(previous_month_detail), week, month)
+    context['current_week_no'] = week
+    context['week_in_english'] = "Week " + str(week)
     return render(request, 'weeklyreport.html', context)
 
 
