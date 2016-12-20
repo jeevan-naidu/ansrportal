@@ -1293,8 +1293,6 @@ def weekwisereport(month, userlist):
     currentmontdetail = monthrange(date.today().year, month)
     if month == 1:
         previousmontdetail = monthrange(date.today().year, 12)
-    elif month == 12:
-        previousmontdetail = monthrange(date.today().year, month - 1)
     else:
         previousmontdetail = monthrange(date.today().year, month - 1)
 
@@ -1306,8 +1304,6 @@ def weekwisereport(month, userlist):
     for val in range(0, currentmontdetail[0]):
         if month == 1:
             datecheck = date(year=date.today().year-1, month=12, day=previousmonthdays - val)
-        elif month == 12:
-            datecheck = date(year=date.today().year+1, month=1, day=previousmonthdays - val)
         else:
             datecheck = date(year=date.today().year, month=month - 1, day=previousmonthdays - val)
         for user in userlist:
@@ -1362,56 +1358,6 @@ def weekwisereport(month, userlist):
     return weekreport
 
 
-def leavereport(request):
-    leavereport = {}
-    user = request.user.id
-    month = int(request.GET.get('month'))
-    manager = Employee.objects.get(user_id=user)
-    userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
-    userid = [user.user_id for user in userlist]
-    userlist = User.objects.filter(id__in=userid, is_active=True)
-    for user in userlist:
-        username = user.username
-        leavereport[username] = monthlyleavereport(user, month)
-    json_data = json.dumps(leavereport)
-    return HttpResponse(json_data, content_type="application/json")
-
-
-def monthlyleavereport(user, month):
-    leavelist = []
-    userreport = {}
-    montdetail = monthrange(date.today().year, month)
-    nextmontdetail = monthrange(date.today().year, month+1)
-    previousmonthdays = nextmontdetail[0]
-    dayscount = montdetail[1]
-    weekcount = 1
-    daysinweek = 1
-    for val in range(0, montdetail[0]):
-        key = "adv"+str(weekcount)+str(val)
-        userreport[key] = 4
-    for val in range(1, dayscount+1):
-        date1 = date(year=date.today().year, month=month, day=val)
-        if date1.strftime("%A") == 'Saturday':
-            weekcount += 1
-            daysinweek = 1
-            leavelist.append(userreport)
-            userreport = {}
-        elif date1.strftime("%A") == 'Sunday':
-            pass
-        else:
-            key = "curr" + str(weekcount) + str(daysinweek)
-            userreport[key] = leavecheck(user, date1)
-            daysinweek +=1
-        if val == dayscount and previousmonthdays<5:
-            for val in range(5-previousmonthdays):
-                key = "next" + str(weekcount) + str(val)
-                userreport[key] = 4
-            leavelist.append(userreport)
-        elif val == dayscount:
-            leavelist.append(userreport)
-    return leavelist
-
-
 def leavecheck(user, date):
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
@@ -1446,6 +1392,7 @@ def leavecheck(user, date):
     else:
         flag = 0
     return flag
+
 
 def monthwisedata(request):
     month = int(request.GET.get('month'))
