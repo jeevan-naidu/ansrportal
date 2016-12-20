@@ -1,7 +1,7 @@
 from Leave.models import ShortAttendance, LeaveApplications
 from employee.models import Attendance,Employee
 from django.contrib.auth.models import User
-from datetime import date,datetime, timedelta, time
+from datetime import date, datetime, timedelta, time
 from django.core.management.base import BaseCommand
 import logging
 import pytz
@@ -23,6 +23,7 @@ class Command(BaseCommand):
 
 
 def shortLeave():
+    print str(datetime.now()) + " short attendance raised started running"
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
     checkdate = date.today() - timedelta(days=4)
@@ -130,6 +131,7 @@ def shortLeave():
                                                   stay_time=time(00, 00, 00),
                                                   )
             send_mail(user, 'full_day', checkdate, dueDate, "missing records", "open")
+    print str(datetime.now()) + " short attendance raised finished running"
 
 
 

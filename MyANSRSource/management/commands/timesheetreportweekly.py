@@ -20,13 +20,14 @@ class Command(BaseCommand):
 
 
 def timesheet_report(week):
-
+    print str(datetime.now()) + " timesheet report weekly started running"
     manager_list = Employee.objects.all().values('manager').distinct()
     for manager in manager_list:
         manager_id = manager_check(manager)
         if manager_id:
             user_list = Employee.objects.filter(manager=manager['manager'])
             report_based_on_manger(user_list, manager_id, week)
+    print str(datetime.now()) + " timesheet report weekly finished running. processed data" + str(len(manager_list))
 
 
 def manager_check(manager):

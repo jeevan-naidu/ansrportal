@@ -1,7 +1,7 @@
 from Leave.models import ShortAttendance, LeaveApplications, LeaveSummary, LeaveType
 from employee.models import Employee
 from django.contrib.auth.models import User
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.core.management.base import BaseCommand
 import logging
 
@@ -17,11 +17,14 @@ class Command(BaseCommand):
 
 
 def shortAttendanceApply():
+    print str(datetime.now()) + " short attendance auto apply started running"
     duedate = date.today() - timedelta(days=1)
-    shortattendance = ShortAttendance.objects.filter(due_date=duedate,active=True)
+    shortattendance = ShortAttendance.objects.filter(due_date=duedate, active=True)
     for attendance in shortattendance:
         applyLeave(attendance)
         print "leave saved for {0}".format(attendance.user)
+    print str(datetime.now()) + " short attendance auto apply finished running. processed data "\
+                                + str(len(shortattendance))
 
 
 def applyLeave(attendance):
