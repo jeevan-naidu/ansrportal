@@ -2365,15 +2365,17 @@ def GetTasks(request, projectid):
             eachRec['norm'] = float(eachRec['norm'])
         a1=request.GET.get('endDate')
         date = datetime(year=int(a1[4:8]), month=int(a1[2:4]), day=int(a1[0:2])).date()
-        pEndDate=Project.objects.get(pk=projectid).endDate
-        diff=date-pEndDate
+        project_obj=Project.objects.get(pk=projectid)
+        # print project_obj.totalValue
+        diff=date-project_obj.endDate
         diff=diff.days
         if diff<0:
             diff=0
-        data = {'data': list(tasks), 'flag':diff}
+        data = {'data': list(tasks), 'flag': diff, 'total_value': str(project_obj.totalValue)}
     except Task.DoesNotExist:
         diff=0
-        data = {'data': list(), 'flag':diff}
+        data = {'data': list(), 'flag': diff, 'total_value': str(project_obj.totalValue)}
+    # print data
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 def GetHolidays(request, memberid):
