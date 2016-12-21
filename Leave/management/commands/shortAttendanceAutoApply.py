@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from datetime import date, timedelta, datetime
 from django.core.management.base import BaseCommand
 import logging
-
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from Leave.tasks import leaveTypeDictionary
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -111,6 +114,11 @@ def leavesubmit(attendance, leave, reason, user_id, applied_by):
         attendance.active = False
         attendance.save()
         leave.save()
+        send_mail(User.objects.get(id=user_id),
+                  leave.leave_type.leave_type,
+                  attendance.for_date,
+                  attendance.for_date,
+                  leavecount)
 
     except:
         print "please check manager for user id {0}".format(user_id)
@@ -129,3 +137,27 @@ def leavecheckonautoapplydate(attendance, user):
         return False
     else:
         return True
+
+
+def send_mail(user, leavetype, fromdate, todate, count):
+    msg_html = render_to_string('email_templates/short_leave_auto_apply.html',
+                                {'registered_by': user.first_name,
+                                 'leaveType': leaveTypeDictionary[leavetype],
+                                 'fromdate': fromdate,
+                                 'todate': todate,
+                                 'count': count,
+                                 })
+
+    mail_obj = EmailMessage('Short Attendance Raised',
+                            msg_html, settings.EMAIL_HOST_USER, [user.email],
+                            cc=[])
+
+    mail_obj.content_subtype = 'html'
+    email_status = mail_obj.send()
+    if email_status == 0:
+        logger.error(
+            "Unable To send Mail To The Authorities For"
+            "The Following Leave Applicant : Date time : ")
+        return "failed"
+    else:
+        logger.debug('send successful')

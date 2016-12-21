@@ -10,7 +10,7 @@ from CompanyMaster.models import Holiday
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
-from Leave.tasks import mangerdetail, shortattendancetype
+from Leave.tasks import shortattendancetype
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -153,7 +153,6 @@ def getTimeFromTdelta(tdelta, fmt):
 
 
 def send_mail(user, leavetype, fordate, duedate, status_comments, status):
-    #manager = mangerdetail(user)
     msg_html = render_to_string('email_templates/short_attendance_raised.html',
                                 {'registered_by': user.first_name,
                                  'leaveType': shortattendancetype[leavetype],
@@ -166,9 +165,6 @@ def send_mail(user, leavetype, fordate, duedate, status_comments, status):
     mail_obj = EmailMessage('Short Attendance Raised',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
                             cc=[])
-    # mail_obj = EmailMessage('Short Attendance Raised',
-    #                         msg_html, settings.EMAIL_HOST_USER, [user.email],
-    #                         cc=[])
 
     mail_obj.content_subtype = 'html'
     email_status = mail_obj.send()
