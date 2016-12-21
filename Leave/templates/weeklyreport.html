@@ -12,7 +12,7 @@
                     <div class="col-sm-12">
 
 
-                      <div class="btn-group">
+                      <div class="btn-group mr-15">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}
                           <i class="fa fa-caret-down prepend-icon"></i> 
                         </button>
@@ -36,18 +36,23 @@
 
 
                       <div class="btn-group">
-                        <a onclick="weekchange({{ previous_week.0 }}, {{ previous_week.1 }}, '{{ team }}')"
-                           id="lr-prev" class="btn btn-default btn-sm"><</a>
+                        <a onclick="weekchange({{ previous_week.0 }}, {{ previous_week.1 }}, '{{ team }}')" id="lr-prev" class="btn btn-default btn-sm">
+                          <span class="glyphicon glyphicon-arrow-left"></span>
+                        </a>
+
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">
                           <span class="week-number">{{ week_in_english }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span>
                           <i class="fa fa-caret-down prepend-icon"></i> 
                         </button>
-                        <a onclick="weekchange({{ next_week.0 }}, {{ next_week.1 }}, '{{ team }}')"
-                           id="lr-next" class="btn btn-default btn-sm right-border-mod">></a>
+
+                        <a onclick="weekchange({{ next_week.0 }}, {{ next_week.1 }}, '{{ team }}')" id="lr-next" class="btn btn-default btn-sm">
+                          <span class="glyphicon glyphicon-arrow-right"></span>
+                        </a>
+
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  current_month_week_details%}
-                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')">
-                                  <span class="week-number">Week {{ forloop.counter }} : </span><span class="week-range">{{ val.0 }} - {{ val.1}}</span></a></li>
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')"><span class="week-number">
+                                  Week {{ forloop.counter }} : </span><span class="week-range">{{ val.0 }} - {{ val.1}}</span></a></li>
                             {% endfor %}
 
                         </ul>
@@ -55,12 +60,14 @@
 
 
                       <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}
+                            <i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
                            <li><a onclick="monthchange({{ current_week_no }}, {{ month }}, 'myteam')">My Team</a></li>
                           <li><a onclick="monthchange({{ current_week_no }}, {{ month }}, 'peers')">My Peers</a></li>
                         </ul>
                       </div>
+
 
 
                       <!-- <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div> -->
