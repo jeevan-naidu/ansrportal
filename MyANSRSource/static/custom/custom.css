@@ -270,6 +270,18 @@ legend{border:none !important;}
 
 span.mandatory-field{color: red}
 
+
+/* library */
+
+#library-book-count{
+    background: #fbfbfb;
+    margin: -15px -25px 15px;
+    padding: 15px;
+    border-bottom: 1px solid #e2e2e2;
+}
+span.book-count-field{color: #6b6b6b}
+span.book-count{font-weight: bold}
+
 /* Leave report */
 
 #bar-placeholder .morris-hover.morris-default-style{background: rgb(24, 51, 14)}

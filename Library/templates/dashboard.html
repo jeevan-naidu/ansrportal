@@ -26,11 +26,25 @@
                     </div>
 
                 </div>
-  {% if is_admin %}
-Available Books:{{ book_count.available }} &nbsp;&nbsp;&nbsp; Applied Books: {{ book_count.applied }} &nbsp;&nbsp;&nbsp;
-      Total Books:{{ book_count.total }}
-    {% endif %}
+
+
+
+
+
+
             <div class="panel-body">
+
+  {% if is_admin %}
+<div id="library-book-count" class="row">
+
+  <div class="col-sm-2 pull-right"><span class="book-count-field">Applied Books: </span><span class="book-count">{{ book_count.applied }}</span></div>
+  <div class="col-sm-2 pull-right"><span class="book-count-field">Available Books: </span><span class="book-count">{{ book_count.available }}</span></div>
+  <div class="col-sm-2 pull-right"><span class="book-count-field">Total Books: </span><span class="book-count">{{ book_count.total }}</span></div>
+
+</div>
+    {% endif %}
+
+
    <ul class="nav nav-tabs">
  <li data-toggle="tab"  data-target="#a" class="active"><a href="#">Avaliable Books</a></li>
   <li data-toggle="tab"  data-target="#b" ><a href="#">Lend History</a></li>
