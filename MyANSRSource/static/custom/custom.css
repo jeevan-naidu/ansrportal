@@ -278,9 +278,15 @@ span.mandatory-field{color: red}
     margin: -15px -25px 15px;
     padding: 15px;
     border-bottom: 1px solid #e2e2e2;
+    text-align: right;
 }
 span.book-count-field{color: #6b6b6b}
 span.book-count{font-weight: bold}
+.book-count-holder{display: inline-block;margin-left: 15px}
+#library-search-categories{float: left;}
+.search{width: auto !important;margin-left: 25px !important;}
+.search-label input[type="radio"]{margin-left: 15px;}
+.search-label span{margin-left: 5px;position: relative;top: -2px;}
 
 /* Leave report */
 

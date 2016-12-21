@@ -37,9 +37,9 @@
   {% if is_admin %}
 <div id="library-book-count" class="row">
 
-  <div class="col-sm-2 pull-right"><span class="book-count-field">Applied Books: </span><span class="book-count">{{ book_count.applied }}</span></div>
-  <div class="col-sm-2 pull-right"><span class="book-count-field">Available Books: </span><span class="book-count">{{ book_count.available }}</span></div>
-  <div class="col-sm-2 pull-right"><span class="book-count-field">Total Books: </span><span class="book-count">{{ book_count.total }}</span></div>
+  <div class="book-count-holder"><span class="book-count-field">Applied Books: </span><span class="book-count">{{ book_count.applied }}</span></div>
+  <div class="book-count-holder"><span class="book-count-field">Available Books: </span><span class="book-count">{{ book_count.available }}</span></div>
+  <div class="book-count-holder"><span class="book-count-field">Total Books: </span><span class="book-count">{{ book_count.total }}</span></div>
 
 </div>
     {% endif %}
@@ -49,23 +49,25 @@
  <li data-toggle="tab"  data-target="#a" class="active"><a href="#">Avaliable Books</a></li>
   <li data-toggle="tab"  data-target="#b" ><a href="#">Lend History</a></li>
        {% if is_admin %}
-  <li data-toggle="tab"  data-target="#c"  ><a href="#">ADMIN</a></li>
+  <li data-toggle="tab"  data-target="#c"  ><a href="#">Admin</a></li>
        {% endif %}
 
-   <div class="pull-right col-sm-6">
-           <div class="search">
-		 <input type="text" id="book-search" class="form-inline input-sm width-50" name="q" placeholder="Search by Author" value="{{ query }}" autocomplete="off"/>
-		 <ul class="results dropdown-menu" >
-		 </ul>
-               </div>
-
+   <div class="pull-right width-40">
+<div id="library-search-categories">
         {% if category == 'Author'  %}
-       <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" >Book Title</label>
-       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" checked>Author</label>
+       <label for="id-one" class="search-label"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" ><span>Book Title</span></label>
+       <label for="id-two" class="search-label"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" checked><span>Author</span></label>
         {% else %}
-            <label for="id-one"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" checked>Book Title</label>
-       <label for="id-two"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" >Author</label>
+            <label for="id-one" class="search-label"><input type="radio" id="id-one" class="form-inline" name="search-category" value="Book Title" checked><span>Book Title</span></label>
+       <label for="id-two" class="search-label"><input type="radio" id="id-two" class="form-inline" name="search-category" value="Author" ><span>Author</span></label>
        {% endif %}
+</div>
+     <div class="search">
+  		 <input type="text" id="book-search" class="form-inline input-sm" name="q" placeholder="Search by Author" value="{{ query }}" autocomplete="off"/>
+  		 <ul class="results dropdown-menu" >
+  		 </ul>
+     </div>
+
    </div>
 
 </ul>
@@ -165,9 +167,9 @@
                         <td>{%for k,v in  status %} {%if k == book.status %} {{v}} {% endif %}{%endfor%}</td>
                     <td>
 
-                                <button type="button" class="btn btn-primary btn-sm action-book" id="accept-{{book.id}}">Accept</button>
+                                <button type="button" class="btn btn-success btn-sm action-book" id="accept-{{book.id}}">Accept</button>
 
-                            <button type="button"  class="btn btn-primary btn-sm action-book" id="reject-{{book.id}}">Reject</button>
+                            <button type="button"  class="btn btn-danger btn-sm action-book" id="reject-{{book.id}}">Reject</button>
 
                         </td>
                         </tr>
