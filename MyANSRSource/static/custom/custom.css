@@ -281,8 +281,5 @@ span.mandatory-field{color: red}
     color: #8e2c2c;
     font-weight: bold;
 }
-.right-border-mod{
-    margin-left: -2px !important;
-    border-top-right-radius: 3px !important;
-    border-bottom-right-radius: 3px !important;
-}
+#lr-prev, #lr-next{border-radius: 3px !important}
+#week-button{margin: 0px 5px; border-radius: 3px !important}
