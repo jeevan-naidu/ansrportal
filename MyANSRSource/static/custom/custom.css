@@ -6,6 +6,7 @@
 .no-pad-left{padding-left: 0px;}
 .no-pad-right{padding-right: 0px;}
 .mgbt-0{margin-bottom: 0px !important}
+.mr-15{margin-right: 15px;}
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
 
@@ -270,9 +271,37 @@ legend{border:none !important;}
 
 span.mandatory-field{color: red}
 
+
+/* library */
+
+#library-book-count{
+    background: #fbfbfb;
+    margin: -15px -25px 15px;
+    padding: 15px;
+    border-bottom: 1px solid #e2e2e2;
+    text-align: right;
+}
+span.book-count-field{color: #6b6b6b}
+span.book-count{font-weight: bold}
+.book-count-holder{display: inline-block;margin-left: 15px}
+#library-search-categories{float: left;}
+.search{width: auto !important;margin-left: 25px !important;}
+.search-label input[type="radio"]{margin-left: 15px;}
+.search-label span{margin-left: 5px;position: relative;top: -2px;}
+
 /* Leave report */
 
 #bar-placeholder .morris-hover.morris-default-style{background: rgb(24, 51, 14)}
 #bar-placeholder .morris-hover-row-label{display: none;}
 
 #user-leave-report .dropdown-toggle{min-width: 0px;}
+
+.week-number{
+    color: #8e2c2c;
+    font-weight: bold;
+}
+#lr-prev, #lr-next{border-radius: 3px !important}
+#week-button{margin: 0px 5px; border-radius: 3px !important}
+
+.leave-report-table thead{border: 1px solid #464a4c;}
+.leave-report-table th{background-color: #464A4C !important;color: #fff;}

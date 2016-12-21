@@ -1,11 +1,6 @@
-#from django.forms import ModelForm, PasswordInput
-#from django.contrib.auth.models import User
-#from employee.models import User
+from django import forms
 
-#class LoginForm(ModelForm):
-#    class Meta:
-#        model = User
-#        fields = ['username', 'password']
-#        widgets = {
-#                'password': PasswordInput(),
-#        }
+
+class EmployeeChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.user.first_name + " " + obj.user.last_name

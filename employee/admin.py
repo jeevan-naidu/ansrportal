@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
 from employee.models import Employee, PreviousEmployment, EmpAddress,\
-    FamilyMember, Education, Designation, TeamMember, Attendance
+    FamilyMember, Education, Designation, TeamMember, Attendance, EmployeeCompanyInformation
+from forms import EmployeeChoiceField
 
 
 class EmpAddressInline(admin.StackedInline):
@@ -226,6 +227,32 @@ class AttendanceAdmin(admin.ModelAdmin):
     ordering = ('attdate', 'employee',)
     date_hierarchy = 'attdate'
 
+
+class EmployeeCompanyRelatedInformationAdmin(admin.ModelAdmin):
+    fields = ['employee', 'department', 'designation', 'company', 'pnl', 'practice',
+              'sub_practice', 'is_billable', 'billable_date']
+    list_display = ('employee', 'department', 'designation', 'company', 'pnl',
+                    'practice', 'sub_practice', 'is_billable', 'billable_date', )
+
+    def save_model(self, request, obj, form, change):
+        obj_id = obj.id
+        user = obj.user = request.user
+        department = EmployeeCompanyInformation.objects.filter(id=obj_id)
+        if department:
+            obj.updatedby = user.id
+        else:
+            obj.createdby = user.id
+            obj.updatedby = user.id
+
+        super(EmployeeCompanyRelatedInformationAdmin, self).save_model(request, obj, form, change)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'employee':
+            kwargs["queryset"] = Employee.objects.filter(user__is_active=True).order_by('user__first_name')
+            kwargs['form_class'] = EmployeeChoiceField
+        return super(EmployeeCompanyRelatedInformationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(TeamMember, EmployeeAdmin)
 admin.site.register(Designation, DesignationAdmin)
+admin.site.register(EmployeeCompanyInformation, EmployeeCompanyRelatedInformationAdmin)

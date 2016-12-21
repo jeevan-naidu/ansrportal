@@ -1,13 +1,16 @@
 from Leave.models import ShortAttendance, LeaveApplications
 from employee.models import Attendance,Employee
 from django.contrib.auth.models import User
-from datetime import date,datetime, timedelta, time
+from datetime import date, datetime, timedelta, time
 from django.core.management.base import BaseCommand
 import logging
 import pytz
 from string import Formatter
 from CompanyMaster.models import Holiday
-from Leave.tasks import ShortAttendanceRaisedEmailSendTask
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+from Leave.tasks import shortattendancetype
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -20,6 +23,7 @@ class Command(BaseCommand):
 
 
 def shortLeave():
+    print str(datetime.now()) + " short attendance raised started running"
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
     checkdate = date.today() - timedelta(days=4)
@@ -107,12 +111,8 @@ def shortLeave():
                                                               swipe_in=swipeInTime,
                                                               swipe_out=swipeOutTime
                                                               )
-                        ShortAttendanceRaisedEmailSendTask.delay(user,
-                                                                 shortLeaveType,
-                                                                 "open",
-                                                                 checkdate,
-                                                                 dueDate,
-                                                                 reason)
+                        send_mail(user, shortLeaveType, checkdate, dueDate, reason, "open")
+
             else:
                 print(user.first_name + user.last_name + " hr need to take care")
         except:
@@ -130,6 +130,8 @@ def shortLeave():
                                                   swipe_out=time(00, 00, 00),
                                                   stay_time=time(00, 00, 00),
                                                   )
+            send_mail(user, 'full_day', checkdate, dueDate, "missing records", "open")
+    print str(datetime.now()) + " short attendance raised finished running"
 
 
 
@@ -148,3 +150,28 @@ def getTimeFromTdelta(tdelta, fmt):
             d[i], rem = divmod(rem, l[i])
 
     return f.format(fmt, **d)
+
+
+def send_mail(user, leavetype, fordate, duedate, status_comments, status):
+    msg_html = render_to_string('email_templates/short_attendance_raised.html',
+                                {'registered_by': user.first_name,
+                                 'leaveType': shortattendancetype[leavetype],
+                                 'fordate': fordate,
+                                 'duedate': duedate,
+                                 'reason': status_comments,
+                                 'status': status,
+                                 })
+
+    mail_obj = EmailMessage('Short Attendance Raised',
+                            msg_html, settings.EMAIL_HOST_USER, [user.email],
+                            cc=[])
+
+    mail_obj.content_subtype = 'html'
+    email_status = mail_obj.send()
+    if email_status == 0:
+        logger.error(
+            "Unable To send Mail To The Authorities For"
+            "The Following Leave Applicant : Date time : ")
+        return "failed"
+    else:
+        logger.debug('send successful')
