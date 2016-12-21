@@ -6,6 +6,7 @@
 .no-pad-left{padding-left: 0px;}
 .no-pad-right{padding-right: 0px;}
 .mgbt-0{margin-bottom: 0px !important}
+.mr-15{margin-right: 15px;}
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
 
@@ -299,8 +300,8 @@ span.book-count{font-weight: bold}
     color: #8e2c2c;
     font-weight: bold;
 }
-.right-border-mod{
-    margin-left: -2px !important;
-    border-top-right-radius: 3px !important;
-    border-bottom-right-radius: 3px !important;
-}
+#lr-prev, #lr-next{border-radius: 3px !important}
+#week-button{margin: 0px 5px; border-radius: 3px !important}
+
+.leave-report-table thead{border: 1px solid #464a4c;}
+.leave-report-table th{background-color: #464A4C !important;color: #fff;}
