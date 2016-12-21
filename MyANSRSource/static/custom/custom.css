@@ -284,3 +284,6 @@ span.mandatory-field{color: red}
 }
 #lr-prev, #lr-next{border-radius: 3px !important}
 #week-button{margin: 0px 5px; border-radius: 3px !important}
+
+.leave-report-table thead{border: 1px solid #464a4c;}
+.leave-report-table th{background-color: #464A4C !important;color: #fff;}
