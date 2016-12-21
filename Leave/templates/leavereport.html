@@ -285,7 +285,6 @@
 
 $(document).ready(function() {
 {% for val in  weekreport%}
-console.log("this are the logged values " , {{ val.available }}, {{ val.unavailable }}, {{ val.holiday }} );
 
 {% endfor %}  
         "use strict";
@@ -337,7 +336,7 @@ console.log("this are the logged values " , {{ val.available }}, {{ val.unavaila
          {% elif person.1.4 == 1 %}
             fridayTotal += .5
         {% endif %}
-        console.log({{ person.1 }})
+
     {% endfor %}
 
     $("#mon-total").text(mondayTotal);
