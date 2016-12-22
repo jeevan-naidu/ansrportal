@@ -55,7 +55,7 @@ class ProfileForm(forms.ModelForm):
         queryset=User.objects.all(),
         required=True,
         widget=autocomplete.ModelSelect2(url='hire_user_search', attrs={
-            'data-placeholder': 'Type Member Name ...',
+            'data-placeholder': 'Type Resignee Name ...',
         }, ), )
     interview_by.widget.attrs = { 'class': 'form-control filter_class input-sm', 'placeholder': 'Enter Interviewer Name',
                                 }

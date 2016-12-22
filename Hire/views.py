@@ -166,7 +166,6 @@ def designation(request):
     return HttpResponse(JsonResponse(response_data), content_type='application/json')
 
 
-
 def specialization(request):
     response_data = {}
     designation = request.GET.get('designation')

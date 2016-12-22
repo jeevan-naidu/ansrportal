@@ -1,0 +1,98 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}Candidate Acceptance Report{% endblock %}
+{% block pageTitle %}Resignation Aceeptance Profile{% endblock %}
+{% block content  %}
+     <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
+                  </div>
+
+
+
+<style>
+    .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+ul{list-style: none;padding-left: 0px;}
+    </style>
+           <div class="panel-body">
+               {{form.errors}}
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
+                        {% csrf_token %}
+                        <div class="">
+                            {{form.exit_applicant}}
+                        <label class=""></label><!-- start -->
+
+                        <div class="form-group">
+
+                            <div class="">Manager Check the Box to accept the resignation<span class="mandatory-field"> *</span>{{ form.manager_accepted }}</div>
+
+                            <div>
+
+                          <div class="help-block with-errors"></div>
+
+                        </div>
+
+                        </div>
+                       <div class="form-group">
+
+                          <div> Manager Please Provide your feedback<span class="mandatory-field"> *</span>{{ form.manager_feedback }}</div>
+
+                          <div class="help-block with-errors"></div>
+
+                       </div>
+
+
+                       <div class="form-group">
+
+                          <div> HR Check the Box to accept the resignation<span class="mandatory-field"> *</span> {{ form.hr_accepted }}</div>
+
+
+                            <div>
+
+                          <div class="help-block with-errors"></div>
+
+                            </div>
+                       </div>
+                            <div class="form-group">
+
+                          <div class=""> HR Please Provide your feedback<span class="mandatory-field"> *</span></div>
+                           {{ form.hr_feedback }}
+                          <div class="help-block with-errors"></div>
+
+                       </div>
+                             <div class="form-group">
+
+                            <div class="">Select The Last date of Employee<span class="mandatory-field"> *</span></div>
+                            <div>
+                            {{ form.last_date_accepted }}
+                          <div class="help-block with-errors"></div>
+
+                        </div>
+
+                        </div>
+                            <input type ="submit" value ="submit" class="exitbutton btn-primary">
+                      </div><!--./end of form group-->
+                    </form>
+           </div>
+                </div>
+              </div>
+            </div>
+        <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+{% endblock %}
