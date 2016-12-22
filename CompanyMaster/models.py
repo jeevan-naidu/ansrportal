@@ -54,74 +54,6 @@ class CustomerGroup(UpdateDate):
         verbose_name = 'Customer Group'
 
 
-class Customer(models.Model):
-    name = models.CharField(verbose_name='Customer Name',
-                            max_length=100,
-                            null=False,
-                            blank=False,
-                            unique=True)
-    internal = models.BooleanField(
-        blank=False,
-        default=False,
-        null=False,
-        verbose_name="Internal Customer"
-    )
-    customerCode = models.CharField(
-        verbose_name="Customer Code",
-        null=False,
-        blank=False,
-        max_length=3,
-        default=None
-    )
-    location = models.CharField(
-        verbose_name="Location",
-        null=False,
-        blank=False,
-        max_length=100,
-        default=None
-    )
-    seqNumber = models.PositiveIntegerField(null=False, default=1,
-                                            verbose_name='Project ID Sequence')
-    Crelation = models.ForeignKey(User, default=None, related_name="Relation",
-                                  verbose_name='Account relationship manager',
-                                  blank=True, null=True)
-    Cdelivery = models.ForeignKey(User, default=None,
-                                  verbose_name='Account delivery manager',
-                                  blank=True, null=True)
-    cContact = models.CharField(
-        verbose_name="Customer contact",
-        null=False,
-        blank=False,
-        max_length=100,
-        default=None
-    )
-    CType = models.ForeignKey(CustomerType, default=None,
-                              verbose_name='Customer Type',
-                              blank=False, null=False)
-    active = models.BooleanField(
-        blank=False,
-        default=True,
-        null=False,
-        verbose_name="Is Active?"
-    )
-    address = models.CharField(
-        verbose_name="Address",
-        default=None,
-        max_length=100,
-        blank=False)
-    customergroup = models.ForeignKey(CustomerGroup,
-                                      verbose_name="Customer Group",
-                                      null=True,
-                                      blank=True)
-    createdon = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedon = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-
 class OfficeLocation(models.Model):
     name = models.CharField(
         verbose_name="Location Name",
@@ -188,7 +120,7 @@ class Department(UpdateDate, UpdateBy):
     )
     name = models.CharField(
         verbose_name="Department Name",
-        max_length=20,
+        max_length=40,
         blank=False)
     head = models.ForeignKey(
         User,
@@ -202,6 +134,7 @@ class Department(UpdateDate, UpdateBy):
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -371,14 +304,13 @@ class Country(UpdateDate):
 
 
 class Company(UpdateDate):
-    company_name = models.CharField(verbose_name="comapny name",
+    company_name = models.CharField(verbose_name="company name",
                                     max_length=20)
-    company_legal_name = models.CharField(verbose_name="conpany legal name",
+    company_legal_name = models.CharField(verbose_name="company legal name",
                                           max_length=50)
     country = models.ForeignKey(Country,
                                 verbose_name="country")
-    legal_HQ_address = models.CharField(verbose_name="legal head quarter address",
-                                        max_length=50,
+    legal_HQ_address = models.TextField(verbose_name="legal head quarter address",
                                         null=True,
                                         blank=True
                                         )
@@ -420,6 +352,7 @@ class PnL(UpdateDate):
     )
     owner = models.ForeignKey(User)
     is_active = models.BooleanField(
+        default=True,
         verbose_name="Is Active"
     )
 
@@ -447,11 +380,11 @@ class Practice(UpdateDate, UpdateBy):
                                    )
     head = models.ForeignKey(User)
     sub_practice = models.BooleanField(
-        verbose_name="Sub Practice",
+        verbose_name="Has Sub Practice",
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
-        max_length=40,
+        default=True,
     )
 
     def __unicode__(self):
@@ -474,7 +407,8 @@ class SubPractice(UpdateDate, UpdateBy):
     )
     practice = models.ForeignKey(Practice)
     is_active = models.BooleanField(
-        verbose_name="Is Active"
+        verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -498,6 +432,7 @@ class CareerBand(UpdateDate):
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -520,6 +455,7 @@ class Role(UpdateDate):
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -555,12 +491,12 @@ class Designation(UpdateDate, UpdateBy):
 class KRA(UpdateDate, UpdateBy):
     designation = models.ForeignKey(Designation)
     series = models.IntegerField()
-    narration = models.CharField(
+    narration = models.TextField(
         verbose_name="KRA Narration",
-        max_length=40,
     )
     is_active = models.BooleanField(
-        verbose_name="Is Active"
+        verbose_name="Is Active",
+        default=True,
     )
 
     def __unicode__(self):
@@ -569,6 +505,76 @@ class KRA(UpdateDate, UpdateBy):
     class Meta:
         verbose_name = 'KRA'
         verbose_name_plural = 'KRAs'
+
+
+class Customer(models.Model):
+    name = models.CharField(verbose_name='Customer Name',
+                            max_length=100,
+                            null=False,
+                            blank=False,
+                            unique=True)
+    internal = models.BooleanField(
+        blank=False,
+        default=False,
+        null=False,
+        verbose_name="Internal Customer"
+    )
+    customerCode = models.CharField(
+        verbose_name="Customer Code",
+        null=False,
+        blank=False,
+        max_length=3,
+        default=None
+    )
+    location = models.CharField(
+        verbose_name="Location",
+        null=False,
+        blank=False,
+        max_length=100,
+        default=None
+    )
+    seqNumber = models.PositiveIntegerField(null=False, default=1,
+                                            verbose_name='Project ID Sequence')
+    Crelation = models.ForeignKey(User, default=None, related_name="Relation",
+                                  verbose_name='Account relationship manager',
+                                  blank=True, null=True)
+    Cdelivery = models.ForeignKey(User, default=None,
+                                  verbose_name='Account delivery manager',
+                                  blank=True, null=True)
+    cContact = models.CharField(
+        verbose_name="Customer contact",
+        null=False,
+        blank=False,
+        max_length=100,
+        default=None
+    )
+    CType = models.ForeignKey(CustomerType, default=None,
+                              verbose_name='Business Segment',
+                              blank=False, null=False)
+    active = models.BooleanField(
+        blank=False,
+        default=True,
+        null=False,
+        verbose_name="Is Active?"
+    )
+    address = models.CharField(
+        verbose_name="Address",
+        default=None,
+        max_length=100,
+        blank=False)
+    customergroup = models.ForeignKey(CustomerGroup,
+                                      verbose_name="Customer Group",
+                                      null=True,
+                                      blank=True)
+    createdon = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedon = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    pnl = models.ForeignKey(PnL, default=None, null=True, blank=True)
+    country_code = models.ForeignKey(Country, default=None, null=True, blank=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 
