@@ -25,47 +25,58 @@
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}
+                          <i class="fa fa-caret-down prepend-icon"></i> 
+                        </button>
                         <ul class="dropdown-menu" role="menu">
 
-                         <li><a onclick="monthchange(1, '{{ team }}')">January</a></li>
-                          <li><a onclick="monthchange(2, '{{ team }}')">February</a></li>
-                          <li><a onclick="monthchange(3, '{{ team }}')">March</a></li>
-                          <li><a onclick="monthchange(4, '{{ team }}')">April</a></li>
-                          <li><a onclick="monthchange(5, '{{ team }}')">May</a></li>
-                          <li><a onclick="monthchange(6, '{{ team }}')">June</a></li>
-                          <li><a onclick="monthchange(7, '{{ team }}')">July</a></li>
-                          <li><a onclick="monthchange(8, '{{ team }}')">August</a></li>
-                          <li><a onclick="monthchange(9, '{{ team }}')">September</a></li>
-                          <li><a onclick="monthchange(10, '{{ team }}')">October</a></li>
-                          <li><a onclick="monthchange(11, '{{ team }}')">November</a></li>
-                          <li><a onclick="monthchange(12, '{{ team }}')">December</a></li>
+                          <li><a onclick="monthchange(1, 1, '{{ team }}')">January</a></li>
+                          <li><a onclick="monthchange(1, 2, '{{ team }}')">February</a></li>
+                          <li><a onclick="monthchange(1, 3, '{{ team }}')">March</a></li>
+                          <li><a onclick="monthchange(1, 4, '{{ team }}')">April</a></li>
+                          <li><a onclick="monthchange(1, 5, '{{ team }}')">May</a></li>
+                          <li><a onclick="monthchange(1, 6, '{{ team }}')">June</a></li>
+                          <li><a onclick="monthchange(1, 7, '{{ team }}')">July</a></li>
+                          <li><a onclick="monthchange(1, 8, '{{ team }}')">August</a></li>
+                          <li><a onclick="monthchange(1, 9, '{{ team }}')">September</a></li>
+                          <li><a onclick="monthchange(1, 10, '{{ team }}')">October</a></li>
+                          <li><a onclick="monthchange(1, 11, '{{ team }}')">November</a></li>
+                          <li><a onclick="monthchange(1, 12, '{{ team }}')">December</a></li>
 
                         </ul>
                       </div>
 
 
                       <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">{{ week_in_english }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                        <a onclick="weekchange({{ previous_week.0 }}, {{ previous_week.1 }}, '{{ team }}')" id="lr-prev" class="btn btn-default btn-sm">
+                            <</a>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">
+                          <span class="week-number">{{ week_in_english }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span>
+                          <i class="fa fa-caret-down prepend-icon"></i> 
+                        </button>
+                        <a onclick="weekchange({{ next_week.0 }}, {{ next_week.1 }}, '{{ team }}')"
+                           id="lr-next" class="btn btn-default btn-sm right-border-mod">></a>
                         <ul class="dropdown-menu" role="menu">
-                            {% for val in  weekreport%}
-                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')">Week {{ forloop.counter }}</a></li>
+                            {% for val in  current_month_week_details%}
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, '{{ team }}')"><span class="week-number">
+                                  Week {{ forloop.counter }} : </span><span class="week-range">{{ val.0 }} - {{ val.1}}</span></a></li>
                             {% endfor %}
 
                         </ul>
                       </div>
 
 
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}<i class="fa fa-caret-down prepend-icon"></i> </button>
+                      <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ team_data }}
+                            <i class="fa fa-caret-down prepend-icon"></i> </button>
                         <ul class="dropdown-menu" role="menu">
-                           <li><a onclick="monthchange({{ month }}, 'myteam')">My Team</a></li>
-                          <li><a onclick="monthchange({{ month }}, 'peers')">My Peers</a></li>
+                           <li><a onclick="monthchange({{ current_week_no }}, {{ month }}, 'myteam')">My Team</a></li>
+                          <li><a onclick="monthchange({{ current_week_no }}, {{ month }}, 'peers')">My Peers</a></li>
                         </ul>
                       </div>
 
 
-                      <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div>
+                      <!-- <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div> -->
 
                     </div>
 
@@ -153,17 +164,26 @@
       <div class="panel-body-list jsh4">
 <!-- Bar chart -->
 
-        <div class="col-sm-4">
+        <div class="col-lg-4 col-sm-6">
           <h4 style="margin-top: 15px">Leave Report Summary (%)</h4>
         </div>
-        <div class="col-sm-6">
+
+<!-- Spacer -->
+
+<div class="col-lg-2 col-sm-1"></div>
+
+        <div class="col-lg-4 col-sm-5">
           <h4 style="margin-top: 15px">Weekly Data</h4>
         </div>        
-        <div class="col-sm-4">
+        <div class="col-lg-4 col-sm-6">
           <div id="bar-placeholder" class="bar-chart" style="height: 300px"></div>
         </div>
 
-        <div class="col-sm-6 pd-25">
+<!-- Spacer -->
+
+<div class="col-lg-2 col-sm-1"></div>
+
+        <div class="col-lg-4 col-sm-5 pd-25">
 
 
           <table class="lr-summary-table">
@@ -230,6 +250,8 @@
       stacked: true,
       xkey: 'y',
       xLabelMargin: 5,
+      barGap:220,
+      barSizeRatio:0.55,
       ykeys: ['a', 'b', 'c'],
       labels: ['Available', 'Leave', 'Holiday'],
       barColors: ["#55b439", "#e95427","#F4A460"]
@@ -331,8 +353,8 @@ console.log("this are the logged values " , {{ val.available }}, {{ val.unavaila
 
 
 // As td with person does not contain div, use div inside tr
-function monthchange(month, team){
-    weekchange(1, month, team);
+function monthchange(week, month, team){
+    weekchange(week, month, team);
       $.ajax({
           type: "GET",
                 url: '/leave/monthwisedata/',
@@ -358,7 +380,7 @@ function monthchange(month, team){
                 success: function (data) {
                     $('#user-leave-report').text('');
                     $('#user-leave-report').append(data);
-                    $('#week-button').text("Week " + week);
+                    $('#week-button span.week-number').text("Week " + week + " : ");
 
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -438,7 +460,7 @@ table.dataTable.leave-report-table thead .sorting{
 .lr-summary-table{
   width: 100%;
   max-width: 500px;
-  margin: auto;
+  /*margin: auto;*/
   text-align: center;
 }
 .lr-summary-table tr:first-child{

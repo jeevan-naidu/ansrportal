@@ -23,6 +23,18 @@ class CustomerTypeAdmin(admin.ModelAdmin):
 
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', 'customerCode', 'customergroup')
+    fields = ['customerCode', 'name', 'cContact', 'CType', 'location', 'address', 'seqNumber', 'customergroup', 'pnl',
+              'country_code', 'Crelation', 'Cdelivery', 'internal', 'active']
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'Crelation':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        if db_field.name == 'Cdelivery':
+            kwargs["queryset"] = User.objects.filter(is_active=True).order_by('first_name')
+            kwargs['form_class'] = UserChoiceField
+        return super(CustomerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 class DepartmentAdmin(admin.ModelAdmin):

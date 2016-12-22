@@ -106,7 +106,7 @@ SECRET_KEY = 'pi3q*!l_+$+vd&3&v_zb*yt6mmi=h*25o#6!q5!aca=j_)&3yd'
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portal.ansrsource.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portal.ansrsource.com', 'stage.ansrsource.com']
 
 # When CRSF failurers happen we just ask them to relogin using our own template
 CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'

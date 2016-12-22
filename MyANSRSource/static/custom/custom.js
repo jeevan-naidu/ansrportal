@@ -23,9 +23,9 @@ jQuery(document).ready(function($){
 	}
 
 
-	extendRibbon = function(){
+/*	extendRibbon = function(){
 		$('#oneteam-ribbon').addClass('extended');
-	}
+	}*/
 
 
 	// Function Calls

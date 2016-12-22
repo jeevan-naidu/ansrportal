@@ -1,11 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from employee.models import Employee
 import datetime, os
 
 
-LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'),('short_leave', 'Short Leave'), ('loss_of_pay', 'Loss Of Pay'), ('bereavement_leave', 'Bereavement Leave'), ('maternity_leave', 'Maternity Leave'), ('paternity_leave', 'Paternity Leave'), ('comp_off_earned', 'Comp Off Earned'), ('comp_off_avail', 'Comp Off Avail'),('pay_off', 'Pay Off'), ('work_from_home', 'Work From Home'), ('sabbatical', 'Sabbatical'))
+LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'),
+                       ('short_leave', 'Short Leave'), ('loss_of_pay', 'Loss Of Pay'),
+                       ('bereavement_leave', 'Bereavement Leave'),
+                       ('maternity_leave', 'Maternity Leave'),
+                       ('paternity_leave', 'Paternity Leave'),
+                       ('comp_off_earned', 'Comp Off Earned'),
+                       ('comp_off_avail', 'Comp Off Avail'),
+                       ('pay_off', 'Pay Off'),
+                       ('work_from_home', 'Work From Home'),
+                       ('sabbatical', 'Sabbatical'))
 OCCURRENCE_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'))
@@ -15,8 +23,6 @@ SHORT_ATTENDANCE_STATUS = (('open','Open'),('closed','Closed'),('accepted','Acce
 SHORT_ATTENDANCE_TYPE = (('half_day','HALF DAY'),('full_day','FULL DAY'))
 DISPUTE_STATUS = (('open','Open'),('raised', 'Raised'), ('approved', 'Approved'), ('rejected', 'Rejected'))
 
-# def content_file_name(instance, filename):
-#     return '/'.join(['content', instance.user.username, filename])
 
 def content_file_name(instance, filename):
     ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
@@ -64,7 +70,6 @@ class LeaveSummary(models.Model):
     applied = models.CharField(max_length=20, verbose_name='applied leave count')
     approved = models.CharField(max_length=20, verbose_name='approved leave count')
     balance = models.CharField(max_length=20, verbose_name='balance leave count')
-
 
     def __unicode__(self):
        ''' return unicode strings '''

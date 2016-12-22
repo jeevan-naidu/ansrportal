@@ -17,94 +17,6 @@
 
 
 
-
-
-
-
-{#<div class="timesheet-carousel text-center hidden">#}
-{#    <div class="carousel slide row" data-ride="carousel" data-wrap='false' data-type="multi" data-interval="false" id="fruitscarousel">#}
-{##}
-{#        <div class="carousel-inner" id="carousel-inner">#}
-{##}
-{##}
-{##}
-{##}
-{#                <div class="item active">#}
-{#              {% for info_dict in ts_final_list %}#}
-{#                {% if forloop.counter0|divisibleby:6 %}#}
-{#                    {% ifnotequal forloop.counter0 0 %}#}
-{#                        </div>#}
-{#                        <div class="item">#}
-{#                    {% endifnotequal %}#}
-{##}
-{#                {% endif %}#}
-{##}
-{##}
-{##}
-{#                    <div class="col-md-2 week-container">#}
-{#                        <a href="entry?wkstart={{ info_dict.wkstart }}&wkend={{ info_dict.wkend }}">#}
-{#                                {% if info_dict.filled %}#}
-{##}
-{#                                    {% if info_dict.hold == True %}#}
-{#                                        <div class="timesheet-week ">#}
-{#                                            <span class="week-start-date">{{ info_dict.for_week }}</span>#}
-{#                                        </div>#}
-{#                                    {% else %}#}
-{#                                        <div class="timesheet-week timesheet-incomplete">#}
-{#                                                <span class="week-start-date">{{ info_dict.for_week }}</span>#}
-{#                                        </div>#}
-{#                                    {% endif %}#}
-{#                                {% else %}#}
-{#                                    <div class="timesheet-week timesheet-not-filled">#}
-{#                                        <span class="week-start-date">{{ info_dict.for_week }}</span>#}
-{#                                    </div>#}
-{#                                {% endif %}#}
-{#                        </a>#}
-{#                    </div>#}
-{##}
-{##}
-{#            {% endfor %}#}
-{#                {% if mondays_list|length|divisibleby:6 %}#}
-{#                {% else %}#}
-{#                    </div>#}
-{#                {% endif %}#}
-{##}
-{##}
-{##}
-{#        </div>#}
-{##}
-{#        <a class="left carousel-control" href="#fruitscarousel" data-slide="prev"><i class="glyphicon glyphicon-chevron-left"></i></a>#}
-{#        <a class="right carousel-control" href="#fruitscarousel" data-slide="next"><i class="glyphicon glyphicon-chevron-right"></i></a>#}
-{##}
-{#    </div>#}
-{#</div><!-- ./carousel for week -->#}
-
-
-
-
-
-
-<legend class="clearfix pad-bot-10 bb0">
-
-<div class="pull-right">
- <div class="pull-left">
- <form id="prevWeek" method="get" action="" enctype="multipart/form-data">
-    <input type="hidden" name="week" value="prev" />
- <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
-    <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    {% if disabled == 'prev' %}
-        <button type="submit" value="submit" disabled="disabled" class="btn btn-default">
-            <span class="glyphicon glyphicon-arrow-left"></span>
-        </button>
-    {% else %}
-        <button type="submit" value="submit" class="btn btn-default">
-            <span class="glyphicon glyphicon-arrow-left"></span>
-        </button>
-    {% endif %}
- </form>
- </div>
-
-
 <style type="text/css">
 .btn.left-text{text-align: left;}
 .week-selector{margin: 0px 5px;}
@@ -168,6 +80,23 @@ a.incomplete:before, button.incomplete:before{
 
 
 
+<legend class="clearfix pad-bot-10 bb0">
+
+<div class="pull-right positioner">
+ <div class="pull-left">
+ <form id="prevWeek" method="get" action="" enctype="multipart/form-data">
+    <input type="hidden" name="week" value="prev" />
+ <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
+    <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
+   
+        <button type="submit" value="submit" {% if disabled == 'prev' %} disabled="disabled" {% endif %} class="btn btn-default">
+            <span class="glyphicon glyphicon-arrow-left"></span>
+        </button>
+   
+ </form>
+ </div>
+
+
 <div class="dropdown week-selector pull-left">
   <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
   <i class="fa fa-calendar" style="margin-right:5px;color:#999"></i>
@@ -202,35 +131,16 @@ a.incomplete:before, button.incomplete:before{
 
 
 
-<script type="text/javascript">
-
-/*    $(".dropdown-menu li a").click(function(){
-        $(this).parents(".dropdown").find('.btn').html($(this).text());
-        $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-    });  */
-
-</script>
-
-
-
-
-
-    <!-- <div class="col-md-7 text-right"><b>Enter Timesheet :</b> <i>{% block startDate %}{% endblock %} - {% block endDate %}{% endblock %}</i></div> -->
-
  <div class="pull-left text-right">
  <form id="nextWeek" method="get" action="" enctype="multipart/form-data">
     <input type="hidden" name="week" value="next" />
     <input type="hidden" name="startdate" value="{{ weekstartDate|date:"dmY" }}" />
     <input type="hidden" name="enddate" value="{{ weekendDate|date:"dmY" }}" />
-    {% if disabled == 'next' %}
-        <button type="submit" value="submit" disabled="disabled" class="btn btn-default">
+   
+        <button type="submit" value="submit" {% if disabled == 'next' %} disabled="disabled" {% endif %} class="btn btn-default">
             <span class="glyphicon glyphicon-arrow-right"></span>
         </button>
-    {% else %}
-        <button type="submit" value="submit" class="btn btn-default">
-            <span class="glyphicon glyphicon-arrow-right"></span>
-        </button>
-    {% endif %}
+   
  </form>
  </div>
 

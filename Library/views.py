@@ -161,6 +161,8 @@ def booksearchbyname(request):
     context['bookshelves'] = bookshelves
     context['lendbook'] = lendbook
     context['status'] = RESULT_STATUS
+    context['lend_history'] = applied_book_history_check(userid)
+    context['book_count'] = library_book_count()
     return render(request, 'dashboard.html', context)
 
 def bookdetail(request):

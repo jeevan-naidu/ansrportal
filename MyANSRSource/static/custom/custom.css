@@ -8,6 +8,15 @@
 .mgbt-0{margin-bottom: 0px !important}
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+     -khtml-user-select: none; /* Konqueror */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
 
 
 /* Overrides */
@@ -260,6 +269,88 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
 .week-start-date{top: -8px;}
 .timesheet-not-filled{/*background: #ffadad*/}
 
+/* Timesheet Approve Rework */
+
+#timesheet-approve-dropdrown{margin:0px 5px;}
+
+
+/* Copied styles */
+
+
+
+                .margin-correct{
+                  margin-left: 0px;
+                  margin-right: 0px;
+                }
+
+
+                /* UI Corrections */
+
+                .form-inline.short-date .input-group{max-width:150px;}
+                .form-inline.short-date .export-btn{display:inline;}
+                .mod .pagination{margin:0px;margin-bottom:100px;}
+
+                /* for approval screen */
+                .mw-120{
+                  max-width: 120px;
+                  display: block;
+                  font-size: 11px;
+                  /*padding-left: 15px;*/
+                }
+
+                .radio-mod{padding-left:5px;display:inline-block;margin:0px 2px;}
+                .radio-mod label{
+                  padding: 2px 5px;
+                  color: #70C0C5;
+                  background-color: #D8C5BF;
+                  background-color: #fff;
+                  /* border-color: #F59B7B; */
+                  border-radius: 3px;
+                  border: 1px solid #9C6969;
+                  border: 1px solid #CE9797;
+                  border:1px solid #70C0C5;
+                }
+                .radio-mod input:checked + label{
+                        background: #616161;
+                        background: #9C6969;
+                        background: #70C0C5;
+                        color: white;
+                        border-radius:3px;
+                        border: 1px solid #70C0C5;
+                    }
+                .radio-mod label::after, .radio-mod label::before{display:none}
+                
+                .radio-mod input:checked + label {
+                    background: #616161;
+                    background: #9C6969;
+                    background: #70C0C5;
+                    color: white;
+                    border-radius: 3px;
+                    border: 1px solid #70C0C5;
+                }
+
+
+
+
+
+/* End of Copied styles */
+
+
+#timesheet-approve-table_wrapper .dataTables_filter, #timesheet-approve-table_wrapper .dataTables_length{display: none;}
+.timesheet-approve-options input[type="checkbox"]{display: none;}
+.timesheet-approve-options label{padding: 2px 5px !important}
+
+.timesheet-approve-user-details{color: #C76B4F}
+/* Risky */
+#timesheet-approve-table + div.row{margin-bottom: 0px;}
+#timesheet-approve-table_wrapper div.row:first-child{margin-bottom: 0px;}
+
+#timesheet-approve-table_wrapper .pagination>li>a, #timesheet-approve-table_wrapper .pagination>li>span{padding: 4px 9px;}
+#timesheet-approve-table_wrapper .checkbox.btn-xs{padding: 0px 2px;}
+#timesheet-approve-table_wrapper .table .menu-action{padding-top: 7px !important}
+#timesheet-approve-table_wrapper .table .menu-action .menu-icon {
+    padding: 2px 6px;
+}
 
 
 /* Crazy overrides */
@@ -276,3 +367,13 @@ span.mandatory-field{color: red}
 #bar-placeholder .morris-hover-row-label{display: none;}
 
 #user-leave-report .dropdown-toggle{min-width: 0px;}
+
+.week-number{
+    color: #8e2c2c;
+    font-weight: bold;
+}
+.right-border-mod{
+    margin-left: -2px !important;
+    border-top-right-radius: 3px !important;
+    border-bottom-right-radius: 3px !important;
+}
