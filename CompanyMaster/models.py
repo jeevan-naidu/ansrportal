@@ -305,7 +305,7 @@ class Country(UpdateDate):
 
 class Company(UpdateDate):
     company_name = models.CharField(verbose_name="company name",
-                                    max_length=20)
+                                    max_length=40)
     company_legal_name = models.CharField(verbose_name="company legal name",
                                           max_length=50)
     country = models.ForeignKey(Country,
