@@ -1441,7 +1441,7 @@ console.log("oiii");
                             $curQuestionsHidden.val($curQuestionsInput.val());
                             $curHoursHidden.val($curHoursInput.val());
 
-                            calculateTotal();update_hours();
+                            calculateTotal();//update_hours();
                         }
                     };
 

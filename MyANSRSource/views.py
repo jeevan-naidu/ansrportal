@@ -622,81 +622,96 @@ def Timesheet(request):
         return renderTimesheet(request, data)
     else:
         # GET request
-        # Switch dates back and forth
-        dates = switchWeeks(request)
-
-        # Getting Data for timesheet and activity
-        tsDataList = getTSDataList(request, dates['start'], dates['end'])
-
-        # Common values initialization
-        extra = 0
-
-        tsFormList, atFormList = [], []
-
-        # Approved TS data
-        if len(tsDataList['tsData']) and len(tsDataList['atData']):
-            tsFormList = tsDataList['tsData']
-            atFormList = tsDataList['atData']
-        elif len(tsDataList['tsData']):
-            tsFormList = tsDataList['tsData']
-        elif len(tsDataList['atData']):
-            defaulLocation = [{'location': request.user.employee.location.id}]
-            atFormList = tsDataList['atData']
-
-        # Fresh TS data
-        else:
-            extra = 1
-            if hasattr(request.user, 'employee'):
-                defaulLocation = [
-                    {'location': request.user.employee.location.id}]
-            else:
-                defaulLocation = [{'location': None}]
-            messages.success(request, 'Please enter your timesheet for \
-                             this week')
-            hold_button = False
-
-        # Constructing status of timesheet
-
-        approvedSet = set()
-        holdSet = set()
-        saveSet = set()
-        sentBackSet = set()
-        if len(tsFormList):
-            for eachTS in tsFormList:
-                tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-                if eachTS['approved']:
-                    approvedSet.add(tsObj.project.projectId)
-                elif eachTS['hold']:
-                    holdSet.add(tsObj.project.projectId)
-                else:
-                    sentBackSet.add(tsObj.project.projectId)
-        else:
-            tsFormList = defaulLocation
-
-        hold_button = False
-        if len(approvedSet) > 0:
-            messages.success(
-                request, 'Timesheet approved :' + unicode_to_string(approvedSet))
-            hold_button = True
-        if len(holdSet) > 0:
-            messages.info(
-                request, 'Timesheet pending manager approval :' +
-                unicode_to_string(holdSet))
-            hold_button = True
-        if len(sentBackSet) > 0:
-            messages.info(
-                request, 'Timesheet you have to submit:' + unicode_to_string(sentBackSet))
-                # str(list(sentBackSet)))
-            hold_button = False
-
-        data = {'weekstartDate': dates['start'],
-                'weekendDate': dates['end'],
-                'disabled': dates['disabled'],
-                'extra': extra,
-                'hold_button': hold_button,
-                'tsFormList': tsFormList,
-                'atFormList': atFormList}
+        data = get_time_sheet(request)
         return renderTimesheet(request, data)
+
+
+def get_time_sheet(request, is_approve=False):
+    # GET request
+    # Switch dates back and forth
+    dates = switchWeeks(request)
+
+    # Getting Data for timesheet and activity
+    tsDataList = getTSDataList(request, dates['start'], dates['end'])
+
+    # Common values initialization
+    extra = 0
+
+    tsFormList, atFormList = [], []
+
+    # Approved TS data
+    if len(tsDataList['tsData']) and len(tsDataList['atData']):
+        tsFormList = tsDataList['tsData']
+        atFormList = tsDataList['atData']
+    elif len(tsDataList['tsData']):
+        tsFormList = tsDataList['tsData']
+    elif len(tsDataList['atData']):
+        defaulLocation = [{'location': request.user.employee.location.id}]
+        atFormList = tsDataList['atData']
+
+    # Fresh TS data
+    else:
+        extra = 1
+        if hasattr(request.user, 'employee'):
+            defaulLocation = [
+                {'location': request.user.employee.location.id}]
+        else:
+            defaulLocation = [{'location': None}]
+        messages.success(request, 'Please enter your timesheet for \
+                                this week')
+        hold_button = False
+
+    # Constructing status of timesheet
+
+    approvedSet = set()
+    holdSet = set()
+    saveSet = set()
+    sentBackSet = set()
+    if len(tsFormList):
+        for eachTS in tsFormList:
+            tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+            if eachTS['approved']:
+                approvedSet.add(tsObj.project.projectId)
+            elif eachTS['hold']:
+                holdSet.add(tsObj.project.projectId)
+            else:
+                sentBackSet.add(tsObj.project.projectId)
+    else:
+        tsFormList = defaulLocation
+
+    hold_button = False
+    if len(approvedSet) > 0:
+        messages.success(
+            request, 'Timesheet approved :' + unicode_to_string(approvedSet))
+        hold_button = True
+    if len(holdSet) > 0:
+        messages.info(
+            request, 'Timesheet pending manager approval :' +
+                     unicode_to_string(holdSet))
+        hold_button = True
+    if len(sentBackSet) > 0:
+        messages.info(
+            request, 'Timesheet you have to submit:' + unicode_to_string(sentBackSet))
+        # str(list(sentBackSet)))
+        hold_button = False
+
+    data = {'weekstartDate': dates['start'],
+            'weekendDate': dates['end'],
+            'disabled': dates['disabled'],
+            'extra': extra,
+            'hold_button': hold_button,
+            'tsFormList': tsFormList,
+            'atFormList': atFormList}
+    is_approve=True
+    if not is_approve:
+        return data
+    else:
+        print json.dumps(str(data))
+        return data
+        return HttpResponse(
+            json.dumps(data),
+            content_type="application/json"
+        )
 
 
 @login_required
@@ -738,13 +753,18 @@ def switchWeeks(request):
 
 
 @login_required
-def getTSDataList(request, weekstartDate, ansrEndDate):
+def getTSDataList(request, weekstartDate, ansrEndDate , user_id=None):
     # To be approved TS data
+    if not user_id:
+        user = request.user
+    else:
+        user = user_id
+
     cwActivityData = TimeSheetEntry.objects.filter(
         Q(
             wkstart=weekstartDate,
             wkend=ansrEndDate,
-            teamMember=request.user,
+            teamMember=user,
             project__isnull=True
         )
     ).values('id', 'activity', 'mondayH', 'tuesdayH', 'wednesdayH',
@@ -755,14 +775,15 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
         Q(
             wkstart=weekstartDate,
             wkend=ansrEndDate,
-            teamMember=request.user,
+            teamMember=user,
             activity__isnull=True
         )
-    ).values('id', 'project',  'task', 'mondayH',
+    ).values('id', 'project', 'project__name',  'task', 'mondayH',
              'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
              'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
              'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
-             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue'
+             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue' ,
+             'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
              )
 
     # Changing data TS data
@@ -773,6 +794,36 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
     for eachData in cwTimesheetData:
         for k, v in eachData.iteritems():
             print k,v
+            if user_id:
+                v = str(v)
+            if user_id:
+                if k == 'teamMember__first_name':
+                    tsData['full_name'] = v + ' ' + str(eachData['teamMember__last_name'])
+                if k == 'teamMember__employee__employee_assigned_id':
+                    tsData['employee_id'] = v
+                if k == 'project':
+                    tsData['project'] = v
+                if k == 'project__name':
+                    tsData['project_name'] = v
+                if k == 'task':
+                    tsData['task'] = v
+                if k == 'mondayH':
+                    tsData['mondayH'] = v
+                if k == 'tuesdayH':
+                    tsData['tuesdayH'] = v
+                if k == 'wednesdayH':
+                    tsData['wednesdayH'] = v
+                if k == 'thursdayH':
+                    tsData['thursdayH'] = v
+                if k == 'fridayH':
+                    tsData['fridayH'] = v
+                if k == 'saturdayH':
+                    tsData['saturdayH'] = v
+                if k == 'project':
+                    tsData['sundayH'] = v
+                if k == 'project':
+                    tsData['sundayH'] = v
+
             tsData[k] = v
             if k == 'managerFeedback':
                 tsData['feedback'] = v
@@ -790,6 +841,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate):
     atDataList = []
     for eachData in cwActivityData:
         for k, v in eachData.iteritems():
+            if user_id:
+                v = str(v)
             if k == 'activity':
                 atData['activity'] = v
             if 'monday' in k:
@@ -831,8 +884,7 @@ def leaveappliedinweek(user, wkstart, wkend):
     return weekleave
 
 
-def renderTimesheet(request, data):
-
+def date_range_picker(request):
     mondays_list = [x for x in get_mondays_list_till_date()]
 
     # list of dict with mentioned ts entry columns
@@ -845,7 +897,7 @@ def renderTimesheet(request, data):
 
     ts_week_info_dict = {}
     for dict_obj in weeks_timesheetEntry_list:
-        for_week = str(str(dict_obj['wkstart'].day) + "-" + dict_obj['wkstart'].strftime("%b")) + " - "+ \
+        for_week = str(str(dict_obj['wkstart'].day) + "-" + dict_obj['wkstart'].strftime("%b")) + " - " + \
                    str(str(dict_obj['wkend'].day) + "-" + dict_obj['wkend'].strftime("%b"))
         dict_obj['for_week'] = for_week
         dict_obj['filled'] = True
@@ -860,26 +912,46 @@ def renderTimesheet(request, data):
 
     for tup in weeks_list:
         for_week = str(tup[0].day) + "-" + str(tup[0].strftime("%b")) + " - " + str(tup[1].day) + \
-                    "-" + str(tup[1].strftime("%b"))
+                   "-" + str(tup[1].strftime("%b"))
         if for_week in ts_week_info_dict:
             ts_final_list.append(ts_week_info_dict[for_week])
         else:
             wkstart = str(tup[0]).split('-')[::-1]
             wkend = str(tup[1]).split('-')[::-1]
-            ts_final_list.append({'for_week':for_week, 'wkstart': "".join([x for x in wkstart]),
+            ts_final_list.append({'for_week': for_week, 'wkstart': "".join([x for x in wkstart]),
                                   'wkend': "".join([x for x in wkend]), 'filled': False})
+    return ts_final_list, mondays_list, ts_week_info_dict
 
 
-    attendance = {}
-    tsObj = TimeSheetEntry.objects.filter(
-        wkstart=data['weekstartDate'],
-        wkend=data['weekendDate'],
-        teamMember=request.user,
-    )
-    billableHours = tsObj.filter(
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object):
+    return TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date, teamMember=request_object.user)
+
+
+def billable_hours(ts_obj):
+    return ts_obj.filter(
         activity__isnull=True,
         task__taskType__in=['B','N']
     ).values('totalH', 'project__totalValue')
+
+
+def billable_value(billable_hours_obj):
+    b_total = 0
+    zero_value = 0
+    non_zero_value = 0
+    for billable in billable_hours_obj:
+        if billable['project__totalValue'] == 0:
+            zero_value += billable['totalH']
+        else:
+            non_zero_value += billable['totalH']
+        b_total += billable['totalH']
+    return zero_value, non_zero_value, b_total
+
+
+def renderTimesheet(request, data):
+    ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(request)
+    attendance = {}
+    tsObj = time_sheet_for_the_week(data['weekstartDate'], data['weekendDate'], request)
+    billableHours = billable_hours(tsObj)
     idleHours = tsObj.filter(
         activity__isnull=True,
         task__taskType='I'
@@ -887,17 +959,8 @@ def renderTimesheet(request, data):
     othersHours = tsObj.filter(
         project__isnull=True
     ).values('totalH')
-    bTotal = 0
-    zero_value=0
-    non_zero_value=0
-    for billable in billableHours:
-        # print billable
-        if billable['project__totalValue'] == 0:
-            zero_value += billable['totalH']
-        else:
-            non_zero_value += billable['totalH']
-        bTotal += billable['totalH']
-    # print zero_value, non_zero_value
+
+    zero_value, non_zero_value, bTotal = billable_value(billableHours)
     idleTotal = 0
     for idle in idleHours:
         idleTotal += idle['totalH']
@@ -1053,6 +1116,26 @@ def renderTimesheet(request, data):
 @login_required
 @permission_required('MyANSRSource.approve_timesheet')
 def ApproveTimesheet(request):
+    if request.method == 'GET':
+        manager = Employee.objects.get(user_id=request.user)
+        team_members = Employee.objects.filter((Q(manager_id=manager) |
+                                                Q(employee_assigned_id=manager)), user__is_active=True)
+        # print team_members.query
+        dates = switchWeeks(request)
+        ts_data_list = {}
+        # print  team_members
+        # print dates
+        for members in team_members:
+            ts_data_list[members.user_id] = {}
+            ts_data_list[members.user_id] = getTSDataList(request, dates['start'], dates['end'], members.user_id)
+            ts_obj= time_sheet_for_the_week(dates['start'], dates['end'], request)
+            billable_hours_obj = billable_hours(ts_obj)
+            zero_value, non_zero_value, b_total = billable_value(billable_hours_obj)
+            ts_data_list[members.user_id]['zero_value']=str(zero_value)
+            ts_data_list[members.user_id]['non_zero_value'] = str(non_zero_value)
+            ts_data_list[members.user_id]['b_total'] = str(b_total)
+        print json.dumps(ts_data_list)
+
     if request.method == 'POST':
         for i in range(1, int(request.POST.get('totalValue')) + 1):
             choice = "choice" + str(i)
