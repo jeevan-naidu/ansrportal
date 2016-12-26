@@ -771,20 +771,36 @@ def getTSDataList(request, weekstartDate, ansrEndDate , user_id=None):
              'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
              'managerFeedback', 'approved', 'hold'
              )
-    cwTimesheetData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=user,
-            activity__isnull=True
-        )
-    ).values('id', 'project', 'project__name',  'task', 'mondayH',
-             'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
-             'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-             'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
-             'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue' ,
-             'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
-             )
+    if user_id:
+        cwTimesheetData = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=user,
+                activity__isnull=True
+            )
+        ).values('id', 'project', 'project__name',  'task', 'mondayH',
+                 'tuesdayH',  'wednesdayH',
+                 'thursdayH',  'fridayH',  'hold',
+                 'saturdayH',  'sundayH',  'approved',
+                 'totalH',  'managerFeedback', 'project__projectType__code', 'project__totalValue' ,
+                 'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
+                 )
+    else:
+        cwTimesheetData = TimeSheetEntry.objects.filter(
+            Q(
+                wkstart=weekstartDate,
+                wkend=ansrEndDate,
+                teamMember=user,
+                activity__isnull=True
+            )
+        ).values('id', 'project', 'project__name', 'task', 'mondayH',
+                 'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
+                 'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
+                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue',
+                 'teamMember__employee__employee_assigned_id',
+                 )
 
     # Changing data TS data
     tsData = {}
@@ -793,12 +809,11 @@ def getTSDataList(request, weekstartDate, ansrEndDate , user_id=None):
     non_zero=0
     for eachData in cwTimesheetData:
         for k, v in eachData.iteritems():
-            print k,v
+            # print k,v
+            # if user_id:
+            #     v = str(v)
             if user_id:
-                v = str(v)
-            if user_id:
-                if k == 'teamMember__first_name':
-                    tsData['full_name'] = v + ' ' + str(eachData['teamMember__last_name'])
+
                 if k == 'teamMember__employee__employee_assigned_id':
                     tsData['employee_id'] = v
                 if k == 'project':
@@ -841,8 +856,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate , user_id=None):
     atDataList = []
     for eachData in cwActivityData:
         for k, v in eachData.iteritems():
-            if user_id:
-                v = str(v)
+            # if user_id:
+            #     v = str(v)
             if k == 'activity':
                 atData['activity'] = v
             if 'monday' in k:
@@ -1134,7 +1149,8 @@ def ApproveTimesheet(request):
             ts_data_list[members.user_id]['zero_value']=str(zero_value)
             ts_data_list[members.user_id]['non_zero_value'] = str(non_zero_value)
             ts_data_list[members.user_id]['b_total'] = str(b_total)
-        print json.dumps(ts_data_list)
+            print ts_data_list
+            return render(request, 'MyANSRSource/timesheetApprove.html', ts_data_list)
 
     if request.method == 'POST':
         for i in range(1, int(request.POST.get('totalValue')) + 1):
