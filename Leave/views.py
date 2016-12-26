@@ -109,8 +109,8 @@ def LeaveCancel(request):
     leave.status_comments = "Leave cancelled by user"
     leave.update()
     manager = managerCheck(user_id)
-    EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
-     leave.to_session, leave.days_count, leave.reason, 'cancel')
+    # EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+    #  leave.to_session, leave.days_count, leave.reason, 'cancel')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
@@ -347,12 +347,12 @@ class ApplyLeaveView(View):
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                         # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
                     else:
                          LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                          days_count=leavecount, reason=reason).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                         # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
@@ -364,12 +364,12 @@ class ApplyLeaveView(View):
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id, request.user.id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                             # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
                         else:
                              LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
                              days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id, request.user.id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                             # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
@@ -746,8 +746,8 @@ def update_leave_application(request, status):
 
     try:
         leave_application.save()
-        ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
-        leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
+        # ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
+        # leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
         return True
     except Exception, e:
         logger.error(e)
@@ -924,12 +924,12 @@ def UpdateShortAttendance(request, status):
 
     try:
         short_attendance.save()
-        ShortAttendanceManagerActionEmailSendTask.delay(short_attendance.user,
-                                                        short_attendance.short_leave_type,
-                                                        short_attendance.status,
-                                                        short_attendance.for_date,
-                                                        short_attendance.due_date,
-                                                        remark_tmp)
+        # ShortAttendanceManagerActionEmailSendTask.delay(short_attendance.user,
+        #                                                 short_attendance.short_leave_type,
+        #                                                 short_attendance.status,
+        #                                                 short_attendance.for_date,
+        #                                                 short_attendance.due_date,
+        #                                                 remark_tmp)
         # ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
         # leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
         return True
@@ -1062,7 +1062,7 @@ class ApplyShortLeaveView(View):
                                       days_count=leavecount,
                                       reason=reason).saveas(user_id, request.user.id)
                     leavesummry_temp.save()
-                    EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                    # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
 
                     context_data['success'] = 'leave saved'
                     context_data['record_added'] = 'True'
@@ -1080,16 +1080,16 @@ class ApplyShortLeaveView(View):
                                           reason=reason,
                                           due_date= duedate).saveas(user_id, request.user.id)
                         leavesummry_temp.save()
-                        EmailSendTask.delay(request.user,
-                                            manager,
-                                            leave_selected,
-                                            fromdate,
-                                            todate,
-                                            fromsession,
-                                            tosession,
-                                            leavecount,
-                                            reason,
-                                            'save')
+                        # EmailSendTask.delay(request.user,
+                        #                     manager,
+                        #                     leave_selected,
+                        #                     fromdate,
+                        #                     todate,
+                        #                     fromsession,
+                        #                     tosession,
+                        #                     leavecount,
+                        #                     reason,
+                        #                     'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
@@ -1160,13 +1160,13 @@ class RaiseDispute(View):
             shortAttendance.status_action_by = user
             shortAttendance.status_comments = status_comment
             shortAttendance.save()
-            ShortAttendanceDisputeEmailSendTask.delay(user,
-                                                      shortAttendance.short_leave_type,
-                                                      shortAttendance.status,
-                                                      shortAttendance.for_date,
-                                                      shortAttendance.due_date,
-                                                      status_comment,
-                                                      shortAttendance.reason)
+            # ShortAttendanceDisputeEmailSendTask.delay(user,
+            #                                           shortAttendance.short_leave_type,
+            #                                           shortAttendance.status,
+            #                                           shortAttendance.for_date,
+            #                                           shortAttendance.due_date,
+            #                                           status_comment,
+            #                                           shortAttendance.reason)
             context_data['record_added'] = True
             context_data['success_msg'] = "Your short attendance had sent for manager approval."
             template = render(request, 'short_attendance_remark.html', context_data)
@@ -1490,16 +1490,16 @@ def adminleavecancel(request):
     leave.status_comments = "Leave cancelled by admin"
     leave.update()
     candidate = User.objects.get(id=leave.user_id)
-    ApproveLeaveCancelEmailSendTask.delay(candidate,
-                                          leave.leave_type.leave_type,
-                                          leave.status,
-                                          leave.from_date,
-                                          leave.to_date,
-                                          leave.from_session,
-                                          leave.to_session,
-                                          leave.days_count,
-                                          leave.reason,
-                                          request.user)
+    # ApproveLeaveCancelEmailSendTask.delay(candidate,
+    #                                       leave.leave_type.leave_type,
+    #                                       leave.status,
+    #                                       leave.from_date,
+    #                                       leave.to_date,
+    #                                       leave.from_session,
+    #                                       leave.to_session,
+    #                                       leave.days_count,
+    #                                       leave.reason,
+    #                                       request.user)
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")

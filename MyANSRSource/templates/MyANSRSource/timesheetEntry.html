@@ -64,7 +64,7 @@
 		{% if forloop.first %}
 		<thead>
 		<tr>
-			<td colspan="4" class="text-right">
+			<td colspan="2" class="text-right">
 				<h6>
                     <strong>Swipe Card Hours</strong>
 				</h6>
@@ -76,7 +76,7 @@
 			{% endfor %}
 		</tr>
 		<tr>
-			<td colspan="4" class="text-right">
+			<td colspan="2" class="text-right">
 				<strong>Timesheet Hours</strong>
 			</td>
 			<td class="text-center">
@@ -110,16 +110,13 @@
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-				{% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 or forloop.counter == 4 %}
+				{% if forloop.counter <= 2%}
 					<th class="res-14-per">
 				{% else %}
 					<th>
 				{% endif %}
-				{% if 'Chapter' in data.label %}
-					Chapter/Subtitle
-				{% else %}
+
 				{{ data.label }}
-				{% endif %}
 				{% if data.field.required %}
 					<span class="required">*</span>
 				{% endif %}
@@ -292,7 +289,7 @@
 						{% endwith %}
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
+					{% if 'Project' in data.label or  'Task' in data.label  or 'Delete' in data.label %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label or 'approved' in data.label %}
 							{% if holdData.value %}
