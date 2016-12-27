@@ -32,65 +32,80 @@ ul{list-style: none;padding-left: 0px;}
                {{form.errors}}
                     <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
-                        <div class="">
-                            {{form.exit_applicant}}
-                        <label class=""></label><!-- start -->
 
-                        <div class="form-group">
 
-                            <div class="">Manager Check the Box to accept the resignation<span class="mandatory-field"> *</span>{{ form.manager_accepted }}</div>
 
-                            <div>
 
-                          <div class="help-block with-errors"></div>
+                      <div class="form-group">
+                        <label class="col-sm-4 control-label">Accept (Manager)</label>
+                        <div class="col-sm-7 controls">
+                          <div class="vd_checkbox checkbox-danger">
+                            {{ form.manager_accepted }}
+                            <label for=""> 3 </label>
 
+                          </div>
                         </div>
+                      </div>
 
+
+
+                      <div class="form-group">
+                        <label class="col-sm-4 control-label">Manager Feedback</label>
+                        <div class="col-sm-7 controls">
+                          {{ form.manager_feedback }}
+                          <span class="help-inline">Some hint here</span> </div>
+                      </div>
+
+
+
+                      <hr>
+
+
+                      <div class="form-group">
+                        <label class="col-sm-4 control-label">Accept (HR)</label>
+                        <div class="col-sm-7 controls">
+                          <div class="vd_checkbox checkbox-danger">
+                            {{ form.hr_accepted }}
+                            <label for=""> 3 </label>
+
+                          </div>
                         </div>
-                       <div class="form-group">
-
-                          <div> Manager Please Provide your feedback<span class="mandatory-field"> *</span>{{ form.manager_feedback }}</div>
-
-                          <div class="help-block with-errors"></div>
-
-                       </div>
+                      </div>
 
 
-                       <div class="form-group">
 
-                          <div> HR Check the Box to accept the resignation<span class="mandatory-field"> *</span> {{ form.hr_accepted }}</div>
+                      <div class="form-group">
+                        <label class="col-sm-4 control-label">HR Feedback</label>
+                        <div class="col-sm-7 controls">
+                          {{ form.hr_feedback }}
+                          <span class="help-inline">Some hint here</span> </div>
+                      </div>
 
 
-                            <div>
 
-                          <div class="help-block with-errors"></div>
+                      <hr>
 
-                            </div>
-                       </div>
-                            <div class="form-group">
 
-                          <div class=""> HR Please Provide your feedback<span class="mandatory-field"> *</span></div>
-                           {{ form.hr_feedback }}
-                          <div class="help-block with-errors"></div>
-
-                       </div>
-                             <div class="form-group">
-
-                            <div class="">Select The Last date of Employee<span class="mandatory-field"> *</span></div>
-                            <div>
+                      <div class="form-group">
+                        <label class="col-sm-4 control-label">Last Date</label>
+                        <div class="col-sm-7 controls">
                             {{ form.last_date_accepted }}
-                          <div class="help-block with-errors"></div>
+                          <span class="help-inline">Some hint here</span> </div>
+                      </div>
 
-                        </div>
 
-                        </div>
-                            <input type ="submit" value ="submit" class="exitbutton btn-primary">
-                      </div><!--./end of form group-->
+
+
+                            <input type ="submit" value ="submit" class="exitbutton btn btn-primary pull-right">
+
                     </form>
            </div>
                 </div>
               </div>
             </div>
+
+
+
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>

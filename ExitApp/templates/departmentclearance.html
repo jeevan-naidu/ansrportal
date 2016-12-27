@@ -31,73 +31,130 @@ ul{list-style: none;padding-left: 0px;}
            <div class="panel-body">
                     <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
-                        <div class="">
-                            {{form.exit_applicant_list}}
-                        <label class=""></label><!-- start -->
-
-                        <div class="form-group">
-
-                            <div class="">Librarian Check the Box to accept the resignation<span class="mandatory-field"> *</span>{{ form.librarian_accepted }}</div>
-
-                            <div>
-
-                          <div class="help-block with-errors"></div>
-
-                        </div>
-
-                        </div>
-                       <div class="form-group">
-
-                          <div> Librarian Please Provide your feedback<span class="mandatory-field"> *</span>{{ form.librarian_feedback }}</div>
-
-                          <div class="help-block with-errors"></div>
-
-                       </div>
 
 
-                       <div class="form-group">
-
-                          <div> Admin Check the Box to accept the resignation<span class="mandatory-field"> *</span> {{ form.admin_accepted }}</div>
 
 
-                            <div>
 
-                          <div class="help-block with-errors"></div>
-
+<table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Username</th>
+                          <th>#</th>
+                          <th>Department</th>
+                          <th>Role</th>
+                          <th>Status</th>
+                          <th>Options</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td rowspan="3" style="vertical-align: middle;">Johann Un</td>
+                          <td>1</td>
+                          <td class="center">Library</td>
+                          <td class="center">Manager</td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                              <i class="fa fa-eye"></i> 
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox" value="1" id="checkbox-1">
+                              <label for="checkbox-1"></label>
                             </div>
-                       </div>
-                            <div class="form-group">
-
-                          <div class=""> Admin Please Provide your feedback<span class="mandatory-field"> *</span></div>
-                           {{ form.admin_feedback }}
-                          <div class="help-block with-errors"></div>
-
-                       </div>
-                             <div class="form-group">
-
-                          <div> IT Check the Box to accept the resignation<span class="mandatory-field"> *</span> {{ form.it_accepted }}</div>
-
-
-                            <div>
-
-                          <div class="help-block with-errors"></div>
-
+                          </td>
+                        </tr>
+                        <tr>
+                          <!-- <td>Petrus Dar</td> -->
+                          <td>2</td>
+                          <td class="center">Catering</td>
+                          <td class="center">Associate Project Lead</td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                              <i class="fa fa-eye"></i> 
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox" value="2" id="checkbox-2">
+                              <label for="checkbox-2"></label>
                             </div>
-                       </div>
-                            <div class="form-group">
+                          </td>
+                        </tr>
+                        <tr>
+                          <!-- <td>Petrus Dar</td> -->
+                          <td>3</td>
+                          <td class="center">Catering</td>
+                          <td class="center">Associate Project Lead</td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                              <i class="fa fa-eye"></i> 
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox" value="3" id="checkbox-3">
+                              <label for="checkbox-3"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
 
-                          <div class=""> IT Please Provide your feedback<span class="mandatory-field"> *</span></div>
-                           {{ form.it_feedback }}
-                          <div class="help-block with-errors"></div>
 
-                       </div>
-                            <input type ="submit" value ="submit" class="exitbutton btn-primary">
-                      </div><!--./end of form group-->
-                    </form>
-           </div>
+
+                      </form>
+                    </div>
                 </div>
               </div>
             </div>
+
+
+
+
+
+<!-- Modal Area -->
+
+ <!-- Modal -->
+                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body"> 
+
+                          <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" type="text"></textarea>
+                              </div>
+
+                            </div>
+                            
+                            
+                          </form>
+                        
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content --> 
+                    </div>
+                    <!-- /.modal-dialog --> 
+                  </div>
+                  <!-- /.modal -->
+
+
+<!-- End of modal area -->
+
+
+
+
+
+
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
