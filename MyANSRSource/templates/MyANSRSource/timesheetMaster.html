@@ -79,8 +79,7 @@
 {#    </div>#}
 {#</div><!-- ./carousel for week -->#}
 
-
-{{mondays_list}}
+<!--{{ts_final_list}}-->
 
 
 <legend class="clearfix pad-bot-10 bb0">
@@ -163,8 +162,7 @@ a.incomplete:before, button.incomplete:before{
 
 
 
-
-
+{% block switch_dates %}
 
 <div class="dropdown week-selector pull-left">
   <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -195,7 +193,7 @@ a.incomplete:before, button.incomplete:before{
       {% endfor %}
 
   </ul>
-</div>
+</div>{% endblock  %}
 
 
 

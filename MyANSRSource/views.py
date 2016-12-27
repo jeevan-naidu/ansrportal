@@ -912,7 +912,7 @@ def members_status (team_members) :
 
 def date_range_picker(request):
     mondays_list = [x for x in get_mondays_list_till_date()]
-    print  "LIST", mondays_list
+    # print  "LIST", mondays_list
 
     # list of dict with mentioned ts entry columns
     weeks_timesheetEntry_list = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart__in=mondays_list). \
@@ -3457,29 +3457,49 @@ def leaveappliedinweek(user, wkstart, wkend):
 
 def status_member(team_members):
     status = {}
-    weeks_list = [x for x in weeks_list_till_date()]
-    for tup in weeks_list:
-        for_week = str(tup[0].day) + "-" + str(tup[0].strftime("%b")) + " - " + str(tup[1].day) + \
-                   "-" + str(tup[1].strftime("%b"))
-        status[for_week] ={}
+    week_collection = []
+    for s in weeks_list_till_date():
+        for_week = str(str(s[0].day) + "-" + s[0].strftime("%b")) + " - " + \
+                   str(str(s[1].day) + "-" + s[1].strftime("%b"))
+        week_collection.append(for_week)
+        wkstart_list = str(s[0]).split('-')[::-1]
+        wkstart = "".join([x for x in wkstart_list])
+        wkend_list = str(s[1]).split('-')[::-1]
+        wkend = "".join([x for x in wkend_list])
+        status[for_week] = {}
+        status[for_week]['status']={}
+        status[for_week]['wkstart'] = wkstart
+        status[for_week]['wkend'] = wkend
         for members in team_members:
-            status[for_week][str(members.user)] = {}
+            status[for_week]['status'][members.user.id] = {}
             try:
-                # date_range = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=s).values('wkstart', 'wkend').distinct()
-
-                result = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=tup,
-                                                                                    approved=True).exists()
-
+                result = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=s[0], wkend=s[1],
+                                                       approved=True).exists()
             except:
-                result = str(False)
-            status[for_week][str(members.user)] =  str(result)
+                result = False
+            status[for_week]['status'][members.user.id] = result
+    # print "in function " ,  type(week_collection)
+    status_dict = {}
+    for k, v in status.iteritems():
+        status_dict[k] = {}
+        status_dict[k]['wkstart'] ={}
+        status_dict[k]['wkend'] = {}
+        if all(value == True for value in v['status'].values()):
+            status_dict[k]['status'] = "approved"
+        elif all(value == False for value in v['status'].values()):
+            status_dict[k]['status'] = "not_approved"
+        elif True in v['status'].values() and False in v['status'].values():
+            status_dict[k]['status'] = "partial"
+        status_dict[k] ['wkstart']= v['wkstart']
+        status_dict[k]['wkend'] = v['wkend']
 
-    # print status
-    return status
+    # print json.dumps(status_dict)
+    return status_dict, week_collection
 
 
-def date_range_picker(request):
+def date_range_picker(request, employee=None):
     mondays_list = [x for x in get_mondays_list_till_date()]
+    # print mondays_list
     # for s in mondays_list:
     #     print s
 
@@ -3488,7 +3508,7 @@ def date_range_picker(request):
         values('wkstart', 'wkend', 'hold', 'approved').distinct()
 
     mondays_list = [str(x.strftime("%b") + "-" + str(x.day)) for x in mondays_list]
-
+    # print mondays_list
 
     weeks_list = [x for x in weeks_list_till_date()]
     # print weeks_list
@@ -3507,7 +3527,7 @@ def date_range_picker(request):
         dict_obj['wkend'] = "".join([x for x in wkend])
 
         ts_week_info_dict[for_week] = dict_obj
-
+    # print ts_week_info_dict
     ts_final_list = []
 
     for tup in weeks_list:
@@ -3520,6 +3540,7 @@ def date_range_picker(request):
             wkend = str(tup[1]).split('-')[::-1]
             ts_final_list.append({ 'for_week': for_week, 'wkstart': "".join([x for x in wkstart]),
                                   'wkend': "".join([x for x in wkend]), 'filled': False})
+    # print ts_final_list
     return ts_final_list, mondays_list, ts_week_info_dict
 
 
@@ -3729,18 +3750,20 @@ class ApproveTimesheetView(TemplateView):
         # print  team_members
         # print dates
         # status = {}
-        result = status_member(team_members)
-        sub_values = {}
-        for k, v in result.iteritems():
-            sub_values[k] = {}
-            print "values", v.values()
-            if 'True'not in v.values():
-                sub_values[k] = 0
-            elif 'True' and 'False' in v.values():
-                sub_values[k] = 1
-            elif 'False' not in v.values():
-                sub_values[k] = 2
-        # print sub_values
+        # result = status_member(team_members)
+        # sub_values = {}
+        # for k, v in result.iteritems():
+        #     sub_values[k] = {}
+        #     # print "values", v.values()
+        #     if 'True'not in v.values():
+        #         sub_values[k] = 0
+        #     elif 'True' and 'False' in v.values():
+        #         sub_values[k] = 1
+        #     elif 'False' not in v.values():
+        #         sub_values[k] = 2
+
+        # print "week collection", week_collection
+        status, week_collection = status_member(team_members)
         for members in team_members:
             # status[str(members.user)] = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=dates['start'],
             #                                                           approved=True).exists()
@@ -3768,11 +3791,11 @@ class ApproveTimesheetView(TemplateView):
             ts_data_list[members]['leave_hours'] = leave_hours
             context['ts_data_list'] = ts_data_list
             context['ts_final_list'] = ts_final_list
-            context['weekstartDate']=dates['start']
+            context['weekstartDate'] = dates['start']
             context['weekendDate'] = dates['end']
-            context['mondays_list']=mondays_list
+            context['status_dict'] = status
+        context['week_collection'] = week_collection[::-1]
 
-        # print ts_data_list
         return context
     # if self.request.method == 'POST':
     #     for i in range(1, int(self.request.POST.get('totalValue')) + 1):
