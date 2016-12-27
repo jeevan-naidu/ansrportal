@@ -39,8 +39,9 @@ ul{list-style: none;padding-left: 0px;}
                     <div class="panel-body">
                     <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
-                        <div class="">
-                        <label class=""></label><!-- start -->
+
+
+<!-- 
                         <div class="form-group">
 
                             <div class="">Select Your Date On Which you put your Resignation<span class="mandatory-field"> *</span></div>
@@ -77,9 +78,75 @@ ul{list-style: none;padding-left: 0px;}
                           <div class="help-block with-errors"></div>
 
                             </div>
-                       </div>
-                            <input type ="submit" value ="submit" class="exitbutton btn-primary">
-                      </div><!--./end of form group-->
+                       </div> -->
+
+
+<!-- Ends -->
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
+                            {{ form.start_date }}
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Last Date<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
+                            {{ form.last_date }}
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
+                           {{ form.reason_dropdown }}
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Comments<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
+                            {{ form.comment }}
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
+
+                            <input type ="submit" value ="submit" class="exitbutton btn btn-primary">
+
+<!-- Ends -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     </form>
                     </div>
                 </div>
