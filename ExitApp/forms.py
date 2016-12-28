@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django import forms
 from django.forms import Textarea
-from models import ResignationInfo
+from models import ResignationInfo, EmployeeClearanceInfo
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal import autocomplete
 from django.contrib.auth.models import User
@@ -60,4 +60,8 @@ class ClearanceForm(forms.ModelForm):
         widget=autocomplete.ModelSelect2(url='resignee_filter', attrs={
             'data-placeholder': 'Type Member Name ...',
         }, ), )
+
+    class Meta:
+        model = EmployeeClearanceInfo
+        fields = ['dept_status', 'dept_feedback', 'dept_due']
 
