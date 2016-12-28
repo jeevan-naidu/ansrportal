@@ -42,7 +42,13 @@ urlpatterns = [
         name=u'timesheet'),
 
     url(r'^timesheet/approve$', permission_required('MyANSRSource.approve_timesheet')(ApproveTimesheetView.as_view()),
-        name='approvetimesheet'),
+        name='approve_time_sheet'),
+    url(r'^timesheet/approve/(?P<startdate>(\d+))/(?P<enddate>(\d+))/$', permission_required('MyANSRSource.approve_timesheet')
+        (ApproveTimesheetView.as_view())),
+    url(r'^timesheet/approve/(?P<week>[\w\-]+)/(?P<startdate>(\d+))/(?P<enddate>(\d+))/$',
+        permission_required('MyANSRSource.approve_timesheet')
+        (ApproveTimesheetView.as_view())),
+
     url(r'^timesheet/get_time_sheet$', permission_required('MyANSRSource.approve_timesheet')(views.get_time_sheet)),
 
     url(r'^dashboard$',

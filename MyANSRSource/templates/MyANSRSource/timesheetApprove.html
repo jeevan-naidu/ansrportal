@@ -5,48 +5,11 @@
 {% load permissions %}
 {% block pageTitle %}
 Approve Timesheet
-<!--<div class="pull-right positioner">-->
-            <!--<div class="pull-left">-->
-             <!--<form id="prevWeek" method="get" action="" enctype="multipart/form-data">-->
-                <!--<input type="hidden" name="week" value="prev">-->
-             <!--<input type="hidden" name="startdate" value="19122016">-->
-                <!--<input type="hidden" name="enddate" value="25122016">-->
-
-                    <!--<button type="submit" value="submit" class="btn btn-default">-->
-                        <!--<span class="glyphicon glyphicon-arrow-left"></span>-->
-                    <!--</button>-->
-
-             <!--</form>-->
-             <!--</div>-->
-
-            <!--<div id="timesheet-approve-dropdrown" class="dropdown pull-left">-->
-              <!--<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">-->
-                <!--<i class="fa fa-calendar" style="margin-right:10px;color:#999"></i>19-Dec - 25-Dec</button>-->
-              <!--<ul class="dropdown-menu">-->
-                <!--<li><a href="#">19-Dec - 25-Dec</a></li>-->
-                <!--<li><a href="#">19-Dec - 25-Dec</a></li>-->
-                <!--<li><a href="#">19-Dec - 25-Dec</a></li>-->
-              <!--</ul>-->
-            <!--</div>-->
-
-
-            <!--<div class="pull-left text-right">-->
-             <!--<form id="nextWeek" method="get" action="" enctype="multipart/form-data">-->
-                <!--<input type="hidden" name="week" value="next">-->
-                <!--<input type="hidden" name="startdate" value="19122016">-->
-                <!--<input type="hidden" name="enddate" value="25122016">-->
-
-                    <!--<button type="submit" value="submit" disabled="disabled" class="btn btn-default">-->
-                        <!--<span class="glyphicon glyphicon-arrow-right"></span>-->
-                    <!--</button>-->
-
-             <!--</form>-->
-             <!--</div>-->
-<!--</div>&lt;!&ndash; ./positioner &ndash;&gt;-->
-
-
-
-
+{% for message in messages %}
+    <li class="{{ message.tags }}">
+    {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
+    </li>
+{% endfor %}
 {% endblock %}
 {% block switch_dates %}
 <div class="dropdown week-selector pull-left">
@@ -60,17 +23,17 @@ Approve Timesheet
            <li>{% with result=status_dict|get_item:date_range %}
                {% for k,v in result.items %}
                     {% if k == 'status'  and v == 'approved' %}
-                         <a href="entry?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="filled">
+                         <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="filled">
                            {{ date_range }}
                          </a>
                     {% else %}
                         {% if k == 'status' and v == 'partial' %}
-                                <a href="entry?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="incomplete">
+                                <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="incomplete">
                                    {{ date_range}}
                                  </a>
                         {% endif %}
                         {% if  k == 'status' and v == 'not_approved'  %}
-                            <a href="entry?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="unfilled">
+                            <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="unfilled">
                                     {{ date_range}}
                             </a>
                         {% endif %}
@@ -92,9 +55,24 @@ Approve Timesheet
 
 
 <div class="panel pb-15">
+
     <div class="panel-body">
+           <div class="form-inline approve-reject pull-right">
+                                       <div class="checkbox checkbox-success">
+                                          <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
+                                          <label for="approve_all" class="lh-16">
+                                             Approve All
+                                          </label>
+                                      </div>&nbsp;&nbsp;&nbsp;
+                                      <div class="checkbox checkbox-danger">
+                                          <input id="reject_all" type="checkbox" name="reject_all" class="reject_all" >
+                                          <label for="reject_all" class="lh-16">
+                                              Reject All
+                                          </label>
+                                      </div>
+                                  </div>
 
-
+<form method="post" action=""> {% csrf_token %}
 <table class="table table-striped" id="timesheet-approve-table">
   <thead>
     <tr>
@@ -111,26 +89,54 @@ Approve Timesheet
   <tbody>
   {% for team_members,values in ts_data_list.iteritems %}
     <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
-      <td><a href="#myModal" class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
+      <td><a href="#myModal_{{team_members.user.id}}" class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}} </td>
         <td>{{values.non_billable_total}}</td>
-      <td> {{values.leave_hours}}</td>
+      <td> {{values.leave_hours}} </td>
 
+<div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback </label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
+                              </div>
+
+                            </div>
+
+
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 
 
 
 <td class="timesheet-approve-options text-center">
     <div class="checkbox checkbox-success radio-mod btn-xs">
-        <input id="approve4845" type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
-        <label for="approve4845" class="ansr-orange-mod noselect">
+        <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
+        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect">
         Approve
         </label>
     </div>
 
     <div class="checkbox checkbox-danger radio-mod btn-xs">
-        <input id="reject4845" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}">
-        <label for="reject4845" class="noselect">
+        <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}">
+        <label for="reject_{{team_members.user.id}}"  class="noselect">
         Reject
         </label>
     </div>
@@ -138,17 +144,24 @@ Approve Timesheet
 </td>
 
     <td class="menu-action">
-      <a data-toggle="modal" data-target="#myModal" class="btn menu-icon vd_bd-yellow vd_yellow">
+      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow">
         <i class="fa fa-envelope"></i>
       </a>
     </td>
+
+        <!-- Modal Area -->
+
+
+
 {%endfor %}
   </tbody>
 </table>
-
-
-
-    </div>
+{% if ts_data_list %}
+<input type="submit" name="submit">
+    <input type="hidden" name="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
+    <input type="hidden" name="weekendDate" value="{{weekendDate|date:"dmY"}}">
+{% endif %}
+</form></div>
 </div>
 
 
@@ -215,39 +228,6 @@ Approve Timesheet
 
 
 
-<!-- Modal Area -->
-
-
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form class="form-horizontal">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback</label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" type="text"></textarea>
-                              </div>
-
-                            </div>
-
-
-                          </form>
-
-                        </div>
-                        <div class="modal-footer background-login">
-                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
-                          <button type="button" class="btn vd_btn vd_bg-green">Save changes</button>
-                        </div>
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
 
 
 
@@ -298,6 +278,43 @@ Approve Timesheet
 
                   });
             });
+          jQuery('.approve_all , .reject_all').click(function(e){
+            if(this.className == 'approve_all') {
+                $('.reject_all,.reject ').prop('checked', false);
+            }
+            else if (this.className == 'reject_all') {
+                $('.approve_all,.approve ').prop('checked', false);
+            }
+            var class_name = this.className.split('_');
+            if($('#'+this.id).prop('checked')) {
+                $('.'+class_name[0]).prop('checked', true);
+            }
+            else {
+                $('.'+class_name[0]).prop('checked', false);
+            }
+
+        });
+        jQuery('.approve , .reject ').click(function(e){
+            var class_name = this.value;
+            if(this.className == 'approve') {
+                $('#reject_'+class_name).prop('checked', false);
+                $('#cancel_'+class_name).prop('checked', false);
+                $('.reject_all').prop('checked', false);
+            }
+            else if (this.className == 'reject') {
+                $('#approve_'+class_name).prop('checked', false);
+                $('#cancel_'+class_name).prop('checked', false);
+                $('.approve_all').prop('checked', false);
+            }
+            else if (this.className == 'cancel') {
+                $('#approve_'+class_name).prop('checked', false);
+                $('#reject_'+class_name).prop('checked', false);
+                $('.approve_all').prop('checked', false);
+                $('.reject_all').prop('checked', false);
+            }
+
+
+        });
 
         } );
 </script>

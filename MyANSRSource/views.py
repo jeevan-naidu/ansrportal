@@ -39,6 +39,7 @@ import employee
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity
 from Grievances.models import Grievances
+from django.core.urlresolvers import reverse_lazy
 
 from ldap import LDAPError
 
@@ -466,8 +467,8 @@ def Timesheet(request):
                         nonbillableTS.activity = eachActivity['activity']
                         nonbillableTS.teamMember = request.user
                         if 'save' not in request.POST:
-                            nonbillableTS.approved = True
-                            nonbillableTS.managerFeedback = 'System Approved'
+                            # nonbillableTS.approved = True
+                            # nonbillableTS.managerFeedback = 'System Approved'
                             nonbillableTS.hold = True
                             nonbillableTS.approvedon = datetime.now().replace(
                                 tzinfo=utc)
@@ -511,8 +512,8 @@ def Timesheet(request):
                     billableTS.teamMember = request.user
                     billableTS.billable = True
                     if 'save' not in request.POST:
-                        billableTS.approved = True
-                        billableTS.managerFeedback = 'System Approved'
+                        # billableTS.approved = True
+                        # billableTS.managerFeedback = 'System Approved'
                         billableTS.hold = True
                         billableTS.approvedon = datetime.now().replace(
                             tzinfo=utc)
@@ -570,11 +571,11 @@ def Timesheet(request):
                 messages.success(
                     request, 'Timesheet approved :' + unicode_to_string(approvedSet))
                 hold_button = True
-            if len(autoApprovedSet) > 0:
-                messages.success(
-                    request, 'Timesheet auto-approved by the system :' +
-                             unicode_to_string(autoApprovedSet))
-                hold_button = True
+            # if len(autoApprovedSet) > 0:
+            #     messages.success(
+            #         request, 'Timesheet auto-approved by the system :' +
+            #                  unicode_to_string(autoApprovedSet))
+            #     hold_button = True
             if len(holdSet) > 0:
                 messages.info(
                     request, 'Timesheet sent to your manager :' +
@@ -721,6 +722,9 @@ def get_time_sheet(request, is_approve=False):
 
 @login_required
 def switchWeeks(request):
+    print "switch week"
+    print request
+    exit()
     today = datetime.now().date()
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=6)
@@ -950,8 +954,14 @@ def date_range_picker(request):
     return ts_final_list, mondays_list, ts_week_info_dict
 
 
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object):
-    return TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date, teamMember=request_object.user)
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False):
+    if approve_time_sheet:
+        ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
+                                               teamMember=request_object.user, approved=False, hold=True)
+    else:
+        ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
+                                               teamMember=request_object.user)
+    return ts_obj
 
 
 def billable_hours(ts_obj):
@@ -3019,8 +3029,8 @@ def Timesheet(request):
                         nonbillableTS.activity = eachActivity['activity']
                         nonbillableTS.teamMember = request.user
                         if 'save' not in request.POST:
-                            nonbillableTS.approved = True
-                            nonbillableTS.managerFeedback = 'System Approved'
+                            # nonbillableTS.approved = True
+                            # nonbillableTS.managerFeedback = 'System Approved'
                             nonbillableTS.hold = True
                             nonbillableTS.approvedon = datetime.now().replace(
                                 tzinfo=utc)
@@ -3064,8 +3074,8 @@ def Timesheet(request):
                     billableTS.teamMember = request.user
                     billableTS.billable = True
                     if 'save' not in request.POST:
-                        billableTS.approved = True
-                        billableTS.managerFeedback = 'System Approved'
+                        # billableTS.approved = True
+                        # billableTS.managerFeedback = 'System Approved'
                         billableTS.hold = True
                         billableTS.approvedon = datetime.now().replace(
                             tzinfo=utc)
@@ -3543,9 +3553,9 @@ def date_range_picker(request, employee=None):
     # print ts_final_list
     return ts_final_list, mondays_list, ts_week_info_dict
 
-
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object):
-    return TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date, teamMember=request_object.user)
+#
+# def time_sheet_for_the_week(week_start_date, week_end_date, request_object):
+#     return TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date, teamMember=request_object.user)
 
 
 def billable_hours(ts_obj):
@@ -3733,6 +3743,9 @@ def renderTimesheet(request, data):
         finalData['atErrorList'] = data['atErrorList']
     return render(request, 'MyANSRSource/timesheetEntry.html', finalData)
 
+def pull_members_time_sheet(request,start=None,end=None) :
+    pass
+
 
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
@@ -3740,159 +3753,93 @@ class ApproveTimesheetView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
-
         manager = Employee.objects.get(user_id=self.request.user)
         team_members = Employee.objects.filter((Q(manager_id=manager) |
                                                 Q(employee_assigned_id=manager)), user__is_active=True)
-        # print team_members.query
         dates = switchWeeks(self.request)
         ts_data_list = {}
-        # print  team_members
-        # print dates
-        # status = {}
-        # result = status_member(team_members)
-        # sub_values = {}
-        # for k, v in result.iteritems():
-        #     sub_values[k] = {}
-        #     # print "values", v.values()
-        #     if 'True'not in v.values():
-        #         sub_values[k] = 0
-        #     elif 'True' and 'False' in v.values():
-        #         sub_values[k] = 1
-        #     elif 'False' not in v.values():
-        #         sub_values[k] = 2
 
-        # print "week collection", week_collection
+        start_date = dates['start']
+        end_date = dates['end']
         status, week_collection = status_member(team_members)
+        # print start_date, end_date
+        # print start_date, end_date
         for members in team_members:
-            # status[str(members.user)] = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=dates['start'],
-            #                                                           approved=True).exists()
             non_billable_total = 0.0
-            ts_data_list[members] = {}
-            ts_obj = time_sheet_for_the_week(dates['start'], dates['end'], members)
-            non_billable_obj = non_billable_hours(ts_obj)
-            for others in non_billable_obj:
-                non_billable_total += float(others['totalH'])
-            ts_data_list[members]['non_billable_total'] = non_billable_total
-            billable_hours_obj = billable_hours(ts_obj)
-            zero_value, non_zero_value, b_total = billable_value(billable_hours_obj)
-            ts_data_list[members]['zero_value'] = zero_value
-            ts_data_list[members]['non_zero_value'] = non_zero_value
-            ts_data_list[members]['b_total'] = b_total
-            leave_flag = leaveappliedinweek(members.user, dates['start'], dates['end'])
-            # print leave_flag
-            leave_hours = 0
-            for flag in leave_flag:
-                if flag == 4:
-                    leave_hours += 4
-                elif flag == 8:
-                    leave_hours += 8
+            ts_obj = time_sheet_for_the_week(start_date, end_date, members, True)
+            if ts_obj:
+                ts_data_list[members] = {}
+                non_billable_obj = non_billable_hours(ts_obj)
+                for others in non_billable_obj:
+                    non_billable_total += float(others['totalH'])
+                ts_data_list[members]['non_billable_total'] = non_billable_total
+                billable_hours_obj = billable_hours(ts_obj)
+                zero_value, non_zero_value, b_total = billable_value(billable_hours_obj)
+                ts_data_list[members]['zero_value'] = zero_value
+                ts_data_list[members]['non_zero_value'] = non_zero_value
+                ts_data_list[members]['b_total'] = b_total
+                leave_flag = leaveappliedinweek(members.user, start_date, end_date)
+                # print leave_flag
+                leave_hours = 0
+                for flag in leave_flag:
+                    if flag == 4:
+                        leave_hours += 4
+                    elif flag == 8:
+                        leave_hours += 8
 
-            ts_data_list[members]['leave_hours'] = leave_hours
+                ts_data_list[members]['leave_hours'] = leave_hours
             context['ts_data_list'] = ts_data_list
             context['ts_final_list'] = ts_final_list
             context['weekstartDate'] = dates['start']
             context['weekendDate'] = dates['end']
             context['status_dict'] = status
+            context['disabled'] = dates['disabled']
         context['week_collection'] = week_collection[::-1]
 
         return context
-    # if self.request.method == 'POST':
-    #     for i in range(1, int(self.request.POST.get('totalValue')) + 1):
-    #         choice = "choice" + str(i)
-    #         mem = "mem" + str(i)
-    #         start = "start" + str(i)
-    #         end = "end" + str(i)
-    #         fb = "fb" + str(i)
-    #         if start in request.POST:
-    #             startDate = date.fromordinal(int(request.POST.get(start)))
-    #         if end in request.POST:
-    #             endDate = date.fromordinal(int(request.POST.get(end)))
-    #         if choice in request.POST:
-    #             if request.POST.get(choice) != 'hold':
-    #                 updateTS = TimeSheetEntry.objects.filter(
-    #                     teamMember__id=int(request.POST.get(mem)),
-    #                     wkstart=startDate,
-    #                     wkend=endDate
-    #                 )
-    #                 for eachTS in updateTS:
-    #                     if request.POST.get(choice) == 'redo':
-    #                         eachTS.hold = False
-    #                         eachTS.approved = False
-    #                         eachTS.managerFeedback = request.POST.get(fb)
-    #                     else:
-    #                         eachTS.hold = True
-    #                         eachTS.approved = True
-    #                         eachTS.managerFeedback = request.POST.get(fb)
-    #                     eachTS.save()
-    #     return HttpResponseRedirect('/myansrsource/dashboard')
-    # else:
-    #     data = TimeSheetEntry.objects.filter(
-    #         project__projectmanager__user=request.user,
-    #         hold=True, approved=False
-    #     ).values('teamMember', 'teamMember__first_name',
-    #              'teamMember__id',
-    #              'teamMember__employee__employee_assigned_id',
-    #              'teamMember__last_name', 'wkstart', 'wkend'
-    #              ).order_by('teamMember', 'wkstart', 'wkend').distinct()
-    #
-    #     tsList = []
-    #     if len(data):
-    #         for eachTS in data:
-    #             tsData = {}
-    #             tsData['member'] = eachTS['teamMember__first_name'] + ' :  ' + eachTS['teamMember__last_name'] + \
-    #                                ' (' + eachTS['teamMember__employee__employee_assigned_id'] + ')'
-    #             tsData['mem'] = eachTS['teamMember__id']
-    #             tsData['wkstart'] = eachTS['wkstart']
-    #             tsData['wkstartNum'] = eachTS['wkstart'].toordinal()
-    #             tsData['wkend'] = eachTS['wkend']
-    #             tsData['wkendNum'] = eachTS['wkend'].toordinal()
-    #             totalNon = TimeSheetEntry.objects.filter(
-    #                 wkstart=eachTS['wkstart'],
-    #                 wkend=eachTS['wkend'],
-    #                 teamMember=eachTS['teamMember'],
-    #                 hold=True, approved=False,
-    #                 project__isnull=True
-    #             ).values('project').annotate(
-    #                 monday=Sum('mondayH'),
-    #                 tuesday=Sum('tuesdayH'),
-    #                 wednesday=Sum('wednesdayH'),
-    #                 thursday=Sum('thursdayH'),
-    #                 friday=Sum('fridayH'),
-    #                 saturday=Sum('saturdayH'),
-    #                 sunday=Sum('sundayH')
-    #             )
-    #             tsData['NHours'] = sum(
-    #                 [eachRec[eachDay] for eachDay in days for eachRec in totalNon])
-    #             totalProjects = TimeSheetEntry.objects.filter(
-    #                 wkstart=eachTS['wkstart'],
-    #                 wkend=eachTS['wkend'],
-    #                 teamMember=eachTS['teamMember'],
-    #                 hold=True,
-    #                 approved=False,
-    #                 project__isnull=False).values(
-    #                 'project',
-    #                 'project__projectId',
-    #                 'project__name',
-    #                 'exception').distinct()
-    #             tsData['projects'] = []
-    #             for eachProject in totalProjects:
-    #                 project = {}
-    #                 project['name'] = eachProject[
-    #                                       'project__projectId'] + ' :  ' + eachProject['project__name']
-    #                 project['exception'] = eachProject['exception']
-    #                 project['BHours'] = getHours(request, eachTS['wkstart'],
-    #                                              eachTS['wkend'],
-    #                                              eachTS['teamMember'],
-    #                                              eachProject['project'], 'B')
-    #                 project['IHours'] = getHours(request, eachTS['wkstart'],
-    #                                              eachTS['wkend'],
-    #                                              eachTS['teamMember'],
-    #                                              eachProject['project'], 'I')
-    #                 tsData['projects'].append(project)
-    #             tsList.append(tsData)
-    #     unTsData = {'timesheetInfo': tsList}
-    #     return render(request, 'MyANSRSource/timesheetApprove.html', unTsData)
+
+    def post(self, request, **kwargs):
+        fail = 0
+        approve_list = request.POST.getlist('approve[]')
+        reject_list = request.POST.getlist('reject[]')
+        feedback = {k: v for k, v in self.request.POST.items() if k.startswith('feedback_')}
+        start_date = datetime.strptime(
+            self.request.POST.get('weekstartDate'), '%d%m%Y'
+        ).date()
+        end_date = datetime.strptime(
+            self.request.POST.get('weekendDate'), '%d%m%Y'
+        ).date()
+        feedback_dict = {}
+        for k, v in feedback.iteritems():
+            user_id = k.split('_')
+            feedback_dict[user_id[1]] = v
+        if approve_list:
+            for user_id in approve_list:
+                try:
+                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                  teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
+                                                                                approved=True)
+                except Exception as e:
+                    fail += 1
+                    logger.error(
+                        u'Unable to make changes(approve) for time sheet approval  {0}{1}{2} and the error is  {3} '
+                        u' '.format(start_date, end_date, user_id, str(e)))
+        if reject_list:
+            for user_id in reject_list:
+                try:
+                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                  teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
+                                                                                hold=False)
+                except Exception as e:
+                    fail += 1
+                    logger.error(
+                        u'Unable to make changes(reject) for time sheet approval  {0}{1}{2} and the error is  {3}'
+                        u' '.format(start_date, end_date, user_id, str(e)))
+        if fail == 0:
+            messages.success(self.request, "Records updated Successfully")
+        else:
+            messages.error(self.request, "Unable  to Process The Records ")
+        return HttpResponseRedirect(reverse_lazy('approve_time_sheet'))
 
 
 @login_required
