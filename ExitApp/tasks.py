@@ -11,10 +11,11 @@ logger = logging.getLogger('MyANSRSource')
 
 
 class ExitEmailSendTask(Task):
-    def run(self, user, optionallast_date):
+    def run(self, user, optionallast_date,dateofresignataion):
         msg_html = render_to_string('email_templates/employee_exit.html',
                                     {'registered_by': user.first_name,
-                                    'last_date': optionallast_date, })
+                                    'last_date': optionallast_date,
+                                     'resign_date':dateofresignataion})
 
         mail_obj = EmailMessage('Employee Resignation Request',
                                 msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com'],
