@@ -49,47 +49,62 @@ class ExitFormAdd(View):
         return render(request, "userexit.html", context)
 
 
-def storeacceptancevalue(request):
-    statustype = request.POST.get()
-    print statustype
-
-
-
 class ResignationAcceptance(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         form = ResignationAcceptanceForm()
         allresignee = ResignationInfo.objects.all()
         context['form'] = form
-        context['id'] = request.user.id
+        # context['id'] = request.user.id
         context['resigneedata'] = allresignee
         return render(request, "exitacceptance.html", context)
 
     def post(self, request):
-        import ipdb;
-        ipdb.set_();
-        trace()
         context = {"form": ""}
-        form = ResignationAcceptanceForm(request.POST)
-        if form.is_valid():
-            try:
-                user_id = form.cleaned_data['exit_applicant']
-                # hr_feedback = form.cleaned_data['hr_feedback']
-                # manager_feedback = form.cleaned_data['manager_feedback']
-                # manger_concent = form.cleaned_data['manager_accepted']
-                # hr_concent = form.cleaned_data['hr_accepted']
-                # laste_date_accepted = form.cleaned_data['last_date_accepted']
-                # user_email = User.objects.get(id=user_id.id)
-                # PostAcceptedMail.delay(user_id, user_email.email, laste_date_accepted)
-                # value = ResignationInfo.objects.get(User=user_id)
-                # value.hr_accepted = hr_concent
-                # value.manager_accepted = manger_concent
-                # value.last_date_accepted = laste_date_accepted
-                # value.save()
-                # EmployeeFeedback(employee_id_id=value.id, manager_feedback=manager_feedback, hr_feedback=hr_feedback,).save()
-                # # import ipdb;ipdb.set_trace()
-                # ClearanceInfo(hr_clearance=hr_concent, IT_clearance=0, admin_clearance=0, library_clearance=0, manager_clearance=manger_concent, resign_id=value.id).save()
-            except Exception as programmingerror:
+        form = request.POST
+        hrconcent_tab ={}
+        hrcomment_tab = {}
+        managerconcent_tab = {}
+        managercomment_tab = {}
+        finaldate_tab = {}
+        hrconcent = {k: v for k, v in self.request.POST.items() if k.startswith('hraccepted_')}
+        hrcomment = {k: v for k, v in self.request.POST.items() if k.startswith('hrcomment_')}
+        managerconcent = {k: v for k, v in self.request.POST.items() if k.startswith('manageraccepted_')}
+        managercomment = {k: v for k, v in self.request.POST.items() if k.startswith('managercomment_')}
+        finaldate = {k: v for k, v in self.request.POST.items() if k.startswith('finaldate_')}
+
+        for k, v in hrconcent.iteritems():
+            tab_id = k.split('_')
+            hrconcent_tab[tab_id[1]] = v
+
+        for k, v in hrcomment.iteritems():
+            tab_id = k.split('_')
+            hrcomment_tab[tab_id[1]] = v
+
+        for k, v in managerconcent.iteritems():
+            tab_id = k.split('_')
+            managerconcent_tab[tab_id[1]] = v
+
+        for k, v in managercomment.iteritems():
+            tab_id = k.split('_')
+            managercomment_tab[tab_id[1]] = v
+
+        for k, v in finaldate.iteritems():
+            tab_id = k.split('_')
+            finaldate_tab[tab_id[1]] = v
+
+        try:
+            for k, v in hrconcent_tab.iteritems():
+                user_email = User.objects.get(id=k)
+                PostAcceptedMail.delay(user_email.first_name, user_email.email, finaldate_tab[k])
+                value = ResignationInfo.objects.get(User=k)
+                value.hr_accepted = hrconcent_tab[k]
+                value.manager_accepted = managerconcent_tab[k]
+                value.manager_comment = managercomment_tab[k]
+                value.hr_comment = hrcomment_tab[k]
+                value.last_date_accepted = '2016-12-18 18:30:00.000000'
+                value.save()
+        except Exception as programmingerror:
                 context['error'] = programmingerror
                 print programmingerror
                 context['form'] = form

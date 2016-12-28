@@ -38,6 +38,8 @@ class ResignationInfo(models.Model):
     reason_optional = models.CharField(verbose_name="optional text area", blank=True, max_length=1000,)
     created_on = models.DateTimeField(verbose_name="created on", auto_now_add=True)
     updated_on = models.DateTimeField(verbose_name="updated on", auto_now_add=True)
+    manager_comment = models.CharField(verbose_name="Manager comment", null=True, blank=True, max_length=1000,)
+    hr_comment = models.CharField(verbose_name="HR comment", null=True, blank=True, max_length=1000,)
     # is_active = models.NullBooleanField(verbose_name="If employee left", blank=True)
 
     def __unicode__(self):
@@ -62,6 +64,9 @@ class EmployeeClearanceInfo(models.Model):
         choices=EMP_AMOUNT,
         blank=True
     )
+
+    def __unicode__(self):
+        return unicode(self.resignationInfo)
 
 
 

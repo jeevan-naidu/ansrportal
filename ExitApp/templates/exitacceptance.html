@@ -29,7 +29,7 @@
 ul{list-style: none;padding-left: 0px;}
     </style>
            <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
+                    <form name="acceptanceform" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         <table class="table table-bordered">
 		<thead>
 			<tr><th class="text-center">Manager Acceptance</th>
@@ -41,13 +41,15 @@ ul{list-style: none;padding-left: 0px;}
                 <th class="text-center">HR Feedback</th>
 		</tr></thead>
                {% for c in resigneedata %}
-                   <tr><th><input id="manager_accepted_{{id}}" name="manager_accepted_{{id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}></th>
-                       <th><input id="hr_accepted_{{id}}" name="hr_accepted_{{id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}></th>
+                   <tr><th><input id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}></th>
+                       <th><input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}></th>
                        <th>{{c}}</th>
                        <th>{{c.last_date}}</th>
-                       <th> <div class="well"><input type="text" class="span2 datepicker" value="" data-date-format="mm/dd/yy" id="datepicker_{{id}}" ></div></th>
-                       <th><textarea id="manager_feedback_{{id}}" maxlength="1000" name="manager_feedback_{{id}}" ></textarea></th>
-                       <th><textarea id="hr_feedback_{{id}}" maxlength="1000" name="hr_feedback_{{id}}" ></textarea></th>
+                       <th> <div class='input-group date datetimepicker' id='datetimepicker'><input name="finaldate_{{c.User_id}}" data-date-format='yyyy-mm-dd hh:ii' type='text' class="form-control datepicker" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div></th>
+                       <th><textarea id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" >{{c.manager_comment}}</textarea></th>
+                       <th><textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" >{{c.hr_comment}}</textarea></th>
                    </tr>
                {% endfor %}
                             {% csrf_token %}
@@ -55,89 +57,15 @@ ul{list-style: none;padding-left: 0px;}
                         <input type ="submit" value ="submit" class="exitbutton btn-primary">
                     </form>
            </div>
-                        {% csrf_token %}
-
-
-
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Accept (Manager)</label>
-                        <div class="col-sm-7 controls">
-                          <div class="vd_checkbox checkbox-danger">
-                            {{ form.manager_accepted }}
-                            <label for=""> 3 </label>
-
-                          </div>
-                        </div>
-                      </div>
-
-
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Manager Feedback</label>
-                        <div class="col-sm-7 controls">
-                          {{ form.manager_feedback }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-
-
-
-                      <hr>
-
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Accept (HR)</label>
-                        <div class="col-sm-7 controls">
-                          <div class="vd_checkbox checkbox-danger">
-                            {{ form.hr_accepted }}
-                            <label for=""> 3 </label>
-
-                          </div>
-                        </div>
-                      </div>
-
-
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">HR Feedback</label>
-                        <div class="col-sm-7 controls">
-                          {{ form.hr_feedback }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-
-
-
-                      <hr>
-
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Last Date</label>
-                        <div class="col-sm-7 controls">
-                            {{ form.last_date_accepted }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-
-
-
-
-                            <input type ="submit" value ="submit" class="exitbutton btn btn-primary pull-right">
-
-                    </form>
-           </div>
-                </div>
-              </div>
-            </div>
-
-
-
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-                    <script>
-                        $(".datepicker").datepicker({
-    format: 'yyyy-mm-dd',
-    weekStart: 1,
- });
-                    </script>
+                    <script type="text/javascript">
+            $(function () {
+                $('.datetimepicker').datetimepicker();
+                format: 'yyyy-mm-dd hh:ii'
+            });
+        </script>
+
 
 {% endblock %}
