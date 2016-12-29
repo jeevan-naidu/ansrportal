@@ -49,7 +49,8 @@ urlpatterns = [
         permission_required('MyANSRSource.approve_timesheet')
         (ApproveTimesheetView.as_view())),
 
-    url(r'^timesheet/get_time_sheet$', permission_required('MyANSRSource.approve_timesheet')(views.get_time_sheet)),
+    url(r'^timesheet/time_sheet_employee', permission_required('MyANSRSource.approve_timesheet')
+        (views.time_sheet_employee)),
 
     url(r'^dashboard$',
         views.Dashboard,

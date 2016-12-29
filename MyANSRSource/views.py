@@ -635,6 +635,7 @@ def Timesheet(request):
 def get_time_sheet(request, is_approve=False):
     # GET request
     # Switch dates back and forth
+    print "get time"
     dates = switchWeeks(request)
 
     # Getting Data for timesheet and activity
@@ -708,23 +709,32 @@ def get_time_sheet(request, is_approve=False):
             'hold_button': hold_button,
             'tsFormList': tsFormList,
             'atFormList': atFormList}
-    is_approve = True
+    # is_approve = True
     if not is_approve:
         return data
     else:
-        print json.dumps(str(data))
-        return data
+        # print json.dumps(str(data))
+        # return data
         return HttpResponse(
             json.dumps(data),
             content_type="application/json"
         )
 
 
+def time_sheet_employee(request):
+
+    s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
+                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
+
+    return HttpResponse(
+            json.dumps(s),
+            content_type="application/json"
+        )
+
+
 @login_required
 def switchWeeks(request):
-    print "switch week"
-    print request
-    exit()
+    print "switch"
     today = datetime.now().date()
     weekstartDate = today - timedelta(days=datetime.now().date().weekday())
     ansrEndDate = weekstartDate + timedelta(days=6)
@@ -760,7 +770,7 @@ def switchWeeks(request):
     return {'start': weekstartDate, 'end': ansrEndDate, 'disabled': disabled}
 
 
-def get_activity_hours(user, weekstartDate, ansrEndDate, user_id=None) :
+def get_activity_hours(user, weekstartDate, ansrEndDate):
     return TimeSheetEntry.objects.filter(
         Q(
             wkstart=weekstartDate,
@@ -773,127 +783,136 @@ def get_activity_hours(user, weekstartDate, ansrEndDate, user_id=None) :
              'managerFeedback', 'approved', 'hold'
              )
 
-@login_required
-def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
-    # To be approved TS data
-    if not user_id:
-        user = request.user
-    else:
-        user = user_id
-    cwActivityData = get_activity_hours(request, weekstartDate, ansrEndDate, user_id=None)
-
-    if user_id:
-        cwTimesheetData = TimeSheetEntry.objects.filter(
-            Q(
-                wkstart=weekstartDate,
-                wkend=ansrEndDate,
-                teamMember=user,
-                activity__isnull=True
-            )
-        ).values('id', 'project', 'project__name', 'task', 'mondayH',
-                 'tuesdayH', 'wednesdayH',
-                 'thursdayH', 'fridayH', 'hold',
-                 'saturdayH', 'sundayH', 'approved',
-                 'totalH', 'managerFeedback', 'project__projectType__code', 'project__totalValue',
-                 'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
-                 )
-    else:
-        cwTimesheetData = TimeSheetEntry.objects.filter(
-            Q(
-                wkstart=weekstartDate,
-                wkend=ansrEndDate,
-                teamMember=user,
-                activity__isnull=True
-            )
-        ).values('id', 'project', 'project__name', 'task', 'mondayH',
-                 'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
-                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-                 'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
-                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue',
-                 'teamMember__employee__employee_assigned_id',
-                 )
-
-    # Changing data TS data
-    tsData = {}
-    tsDataList = []
-    zero = 0
-    non_zero = 0
-    for eachData in cwTimesheetData:
-        for k, v in eachData.iteritems():
-            # print k,v
-            # if user_id:
-            #     v = str(v)
-            if user_id:
-
-                if k == 'teamMember__employee__employee_assigned_id':
-                    tsData['employee_id'] = v
-                if k == 'project':
-                    tsData['project'] = v
-                if k == 'project__name':
-                    tsData['project_name'] = v
-                if k == 'task':
-                    tsData['task'] = v
-                if k == 'mondayH':
-                    tsData['mondayH'] = v
-                if k == 'tuesdayH':
-                    tsData['tuesdayH'] = v
-                if k == 'wednesdayH':
-                    tsData['wednesdayH'] = v
-                if k == 'thursdayH':
-                    tsData['thursdayH'] = v
-                if k == 'fridayH':
-                    tsData['fridayH'] = v
-                if k == 'saturdayH':
-                    tsData['saturdayH'] = v
-                if k == 'project':
-                    tsData['sundayH'] = v
-                if k == 'project':
-                    tsData['sundayH'] = v
-
-            tsData[k] = v
-            if k == 'managerFeedback':
-                tsData['feedback'] = v
-            if k == 'id':
-                tsData['tsId'] = v
-            if k == 'project__totalValue':
-                tsData['project_value'] = v
-
-            if k == 'project__projectType__code':
-                tsData['projectType'] = v
-
-        tsDataList.append(tsData.copy())
-        tsData.clear()
-    atData = {}
-    atDataList = []
-    for eachData in cwActivityData:
-        for k, v in eachData.iteritems():
-            # if user_id:
-            #     v = str(v)
-            if k == 'activity':
-                atData['activity'] = v
-            if 'monday' in k:
-                atData['activity_monday'] = v
-            if 'tuesday' in k:
-                atData['activity_tuesday'] = v
-            if 'wednesday' in k:
-                atData['activity_wednesday'] = v
-            if 'thursday' in k:
-                atData['activity_thursday'] = v
-            if 'friday' in k:
-                atData['activity_friday'] = v
-            if 'saturday' in k:
-                atData['activity_saturday'] = v
-            if 'sunday' in k:
-                atData['activity_sunday'] = v
-            if 'total' in k:
-                atData['activity_total'] = v
-            if k == 'managerFeedback':
-                atData['feedback'] = v
-            if k == 'id':
-                atData['atId'] = v
-        atDataList.append(atData.copy())
-        atData.clear()
-    return {'tsData': tsDataList, 'atData': atDataList}
+# @login_required
+# def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
+#     exit()
+#     # To be approved TS data
+#     print "get data"
+#     print request, weekstartDate, ansrEndDate, user_id
+#     # import ipdb
+#     # ipdb.set_trace()
+#     if not user_id:
+#         user = request.user.id
+#     else:
+#         user = user_id
+#     cwActivityData = get_activity_hours(user, weekstartDate, ansrEndDate)
+#     print cwActivityData
+#
+#     if user_id:
+#         cwTimesheetData = TimeSheetEntry.objects.filter(
+#             Q(
+#                 wkstart=weekstartDate,
+#                 wkend=ansrEndDate,
+#                 teamMember=user,
+#                 activity__isnull=True
+#             )
+#         ).values('id', 'project', 'project__name', 'task', 'mondayH',
+#                  'tuesdayH', 'wednesdayH',
+#                  'thursdayH', 'fridayH', 'hold',
+#                  'saturdayH', 'sundayH', 'approved',
+#                  'totalH', 'managerFeedback', 'project__projectType__code', 'project__totalValue',
+#                  'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
+#                  )
+#     else:
+#         cwTimesheetData = TimeSheetEntry.objects.filter(
+#             Q(
+#                 wkstart=weekstartDate,
+#                 wkend=ansrEndDate,
+#                 teamMember=user,
+#                 activity__isnull=True
+#             )
+#         ).values('id', 'project', 'project__name', 'task', 'mondayH',
+#                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
+#                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
+#                  'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
+#                  'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue',
+#                  'teamMember__employee__employee_assigned_id',
+#                  )
+#
+#     # Changing data TS data
+#     tsData = {}
+#     tsDataList = []
+#     zero = 0
+#     non_zero = 0
+#     for eachData in cwTimesheetData:
+#         for k, v in eachData.iteritems():
+#             v= str(v)
+#             if user_id:
+#                 "print", request.GET
+#                 v = str(v)
+#                 print v
+#             if user_id:
+#
+#                 if k == 'teamMember__employee__employee_assigned_id':
+#                     tsData['employee_id'] = v
+#                 if k == 'project':
+#                     tsData['project'] = v
+#                 if k == 'project__name':
+#                     tsData['project_name'] = v
+#                 if k == 'task':
+#                     tsData['task'] = v
+#                 if k == 'mondayH':
+#                     tsData['mondayH'] = v
+#                 if k == 'tuesdayH':
+#                     tsData['tuesdayH'] = v
+#                 if k == 'wednesdayH':
+#                     tsData['wednesdayH'] = v
+#                 if k == 'thursdayH':
+#                     tsData['thursdayH'] = v
+#                 if k == 'fridayH':
+#                     tsData['fridayH'] = v
+#                 if k == 'saturdayH':
+#                     tsData['saturdayH'] = v
+#                 if k == 'project':
+#                     tsData['sundayH'] = v
+#                 if k == 'project':
+#                     tsData['sundayH'] = v
+#
+#             tsData[k] = v
+#             if k == 'managerFeedback':
+#                 tsData['feedback'] = v
+#             if k == 'id':
+#                 tsData['tsId'] = v
+#             if k == 'project__totalValue':
+#                 tsData['project_value'] = v
+#
+#             if k == 'project__projectType__code':
+#                 tsData['projectType'] = v
+#
+#         tsDataList.append(tsData.copy())
+#         tsData.clear()
+#     atData = {}
+#     atDataList = []
+#     for eachData in cwActivityData:
+#         for k, v in eachData.iteritems():
+#             v = str(v)
+#             if user_id:
+#                 v = str(v)
+#             if k == 'activity':
+#                 atData['activity'] = v
+#             if 'monday' in k:
+#                 atData['activity_monday'] = v
+#             if 'tuesday' in k:
+#                 atData['activity_tuesday'] = v
+#             if 'wednesday' in k:
+#                 atData['activity_wednesday'] = v
+#             if 'thursday' in k:
+#                 atData['activity_thursday'] = v
+#             if 'friday' in k:
+#                 atData['activity_friday'] = v
+#             if 'saturday' in k:
+#                 atData['activity_saturday'] = v
+#             if 'sunday' in k:
+#                 atData['activity_sunday'] = v
+#             if 'total' in k:
+#                 atData['activity_total'] = v
+#             if k == 'managerFeedback':
+#                 atData['feedback'] = v
+#             if k == 'id':
+#                 atData['atId'] = v
+#         atDataList.append(atData.copy())
+#         atData.clear()
+#     return {'tsData': tsDataList, 'atData': atDataList}
 
 
 def leaveappliedinweek(user, wkstart, wkend):
@@ -908,11 +927,11 @@ def leaveappliedinweek(user, wkstart, wkend):
             weekleave.append(0)
     return weekleave
 
-def members_status (team_members) :
-    status = {}
-    for members in team_members:
-        status[str(members.user)] = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=dates['start'],
-                                                                  approved=True).exists()
+# def members_status (team_members) :
+#     status = {}
+#     for members in team_members:
+#         status[str(members.user)] = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=dates['start'],
+#                                                                   approved=True).exists()
 
 def date_range_picker(request):
     mondays_list = [x for x in get_mondays_list_till_date()]
@@ -3324,7 +3343,9 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
     if not user_id:
         user = request.user
+
     else:
+        total_list = []
         user = user_id
 
     cwActivityData = TimeSheetEntry.objects.filter(
@@ -3374,11 +3395,18 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     tsDataList = []
     zero = 0
     non_zero = 0
+    monday_total = 0.0
+    tuesday_total = 0.0
+    wednesday_total = 0.0
+    thursday_total = 0.0
+    friday_total = 0.0
+    saturday_total = 0.0
+    sunday_total = 0.0
     for eachData in cwTimesheetData:
         for k, v in eachData.iteritems():
             # print k,v
-            # if user_id:
-            #     v = str(v)
+            if user_id:
+                v = str(v)
             if user_id:
 
                 if k == 'teamMember__employee__employee_assigned_id':
@@ -3391,20 +3419,25 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                     tsData['task'] = v
                 if k == 'mondayH':
                     tsData['mondayH'] = v
+                    monday_total += float(v)
                 if k == 'tuesdayH':
                     tsData['tuesdayH'] = v
+                    tuesday_total += float(v)
                 if k == 'wednesdayH':
                     tsData['wednesdayH'] = v
+                    wednesday_total += float(v)
                 if k == 'thursdayH':
                     tsData['thursdayH'] = v
+                    thursday_total += float(v)
                 if k == 'fridayH':
                     tsData['fridayH'] = v
+                    friday_total += float(v)
                 if k == 'saturdayH':
                     tsData['saturdayH'] = v
-                if k == 'project':
+                    saturday_total += float(v)
+                if k == 'sundayH':
                     tsData['sundayH'] = v
-                if k == 'project':
-                    tsData['sundayH'] = v
+                    sunday_total += float(v)
 
             tsData[k] = v
             if k == 'managerFeedback':
@@ -3421,26 +3454,34 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         tsData.clear()
     atData = {}
     atDataList = []
+
     for eachData in cwActivityData:
         for k, v in eachData.iteritems():
-            # if user_id:
-            #     v = str(v)
+            if user_id:
+                v = str(v)
             if k == 'activity':
                 atData['activity'] = v
             if 'monday' in k:
                 atData['activity_monday'] = v
+                monday_total += float(v)
             if 'tuesday' in k:
                 atData['activity_tuesday'] = v
+                tuesday_total += float(v)
             if 'wednesday' in k:
                 atData['activity_wednesday'] = v
+                wednesday_total += float(v)
             if 'thursday' in k:
                 atData['activity_thursday'] = v
+                thursday_total += float(v)
             if 'friday' in k:
                 atData['activity_friday'] = v
+                friday_total += float(v)
             if 'saturday' in k:
                 atData['activity_saturday'] = v
+                saturday_total += float(v)
             if 'sunday' in k:
                 atData['activity_sunday'] = v
+                sunday_total += float(v)
             if 'total' in k:
                 atData['activity_total'] = v
             if k == 'managerFeedback':
@@ -3449,7 +3490,11 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 atData['atId'] = v
         atDataList.append(atData.copy())
         atData.clear()
-    return {'tsData': tsDataList, 'atData': atDataList}
+    total_list .append({'monday_total': monday_total, 'tuesday_total': tuesday_total,
+                        'wednesday_total': wednesday_total, 'thurusday_total': thursday_total,
+                        'friday_total': friday_total, 'saturday_total': saturday_total,
+                        'sunday_total': sunday_total})
+    return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
 
 def leaveappliedinweek(user, wkstart, wkend):
@@ -3525,8 +3570,6 @@ def date_range_picker(request, employee=None):
 
     ts_week_info_dict = {}
     for dict_obj in weeks_timesheetEntry_list:
-        # {'wkstart': '04012016', 'wkend': '10012016', 'hold': True, 'for_week': '4-Jan - 10-Jan', 'approved': True,
-        #  'filled': True
         for_week = str(str(dict_obj['wkstart'].day) + "-" + dict_obj['wkstart'].strftime("%b")) + " - " + \
                    str(str(dict_obj['wkend'].day) + "-" + dict_obj['wkend'].strftime("%b"))
         dict_obj['for_week'] = for_week
@@ -3537,7 +3580,6 @@ def date_range_picker(request, employee=None):
         dict_obj['wkend'] = "".join([x for x in wkend])
 
         ts_week_info_dict[for_week] = dict_obj
-    # print ts_week_info_dict
     ts_final_list = []
 
     for tup in weeks_list:
@@ -3552,11 +3594,6 @@ def date_range_picker(request, employee=None):
                                   'wkend': "".join([x for x in wkend]), 'filled': False})
     # print ts_final_list
     return ts_final_list, mondays_list, ts_week_info_dict
-
-#
-# def time_sheet_for_the_week(week_start_date, week_end_date, request_object):
-#     return TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date, teamMember=request_object.user)
-
 
 def billable_hours(ts_obj):
     return ts_obj.filter(

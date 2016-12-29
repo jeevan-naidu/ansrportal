@@ -89,7 +89,7 @@ Approve Timesheet
   <tbody>
   {% for team_members,values in ts_data_list.iteritems %}
     <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
-      <td><a href="#myModal_{{team_members.user.id}}" class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
+      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}} </td>
         <td>{{values.non_billable_total}}</td>
@@ -158,8 +158,8 @@ Approve Timesheet
 </table>
 {% if ts_data_list %}
 <input type="submit" name="submit">
-    <input type="hidden" name="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
-    <input type="hidden" name="weekendDate" value="{{weekendDate|date:"dmY"}}">
+    <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
+    <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
 {% endif %}
 </form></div>
 </div>
@@ -173,7 +173,7 @@ Approve Timesheet
                       <thead>
                         <tr>
                           <th>Project</th>
-                          <th>Chapter</th>
+                          <th>Task</th>
                           <th>Mon</th>
                           <th>Tue</th>
                           <th>Wed</th>
@@ -186,7 +186,17 @@ Approve Timesheet
 
                         <tr>
                           <td>The name of the project</td>
-                          <td>The name of the chapter</td>
+                          <td>The name of the Task</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                        </tr>
+
+                        <tr>
+                          <td>The name of the project</td>
+                          <td>The name of the Task</td>
                           <td>1</td>
                           <td>2</td>
                           <td>1</td>
@@ -205,15 +215,14 @@ Approve Timesheet
                         </tr>
 
                         <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the chapter</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
+                          <td></td>
+                          <td>Total</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
                         </tr>
-
 
                       </tbody>
                     </table>
@@ -245,6 +254,7 @@ Approve Timesheet
 
 
 <script type="text/javascript">
+var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projectType":"Pr","feedback":"None","project__projectType__code":"Pr","mondayH":"9.00","sundayH":"0.00","managerFeedback":"None","totalH":"45.00","teamMember__last_name":"Pradhan","hold":"True","id":"170202","task":"824","employee_id":"16021035","project__name":"ANSR PORTAL DEV- 2016 3rd quarter","tuesdayH":"9.00","fridayH":"9.00","thursdayH":"9.00","tsId":"170202","teamMember__first_name":"Vivek","wednesdayH":"9.00","approved":"False","project":"1487","project__totalValue":"0.00","project_value":"0.00","teamMember__employee__employee_assigned_id":"16021035","saturdayH":"0.00"}],"total_list":[{"monday_total":9,"friday_total":9,"tuesday_total":9,"wednesday_total":9,"saturday_total":0,"thurusday_total":9,"sunday_total":0}],"atData":[]} ;
         $(document).ready(function() {
                 "use strict";
 
@@ -259,21 +269,16 @@ Approve Timesheet
             })
 
 
-             $('.employee').on('click', function()  { return false;
+             $('.employee').on('click', function()  {
+
                   $.ajax({
-                    url: '/myansrsource/timesheet/get_time_sheet',
+                    url: '/myansrsource/timesheet/time_sheet_employee',
                     type: 'GET',
                     dataType :'json',
-                    data: {"user_id":this.getAttribute('data-value') },
+                    data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
                     success: function (data) {
-                    console.log(data);
-                        populateForm(data);
-                        orderTabs(data);
-                        assignMandatory(data);
+                    console.log(JSON.stringify(data));
 
-                        // globalObj to capture the order of tabs
-
-                        globalObj = data;
                     },
 
                   });
