@@ -3341,11 +3341,12 @@ def switchWeeks(request):
 @login_required
 def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
+    total_list = []
     if not user_id:
         user = request.user
 
     else:
-        total_list = []
+
         user = user_id
 
     cwActivityData = TimeSheetEntry.objects.filter(
@@ -3490,10 +3491,11 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 atData['atId'] = v
         atDataList.append(atData.copy())
         atData.clear()
-    total_list .append({'monday_total': monday_total, 'tuesday_total': tuesday_total,
-                        'wednesday_total': wednesday_total, 'thurusday_total': thursday_total,
-                        'friday_total': friday_total, 'saturday_total': saturday_total,
-                        'sunday_total': sunday_total})
+    if user_id:
+        total_list .append({'monday_total': monday_total, 'tuesday_total': tuesday_total,
+                            'wednesday_total': wednesday_total, 'thurusday_total': thursday_total,
+                            'friday_total': friday_total, 'saturday_total': saturday_total,
+                            'sunday_total': sunday_total})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
 
