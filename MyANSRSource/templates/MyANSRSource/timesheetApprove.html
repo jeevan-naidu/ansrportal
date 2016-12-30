@@ -1,96 +1,339 @@
-{% extends 'timesheetMaster.inc'  %}
+{% extends 'timesheetEntry.html'  %}
 
 {% block siteTitle %}Timesheet{% endblock %}
 
-<!-- {% block timesheetActive %}class="active"{% endblock %} -->
-{% block pageTitle %}Approve / Hold Exceptions{% endblock %}
-{% block content %}
-
-
-                    <div class="panel pb-15">
-                        <!-- first widget (vertical tabs) -->
-
-                        <div class="panel-body">
-
-<form id="approveTS" method="post" action="" >
-<!--     <button type="submit" class="btn btn-info pull-right">Submit Status</button>
-    <legend><h2><small>Approve / Hold Exceptions</small></h2></legend> -->
-	{% csrf_token %}
-    {% for eachInfo in timesheetInfo %}
-        <table class="table table-condensed">
-            {% if forloop.last %}
-                <input type="hidden" name="totalValue" value="{{ forloop.counter }}" />
-            {% endif %}
-            <thead>
-                <th>{{ eachInfo.member }}</th>
-                <th class="text-center">{{ eachInfo.wkstart }} - {{ eachInfo.wkend }}</th>
-                {% with forloop.counter|stringformat:"s" as t %}
-                    <th class="text-right">
-                        {% with "#fb"|add:t as total %}
-                            <a href="#" data-toggle="modal" data-target="{{ total }}">Give Feedback</a>
-                        {% endwith %}
-                    </th>
-                    {% with "fb"|add:t as total %}
-                    <div class="modal fade" id="{{ total }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    {% endwith %}
-                        <div class="modal-dialog">
-                             <div class="modal-content">
-                                <div class="modal-header vd_bg-blue vd_white">
-                                    <button type="button" class="close" data-dismiss="modal">
-                                        <span aria-hidden="true">&times;</span>
-                                        <span class="sr-only">Close</span>
-                                    </button>
-                                    <h4 class="modal-title" id="myModalLabel"><b>Week's Feedback</b></h4>
-                                </div>
-                                <div class="modal-body">
-                                    {% with "fb"|add:t as total %}
-                                        <textarea name="{{ total }}" class="form-control" rows="4" cols="50" placeholder="Enter Feedback..."></textarea>
-                                    {% endwith %}
-                                </div>
-                             </div>
-                         </div>
-                    </div>
-                    <th class="text-right">
-                        <div class="btn-group" data-toggle="buttons">
-                                {% with "choice"|add:t as total %}
-                                    <label class="btn btn-default"><input type="radio" name="{{ total }}" value="approve" /> Approve </label>
-                                    <label class="btn btn-default active"><input checked type="radio" name="{{ total }}" value="hold" /> Hold </label>
-                                    <label class="btn btn-default"><input type="radio" name="{{ total }}" value="redo" /> Reject </label>
-                                {% endwith %}
-                                {% with "start"|add:t as total %}
-                                    <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkstartNum }}" />
-                                {% endwith %}
-                                {% with "end"|add:t as total %}
-                                    <input type="hidden" name="{{ total }}" value="{{ eachInfo.wkendNum }}" />
-                                {% endwith %}
-                                {% with "mem"|add:t as total %}
-                                    <input type="hidden" name="{{ total }}" value="{{ eachInfo.mem }}" />
-                                {% endwith %}
-                        </div>
-                    </th>
-                {% endwith %}
-            </thead>
-            <tbody>
-                {% for eachProject in eachInfo.projects %}
-                    {% if forloop.first %}
-                        <tr>
-                            <td class="text-center" colspan=4><h4><small><b>Reason</b> : {{ eachProject.exception }}</small></h4></td>
-                        </tr>
-                    {% endif %}
-                    <tr>
-                        <td class="text-center">{{ eachProject.name }}</td>
-                        <td><b>{{ eachProject.BHours }}</b> Billed Hour(s)</td>
-                        <td><b>{{ eachProject.IHours }}</b> Idle Hour(s)</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td class="text-center" colspan="4"><b>{{ eachInfo.NHours }}</b> Non-Project Hour(s)</td>
-                </tr>
-            </tbody>
-        </table>
-    {% endfor %}
-	<button type="submit" class="btn btn-info pull-right">Submit Status</button>
-</form>
-</div>
-</div>
+{% load permissions %}
+{% block pageTitle %}
+Approve Timesheet
+{% for message in messages %}
+    <li class="{{ message.tags }}">
+    {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
+    </li>
+{% endfor %}
 {% endblock %}
+{% block switch_dates %}
+<div class="dropdown week-selector pull-left">
+  <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+  <i class="fa fa-calendar" style="margin-right:5px;color:#999"></i>
+    {{ weekstartDate|date:"d-M" }} - {{ weekendDate|date:"d-M" }}
+    <!-- <span class="caret"></span> -->
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+       {% for date_range in week_collection  %}
+           <li>{% with result=status_dict|get_item:date_range %}
+               {% for k,v in result.items %}
+                    {% if k == 'status'  and v == 'approved' %}
+                         <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="filled">
+                           {{ date_range }}
+                         </a>
+                    {% else %}
+                        {% if k == 'status' and v == 'partial' %}
+                                <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="incomplete">
+                                   {{ date_range}}
+                                 </a>
+                        {% endif %}
+                        {% if  k == 'status' and v == 'not_approved'  %}
+                            <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="unfilled">
+                                    {{ date_range}}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+               {% endfor %} {%endwith %}
+           </li>
+      {% endfor %}
+
+  </ul>
+</div>
+
+
+
+{% endblock %}
+{% block timesheetContent %}
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
+
+
+<div class="panel pb-15">
+
+    <div class="panel-body">
+           <div class="form-inline approve-reject pull-right">
+                                       <div class="checkbox checkbox-success">
+                                          <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
+                                          <label for="approve_all" class="lh-16">
+                                             Approve All
+                                          </label>
+                                      </div>&nbsp;&nbsp;&nbsp;
+                                      <div class="checkbox checkbox-danger">
+                                          <input id="reject_all" type="checkbox" name="reject_all" class="reject_all" >
+                                          <label for="reject_all" class="lh-16">
+                                              Reject All
+                                          </label>
+                                      </div>
+                                  </div>
+
+<form method="post" action=""> {% csrf_token %}
+<table class="table table-striped" id="timesheet-approve-table">
+  <thead>
+    <tr>
+        <th>Employee Id</th>
+      <th>Name</th>
+      <th>Billable (Hrs) $ >0</th>
+        <th>Billable (Hrs) $ =0</th>
+      <th>Non-Billable (Hrs)</th>
+      <th>Leave (Hrs)</th>
+      <th class="text-center">Options</th>
+      <th> Feedback</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for team_members,values in ts_data_list.iteritems %}
+    <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
+      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
+      <td>{{values.non_zero_value}}</td>
+      <td>{{values.zero_value}} </td>
+        <td>{{values.non_billable_total}}</td>
+      <td> {{values.leave_hours}} </td>
+
+<div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback </label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
+                              </div>
+
+                            </div>
+
+
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+
+<td class="timesheet-approve-options text-center">
+    <div class="checkbox checkbox-success radio-mod btn-xs">
+        <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
+        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect">
+        Approve
+        </label>
+    </div>
+
+    <div class="checkbox checkbox-danger radio-mod btn-xs">
+        <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}">
+        <label for="reject_{{team_members.user.id}}"  class="noselect">
+        Reject
+        </label>
+    </div>
+
+</td>
+
+    <td class="menu-action">
+      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </td>
+
+        <!-- Modal Area -->
+
+
+
+{%endfor %}
+  </tbody>
+</table>
+{% if ts_data_list %}
+<input type="submit" name="submit" value="Submit">
+    <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
+    <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
+{% endif %}
+</form></div>
+</div>
+
+
+
+<div class="panel pb-15">
+    <div class="panel-body">
+
+<table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Project</th>
+                          <th>Task</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+
+                        <tr>
+                          <td>The name of the project</td>
+                          <td>The name of the Task</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                        </tr>
+
+                        <tr>
+                          <td>The name of the project</td>
+                          <td>The name of the Task</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                        </tr>
+
+                        <tr>
+                          <td>The name of the project</td>
+                          <td>The name of the chapter</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                        </tr>
+
+                        <tr>
+                          <td></td>
+                          <td>Total</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+
+
+<script type="text/javascript">
+var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projectType":"Pr","feedback":"None","project__projectType__code":"Pr","mondayH":"9.00","sundayH":"0.00","managerFeedback":"None","totalH":"45.00","teamMember__last_name":"Pradhan","hold":"True","id":"170202","task":"824","employee_id":"16021035","project__name":"ANSR PORTAL DEV- 2016 3rd quarter","tuesdayH":"9.00","fridayH":"9.00","thursdayH":"9.00","tsId":"170202","teamMember__first_name":"Vivek","wednesdayH":"9.00","approved":"False","project":"1487","project__totalValue":"0.00","project_value":"0.00","teamMember__employee__employee_assigned_id":"16021035","saturdayH":"0.00"}],"total_list":[{"monday_total":9,"friday_total":9,"tuesday_total":9,"wednesday_total":9,"saturday_total":0,"thurusday_total":9,"sunday_total":0}],"atData":[]} ;
+        $(document).ready(function() {
+                "use strict";
+
+            $('#timesheet-approve-table').dataTable();
+
+            /* Toggle checkbox */
+
+            $('.timesheet-approve-options label').click(function(){
+              if($(this).parent().find('input[type="checkbox"]').prop("checked") == false){
+                $(this).parent().parent().find('input[type="checkbox"]').attr('checked', false);
+              }
+            })
+
+
+             $('.employee').on('click', function()  { console.log("click");
+
+                  $.ajax({
+                    url: '/myansrsource/timesheet/time_sheet_employee',
+                    type: 'GET',
+                    dataType :'json',
+                    data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
+                    success: function (data) {
+                    console.log(JSON.stringify(data));
+
+                    },
+
+                  });
+            });
+          jQuery('.approve_all , .reject_all').click(function(e){
+            if(this.className == 'approve_all') {
+                $('.reject_all,.reject ').prop('checked', false);
+            }
+            else if (this.className == 'reject_all') {
+                $('.approve_all,.approve ').prop('checked', false);
+            }
+            var class_name = this.className.split('_');
+            if($('#'+this.id).prop('checked')) {
+                $('.'+class_name[0]).prop('checked', true);
+            }
+            else {
+                $('.'+class_name[0]).prop('checked', false);
+            }
+
+        });
+        jQuery('.approve , .reject ').click(function(e){
+            var class_name = this.value;
+            if(this.className == 'approve') {
+                $('#reject_'+class_name).prop('checked', false);
+                $('#cancel_'+class_name).prop('checked', false);
+                $('.reject_all').prop('checked', false);
+            }
+            else if (this.className == 'reject') {
+                $('#approve_'+class_name).prop('checked', false);
+                $('#cancel_'+class_name).prop('checked', false);
+                $('.approve_all').prop('checked', false);
+            }
+            else if (this.className == 'cancel') {
+                $('#approve_'+class_name).prop('checked', false);
+                $('#reject_'+class_name).prop('checked', false);
+                $('.approve_all').prop('checked', false);
+                $('.reject_all').prop('checked', false);
+            }
+
+
+        });
+
+        } );
+</script>
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
