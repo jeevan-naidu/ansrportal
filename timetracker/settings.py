@@ -214,6 +214,7 @@ DATABASES = {
         },
     }
 
+
 # Bootstrap3 related settings
 BOOTSTRAP3 = {
     'include_jquery': True,

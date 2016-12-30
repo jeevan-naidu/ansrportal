@@ -67,3 +67,10 @@ def choose_reportee(user):
 def IsManager(user):
     UserGroupsList = user.groups.all().values_list('name', flat=True)
     return settings.MANAGER in UserGroupsList
+
+@register.filter
+def get_item(dictionary, key):
+    s = dictionary.get(key)
+    if s is None:
+        s = 0
+    return s

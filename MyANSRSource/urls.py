@@ -2,6 +2,8 @@ from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
 from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser
 from Reports import views as milestonreporteviews
+from .views import ApproveTimesheetView
+from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
     url(
@@ -38,9 +40,19 @@ urlpatterns = [
     url(r'^timesheet/entry$',
         views.Timesheet,
         name=u'timesheet'),
-    url(r'^timesheet/approve$',
-        views.ApproveTimesheet,
-        name=u'approvetimesheet'),
+
+    url(r'^timesheet/approve$', permission_required('MyANSRSource.approve_timesheet')(ApproveTimesheetView.as_view()),
+        name='approve_time_sheet'),
+    url(r'^timesheet/approve/(?P<startdate>(\d+))/(?P<enddate>(\d+))/$',
+        permission_required('MyANSRSource.approve_timesheet')
+        (ApproveTimesheetView.as_view())),
+    url(r'^timesheet/approve/(?P<week>[\w\-]+)/(?P<startdate>(\d+))/(?P<enddate>(\d+))/$',
+        permission_required('MyANSRSource.approve_timesheet')
+        (ApproveTimesheetView.as_view())),
+
+    url(r'^timesheet/time_sheet_employee', permission_required('MyANSRSource.approve_timesheet')
+        (views.time_sheet_employee)),
+
     url(r'^dashboard$',
         views.Dashboard,
         name=u'dashboard'),
