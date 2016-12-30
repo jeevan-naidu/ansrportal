@@ -272,7 +272,7 @@ app.changeProject = function() {
             var id = this.id.split('-');
             project_value_id = id[0]+'-'+id[1]+'-project_value' ;
 //            console.log("current_project_value"+current_project_value);
-//            console.log("project_value"+$('#'+project_value_id).val());
+            console.log("project_value"+$('#'+project_value_id).val());
 
 
 
@@ -287,7 +287,7 @@ app.changeProject = function() {
 var row_total = parseFloat($($row).find('span.t-hours').text());
         if (prev_value != curr_value && curr_value == 0 ){
 //       $('#'+project_value_id).val(data['total_value']);
-//            console.log("val"+$('#'+project_value_id).val())
+            console.log("val"+$('#'+project_value_id).val())
 
 //            if (parseFloat( $('#'+project_value_id).val()) !=0  ) {
     //            var row_total = parseFloat($($row).find('span.t-hours').text());
