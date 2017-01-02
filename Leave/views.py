@@ -87,7 +87,7 @@ def LeaveCancel(request):
     leave_id = request.GET.get('leaveid')
     leavecount = request.GET.get('leavecount')
     leave = LeaveApplications.objects.get(id=leave_id)
-    leave_apply_year = leave.year
+    leave_apply_year = leave.from_date.year
     leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=user_id, year=leave_apply_year)
     onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
 
