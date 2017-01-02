@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from CompanyMaster.models import PnL, Practice, SubPractice, Department, Designation, Company, UpdateDate, UpdateBy
-
+import CompanyMaster
 fs = FileSystemStorage(location='employee/emp_photo')
 
 GENDER_CHOICES = (
@@ -473,7 +473,7 @@ class EmployeeCompanyInformation(UpdateDate, UpdateBy):
     is_billable = models.BooleanField(default=True, verbose_name="Is Billable")
     billable_date = models.DateField(verbose_name="Effective Date of Billability", blank=True, null=True)
     department = models.ForeignKey(Department, verbose_name="Department")
-    designation = models.ForeignKey(Designation, verbose_name="Designation")
+    designation = models.ForeignKey(CompanyMaster.models.Designation, verbose_name="Designation")
     company = models.ForeignKey(Company, default=None, verbose_name="Company", blank=True, null=True)
     pnl = models.ForeignKey(PnL, default=None, verbose_name="PnL", blank=True, null=True)
     practice = models.ForeignKey(Practice, default=None, verbose_name="Practice", blank=True, null=True)
