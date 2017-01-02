@@ -29,7 +29,7 @@
 ul{list-style: none;padding-left: 0px;}
     </style>
            <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
+                    <form class="form-horizontal" name="dept_clearance" role="form" method="post"  data-toggle="validator">
                         {% csrf_token %}
 <table class="table table-bordered">
                       <thead>
@@ -50,14 +50,14 @@ ul{list-style: none;padding-left: 0px;}
                           <td rowspan="6" style="vertical-align: middle;">{{candidate}}</td>
                           <td>1</td>
                           <td class="center">Library</td>
-                          <td class="center"><input type="number" name="libamount" id = "libamount" class="amountbox"/></td>
+                          <td class="center"><input type="number" name="lib_amount" id = "libamount" class="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="" name="libraryapproval" id="checkbox-1">
+                              <input type="checkbox"  value=2 name="library_approval" id="checkbox-1">
                               <label for="checkbox-1"></label>
                             </div>
                           </td>
@@ -66,14 +66,14 @@ ul{list-style: none;padding-left: 0px;}
                           <!-- <td>Petrus Dar</td> -->
                           <td>2</td>
                           <td class="center">IT Admin</td>
-                          <td class="center"><input type="number" name="adminamount" id = "adminamount" class ="amountbox"/></td>
+                          <td class="center"><input type="number" name="admin_amount" id = "adminamount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="" name="adminapproval" id="checkbox-2">
+                              <input type="checkbox"  value=2 name="admin_approval" id="checkbox-2">
                               <label for="checkbox-2"></label>
                             </div>
                           </td>
@@ -82,56 +82,56 @@ ul{list-style: none;padding-left: 0px;}
                           <!-- <td>Petrus Dar</td> -->
                           <td>3</td>
                           <td class="center">Finance</td>
-                          <td class="center"><input type="number" name="financeamount" id = "financeamount" class ="amountbox"/></td>
+                          <td class="center"><input type="number" name="finance_amount" id = "financeamount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success" class ="amountbox">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="" name="financeapproval" id="checkbox-3">
+                              <input type="checkbox"  value=2 name="finance_approval" id="checkbox-3">
                               <label for="checkbox-3"></label>
                             </div>
                           </td>
                         </tr>
                       <td>4</td>
                           <td class="center">HR</td>
-                          <td class="center"><input type="number" name="hramount" id = "hramount" class ="amountbox"/></td>
+                          <td class="center"><input type="number" name="hr_amount" id = "hramount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="" name="hrapproval" id="checkbox-4">
+                              <input type="checkbox"  value=2 name="hr_approval" id="checkbox-4">
                               <label for="checkbox-4"></label>
                             </div>
                           </td>
                         </tr>
                       <td>5</td>
                           <td class="center">Facility</td>
-                          <td class="center"><input type="number" name="facilityamount" id = "facilityamount" class ="amountbox"/></td>
+                          <td class="center"><input type="number" name="facility_amount" id = "facilityamount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="" name="facilityapproval" id="checkbox-5">
+                              <input type="checkbox"  value=2 name="facility_approval" id="checkbox-5">
                               <label for="checkbox-5"></label>
                             </div>
                           </td>
                         </tr>
                       <td>6</td>
                           <td class="center">Manager</td>
-                          <td class="center"><input type="number" id = "manageramount" name="manageramount" class ="amountbox"/></td>
+                          <td class="center"><input type="number" id = "manager_amount" name="manager_amount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="" name="managerapproval" id="checkbox-6">
+                              <input type="checkbox"  value=2 name="manager_approval" id="checkbox-6">
                               <label for="checkbox-6"></label>
                             </div>
                           </td>
@@ -153,16 +153,8 @@ ul{list-style: none;padding-left: 0px;}
                               <div class="col-sm-7 controls">
                                 <textarea class="input-border-btm" type="text" name="dpeatmentfeedback"></textarea>
                               </div>
-
                             </div>
-
-
                           </form>
-
-                        </div>
-                        <div class="modal-footer background-login">
-                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
-                          <button type="button" class="btn vd_btn vd_bg-green">Save</button>
                         </div>
                       </div>
                       <!-- /.modal-content -->
@@ -170,7 +162,7 @@ ul{list-style: none;padding-left: 0px;}
                     <!-- /.modal-dialog -->
                   </div>
     {% endif %}
-                      {% endfor %}
+    {% endfor %}
                     </table>
                         <input type ="submit" value="Submit" class="exitbutton btn-primary">
 <!-- Modal Area -->

@@ -12,7 +12,8 @@ Department = (
     ('FIN', 'Finance'),
     ('LIB', 'Library'),
     ('FAC', 'Facility'),
-    ('HR', 'Human Resource')
+    ('HR', 'Human Resource'),
+    ('MGR', 'Manager')
 )
 
 '''Table to store the data of employee who is exiting the organization'''
@@ -44,14 +45,14 @@ class ResignationInfo(models.Model):
 class EmployeeClearanceInfo(models.Model):
     resignationInfo = models.ForeignKey(ResignationInfo)
     dept_status = models.BooleanField(verbose_name="Clearance from Department", blank=True)
-    status_by = models.ForeignKey(User, unique=True)
+    status_by = models.ForeignKey(User)
     department = models.CharField(verbose_name='Department', choices=Department, max_length=40, blank=False)
     status_on = models.DateTimeField(verbose_name="Time of Approval")
     dept_feedback = models.CharField(max_length=1000, blank=True)
     dept_due = models.IntegerField(verbose_name="Department Due Amount",  blank=True)
 
     def __unicode__(self):
-        return unicode(self.dept_due)
+        return unicode(self.department)
 
 
 

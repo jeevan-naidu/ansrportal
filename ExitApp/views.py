@@ -113,9 +113,9 @@ class ResignationAcceptance(View):
 class ClearanceFormView(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        idd = request.GET.get('id')
-        approved_applicant = ResignationInfo.objects.all().filter(id=idd)
-        clearance_data = EmployeeClearanceInfo.objects.all().filter(id=idd)
+        id = request.GET.get('id')
+        approved_applicant = ResignationInfo.objects.all().filter(id=id)
+        clearance_data = EmployeeClearanceInfo.objects.all().filter(id=id)
         context['approved_candidate'] = approved_applicant
         context['clearance_data'] = clearance_data
         return render(request, "departmentclearance.html", context)
@@ -123,20 +123,94 @@ class ClearanceFormView(View):
     def post(self, request):
         context = {"form": ""}
         form = request.POST
-        print form
         try:
-            lib_amount = form['libamount']
-            facility_amount = form['facilityamount']
-            admin_amount = form['adminamount']
-            hr_amount = form['hramount']
-            manager_amount = form['manageramount']
-            finance_amount = form['financeamount']
-            hr_approval = form['hrapproval']
-            facility_approval = form['facilityapproval']
-            finance_approval = form['financeapproval']
-            manager_approval = form['managerapproval']
-            admin_approval = form['admin_approval']
-            library_approval = form['libraryapproval']
+            resignee_id = request.GET.get('id')
+            statusby_id = request.user.id
+            time = timezone.now()
+            facility_amount = form['facility_amount']
+            admin_amount = form['admin_amount']
+            hr_amount = form['hr_amount']
+            lib_amount = form['lib_amount']
+            manager_amount = form['manager_amount']
+            finance_amount = form['finance_amount']
+            admin_feedback = 'hello'
+            # form['adminfeedback']
+            finance_feedback = 'financefeedback'
+            # form['finance_feedback']
+            hr_feedback = 'hefeedback'
+            # form['hr_feedback']
+            facility_feedback = 'faculty_feedback'
+            # form['facility_feedback']
+            manager_feedback = 'mgrfeedback'
+            # form['manager_feedback']
+            library_feedback = 'library feedback'
+            # form['library_feedback']
+
+            if 'hr_approval' in form:
+                hr_approval = form['hr_approval']
+                try:
+                    EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=hr_approval,
+                                          status_by_id=statusby_id,
+                                          department="HR", status_on=time, dept_feedback=hr_feedback,
+                                          dept_due=hr_amount).save()
+                except Exception as programmingerror:
+                    print programmingerror
+            else:
+                hr_approval = 1
+            if 'facility_approval' in form:
+                facility_approval = form['facility_approval']
+                try:
+                    EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=facility_approval,
+                                          status_by_id=statusby_id,
+                                          department="FAC", status_on=time, dept_feedback=facility_feedback,
+                                          dept_due=facility_amount).save()
+                except Exception as programmingerror:
+                    print programmingerror
+            else:
+                facility_approval = 1
+            if 'finance_approval' in form:
+                finance_approval = form['finance_approval']
+                try:
+                    EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=finance_approval,
+                                          status_by_id=statusby_id,
+                                          department="FIN", status_on=time, dept_feedback=finance_feedback,
+                                          dept_due=finance_amount).save()
+                except Exception as programmingerror:
+                    print programmingerror
+            else:
+                finance_approval =1
+            if 'manager_approval' in form:
+                manager_approval = form['manager_approval']
+                try:
+                    EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=manager_approval,
+                                          status_by_id=statusby_id,
+                                          department="MGR", status_on=time, dept_feedback=manager_feedback,
+                                          dept_due=manager_amount).save()
+                except Exception as programmingerror:
+                    print programmingerror
+            else:
+                manager_approval = 1
+            if 'admin_approval' in form:
+                admin_approval = form['admin_approval']
+                try:
+                    EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=admin_approval,
+                                          status_by_id=statusby_id,
+                                          department="IT", status_on=time, dept_feedback=admin_feedback,
+                                          dept_due=admin_amount).save()
+                except Exception as programmingerror:
+                    print programmingerror
+            else:
+                admin_approval =1
+            if 'library_approval' in form:
+                library_approval = form['library_approval']
+                try:
+                    EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=library_approval, status_by_id=statusby_id,
+                                          department="LIB", status_on=time, dept_feedback=library_feedback,
+                                          dept_due=lib_amount).save()
+                except Exception as programmingerror:
+                    print programmingerror
+            else:
+                library_approval = 1
         except Exception as programmingerror:
             context['error'] = programmingerror
             print programmingerror
