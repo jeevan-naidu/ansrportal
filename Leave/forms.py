@@ -134,10 +134,14 @@ dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 
 def ShortLeaveForm(leavetype, user,fordate=None,leaveid=None, data=None):
+    if fordate:
+        leave_applied_date = fordate.year
+    else:
+        leave_applied_date = date.today().year
     staytime = ShortAttendance.objects.get(id=leaveid)
     SHORT_LEAVE_TYPES_CHOICES = ( ('loss_of_pay', 'Loss Of Pay'),)
     leaveallowed = {'earned_leave':'Earned Leave', 'sick_leave':'Sick Leave', 'casual_leave':'Casual Leave','short_leave':'Short Leave', 'comp_off_avail':'Comp Off Avail'}
-    leaveAvaliable = LeaveSummary.objects.filter(user=user, leave_type__in =[1,2,3,13], year=date.today().year).values('balance','leave_type__leave_type')
+    leaveAvaliable = LeaveSummary.objects.filter(user=user, leave_type__in =[1,2,3,13], year=leave_applied_date).values('balance','leave_type__leave_type')
     for leave in leaveAvaliable:
         if leave['leave_type__leave_type'] != 'short_leave' and float(leave['balance']) > 0:
             SHORT_LEAVE_TYPES_CHOICES = ((leave['leave_type__leave_type'],

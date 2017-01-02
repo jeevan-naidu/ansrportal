@@ -1477,7 +1477,8 @@ def adminleavecancel(request):
     leavecount = request.GET.get('leavecount')
     status = request.GET.get('status')
     leave = LeaveApplications.objects.get(id = leave_id)
-    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=leave.user_id, year=date.today().year)
+    leave_year_date = leave.from_date.year
+    leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=leave.user_id, year=leave_year_date)
     onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
     if leave.leave_type.leave_type in leaveWithoutBalance:
         leavededuct = float(leavecount)
