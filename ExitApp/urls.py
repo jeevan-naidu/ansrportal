@@ -1,6 +1,6 @@
 from django.conf.urls import url
-from views import ExitFormAdd, ResignationAcceptance, ClearanceFormView
-from django.contrib.auth.decorators import login_required
+from views import ExitFormAdd, ResignationAcceptance, ClearanceFormView, ClearanceList
+from django.contrib.auth.decorators import login_required, user_passes_test
 from autocomplete_light_registry import AutoCompleteRequisitionSearch, AutoCompleteResigneeSearch
 
 urlpatterns = [
@@ -13,11 +13,8 @@ urlpatterns = [
                        url(r'^clearance/$',
                            login_required(ClearanceFormView.as_view()),
                            name='clearance'),
-                       url(r'^AutoCompleteRequisitionSearch/$',
-                           login_required(AutoCompleteRequisitionSearch.as_view()),
-                           name='resignee_search'),
-                       url(r'^AutoCompleteResigneeSearch/$',
-                           login_required(AutoCompleteResigneeSearch.as_view()),
-                           name='resignee_filter'),
+                       url(r'^clearance-list/$',
+                           login_required(ClearanceList.as_view()),
+                           name='list'),
 
                        ]

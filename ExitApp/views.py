@@ -2,7 +2,7 @@
 from django.shortcuts import render, render_to_response
 from django.views.generic import View
 from django.contrib.auth.models import User
-from .models import ResignationInfo
+from .models import ResignationInfo, EmployeeClearanceInfo
 from forms import UserExitForm, ResignationAcceptanceForm, ClearanceForm
 from tasks import ExitEmailSendTask, PostAcceptedMail, LibraryClearanceMail, ITClearanceMail, AdminClearanceMail
 from django.utils import timezone
@@ -52,10 +52,7 @@ class ExitFormAdd(View):
 class ResignationAcceptance(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        form = ResignationAcceptanceForm()
         allresignee = ResignationInfo.objects.all()
-        context['form'] = form
-        # context['id'] = request.user.id
         context['resigneedata'] = allresignee
         return render(request, "exitacceptance.html", context)
 
@@ -115,49 +112,46 @@ class ResignationAcceptance(View):
 
 class ClearanceFormView(View):
     def get(self, request):
-        context = {"form": ""}
-        form = ClearanceForm()
-        context['form'] = form
+        context = {"form": "", "data": ""}
+        idd = request.GET.get('id')
+        approved_applicant = ResignationInfo.objects.all().filter(id=idd)
+        clearance_data = EmployeeClearanceInfo.objects.all().filter(id=idd)
+        context['approved_candidate'] = approved_applicant
+        context['clearance_data'] = clearance_data
         return render(request, "departmentclearance.html", context)
 
     def post(self, request):
-        # import ipdb;ipdb.set_trace()
         context = {"form": ""}
-        form = ClearanceForm(request.POST)
-        if form.is_valid():
-            try:
-                user_id = form.cleaned_data['exit_applicant_list']
-                # librarian_accepted = form.cleaned_data['librarian_accepted']
-                # librarian_feedback = form.cleaned_data['librarian_feedback']
-                # admin_accepted = form.cleaned_data['admin_accepted']
-                # admin_feedback = form.cleaned_data['admin_feedback']
-                # it_accepted = form.cleaned_data['it_accepted']
-                # it_feedback = form.cleaned_data['it_feedback']
-                # user_detail = User.objects.get(id=user_id.id)
-                # if librarian_accepted is not None:
-                #     LibraryClearanceMail.delay(user_id, user_detail.email)
-                # if admin_accepted is not None:
-                #     AdminClearanceMail.delay(user_id, user_detail.email)
-                # if it_accepted is not None:
-                #     ITClearanceMail.delay(user_id, user_detail.email)
-                #
-                # clearancevalue = ClearanceInfo.objects.get(resign=user_id)
-                # clearancevalue.IT_clearance = it_accepted
-                # clearancevalue.admin_clearance = admin_accepted
-                # clearancevalue.library_clearance = librarian_accepted
-                # clearancevalue.save()
-                # value = EmployeeFeedback.objects.get(employee_id=user_id)
-                # value.it_feedback = it_feedback
-                # value.library_feedback = librarian_feedback
-                # value.admin_feedback = admin_feedback
-                # value.save()
-            except Exception as programmingerror:
-                context['error'] = programmingerror
-                print programmingerror
-                context['form'] = form
-                return render(request, "departmentclearance.html", context)
+        form = request.POST
+        print form
+        try:
+            lib_amount = form['libamount']
+            facility_amount = form['facilityamount']
+            admin_amount = form['adminamount']
+            hr_amount = form['hramount']
+            manager_amount = form['manageramount']
+            finance_amount = form['financeamount']
+            hr_approval = form['hrapproval']
+            facility_approval = form['facilityapproval']
+            finance_approval = form['financeapproval']
+            manager_approval = form['managerapproval']
+            admin_approval = form['admin_approval']
+            library_approval = form['libraryapproval']
+        except Exception as programmingerror:
+            context['error'] = programmingerror
+            print programmingerror
+            context['form'] = form
+            return render(request, "departmentclearance.html", context)
 
         return render(request, "departmentclearance.html", context)
+
+
+class ClearanceList(View):
+    def get(self, request):
+        context = {"form": "", "data": ""}
+        approved_applicant = ResignationInfo.objects.all()
+        context['approved_candidate'] = approved_applicant
+        return render(request, "clearancelist.html", context)
 
 
 

@@ -31,35 +31,33 @@ ul{list-style: none;padding-left: 0px;}
            <div class="panel-body">
                     <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
-
-
-
-
-
 <table class="table table-bordered">
                       <thead>
                         <tr>
                           <th>Username</th>
                           <th>#</th>
                           <th>Department</th>
-                          <th>Role</th>
+                          <th>Amount</th>
                           <th>Status</th>
                           <th>Options</th>
                         </tr>
                       </thead>
+
+    {% for candidate in approved_candidate %}
+                      {% if candidate.hr_accepted == True and candidate.manager_accepted == True %}
                       <tbody>
-                        <tr>
-                          <td rowspan="3" style="vertical-align: middle;">Johann Un</td>
+                      <tr>
+                          <td rowspan="6" style="vertical-align: middle;">{{candidate}}</td>
                           <td>1</td>
                           <td class="center">Library</td>
-                          <td class="center">Manager</td>
+                          <td class="center"><input type="number" name="libamount" id = "libamount" class="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="1" id="checkbox-1">
+                              <input type="checkbox" value="" name="libraryapproval" id="checkbox-1">
                               <label for="checkbox-1"></label>
                             </div>
                           </td>
@@ -67,15 +65,15 @@ ul{list-style: none;padding-left: 0px;}
                         <tr>
                           <!-- <td>Petrus Dar</td> -->
                           <td>2</td>
-                          <td class="center">Catering</td>
-                          <td class="center">Associate Project Lead</td>
+                          <td class="center">IT Admin</td>
+                          <td class="center"><input type="number" name="adminamount" id = "adminamount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="2" id="checkbox-2">
+                              <input type="checkbox" value="" name="adminapproval" id="checkbox-2">
                               <label for="checkbox-2"></label>
                             </div>
                           </td>
@@ -83,68 +81,109 @@ ul{list-style: none;padding-left: 0px;}
                         <tr>
                           <!-- <td>Petrus Dar</td> -->
                           <td>3</td>
-                          <td class="center">Catering</td>
-                          <td class="center">Associate Project Lead</td>
-                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="center">Finance</td>
+                          <td class="center"><input type="number" name="financeamount" id = "financeamount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success" class ="amountbox">Active</span></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input type="checkbox" value="3" id="checkbox-3">
+                              <input type="checkbox" value="" name="financeapproval" id="checkbox-3">
                               <label for="checkbox-3"></label>
                             </div>
                           </td>
                         </tr>
+                      <td>4</td>
+                          <td class="center">HR</td>
+                          <td class="center"><input type="number" name="hramount" id = "hramount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
+                              <i class="fa fa-eye"></i>
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox" value="" name="hrapproval" id="checkbox-4">
+                              <label for="checkbox-4"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <td>5</td>
+                          <td class="center">Facility</td>
+                          <td class="center"><input type="number" name="facilityamount" id = "facilityamount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
+                              <i class="fa fa-eye"></i>
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox" value="" name="facilityapproval" id="checkbox-5">
+                              <label for="checkbox-5"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <td>6</td>
+                          <td class="center">Manager</td>
+                          <td class="center"><input type="number" id = "manageramount" name="manageramount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
+                              <i class="fa fa-eye"></i>
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox" value="" name="managerapproval" id="checkbox-6">
+                              <label for="checkbox-6"></label>
+                            </div>
+                          </td>
+                        </tr>
                       </tbody>
-                    </table>
 
-
-
-                      </form>
-                    </div>
-                </div>
-              </div>
-            </div>
-
-
-
-
-
-<!-- Modal Area -->
-
- <!-- Modal -->
-                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel">Enter Your Feedback</h4>
                         </div>
-                        <div class="modal-body"> 
+                        <div class="modal-body">
 
                           <form class="form-horizontal">
                             <div class="form-group">
                               <label class="col-sm-4 control-label">Feedback</label>
                               <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" type="text"></textarea>
+                                <textarea class="input-border-btm" type="text" name="dpeatmentfeedback"></textarea>
                               </div>
 
                             </div>
-                            
-                            
+
+
                           </form>
-                        
+
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
                           <button type="button" class="btn vd_btn vd_bg-green">Save</button>
                         </div>
                       </div>
-                      <!-- /.modal-content --> 
+                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-dialog --> 
+                    <!-- /.modal-dialog -->
                   </div>
+    {% endif %}
+                      {% endfor %}
+                    </table>
+                        <input type ="submit" value="Submit" class="exitbutton btn-primary">
+<!-- Modal Area -->
+
+ <!-- Modal -->
+
+</form>
+            </div>
+                </div>
+              </div>
+            </div>
+
+
                   <!-- /.modal -->
 
 
