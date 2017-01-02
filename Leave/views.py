@@ -265,30 +265,30 @@ class ApplyLeaveView(View):
             context_data['form'] = form
             return render(request, 'leave_apply.html', context_data)
 
-
     def post(self, request):
-        # import ipdb
-        # ipdb.set_trace()
         user_id = request.POST['name']
         if not user_id:
-            user_id =request.user.id
+            user_id = request.user.id
         leave_form=LeaveForm(request.POST['leave'], user_id, request.POST)
-        response_data = {}
-        context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None, 'leave':'formdata' }
-
-
+        context_data = {'add': True,
+                        'record_added': False,
+                        'form' : None, 'success_msg': None,
+                        'html_data': None,
+                        'errors': [],
+                        'leave_type_check': None,
+                        'leave':'formdata'}
         attachment = request.FILES.get('leave_attachment', "")
         if attachment:
             if request.FILES['leave_attachment'].name.split(".")[-1] not in AllowedFileTypes:
                 context_data['errors'].append('Attachment : File type not allowed. Please select a valid file type and then submit again')
-        #validations of leave
 
         if leave_form.is_valid() and not context_data['errors']:
-
+            fromdate = leave_form.cleaned_data['fromDate']
+            leave_applied_year = fromdate.year
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
             try:
-                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected, user_id=user_id, year=date.today().year)[0].balance
+                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected, user_id=user_id, year=leave_applied_year)[0].balance
             except:
                 context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
                 context_data['form'] = leave_form
@@ -298,7 +298,7 @@ class ApplyLeaveView(View):
             reason=leave_form.cleaned_data['Reason']
             manager = managerCheck(user_id)
             if leave_selected in onetime_leave:
-                validate = oneTimeLeaveValidation(leave_form, user_id)
+                validate = oneTimeLeaveValidation(leave_form, user_id, leave_applied_year)
                 fromdate = leave_form.cleaned_data['fromDate']
                 todate = validate['todate']
                 fromsession = 'session_first'
@@ -308,7 +308,7 @@ class ApplyLeaveView(View):
 
 
             else:
-                validate=leaveValidation(leave_form, user_id, attachment)
+                validate=leaveValidation(leave_form, user_id, leave_applied_year, attachment)
                 fromdate = leave_form.cleaned_data['fromDate']
                 todate = leave_form.cleaned_data['toDate']
                 fromsession = leave_form.cleaned_data['from_session']
@@ -321,18 +321,21 @@ class ApplyLeaveView(View):
                 for error in validate['errors']:
                     context_data['errors'].append(error)
                 context_data['form'] = leave_form
+            elif fromdate.year != todate.year:
+                context_data['errors'].append('From Date and To date need to be in same year')
+                context_data['form'] = leave_form
             else:
 
                 leavecount = validate['success']
                 leaveType=LeaveType.objects.get(leave_type= leave_form.cleaned_data['leave'])
 
-                leavesummry = LeaveSummary.objects.filter(leave_type=leaveType, user=user_id, year = date.today().year)
+                leavesummry = LeaveSummary.objects.filter(leave_type=leaveType, user=user_id, year = leave_applied_year)
                 if leavesummry:
                     leavesummry_temp = leavesummry[0]
                 else:
                     user = User.objects.get(id=user_id)
                     leavesummry_temp = LeaveSummary.objects.create(user=user, leave_type=leaveType, applied=0, approved=0, balance=0,
-                                                               year=date.today().year)
+                                                               year=leave_applied_year)
 
                 if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
                     if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate, user_id):

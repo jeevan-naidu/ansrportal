@@ -24,27 +24,27 @@ def shortAttendanceApply():
     duedate = date.today() - timedelta(days=1)
     shortattendance = ShortAttendance.objects.filter(due_date=duedate, active=True)
     for attendance in shortattendance:
-        applyLeave(attendance)
+        applyLeave(attendance, attendance.for_date.year)
         print "leave saved for {0}".format(attendance.user)
     print str(datetime.now()) + " short attendance auto apply finished running. processed data "\
                                 + str(len(shortattendance))
 
 
-def applyLeave(attendance):
+def applyLeave(attendance, year):
 
     user_id = attendance.user.id
     reason = "applied by system because dispute not resolved"
     applied_by = User.objects.get(id=35).id
 
-    avaliable_leave = avaliableLeaveCheck(user_id, attendance.short_leave_type)
+    avaliable_leave = avaliableLeaveCheck(user_id, attendance.short_leave_type, year)
     if avaliable_leave!=0:
         leave = LeaveSummary.objects.get(user=user_id,
                                          leave_type=avaliable_leave,
-                                         year=date.today().year)
+                                         year=year)
     else:
         leave = LeaveSummary.objects.filter(user=user_id,
                                          leave_type__leave_type='loss_of_pay',
-                                         year=date.today().year)
+                                         year=year)
         if leave:
             leave = leave[0]
         else:
@@ -52,7 +52,7 @@ def applyLeave(attendance):
                                         leave_type=LeaveType.objects.get(leave_type='loss_of_pay'),
                                         applied=0, approved=0,
                                         balance=0,
-                                        year=date.today().year)
+                                        year=year)
     if leavecheckonautoapplydate(attendance, user_id):
         leavesubmit(attendance, leave, reason, user_id, applied_by)
     else:
@@ -60,10 +60,10 @@ def applyLeave(attendance):
         attendance.save()
 
 
-def avaliableLeaveCheck(user_id, short_leave_type):
+def avaliableLeaveCheck(user_id, short_leave_type, year):
     leavesavaliableforapply = ['casual_leave', 'earned_leave']
     for val in leavesavaliableforapply:
-        leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=date.today().year)
+        leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=year)
         if short_leave_type == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 1:
             return leave[0].leave_type
         elif leave and leave and float(leave[0].balance.encode('utf-8'))>0:
