@@ -127,19 +127,23 @@ def loginResponse(request, form, template):
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
+previous_year_month = [10, 11, 12]
+
 
 def get_mondays_list_till_date():
     '''generate all days that are Mondays in the current year
     returns only monday(date object)'''
     current_date = datetime.now().date()
     jan1 = date(current_date.year, 1, 1)
+    jan1 = date(current_date.year - 1, 10, 1)  # to shows last 3 months from previous year
+
 
     # find first Monday (which could be this day)
     monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
 
     while 1:
 
-        if monday.year != current_date.year or monday > current_date:
+        if (monday.year != current_date.year and monday.month not in previous_year_month) or monday > current_date:
             break
         yield monday
         monday += timedelta(days=7)
@@ -154,13 +158,15 @@ def weeks_list_till_date():
     current_date = datetime.now().date()
 
     jan1 = date(current_date.year, 1, 1)
+    jan1 = date(current_date.year - 1, 10, 1)
 
     # find first Monday (which could be this day)
     monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
 
     while 1:
 
-        if monday.year != current_date.year or monday > current_date:
+        if (monday.year != current_date.year and monday.month not in previous_year_month) or monday > current_date:
+            print (monday, monday + timedelta(days=6))
             break
         yield (monday, monday + timedelta(days=6))
         monday += timedelta(days=7)
@@ -3558,7 +3564,7 @@ def status_member(team_members):
 
 def date_range_picker(request, employee=None):
     mondays_list = [x for x in get_mondays_list_till_date()]
-    # print mondays_list
+    print mondays_list
     # for s in mondays_list:
     #     print s
 
