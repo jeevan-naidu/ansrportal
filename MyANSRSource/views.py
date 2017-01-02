@@ -127,44 +127,41 @@ def append_tsstatus_msg(request, tsSet, msg):
 
 
 def get_mondays_list_till_date():
-   '''generate all days that are Mondays in the current year
-   returns only monday(date object)'''
-   current_date = datetime.now().date()
-   jan1 = date(current_date.year, 1, 1)
-   jan1 = date(current_date.year - 1, 10, 1)  # to shows last 3 months from previous year
+    '''generate all days that are Mondays in the current year
+    returns only monday(date object)'''
+    current_date = datetime.now().date()
+    jan1 = date(current_date.year, 1, 1)
 
 
-   # find first Monday (which could be this day)
-   monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
+    # find first Monday (which could be this day)
+    monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
 
-   while 1:
+    while 1:
 
-       if (monday.year != current_date.year and monday.month not in previous_year_month) or monday > current_date:
-           break
-       yield monday
-       monday += timedelta(days=7)
+        if monday.year != current_date.year or monday > current_date:
+            break
+        yield monday
+        monday += timedelta(days=7)
 
 # diff between above function get_mondays_list_till_date() and below function weeks_list_till_date
 # is only in the yield statement
 #
 def weeks_list_till_date():
-   '''generate week(monday to sunday) for the current year
-   returns tuple for with 2 objects: week_start and week_end'''
-   current_date = datetime.now().date()
+    '''generate week(monday to sunday) for the current year
+    returns tuple for with 2 objects: week_start and week_end'''
+    current_date = datetime.now().date()
 
-   jan1 = date(current_date.year, 1, 1)
-   jan1 = date(current_date.year - 1, 10, 1)
+    jan1 = date(current_date.year, 1, 1)
 
-   # find first Monday (which could be this day)
-   monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
+    # find first Monday (which could be this day)
+    monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
 
-   while 1:
+    while 1:
 
-       if (monday.year != current_date.year and monday.month not in previous_year_month) or monday > current_date:
-
-           break
-       yield (monday, monday + timedelta(days=6))
-       monday += timedelta(days=7)
+        if monday.year != current_date.year or monday > current_date:
+            break
+        yield (monday, monday + timedelta(days=6))
+        monday += timedelta(days=7)
 
 
 # to convert unicode strings to string with apostrophe removed from each project name
