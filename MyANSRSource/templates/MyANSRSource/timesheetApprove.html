@@ -56,7 +56,7 @@ Approve Timesheet
 
 <div class="panel pb-15">
 
-    <div class="panel-body">
+    <div class="panel-body"><form method="post" action=""> {% csrf_token %}
            <div class="form-inline approve-reject pull-right">
                                        <div class="checkbox checkbox-success">
                                           <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
@@ -70,9 +70,15 @@ Approve Timesheet
                                               Reject All
                                           </label>
                                       </div>
+                <div class="checkbox checkbox-success radio-mod btn-xs">
+<input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
+
+        Send Reminder Mail
+        </label>
+    </div>
                                   </div>
 
-<form method="post" action=""> {% csrf_token %}
+
 <table class="table table-striped" id="timesheet-approve-table">
   <thead>
     <tr>
@@ -87,11 +93,12 @@ Approve Timesheet
     </tr>
   </thead>
   <tbody>
-  {% for team_members,values in ts_data_list.iteritems %}
+
+  {% for team_members,values in ts_data_list_approved_false.iteritems %}
     <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
-      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
+      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}}  {{team_members.user.last_name}}</a></td>
       <td>{{values.non_zero_value}}</td>
-      <td>{{values.zero_value}} </td>
+      <td>{{values.zero_value}}  </td>
         <td>{{values.non_billable_total}}</td>
       <td> {{values.leave_hours}} </td>
 
@@ -127,7 +134,8 @@ Approve Timesheet
 
 
 <td class="timesheet-approve-options text-center">
-    <div class="checkbox checkbox-success radio-mod btn-xs">
+
+  <div class="checkbox checkbox-success radio-mod btn-xs">
         <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
         <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect">
         Approve
@@ -152,8 +160,67 @@ Approve Timesheet
         <!-- Modal Area -->
 
 
-
+</tr>
 {%endfor %}
+
+   {% for team_members,values in ts_data_list_approved_true.iteritems %}
+    <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
+      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
+      <td>{{values.non_zero_value}}</td>
+      <td>{{values.zero_value}}{{values.approved_status}} </td>
+        <td>{{values.non_billable_total}}</td>
+      <td> {{values.leave_hours}} </td>
+
+<div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback </label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
+                              </div>
+
+                            </div>
+
+
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+
+<td class="timesheet-approve-options text-center">
+   <div><span> Already Approved</span></div>
+
+</td>
+
+    <td class="menu-action">
+      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </td>
+
+        <!-- Modal Area -->
+
+
+</tr>
+{%endfor %}
+
+
+
   </tbody>
 </table>
 {% if ts_data_list %}
@@ -259,6 +326,7 @@ var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projec
                 "use strict";
 
             $('#timesheet-approve-table').dataTable();
+        $("[data-toggle='tooltip']").tooltip();
 
             /* Toggle checkbox */
 
