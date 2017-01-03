@@ -157,86 +157,86 @@ def TimesheetFormset(currentUser,enddate):
                                      decimal_places=2,
                                      widget=forms.HiddenInput()
                                      , required=False)
-        mondayQ = forms.DecimalField(label="Questions",
-                                     max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
-                                     , required=False)
+        # mondayQ = forms.DecimalField(label="Questions",
+        #                              max_digits=12,
+        #                              decimal_places=2,
+        #                              widget=forms.HiddenInput()
+        #                              , required=False)
         tuesday = forms.CharField(label="Tue", required=False)
         tuesdayH = forms.DecimalField(label="Hours",
                                       max_digits=12,
                                       decimal_places=2,
                                       widget=forms.HiddenInput()
                                       , required=False)
-        tuesdayQ = forms.DecimalField(label="Questions",
-                                      max_digits=12,
-                                      decimal_places=2,
-                                      widget=forms.HiddenInput()
-                                      , required=False)
+        # tuesdayQ = forms.DecimalField(label="Questions",
+        #                               max_digits=12,
+        #                               decimal_places=2,
+        #                               widget=forms.HiddenInput()
+        #                               , required=False)
         wednesday = forms.CharField(label="Wed", required=False)
         wednesdayH = forms.DecimalField(label="Hours",
                                         max_digits=12,
                                         decimal_places=2,
                                         widget=forms.HiddenInput()
                                         , required=False)
-        wednesdayQ = forms.DecimalField(label="Questions",
-                                        max_digits=12,
-                                        decimal_places=2,
-                                        widget=forms.HiddenInput()
-                                        , required=False)
+        # wednesdayQ = forms.DecimalField(label="Questions",
+        #                                 max_digits=12,
+        #                                 decimal_places=2,
+        #                                 widget=forms.HiddenInput()
+        #                                 , required=False)
         thursday = forms.CharField(label="Thu", required=False)
         thursdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
                                        decimal_places=2,
                                        widget=forms.HiddenInput()
                                        , required=False)
-        thursdayQ = forms.DecimalField(label="Questions",
-                                       max_digits=12,
-                                       decimal_places=2,
-                                       widget=forms.HiddenInput()
-                                       , required=False)
+        # thursdayQ = forms.DecimalField(label="Questions",
+        #                                max_digits=12,
+        #                                decimal_places=2,
+        #                                widget=forms.HiddenInput()
+        #                                , required=False)
         friday = forms.CharField(label="Fri", required=False)
         fridayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
                                      decimal_places=2,
                                      widget=forms.HiddenInput()
                                      , required=False)
-        fridayQ = forms.DecimalField(label="Questions",
-                                     max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
-                                     , required=False)
+        # fridayQ = forms.DecimalField(label="Questions",
+        #                              max_digits=12,
+        #                              decimal_places=2,
+        #                              widget=forms.HiddenInput()
+        #                              , required=False)
         saturday = forms.CharField(label="Sat", required=False)
         saturdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
                                        decimal_places=2,
                                        widget=forms.HiddenInput()
                                        , required=False)
-        saturdayQ = forms.DecimalField(label="Questions",
-                                       max_digits=12,
-                                       decimal_places=2,
-                                       widget=forms.HiddenInput()
-                                       , required=False)
+        # saturdayQ = forms.DecimalField(label="Questions",
+        #                                max_digits=12,
+        #                                decimal_places=2,
+        #                                widget=forms.HiddenInput()
+        #                                , required=False)
         sunday = forms.CharField(label="Sun", required=False)
         sundayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
                                      decimal_places=2,
                                      widget=forms.HiddenInput()
                                      , required=False)
-        sundayQ = forms.DecimalField(label="Questions",
-                                     max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
-                                     , required=False)
+        # sundayQ = forms.DecimalField(label="Questions",
+        #                              max_digits=12,
+        #                              decimal_places=2,
+        #                              widget=forms.HiddenInput()
+        #                              , required=False)
         total = forms.CharField(label="Total", required=False)
         totalH = forms.DecimalField(label="Hours",
                                     max_digits=12,
                                     decimal_places=2,
                                     widget=forms.HiddenInput())
-        totalQ = forms.DecimalField(label="Questions",
-                                    max_digits=12,
-                                    decimal_places=2,
-                                    widget=forms.HiddenInput())
+        # totalQ = forms.DecimalField(label="Questions",
+        #                             max_digits=12,
+        #                             decimal_places=2,
+        #                             widget=forms.HiddenInput())
 
         tsId = forms.IntegerField(label="id",
                                   required=False,
@@ -287,70 +287,70 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['task'].widget.attrs[
                 'class'
             ] = "form-control d-item b-task remove-sel-options set-zero"
-            self.fields['mondayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            # self.fields['mondayQ'].widget.attrs[
+            #     'class'
+            # ] = "b-questions-hidden d-item set-zero"
             self.fields['mondayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item set-zero"
-            self.fields['tuesdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            # self.fields['tuesdayQ'].widget.attrs[
+            #     'class'
+            # ] = "b-questions-hidden d-item set-zero"
             self.fields['tuesdayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item set-zero"
-            self.fields['wednesdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            # self.fields['wednesdayQ'].widget.attrs[
+            #     'class'
+            # ] = "b-questions-hidden d-item set-zero"
             self.fields['wednesdayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item set-zero"
-            self.fields['thursdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            # self.fields['thursdayQ'].widget.attrs[
+            #     'class'
+            # ] = "b-questions-hidden d-item set-zero"
             self.fields['thursdayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item set-zero"
-            self.fields['fridayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            # self.fields['fridayQ'].widget.attrs[
+            #     'class'
+            # ] = "b-questions-hidden d-item set-zero"
             self.fields['fridayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item set-zero"
-            self.fields['saturdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            # self.fields['saturdayQ'].widget.attrs[
+            #     'class'
+            # ] = "b-questions-hidden d-item set-zero"
             self.fields['saturdayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item set-zero"
-            self.fields['sundayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            # self.fields['sundayQ'].widget.attrs[
+            #     'class'
+            # ] = "b-questions-hidden d-item set-zero"
             self.fields['sundayH'].widget.attrs[
                 'class'
             ] = "b-hours-hidden d-item set-zero"
-            self.fields['totalQ'].widget.attrs[
-                'class'
-            ] = "t-questions-hidden d-item set-zero"
+            # self.fields['totalQ'].widget.attrs[
+            #     'class'
+            # ] = "t-questions-hidden d-item set-zero"
             self.fields['totalH'].widget.attrs[
                 'class'
             ] = "t-hours-hidden d-item set-zero"
             self.fields['mondayH'].widget.attrs['value'] = 0
-            self.fields['mondayQ'].widget.attrs['value'] = 0.0
+            # self.fields['mondayQ'].widget.attrs['value'] = 0.0
             self.fields['tuesdayH'].widget.attrs['value'] = 0
-            self.fields['tuesdayQ'].widget.attrs['value'] = 0.0
+            # self.fields['tuesdayQ'].widget.attrs['value'] = 0.0
             self.fields['wednesdayH'].widget.attrs['value'] = 0
-            self.fields['wednesdayQ'].widget.attrs['value'] = 0.0
+            # self.fields['wednesdayQ'].widget.attrs['value'] = 0.0
             self.fields['thursdayH'].widget.attrs['value'] = 0
-            self.fields['thursdayQ'].widget.attrs['value'] = 0.0
+            # self.fields['thursdayQ'].widget.attrs['value'] = 0.0
             self.fields['fridayH'].widget.attrs['value'] = 0
-            self.fields['fridayQ'].widget.attrs['value'] = 0.0
+            # self.fields['fridayQ'].widget.attrs['value'] = 0.0
             self.fields['saturdayH'].widget.attrs['value'] = 0
-            self.fields['saturdayQ'].widget.attrs['value'] = 0.0
+            # self.fields['saturdayQ'].widget.attrs['value'] = 0.0
             self.fields['sundayH'].widget.attrs['value'] = 0
-            self.fields['sundayQ'].widget.attrs['value'] = 0.0
+            # self.fields['sundayQ'].widget.attrs['value'] = 0.0
             self.fields['totalH'].widget.attrs['value'] = 0
-            self.fields['totalQ'].widget.attrs['value'] = 0.0
+            # self.fields['totalQ'].widget.attrs['value'] = 0.0
             self.fields['tsId'].widget.attrs['value'] = 0
             self.fields['project_value'].widget.attrs['value'] = 0.0
             self.fields['project_value'].widget.attrs['class'] = 'project_value'
