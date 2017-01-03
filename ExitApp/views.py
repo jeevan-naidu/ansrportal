@@ -3,7 +3,7 @@ from django.shortcuts import render, render_to_response
 from django.views.generic import View
 from django.contrib.auth.models import User
 from .models import ResignationInfo, EmployeeClearanceInfo
-from forms import UserExitForm, ResignationAcceptanceForm, ClearanceForm
+from forms import UserExitForm
 from tasks import ExitEmailSendTask, PostAcceptedMail, LibraryClearanceMail, ITClearanceMail, AdminClearanceMail
 from django.utils import timezone
 from employee.models import Employee
