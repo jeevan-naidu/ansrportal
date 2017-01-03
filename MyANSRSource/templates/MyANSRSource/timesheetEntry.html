@@ -110,14 +110,12 @@
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-				{% if forloop.counter <= 2 %}
-					<th class="res-14-per">
+				{% if forloop.counter <= 4 %}
+					<th class="res-10-per">
 				{% else %}
 					<th>
 				{% endif %}
-
 				{{ data.label }}
-
 				{% if data.field.required %}
 					<span class="required">*</span>
 				{% endif %}
