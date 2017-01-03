@@ -125,6 +125,8 @@ def loginResponse(request, form, template):
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
+previous_year_month = [10, 11, 12]
+
 
 def get_mondays_list_till_date():
    '''generate all days that are Mondays in the current year
