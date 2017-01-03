@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import ResignationInfo
+from models import ResignationInfo, EmployeeClearanceInfo
 from tasks import PostAcceptedMail
 from django.contrib.auth.models import User
 # Register your models here.

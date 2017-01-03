@@ -29,6 +29,7 @@ class ExitFormAdd(View):
 
         if form.is_valid():
             try:
+                context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
                 start_date = form.cleaned_data['start_date']
                 ExitEmailSendTask.delay(request.user, last_date, start_date )
@@ -40,10 +41,11 @@ class ExitFormAdd(View):
                 value = Employee.objects.get(user_id=userid)
                 value.resignation = start_date
                 value.save()
+                return render(request, "userexit.html", context)
             except Exception as programmingerror:
                 context['error'] = programmingerror
                 print context['error']
-                context["form"] = form
+                context["form"] = UserExitForm()
                 return render(request, "userexit.html", context)
 
         return render(request, "userexit.html", context)
@@ -133,18 +135,12 @@ class ClearanceFormView(View):
             lib_amount = form['lib_amount']
             manager_amount = form['manager_amount']
             finance_amount = form['finance_amount']
-            admin_feedback = 'hello'
-            # form['adminfeedback']
-            finance_feedback = 'financefeedback'
-            # form['finance_feedback']
-            hr_feedback = 'hefeedback'
-            # form['hr_feedback']
-            facility_feedback = 'faculty_feedback'
-            # form['facility_feedback']
-            manager_feedback = 'mgrfeedback'
-            # form['manager_feedback']
-            library_feedback = 'library feedback'
-            # form['library_feedback']
+            admin_feedback = form['admin_feedback']
+            finance_feedback = form['finance_feedback']
+            hr_feedback = form['hr_feedback']
+            facility_feedback = form['facility_feedback']
+            manager_feedback =  form['manager_feedback']
+            library_feedback =  form['library_feedback']
 
             if 'hr_approval' in form:
                 hr_approval = form['hr_approval']
