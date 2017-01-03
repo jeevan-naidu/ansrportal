@@ -3893,22 +3893,21 @@ class ApproveTimesheetView(TemplateView):
                                                     Q(employee_assigned_id=
                                                       self.request.user.employee.employee_assigned_id)),
                                                    user__is_active=True)
-            # print team_members.query
             for members in team_members:
                 # try:
                 result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                        teamMember=members.user).exists()
-                if result:
-                    user_obj = User.objects.get(user=members.user)
+                if not result:
+                    user_obj = User.objects.get(id=int(members.user.id))
                     email_list.append(user_obj.email)
 
 
                 # except Exception as e:
                 #     print str(e)
                 #     pass
-            # print email
-        else:
-            print "nope"
+            # print "email",  email_list
+        # else:
+        #     print "nope"
 
         for k, v in feedback.iteritems():
             user_id = k.split('_')
