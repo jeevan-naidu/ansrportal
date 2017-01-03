@@ -166,7 +166,7 @@ def weeks_list_till_date():
     while 1:
 
         if (monday.year != current_date.year and monday.month not in previous_year_month) or monday > current_date:
-            print (monday, monday + timedelta(days=6))
+
             break
         yield (monday, monday + timedelta(days=6))
         monday += timedelta(days=7)
@@ -982,7 +982,8 @@ def date_range_picker(request):
 def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False):
     if approve_time_sheet:
         ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                               teamMember=request_object.user, approved=False, hold=True)
+                                               teamMember=request_object.user, hold=True)
+
     else:
         ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
                                                teamMember=request_object.user)
@@ -2716,43 +2717,43 @@ def loginResponse(request, form, template):
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
-
-def get_mondays_list_till_date():
-    '''generate all days that are Mondays in the current year
-    returns only monday(date object)'''
-    current_date = datetime.now().date()
-    jan1 = date(current_date.year, 1, 1)
-
-    # find first Monday (which could be this day)
-    monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
-
-    while 1:
-
-        if monday.year != current_date.year or monday > current_date:
-            break
-        yield monday
-        monday += timedelta(days=7)
+#
+# def get_mondays_list_till_date():
+#     '''generate all days that are Mondays in the current year
+#     returns only monday(date object)'''
+#     current_date = datetime.now().date()
+#     jan1 = date(current_date.year, 1, 1)
+#
+#     # find first Monday (which could be this day)
+#     monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
+#
+#     while 1:
+#
+#         if monday.year != current_date.year or monday > current_date:
+#             break
+#         yield monday
+#         monday += timedelta(days=7)
 
 
 # diff between above function get_mondays_list_till_date() and below function weeks_list_till_date
 # is only in the yield statement
 #
-def weeks_list_till_date():
-    '''generate week(monday to sunday) for the current year
-    returns tuple for with 2 objects: week_start and week_end'''
-    current_date = datetime.now().date()
-
-    jan1 = date(current_date.year, 1, 1)
-
-    # find first Monday (which could be this day)
-    monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
-
-    while 1:
-
-        if monday.year != current_date.year or monday > current_date:
-            break
-        yield (monday, monday + timedelta(days=6))
-        monday += timedelta(days=7)
+# def weeks_list_till_date():
+#     '''generate week(monday to sunday) for the current year
+#     returns tuple for with 2 objects: week_start and week_end'''
+#     current_date = datetime.now().date()
+#
+#     jan1 = date(current_date.year, 1, 1)
+#
+#     # find first Monday (which could be this day)
+#     monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
+#
+#     while 1:
+#
+#         if monday.year != current_date.year or monday > current_date:
+#             break
+#         yield (monday, monday + timedelta(days=6))
+#         monday += timedelta(days=7)
 
 
 # to convert unicode strings to string with apostrophe removed from each project name
@@ -3821,6 +3822,7 @@ class ApproveTimesheetView(TemplateView):
         start_date = dates['start']
         end_date = dates['end']
         status, week_collection = status_member(team_members)
+        # print status
         # print start_date, end_date
         # print start_date, end_date
         for members in team_members:
@@ -3828,6 +3830,12 @@ class ApproveTimesheetView(TemplateView):
             ts_obj = time_sheet_for_the_week(start_date, end_date, members, True)
             if ts_obj:
                 ts_data_list[members] = {}
+                for s in ts_obj:
+                    a = 0
+                    while a == 0:
+                        ts_data_list[members]['approved_status'] = s.approved
+                        a += 1
+
                 non_billable_obj = non_billable_hours(ts_obj)
                 for others in non_billable_obj:
                     non_billable_total += float(others['totalH'])
@@ -3837,7 +3845,6 @@ class ApproveTimesheetView(TemplateView):
                 ts_data_list[members]['zero_value'] = zero_value
                 ts_data_list[members]['non_zero_value'] = non_zero_value
                 ts_data_list[members]['b_total'] = b_total
-                pull_members_week(members, start_date, end_date)
                 ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
             context['ts_data_list'] = ts_data_list
             context['ts_final_list'] = ts_final_list
@@ -3846,7 +3853,23 @@ class ApproveTimesheetView(TemplateView):
             context['status_dict'] = status
             context['disabled'] = dates['disabled']
         context['week_collection'] = week_collection[::-1]
+        ts_data_list_approved_false = {}
+        ts_data_list_approved_true = {}
 
+        for k, v in ts_data_list.iteritems():
+
+            if v['approved_status']:
+                # print  k,v
+                ts_data_list_approved_true[k] = v
+                # print ts_data_list_reordered
+            else:
+                # print "else",  k, v
+                ts_data_list_approved_false[k] = v
+        context['ts_data_list_approved_false'] = ts_data_list_approved_false
+        context['ts_data_list_approved_true'] = ts_data_list_approved_true
+        # print "false",ts_data_list_approved_false
+        # print "true",ts_data_list_approved_true
+        # print ts_data_list_approved_true
         return context
 
     def post(self, request, **kwargs):
@@ -3861,6 +3884,32 @@ class ApproveTimesheetView(TemplateView):
             self.request.POST.get('weekendDate'), '%d%m%Y'
         ).date()
         feedback_dict = {}
+        email_list = []
+        # for k in self.request.POST:
+        #     print k,
+        # print "rem", self.request.POST['reminder_mail']
+        if 'reminder_mail' in self.request.POST:
+            team_members = Employee.objects.filter((Q(manager_id=self.request.user.employee.employee_assigned_id) |
+                                                    Q(employee_assigned_id=
+                                                      self.request.user.employee.employee_assigned_id)),
+                                                   user__is_active=True)
+            # print team_members.query
+            for members in team_members:
+                # try:
+                result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                       teamMember=members.user).exists()
+                if result:
+                    user_obj = User.objects.get(user=members.user)
+                    email_list.append(user_obj.email)
+
+
+                # except Exception as e:
+                #     print str(e)
+                #     pass
+            # print email
+        else:
+            print "nope"
+
         for k, v in feedback.iteritems():
             user_id = k.split('_')
             feedback_dict[user_id[1]] = v
@@ -3870,8 +3919,10 @@ class ApproveTimesheetView(TemplateView):
                     TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                   teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
                                                                                 approved=True)
+
                 except Exception as e:
                     fail += 1
+                    print str(e)
                     logger.error(
                         u'Unable to make changes(approve) for time sheet approval  {0}{1}{2} and the error is  {3} '
                         u' '.format(start_date, end_date, user_id, str(e)))
