@@ -53,7 +53,7 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center"><input type="number" name="libamount" id = "libamount" class="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_library" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
@@ -69,7 +69,7 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center"><input type="number" name="adminamount" id = "adminamount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_it" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
@@ -85,7 +85,7 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center"><input type="number" name="financeamount" id = "financeamount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success" class ="amountbox">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_finance" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
@@ -99,7 +99,7 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center"><input type="number" name="hramount" id = "hramount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_hr" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
@@ -113,7 +113,7 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center"><input type="number" name="facilityamount" id = "facilityamount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_facility" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
@@ -127,7 +127,7 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center"><input type="number" id = "manageramount" name="manageramount" class ="amountbox"/></td>
                           <td class="center"><span class="label label-success">Active</span></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#myModal" data-placement="top" class="btn menu-icon vd_bg-green">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_manager" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
                             </a>
                             <div class="vd_checkbox checkbox-success pull-right">
@@ -138,12 +138,17 @@ ul{list-style: none;padding-left: 0px;}
                         </tr>
                       </tbody>
 
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+
+<!-- Set of Modals -->
+
+
+    <div class="modal fade" id="modal_library" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="myModalLabel">Enter Your Feedback</h4>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
                         </div>
                         <div class="modal-body">
 
@@ -169,10 +174,188 @@ ul{list-style: none;padding-left: 0px;}
                     </div>
                     <!-- /.modal-dialog -->
                   </div>
+
+
+    <div class="modal fade" id="modal_it" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" type="text" name="dpeatmentfeedback"></textarea>
+                              </div>
+
+                            </div>
+
+
+                          </form>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+    <div class="modal fade" id="modal_finance" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" type="text" name="dpeatmentfeedback"></textarea>
+                              </div>
+
+                            </div>
+
+
+                          </form>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+    <div class="modal fade" id="modal_hr" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" type="text" name="dpeatmentfeedback"></textarea>
+                              </div>
+
+                            </div>
+
+
+                          </form>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+    <div class="modal fade" id="modal_facility" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" type="text" name="dpeatmentfeedback"></textarea>
+                              </div>
+
+                            </div>
+
+
+                          </form>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+    <div class="modal fade" id="modal_manager" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" type="text" name="dpeatmentfeedback"></textarea>
+                              </div>
+
+                            </div>
+
+
+                          </form>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+
+<!-- ./ Set of Modals -->
+
+
+
+
+
+
+
+
+
     {% endif %}
                       {% endfor %}
                     </table>
-                        <input type ="submit" value="Submit" class="exitbutton btn-primary">
+                        <input type ="submit" value="Submit" class="exitbutton btn btn-primary">
 <!-- Modal Area -->
 
  <!-- Modal -->
