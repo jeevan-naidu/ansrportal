@@ -44,7 +44,7 @@ ul{list-style: none;padding-left: 0px;}
                    <tr><th><input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}></th>
                        <th><input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}></th>
                        <th>{{c}}</th>
-                       <th>{{c.last_date | truncatechars:14 }}</th>
+                       <th>{{c.last_date |date:"M d, Y"}}</th>
                        <th> <div class='input-group date datetimepicker' id='datetimepicker'><input name="finaldate_{{c.User_id}}" data-date-format='yyyy-mm-dd hh:ii' type='text' class="form-control datepicker" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                     </span>
                 </div></th>

@@ -32,7 +32,7 @@ class ExitFormAdd(View):
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
                 start_date = form.cleaned_data['start_date']
-                ExitEmailSendTask.delay(request.user, last_date, start_date )
+                ExitEmailSendTask.delay(request.user, last_date, start_date)
                 reason_dropdown = form.cleaned_data['reason_dropdown']
                 comment = form.cleaned_data['comment']
                 time = timezone.now()

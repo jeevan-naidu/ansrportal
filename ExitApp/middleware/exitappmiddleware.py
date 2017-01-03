@@ -31,7 +31,7 @@ class ExitappPermissionCheckMiddleware(object):
                 else:
                     if request.user.is_authenticated():
                         logger.error("This User is tried to"
-                                     " access grievance admin module "
+                                     " access Exit App admin module "
                                      "{0}  and the ip address is : {1} "
                                      " Date Time is {2}".format(request.user,
                                                                 get_client_ip(request),
