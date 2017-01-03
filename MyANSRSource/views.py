@@ -439,16 +439,14 @@ def Timesheet(request):
                         billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold':
-                            if k in (
-                            'mondayQ', 'tuesdayQ', 'wednesdayQ', 'thursdayQ', 'fridayQ', 'saturdayQ', 'sundayQ'):
-                                if v == None:
-                                    v = float(0.0)
-                            if k in (
-                            'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
-                                if v == None:
-                                    v = float(0.0)
-                            # if k == 'chapter':
-                            #     v = Chapter.objects.get(pk=v)
+                            if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
+                                if v==None:
+                                    v=float(0.0)
+                            if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
+                                if v==None:
+                                    v=float(0.0)
+                            if k == 'totalH':
+                                print v
                             # if k == 'task':
                             #     v = Task.objects.get(pk=v)
                             setattr(billableTS, k, v)
@@ -536,6 +534,8 @@ def Timesheet(request):
                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
                                 if v == None:
                                     v = float(0.0)
+                            if k == 'totalH':
+                                print v
                             # if k == 'chapter':
                             #     v = Chapter.objects.get(pk=v)
                             # if k == 'task':
@@ -3031,6 +3031,8 @@ def Timesheet(request):
                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
                                 if v == None:
                                     v = float(0.0)
+                            if k == 'totalH':
+                                print v
                             # if k == 'chapter':
                             #     v = Chapter.objects.get(pk=v)
                             # if k == 'task':
@@ -3120,6 +3122,8 @@ def Timesheet(request):
                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
                                 if v == None:
                                     v = float(0.0)
+                            if k == 'totalH':
+                                print v
                             # if k == 'chapter':
                             #     v = Chapter.objects.get(pk=v)
                             # if k == 'task':
@@ -3565,7 +3569,7 @@ def status_member(team_members):
 
 def date_range_picker(request, employee=None):
     mondays_list = [x for x in get_mondays_list_till_date()]
-    print mondays_list
+    # print mondays_list/
     # for s in mondays_list:
     #     print s
 
