@@ -36,50 +36,60 @@ ul{list-style: none;padding-left: 0px;}
 .select2-container .select2-selection--single{height: 30px;}
 
 </style>
+                    {{form.error}}
+                    {% if form.error %}
+    {% for field in form %}
+        {% for error in field.error %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
                     <div class="panel-body">
                     <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
-                        <div class="">
-                        <label class=""></label><!-- start -->
-                        <div class="form-group">
-
-                            <div class="">Select Your Date On Which you put your Resignation<span class="mandatory-field"> *</span></div>
-                            <div>
-                            {{form.start_date}}
-                            </div>
-                               </div>
-                        <div class="form-group">
-
-                            <div class="">Select Your Last Date<span class="mandatory-field"> *</span></div>
-                            <div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
+                            {{ form.start_date }}
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Last Date<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
                             {{ form.last_date }}
-                          <div class="help-block with-errors"></div>
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
 
-                        </div>
-
-                        </div>
-
-                       <div class="form-group">
-
-                          <div class=""> Select your Appropriate Reason<span class="mandatory-field"> *</span></div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
                            {{ form.reason_dropdown }}
-                          <div class="help-block with-errors"></div>
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
 
-                       </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" >Comments<span class="mandatory-field"> *</span></label>
+                        <div class="col-sm-7 controls">
+                            {{ form.comment }}
+                          <div class="help-block with-errors"></div> 
+                          </div>
+                      </div>
+
+                          <input type ="submit" value ="submit" class="exitbutton btn btn-primary pull-right">
 
 
-                       <div class="form-group">
 
-                          <div> Additional Comment<span class="mandatory-field"> *</span></div>
 
-                            <div>
-                                {{ form.comment }}
-                          <div class="help-block with-errors"></div>
-
-                            </div>
-                       </div>
-                            <input type ="submit" value ="submit" class="exitbutton btn-primary">
-                      </div><!--./end of form group-->
                     </form>
                     </div>
                 </div>

@@ -4,7 +4,17 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+
 # Create your models here.
+
+Department = (
+    ('IT', 'IT Support'),
+    ('FIN', 'Finance'),
+    ('LIB', 'Library'),
+    ('FAC', 'Facility'),
+    ('HR', 'Human Resource'),
+    ('MGR', 'Manager')
+)
 
 '''Table to store the data of employee who is exiting the organization'''
 
@@ -19,9 +29,12 @@ class ResignationInfo(models.Model):
     reason_optional = models.CharField(verbose_name="optional text area", blank=True, max_length=1000,)
     created_on = models.DateTimeField(verbose_name="created on", auto_now_add=True)
     updated_on = models.DateTimeField(verbose_name="updated on", auto_now_add=True)
+    manager_comment = models.CharField(verbose_name="Manager comment", null=True, blank=True, max_length=1000,)
+    hr_comment = models.CharField(verbose_name="HR comment", null=True, blank=True, max_length=1000,)
+    # is_active = models.NullBooleanField(verbose_name="If employee left", blank=True)
 
     def __unicode__(self):
-        return self.User
+        return unicode(self.User)
 
     class Meta:
         verbose_name = 'Regignation info'
@@ -29,28 +42,21 @@ class ResignationInfo(models.Model):
 '''Database for clearance from all Dept...'''
 
 
-class ClearanceInfo(models.Model):
-    resign = models.ForeignKey(User)
-    hr_clearance = models.BooleanField(verbose_name="hr clearance", blank=True)
-    IT_clearance = models.BooleanField(verbose_name="it clearance", blank=True)
-    manager_clearance = models.BooleanField(verbose_name="manager clearance", blank=True)
-    admin_clearance = models.BooleanField(verbose_name="admin clearance", blank=True)
-    library_clearance = models.BooleanField(verbose_name="Library clearance", blank=True)
+class EmployeeClearanceInfo(models.Model):
+    resignationInfo = models.ForeignKey(ResignationInfo)
+    dept_status = models.BooleanField(verbose_name="Clearance from Department", blank=True)
+    status_by = models.ForeignKey(User)
+    department = models.CharField(verbose_name='Department', choices=Department, max_length=40, blank=False)
+    status_on = models.DateTimeField(verbose_name="Time of Approval")
+    dept_feedback = models.CharField(max_length=1000, blank=True)
+    dept_due = models.IntegerField(verbose_name="Department Due Amount",  blank=True)
 
     def __unicode__(self):
-        return self.resign
+        return unicode(self.department)
 
 
-'''Model for storing the employee feedback'''
 
 
-class EmployeeFeedback(models.Model):
-    employee_id = models.ForeignKey(User)
-    hr_feedback = models.CharField(verbose_name="HR comment over Employee", blank=False, max_length=1000)
-    manager_feedback = models.CharField(verbose_name="Manger comment over Employee", blank=False, max_length=1000)
-    it_feedback = models.CharField(verbose_name="IT comment over Employee", blank=False, max_length=1000)
-    library_feedback = models.CharField(verbose_name="LIBRARY comment over Employee", blank=False, max_length=1000)
-    admin_feedback = models.CharField(verbose_name="HR comment over Employee", blank=False, max_length=1000)
 
 
 

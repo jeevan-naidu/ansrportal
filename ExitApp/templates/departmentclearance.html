@@ -18,9 +18,6 @@
                   <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
                   </div>
-
-
-
 <style>
     .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
@@ -29,185 +26,263 @@
 ul{list-style: none;padding-left: 0px;}
     </style>
            <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
-
-
-
-
-<!--                       <div class="form-group">
-                        <label class="col-sm-4 control-label">Checkbox Inline</label>
-                        <div class="col-sm-7 controls">
-                          <div class="vd_checkbox checkbox-danger">
-                            <input type="checkbox" value="1" id="checkbox-3">
-                            <label for="checkbox-3"> 3 </label>
-                            <input type="checkbox" value="2" id="checkbox-4">
-                            <label for="checkbox-4"> 4 </label>
-                            <input type="checkbox" value="3" id="checkbox-5">
-                            <label for="checkbox-5"> 5 </label>
-                          </div>
-                        </div>
-                      </div> -->
-
-
-
+                    <form class="form-horizontal" name="dept_clearance" role="form" method="post"  data-toggle="validator">
                         {% csrf_token %}
+<table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Username</th>
+                          <th>#</th>
+                          <th>Department</th>
+                          <th>Amount</th>
+                          <th>Status</th>
+                          <th>Options</th>
+                        </tr>
+                      </thead>
+    {% for candidate in approved_candidate %}
+                      {% if candidate.hr_accepted == True and candidate.manager_accepted == True %}
+                      <tbody>
+                      <tr>
+                          <td rowspan="6" style="vertical-align: middle;">{{candidate}}</td>
+                          <td>1</td>
+                          <td class="center">Library</td>
+                          <td class="center"><input type="number" name="lib_amount" id = "libamount" class="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_library" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                              <i class="fa fa-eye"></i> 
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox"  value=2 name="library_approval" id="checkbox-1">
+                              <label for="checkbox-1"></label>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <!-- <td>Petrus Dar</td> -->
+                          <td>2</td>
+                          <td class="center">IT Admin</td>
+                          <td class="center"><input type="number" name="admin_amount" id = "adminamount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_it" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                              <i class="fa fa-eye"></i> 
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox"  value=2 name="admin_approval" id="checkbox-2">
+                              <label for="checkbox-2"></label>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <!-- <td>Petrus Dar</td> -->
+                          <td>3</td>
+                          <td class="center">Finance</td>
+                          <td class="center"><input type="number" name="finance_amount" id = "financeamount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success" class ="amountbox">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_finance" data-placement="top" class="btn menu-icon vd_bg-green"> 
+                              <i class="fa fa-eye"></i> 
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox"  value=2 name="finance_approval" id="checkbox-3">
+                              <label for="checkbox-3"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <td>4</td>
+                          <td class="center">HR</td>
+                          <td class="center"><input type="number" name="hr_amount" id = "hramount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_hr" data-placement="top" class="btn menu-icon vd_bg-green">
+                              <i class="fa fa-eye"></i>
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox"  value=2 name="hr_approval" id="checkbox-4">
+                              <label for="checkbox-4"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <td>5</td>
+                          <td class="center">Facility</td>
+                          <td class="center"><input type="number" name="facility_amount" id = "facilityamount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_facility" data-placement="top" class="btn menu-icon vd_bg-green">
+                              <i class="fa fa-eye"></i>
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox"  value=2 name="facility_approval" id="checkbox-5">
+                              <label for="checkbox-5"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <td>6</td>
+                          <td class="center">Manager</td>
+                          <td class="center"><input type="number" id = "manager_amount" name="manager_amount" class ="amountbox"/></td>
+                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="menu-action">
+                            <a data-original-title="view" data-toggle="modal" data-target="#modal_manager" data-placement="top" class="btn menu-icon vd_bg-green">
+                              <i class="fa fa-eye"></i>
+                            </a>
+                            <div class="vd_checkbox checkbox-success pull-right">
+                              <input type="checkbox"  value=2 name="manager_approval" id="checkbox-6">
+                              <label for="checkbox-6"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
 
 
 
-                            
+<!-- Set of Modals -->
 
 
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Select Member</label>
-                        <div class="col-sm-7 controls">{{form.exit_applicant_list}}</div>
-                      </div>
-
-                      <br>
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Librarian Check the Box to accept the resignation</label>
-                        <div class="col-sm-7 controls">{{ form.librarian_accepted }}</div>
-                      </div>
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Librarian Please Provide your feedback</label>
-                        <div class="col-sm-7 controls">
-                          {{ form.librarian_feedback }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-<hr>
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Admin Check the Box to accept the resignation</label>
-                        <div class="col-sm-7 controls">
-                          {{ form.admin_accepted }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">Admin Please Provide your feedback</label>
-                        <div class="col-sm-7 controls">
-                          {{ form.admin_feedback }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-<hr>
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">IT Check the Box to accept the resignation</label>
-                        <div class="col-sm-7 controls">
-                          {{ form.it_accepted }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label">IT Please Provide your feedback</label>
-                        <div class="col-sm-7 controls">
-                          {{ form.it_feedback }}
-                          <span class="help-inline">Some hint here</span> </div>
-                      </div>
-<hr>
-
-                      <div class="form-group form-actions">
-                        <div class="col-sm-4"> </div>
-                        <div class="col-sm-7">
-                          <button class="btn vd_btn vd_bg-green vd_white" type="submit"><i class="icon-ok"></i> Save</button>
-                          <button class="btn vd_btn" type="button">Cancel</button>
+    <div class="modal fade" id="modal_library" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
                         </div>
-                      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-                        <div class="form-group">
-
-                            Librarian Check the Box to accept the resignation<span class="mandatory-field"> *</span>{{ form.librarian_accepted }}
-
-                            <div>
-
-                          
-
-                        </div>
-
-                        </div>
-                       <div class="form-group">
-
-                          Librarian Please Provide your feedback<span class="mandatory-field"> *</span>{{ form.librarian_feedback }}
-
-                          
-
-                       </div>
-
-
-                       <div class="form-group">
-
-                          Admin Check the Box to accept the resignation<span class="mandatory-field"> *</span> {{ form.admin_accepted }}
-
-
-                            <div>
-
-                          
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="library_feedback"></textarea>
+                              </div>
 
                             </div>
-                       </div>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+    <div class="modal fade" id="modal_it" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
                             <div class="form-group">
-
-                          Admin Please Provide your feedback<span class="mandatory-field"> *</span>
-                           {{ form.admin_feedback }}
-                          
-
-                       </div>
-                             <div class="form-group">
-
-                           IT Check the Box to accept the resignation<span class="mandatory-field"> *</span> {{ form.it_accepted }}
-
-
-                            <div>
-
-                          
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="admin_feedback"></textarea>
+                              </div>
 
                             </div>
-                       </div>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+    <div class="modal fade" id="modal_finance" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
                             <div class="form-group">
-
-                           IT Please Provide your feedback<span class="mandatory-field"> *</span>
-                           {{ form.it_feedback }}
-                          
-
-                       </div>
-                            <input type ="submit" value ="submit" class="exitbutton btn-primary">
-
-
-
- -->
-
-
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="finance_feedback"></textarea>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 
 
+    <div class="modal fade" id="modal_hr" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="hr_feedback"></textarea>
+                              </div>
+
+                            </div>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 
 
+    <div class="modal fade" id="modal_facility" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="facility_feedback"></textarea>
+                              </div>
+
+                            </div>
+
+                        </div>
+
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 
 
+    <div class="modal fade" id="modal_manager" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Feedback</label>
+                              <div class="col-sm-7 controls">
+                                <textarea class="input-border-btm" type="text" name="manager_feedback"></textarea>
+                              </div>
 
-                    </form>
-           </div>
+                            </div>
+                        </div>
+
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+    {% endif %}
+    {% endfor %}
+                    </table>
+                        <input type ="submit" value="Submit" class="exitbutton btn btn-primary">
+</form>
+            </div>
                 </div>
               </div>
             </div>

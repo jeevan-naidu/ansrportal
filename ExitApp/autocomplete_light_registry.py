@@ -1,5 +1,5 @@
 from dal import autocomplete
-from models import ResignationInfo, EmployeeFeedback, ClearanceInfo
+from models import ResignationInfo
 from django.contrib.auth.models import User
 
 

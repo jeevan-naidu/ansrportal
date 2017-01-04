@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import ResignationInfo, ClearanceInfo
+from models import ResignationInfo, EmployeeClearanceInfo
 from tasks import PostAcceptedMail
 from django.contrib.auth.models import User
 # Register your models here.
@@ -14,4 +14,3 @@ class AcceptanceAdmin(admin.ModelAdmin,):
 
 
 admin.site.register(ResignationInfo, AcceptanceAdmin)
-# admin.site.register(ClearanceInfoAdmin)
