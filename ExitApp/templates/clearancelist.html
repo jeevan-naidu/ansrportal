@@ -39,10 +39,10 @@ ul{list-style: none;padding-left: 0px;}
 		</tr></thead>
                {% for c in approved_candidate %}
                             {% if c.hr_accepted == True and c.manager_accepted == True %}
-                    <tr><th>{{c.id}}</th>
-                       <th>{{c}}</th>
-                       <th>{{c.last_date | date:"M d, Y"}}</th>
-                        <th><a href="/exitapp/clearance/?id={{c.id}}"><button type="button" class="btn btn-primary showlist" value ="{{c.id}}">Click</button></a></th>
+                    <tr><td>{{c.id}}</td>
+                       <td>{{c}}</td>
+                       <td>{{c.last_date | date:"M d, Y"}}</td>
+                        <td><a href="/exitapp/clearance/?id={{c.id}}"><button type="button" class="btn btn-primary btn-xs showlist" value ="{{c.id}}">Accept</button></a></td>
                    </tr>
                             {% endif %}
                {% endfor %}

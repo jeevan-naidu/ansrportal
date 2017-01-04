@@ -10,6 +10,17 @@
 .overflow-hide{overflow: hidden;}
 
 
+/* myansr mod */
+
+.myansr-table{
+    border: 1px solid #f9f9f9;
+}
+.myansr-table thead{background: #464A4C;color: #fff}
+.myansr-table thead th{padding: 10px 5px !important;}
+.myansr-table td{vertical-align: middle !important;}
+
+
+
 /* Overrides */
 
 a{color: #337ab7}
@@ -274,3 +285,8 @@ span.mandatory-field{color: red}
 
 #bar-placeholder .morris-hover.morris-default-style{background: rgb(24, 51, 14)}
 #bar-placeholder .morris-hover-row-label{display: none;}
+
+
+/* Exit App */
+
+#acceptanceform textarea{max-height: 30px;}

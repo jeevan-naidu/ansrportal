@@ -1,7 +1,4 @@
 {% extends 'master.html' %}
-{% load bootstrap3 %}
-{% load fontawesome %}
-{% load static from staticfiles %}
 {% block siteTitle %}Candidate Acceptance Report{% endblock %}
 {% block pageTitle %}Resignation Aceeptance Profile{% endblock %}
 {% block content  %}
@@ -15,9 +12,9 @@
             <div class="row" id="form-basic">
               <div class="col-md-12">
                 <div class="panel widget">
-                  <div class="panel-heading vd_bg-grey">
+                  <!-- <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
-                  </div>
+                  </div> -->
 
 
 
@@ -29,32 +26,35 @@
 ul{list-style: none;padding-left: 0px;}
     </style>
            <div class="panel-body">
-                    <form name="acceptanceform" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
-                        <table class="table table-bordered">
-		<thead>
-			<tr><th class="text-center">Manager Acceptance</th>
-                <th class="text-center">HR Acceptance</th>
-                <th class="text-center">Employee</th>
-                <th class="text-center">Last Date Opted</th>
-                <th class="text-center">Last Date By Manager</th>
-                <th class="text-center">Manager Feedback</th>
-                <th class="text-center">HR Feedback</th>
-		</tr></thead>
+                    <form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
+                        <table class="table table-condensed table-striped myansr-table">
+                      		<thead>
+                            <th class="text-center">Manager</th>
+                            <th class="text-center">HR</th>
+                            <th class="text-center">Employee</th>
+                            <th class="text-center">Last Date Opted</th>
+                            <th class="text-center">Last Date By Manager</th>
+                            <th class="text-center">Manager Feedback</th>
+                            <th class="text-center">HR Feedback</th>
+                          </thead>
                {% for c in resigneedata %}
-                   <tr><th><input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}></th>
-                       <th><input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}></th>
-                       <th>{{c}}</th>
-                       <th>{{c.last_date |date:"M d, Y"}}</th>
-                       <th> <div class='input-group date datetimepicker' id='datetimepicker'><input name="finaldate_{{c.User_id}}" data-date-format='yyyy-mm-dd hh:ii' type='text' class="form-control datepicker" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div></th>
-                       <th><textarea id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" >{{c.manager_comment}}</textarea></th>
-                       <th><textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" >{{c.hr_comment}}</textarea></th>
+                   <tr><td><input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}></td>
+                       <td><input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}></td>
+                       <td>{{c}}</td>
+                       <td>{{c.last_date |date:"M d, Y"}}</td>
+                       <td> 
+                         <div class='input-group date datetimepicker' id='datetimepicker'>
+                         <input name="finaldate_{{c.User_id}}" data-date-format='yyyy-mm-dd hh:ii' type='text' class="form-control datepicker input-sm" />
+                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                         </div>
+                       </td>
+                       <td><textarea id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea></td>
+                       <td><textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea></td>
                    </tr>
                {% endfor %}
                             {% csrf_token %}
                              </table>
-                        <input type ="submit" value ="submit" class="exitbutton btn btn-primary">
+                        <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
                     </form>
            </div>
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
