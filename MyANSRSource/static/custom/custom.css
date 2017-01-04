@@ -290,6 +290,9 @@ span.mandatory-field{color: red}
 /* Exit App */
 
 .mw-ra{min-width: 85px;}
+.mxw-250{max-width: 250px !important}
+
+#exit-form input{max-width: 300px;}
 
 #acceptanceform textarea{max-height: 30px;}
 #acceptanceform input[type="checkbox"]{margin-left: 35px}

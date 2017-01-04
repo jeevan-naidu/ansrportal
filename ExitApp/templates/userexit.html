@@ -47,45 +47,45 @@ ul{list-style: none;padding-left: 0px;}
 
                      {% endfor %}
                    {% endif %}
-                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
-                        {% csrf_token %}
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
-                        <div class="col-sm-4 controls">
-                            {{ form.start_date }}
-                          <div class="help-block with-errors"></div> 
-                          </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label" >Last Date<span class="mandatory-field"> *</span></label>
-                        <div class="col-sm-4 controls">
-                            {{ form.last_date }}
-                          <div class="help-block with-errors"></div> 
-                          </div>
-                      </div>
+            <form id="exit-form" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
+                {% csrf_token %}
+              <div class="form-group">
+                <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
+                <div class="col-sm-4 controls mxw-250">
+                    {{ form.start_date }}
+                  <div class="help-block with-errors"></div> 
+                  </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label" >Last Date<span class="mandatory-field"> *</span></label>
+                <div class="col-sm-4 controls mxw-250">
+                    {{ form.last_date }}
+                  <div class="help-block with-errors"></div> 
+                  </div>
+              </div>
 
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
-                        <div class="col-sm-4 controls">
-                           {{ form.reason_dropdown }}
-                          <div class="help-block with-errors"></div> 
-                          </div>
-                      </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
+                <div class="col-sm-4 controls mxw-250">
+                   {{ form.reason_dropdown }}
+                  <div class="help-block with-errors"></div> 
+                  </div>
+              </div>
 
-                      <div class="form-group">
-                        <label class="col-sm-4 control-label" >Comments</label>
-                        <div class="col-sm-4 controls">
-                            {{ form.comment }}
-                          <div class="help-block with-errors"></div> 
-                          </div>
-                      </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label" >Comments</label>
+                <div class="col-sm-4 controls mxw-250">
+                    {{ form.comment }}
+                  <div class="help-block with-errors"></div> 
+                  </div>
+              </div>
 
-                          <input type ="submit" value ="submit" class="exitbutton btn btn-primary pull-right">
-
-
+                  <input type ="submit" value ="submit" class="exitbutton btn btn-primary pull-right">
 
 
-                    </form>
+
+
+            </form>
                     </div>
                 </div>
               </div>
