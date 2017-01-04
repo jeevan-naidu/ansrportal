@@ -294,7 +294,10 @@ span.mandatory-field{color: red}
 
 .mw-ra{min-width: 85px;}
 .mxw-250{max-width: 250px !important}
+.mxw-150{max-width: 150px !important}
 
 #exit-form input{max-width: 300px;}
 
 #acceptanceform textarea{max-height: 30px;}
+
+#dept_clearance_form .amountbox{max-width: 100px;}

@@ -26,16 +26,17 @@
 ul{list-style: none;padding-left: 0px;}
     </style>
            <div class="panel-body">
-                    <form class="form-horizontal" name="dept_clearance" role="form" method="post"  data-toggle="validator">
+                    <form id="dept_clearance_form" class="form-horizontal" name="dept_clearance" role="form" method="post"  data-toggle="validator">
                         {% csrf_token %}
 <table class="table table-condensed table-bordered myansr-table">
                       <thead>
                         <tr>
-                          <th>Username</th>
+                          <!-- <th>Username</th> -->
                           <th>Sr.No</th>
                           <th>Department</th>
                           <th>Amount</th>
-                          <th>Status</th>
+                          <!-- <th>Status</th> -->
+                          <th>Feedback</th>
                           <th>Options</th>
                         </tr>
                       </thead>
@@ -43,11 +44,12 @@ ul{list-style: none;padding-left: 0px;}
                       {% if candidate.hr_accepted == True and candidate.manager_accepted == True %}
                       <tbody>
                       <tr>
-                          <td rowspan="6" style="vertical-align: middle;">{{candidate}}</td>
+                          <!-- <td rowspan="6" style="vertical-align: middle;">{{candidate}}</td> -->
                           <td>1</td>
                           <td class="center">Library</td>
-                          <td class="center"><input type="number" name="lib_amount" id = "libamount" class="amountbox"/></td>
-                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="center"><input type="number" name="lib_amount" id = "libamount" class="amountbox form-control input-sm"/></td>
+                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
+                          <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#modal_library" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
@@ -62,8 +64,9 @@ ul{list-style: none;padding-left: 0px;}
                           <!-- <td>Petrus Dar</td> -->
                           <td>2</td>
                           <td class="center">IT Admin</td>
-                          <td class="center"><input type="number" name="admin_amount" id = "adminamount" class ="amountbox"/></td>
-                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="center"><input type="number" name="admin_amount" id = "adminamount" class ="amountbox form-control input-sm"/></td>
+                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
+                          <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#modal_it" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
@@ -78,8 +81,9 @@ ul{list-style: none;padding-left: 0px;}
                           <!-- <td>Petrus Dar</td> -->
                           <td>3</td>
                           <td class="center">Finance</td>
-                          <td class="center"><input type="number" name="finance_amount" id = "financeamount" class ="amountbox"/></td>
-                          <td class="center"><span class="label label-success" class ="amountbox">Active</span></td>
+                          <td class="center"><input type="number" name="finance_amount" id = "financeamount" class ="amountbox form-control input-sm"/></td>
+                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
+                          <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#modal_finance" data-placement="top" class="btn menu-icon vd_bg-green"> 
                               <i class="fa fa-eye"></i> 
@@ -92,8 +96,9 @@ ul{list-style: none;padding-left: 0px;}
                         </tr>
                       <td>4</td>
                           <td class="center">HR</td>
-                          <td class="center"><input type="number" name="hr_amount" id = "hramount" class ="amountbox"/></td>
-                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="center"><input type="number" name="hr_amount" id = "hramount" class ="amountbox form-control input-sm"/></td>
+                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
+                          <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#modal_hr" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
@@ -106,8 +111,9 @@ ul{list-style: none;padding-left: 0px;}
                         </tr>
                       <td>5</td>
                           <td class="center">Facility</td>
-                          <td class="center"><input type="number" name="facility_amount" id = "facilityamount" class ="amountbox"/></td>
-                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="center"><input type="number" name="facility_amount" id = "facilityamount" class ="amountbox form-control input-sm"/></td>
+                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
+                          <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#modal_facility" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
@@ -120,8 +126,9 @@ ul{list-style: none;padding-left: 0px;}
                         </tr>
                       <td>6</td>
                           <td class="center">Manager</td>
-                          <td class="center"><input type="number" id = "manager_amount" name="manager_amount" class ="amountbox"/></td>
-                          <td class="center"><span class="label label-success">Active</span></td>
+                          <td class="center"><input type="number" id = "manager_amount" name="manager_amount" class ="amountbox form-control input-sm"/></td>
+                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
+                          <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <a data-original-title="view" data-toggle="modal" data-target="#modal_manager" data-placement="top" class="btn menu-icon vd_bg-green">
                               <i class="fa fa-eye"></i>
