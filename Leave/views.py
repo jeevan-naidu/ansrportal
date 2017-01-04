@@ -131,12 +131,21 @@ class Dashboard(View):
         LeaveAdmin = False
         userCheck = False
         user_id = request.user.id
-        leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
+        # leave_summary = LeaveSummary.objects.filter(user=user_id,
+        #                                             year=date.today().year).values('leave_type__leave_type',
+        #                                                                            'applied',
+        #                                                                            'approved',
+        #                                                                            'balance')
+        leave_summary = LeaveSummary.objects.filter(user=user_id,
+                                                    year=2016).values('leave_type__leave_type',
+                                                                                   'applied',
+                                                                                   'approved',
+                                                                                   'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
 
-        if self.request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists():
+        if self.request.user.groups.filter(name=settings.LEAVE_ADMIN_GROUP).exists():
             LeaveAdmin = True
 
         if user_id:
@@ -193,7 +202,16 @@ class Dashboard(View):
             LeaveAdmin = True
         elif  int(user_id) == int(request.user.id):
             userCheck = True
-        leave_summary=LeaveSummary.objects.filter(user=user_id, year = date.today().year).values('leave_type__leave_type', 'applied', 'approved', 'balance')
+        # leave_summary = LeaveSummary.objects.filter(user=user_id,
+        #                                           year=date.today().year).values('leave_type__leave_type',
+        #                                                                          'applied',
+        #                                                                          'approved',
+        #                                                                          'balance')
+        leave_summary = LeaveSummary.objects.filter(user=user_id,
+                                                    year=2016).values('leave_type__leave_type',
+                                                                                   'applied',
+                                                                                   'approved',
+                                                                                   'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
@@ -1514,4 +1532,14 @@ def adminleavecancel(request):
                                           request.user)
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
+    return HttpResponse(json_data, content_type="application/json")
+
+
+def balance_based_on_year(request):
+    date = str(request.GET.get('from_date'))
+    user = request.GET.get('user')
+    leaveSelected = request.GET.get('leaveSelected')
+    leaveType = LeaveType.objects.get(leave_type=leaveSelected)
+    leaveSummary = LeaveSummary.objects.get(user=user, year=date[:4], leave_type=leaveType.id)
+    json_data = json.dumps(leaveSummary.balance)
     return HttpResponse(json_data, content_type="application/json")

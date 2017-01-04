@@ -231,6 +231,21 @@
 	    .on("input change", function (e) {
 				if(e.target.value){
 					$("#id_toDate_pickers").datepicker("update", e.target.value);
+                    var leave = document.getElementById("id_leave");
+                    var leaveSelected = leave.options[leave.selectedIndex].value;
+                    user = $("#id_name").val();
+					$.ajax({
+					    url: "/leave/balance_based_on_year",
+                        type: "get",
+                        data: {'from_date':e.target.value, 'user':user, 'leaveSelected': leaveSelected},
+                        success: function(data){
+					        $(".remaining-leave-indicator").text('Remaining Leaves :' + data);
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown){
+                        alert(XMLHttpRequest, textStatus, errorThrown);
+                        }
+
+                    });
 				}
 	});
 			  </script>

@@ -22,7 +22,9 @@ urlpatterns = [
                        url(r'^shortleavemanage/$',
                            login_required(ShortAttendanceManageView.as_view()),
                            name=u'Short_Attendance_Manage_View'),
-                       url(r'^addshortleave/$', login_required(ApplyShortLeaveView.as_view()), name=u'short_leave_list'),
+                       url(r'^addshortleave/$',
+                           login_required(ApplyShortLeaveView.as_view()),
+                           name=u'short_leave_list'),
                        url(r'^raisedispute/$', login_required(RaiseDispute.as_view()), name=u'raise_dispute'),
                        url(r'^AutocompleteUserSearch/$', login_required(AutocompleteUserSearch.as_view()),
                            name=u'AutocompleteUserSearch'),
@@ -30,5 +32,8 @@ urlpatterns = [
                        url(r'^monthwisedata/$', login_required(monthwisedata), name=u'month_wise_data'),
                        url(r'^weekwisedata/$', login_required(weekwisedata), name=u'week_wise_data'),
                        url(r'^admincancel/$', login_required(adminleavecancel), name=u'admin_leave_cancel'),
+                       url(r'^balance_based_on_year/$',
+                           login_required(balance_based_on_year),
+                           name=u'balanced_based_on_year')
 
                        ]
