@@ -4,7 +4,7 @@ from django.views.generic import View
 from django.contrib.auth.models import User
 from .models import ResignationInfo, EmployeeClearanceInfo
 from forms import UserExitForm
-from tasks import ExitEmailSendTask, PostAcceptedMail, LibraryClearanceMail, ITClearanceMail, AdminClearanceMail
+from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, ITClearanceMail, AdminClearanceMail
 from django.utils import timezone
 from employee.models import Employee
 from django.contrib import messages
@@ -96,12 +96,12 @@ class ResignationAcceptance(View):
         try:
             for k, v in hrconcent_tab.iteritems():
                 user_email = User.objects.get(id=k)
-                # PostAcceptedMail.delay(user_email.first_name, user_email.email, finaldate_tab[k])
                 try:
                     value = ResignationInfo.objects.get(User=k)
                     value.hr_accepted = hrconcent_tab[k]
                     value.hr_comment = hrcomment_tab[k]
                     value.save()
+                    PostAcceptedMailHR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
                 except Exception as programmingerror:
                     context['error'] = programmingerror
                     print programmingerror
@@ -115,18 +115,22 @@ class ResignationAcceptance(View):
         try:
             for k, v in managerconcent_tab.iteritems():
                 user_email = User.objects.get(id=k)
-                # PostAcceptedMail.delay(user_email.first_name, user_email.email, finaldate_tab[k])
                 try:
                     value = ResignationInfo.objects.get(User_id=k)
                     value.manager_accepted = managerconcent_tab[k]
                     value.manager_comment = managercomment_tab[k]
                     value.last_date_accepted = finaldate_tab[k]
                     value.save()
+                    last_date_final = Employee.objects.get(user_id=k)
+                    last_date_final.exit = finaldate_tab[k]
+                    last_date_final.save()
+                    PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
                 except Exception as programmingerror:
                     context['error'] = programmingerror
                     print programmingerror
                     context['form'] = form
                     return render(request, "exitacceptance.html", context)
+
         except Exception as programmingerror:
                 context['error'] = programmingerror
                 print programmingerror
