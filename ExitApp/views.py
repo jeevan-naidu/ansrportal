@@ -7,6 +7,7 @@ from forms import UserExitForm
 from tasks import ExitEmailSendTask, PostAcceptedMail, LibraryClearanceMail, ITClearanceMail, AdminClearanceMail
 from django.utils import timezone
 from employee.models import Employee
+from django.contrib import messages
 
 
 # Create your views here.
@@ -43,8 +44,8 @@ class ExitFormAdd(View):
                 value.save()
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
+                messages.error(request, 'You Have already applyed for your Resignation')
                 context['error'] = programmingerror
-                print programmingerror
                 context["form"] = UserExitForm()
                 return render(request, "userexit.html", context)
 
@@ -66,12 +67,12 @@ class ResignationAcceptance(View):
         managerconcent_tab = {}
         managercomment_tab = {}
         finaldate_tab = {}
+        # import ipdb; ipdb.set_trace()
         hrconcent = {k: v for k, v in self.request.POST.items() if k.startswith('hraccepted_')}
         hrcomment = {k: v for k, v in self.request.POST.items() if k.startswith('hrcomment_')}
         managerconcent = {k: v for k, v in self.request.POST.items() if k.startswith('manageraccepted_')}
         managercomment = {k: v for k, v in self.request.POST.items() if k.startswith('managercomment_')}
         finaldate = {k: v for k, v in self.request.POST.items() if k.startswith('finaldate_')}
-
         for k, v in hrconcent.iteritems():
             tab_id = k.split('_')
             hrconcent_tab[tab_id[1]] = v
@@ -95,14 +96,37 @@ class ResignationAcceptance(View):
         try:
             for k, v in hrconcent_tab.iteritems():
                 user_email = User.objects.get(id=k)
-                PostAcceptedMail.delay(user_email.first_name, user_email.email, finaldate_tab[k])
-                value = ResignationInfo.objects.get(User=k)
-                value.hr_accepted = hrconcent_tab[k]
-                value.manager_accepted = managerconcent_tab[k]
-                value.manager_comment = managercomment_tab[k]
-                value.hr_comment = hrcomment_tab[k]
-                value.last_date_accepted = '2016-12-18 18:30:00.000000'
-                value.save()
+                # PostAcceptedMail.delay(user_email.first_name, user_email.email, finaldate_tab[k])
+                try:
+                    value = ResignationInfo.objects.get(User=k)
+                    value.hr_accepted = hrconcent_tab[k]
+                    value.hr_comment = hrcomment_tab[k]
+                    value.save()
+                except Exception as programmingerror:
+                    context['error'] = programmingerror
+                    print programmingerror
+                    context['form'] = form
+                    return render(request, "exitacceptance.html", context)
+        except Exception as programmingerror:
+                context['error'] = programmingerror
+                print programmingerror
+                context['form'] = form
+                return render(request, "exitacceptance.html", context)
+        try:
+            for k, v in managerconcent_tab.iteritems():
+                user_email = User.objects.get(id=k)
+                # PostAcceptedMail.delay(user_email.first_name, user_email.email, finaldate_tab[k])
+                try:
+                    value = ResignationInfo.objects.get(User_id=k)
+                    value.manager_accepted = managerconcent_tab[k]
+                    value.manager_comment = managercomment_tab[k]
+                    value.last_date_accepted = finaldate_tab[k]
+                    value.save()
+                except Exception as programmingerror:
+                    context['error'] = programmingerror
+                    print programmingerror
+                    context['form'] = form
+                    return render(request, "exitacceptance.html", context)
         except Exception as programmingerror:
                 context['error'] = programmingerror
                 print programmingerror
