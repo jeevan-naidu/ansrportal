@@ -40,13 +40,13 @@ ul{list-style: none;padding-left: 0px;}
                {% for c in resigneedata %}
                    <tr>
                        <td>
-                        <input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
+                        <input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
                         <textarea id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
                        </td>
                        <td>
-                        <input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
+                        <input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
                         <textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea>
