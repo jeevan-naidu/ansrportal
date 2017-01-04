@@ -26,17 +26,17 @@ class ExitFormAdd(View):
     def post(self, request):
         context = {"form": ""}
         form = UserExitForm(request.POST)
-
         if form.is_valid():
             try:
+                userid = request.user.id
+                user_email = User.objects.get(id=userid)
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
                 start_date = form.cleaned_data['start_date']
-                ExitEmailSendTask.delay(request.user, last_date, start_date)
+                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email)
                 reason_dropdown = form.cleaned_data['reason_dropdown']
                 comment = form.cleaned_data['comment']
                 time = timezone.now()
-                userid = request.user.id
                 ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
                 value = Employee.objects.get(user_id=userid)
                 value.resignation = start_date
@@ -44,7 +44,7 @@ class ExitFormAdd(View):
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
                 context['error'] = programmingerror
-                print context['error']
+                print programmingerror
                 context["form"] = UserExitForm()
                 return render(request, "userexit.html", context)
 
