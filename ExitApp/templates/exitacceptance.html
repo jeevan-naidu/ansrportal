@@ -29,17 +29,17 @@ ul{list-style: none;padding-left: 0px;}
                     <form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         <table class="table table-condensed table-striped myansr-table">
                           <thead>
+                            <th class="text-center">Employee</th>
                             <th class="text-center mw-ra">Manager</th>
                             <th class="text-center">Manager Feedback</th>
                             <th class="text-center mw-ra">HR</th>
                             <th class="text-center">HR Feedback</th>
-                            <th class="text-center">Employee</th>
-                            <th class="text-center">Last Date Opted</th>
-                            <th class="text-center">Last Date By Manager</th>
-                          <th class="text-center">Reason of Resigning</th>
+                            <th class="text-center">Last Date</th>
+                            <th class="text-center">Reason</th>
                           </thead>
                {% for c in resigneedata %}
                    <tr>
+                       <td>{{c}}</td>
                        <td>
                         <input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
                        </td>
@@ -52,8 +52,6 @@ ul{list-style: none;padding-left: 0px;}
                        <td>
                         <textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea>
                        </td>
-                       <td>{{c}}</td>
-                       <td>{{c.last_date |date:"M d, Y"}}</td>
                        <td> 
                          <div class='input-group date datetimepicker' id='datetimepicker'>
                          <input name="finaldate_{{c.User_id}}" type='text' class="form-control datepicker input-sm" value="2017-01-05"  />
