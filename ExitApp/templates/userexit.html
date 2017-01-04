@@ -36,22 +36,17 @@ ul{list-style: none;padding-left: 0px;}
 .select2-container .select2-selection--single{height: 30px;}
 
 </style>
-                    {{form.error}}
-                    {% if form.error %}
-    {% for field in form %}
-        {% for error in field.error %}
-            <div class="alert alert-danger">
-                <strong>{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
-        </div>
-    {% endfor %}
-{% endif %}
                     <div class="panel-body">
+                        {% if messages %}
+
+                     {% for message in messages %}
+
+                 <div class="alert alert-danger">
+                   <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
+                   <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong></div>
+
+                     {% endfor %}
+                   {% endif %}
                     <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
                       <div class="form-group">
