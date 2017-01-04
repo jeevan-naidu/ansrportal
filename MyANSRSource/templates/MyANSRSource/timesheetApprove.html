@@ -58,18 +58,7 @@ Approve Timesheet
 
     <div class="panel-body"><form method="post" action=""> {% csrf_token %}
            <div class="form-inline approve-reject pull-right">
-                                       <div class="checkbox checkbox-success">
-                                          <input id="approve_all" type="checkbox" name="approve_all" class="approve_all">
-                                          <label for="approve_all" class="lh-16">
-                                             Approve All
-                                          </label>
-                                      </div>&nbsp;&nbsp;&nbsp;
-                                      <div class="checkbox checkbox-danger">
-                                          <input id="reject_all" type="checkbox" name="reject_all" class="reject_all" >
-                                          <label for="reject_all" class="lh-16">
-                                              Reject All
-                                          </label>
-                                      </div>
+
                 <div class="checkbox checkbox-success radio-mod btn-xs">
 <input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
 
@@ -350,22 +339,7 @@ var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projec
 
                   });
             });
-          jQuery('.approve_all , .reject_all').click(function(e){
-            if(this.className == 'approve_all') {
-                $('.reject_all,.reject ').prop('checked', false);
-            }
-            else if (this.className == 'reject_all') {
-                $('.approve_all,.approve ').prop('checked', false);
-            }
-            var class_name = this.className.split('_');
-            if($('#'+this.id).prop('checked')) {
-                $('.'+class_name[0]).prop('checked', true);
-            }
-            else {
-                $('.'+class_name[0]).prop('checked', false);
-            }
 
-        });
         jQuery('.approve , .reject ').click(function(e){
             var class_name = this.value;
             if(this.className == 'approve') {
@@ -375,14 +349,12 @@ var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projec
             }
             else if (this.className == 'reject') {
                 $('#approve_'+class_name).prop('checked', false);
-                $('#cancel_'+class_name).prop('checked', false);
-                $('.approve_all').prop('checked', false);
+
             }
             else if (this.className == 'cancel') {
                 $('#approve_'+class_name).prop('checked', false);
                 $('#reject_'+class_name).prop('checked', false);
-                $('.approve_all').prop('checked', false);
-                $('.reject_all').prop('checked', false);
+
             }
 
 
