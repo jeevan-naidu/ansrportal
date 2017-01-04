@@ -17,7 +17,10 @@
 }
 .myansr-table thead{background: #464A4C;color: #fff}
 .myansr-table thead th{padding: 10px 15px !important;}
-.myansr-table td{vertical-align: middle !important;}
+.myansr-table td{vertical-align: middle !important;padding: 8px 15px !important;}
+.table-striped.myansr-table>tbody>tr:nth-of-type(even) {
+    background-color: #fff;
+}
 
 
 
@@ -295,4 +298,3 @@ span.mandatory-field{color: red}
 #exit-form input{max-width: 300px;}
 
 #acceptanceform textarea{max-height: 30px;}
-#acceptanceform input[type="checkbox"]{margin-left: 35px}
