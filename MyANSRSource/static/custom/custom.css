@@ -16,7 +16,7 @@
     border: 1px solid #f9f9f9;
 }
 .myansr-table thead{background: #464A4C;color: #fff}
-.myansr-table thead th{padding: 10px 15px !important;}
+.myansr-table thead th{padding: 8px 15px !important;}
 .myansr-table td{vertical-align: middle !important;padding: 8px 15px !important;}
 .table-striped.myansr-table>tbody>tr:nth-of-type(even) {
     background-color: #fff;
