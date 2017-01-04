@@ -28,7 +28,7 @@ ul{list-style: none;padding-left: 0px;}
            <div class="panel-body">
                     <form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         <table class="table table-condensed table-striped myansr-table">
-                      		<thead>
+                          <thead>
                             <th class="text-center">Manager</th>
                             <th class="text-center">HR</th>
                             <th class="text-center">Employee</th>
@@ -62,8 +62,7 @@ ul{list-style: none;padding-left: 0px;}
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
                     <script type="text/javascript">
             $(function () {
-                $('.datetimepicker').datetimepicker();
-                format: 'yyyy-mm-dd'
+                $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
             });
         </script>
     </div>
