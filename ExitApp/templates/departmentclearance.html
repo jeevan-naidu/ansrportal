@@ -15,9 +15,9 @@
             <div class="row" id="form-basic">
               <div class="col-md-12">
                 <div class="panel widget">
-                  <div class="panel-heading vd_bg-grey">
+                  <!-- <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
-                  </div>
+                  </div> -->
 <style>
     .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
@@ -28,7 +28,7 @@ ul{list-style: none;padding-left: 0px;}
            <div class="panel-body">
                     <form class="form-horizontal" name="dept_clearance" role="form" method="post"  data-toggle="validator">
                         {% csrf_token %}
-<table class="table table-bordered">
+<table class="table table-condensed table-bordered myansr-table">
                       <thead>
                         <tr>
                           <th>Username</th>
@@ -280,7 +280,7 @@ ul{list-style: none;padding-left: 0px;}
     {% endif %}
     {% endfor %}
                     </table>
-                        <input type ="submit" value="Submit" class="exitbutton btn btn-primary">
+                        <input type ="submit" value="Submit" class="exitbutton btn btn-primary pull-right">
 </form>
             </div>
                 </div>

@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
-{% block siteTitle %}Candidate Acceptance Report{% endblock %}
-{% block pageTitle %}Resignation Aceeptance Profile{% endblock %}
+{% block siteTitle %}Candidate Resignation Acceptance{% endblock %}
+{% block pageTitle %}Resignation Acceptance{% endblock %}
 {% block content  %}
      <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
@@ -29,17 +29,28 @@ ul{list-style: none;padding-left: 0px;}
                     <form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         <table class="table table-condensed table-striped myansr-table">
                           <thead>
-                            <th class="text-center">Manager</th>
-                            <th class="text-center">HR</th>
+                            <th class="text-center mw-ra">Manager</th>
+                            <th class="text-center">Manager Feedback</th>
+                            <th class="text-center mw-ra">HR</th>
+                            <th class="text-center">HR Feedback</th>
                             <th class="text-center">Employee</th>
                             <th class="text-center">Last Date Opted</th>
                             <th class="text-center">Last Date By Manager</th>
-                            <th class="text-center">Manager Feedback</th>
-                            <th class="text-center">HR Feedback</th>
                           </thead>
                {% for c in resigneedata %}
-                   <tr><td><input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}></td>
-                       <td><input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}></td>
+                   <tr>
+                       <td>
+                        <input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
+                       </td>
+                       <td>
+                        <textarea id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
+                       </td>
+                       <td>
+                        <input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
+                       </td>
+                       <td>
+                        <textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea>
+                       </td>
                        <td>{{c}}</td>
                        <td>{{c.last_date |date:"M d, Y"}}</td>
                        <td> 
@@ -48,8 +59,6 @@ ul{list-style: none;padding-left: 0px;}
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                          </div>
                        </td>
-                       <td><textarea id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea></td>
-                       <td><textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea></td>
                    </tr>
                {% endfor %}
                             {% csrf_token %}

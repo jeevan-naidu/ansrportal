@@ -2,8 +2,8 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
-{% block siteTitle %}Candidate Exit Report{% endblock %}
-{% block pageTitle %}Candidate Exit Profile{% endblock %}
+{% block siteTitle %}Candidate Exit Form{% endblock %}
+{% block pageTitle %}Candidate Exit Form{% endblock %}
 {% block content  %}
      <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
@@ -73,7 +73,7 @@ ul{list-style: none;padding-left: 0px;}
                       </div>
 
                       <div class="form-group">
-                        <label class="col-sm-4 control-label" >Comments<span class="mandatory-field"> *</span></label>
+                        <label class="col-sm-4 control-label" >Comments</label>
                         <div class="col-sm-4 controls">
                             {{ form.comment }}
                           <div class="help-block with-errors"></div> 

@@ -3,7 +3,7 @@
 {% load fontawesome %}
 {% load static from staticfiles %}
 {% block siteTitle %}Candidate Acceptance Report{% endblock %}
-{% block pageTitle %}Resignation Aceeptance Profile{% endblock %}
+{% block pageTitle %}Resignation Acceptance Profile{% endblock %}
 {% block content  %}
      <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
@@ -32,10 +32,10 @@ ul{list-style: none;padding-left: 0px;}
 
                         <table class="table table-bordered">
 		<thead>
-			<tr><th class="text-center">Sr.No</th>
-                <th class="text-center">Name</th>
-                <th class="text-center">Last Date</th>
-                <th class="text-center">Action</th>
+			<tr><th>Sr.No</th>
+                <th>Name</th>
+                <th>Last Date</th>
+                <th>Action</th>
 		</tr></thead>
                {% for c in approved_candidate %}
                             {% if c.hr_accepted == True and c.manager_accepted == True %}
