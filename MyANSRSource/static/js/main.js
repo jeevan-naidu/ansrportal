@@ -1195,24 +1195,24 @@ app.getSum = function($elements, $outputElement) {
 
                     var $curDayBtn = $(this),
                         $curRow = $curDayBtn.closest('tr'),
-                        $curRowQuestions = $curRow.find('.b-questions'),
+//                        $curRowQuestions = $curRow.find('.b-questions'),
                         $curRowProjectValue = $curRow.find('.project_value'),
                         $curRowHours = $curRow.find('.b-hours'),
-                        $totalQuestions = $curRow.find('.t-questions'),
+//                        $totalQuestions = $curRow.find('.t-questions'),
                         $totalHours = $curRow.find('.t-hours'),
-                        $totalQuestionsHidden = $curRow.find('.t-questions-hidden'),
+//                        $totalQuestionsHidden = $curRow.find('.t-questions-hidden'),
                         $totalHoursHidden = $curRow.find('.t-hours-hidden'),
                         curRowQuestionsLen = $curRowHours.length,
-                        $curQuestionsView = $curDayBtn.find('.b-questions'),
+//                        $curQuestionsView = $curDayBtn.find('.b-questions'),
                         $curHoursView = $curDayBtn.find('.b-hours'),
-                        $curQuestionsHidden = $curDayBtn.find('.b-questions-hidden'),
+//                        $curQuestionsHidden = $curDayBtn.find('.b-questions-hidden'),
                         $curHoursHidden = $curDayBtn.find('.b-hours-hidden'),
-                        $curQuestionsInput = $curDayBtn.next().find('.question-input'),
+//                        $curQuestionsInput = $curDayBtn.next().find('.question-input'),
                         $curHoursInput = $curDayBtn.next().find('.hours-input'),
                         $curProjectUnit = $curDayBtn.find('.project-unit'),
                         $curProjectPopupUnit = $curDayBtn.next().find('.project-type-popup'),
                         $curProjectPopupNorm = $curDayBtn.next().find('.norm-input'),
-                        curQuestionsViewText = $curQuestionsView.text(),
+//                        curQuestionsViewText = $curQuestionsView.text(),
                         curHoursViewText = $curHoursView.text(),
                         curProjectUnit = $curProjectUnit.text(),
                         $curSelectProject = $curRow.find('.billable-select-project'),
@@ -1220,7 +1220,7 @@ app.getSum = function($elements, $outputElement) {
                         selectedProject;
 
                     var viewToInput = function() {
-                        $($curQuestionsInput).val(curQuestionsViewText);
+//                        $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
                     };
 
@@ -1344,11 +1344,11 @@ console.log("oiii");
                         }
 //                        console.log("curRowQuestionsLen"+curRowQuestionsLen)
                         for (i = 0; i < curRowQuestionsLen; i += 1) {
-                            curQuestions = Number($($curRowQuestions[i]).text());
+//                            curQuestions = Number($($curRowQuestions[i]).text());
                             curHours = Number($($curRowHours[i]).text());
 //                            console.log("curHours"+curHours);
 //                            console.log("val"+$($curRowProjectValue[i]).val())
-                            questionsTemp += curQuestions;
+//                            questionsTemp += curQuestions;
                             hoursTemp += curHours;
 
                             if (curTaskType === 'I') {
@@ -1365,10 +1365,10 @@ console.log("oiii");
 //                            else
 //                                var zero_value +=obj.value;
 //                        });
-                        $totalQuestions.text(questionsTemp.toFixed(2));
+//                        $totalQuestions.text(questionsTemp.toFixed(2));
                         $totalHours.text(hoursTemp.toFixed(2));
 
-                        $totalQuestionsHidden.val(questionsTemp.toFixed(2));
+//                        $totalQuestionsHidden.val(questionsTemp.toFixed(2));
                         $totalHoursHidden.val(hoursTemp.toFixed(2));
 
                         // Idle and billable hours
@@ -1440,12 +1440,12 @@ console.log("oiii");
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
 //                        console.log("tsInput"+tsInput);
                         if (tsInput) {
-                            $curQuestionsView.text($curQuestionsInput.val());
+//                            $curQuestionsView.text($curQuestionsInput.val());
 //                            console.log("$curHoursView.text"+ $curHoursView.text());
 //                            console.log("$curHoursHidden.val"+ $curHoursHidden.val());
                             $curHoursView.text($curHoursInput.val());
 
-                            $curQuestionsHidden.val($curQuestionsInput.val());
+//                            $curQuestionsHidden.val($curQuestionsInput.val());
                             $curHoursHidden.val($curHoursInput.val());
 //                            console.log("after $curHoursView.text"+ $curHoursView.text());
 //                            console.log("after  $curHoursHidden.val"+ $curHoursHidden.val());
@@ -1453,10 +1453,10 @@ console.log("oiii");
                         }
                     };
 
-                    $curQuestionsInput.on({
-                        keyup: inputToView,
-                        click: inputToView
-                    }, calculateTotal);
+//                    $curQuestionsInput.on({
+//                        keyup: inputToView,
+//                        click: inputToView
+//                    }, calculateTotal);
 
                     $curHoursInput.on({
                         keyup: inputToView,
