@@ -1202,7 +1202,7 @@ app.getSum = function($elements, $outputElement) {
                         $totalHours = $curRow.find('.t-hours'),
                         $totalQuestionsHidden = $curRow.find('.t-questions-hidden'),
                         $totalHoursHidden = $curRow.find('.t-hours-hidden'),
-                        curRowQuestionsLen = $curRowQuestions.length,
+                        curRowQuestionsLen = $curRowHours.length,
                         $curQuestionsView = $curDayBtn.find('.b-questions'),
                         $curHoursView = $curDayBtn.find('.b-hours'),
                         $curQuestionsHidden = $curDayBtn.find('.b-questions-hidden'),
@@ -1256,6 +1256,7 @@ app.getSum = function($elements, $outputElement) {
 //                    console.log(this.class)
 //                        console.log("Saving value " + $(this).val());
                         current_hour  = $(this).data('val', $(this).val());
+                        console.log("current_hour"+current_hour.text());
                     });
 //                     var  current_project_value  = 0
 
@@ -1322,7 +1323,7 @@ console.log("oiii");
                     });
 
                     var calculateTotal = function() {
-//                        console.log("id"+$curRowProjectValue.get(0).value)
+//                        console.log("calculateTotal")
                         var questionsTemp = 0,
                             hoursTemp = 0,
                             curQuestions,
@@ -1341,10 +1342,11 @@ console.log("oiii");
                         } else {
                             $curRow.removeClass('idle-row').addClass('billable-row');
                         }
-
+//                        console.log("curRowQuestionsLen"+curRowQuestionsLen)
                         for (i = 0; i < curRowQuestionsLen; i += 1) {
                             curQuestions = Number($($curRowQuestions[i]).text());
                             curHours = Number($($curRowHours[i]).text());
+//                            console.log("curHours"+curHours);
 //                            console.log("val"+$($curRowProjectValue[i]).val())
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
@@ -1430,17 +1432,23 @@ console.log("oiii");
 //
 //                    }
                     var inputToView = function() {
+//                        console.log("inputToView function ");
                         var curInput = $curHoursInput.val();
+//                        console.log("curInput"+curInput);
 
 
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
+//                        console.log("tsInput"+tsInput);
                         if (tsInput) {
                             $curQuestionsView.text($curQuestionsInput.val());
+//                            console.log("$curHoursView.text"+ $curHoursView.text());
+//                            console.log("$curHoursHidden.val"+ $curHoursHidden.val());
                             $curHoursView.text($curHoursInput.val());
 
                             $curQuestionsHidden.val($curQuestionsInput.val());
                             $curHoursHidden.val($curHoursInput.val());
-
+//                            console.log("after $curHoursView.text"+ $curHoursView.text());
+//                            console.log("after  $curHoursHidden.val"+ $curHoursHidden.val());
                             calculateTotal();//update_hours();
                         }
                     };
@@ -1869,7 +1877,7 @@ $.ajaxSetup({
 // }
   $("[name$='project']").on('focus', function(){
 //                    id_form-1-project
-                        console.log("focus");
+//                        console.log("focus");
                         var tmp_id = this.id.split('-');
 //                        console.log(tmp_id);
                         var tmp_project_value_id = tmp_id[0]+'-'+tmp_id[1]+'-project_value';
@@ -1878,6 +1886,6 @@ $.ajaxSetup({
 //                        console.log("current_project_value " + current_project_value);
                         $('#'+tmp_project_value_id).data('prev_value', $('#'+tmp_project_value_id).val());
 //                         console.log("curr_value--focus " + $('#'+tmp_project_value_id).val());
-                         console.log("prev_value--focus " + $('#'+tmp_project_value_id).data('prev_value'));
+//                         console.log("prev_value--focus " + $('#'+tmp_project_value_id).data('prev_value'));
                     });
 
