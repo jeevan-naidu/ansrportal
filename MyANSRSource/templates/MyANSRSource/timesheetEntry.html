@@ -107,6 +107,7 @@
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field.label }}</td>
 				{% endif %}
+
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
@@ -135,9 +136,7 @@
 				{% if 'pt' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
-            {% if 'project_value' in field.label %}
-					<td style="display: none">{{ field }}</td>
-				{% endif %}
+
 			{% endfor %}
 			{% for data in form.visible_fields %}
 			{% spaceless %}
@@ -292,6 +291,10 @@
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
 					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
+
+
+
+
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label or 'approved' in data.label %}
 							{% if holdData.value %}
@@ -305,6 +308,13 @@
                 		{% endif %}
             		{% endspaceless %}
 			{% endfor %}
+
+
+               {% for field in form.hidden_fields %}
+                            {% if 'project_value' in field.label %}
+                                <td style="display: none">{{ field }}</td>
+                            {% endif %}
+                        {% endfor %}
 		</tr>
 		{% if forloop.last %}
 		</tbody>
@@ -464,7 +474,7 @@
                 </tr>
                 <tr>
                     <td>Leave</td>
-		    <td class="total-idle-hours text-right">{{ idleTotal }}</td>
+		    <td class="total-leave-hours text-right">{{ leave_hours }}</td>
                 </tr>
                 <tr>
                     <td>Non-Billable</td>
