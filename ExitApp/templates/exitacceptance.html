@@ -36,6 +36,7 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="text-center">Employee</th>
                             <th class="text-center">Last Date Opted</th>
                             <th class="text-center">Last Date By Manager</th>
+                          <th class="text-center">Reason of Resigning</th>
                           </thead>
                {% for c in resigneedata %}
                    <tr>
@@ -59,6 +60,7 @@ ul{list-style: none;padding-left: 0px;}
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                          </div>
                        </td>
+                       <td>{{c.emp_reason}}</td>
                    </tr>
                {% endfor %}
                             {% csrf_token %}

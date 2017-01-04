@@ -41,7 +41,7 @@ ul{list-style: none;padding-left: 0px;}
                             {% if c.hr_accepted == True and c.manager_accepted == True %}
                     <tr><td>{{c.id}}</td>
                        <td>{{c}}</td>
-                       <td>{{c.last_date | date:"M d, Y"}}</td>
+                       <td>{{c.last_date_accepted | date:"M d, Y"}}</td>
                         <td><a href="/exitapp/clearance/?id={{c.id}}"><button type="button" class="btn btn-primary btn-xs showlist" value ="{{c.id}}">Accept</button></a></td>
                    </tr>
                             {% endif %}
