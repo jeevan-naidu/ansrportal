@@ -31,29 +31,22 @@ ul{list-style: none;padding-left: 0px;}
 <table class="table table-condensed table-bordered myansr-table">
                       <thead>
                         <tr>
-                          <!-- <th>Username</th> -->
-                          <th>Sr.No</th>
+                          <th>#</th>
                           <th>Department</th>
-                          <th>Amount</th>
-                          <!-- <th>Status</th> -->
+                          <th class="mxw-150">Amount</th>
                           <th>Feedback</th>
-                          <th>Options</th>
+                          <th>Accept</th>
                         </tr>
                       </thead>
     {% for candidate in approved_candidate %}
                       {% if candidate.hr_accepted == True and candidate.manager_accepted == True %}
                       <tbody>
                       <tr>
-                          <!-- <td rowspan="6" style="vertical-align: middle;">{{candidate}}</td> -->
                           <td>1</td>
                           <td class="center">Library</td>
                           <td class="center"><input type="number" name="lib_amount" id = "libamount" class="amountbox form-control input-sm"/></td>
-                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
                           <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#modal_library" data-placement="top" class="btn menu-icon vd_bg-green"> 
-                              <i class="fa fa-eye"></i> 
-                            </a>
                             <div class="vd_checkbox checkbox-success pull-right">
                               <input type="checkbox"  value=2 name="library_approval" id="checkbox-1">
                               <label for="checkbox-1"></label>
@@ -61,16 +54,11 @@ ul{list-style: none;padding-left: 0px;}
                           </td>
                         </tr>
                         <tr>
-                          <!-- <td>Petrus Dar</td> -->
                           <td>2</td>
                           <td class="center">IT Admin</td>
                           <td class="center"><input type="number" name="admin_amount" id = "adminamount" class ="amountbox form-control input-sm"/></td>
-                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
                           <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#modal_it" data-placement="top" class="btn menu-icon vd_bg-green"> 
-                              <i class="fa fa-eye"></i> 
-                            </a>
                             <div class="vd_checkbox checkbox-success pull-right">
                               <input type="checkbox"  value=2 name="admin_approval" id="checkbox-2">
                               <label for="checkbox-2"></label>
@@ -78,16 +66,11 @@ ul{list-style: none;padding-left: 0px;}
                           </td>
                         </tr>
                         <tr>
-                          <!-- <td>Petrus Dar</td> -->
                           <td>3</td>
                           <td class="center">Finance</td>
                           <td class="center"><input type="number" name="finance_amount" id = "financeamount" class ="amountbox form-control input-sm"/></td>
-                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
                           <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#modal_finance" data-placement="top" class="btn menu-icon vd_bg-green"> 
-                              <i class="fa fa-eye"></i> 
-                            </a>
                             <div class="vd_checkbox checkbox-success pull-right">
                               <input type="checkbox"  value=2 name="finance_approval" id="checkbox-3">
                               <label for="checkbox-3"></label>
@@ -97,12 +80,8 @@ ul{list-style: none;padding-left: 0px;}
                       <td>4</td>
                           <td class="center">HR</td>
                           <td class="center"><input type="number" name="hr_amount" id = "hramount" class ="amountbox form-control input-sm"/></td>
-                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
                           <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#modal_hr" data-placement="top" class="btn menu-icon vd_bg-green">
-                              <i class="fa fa-eye"></i>
-                            </a>
                             <div class="vd_checkbox checkbox-success pull-right">
                               <input type="checkbox"  value=2 name="hr_approval" id="checkbox-4">
                               <label for="checkbox-4"></label>
@@ -112,12 +91,8 @@ ul{list-style: none;padding-left: 0px;}
                       <td>5</td>
                           <td class="center">Facility</td>
                           <td class="center"><input type="number" name="facility_amount" id = "facilityamount" class ="amountbox form-control input-sm"/></td>
-                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
                           <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#modal_facility" data-placement="top" class="btn menu-icon vd_bg-green">
-                              <i class="fa fa-eye"></i>
-                            </a>
                             <div class="vd_checkbox checkbox-success pull-right">
                               <input type="checkbox"  value=2 name="facility_approval" id="checkbox-5">
                               <label for="checkbox-5"></label>
@@ -127,12 +102,8 @@ ul{list-style: none;padding-left: 0px;}
                       <td>6</td>
                           <td class="center">Manager</td>
                           <td class="center"><input type="number" id = "manager_amount" name="manager_amount" class ="amountbox form-control input-sm"/></td>
-                          <!-- <td class="center"><span class="label label-success">Active</span></td> -->
                           <td><input type="text" name="" class="form-control input-sm"></td>
                           <td class="menu-action">
-                            <a data-original-title="view" data-toggle="modal" data-target="#modal_manager" data-placement="top" class="btn menu-icon vd_bg-green">
-                              <i class="fa fa-eye"></i>
-                            </a>
                             <div class="vd_checkbox checkbox-success pull-right">
                               <input type="checkbox"  value=2 name="manager_approval" id="checkbox-6">
                               <label for="checkbox-6"></label>
@@ -145,145 +116,6 @@ ul{list-style: none;padding-left: 0px;}
 
 <!-- Set of Modals -->
 
-
-    <div class="modal fade" id="modal_library" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback</label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="library_feedback"></textarea>
-                              </div>
-
-                            </div>
-                        </div>
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
-
-
-    <div class="modal fade" id="modal_it" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback</label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="admin_feedback"></textarea>
-                              </div>
-
-                            </div>
-                        </div>
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
-
-
-    <div class="modal fade" id="modal_finance" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback</label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="finance_feedback"></textarea>
-                              </div>
-                            </div>
-                        </div>
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
-
-
-    <div class="modal fade" id="modal_hr" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback</label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="hr_feedback"></textarea>
-                              </div>
-
-                            </div>
-                        </div>
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
-
-
-    <div class="modal fade" id="modal_facility" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback</label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" placeholder="Enter Your Feedback" name="facility_feedback"></textarea>
-                              </div>
-
-                            </div>
-
-                        </div>
-
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
-
-
-    <div class="modal fade" id="modal_manager" tabindex="-1" role="dialog" aria-labelledby="modal_libraryLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="modal_libraryLabel">Enter Your Feedback</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback</label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" type="text" name="manager_feedback"></textarea>
-                              </div>
-
-                            </div>
-                        </div>
-
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
     {% endif %}
     {% endfor %}
                     </table>
