@@ -58,25 +58,22 @@ Approve Timesheet
 
     <div class="panel-body"><form method="post" action=""> {% csrf_token %}
            <div class="form-inline approve-reject pull-right">
-
                 <div class="checkbox checkbox-success radio-mod btn-xs">
-<input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
-
-        Send Reminder Mail
-        </label>
-    </div>
-                                  </div>
+                  <input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
+                  <label for="reminder_mail"  class="ansr-orange-mod noselect">Send Reminder Mail</label>
+                </div>
+            </div>
 
 
 <table class="table table-striped" id="timesheet-approve-table">
   <thead>
     <tr>
-        <th>Employee Id</th>
+      <th>Employee Id</th>
       <th>Name</th>
-      <th>Billable (Hrs) $ >0</th>
-        <th>Billable (Hrs) $ =0</th>
-      <th>Non-Billable (Hrs)</th>
-      <th>Leave (Hrs)</th>
+      <th>Billable </th>
+      <th>Billable (0$)</th>
+      <th>Non-Billable </th>
+      <th>Leave</th>
       <th class="text-center">Options</th>
       <th> Feedback</th>
     </tr>
@@ -84,14 +81,15 @@ Approve Timesheet
   <tbody>
 
   {% for team_members,values in ts_data_list_approved_false.iteritems %}
-    <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
+    <tr class="odd gradeX"> 
+      <td>{{team_members.employee_assigned_id}} </td>
       <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}}  {{team_members.user.last_name}}</a></td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}}  </td>
-        <td>{{values.non_billable_total}}</td>
+      <td>{{values.non_billable_total}}</td>
       <td> {{values.leave_hours}} </td>
 
-<div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                  <div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
@@ -122,7 +120,7 @@ Approve Timesheet
 
 
 
-<td class="timesheet-approve-options text-center">
+<td class="timesheet-approve-options text-center radio-padding-mod">
 
   <div class="checkbox checkbox-success radio-mod btn-xs">
         <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
@@ -153,14 +151,15 @@ Approve Timesheet
 {%endfor %}
 
    {% for team_members,values in ts_data_list_approved_true.iteritems %}
-    <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
+    <tr class="odd gradeX"> 
+      <td>{{team_members.employee_assigned_id}} </td>
       <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}} </td>
-        <td>{{values.non_billable_total}}</td>
+      <td>{{values.non_billable_total}}</td>
       <td> {{values.leave_hours}} </td>
 
-<div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                  <div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
@@ -168,16 +167,12 @@ Approve Timesheet
                           <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback </label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
-                              </div>
-
+                          <div class="form-group">
+                            <label class="col-sm-4 control-label">Feedback </label>
+                            <div class="col-sm-7 controls">
+                              <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
                             </div>
-
-
-
+                          </div>
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
@@ -213,7 +208,7 @@ Approve Timesheet
   </tbody>
 </table>
 {% if ts_data_list %}
-<input type="submit" name="submit" value="Submit">
+<input type="submit" name="submit" class="btn btn-primary btn-sm pull-right" value="Submit">
     <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
     <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
 {% endif %}
