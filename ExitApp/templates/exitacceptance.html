@@ -26,6 +26,7 @@
 }
 ul{list-style: none;padding-left: 0px;}
     </style>
+
            <div class="panel-body">
                     <form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                         <table class="table table-condensed table-striped myansr-table">
@@ -38,7 +39,7 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Last Date</th>
                             <th class="">Reason</th>
                           </thead>
-               {% for c in resigneedata %}
+                   {% for c in resigneedata %}
                    <tr>
                        <td>{{c}}</td>
                        <td>
@@ -55,7 +56,7 @@ ul{list-style: none;padding-left: 0px;}
                        </td>
                        <td> 
                          <div class='input-group date datetimepicker' id='datetimepicker'>
-                         <input name="finaldate_{{c.User_id}}" type='text' class="form-control datepicker input-sm" value='{{c.last_date |date:"o-d-m"}}'  />
+                         <input name="finaldate_{{c.User_id}}" type='text' class="form-control datepicker input-sm" value='{{c.last_date |date:"o-m-d"}}'  />
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                          </div>
                        </td>

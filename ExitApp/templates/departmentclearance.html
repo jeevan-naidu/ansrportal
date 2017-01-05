@@ -41,10 +41,8 @@ ul{list-style: none;padding-left: 0px;}
                       </thead>
     {% for candidate in approved_candidate %}
                       {% if candidate.hr_accepted == True and candidate.manager_accepted == True %}
-
                       <tbody>
                       <tr>
-
                           <td>1</td>
                           <td class="center">Library</td>
                           <td class="center"><input type="number" {% for data in  clearance_data%} {% if data.department == "LIB" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="lib_amount" id = "libamount" class="amountbox form-control input-sm"/></td>

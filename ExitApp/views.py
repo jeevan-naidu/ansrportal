@@ -31,16 +31,19 @@ class ExitFormAdd(View):
             try:
                 userid = request.user.id
                 user_email = User.objects.get(id=userid)
+                manager_id = Employee.objects.filter(user_id=userid).values('manager_id')
+                manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
                 start_date = form.cleaned_data['start_date']
-                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email)
+                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email, manager)
                 reason_dropdown = form.cleaned_data['reason_dropdown']
                 comment = form.cleaned_data['comment']
                 time = timezone.now()
                 ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
                 value = Employee.objects.get(user_id=userid)
                 value.resignation = start_date
+                value.exit = last_date
                 value.save()
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
@@ -56,12 +59,17 @@ class ResignationAcceptance(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         allresignee = ResignationInfo.objects.all()
+        id = ResignationInfo.objects.values_list('User_id')
+        last_date = Employee.objects.values_list('exit').filter(user_id=id)
         context['resigneedata'] = allresignee
+        context['last_date'] = last_date
         return render(request, "exitacceptance.html", context)
 
     def post(self, request):
         context = {"form": ""}
         form = request.POST
+        allresignee = ResignationInfo.objects.all()
+        context['resigneedata'] = allresignee
         hrconcent_tab ={}
         hrcomment_tab = {}
         managerconcent_tab = {}
@@ -120,6 +128,7 @@ class ResignationAcceptance(View):
                     value.manager_accepted = managerconcent_tab[k]
                     value.manager_comment = managercomment_tab[k]
                     value.last_date_accepted = finaldate_tab[k]
+                    value.last_date = finaldate_tab[k]
                     value.save()
                     last_date_final = Employee.objects.get(user_id=k)
                     last_date_final.exit = finaldate_tab[k]
@@ -153,6 +162,11 @@ class ClearanceFormView(View):
     def post(self, request):
         context = {"form": ""}
         form = request.POST
+        id = request.GET.get('id')
+        approved_applicant = ResignationInfo.objects.all().filter(id=id)
+        clearance_data = EmployeeClearanceInfo.objects.all()
+        context['approved_candidate'] = approved_applicant
+        context['clearance_data'] = clearance_data
         try:
             resignee_id = request.GET.get('id')
             statusby_id = request.user.id
