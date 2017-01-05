@@ -731,7 +731,7 @@
                                                     <span class="menu-text">Enter Resignation</span>
                                                 </a>
                                             </li>
-                                                 {% if user|IsManager or request.user|has_group:'HireAdmin' %}
+                                                 {% if user|IsManager or request.user|has_group:'myansrsourceHR' %}
                                             <li>
 
                                                 <a href="/exitapp/exit-acceptance/">
@@ -739,7 +739,7 @@
                                                 </a>
                                             </li>
                                             {% endif %}
-                                            {% if user|IsManager or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
+                                            {% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
                                             <li>
                                                 <a href="/exitapp/clearance-list/">
                                                     <span class="menu-text">Resigned Candidate List</span>

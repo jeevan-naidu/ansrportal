@@ -1,4 +1,5 @@
 {% extends 'master.html' %}
+{% load permissions %}
 {% block siteTitle %}Candidate Resignation Acceptance{% endblock %}
 {% block pageTitle %}Resignation Acceptance{% endblock %}
 {% block content  %}
@@ -41,16 +42,16 @@ ul{list-style: none;padding-left: 0px;}
                    <tr>
                        <td>{{c}}</td>
                        <td>
-                        <input  id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
+                        <input  {% if user|IsManager == False %} disabled {%endif%} id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
-                        <textarea id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
+                        <textarea {% if user|IsManager == False %} disabled {%endif%} id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
                        </td>
                        <td>
-                        <input id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
+                        <input  {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
-                        <textarea id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea>
+                        <textarea {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea>
                        </td>
                        <td> 
                          <div class='input-group date datetimepicker' id='datetimepicker'>
