@@ -731,17 +731,21 @@
                                                     <span class="menu-text">Enter Resignation</span>
                                                 </a>
                                             </li>
-
+                                                 {% if user|IsManager or request.user|has_group:'HireAdmin' %}
                                             <li>
+
                                                 <a href="/exitapp/exit-acceptance/">
                                                     <span class="menu-text">Manager/HR Approval</span>
                                                 </a>
                                             </li>
+                                            {% endif %}
+                                            {% if user|IsManager or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
                                             <li>
                                                 <a href="/exitapp/clearance-list/">
                                                     <span class="menu-text">Resigned Candidate List</span>
                                                 </a>
                                             </li>
+                                            {% endif %}
                                         </ul>
                                                 </div>
                                             </li>
@@ -751,33 +755,33 @@
                                 </li>
 
 
-                                <li>
-                                    <a href="javascript:void(0);" data-action="click-trigger">
-                                        <span class="menu-icon"><i class="fa fa-th-list"></i></span>
-                                        <span class="menu-text">ExitApp</span>
-                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
-                                    </a>
-                                    <div class="child-menu" data-action="click-target">
-                                        <ul>
-                                            <li>
-                                                <a href="/exitapp/exit-peer/">
-                                                    <span class="menu-text">Enter Resignation</span>
-                                                </a>
-                                            </li>
+                                <!--<li>-->
+                                    <!--<a href="javascript:void(0);" data-action="click-trigger">-->
+                                        <!--<span class="menu-icon"><i class="fa fa-th-list"></i></span>-->
+                                        <!--<span class="menu-text">ExitApp</span>-->
+                                        <!--<span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>-->
+                                    <!--</a>-->
+                                    <!--<div class="child-menu" data-action="click-target">-->
+                                        <!--<ul>-->
+                                            <!--<li>-->
+                                                <!--<a href="/exitapp/exit-peer/">-->
+                                                    <!--<span class="menu-text">Enter Resignation</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
 
-                                            <li>
-                                                <a href="/exitapp/exit-acceptance/">
-                                                    <span class="menu-text">Manager/HR Approval</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="/exitapp/clearance-list/">
-                                                    <span class="menu-text">Resigned Candidate List</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>      
+                                            <!--<li>-->
+                                                <!--<a href="/exitapp/exit-acceptance/">-->
+                                                    <!--<span class="menu-text">Manager/HR Approval</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                            <!--<li>-->
+                                                <!--<a href="/exitapp/clearance-list/">-->
+                                                    <!--<span class="menu-text">Resigned Candidate List</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                        <!--</ul>-->
+                                    <!--</div>-->
+                                <!--</li>      -->
 
                                                           
 
