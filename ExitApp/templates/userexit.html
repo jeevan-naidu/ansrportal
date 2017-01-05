@@ -97,20 +97,13 @@ ul{list-style: none;padding-left: 0px;}
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
                             <script type="text/javascript">
 
-    <!--$(document).ready(function(){-->
-    <!--$('select').on('change', function() {-->
-    <!--var value = this.value-->
-    <!--if(value == 'other')-->
-    <!--{-->
-    <!--$(".feedbackblock").css("display", "block");-->
-    <!--}-->
-    <!--else-->
-    <!--{-->
-    <!--$(".feedbackblock").css("display", "none");-->
+    $(document).ready(function(){
 
-    <!--}-->
-    <!--});-->
-    <!--});-->
+      $('.input-group-addon').click(function(){
+        $(this).parent().find('input').focus();
+      });
+
+    });
     </script>
 
 {% endblock %}
