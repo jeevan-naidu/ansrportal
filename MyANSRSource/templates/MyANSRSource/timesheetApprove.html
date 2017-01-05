@@ -93,14 +93,17 @@ Approve Timesheet
 
 
                   <div class="modal fade" id="timesheet-approve-report_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg">
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
                         </div>
                         <div class="modal-body">
-<table class="table table-hover">
+
+
+
+                    <table class="table table-hover project-table">
                       <thead>
                         <tr>
                           <th>Project</th>
@@ -110,42 +113,27 @@ Approve Timesheet
                           <th>Wed</th>
                           <th>Thu</th>
                           <th>Fri</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
                         </tr>
                       </thead>
                       <tbody>
 
 
                         <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the Task</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
+                          <td class="project_name">The name of the project</td>
+                          <td class="task">The name of the Task</td>
+                          <td class="mondayH">1</td>
+                          <td class="tuesdayH">2</td>
+                          <td class="wednesdayH">1</td>
+                          <td class="thursdayH">2</td>
+                          <td class="fridayH">1</td>
+                          <td class="saturdayH">2</td>
+                          <td class="sundayH">1</td>
                         </tr>
 
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the Task</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                        </tr>
 
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the chapter</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                        </tr>
-
-                        <tr>
+                        <tr class="total-row">
                           <td></td>
                           <td>Total</td>
                           <td>3</td>
@@ -157,7 +145,53 @@ Approve Timesheet
 
                       </tbody>
                     </table>
-                        </div>
+
+<hr>
+
+
+                    <table class="table table-hover activity-table">
+                      <thead>
+                        <tr>
+                          <th>Activity</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+
+                        <tr>
+                          <td class="activity_name">The name of the activity</td>
+                          <td class="activity_monday">1</td>
+                          <td class="activity_tuesday">2</td>
+                          <td class="activity_wednesday">1</td>
+                          <td class="activity_thursday">2</td>
+                          <td class="activity_friday">1</td>
+                          <td class="activity_saturday">2</td>
+                          <td class="activity_sunday">1</td>
+                        </tr>
+
+
+                        <tr class="total-row">
+                          <td>Total</td>
+                          <td class="monday_total">3</td>
+                          <td class="tuesday_total">6</td>
+                          <td class="wednesday_total">3</td>
+                          <td class="thursday_total">6</td>
+                          <td class="friday_total">3</td>
+                          <td class="saturday_total">6</td>
+                          <td class="sunday_total">3</td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+
+                        </div><!-- ./modal-body -->
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
                           <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
@@ -241,7 +275,125 @@ Approve Timesheet
    {% for team_members,values in ts_data_list_approved_true.iteritems %}
     <tr class="odd gradeX"> 
       <td>{{team_members.employee_assigned_id}} </td>
-      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
+      <td>
+      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report_{{team_members.user.id}}" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+
+<!-- Modal Area II -->
+
+
+
+
+
+                  <div class="modal fade" id="timesheet-approve-report_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                    <table class="table table-hover project-table">
+                      <thead>
+                        <tr>
+                          <th>Project</th>
+                          <th>Task</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+
+                        <tr>
+                          <td class="project_name">The name of the project</td>
+                          <td class="task">The name of the Task</td>
+                          <td class="mondayH">1</td>
+                          <td class="tuesdayH">2</td>
+                          <td class="wednesdayH">1</td>
+                          <td class="thursdayH">2</td>
+                          <td class="fridayH">1</td>
+                          <td class="saturdayH">2</td>
+                          <td class="sundayH">1</td>
+                        </tr>
+
+
+                        <tr class="total-row">
+                          <td></td>
+                          <td>Total</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+
+<hr>
+
+
+                    <table class="table table-hover activity-table">
+                      <thead>
+                        <tr>
+                          <th>Activity</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+
+                        <tr>
+                          <td class="activity_name">The name of the activity</td>
+                          <td class="activity_monday">1</td>
+                          <td class="activity_tuesday">2</td>
+                          <td class="activity_wednesday">1</td>
+                          <td class="activity_thursday">2</td>
+                          <td class="activity_friday">1</td>
+                          <td class="activity_saturday">2</td>
+                          <td class="activity_sunday">1</td>
+                        </tr>
+
+
+                        <tr class="total-row">
+                          <td>Total</td>
+                          <td class="monday_total">3</td>
+                          <td class="tuesday_total">6</td>
+                          <td class="wednesday_total">3</td>
+                          <td class="thursday_total">6</td>
+                          <td class="friday_total">3</td>
+                          <td class="saturday_total">6</td>
+                          <td class="sunday_total">3</td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+<!-- ./Modal Area II -->
+
+
+      </td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}} </td>
       <td>{{values.non_billable_total}}</td>
@@ -305,74 +457,6 @@ Approve Timesheet
 
 
 
-<!-- <div class="panel pb-15">
-    <div class="panel-body">
-
-<table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>Project</th>
-                          <th>Task</th>
-                          <th>Mon</th>
-                          <th>Tue</th>
-                          <th>Wed</th>
-                          <th>Thu</th>
-                          <th>Fri</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-
-
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the Task</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                        </tr>
-
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the Task</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                        </tr>
-
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the chapter</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                        </tr>
-
-                        <tr>
-                          <td></td>
-                          <td>Total</td>
-                          <td>3</td>
-                          <td>6</td>
-                          <td>3</td>
-                          <td>6</td>
-                          <td>3</td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-
-    </div>
-</div> -->
-
-
-
-
-
 
 
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
@@ -382,34 +466,34 @@ Approve Timesheet
 
 <script type="text/javascript">
 
-var obj = {
+/*var obj = {
     "tsData":[
   {
     "project_name":"ANSR PORTAL DEV- 2016 3rd quarter",
-    "projectType":"Pr",
-    "feedback":"None",
-    "project__projectType__code":"Pr",
+        "projectType":"Pr",
+        "feedback":"None",
+        "project__projectType__code":"Pr",
     "mondayH":"8.00",
     "sundayH":"0.00",
-    "managerFeedback":"None",
+        "managerFeedback":"None",
     "totalH":"40.00",
-    "teamMember__last_name":"RS",
-    "hold":"True",
-    "id":"170212",
+        "teamMember__last_name":"RS",
+        "hold":"True",
+        "id":"170212",
     "task":"824",
-    "employee_id":"16011029",
+        "employee_id":"16011029",
     "project__name":"ANSR PORTAL DEV- 2016 3rd quarter",
     "tuesdayH":"8.00",
     "fridayH":"8.00",
     "thursdayH":"8.00",
-    "tsId":"170212",
-    "teamMember__first_name":"Balamurugan",
+        "tsId":"170212",
+        "teamMember__first_name":"Balamurugan",
     "wednesdayH":"8.00",
-    "approved":"False",
-    "project":"1487",
-    "project__totalValue":"0.00",
-    "project_value":"0.00",
-    "teamMember__employee__employee_assigned_id":"16011029",
+        "approved":"False",
+        "project":"1487",
+        "project__totalValue":"0.00",
+        "project_value":"0.00",
+        "teamMember__employee__employee_assigned_id":"16011029",
     "saturdayH":"0.00"
   }
   ],
@@ -427,15 +511,15 @@ var obj = {
     "atData":[
   {
     "activity_sunday":"0.00",
-    "atId":"170210",
-    "feedback":"None",
+        "atId":"170210",
+        "feedback":"None",
     "activity_saturday":"0.00",
     "activity_friday":"0.00",
     "activity_thursday":"0.00",
     "activity_wednesday":"0.00",
     "activity_tuesday":"0.00",
     "activity_total":"2.00",
-    "activity":"39",
+        "activity":"39",
     "activity_monday":"2.00"
   },
   {
@@ -452,7 +536,7 @@ var obj = {
     "activity_monday":"0.00"
 }
 ]
-}   //./    
+}   *///./    
 
 
 
