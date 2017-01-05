@@ -15,13 +15,13 @@ ReasonOfLeaving = (('', 'Please Select'), ('i was tired', 'tired'), ('Personal g
 
 
 class UserExitForm(forms.ModelForm):
-    last_date = forms.DateField(label=('Select your Last Date'),
-                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm'}))
     start_date = forms.DateField(label=('Select your Date on which you put the resignation'),
-                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm'}))
+                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':''}))
+    last_date = forms.DateField(label=('Select your Last Date'),
+                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':''}))
     reason_dropdown = forms.ChoiceField(choices=ReasonOfLeaving, required=True,
                                         label=('Please select the proper reason of leaving'),)
-    reason_dropdown.widget.attrs = {'class': 'form-control input-sm'}
+    reason_dropdown.widget.attrs = {'class': 'form-control input-sm', 'required':''}
     comment = forms.CharField(required=False, label=('Write your Concern overhere'), )
     comment.widget.attrs = {'class': 'form-control input-sm'}
 
