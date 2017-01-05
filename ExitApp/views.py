@@ -31,12 +31,12 @@ class ExitFormAdd(View):
             try:
                 userid = request.user.id
                 user_email = User.objects.get(id=userid)
-                manager_id = Employee.objects.filter(user_id=userid).values('manager_id')
-                manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
+                # manager_id = Employee.objects.filter(user_id=userid).values('manager_id')
+                # manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
                 start_date = form.cleaned_data['start_date']
-                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email, manager)
+                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email)
                 reason_dropdown = form.cleaned_data['reason_dropdown']
                 comment = form.cleaned_data['comment']
                 time = timezone.now()
