@@ -145,7 +145,7 @@ class ClearanceFormView(View):
         context = {"form": "", "data": ""}
         id = request.GET.get('id')
         approved_applicant = ResignationInfo.objects.all().filter(id=id)
-        clearance_data = EmployeeClearanceInfo.objects.all().filter(id=id)
+        clearance_data = EmployeeClearanceInfo.objects.all()
         context['approved_candidate'] = approved_applicant
         context['clearance_data'] = clearance_data
         return render(request, "departmentclearance.html", context)
