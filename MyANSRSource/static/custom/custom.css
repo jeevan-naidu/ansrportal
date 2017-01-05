@@ -10,6 +10,15 @@
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
 
+/* General Classes */
+
+.disable-select {
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+}
+
 
 /* Overrides */
 

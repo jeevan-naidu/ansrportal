@@ -60,7 +60,7 @@ Approve Timesheet
            <div class="form-inline approve-reject pull-right">
                 <div class="checkbox checkbox-success radio-mod btn-xs">
                   <input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
-                  <label for="reminder_mail"  class="ansr-orange-mod noselect">Send Reminder Mail</label>
+                  <label for="reminder_mail"  class="ansr-orange-mod noselect disable-select">Send Reminder Mail</label>
                 </div>
             </div>
 
@@ -83,7 +83,95 @@ Approve Timesheet
   {% for team_members,values in ts_data_list_approved_false.iteritems %}
     <tr class="odd gradeX"> 
       <td>{{team_members.employee_assigned_id}} </td>
-      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}}  {{team_members.user.last_name}}</a></td>
+      <td>
+      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report_{{team_members.user.id}}" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+
+<!-- Modal Area II -->
+
+
+
+
+
+                  <div class="modal fade" id="timesheet-approve-report_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+<table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Project</th>
+                          <th>Task</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+
+                        <tr>
+                          <td>The name of the project</td>
+                          <td>The name of the Task</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                        </tr>
+
+                        <tr>
+                          <td>The name of the project</td>
+                          <td>The name of the Task</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                        </tr>
+
+                        <tr>
+                          <td>The name of the project</td>
+                          <td>The name of the chapter</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                          <td>2</td>
+                          <td>1</td>
+                        </tr>
+
+                        <tr>
+                          <td></td>
+                          <td>Total</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
+                          <td>6</td>
+                          <td>3</td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+<!-- ./Modal Area II -->
+
+
+      </td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}}  </td>
       <td>{{values.non_billable_total}}</td>
@@ -124,14 +212,14 @@ Approve Timesheet
 
   <div class="checkbox checkbox-success radio-mod btn-xs">
         <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
-        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect">
+        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect disable-select">
         Approve
         </label>
     </div>
 
     <div class="checkbox checkbox-danger radio-mod btn-xs">
         <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}">
-        <label for="reject_{{team_members.user.id}}"  class="noselect">
+        <label for="reject_{{team_members.user.id}}"  class="noselect disable-select">
         Reject
         </label>
     </div>
@@ -287,25 +375,88 @@ Approve Timesheet
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
 
 
 <script type="text/javascript">
-var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projectType":"Pr","feedback":"None","project__projectType__code":"Pr","mondayH":"8.00","sundayH":"0.00","managerFeedback":"None","totalH":"40.00","teamMember__last_name":"RS","hold":"True","id":"170212","task":"824","employee_id":"16011029","project__name":"ANSR PORTAL DEV- 2016 3rd quarter","tuesdayH":"8.00","fridayH":"8.00","thursdayH":"8.00","tsId":"170212","teamMember__first_name":"Balamurugan","wednesdayH":"8.00","approved":"False","project":"1487","project__totalValue":"0.00","project_value":"0.00","teamMember__employee__employee_assigned_id":"16011029","saturdayH":"0.00"}],"total_list":[{"monday_total":10,"friday_total":8,"tuesday_total":10,"wednesday_total":8,"saturday_total":0,"thurusday_total":8,"sunday_total":0}],"atData":[{"activity_sunday":"0.00","atId":"170210","feedback":"None","activity_saturday":"0.00","activity_friday":"0.00","activity_thursday":"0.00","activity_wednesday":"0.00","activity_tuesday":"0.00","activity_total":"2.00","activity":"39","activity_monday":"2.00"},{"activity_sunday":"0.00","atId":"170211","feedback":"None","activity_saturday":"0.00","activity_friday":"0.00","activity_thursday":"0.00","activity_wednesday":"0.00","activity_tuesday":"2.00","activity_total":"2.00","activity":"37","activity_monday":"0.00"}]}        $(document).ready(function() {
+
+var obj = {
+    "tsData":[
+  {
+    "project_name":"ANSR PORTAL DEV- 2016 3rd quarter",
+    "projectType":"Pr",
+    "feedback":"None",
+    "project__projectType__code":"Pr",
+    "mondayH":"8.00",
+    "sundayH":"0.00",
+    "managerFeedback":"None",
+    "totalH":"40.00",
+    "teamMember__last_name":"RS",
+    "hold":"True",
+    "id":"170212",
+    "task":"824",
+    "employee_id":"16011029",
+    "project__name":"ANSR PORTAL DEV- 2016 3rd quarter",
+    "tuesdayH":"8.00",
+    "fridayH":"8.00",
+    "thursdayH":"8.00",
+    "tsId":"170212",
+    "teamMember__first_name":"Balamurugan",
+    "wednesdayH":"8.00",
+    "approved":"False",
+    "project":"1487",
+    "project__totalValue":"0.00",
+    "project_value":"0.00",
+    "teamMember__employee__employee_assigned_id":"16011029",
+    "saturdayH":"0.00"
+  }
+  ],
+    "total_list":[
+  {
+    "monday_total":10,
+    "friday_total":8,
+    "tuesday_total":10,
+    "wednesday_total":8,
+    "saturday_total":0,
+    "thurusday_total":8,
+    "sunday_total":0
+  }
+  ],
+    "atData":[
+  {
+    "activity_sunday":"0.00",
+    "atId":"170210",
+    "feedback":"None",
+    "activity_saturday":"0.00",
+    "activity_friday":"0.00",
+    "activity_thursday":"0.00",
+    "activity_wednesday":"0.00",
+    "activity_tuesday":"0.00",
+    "activity_total":"2.00",
+    "activity":"39",
+    "activity_monday":"2.00"
+  },
+  {
+    "activity_sunday":"0.00",
+    "atId":"170211",
+    "feedback":"None",
+    "activity_saturday":"0.00",
+    "activity_friday":"0.00",
+    "activity_thursday":"0.00",
+    "activity_wednesday":"0.00",
+    "activity_tuesday":"2.00",
+    "activity_total":"2.00",
+    "activity":"37",
+    "activity_monday":"0.00"
+}
+]
+}   //./    
+
+
+
+ $(document).ready(function() {
                 "use strict";
 
             $('#timesheet-approve-table').dataTable();
