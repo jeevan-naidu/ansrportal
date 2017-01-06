@@ -4,7 +4,7 @@ from django.core.mail import EmailMessage
 from celery.task import Task
 from django.conf import settings
 from celery.registry import tasks
-from .models import ResignationInfo
+
 import logging
 
 logger = logging.getLogger('MyANSRSource')
@@ -134,9 +134,73 @@ class AdminClearanceMail(Task):
             logger.debug('send successful')
 
 
+class FacilityClearanceMail(Task):
+    def run(self, username, user_email, ):
+        msg_html = render_to_string('email_templates/Facility_email.html',
+                                    {'registered_by': username, })
+
+        mail_obj = EmailMessage('Resignation Acceptance',
+                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
+                                cc=['balamurugan.rs@ansrsource.com'])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Exit Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
+class MGRClearanceMail(Task):
+    def run(self, username, user_email, ):
+        msg_html = render_to_string('email_templates/MGR_email.html',
+                                    {'registered_by': username, })
+
+        mail_obj = EmailMessage('Resignation Acceptance',
+                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
+                                cc=['balamurugan.rs@ansrsource.com'])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Exit Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
+class HRClearanceMail(Task):
+    def run(self, username, user_email, ):
+        msg_html = render_to_string('email_templates/HR_email.html',
+                                    {'registered_by': username, })
+
+        mail_obj = EmailMessage('Resignation Acceptance',
+                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
+                                cc=['balamurugan.rs@ansrsource.com'])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Exit Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
 tasks.register(ExitEmailSendTask)
 tasks.register(PostAcceptedMailMGR)
 tasks.register(PostAcceptedMailHR)
 # tasks.register(AdminClearanceMail)
 # tasks.register(ITClearanceMail)
 # tasks.register(LibraryClearanceMail)
+# tasks.register(FacilityClearanceMail)
+# tasks.register(HRClearanceMail)
+# tasks.register(MGRClearanceMail)
+# tasks.register(FacilityClearanceMail)
