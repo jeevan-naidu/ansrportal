@@ -84,7 +84,7 @@ Approve Timesheet
     <tr class="odd gradeX"> 
       <td>{{team_members.employee_assigned_id}} </td>
       <td>
-      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report_{{team_members.user.id}}" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report_{{team_members.user.id}}" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
 
 <!-- Modal Area II -->
 
@@ -276,7 +276,7 @@ Approve Timesheet
     <tr class="odd gradeX"> 
       <td>{{team_members.employee_assigned_id}} </td>
       <td>
-      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report_{{team_members.user.id}}" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report_{{team_members.user.id}}" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
 
 <!-- Modal Area II -->
 
@@ -466,81 +466,22 @@ Approve Timesheet
 
 <script type="text/javascript">
 
-/*var obj = {
-    "tsData":[
-  {
-    "project_name":"ANSR PORTAL DEV- 2016 3rd quarter",
-        "projectType":"Pr",
-        "feedback":"None",
-        "project__projectType__code":"Pr",
-    "mondayH":"8.00",
-    "sundayH":"0.00",
-        "managerFeedback":"None",
-    "totalH":"40.00",
-        "teamMember__last_name":"RS",
-        "hold":"True",
-        "id":"170212",
-    "task":"824",
-        "employee_id":"16011029",
-    "project__name":"ANSR PORTAL DEV- 2016 3rd quarter",
-    "tuesdayH":"8.00",
-    "fridayH":"8.00",
-    "thursdayH":"8.00",
-        "tsId":"170212",
-        "teamMember__first_name":"Balamurugan",
-    "wednesdayH":"8.00",
-        "approved":"False",
-        "project":"1487",
-        "project__totalValue":"0.00",
-        "project_value":"0.00",
-        "teamMember__employee__employee_assigned_id":"16011029",
-    "saturdayH":"0.00"
+
+
+
+// Functions
+
+var time_iterate = function(e){
+  for (var time_key in e['tsData']){
+    if (time_key['tsData'].hasOwnProperty(key)){
+      console.log(key);
+    }
   }
-  ],
-    "total_list":[
-  {
-    "monday_total":10,
-    "friday_total":8,
-    "tuesday_total":10,
-    "wednesday_total":8,
-    "saturday_total":0,
-    "thurusday_total":8,
-    "sunday_total":0
-  }
-  ],
-    "atData":[
-  {
-    "activity_sunday":"0.00",
-        "atId":"170210",
-        "feedback":"None",
-    "activity_saturday":"0.00",
-    "activity_friday":"0.00",
-    "activity_thursday":"0.00",
-    "activity_wednesday":"0.00",
-    "activity_tuesday":"0.00",
-    "activity_total":"2.00",
-        "activity":"39",
-    "activity_monday":"2.00"
-  },
-  {
-    "activity_sunday":"0.00",
-    "atId":"170211",
-    "feedback":"None",
-    "activity_saturday":"0.00",
-    "activity_friday":"0.00",
-    "activity_thursday":"0.00",
-    "activity_wednesday":"0.00",
-    "activity_tuesday":"2.00",
-    "activity_total":"2.00",
-    "activity":"37",
-    "activity_monday":"0.00"
 }
-]
-}   *///./    
 
 
 
- $(document).ready(function() {
+$(document).ready(function() {
                 "use strict";
 
             // $('#timesheet-approve-table').dataTable();
@@ -563,8 +504,8 @@ Approve Timesheet
                     dataType :'json',
                     data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
                     success: function (data) {
-                    console.log(JSON.stringify(data));
-
+                    // console.log(JSON.stringify(data));
+                    time_iterate(data);
                     },
 
                   });
@@ -590,7 +531,7 @@ Approve Timesheet
 
         });
 
-        } );
+} ); // ./doc-ready
 </script>
 
 
