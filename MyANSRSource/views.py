@@ -21,7 +21,7 @@ from django.conf import settings
 from employee.models import Employee
 from Leave.views import leavecheck, daterange
 from django.views.generic import View , TemplateView
-
+from tasks import TimeSheetWeeklyReminder
 from fb360.models import Respondent
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -3911,10 +3911,9 @@ class ApproveTimesheetView(TemplateView):
         #     print k,
         # print "rem", self.request.POST['reminder_mail']
         if 'reminder_mail' in self.request.POST:
-            team_members = Employee.objects.filter((Q(manager_id=self.request.user.employee.employee_assigned_id) |
-                                                    Q(employee_assigned_id=
-                                                      self.request.user.employee.employee_assigned_id)),
+            team_members = Employee.objects.filter(manager_id=self.request.user.employee.employee_assigned_id,
                                                    user__is_active=True)
+
             for members in team_members:
                 # try:
                 result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
@@ -3923,14 +3922,8 @@ class ApproveTimesheetView(TemplateView):
                     user_obj = User.objects.get(id=int(members.user.id))
                     email_list.append(user_obj.email)
 
-
-                # except Exception as e:
-                #     print str(e)
-                #     pass
-            # print "email",  email_list
-        # else:
-        #     print "nope"
-
+        manager_name = self.request.user.first_name + ' ' + self.request.user.last_name
+        TimeSheetWeeklyReminder.delay(request.user, manager_name,  email_list, start_date, end_date)
         for k, v in feedback.iteritems():
             user_id = k.split('_')
             feedback_dict[user_id[1]] = v
