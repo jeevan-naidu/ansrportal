@@ -117,8 +117,6 @@
 			{% endfor %}
 
 
-
-
 <!-- Timesheet Hours section -->
 
 
@@ -132,7 +130,7 @@
 
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
-								<a class="btn btn-default day-popover-button {% if data.value %} disabled {% endif %} fixed-btn-size" href="javascript:;">
+								<div class="btn btn-default day-popover-button {% if data.value %} disabled {% endif %} fixed-btn-size" >
 							{% endif %}
 						{% endfor %}
 
@@ -140,6 +138,10 @@
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
                                         
+
+
+
+
                                             <span class="b-hours {{ dayclass }} set-zero" data-original-title="">
                                             {% if tdata.value > 0 %} 
                                             	{{ tdata.value }} 
@@ -147,12 +149,17 @@
                                             	0 
                                             {% endif %}
                                             </span>H
-                                        
+
+
+
+
+
                                     {% endwith %}
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
-						</a>
+						</div>
+
 					</td>
 
 
@@ -189,11 +196,9 @@
 									    {% endif %}
 									{% endif %}
 								    {% endfor %}
-									{% if data.value > 0 %}
-										<span class="t-hours set-zero">{{ data.value }}</span>H
-									{% else %}
-										<span class="t-hours set-zero">0</span>H
-									{% endif %}
+									
+										<span class="t-hours set-zero">{% if data.value > 0 %} {{ data.value }} {% else %} 0 {% endif %}</span>H
+									
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -264,16 +269,10 @@
 </div>
 </div>
 
+<div class="panel pb-15">
+    <!-- first widget (vertical tabs) -->
 
-
-
-                    <div class="panel pb-15">
-                        <!-- first widget (vertical tabs) -->
-
-                        <div class="panel-body">
-
-
-
+    <div class="panel-body">
 
     <div id="timesheet-non-billable">
 	<legend>
@@ -298,7 +297,7 @@
 			</div>
 		{% endif %}
 	{% endfor %}
-	<table class="table table-condensed table-responsive"id="non_project_table" >
+	<table class="table table-condensed table-responsive" id="non_project_table" >
 	{% for form in atFormset %}
 		{{ form.errors }}
 		{% if forloop.first %}
