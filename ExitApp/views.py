@@ -206,8 +206,10 @@ class ClearanceFormView(View):
             resignee_id = request.GET.get('id')
             statusby_id = request.user.id
             time = timezone.now()
-            user_email = User.objects.get(id=resignee_id)
+            user_detail = ResignationInfo.objects.get(id=resignee_id)
+            user_email = User.objects.get(id=user_detail.User_id)
 
+            form = request.POST
             if 'hr_approval' in form:
                 hr_approval = form['hr_approval']
                 hr_amount = form['hr_amount']
