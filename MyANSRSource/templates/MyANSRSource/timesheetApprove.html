@@ -388,21 +388,20 @@ var time_iterate = function(e){
       // Get length
 
       var obj_length = time_obj.tsData.length;
-      console.log(obj_length);
+      console.log('the project length is ' + obj_length);
 
       // Populate project row
 
-      for(i=0; i<obj_length; i++){
-        $('.project-time-row').append(project_time_row);
-        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[i]['project_name']);
-        $('.project-time-row:last-child td.task').html(time_obj.tsData[i]['task']);
-        $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[i]['mondayH']);
-        $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[i]['tuesdayH']);
-        $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[i]['wednesdayH']);
-        $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[i]['fridayH']);
-        $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[i]['saturdayH']);
-        $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[i]['sundayH']);
-      }
+        $('.project-table tbody').append('<tr class="project-time-row"></tr>')
+        $('.project-time-row:last-child').append(project_time_row);
+        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
+        $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task']);
+        $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[time_key]['mondayH']);
+        $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
+        $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
+        $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
+        $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
+        $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
 
     }
   } // ./ ts data iteration
@@ -423,16 +422,16 @@ var time_iterate = function(e){
 
       // Populate project row
 
-      for(i=0; i<obj_length; i++){
-        $('.activity-time-row').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html(time_obj.atData[i]['activity']);
-        $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[i]['activity_monday']);
-        $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[i]['activity_tuesday']);
-        $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[i]['activity_wednesday']);
-        $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[i]['activity_friday']);
-        $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[i]['activity_saturday']);
-        $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[i]['activity_sunday']);
-      } // ./for loop
+        $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
+        $('.activity-time-row:last-child').append(activity_time_row);
+        $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity']);
+        $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
+        $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
+        $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
+        $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
+        $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
+        $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
+
     }else{
         $('.activity-time-row').append(activity_time_row);
         $('.activity-time-row:last-child td.activity').html('nil');
