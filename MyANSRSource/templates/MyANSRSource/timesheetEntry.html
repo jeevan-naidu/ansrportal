@@ -17,19 +17,6 @@
 
 </style>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   <form id="timesheet" method="post" action="" enctype="multipart/form-data">
 
                     <div class="panel pb-15">
@@ -220,11 +207,7 @@
 							{% with apIdT="#myModal-"|add:data.id_for_label %}
 								{% for data in form.visible_fields %}
 									{% if 'hold' in data.label %}
-										{% if data.value %}
-											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-										{% else %}
-											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-										{% endif %}
+										<button type="button" class="btn btn-default {% if data.value %} disabled {% endif %}" data-toggle="modal" data-target={{ apIdT }}>
 									{% endif %}
 								{% endfor %}
 							{% endwith %}
@@ -320,27 +303,18 @@
 		{{ form.errors }}
 		{% if forloop.first %}
 		<thead>
-            	<tr>
-		{% for field in form.hidden_fields %}
-			{% if 'id' in field.label %}
-				<td style="display: none">{{ field.label }}</td>
-			{% endif %}
-		{% endfor %}
-                {% for data in form %}
-		    {% if 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-		    {% if forloop.counter == 1 or forloop.counter == 9 %}
-		    	<th class="res-14-per">
-		    {% else %}
-			<th>
-		    {% endif %}
-                    	{{ data.label }}
-                   <!--  {% if data.field.required %}
-                        <span class="required">*</span>
-		    {% endif %} -->
-                    </th>
-                    {% endif %}
-                {% endfor %}
-            	</tr>
+		        <tr>
+					<th class="res-14-per">Activity</th>
+		            <th>Mon</th>
+		            <th>Tue</th>
+		            <th>Wed</th>
+		            <th>Thu</th>
+		            <th>Fri</th>
+		            <th>Sat</th>
+		            <th>Sun</th>
+		            <th class="res-14-per">Total</th>
+		            <th>Delete</th>
+		        </tr>
 		</thead>
 		<tbody>
 		{% endif %}
@@ -355,11 +329,7 @@
 					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label %}
-							{% if holdData.value or prevWeekBlock %}
-								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}
-								<td>{{ data }}</td>
-							{% endif %}
+							<td {% if holdData.value or prevWeekBlock %} class="ansr-disabled" {% endif %}>{{ data }}</td>
 						{% endif %}
 					{% endfor %}
 					{% endif %}
