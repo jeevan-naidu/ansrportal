@@ -43,7 +43,7 @@ class ExitFormAdd(View):
                 comment = form.cleaned_data['comment']
                 time = timezone.now()
                 if start_date > last_date:
-                    messages.error(request, 'You Last Date Should be Greater than resignation Date')
+                    messages.error(request, 'Your Last Date Should be Greater than resignation Date')
                     return render(request, "userexit.html", context)
                 ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
                 value = Employee.objects.get(user_id=userid)
@@ -298,8 +298,17 @@ class ClearanceFormView(View):
 class ClearanceList(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        approved_applicant = ResignationInfo.objects.all()
-        context['approved_candidate'] = approved_applicant
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin']).exists():
+            allresignee = ResignationInfo.objects.all()
+            context['approved_candidate'] = allresignee
+        else:
+            mgrid = Employee.objects.get(user_id=request.user.id)
+            reportee = Employee.objects.filter(manager_id=mgrid)
+            filterdata = []
+            for value in reportee:
+                filterdata.append(value.user.id)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
+            context['approved_candidate'] = allresignee
         return render(request, "clearancelist.html", context)
 
 
