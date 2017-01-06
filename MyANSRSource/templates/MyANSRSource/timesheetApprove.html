@@ -5,11 +5,6 @@
 {% load permissions %}
 {% block pageTitle %}
 Approve Timesheet
-{% for message in messages %}
-    <li class="{{ message.tags }}">
-    {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
-    </li>
-{% endfor %}
 {% endblock %}
 {% block switch_dates %}
 <div class="dropdown week-selector pull-left">
@@ -212,11 +207,9 @@ Approve Timesheet
 
   </tbody>
 </table>
-{% if ts_data_list %}
 <input type="submit" name="submit" value="Submit">
     <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
     <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
-{% endif %}
 </form></div>
 </div>
 
