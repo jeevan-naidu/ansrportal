@@ -211,10 +211,11 @@ Approve Timesheet
 
   </tbody>
 </table>
-<input type="submit" name="submit" value="Submit">
+<input type="submit" name="submit" class="btn btn-primary btn-sm pull-right" value="Submit">
     <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
     <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
-</form></div>
+</form>
+</div>
 </div>
 
 
@@ -366,7 +367,7 @@ var time_iterate = function(e){
 
   // Append employee name to modal header
 
-  $('.timesheet-member-name').html(time_obj.tsData[0]['employee_id']);
+  $('.timesheet-member-name').html(time_obj.tsData[0]['teamMember__first_name'] +'  ' + time_obj.tsData[0]['teamMember__last_name'] + ' ('+ time_obj.tsData[0]['teamMember__employee__employee_assigned_id'] +')');
 
   // tsdata iteration
 
@@ -390,7 +391,7 @@ var time_iterate = function(e){
         $('.project-table tbody').append('<tr class="project-time-row"></tr>')
         $('.project-time-row:last-child').append(project_time_row);
         $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
-        $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task']);
+        $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task__name']);
         $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[time_key]['mondayH']);
         $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
         $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
@@ -419,7 +420,7 @@ var time_iterate = function(e){
 
         $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
         $('.activity-time-row:last-child').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity']);
+        $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity__name']);
         $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
         $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
         $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
@@ -517,6 +518,22 @@ $(document).ready(function() {
 
 
         });
+
+      $('#reminder_mail').on('click', function()  {
+          if(this.checked){
+              $.ajax({
+                url: '/myansrsource/timesheet/send_reminder_mail',
+                type: 'GET',
+                dataType :'json',
+                data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
+                success: function (data) {
+                    swal("Voila", "Reminder Mail is sent Successfully!", "success")
+                },
+
+              });
+          }
+      });
+
 
 } ); // ./doc-ready
 </script>

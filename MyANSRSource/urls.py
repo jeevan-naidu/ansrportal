@@ -52,6 +52,8 @@ urlpatterns = [
 
     url(r'^timesheet/time_sheet_employee', permission_required('MyANSRSource.approve_timesheet')
         (views.time_sheet_employee)),
+    url(r'^timesheet/send_reminder_mail', permission_required('MyANSRSource.approve_timesheet')
+        (views.send_reminder_mail)),
 
     url(r'^dashboard$',
         views.Dashboard,

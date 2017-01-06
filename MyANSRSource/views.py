@@ -749,7 +749,7 @@ def time_sheet_employee(request):
 
     s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
                       datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
-
+    print json.dumps(s)
     return HttpResponse(
             json.dumps(s),
             content_type="application/json"
@@ -3387,7 +3387,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
             teamMember=user,
             project__isnull=True
         )
-    ).values('id', 'activity', 'mondayH', 'tuesdayH', 'wednesdayH',
+    ).values('id', 'activity', 'activity__name', 'mondayH', 'tuesdayH', 'wednesdayH',
              'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
              'managerFeedback', 'approved', 'hold'
              )
@@ -3399,11 +3399,11 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 teamMember=user,
                 activity__isnull=True
             )
-        ).values('id', 'project', 'project__name', 'task', 'mondayH',
+        ).values('id', 'project', 'project__name',  'task__name', 'mondayH',
                  'tuesdayH', 'wednesdayH',
                  'thursdayH', 'fridayH', 'hold',
                  'saturdayH', 'sundayH', 'approved',
-                 'totalH', 'managerFeedback', 'project__projectType__code', 'project__totalValue',
+                 'totalH', 'managerFeedback',  'project__totalValue',
                  'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
                  )
     else:
@@ -3518,6 +3518,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 atData['activity_total'] = v
             if k == 'managerFeedback':
                 atData['feedback'] = v
+            if k == 'activity__name':
+                atData['activity__name'] = v
             if k == 'id':
                 atData['atId'] = v
         atDataList.append(atData.copy())
@@ -3829,6 +3831,29 @@ def pull_members_week(employee,start_date,end_date) :
     return leave_hours
 
 
+def send_reminder_mail(request):
+    email_list = []
+    user_id = request.GET.get('user_id')
+    start_date = datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date()
+    end_date = datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
+    user = User.objects.get(id=user_id)
+    team_members = Employee.objects.filter(manager_id=user.employee.employee_assigned_id,
+                                           user__is_active=True)
+
+    for members in team_members:
+            # try:
+        result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                               teamMember=members.user).exists()
+        if not result:
+            user_obj = User.objects.get(id=int(members.user.id))
+            email_list.append(user_obj.email)
+
+    manager_name = user.first_name + ' ' + request.user.last_name
+    TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
+    json_obj = {'status': True}
+    return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
+
+
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
 
@@ -3906,24 +3931,7 @@ class ApproveTimesheetView(TemplateView):
             self.request.POST.get('weekendDate'), '%d%m%Y'
         ).date()
         feedback_dict = {}
-        email_list = []
-        # for k in self.request.POST:
-        #     print k,
-        # print "rem", self.request.POST['reminder_mail']
-        if 'reminder_mail' in self.request.POST:
-            team_members = Employee.objects.filter(manager_id=self.request.user.employee.employee_assigned_id,
-                                                   user__is_active=True)
 
-            for members in team_members:
-                # try:
-                result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                       teamMember=members.user).exists()
-                if not result:
-                    user_obj = User.objects.get(id=int(members.user.id))
-                    email_list.append(user_obj.email)
-
-        manager_name = self.request.user.first_name + ' ' + self.request.user.last_name
-        TimeSheetWeeklyReminder.delay(request.user, manager_name,  email_list, start_date, end_date)
         for k, v in feedback.iteritems():
             user_id = k.split('_')
             feedback_dict[user_id[1]] = v

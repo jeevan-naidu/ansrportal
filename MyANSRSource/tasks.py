@@ -10,17 +10,15 @@ logger = logging.getLogger('MyANSRSource')
 
 
 class TimeSheetWeeklyReminder(Task):
-    def run(self, user, manager_name, email_list, from_date, to_date):
+    def run(self, user,  email_list, from_date, to_date):
         msg_html = render_to_string('email/time_sheet_reminder.html',
                                     {
                                      'start_date': from_date,
                                      'end_date': to_date,
-                                     'manager': manager_name,
                                     })
-
         mail_obj = EmailMessage('Time sheet Weekly Submission Reminder',
                                 msg_html, settings.EMAIL_HOST_USER, email_list,
-                                cc=[user.email])
+                                cc=email_list)
 
         mail_obj.content_subtype = 'html'
         try:
@@ -29,6 +27,5 @@ class TimeSheetWeeklyReminder(Task):
             logger.error(
                 u'Unable to send time sheet reminder mail for   {0}{1}{2} and the error is {3}'
                 u' '.format(from_date, to_date, email_list, str(e)))
-
 
 tasks.register(TimeSheetWeeklyReminder)
