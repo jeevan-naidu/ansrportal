@@ -278,7 +278,7 @@ Approve Timesheet
     <tr class="odd gradeX"> 
       <td>{{team_members.employee_assigned_id}} </td>
       <td>
-      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report_{{team_members.user.id}}" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
 
 <!-- Modal Area II -->
 
@@ -508,18 +508,6 @@ Approve Timesheet
                         </tr>
 
 
-                        <tr class="project-total-row">
-                          <td></td>
-                          <td>Total</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                        </tr>
-
                       </tbody>
                     </table>
 
@@ -539,9 +527,9 @@ Approve Timesheet
                           <th>Fri</th>
                         </tr>
                       </thead>
+
+
                       <tbody>
-
-
                         <tr class="activity-time-row">
                           <td class="activity_name">The name of the activity</td>
                           <td class="activity_monday">0</td>
@@ -554,7 +542,7 @@ Approve Timesheet
                         </tr>
 
 
-                        <tr class="activity-total-row">
+                        <tr class="total-row">
                           <td>Total</td>
                           <td class="monday_total">0</td>
                           <td class="tuesday_total">0</td>
@@ -596,9 +584,8 @@ Approve Timesheet
 <script type="text/javascript">
 
 var project_time_row = $('.project-time-row').html();
-var project_total_row = $('.project-total-row').html();
 var activity_time_row = $('.activity-time-row').html();
-var activity_total_row = $('.activity-total-row').html();
+var total_row = $('.total-row').html();
 
 
 
@@ -608,7 +595,10 @@ var time_iterate = function(e){
 
   var time_obj = e;
 
-  console.log(time_obj)
+  console.log(time_obj);
+
+
+  // tsdata iteration
 
   for (var time_key in time_obj['tsData']){
     if (time_obj['tsData'].hasOwnProperty(time_key)){
@@ -619,11 +609,36 @@ var time_iterate = function(e){
       console.log(time_obj['tsData'][time_key]);
       console.log(time_obj.tsData[0]['id']);
 
+      // Get length
+
+      var obj_length = time_obj.tsData.length;
+      console.log(obj_length);
+
       // Append employee name to modal header
 
       $('.timesheet-member-name').html(time_obj.tsData[0]['id']);
     }
+  } // ./ ts data iteration
+
+
+
+
+  // total_list iteration
+
+  for (var time_key in time_obj['total_list']){
+    if (time_obj['total_list'].hasOwnProperty(time_key)){  
+      console.log(time_obj.total_list[0]['friday_total']);
+      $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
+      $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
+      $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
+      $('#timesheet-approve-report .thursday_total').html(time_obj.total_list[0]['thursday_total']);
+      $('#timesheet-approve-report .friday_total').html(time_obj.total_list[0]['friday_total']);
+      $('#timesheet-approve-report .saturday_total').html(time_obj.total_list[0]['saturday_total']);
+      $('#timesheet-approve-report .sunday_total').html(time_obj.total_list[0]['sunday_total']);
+    }
   }
+
+
 }
 
 
