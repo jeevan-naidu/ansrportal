@@ -99,7 +99,7 @@ def LeaveTransaction(request):
 
 
 def LeaveCancel(request):
-    user_id=request.user.id
+    user_id = request.user.id
     leave_id = request.GET.get('leaveid')
     leavecount = request.GET.get('leavecount')
     leave = LeaveApplications.objects.get(id=leave_id)
@@ -125,7 +125,7 @@ def LeaveCancel(request):
     leave.status_action_by = User.objects.get(id=user_id)
     leave.status_comments = "Leave cancelled by user"
     leave.update()
-    short_leave_against_cancellation(leave.from_date, leave.to_date)
+    short_leave_against_cancellation(leave.from_date, leave.to_date, user_id)
     manager = managerCheck(user_id)
     EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
      leave.to_session, leave.days_count, leave.reason, 'cancel')
@@ -878,7 +878,9 @@ def update_leave_application(request, status):
 
     if status_tmp[0] == 'cancelled' or status_tmp[0] == 'rejected':
         #short leave check against cancel leave
-        short_leave_against_cancellation(leave_application.from_date, leave_application.to_date)
+        short_leave_against_cancellation(leave_application.from_date,
+                                         leave_application.to_date,
+                                         leave_application.user.id)
         leave_status.applied -= Decimal(leave_days)
         leave_status.applied = str(leave_status.applied)
         if is_com_off not in leaveWithoutBalance:
@@ -1680,16 +1682,17 @@ def balance_based_on_year(request):
     return HttpResponse(json_data, content_type="application/json")
 
 
-def short_leave_against_cancellation(from_date, to_date):
+def short_leave_against_cancellation(from_date, to_date, user):
     '''
     :param from_date: From date of cancel leave
     :param to_date: To date of cancel leave
     :return: updates the short attendance flag.
     '''
-
     short_leaves = ShortAttendance.objects.filter(for_date__gte=from_date,
                                                   for_date__lte=to_date,
+                                                  user_id=user,
                                                   active=False)
     for leave in short_leaves:
         leave.active = True
+        leave.save()
 
