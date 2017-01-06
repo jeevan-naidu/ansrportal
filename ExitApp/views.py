@@ -9,6 +9,8 @@ from django.utils import timezone
 from employee.models import Employee
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
+from datetime import datetime, timedelta
+from datetime import datetime, date
 
 
 # Create your views here.
@@ -59,7 +61,8 @@ class ExitFormAdd(View):
                 context['error'] = programmingerror
                 context["form"] = UserExitForm()
                 return render(request, "userexit.html", context)
-
+        form = UserExitForm()
+        context["form"] = form
         return render(request, "userexit.html", context)
 
 
@@ -125,15 +128,19 @@ class ResignationAcceptance(View):
             finaldate_tab[tab_id[1]] = v
 
         try:
+            i = 0
             for k, v in hrconcent_tab.iteritems():
                 user_email = User.objects.get(id=k)
                 try:
+                    if i == 0:
+                        PostAcceptedMailHR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
+                        messages.error(request, 'Your response has been submitted successfully')
                     value = ResignationInfo.objects.get(User=k)
                     value.hr_accepted = hrconcent_tab[k]
                     value.hr_comment = hrcomment_tab[k]
                     value.save()
-                    PostAcceptedMailHR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
-                    messages.error(request, 'Your response has been submitted successfully')
+                    i = (i+1)
+
                 except Exception as programmingerror:
                     context['error'] = programmingerror
                     print programmingerror
@@ -147,7 +154,11 @@ class ResignationAcceptance(View):
         try:
             for k, v in managerconcent_tab.iteritems():
                 user_email = User.objects.get(id=k)
+                i = 0
                 try:
+                    if i ==0:
+                        PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
+                        messages.error(request, 'Your response has been submitted successfully')
                     value = ResignationInfo.objects.get(User_id=k)
                     value.manager_accepted = managerconcent_tab[k]
                     value.manager_comment = managercomment_tab[k]
@@ -157,8 +168,7 @@ class ResignationAcceptance(View):
                     last_date_final = Employee.objects.get(user_id=k)
                     last_date_final.exit = finaldate_tab[k]
                     last_date_final.save()
-                    PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
-                    messages.error(request, 'Your response has been submitted successfully')
+
                 except Exception as programmingerror:
                     context['error'] = programmingerror
                     print programmingerror
@@ -299,18 +309,21 @@ class ClearanceList(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin']).exists():
-            allresignee = ResignationInfo.objects.all()
+            d = date.today()
+            final_val = d + timedelta(days=1)
+            allresignee = ResignationInfo.objects.filter(last_date_accepted=final_val)
             context['approved_candidate'] = allresignee
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
             reportee = Employee.objects.filter(manager_id=mgrid)
             filterdata = []
+            d = date.today()
+            final_val = d + timedelta(days=1)
             for value in reportee:
                 filterdata.append(value.user.id)
-            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted=final_val)
             context['approved_candidate'] = allresignee
         return render(request, "clearancelist.html", context)
-
 
 
 
