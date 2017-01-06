@@ -51,7 +51,7 @@ class ExitFormAdd(View):
                 value.exit = last_date
                 value.save()
                 ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email)
-                messages.error(request, 'Your Resignation has been Submitted')
+                messages.success(request, 'Your Resignation has been Submitted')
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
                 print programmingerror
@@ -82,8 +82,17 @@ class ResignationAcceptance(View):
     def post(self, request):
         context = {"form": ""}
         form = request.POST
-        allresignee = ResignationInfo.objects.all()
-        context['resigneedata'] = allresignee
+        if request.user.groups.filter(name__in=['myansrsourceHR']).exists():
+            allresignee = ResignationInfo.objects.all()
+            context['resigneedata'] = allresignee
+        else:
+            mgrid = Employee.objects.get(user_id=request.user.id)
+            reportee = Employee.objects.filter(manager_id=mgrid)
+            filterdata = []
+            for value in reportee:
+                filterdata.append(value.user.id)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
+            context['resigneedata'] = allresignee
         hrconcent_tab ={}
         hrcomment_tab = {}
         managerconcent_tab = {}
@@ -124,6 +133,7 @@ class ResignationAcceptance(View):
                     value.hr_comment = hrcomment_tab[k]
                     value.save()
                     PostAcceptedMailHR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
+                    messages.error(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     context['error'] = programmingerror
                     print programmingerror
@@ -148,6 +158,7 @@ class ResignationAcceptance(View):
                     last_date_final.exit = finaldate_tab[k]
                     last_date_final.save()
                     PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
+                    messages.error(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     context['error'] = programmingerror
                     print programmingerror
@@ -197,6 +208,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="HR", status_on=time, dept_feedback=hr_feedback,
                                           dept_due=hr_amount).save()
+                    messages.error(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -211,6 +223,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="FAC", status_on=time, dept_feedback=facility_feedback,
                                           dept_due=facility_amount).save()
+                    messages.error(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -225,6 +238,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="FIN", status_on=time, dept_feedback=finance_feedback,
                                           dept_due=finance_amount).save()
+                    messages.error(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -239,6 +253,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="MGR", status_on=time, dept_feedback=manager_feedback,
                                           dept_due=manager_amount).save()
+                    messages.error(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -266,6 +281,7 @@ class ClearanceFormView(View):
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=library_approval, status_by_id=statusby_id,
                                           department="LIB", status_on=time, dept_feedback=library_feedback,
                                           dept_due=lib_amount).save()
+                    messages.error(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
