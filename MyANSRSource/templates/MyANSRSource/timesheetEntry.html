@@ -149,59 +149,35 @@
 							{% endif %}
 						{% endfor %}
 
-
-
-
-
-
-
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
-                                        {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
-                                        {% else %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H
-                                        {% endif %}
+                                        
+                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">
+                                            {% if tdata.value > 0 %} 
+                                            	{{ tdata.value }} 
+                                            {% else %} 
+                                            	0 
+                                            {% endif %}
+                                            </span>H
+                                        
                                     {% endwith %}
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
 						</a>
 					</td>
+
+
 				{% elif data.label == 'Total' %}
 					<td>
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
-								{% if data.value %}
-									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
-								{% else %}
-									<a class="lh-30 btn-default row-total-view fixed-btn-size" href="javascript:;">
-								{% endif %}
+								<a class="lh-30 btn-default row-total-view {% if data.value %} disabled {% endif %} fixed-btn-size" href="javascript:;">
 							{% endif %}
 						{% endfor %}
-                            <span style="display: none;">
-							{% for data in form.hidden_fields %}
-								{% if 'totalQ' in data.id_for_label %}
-									{% for typeData in form.hidden_fields %}
-										{% if 'projectType' in typeData.id_for_label %}
-										{% if data.value > 0 %}
-											<span class="t-questions set-zero">{{ data.value }}</span>
-											<span class="project-unit">{{ typeData.value }}</span>
-										{% else %}
-											<span class="t-questions set-zero">0</span>
-											{% if typeData.value == None %}
-												<span class="project-unit">Q</span>
-											{% else %}
-												<span class="project-unit">{{ typeData.value }}</span>
-											{% endif %}
-										{% endif %}
-										{% endif %}
-									{% endfor %}
-									{{ data }}
-								{% endif %}
-							{% endfor %}
-                            </span>
+
+
 
 							{% for data in form.hidden_fields %}
 
@@ -274,15 +250,9 @@
 					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
 
 
-
-
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label or 'approved' in data.label %}
-							{% if holdData.value %}
-								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}
-								<td>{{ data }}</td>
-							{% endif %}
+							<td {% if holdData.value %} class="ansr-disabled" {% endif %}>{{ data }}</td>
 						{% endif %}
 					{% endfor %}
 					{% endif %}
