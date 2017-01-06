@@ -40,6 +40,9 @@ class ExitFormAdd(View):
                 reason_dropdown = form.cleaned_data['reason_dropdown']
                 comment = form.cleaned_data['comment']
                 time = timezone.now()
+                if start_date > last_date:
+                    messages.error(request, 'You Last Date Should be Greater than resignation Date')
+                    return render(request, "userexit.html", context)
                 ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
                 value = Employee.objects.get(user_id=userid)
                 value.resignation = start_date
@@ -47,6 +50,7 @@ class ExitFormAdd(View):
                 value.save()
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
+                print programmingerror
                 messages.error(request, 'You Have already applyed for your Resignation')
                 context['error'] = programmingerror
                 context["form"] = UserExitForm()
