@@ -102,14 +102,24 @@ def LeaveForm(leavetype, user, data=None):
 
             fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session','Reason', 'leave_attachment','name']
             widgets = {
-              'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
-              #'leave':forms.Select(attrs={'class': 'form-control', 'required':'true'}),
-            #   'from_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
-            #   'to_session':forms.Select(attrs={'class': 'form-control', 'required':'false'}),
+              'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
             }
 
-    onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave',  'comp_off_avail', 'pay_off', 'short_leave','comp_off_earned']
-    regular_leave = ['earned_leave', 'sick_leave', 'casual_leave', 'loss_of_pay', 'work_from_home', 'sabbatical']
+    onetime_leave = ['maternity_leave',
+                     'paternity_leave',
+                     'bereavement_leave',
+                     'comp_off_avail',
+                     'pay_off',
+                     'short_leave',
+                     'comp_off_earned']
+    regular_leave = ['earned_leave',
+                     'sick_leave',
+                     'casual_leave',
+                     'loss_of_pay',
+                     'work_from_home',
+                     'sabbatical',
+                     'ooo_dom',
+                     'ooo_int']
 
     if leavetype in onetime_leave:
         if data:

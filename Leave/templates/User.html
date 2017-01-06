@@ -527,6 +527,44 @@
                         </div>
                     </div>
 
+                <div class="row pad5 progress-bar-container" id="ooo_dom">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                            Domestic Travel
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="row pad5 progress-bar-container" id="international_travel">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                            International Travel
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="progress Lv-progress">
+                                        <div class="progress-bar progress-bar-success Lv-progress-bar approved" role="progressbar" style="width:0%">
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning Lv-progress-bar applied" role="progressbar" style="width:0%">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
 <!-- Short Leave -->
                 {% if leaveShortAttendanceIsActive %}
@@ -988,6 +1026,64 @@ function shortLeaveGridLoad(){
       break;
     }
 
+    case 'ooo_dom':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      if(applied!=0){
+        $('#ooo_dom .applied').text(applied);
+      }
+      if(approved!=0){
+      $('#ooo_dom .approved').text(approved);
+      }
+      if(total!=0){
+      $('#ooo_dom .total').text(total +' days');
+      }
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#ooo_dom .applied').css({'width' : applied_perc+"%"});
+        $('#ooo_dom .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#ooo_dom .applied').css({'width' : "0%"});
+        $('#ooo_dom .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+
+    case 'international_travel':
+    {
+      var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
+      var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
+      var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
+
+      if(applied!=0){
+        $('#international_travel .applied').text(applied);
+      }
+      if(approved!=0){
+      $('#international_travel .approved').text(approved);
+      }
+      if(total!=0){
+      $('#international_travel .total').text(total +' days');
+      }
+
+      if(applied || approved || total){
+        applied_perc = (applied/(applied + approved + total))*100;
+        approved_perc = (approved/(applied + approved + total))*100;
+        $('#international_travel .applied').css({'width' : applied_perc+"%"});
+        $('#international_travel .approved').css({'width' : approved_perc+"%"});
+      }
+      else{
+        $('#international_travel .applied').css({'width' : "0%"});
+        $('#international_travel .approved').css({'width' : "0%"});
+      }
+      break;
+    }
+
     case 'comp_off_avail':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -1145,6 +1241,8 @@ function removeSelection(){
   $("#loss_of_pay .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#pay_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#work_from_home .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#ooo_dom .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#international_travel .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off_apply .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#sabbatical .col-md-12 .row").removeClass("Lv-Type-Selected");
@@ -1157,7 +1255,20 @@ function removeSelection(){
 
 
 function gridLoad(name){
-  getLeaveName = {'sabbatical':'Sabbatical', 'comp_off_avail':"Comp Off avail",'paternity_leave':'Paternity','maternity_leave':'Maternity', 'comp_off_earned':'Comp Off Earned', 'work_from_home':"Work From Home",'pay_off':"Pay Off",'loss_of_pay':"Loss Of Pay", 'bereavement_leave':"Bereavement Leave", 'casual_leave':"Casual Leave",'sick_leave': 'Sick Leave', 'earned_leave': 'Earned Leave' };
+  getLeaveName = {'sabbatical':'Sabbatical',
+      'comp_off_avail':"Comp Off avail",
+      'paternity_leave':'Paternity',
+      'maternity_leave':'Maternity',
+      'comp_off_earned':'Comp Off Earned',
+      'work_from_home':"Work From Home",
+      'pay_off':"Pay Off",
+      'loss_of_pay':"Loss Of Pay",
+      'bereavement_leave':"Bereavement Leave",
+      'casual_leave':"Casual Leave",
+      'sick_leave': 'Sick Leave',
+      'earned_leave': 'Earned Leave' ,
+      'international_travel':'International Travel',
+      'ooo_dom':'Domestic Travel'};
   leavename = getLeaveName[name];
   $("#leave_name").text(leavename);
 
@@ -1241,6 +1352,18 @@ removeSelection();
    gridLoad("work_from_home");
   });
 
+   $('#ooo_dom .col-md-12 .row').click(function(){
+    removeSelection();
+   $('#ooo_dom .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("ooo_dom");
+  });
+
+    $('#international_travel .col-md-12 .row').click(function(){
+    removeSelection();
+   $('#international_travel .col-md-12 .row').addClass("Lv-Type-Selected");
+   gridLoad("international_travel");
+  });
+
   $('#sabbatical .col-md-12 .row').click(function(){
     removeSelection();
    $('#sabbatical .col-md-12 .row').addClass("Lv-Type-Selected");
@@ -1262,10 +1385,21 @@ $('#child_care .col-md-12 .row').click(function(){
 
   $("#month_select").change(function(){
     name = $("#leave_name").text();
-    LeaveName = {'Sabbatical':'sabbatical', "Comp Off avail":'comp_off_avail','Maternity':'maternity_leave',
-    'Paternity':'paternity_leave', 'Comp Off Earned':'comp_off_earned', "Work From Home":'work_from_home',"Pay Off":'pay_off',
-    "Loss Of Pay":'loss_of_pay', "Bereavement Leave":'bereavement_leave', "Casual Leave":'casual_leave', 'Sick Leave':'sick_leave',
-    'Earned Leave':'earned_leave' };
+    LeaveName = {'Sabbatical':'sabbatical',
+        "Comp Off avail":'comp_off_avail',
+        'Maternity':'maternity_leave',
+        'Paternity':'paternity_leave',
+        'Comp Off Earned':'comp_off_earned',
+        "Work From Home":'work_from_home',
+        "Pay Off":'pay_off',
+        "Loss Of Pay":'loss_of_pay',
+        "Bereavement Leave":'bereavement_leave',
+        "Casual Leave":'casual_leave',
+        'Sick Leave':'sick_leave',
+        'Earned Leave':'earned_leave',
+        'Domestic Travel': 'ooo_dom',
+        'International Travel':'international_travel'
+    };
   gridLoad(LeaveName[name]);
   });
 

@@ -13,14 +13,16 @@ LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Le
                        ('comp_off_avail', 'Comp Off Avail'),
                        ('pay_off', 'Pay Off'),
                        ('work_from_home', 'Work From Home'),
-                       ('sabbatical', 'Sabbatical'))
+                       ('sabbatical', 'Sabbatical'),
+                       ('ooo_dom', 'Domestic Travel'),
+                       ('ooo_int', 'International Travel'))
 OCCURRENCE_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'))
 SESSION_STATUS = (('session_first', 'First Half'), ('session_second', 'Second Half'))
 BUTTON_NAME = (('success', 'approved'), ('info', 'open'), ('danger', 'rejected'), ('warning', 'cancelled'))
-SHORT_ATTENDANCE_STATUS = (('open','Open'),('closed','Closed'),('accepted','Accepted'))
-SHORT_ATTENDANCE_TYPE = (('half_day','HALF DAY'),('full_day','FULL DAY'))
+SHORT_ATTENDANCE_STATUS = (('open', 'Open'), ('closed', 'Closed'), ('accepted', 'Accepted'))
+SHORT_ATTENDANCE_TYPE = (('half_day', 'HALF DAY'), ('full_day', 'FULL DAY'))
 DISPUTE_STATUS = (('open','Open'),('raised', 'Raised'), ('approved', 'Approved'), ('rejected', 'Rejected'))
 
 
