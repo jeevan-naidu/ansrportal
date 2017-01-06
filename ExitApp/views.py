@@ -208,23 +208,26 @@ class ClearanceFormView(View):
             time = timezone.now()
             user_detail = ResignationInfo.objects.get(id=resignee_id)
             user_email = User.objects.get(id=user_detail.User_id)
-
             form = request.POST
-            if 'hr_approval' in form:
-                hr_approval = form['hr_approval']
-                hr_amount = form['hr_amount']
-                hr_feedback = form['hr_feedback']
-                try:
-                    HRClearanceMail.delay(user_email.first_name, user_email.email)
-                    EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=hr_approval,
-                                          status_by_id=statusby_id,
-                                          department="HR", status_on=time, dept_feedback=hr_feedback,
-                                          dept_due=hr_amount).save()
-                    messages.error(request, 'Your response has been submitted successfully')
-                except Exception as programmingerror:
-                    print programmingerror
+            count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
+            if count == 5:
+                if 'hr_approval' in form:
+                    hr_approval = form['hr_approval']
+                    hr_amount = form['hr_amount']
+                    hr_feedback = form['hr_feedback']
+                    try:
+                        HRClearanceMail.delay(user_email.first_name, user_email.email)
+                        EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=hr_approval,
+                                              status_by_id=statusby_id,
+                                              department="HR", status_on=time, dept_feedback=hr_feedback,
+                                              dept_due=hr_amount).save()
+                        messages.error(request, 'Your response has been submitted successfully')
+                    except Exception as programmingerror:
+                        print programmingerror
+                else:
+                    hr_approval = 1
             else:
-                hr_approval = 1
+                messages.error(request, 'Hr is not suppose to fill unless all department have checked')
             if 'facility_approval' in form:
                 facility_approval = form['facility_approval']
                 facility_amount = form['facility_amount']
