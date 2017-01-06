@@ -31,9 +31,10 @@ class ExitFormAdd(View):
             try:
                 userid = request.user.id
                 user_email = User.objects.get(id=userid)
-                mgr_id = Employee.objects.filter(user_id=userid).values('manager_id')
-                manager = Employee.objects.filter(employee_assigned_id=mgr_id).values('user_id')
-                manager.user.email
+                # import ipdb; ipdb.set_trace()
+                # mgr_id = Employee.objects.filter(user_id=userid).values('manager_id')
+                # manager = Employee.objects.filter(employee_assigned_id=mgr_id).values('user_id')
+                # manager.user.email
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
                 start_date = form.cleaned_data['start_date']
