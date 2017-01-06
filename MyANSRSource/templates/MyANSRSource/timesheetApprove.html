@@ -125,14 +125,14 @@ Approve Timesheet
 <td class="timesheet-approve-options text-center radio-padding-mod">
 
   <div class="checkbox checkbox-success radio-mod btn-xs">
-        <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
+        <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}" disabled>
         <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect disable-select">
         Approve
         </label>
     </div>
 
     <div class="checkbox checkbox-danger radio-mod btn-xs">
-        <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}">
+        <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}" disabled>
         <label for="reject_{{team_members.user.id}}"  class="noselect disable-select">
         Reject
         </label>
@@ -483,6 +483,10 @@ $(document).ready(function() {
 
 
              $('.employee').on('click', function()  { console.log("click");
+
+                  // Enabling approve and reject checkboxes
+
+                  $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
 
                   $.ajax({
                     url: '/myansrsource/timesheet/time_sheet_employee',
