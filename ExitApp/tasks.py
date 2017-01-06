@@ -94,7 +94,7 @@ class LibraryClearanceMail(Task):
             logger.debug('send successful')
 
 
-class ITClearanceMail(Task):
+class FinanceClearanceMail(Task):
     def run(self, username, user_email, ):
         msg_html = render_to_string('email_templates/it_email.html',
                                     {'registered_by': username, })

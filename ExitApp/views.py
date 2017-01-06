@@ -4,7 +4,7 @@ from django.views.generic import View
 from django.contrib.auth.models import User
 from .models import ResignationInfo, EmployeeClearanceInfo
 from forms import UserExitForm
-from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, ITClearanceMail, AdminClearanceMail
+from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, LibraryClearanceMail, FinanceClearanceMail, AdminClearanceMail, MGRClearanceMail, HRClearanceMail, FacilityClearanceMail
 from django.utils import timezone
 from employee.models import Employee
 from django.contrib import messages
@@ -183,10 +183,12 @@ class ClearanceFormView(View):
             facility_feedback = form['facility_feedback']
             manager_feedback =  form['manager_feedback']
             library_feedback =  form['library_feedback']
+            user_email = User.objects.get(id=resignee_id)
 
             if 'hr_approval' in form:
                 hr_approval = form['hr_approval']
                 try:
+                    HRClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=hr_approval,
                                           status_by_id=statusby_id,
                                           department="HR", status_on=time, dept_feedback=hr_feedback,
@@ -198,6 +200,7 @@ class ClearanceFormView(View):
             if 'facility_approval' in form:
                 facility_approval = form['facility_approval']
                 try:
+                    FacilityClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=facility_approval,
                                           status_by_id=statusby_id,
                                           department="FAC", status_on=time, dept_feedback=facility_feedback,
@@ -209,6 +212,7 @@ class ClearanceFormView(View):
             if 'finance_approval' in form:
                 finance_approval = form['finance_approval']
                 try:
+                    FinanceClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=finance_approval,
                                           status_by_id=statusby_id,
                                           department="FIN", status_on=time, dept_feedback=finance_feedback,
@@ -220,6 +224,7 @@ class ClearanceFormView(View):
             if 'manager_approval' in form:
                 manager_approval = form['manager_approval']
                 try:
+                    MGRClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=manager_approval,
                                           status_by_id=statusby_id,
                                           department="MGR", status_on=time, dept_feedback=manager_feedback,
@@ -231,6 +236,7 @@ class ClearanceFormView(View):
             if 'admin_approval' in form:
                 admin_approval = form['admin_approval']
                 try:
+                    AdminClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=admin_approval,
                                           status_by_id=statusby_id,
                                           department="IT", status_on=time, dept_feedback=admin_feedback,
@@ -242,6 +248,7 @@ class ClearanceFormView(View):
             if 'library_approval' in form:
                 library_approval = form['library_approval']
                 try:
+                    LibraryClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=library_approval, status_by_id=statusby_id,
                                           department="LIB", status_on=time, dept_feedback=library_feedback,
                                           dept_due=lib_amount).save()
