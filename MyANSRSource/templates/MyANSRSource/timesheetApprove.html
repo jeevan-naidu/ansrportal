@@ -5,6 +5,11 @@
 {% load permissions %}
 {% block pageTitle %}
 Approve Timesheet
+{% for message in messages %}
+    <li class="{{ message.tags }}">
+    {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
+    </li>
+{% endfor %}
 {% endblock %}
 {% block switch_dates %}
 <div class="dropdown week-selector pull-left">
@@ -53,25 +58,22 @@ Approve Timesheet
 
     <div class="panel-body"><form method="post" action=""> {% csrf_token %}
            <div class="form-inline approve-reject pull-right">
-
                 <div class="checkbox checkbox-success radio-mod btn-xs">
-<input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
-
-        Send Reminder Mail
-        </label>
-    </div>
-                                  </div>
+                  <input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
+                  <label for="reminder_mail"  class="ansr-orange-mod noselect disable-select">Send Reminder Mail</label>
+                </div>
+            </div>
 
 
 <table class="table table-striped" id="timesheet-approve-table">
   <thead>
     <tr>
-        <th>Employee Id</th>
+      <th>Employee Id</th>
       <th>Name</th>
-      <th>Billable (Hrs) $ >0</th>
-        <th>Billable (Hrs) $ =0</th>
-      <th>Non-Billable (Hrs)</th>
-      <th>Leave (Hrs)</th>
+      <th>Billable </th>
+      <th>Billable (0$)</th>
+      <th>Non-Billable </th>
+      <th>Leave</th>
       <th class="text-center">Options</th>
       <th> Feedback</th>
     </tr>
@@ -79,14 +81,17 @@ Approve Timesheet
   <tbody>
 
   {% for team_members,values in ts_data_list_approved_false.iteritems %}
-    <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
-      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}}  {{team_members.user.last_name}}</a></td>
+    <tr class="odd gradeX">
+      <td>{{team_members.employee_assigned_id}} </td>
+      <td>
+      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+      </td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}}  </td>
-        <td>{{values.non_billable_total}}</td>
+      <td>{{values.non_billable_total}}</td>
       <td> {{values.leave_hours}} </td>
 
-<div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                  <div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
@@ -117,18 +122,18 @@ Approve Timesheet
 
 
 
-<td class="timesheet-approve-options text-center">
+<td class="timesheet-approve-options text-center radio-padding-mod">
 
   <div class="checkbox checkbox-success radio-mod btn-xs">
-        <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}">
-        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect">
+        <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}" disabled>
+        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect disable-select">
         Approve
         </label>
     </div>
 
     <div class="checkbox checkbox-danger radio-mod btn-xs">
-        <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}">
-        <label for="reject_{{team_members.user.id}}"  class="noselect">
+        <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}" disabled>
+        <label for="reject_{{team_members.user.id}}"  class="noselect disable-select">
         Reject
         </label>
     </div>
@@ -148,14 +153,17 @@ Approve Timesheet
 {%endfor %}
 
    {% for team_members,values in ts_data_list_approved_true.iteritems %}
-    <tr class="odd gradeX"> <td>{{team_members.employee_assigned_id}} </td>
-      <td><a class="timesheet-approve-user-details employee" data-value="{{team_members.user.id}}">{{team_members.user.first_name}} {{team_members.user.last_name}}</a></td>
+    <tr class="odd gradeX">
+      <td>{{team_members.employee_assigned_id}} </td>
+      <td>
+      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+      </td>
       <td>{{values.non_zero_value}}</td>
       <td>{{values.zero_value}} </td>
-        <td>{{values.non_billable_total}}</td>
+      <td>{{values.non_billable_total}}</td>
       <td> {{values.leave_hours}} </td>
 
-<div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
+                  <div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
@@ -163,16 +171,12 @@ Approve Timesheet
                           <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback </label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
-                              </div>
-
+                          <div class="form-group">
+                            <label class="col-sm-4 control-label">Feedback </label>
+                            <div class="col-sm-7 controls">
+                              <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
                             </div>
-
-
-
+                          </div>
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
@@ -215,17 +219,32 @@ Approve Timesheet
 
 
 
-<div class="panel pb-15">
-    <div class="panel-body">
 
-<table class="table table-hover">
+
+
+
+
+<!-- Modal Area III -->
+
+
+                  <div class="modal fade" id="timesheet-approve-report" tabindex="-1" role="dialog" aria-labelledby="timesheet-approve-report" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="timesheet-approve-report-body">Timesheet Overview : <span class="timesheet-member-name"></span></h4>
+                        </div>
+                        <div class="modal-body">
+                    <table class="table table-hover project-table">
                       <thead>
                         <tr>
-                          <th>Project</th>
-                          <th>Task</th>
+                          <th style="width: 300px;">Project</th>
+                          <th style="width: 300px;">Task</th>
                           <th>Mon</th>
                           <th>Tue</th>
                           <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
                           <th>Thu</th>
                           <th>Fri</th>
                         </tr>
@@ -233,66 +252,90 @@ Approve Timesheet
                       <tbody>
 
 
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the Task</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
+                        <tr class="project-time-row">
+                          <td class="project_name">The name of the project</td>
+                          <td class="task">The name of the Task</td>
+                          <td class="mondayH">0</td>
+                          <td class="tuesdayH">0</td>
+                          <td class="wednesdayH">0</td>
+                          <td class="thursdayH">0</td>
+                          <td class="fridayH">0</td>
+                          <td class="saturdayH">0</td>
+                          <td class="sundayH">0</td>
                         </tr>
 
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the Task</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                        </tr>
-
-                        <tr>
-                          <td>The name of the project</td>
-                          <td>The name of the chapter</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>1</td>
-                        </tr>
-
-                        <tr>
-                          <td></td>
-                          <td>Total</td>
-                          <td>3</td>
-                          <td>6</td>
-                          <td>3</td>
-                          <td>6</td>
-                          <td>3</td>
-                        </tr>
 
                       </tbody>
                     </table>
 
-    </div>
-</div>
+
+                    <table class="table table-hover activity-table">
+                      <thead>
+                        <tr>
+                          <th style="width: 600px;">Activity</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
 
 
+                      <tbody>
+                        <tr class="activity-time-row">
+                          <td class="activity">The name of the activity</td>
+                          <td class="activity_monday">0</td>
+                          <td class="activity_tuesday">0</td>
+                          <td class="activity_wednesday">0</td>
+                          <td class="activity_thursday">0</td>
+                          <td class="activity_friday">0</td>
+                          <td class="activity_saturday">0</td>
+                          <td class="activity_sunday">0</td>
+                        </tr>
+                      </tbody>
+                    </table>
 
 
+                    <table class="table table-hover total-table">
+                      <thead>
+                        <tr>
+                          <th class="invisible" style="width: 600px;">Activity</th>
+                          <th>Mon</th>
+                          <th>Tue</th>
+                          <th>Wed</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                          <th>Thu</th>
+                          <th>Fri</th>
+                        </tr>
+                      </thead>
+                        <tr class="total-row">
+                          <td>Total</td>
+                          <td class="monday_total">0</td>
+                          <td class="tuesday_total">0</td>
+                          <td class="wednesday_total">0</td>
+                          <td class="thursday_total">0</td>
+                          <td class="friday_total">0</td>
+                          <td class="saturday_total">0</td>
+                          <td class="sunday_total">0</td>
+                        </tr>
+                    </table>
 
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 
-
-
-
-
-
-
-
-
-
+<!-- ./Modal Area III -->
 
 
 
@@ -303,10 +346,128 @@ Approve Timesheet
 
 
 <script type="text/javascript">
-var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projectType":"Pr","feedback":"None","project__projectType__code":"Pr","mondayH":"8.00","sundayH":"0.00","managerFeedback":"None","totalH":"40.00","teamMember__last_name":"RS","hold":"True","id":"170212","task":"824","employee_id":"16011029","project__name":"ANSR PORTAL DEV- 2016 3rd quarter","tuesdayH":"8.00","fridayH":"8.00","thursdayH":"8.00","tsId":"170212","teamMember__first_name":"Balamurugan","wednesdayH":"8.00","approved":"False","project":"1487","project__totalValue":"0.00","project_value":"0.00","teamMember__employee__employee_assigned_id":"16011029","saturdayH":"0.00"}],"total_list":[{"monday_total":10,"friday_total":8,"tuesday_total":10,"wednesday_total":8,"saturday_total":0,"thurusday_total":8,"sunday_total":0}],"atData":[{"activity_sunday":"0.00","atId":"170210","feedback":"None","activity_saturday":"0.00","activity_friday":"0.00","activity_thursday":"0.00","activity_wednesday":"0.00","activity_tuesday":"0.00","activity_total":"2.00","activity":"39","activity_monday":"2.00"},{"activity_sunday":"0.00","atId":"170211","feedback":"None","activity_saturday":"0.00","activity_friday":"0.00","activity_thursday":"0.00","activity_wednesday":"0.00","activity_tuesday":"2.00","activity_total":"2.00","activity":"37","activity_monday":"0.00"}]}        $(document).ready(function() {
+
+var project_time_row = $('.project-time-row').html();
+var activity_time_row = $('.activity-time-row').html();
+var total_row = $('.total-row').html();
+
+
+
+// Functions
+
+var time_iterate = function(e){
+
+  var time_obj = e;
+
+  // console.log(time_obj);
+
+  $('.project-time-row').html('');
+  $('.activity-time-row').html('');
+
+  // Append employee name to modal header
+
+  $('.timesheet-member-name').html(time_obj.tsData[0]['employee_id']);
+
+  // tsdata iteration
+
+  for (var time_key in time_obj['tsData']){
+    if (time_obj['tsData'].hasOwnProperty(time_key)){
+
+      // Console log section
+
+/*      console.log(time_key);
+      console.log(time_obj['tsData'][time_key]);
+      console.log(time_obj.tsData[0]['id']);*/
+
+
+      // Get length
+
+      var obj_length = time_obj.tsData.length;
+      console.log('the project length is ' + obj_length);
+
+      // Populate project row
+
+        $('.project-table tbody').append('<tr class="project-time-row"></tr>')
+        $('.project-time-row:last-child').append(project_time_row);
+        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
+        $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task']);
+        $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[time_key]['mondayH']);
+        $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
+        $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
+        $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
+        $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
+        $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
+
+    }
+  } // ./ ts data iteration
+
+
+
+  // atdata iteration
+
+  for (var time_key in time_obj['atData']){
+    if (time_obj['atData'].hasOwnProperty(time_key)){
+
+      console.log(time_obj['atData'][0]);
+
+      // Get length
+
+      var obj_length = time_obj.atData.length;
+      console.log('activity length is ' + obj_length);
+
+      // Populate project row
+
+        $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
+        $('.activity-time-row:last-child').append(activity_time_row);
+        $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity']);
+        $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
+        $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
+        $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
+        $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
+        $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
+        $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
+
+    }else{
+        $('.activity-time-row').append(activity_time_row);
+        $('.activity-time-row:last-child td.activity').html('nil');
+        $('.activity-time-row:last-child td.activity_monday').html('nil');
+        $('.activity-time-row:last-child td.activity_tuesday').html('nil');
+        $('.activity-time-row:last-child td.activity_wednesday').html('nil');
+        $('.activity-time-row:last-child td.activity_friday').html('nil');
+        $('.activity-time-row:last-child td.activity_saturday').html('nil');
+        $('.activity-time-row:last-child td.activity_sunday').html('nil');
+    }
+
+  } // ./ at data iteration
+
+
+
+  // total_list iteration
+
+  for (var time_key in time_obj['total_list']){
+    if (time_obj['total_list'].hasOwnProperty(time_key)){
+      console.log(time_obj.total_list[0]['friday_total']);
+      $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
+      $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
+      $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
+      $('#timesheet-approve-report .thursday_total').html(time_obj.total_list[0]['thursday_total']);
+      $('#timesheet-approve-report .friday_total').html(time_obj.total_list[0]['friday_total']);
+      $('#timesheet-approve-report .saturday_total').html(time_obj.total_list[0]['saturday_total']);
+      $('#timesheet-approve-report .sunday_total').html(time_obj.total_list[0]['sunday_total']);
+    }
+  }
+
+
+
+
+} // ./time_iterate function
+
+
+
+$(document).ready(function() {
                 "use strict";
 
-            $('#timesheet-approve-table').dataTable();
+            // $('#timesheet-approve-table').dataTable();
         $("[data-toggle='tooltip']").tooltip();
 
             /* Toggle checkbox */
@@ -320,14 +481,18 @@ var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projec
 
              $('.employee').on('click', function()  { console.log("click");
 
+                  // Enabling approve and reject checkboxes
+
+                  $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
+
                   $.ajax({
                     url: '/myansrsource/timesheet/time_sheet_employee',
                     type: 'GET',
                     dataType :'json',
                     data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
                     success: function (data) {
-                    console.log(JSON.stringify(data));
-
+                    // console.log(JSON.stringify(data));
+                    time_iterate(data);
                     },
 
                   });
@@ -353,7 +518,7 @@ var obj = {"tsData":[{"project_name":"ANSR PORTAL DEV- 2016 3rd quarter","projec
 
         });
 
-        } );
+} ); // ./doc-ready
 </script>
 
 

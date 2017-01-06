@@ -43,7 +43,7 @@
 		<span class="pull-right">
 			<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
 				<span class="glyphicon glyphicon-plus"></span>
-				Add Project effort Item
+				Add
 			</a>
 		</span>
 	</legend>
@@ -138,10 +138,21 @@
 				{% endif %}
 
 			{% endfor %}
+
+
+
+
+<!-- Timesheet Hours section -->
+
+
 			{% for data in form.visible_fields %}
 			{% spaceless %}
 			{% if data.label in shortDays %}
+
 					<td style="position:relative">
+
+
+
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
@@ -309,6 +320,8 @@
             		{% endspaceless %}
 			{% endfor %}
 
+<!-- end of bloody for loop -->
+
 
                {% for field in form.hidden_fields %}
                             {% if 'project_value' in field.label %}
@@ -345,10 +358,13 @@
 	<span class="pull-right">
 		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn-success btn-xs">
 			<span class="glyphicon glyphicon-plus"></span>
-			Add Non-project effort Item
+			Add
 		</a>
 	</span>
 	</legend>
+
+
+<!-- Some sort of alert -->
 	{{ atFormset.management_form }}
 	{% for eachError in atErrorList %}
 		{% if eachError.items|length > 0 %}
