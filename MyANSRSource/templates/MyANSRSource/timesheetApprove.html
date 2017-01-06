@@ -291,7 +291,7 @@ Approve Timesheet
 
                       <tbody>
                         <tr class="activity-time-row">
-                          <td class="activity_name">The name of the activity</td>
+                          <td class="activity">The name of the activity</td>
                           <td class="activity_monday">0</td>
                           <td class="activity_tuesday">0</td>
                           <td class="activity_wednesday">0</td>
@@ -300,7 +300,6 @@ Approve Timesheet
                           <td class="activity_saturday">0</td>
                           <td class="activity_sunday">0</td>
                         </tr>
-
 
                         <tr class="total-row">
                           <td>Total</td>
@@ -350,9 +349,14 @@ var time_iterate = function(e){
 
   var time_obj = e;
 
-  console.log(time_obj);
+  // console.log(time_obj);
 
   $('.project-time-row').html('');
+  $('.activity-time-row').html('');
+
+  // Append employee name to modal header
+
+  $('.timesheet-member-name').html(time_obj.tsData[0]['employee_id']);
 
   // tsdata iteration
 
@@ -361,13 +365,10 @@ var time_iterate = function(e){
 
       // Console log section
 
-      console.log(time_key);
+/*      console.log(time_key);
       console.log(time_obj['tsData'][time_key]);
-      console.log(time_obj.tsData[0]['id']);
+      console.log(time_obj.tsData[0]['id']);*/
 
-      // Append employee name to modal header
-
-      $('.timesheet-member-name').html(time_obj.tsData[0]['id']);
 
       // Get length
 
@@ -393,6 +394,44 @@ var time_iterate = function(e){
 
 
 
+  // atdata iteration
+
+  for (var time_key in time_obj['atData']){
+    if (time_obj['atData'].hasOwnProperty(time_key)){
+
+      console.log(time_obj['atData'][0]);
+
+      // Get length
+
+      var obj_length = time_obj.atData.length;
+      console.log('activity length is ' + obj_length);
+
+      // Populate project row
+
+      for(i=0; i<obj_length; i++){
+        $('.activity-time-row').append(activity_time_row);
+        $('.activity-time-row:last-child td.activity').html(time_obj.atData[i]['activity']);
+        $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[i]['activity_monday']);
+        $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[i]['activity_tuesday']);
+        $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[i]['activity_wednesday']);
+        $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[i]['activity_friday']);
+        $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[i]['activity_saturday']);
+        $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[i]['activity_sunday']);
+      } // ./for loop
+    }else{
+        $('.activity-time-row').append(activity_time_row);
+        $('.activity-time-row:last-child td.activity').html('nil');
+        $('.activity-time-row:last-child td.activity_monday').html('nil');
+        $('.activity-time-row:last-child td.activity_tuesday').html('nil');
+        $('.activity-time-row:last-child td.activity_wednesday').html('nil');
+        $('.activity-time-row:last-child td.activity_friday').html('nil');
+        $('.activity-time-row:last-child td.activity_saturday').html('nil');
+        $('.activity-time-row:last-child td.activity_sunday').html('nil');      
+    }
+
+  } // ./ at data iteration
+
+
 
   // total_list iteration
 
@@ -410,7 +449,9 @@ var time_iterate = function(e){
   }
 
 
-}
+
+
+} // ./time_iterate function
 
 
 
