@@ -8,6 +8,7 @@ from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, Li
 from django.utils import timezone
 from employee.models import Employee
 from django.contrib import messages
+from django.contrib.auth.models import User, Group
 
 
 # Create your views here.
@@ -65,11 +66,17 @@ class ExitFormAdd(View):
 class ResignationAcceptance(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        allresignee = ResignationInfo.objects.all()
-        id = ResignationInfo.objects.values_list('User_id')
-        last_date = Employee.objects.values_list('exit').filter(user_id=id)
-        context['resigneedata'] = allresignee
-        context['last_date'] = last_date
+        if request.user.groups.filter(name__in=['myansrsourceHR']).exists():
+            allresignee = ResignationInfo.objects.all()
+            context['resigneedata'] = allresignee
+        else:
+            mgrid = Employee.objects.get(user_id=request.user.id)
+            reportee = Employee.objects.filter(manager_id=mgrid)
+            filterdata = []
+            for value in reportee:
+                filterdata.append(value.user.id)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
+            context['resigneedata'] = allresignee
         return render(request, "exitacceptance.html", context)
 
     def post(self, request):
@@ -178,22 +185,12 @@ class ClearanceFormView(View):
             resignee_id = request.GET.get('id')
             statusby_id = request.user.id
             time = timezone.now()
-            facility_amount = form['facility_amount']
-            admin_amount = form['admin_amount']
-            hr_amount = form['hr_amount']
-            lib_amount = form['lib_amount']
-            manager_amount = form['manager_amount']
-            finance_amount = form['finance_amount']
-            admin_feedback = form['admin_feedback']
-            finance_feedback = form['finance_feedback']
-            hr_feedback = form['hr_feedback']
-            facility_feedback = form['facility_feedback']
-            manager_feedback =  form['manager_feedback']
-            library_feedback =  form['library_feedback']
             user_email = User.objects.get(id=resignee_id)
 
             if 'hr_approval' in form:
                 hr_approval = form['hr_approval']
+                hr_amount = form['hr_amount']
+                hr_feedback = form['hr_feedback']
                 try:
                     HRClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=hr_approval,
@@ -206,6 +203,8 @@ class ClearanceFormView(View):
                 hr_approval = 1
             if 'facility_approval' in form:
                 facility_approval = form['facility_approval']
+                facility_amount = form['facility_amount']
+                facility_feedback = form['facility_feedback']
                 try:
                     FacilityClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=facility_approval,
@@ -218,6 +217,8 @@ class ClearanceFormView(View):
                 facility_approval = 1
             if 'finance_approval' in form:
                 finance_approval = form['finance_approval']
+                finance_amount = form['finance_amount']
+                finance_feedback = form['finance_feedback']
                 try:
                     FinanceClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=finance_approval,
@@ -230,6 +231,8 @@ class ClearanceFormView(View):
                 finance_approval =1
             if 'manager_approval' in form:
                 manager_approval = form['manager_approval']
+                manager_amount = form['manager_amount']
+                manager_feedback = form['manager_feedback']
                 try:
                     MGRClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=manager_approval,
@@ -241,7 +244,9 @@ class ClearanceFormView(View):
             else:
                 manager_approval = 1
             if 'admin_approval' in form:
+                admin_amount = form['admin_amount']
                 admin_approval = form['admin_approval']
+                admin_feedback = form['admin_feedback']
                 try:
                     AdminClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=admin_approval,
@@ -254,6 +259,8 @@ class ClearanceFormView(View):
                 admin_approval =1
             if 'library_approval' in form:
                 library_approval = form['library_approval']
+                lib_amount = form['lib_amount']
+                library_feedback = form['library_feedback']
                 try:
                     LibraryClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=library_approval, status_by_id=statusby_id,
