@@ -331,11 +331,6 @@ Approve Timesheet
 
 
 
-
-
-
-
-
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
@@ -357,6 +352,7 @@ var time_iterate = function(e){
 
   console.log(time_obj);
 
+  $('.project-time-row').html('');
 
   // tsdata iteration
 
@@ -369,14 +365,29 @@ var time_iterate = function(e){
       console.log(time_obj['tsData'][time_key]);
       console.log(time_obj.tsData[0]['id']);
 
+      // Append employee name to modal header
+
+      $('.timesheet-member-name').html(time_obj.tsData[0]['id']);
+
       // Get length
 
       var obj_length = time_obj.tsData.length;
       console.log(obj_length);
 
-      // Append employee name to modal header
+      // Populate project row
 
-      $('.timesheet-member-name').html(time_obj.tsData[0]['id']);
+      for(i=0; i<obj_length; i++){
+        $('.project-time-row').append(project_time_row);
+        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[i]['project_name']);
+        $('.project-time-row:last-child td.task').html(time_obj.tsData[i]['task']);
+        $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[i]['mondayH']);
+        $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[i]['tuesdayH']);
+        $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[i]['wednesdayH']);
+        $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[i]['fridayH']);
+        $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[i]['saturdayH']);
+        $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[i]['sundayH']);
+      }
+
     }
   } // ./ ts data iteration
 
