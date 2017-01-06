@@ -50,6 +50,7 @@ class ExitFormAdd(View):
                 value.exit = last_date
                 value.save()
                 ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email)
+                messages.error(request, 'Your Resignation has been Submitted')
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
                 print programmingerror
