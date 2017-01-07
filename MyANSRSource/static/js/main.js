@@ -1178,13 +1178,28 @@ app.getSum = function($elements, $outputElement) {
                 var $bTask = $table.find('.b-task'),
                     $rowTotalView = $('.row-total-view');
 
-                var popoverCon = '<div class="mar-bot-5"><label class="sm-fw-label hours"></label> <input style="position: absolute;top: -44px;left: -39px;width: 82px;    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.25) inset;" class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
-                
+                var popoverCon = '<div class="mar-bot-5" style="display: none;><label class="sm-fw-label project-type-popup">Questions</label> <input class="form-control small-input question-input" type="number" value="0" min="0" step="0.01"></div>';
+                popoverCon += '<div class="mar-bot-5"><label class="sm-fw-label hours"></label> <input style="position: absolute;top: -44px;left: -39px;width: 82px;" class="form-control small-input hours-input" type="number" value="0" max="24" min="0" step="0.01"></div>';
+                popoverCon += '<div class="mar-bot-5" style="display: none;><label class="sm-fw-label hours">Norm</label> <label class="small-input norm-input"></label></div>';
+
+                // Adding callback
+
+                var tmp = $.fn.popover.Constructor.prototype.show;
+                $.fn.popover.Constructor.prototype.show = function () {
+                  tmp.call(this);
+                  if (this.options.callback) {
+                    this.options.callback();
+                  }
+                }
+
                 $dayPopoverBtn.popover({
                     trigger: 'click',
                     html: true,
                     placement: 'bottom',
-                    content: popoverCon
+                    content: popoverCon,
+                    callback: function(){
+                        $('input.hours-input').focus();
+                    }
                 });
 
 

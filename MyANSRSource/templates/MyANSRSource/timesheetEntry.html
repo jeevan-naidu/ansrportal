@@ -130,7 +130,8 @@
 
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
-								<div class="btn btn-default day-popover-button {% if data.value %} disabled {% endif %} fixed-btn-size" >
+								
+									<a class="btn btn-default day-popover-button {% if data.value %} disabled {% endif %} fixed-btn-size" href="javascript:;">
 							{% endif %}
 						{% endfor %}
 
@@ -139,26 +140,14 @@
                                     {% with dayclass=data.label|add:"-t" %}
                                         
 
-
-
-
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">
-                                            {% if tdata.value > 0 %} 
-                                            	{{ tdata.value }} 
-                                            {% else %} 
-                                            	0 
-                                            {% endif %}
-                                            </span>H
-
-
-
-
-
+                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{% if tdata.value > 0 %} {{ tdata.value }} {% else %} 0 {% endif %}</span>H
+                                        
                                     {% endwith %}
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
-						</div>
+						</a>
+
 
 					</td>
 
