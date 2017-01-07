@@ -210,8 +210,8 @@ class ClearanceFormView(View):
             user_email = User.objects.get(id=user_detail.User_id)
             form = request.POST
             count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
-            if count == 5:
-                if 'hr_approval' in form:
+            if 'hr_approval' in form:
+                if count == 5:
                     hr_approval = form['hr_approval']
                     hr_amount = form['hr_amount']
                     hr_feedback = form['hr_feedback']
@@ -221,13 +221,14 @@ class ClearanceFormView(View):
                                               status_by_id=statusby_id,
                                               department="HR", status_on=time, dept_feedback=hr_feedback,
                                               dept_due=hr_amount).save()
-                        messages.error(request, 'Your response has been submitted successfully')
+                        messages.success(request, 'Your response has been submitted successfully')
                     except Exception as programmingerror:
                         print programmingerror
                 else:
-                    hr_approval = 1
+                    messages.error(request, 'Hr is not suppose to fill unless all department have checked')
             else:
-                messages.error(request, 'Hr is not suppose to fill unless all department have checked')
+                hr_approval = 1
+
             if 'facility_approval' in form:
                 facility_approval = form['facility_approval']
                 facility_amount = form['facility_amount']
@@ -238,7 +239,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="FAC", status_on=time, dept_feedback=facility_feedback,
                                           dept_due=facility_amount).save()
-                    messages.error(request, 'Your response has been submitted successfully')
+                    messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -253,7 +254,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="FIN", status_on=time, dept_feedback=finance_feedback,
                                           dept_due=finance_amount).save()
-                    messages.error(request, 'Your response has been submitted successfully')
+                    messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -268,7 +269,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="MGR", status_on=time, dept_feedback=manager_feedback,
                                           dept_due=manager_amount).save()
-                    messages.error(request, 'Your response has been submitted successfully')
+                    messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -283,6 +284,7 @@ class ClearanceFormView(View):
                                           status_by_id=statusby_id,
                                           department="IT", status_on=time, dept_feedback=admin_feedback,
                                           dept_due=admin_amount).save()
+                    messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -296,7 +298,7 @@ class ClearanceFormView(View):
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=library_approval, status_by_id=statusby_id,
                                           department="LIB", status_on=time, dept_feedback=library_feedback,
                                           dept_due=lib_amount).save()
-                    messages.error(request, 'Your response has been submitted successfully')
+                    messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
@@ -316,7 +318,7 @@ class ClearanceList(View):
         if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin']).exists():
             d = date.today()
             final_val = d + timedelta(days=1)
-            allresignee = ResignationInfo.objects.filter(last_date_accepted=final_val)
+            allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val)
             context['approved_candidate'] = allresignee
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
@@ -326,7 +328,7 @@ class ClearanceList(View):
             final_val = d + timedelta(days=1)
             for value in reportee:
                 filterdata.append(value.user.id)
-            allresignee = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted=final_val)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted__lte=final_val)
             context['approved_candidate'] = allresignee
         return render(request, "clearancelist.html", context)
 
