@@ -17,19 +17,6 @@
 
 </style>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   <form id="timesheet" method="post" action="" enctype="multipart/form-data">
 
                     <div class="panel pb-15">
@@ -102,28 +89,18 @@
 			</td>
 		</tr>
 
-            	<tr>
-			{% for field in form.hidden_fields %}
-				{% if 'id' in field.label %}
-					<td style="display: none">{{ field.label }}</td>
-				{% endif %}
-
-			{% endfor %}
-			{% for data in form.visible_fields %}
-				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-				{% if forloop.counter <= 4 %}
-					<th class="res-10-per">
-				{% else %}
-					<th>
-				{% endif %}
-				{{ data.label }}
-				{% if data.field.required %}
-					<span class="required">*</span>
-				{% endif %}
-					</th>
-				{% endif %}
-			{% endfor %}
-            	</tr>
+		<tr>
+			<th class="res-10-per">Project <span class="required">*</span></th>
+			<th class="res-10-per">Task <span class="required">*</span></th>
+			<th class="res-10-per">Mon</th>
+			<th class="res-10-per">Tue</th>
+			<th>Wed</th>
+			<th>Thu</th>
+			<th>Fri</th>
+			<th>Sat</th><th>Sun</th>
+			<th>Total</th>
+			<th>Delete</th>
+		</tr>
 		</thead>
 		<tbody>
 		{% endif %}
@@ -140,8 +117,6 @@
 			{% endfor %}
 
 
-
-
 <!-- Timesheet Hours section -->
 
 
@@ -155,83 +130,48 @@
 
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
-								{% if data.value %}
-									<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">
-								{% else %}
-									<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">
-								{% endif %}
+								<div class="btn btn-default day-popover-button {% if data.value %} disabled {% endif %} fixed-btn-size" >
 							{% endif %}
 						{% endfor %}
-                            <span style="display: none;">
-							{% for tdata in form.hidden_fields %}
-								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
-									{% for typeData in form.hidden_fields %}
-										{% if 'projectType' in typeData.id_for_label %}
-											{% if tdata.value > 0 %}
-												<span class="b-questions set-zero">{{ tdata.value }}</span>
-												<span class="project-unit">{{ typeData.value }}</span>
-											{% else %}
-												<span class="b-questions set-zero">0</span>
-												{% if typeData.value == None %}
-													<span class="project-unit set-q">Q</span>
-												{% else %}
-													<span class="project-unit set-q">{{ typeData.value }}</span>
-												{% endif %}
-											{% endif %}
-										{% endif %}
-									{% endfor %}
-									{{ tdata }}
-								{% endif %}
-							{% endfor %}
-                            </span>
 
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
-                                        {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
-                                        {% else %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H
-                                        {% endif %}
+                                        
+
+
+
+
+                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">
+                                            {% if tdata.value > 0 %} 
+                                            	{{ tdata.value }} 
+                                            {% else %} 
+                                            	0 
+                                            {% endif %}
+                                            </span>H
+
+
+
+
+
                                     {% endwith %}
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
-						</a>
+						</div>
+
 					</td>
+
+
 				{% elif data.label == 'Total' %}
 					<td>
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
-								{% if data.value %}
-									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
-								{% else %}
-									<a class="lh-30 btn-default row-total-view fixed-btn-size" href="javascript:;">
-								{% endif %}
+								<a class="lh-30 btn-default row-total-view {% if data.value %} disabled {% endif %} fixed-btn-size" href="javascript:;">
 							{% endif %}
 						{% endfor %}
-                            <span style="display: none;">
-							{% for data in form.hidden_fields %}
-								{% if 'totalQ' in data.id_for_label %}
-									{% for typeData in form.hidden_fields %}
-										{% if 'projectType' in typeData.id_for_label %}
-										{% if data.value > 0 %}
-											<span class="t-questions set-zero">{{ data.value }}</span>
-											<span class="project-unit">{{ typeData.value }}</span>
-										{% else %}
-											<span class="t-questions set-zero">0</span>
-											{% if typeData.value == None %}
-												<span class="project-unit">Q</span>
-											{% else %}
-												<span class="project-unit">{{ typeData.value }}</span>
-											{% endif %}
-										{% endif %}
-										{% endif %}
-									{% endfor %}
-									{{ data }}
-								{% endif %}
-							{% endfor %}
-                            </span>
+
+
 
 							{% for data in form.hidden_fields %}
 
@@ -256,11 +196,9 @@
 									    {% endif %}
 									{% endif %}
 								    {% endfor %}
-									{% if data.value > 0 %}
-										<span class="t-hours set-zero">{{ data.value }}</span>H
-									{% else %}
-										<span class="t-hours set-zero">0</span>H
-									{% endif %}
+									
+										<span class="t-hours set-zero">{% if data.value > 0 %} {{ data.value }} {% else %} 0 {% endif %}</span>H
+									
 									{{ data }}
 								{% endif %}
 							{% endfor %}
@@ -274,11 +212,7 @@
 							{% with apIdT="#myModal-"|add:data.id_for_label %}
 								{% for data in form.visible_fields %}
 									{% if 'hold' in data.label %}
-										{% if data.value %}
-											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-										{% else %}
-											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-										{% endif %}
+										<button type="button" class="btn btn-default {% if data.value %} disabled {% endif %}" data-toggle="modal" data-target={{ apIdT }}>
 									{% endif %}
 								{% endfor %}
 							{% endwith %}
@@ -304,15 +238,9 @@
 					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
 
 
-
-
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label or 'approved' in data.label %}
-							{% if holdData.value %}
-								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}
-								<td>{{ data }}</td>
-							{% endif %}
+							<td {% if holdData.value %} class="ansr-disabled" {% endif %}>{{ data }}</td>
 						{% endif %}
 					{% endfor %}
 					{% endif %}
@@ -341,16 +269,10 @@
 </div>
 </div>
 
+<div class="panel pb-15">
+    <!-- first widget (vertical tabs) -->
 
-
-
-                    <div class="panel pb-15">
-                        <!-- first widget (vertical tabs) -->
-
-                        <div class="panel-body">
-
-
-
+    <div class="panel-body">
 
     <div id="timesheet-non-billable">
 	<legend>
@@ -375,32 +297,23 @@
 			</div>
 		{% endif %}
 	{% endfor %}
-	<table class="table table-condensed table-responsive"id="non_project_table" >
+	<table class="table table-condensed table-responsive" id="non_project_table" >
 	{% for form in atFormset %}
 		{{ form.errors }}
 		{% if forloop.first %}
 		<thead>
-            	<tr>
-		{% for field in form.hidden_fields %}
-			{% if 'id' in field.label %}
-				<td style="display: none">{{ field.label }}</td>
-			{% endif %}
-		{% endfor %}
-                {% for data in form %}
-		    {% if 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
-		    {% if forloop.counter == 1 or forloop.counter == 9 %}
-		    	<th class="res-14-per">
-		    {% else %}
-			<th>
-		    {% endif %}
-                    	{{ data.label }}
-                   <!--  {% if data.field.required %}
-                        <span class="required">*</span>
-		    {% endif %} -->
-                    </th>
-                    {% endif %}
-                {% endfor %}
-            	</tr>
+		        <tr>
+					<th class="res-14-per">Activity</th>
+		            <th>Mon</th>
+		            <th>Tue</th>
+		            <th>Wed</th>
+		            <th>Thu</th>
+		            <th>Fri</th>
+		            <th>Sat</th>
+		            <th>Sun</th>
+		            <th class="res-14-per">Total</th>
+		            <th>Delete</th>
+		        </tr>
 		</thead>
 		<tbody>
 		{% endif %}
@@ -415,11 +328,7 @@
 					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label %}
-							{% if holdData.value or prevWeekBlock %}
-								<td class="ansr-disabled">{{ data }}</td>
-							{% else %}
-								<td>{{ data }}</td>
-							{% endif %}
+							<td {% if holdData.value or prevWeekBlock %} class="ansr-disabled" {% endif %}>{{ data }}</td>
 						{% endif %}
 					{% endfor %}
 					{% endif %}
