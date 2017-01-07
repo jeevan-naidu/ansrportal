@@ -1,0 +1,90 @@
+{% extends 'master.html' %}
+{% load permissions %}
+{% block siteTitle %}Candidate Resignation Acceptance{% endblock %}
+{% block pageTitle %}Resignation Acceptance{% endblock %}
+{% block content  %}
+     <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <!-- <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
+                  </div> -->
+
+
+
+<style>
+    .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+ul{list-style: none;padding-left: 0px;}
+    </style>
+           <div class="panel-body">
+               {% if messages %}
+                     {% for message in messages %}
+
+               <div class="alert alert-success">
+                <strong>Success!</strong> {{message}}.
+               </div>
+               {% endfor %}
+               {% endif %}
+                    <form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
+                        <table class="table table-condensed table-striped myansr-table">
+                          <thead>
+                            <th class="">Employee</th>
+                            <th class="mw-ra">Manager</th>
+                            <th class="">Manager Feedback</th>
+                            <th class="mw-ra">HR</th>
+                            <th class="">HR Feedback</th>
+                            <th class="">Last Date</th>
+                            <th class="">Reason</th>
+                          </thead>
+                   {% for c in resigneedata %}
+                   <tr>
+                       <td>{{c}}</td>
+                       <td>
+                        <input  {% if user|IsManager == False %} disabled {%endif%} id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
+                       </td>
+                       <td>
+                        <textarea {% if user|IsManager == False %} disabled {%endif%} id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
+                       </td>
+                       <td>
+                        <input  {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} id="hraccepted_{{c.User_id}}" name="hraccepted_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
+                       </td>
+                       <td>
+                        <textarea {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} id="hrfeedback_{{c.User_id}}" maxlength="1000" name="hrcomment_{{c.User_id}}" class="form-control input-sm">{{c.hr_comment}}</textarea>
+                       </td>
+                       <td> 
+                         <div class='input-group date datetimepicker' id='datetimepicker'>
+                         <input name="finaldate_{{c.User_id}}" type='text' class="form-control datepicker input-sm" value='{{c.last_date |date:"o-m-d"}}'  />
+                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                         </div>
+                       </td>
+                       <td>{{c.emp_reason}}</td>
+                   </tr>
+               {% endfor %}
+                            {% csrf_token %}
+                             </table>
+                        <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
+                    </form>
+           </div>
+        <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+                    <script type="text/javascript">
+            $(function () {
+                $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+            });
+        </script>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
