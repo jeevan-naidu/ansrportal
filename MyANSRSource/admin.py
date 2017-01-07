@@ -5,7 +5,7 @@ from django.contrib import messages
 from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
     projectType, Task, Activity, Report,\
-    TimeSheetEntry, Milestone
+    TimeSheetEntry
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -60,7 +60,7 @@ class BookAdmin(admin.ModelAdmin):
             messages.success(request,"")
 
 class ProjectMilestoneInline(admin.TabularInline):
-    model = Milestone
+    model = ProjectMilestone
     extra = 0
 
 
