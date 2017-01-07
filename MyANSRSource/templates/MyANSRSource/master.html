@@ -369,8 +369,8 @@
                                             <li>
                                                 <a href="/myansrsource/timesheet/entry">
                                                     <span class="menu-text">Enter Timesheet</span>
-                                                    {% if TSProjectsCount > 0 %}
-                                                        <span class="menu-badge"><span class="badge vd_bg-red">{{ TSProjectsCount }}</span></span>
+                                                    {% if request.session.TSProjectsCount and request.session.TSProjectsCount > 0 %}
+                                                        <span class="menu-badge"><span class="badge vd_bg-red">{{ request.session.TSProjectsCount }}</span></span>
                                                     {% else %}
                                                         <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
                                                     {% endif %}

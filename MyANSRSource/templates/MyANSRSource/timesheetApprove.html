@@ -211,9 +211,13 @@ Approve Timesheet
 
   </tbody>
 </table>
-<input type="submit" name="submit" class="btn btn-primary btn-sm pull-right" value="Submit">
-    <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
-    <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
+        {% if ts_data_list_approved_true or ts_data_list_approved_false %}
+            <input type="submit" name="submit" class="btn btn-primary btn-sm pull-right" value="Submit">
+        {% endif %}
+        <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
+        <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
+
+
 </form>
 </div>
 </div>
