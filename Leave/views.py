@@ -31,25 +31,41 @@ from CompanyMaster.models import Holiday
 
 logger = logging.getLogger('MyANSRSource')
 
-AllowedFileTypes = ['jpg', 'csv','png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
+AllowedFileTypes = ['jpg', 'csv', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
 leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
 leaveSessionDictionary = dict(SESSION_STATUS)
-leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home']
+leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home', 'ooo_dom', 'ooo_int']
 
 
 def LeaveTransaction(request):
     statusType = request.GET.get('type')
     user_id = request.GET.get('user_id')
     loggedInUser = request.user.id
-    statusDict = {'Approved': 'approved' , 'Rejected': 'rejected', 'Cancelled': 'cancelled', 'Open': 'open'}
+    statusDict = {'Approved': 'approved',
+                  'Rejected': 'rejected',
+                  'Cancelled': 'cancelled',
+                  'Open': 'open'}
     if statusType == 'All':
-        Leave_transact=LeaveApplications.objects.filter(user=user_id,
-        leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
-        'to_session','days_count','status')
+        Leave_transact = LeaveApplications.objects.filter(user=user_id,
+                                                          leave_type__leave_type=request.GET.get('leave')).values('id',
+                                                                                                                  'leave_type__leave_type',
+                                                                                                                  'from_date',
+                                                                                                                  'from_session',
+                                                                                                                  'to_date',
+                                                                                                                  'to_session',
+                                                                                                                  'days_count',
+                                                                                                                  'status')
     else:
-        Leave_transact=LeaveApplications.objects.filter(status = statusDict[statusType] , user=user_id,
-        leave_type__leave_type=request.GET.get('leave') ).values('id','leave_type__leave_type', 'from_date', 'from_session', 'to_date',
-        'to_session','days_count','status')
+        Leave_transact = LeaveApplications.objects.filter(status=statusDict[statusType],
+                                                          user=user_id,
+                                                          leave_type__leave_type=request.GET.get('leave')).values('id',
+                                                                                                                  'leave_type__leave_type',
+                                                                                                                  'from_date',
+                                                                                                                  'from_session',
+                                                                                                                  'to_date',
+                                                                                                                   'to_session',
+                                                                                                                  'days_count',
+                                                                                                                  'status')
 
     count = 0
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
@@ -83,7 +99,7 @@ def LeaveTransaction(request):
 
 
 def LeaveCancel(request):
-    user_id=request.user.id
+    user_id = request.user.id
     leave_id = request.GET.get('leaveid')
     leavecount = request.GET.get('leavecount')
     leave = LeaveApplications.objects.get(id=leave_id)
@@ -109,6 +125,7 @@ def LeaveCancel(request):
     leave.status_action_by = User.objects.get(id=user_id)
     leave.status_comments = "Leave cancelled by user"
     leave.update()
+    short_leave_against_cancellation(leave.from_date, leave.to_date, user_id)
     manager = managerCheck(user_id)
     EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
      leave.to_session, leave.days_count, leave.reason, 'cancel')
@@ -168,7 +185,7 @@ class Dashboard(View):
             managerFlag = False
         # short leave grid population
         leaveShortAttendanceIsActive = settings.LEAVE_SHORT_ATTENDANCE_ISACTIVE
-        ShortLeaveApplied = ShortAttendance.objects.filter(user = user_id, active=True).count()
+        ShortLeaveApplied = ShortAttendance.objects.filter(user=user_id, active=True).count()
         ShortLeaveAppproved = ShortAttendance.objects.filter(user=user_id, active=False).count()
         context={'leave_summary':leave_summary,
                  'gender': genderFlag,
@@ -260,16 +277,34 @@ class ApplyLeaveView(View):
     ''' add or edit leave '''
 
     def get(self, request):
-        context_data={'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [],
-        'leave_type_check' : None, 'leave':None}
+        context_data = {'add': True,
+                        'record_added': False,
+                        'form': None,
+                        'success_msg': None,
+                        'html_data': None,
+                        'errors': [],
+                        'leave_type_check': None, 'leave':None}
         try:
-            leavetype=request.GET.get('leavetype')
+            leavetype = request.GET.get('leavetype')
             user_id = request.GET.get('user_id')
-            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off', 'short_leave']
-            count_not_required = ['comp_off_earned','pay_off','work_from_home','loss_of_pay']
+            onetime_leave = ['maternity_leave',
+                             'paternity_leave',
+                             'bereavement_leave',
+                             'comp_off_earned',
+                             'comp_off_avail',
+                             'pay_off',
+                             'short_leave']
+            count_not_required = ['comp_off_earned',
+                                  'pay_off',
+                                  'work_from_home',
+                                  'loss_of_pay',
+                                  'ooo_dom',
+                                  'ooo_int']
             form = LeaveForm(leavetype, user_id)
             context_data['form'] = form
-            leave_count = LeaveSummary.objects.filter(leave_type__leave_type= leavetype, user_id= user_id, year = date.today().year)
+            leave_count = LeaveSummary.objects.filter(leave_type__leave_type=leavetype,
+                                                      user_id=user_id,
+                                                      year=date.today().year)
             if leavetype:
                 context_data['leave'] = 'data'
             if leavetype in onetime_leave:
@@ -295,11 +330,14 @@ class ApplyLeaveView(View):
                         'html_data': None,
                         'errors': [],
                         'leave_type_check': None,
-                        'leave':'formdata'}
+                        'leave': 'formdata'
+                        }
         attachment = request.FILES.get('leave_attachment', "")
         if attachment:
             if request.FILES['leave_attachment'].name.split(".")[-1] not in AllowedFileTypes:
-                context_data['errors'].append('Attachment : File type not allowed. Please select a valid file type and then submit again')
+                context_data['errors'].append('Attachment : '
+                                              'File type not allowed.'
+                                              ' Please select a valid file type and then submit again')
 
         if leave_form.is_valid() and not context_data['errors']:
             fromdate = leave_form.cleaned_data['fromDate']
@@ -307,11 +345,18 @@ class ApplyLeaveView(View):
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
             try:
-                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected, user_id=user_id, year=leave_applied_year)[0].balance
+                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected,
+                                                                          user_id=user_id,
+                                                                          year=leave_applied_year)[0].balance
             except:
-                context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
+                context_data['errors'].append('No leave records found on myansrsource portal. Please contact HR.')
                 context_data['form'] = leave_form
-            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off','short_leave']
+            onetime_leave = ['maternity_leave',
+                             'paternity_leave',
+                             'bereavement_leave',
+                             'comp_off_earned',
+                             'comp_off_avail',
+                             'pay_off','short_leave']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
             reason=leave_form.cleaned_data['Reason']
@@ -353,12 +398,17 @@ class ApplyLeaveView(View):
                     leavesummry_temp = leavesummry[0]
                 else:
                     user = User.objects.get(id=user_id)
-                    leavesummry_temp = LeaveSummary.objects.create(user=user, leave_type=leaveType, applied=0, approved=0, balance=0,
-                                                               year=leave_applied_year)
+                    leavesummry_temp = LeaveSummary.objects.create(user=user,
+                                                                   leave_type=leaveType,
+                                                                   applied=0,
+                                                                   approved=0,
+                                                                   balance=0,
+                                                                   year=leave_applied_year)
 
                 if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
-                    if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate, user_id):
-                        context_data['errors'].append( 'For this time period there is no comp off ')
+                    if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate,
+                                                                                                         user_id):
+                        context_data['errors'].append('For this time period there is no comp off ')
                         context_data['form'] = leave_form
                         return render(request, 'leave_apply.html', context_data)
 
@@ -366,42 +416,107 @@ class ApplyLeaveView(View):
                     leavesummry_temp.balance = float(leavesummry_temp.balance) - leavecount
 
                     if attachment:
-                         LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         days_count=leavecount, reason=reason, atachement=attachment).saveas(user_id, request.user.id)
+                         LeaveApplications(leave_type=leaveType,
+                                           from_date=fromdate,
+                                           to_date=todate,
+                                           from_session=fromsession,
+                                           to_session=tosession,
+                                           days_count=leavecount,
+                                           reason=reason,
+                                           atachement=attachment).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                         EmailSendTask.delay(request.user,
+                                             manager,
+                                             leave_selected,
+                                             fromdate,
+                                             todate,
+                                             fromsession,
+                                             tosession,
+                                             leavecount,
+                                             reason,
+                                             'save')
                     else:
-                         LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                         days_count=leavecount, reason=reason).saveas(user_id, request.user.id)
+                         LeaveApplications(leave_type=leaveType,
+                                           from_date=fromdate,
+                                           to_date=todate,
+                                           from_session=fromsession,
+                                           to_session=tosession,
+                                           days_count=leavecount,
+                                           reason=reason).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                         EmailSendTask.delay(request.user,
+                                             manager,
+                                             leave_selected,
+                                             fromdate,
+                                             todate,
+                                             fromsession,
+                                             tosession,
+                                             leavecount,
+                                             reason,
+                                             'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
                 else:
-                    if leave_form.cleaned_data['leave'] in ['comp_off_earned','work_from_home','pay_off','loss_of_pay']:
+                    if leave_form.cleaned_data['leave'] in ['comp_off_earned',
+                                                            'work_from_home',
+                                                            'pay_off',
+                                                            'loss_of_pay',
+                                                            'ooo_dom',
+                                                            'ooo_int']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
 
                         if attachment:
-                             LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                             days_count=leavecount, reason=reason, atachement=attachment, due_date= duedate).saveas(user_id, request.user.id)
+                             LeaveApplications(leave_type=leaveType,
+                                               from_date=fromdate,
+                                               to_date=todate,
+                                               from_session=fromsession,
+                                               to_session=tosession,
+                                               days_count=leavecount,
+                                               reason=reason,
+                                               atachement=attachment,
+                                               due_date=duedate).saveas(user_id,
+                                                                        request.user.id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                             EmailSendTask.delay(request.user,
+                                                 manager,
+                                                 leave_selected,
+                                                 fromdate,
+                                                 todate,
+                                                 fromsession,
+                                                 tosession,
+                                                 leavecount,
+                                                 reason,
+                                                 'save')
                         else:
-                             LeaveApplications(leave_type=leaveType, from_date=fromdate, to_date=todate, from_session=fromsession, to_session=tosession,
-                             days_count=leavecount, reason=reason, due_date= duedate).saveas(user_id, request.user.id)
+                             LeaveApplications(leave_type=leaveType,
+                                               from_date=fromdate,
+                                               to_date=todate,
+                                               from_session=fromsession,
+                                               to_session=tosession,
+                                               days_count=leavecount,
+                                               reason=reason,
+                                               due_date=duedate).saveas(user_id,
+                                                                        request.user.id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                             EmailSendTask.delay(request.user,
+                                                 manager,
+                                                 leave_selected,
+                                                 fromdate,
+                                                 todate,
+                                                 fromsession,
+                                                 tosession,
+                                                 leavecount,
+                                                 reason,
+                                                 'save')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
-                        context_data['errors'].append( 'You do not have the necessary leave balance to avail of this leave.')
+                        context_data['errors'].append('You do'
+                                                      ' not have the necessary leave balance to avail of this leave.')
                         context_data['form'] = leave_form
-
-                    # return render(request, 'leave_apply.html', context_data)
                 if context_data['errors']:
-
                     return render(request, 'leave_apply.html', context_data)
                 else:
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
@@ -414,6 +529,7 @@ class ApplyLeaveView(View):
             context_data['form'] = leave_form
 
         return render(request, 'leave_apply.html', context_data)
+
 
 def managerCheck(user):
     manager_id = Employee.objects.filter(user_id=user).values('manager_id')
@@ -694,22 +810,22 @@ class LeaveListView(ListView):
 
         if not leave_list and 'leave_list' in self.request.session:
             del self.request.session['leave_list']
-
-
-        return render(self.request, self.template_name, {'leave_list': leave_list,
-                                                         'APPLICATION_STATUS': APPLICATION_STATUS,
-                                                         'LEAVE_TYPES_CHOICES': LEAVE_TYPES_CHOICES,
-                                                         'SESSION_STATUS': SESSION_STATUS,
-                                                         'BUTTON_NAME': BUTTON_NAME, 'leave_days': leave_days,
-                                                         'month': request.POST.get('month'),
-                                                         'post_application_status': post_application_status,
-                                                         'months_choices': months_choices,
-                                                         'apply_to': self.request.session['apply_to'],
-                                                         'users':  self.request.session['users'],
-                                                         'post_apply_to': self.request.POST.get('apply_to'),
-                                                         'post_users': self.request.POST.get('users'),
-
-                                                         'form': form})
+        return render(self.request,
+                      self.template_name,
+                      {'leave_list': leave_list,
+                       'APPLICATION_STATUS': APPLICATION_STATUS,
+                       'LEAVE_TYPES_CHOICES': LEAVE_TYPES_CHOICES,
+                       'SESSION_STATUS': SESSION_STATUS,
+                       'BUTTON_NAME': BUTTON_NAME,
+                       'leave_days': leave_days,
+                       'month': request.POST.get('month'),
+                       'post_application_status': post_application_status,
+                       'months_choices': months_choices,
+                       'apply_to': self.request.session['apply_to'],
+                       'users':  self.request.session['users'],
+                       'post_apply_to': self.request.POST.get('apply_to'),
+                       'post_users': self.request.POST.get('users'),
+                       'form': form})
 
 
 def update_leave_application(request, status):
@@ -761,6 +877,10 @@ def update_leave_application(request, status):
         leave_status.approved = str(leave_status.approved)
 
     if status_tmp[0] == 'cancelled' or status_tmp[0] == 'rejected':
+        #short leave check against cancel leave
+        short_leave_against_cancellation(leave_application.from_date,
+                                         leave_application.to_date,
+                                         leave_application.user.id)
         leave_status.applied -= Decimal(leave_days)
         leave_status.applied = str(leave_status.applied)
         if is_com_off not in leaveWithoutBalance:
@@ -975,7 +1095,7 @@ class ApplyShortLeaveView(View):
             leaveid = request.GET.get('leaveid')
             user_id = request.GET.get('user_id')
             onetime_leave = ['comp_off_avail', 'short_leave']
-            count_not_required = ['comp_off_earned', 'pay_off', 'work_from_home', 'loss_of_pay']
+            count_not_required = ['comp_off_earned', 'pay_off', 'work_from_home', 'loss_of_pay', 'ooo_dom', 'ooo_int']
             if leaveid:
                 shortAttendance = ShortAttendance.objects.get(id=leaveid)
                 form = ShortLeaveForm(leavetype, user_id, shortAttendance.for_date,shortAttendance.id)
@@ -1014,7 +1134,15 @@ class ApplyShortLeaveView(View):
         if not user_id:
             user_id = request.user.id
 
-        context_data = {'add' : True, 'record_added' : False, 'form' : None, 'success_msg' : None, 'html_data' : None, 'errors' : [], 'leave_type_check' : None, 'leave':'formdata' }
+        context_data = {'add': True,
+                        'record_added': False,
+                        'form': None,
+                        'success_msg': None,
+                        'html_data': None,
+                        'errors': [],
+                        'leave_type_check': None,
+                        'leave': 'formdata'
+                        }
 
         if leave_form.is_valid() and not context_data['errors']:
 
@@ -1029,10 +1157,16 @@ class ApplyShortLeaveView(View):
             except:
                 context_data['errors'].append( 'No leave records found on myansrsource portal. Please contact HR.')
                 context_data['form'] = leave_form
-            onetime_leave = ['maternity_leave', 'paternity_leave', 'bereavement_leave', 'comp_off_earned', 'comp_off_avail', 'pay_off','short_leave']
+            onetime_leave = ['maternity_leave',
+                             'paternity_leave',
+                             'bereavement_leave',
+                             'comp_off_earned',
+                             'comp_off_avail',
+                             'pay_off',
+                             'short_leave']
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
-            reason=leave_form.cleaned_data['Reason']
+            reason = leave_form.cleaned_data['Reason']
             manager = managerCheck(user_id)
             if leave_selected in onetime_leave:
                 validate = oneTimeLeaveValidation(leave_form, user_id, leave_apply_year)
@@ -1097,7 +1231,10 @@ class ApplyShortLeaveView(View):
                     context_data['record_added'] = 'True'
                 else:
                     if leave_form.cleaned_data['leave'] in ['comp_off_earned', 'work_from_home', 'pay_off',
-                                                            'loss_of_pay', 'short_leave']:
+                                                            'loss_of_pay',
+                                                            'short_leave',
+                                                            'ooo_dom',
+                                                            'ooo_int']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
                         ShortAttendanceResolution(leaveid, fromdate, fromsession, tosession, user_id)
                         LeaveApplications(leave_type=leaveType,
@@ -1543,3 +1680,19 @@ def balance_based_on_year(request):
     leaveSummary = LeaveSummary.objects.get(user=user, year=date[:4], leave_type=leaveType.id)
     json_data = json.dumps(leaveSummary.balance)
     return HttpResponse(json_data, content_type="application/json")
+
+
+def short_leave_against_cancellation(from_date, to_date, user):
+    '''
+    :param from_date: From date of cancel leave
+    :param to_date: To date of cancel leave
+    :return: updates the short attendance flag.
+    '''
+    short_leaves = ShortAttendance.objects.filter(for_date__gte=from_date,
+                                                  for_date__lte=to_date,
+                                                  user_id=user,
+                                                  active=False)
+    for leave in short_leaves:
+        leave.active = True
+        leave.save()
+

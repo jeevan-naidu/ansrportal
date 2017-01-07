@@ -19,21 +19,28 @@ def leaveValidation(leave_form, user, leave_applied_year, attachment=None):
     -------
     Returns dictionary with key success (containing the no of leave applied) and errors containing error message
     '''
-    result = {'errors' : [], 'success':[]}
+    result = {'errors': [], 'success':[]}
     lateLeaveApplication = lateLeaveCheck(leave_form)
     if lateLeaveApplication['error']:
-        result['errors'].append( lateLeaveApplication['error'])
+        result['errors'].append(lateLeaveApplication['error'])
 
     fromDate = leave_form.cleaned_data['fromDate']
     toDate = leave_form.cleaned_data['toDate']
     fromSession = leave_form.cleaned_data['from_session']
     tosession = leave_form.cleaned_data['to_session']
-    if fromDate <= toDate :
-        if fromDate == toDate and fromSession== 'session_second' and tosession== 'session_first':
+    if fromDate <= toDate:
+        if fromDate == toDate and fromSession == 'session_second' and tosession == 'session_first':
             result['errors'].append("Please enter the correct session details.")
             return result
-        leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)), status__in=['approved', 'open'],user=user)
-        if len(leave_between_applied_date)>1 or leaveCheckBetweenAppliedLied(leave_between_applied_date, leave_form):
+        leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte=fromDate) &
+                                                                        Q(to_date__gte=fromDate))|
+                                                                      Q(Q(from_date__gte=fromDate) &
+                                                                        Q(to_date__lte=toDate))|
+                                                                      Q(Q(from_date__lte=toDate) &
+                                                                        Q(to_date__gte=toDate)),
+                                                                      status__in=['approved', 'open'],
+                                                                      user=user)
+        if len(leave_between_applied_date) > 1 or leaveCheckBetweenAppliedLied(leave_between_applied_date, leave_form):
             result['errors'].append('You have already applied for leave in this time period')
         result_temp = validation_leave_type(leave_form, user, fromDate, toDate, leave_applied_year, attachment)
 
@@ -171,9 +178,9 @@ def validation_leave_type(leave_form, user, fromDate, toDate, leave_applied_year
         result['success'] = leavecount
         return result
 
-    elif leaveType_selected == 'work_from_home' :
+    elif leaveType_selected in ['work_from_home', 'ooo_dom', 'ooo_int']:
         if newJoineeValidation(user, fromDate):
-            result['errors'] = "You are not allowed to take work from home during first 90 days from you DOJ"
+            result['errors'] = "You are not allowed to take this type of leave during first 90 days from you DOJ"
             return result
 
         else:
@@ -222,7 +229,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
     -------
 
     '''
-    result = {'errors' : [], 'success':[]}
+    result = {'errors': [], 'success':[]}
     if fromDate.month != toDate.month:
         last_day = getLast_day_of_month(fromDate)
         first_day = getStart_day_of_month(toDate)
@@ -238,7 +245,7 @@ def validation_month_wise(fromDate, toDate, fromSession, toSession, leavecount, 
         if balanceLeave1 >= leave_count_start_month and balanceLeave2 >= leave_count_end_month:
             result['success'] = 'success'
 
-        else :
+        else:
             result['errors'] = " You do not have the necessary leave balance to avail of this leave."
 
     else:
