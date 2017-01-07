@@ -3390,7 +3390,9 @@ def renderTimesheet(request, data):
                 prevWeekBlock = True
             elif pwActivityData[0]['hold']:
                 prevWeekBlock = True
-
+    leave_hours = pull_members_week(request, data['weekstartDate'], data['weekendDate'])
+    leave_hours = float(leave_hours)
+    total_sum = leave_hours + float(total)
     finalData = {'weekstartDate': data['weekstartDate'],
                  'weekendDate': data['weekendDate'],
                  'disabled': data['disabled'],
@@ -3402,18 +3404,18 @@ def renderTimesheet(request, data):
                  'zero_value': zero_value,
                  'non_zero_value': non_zero_value,
                  'bTotal': bTotal,
-                 'leave_hours': pull_members_week(request, data['weekstartDate'], data['weekendDate']),
+                 'leave_hours': leave_hours,
                  'idleTotal': idleTotal,
                  'attendance': attendance,
                  'othersTotal': othersTotal,
                  'tsTotal': d,
                  'prevWeekBlock': prevWeekBlock,
-                 'total': total,
+                 'total': total_sum,
                  'tsFormset': tsFormset,
                  'atFormset': atFormset,
                  'mondays_list': mondays_list,
                  'ts_week_info_dict': ts_week_info_dict,
-                 'ts_final_list': ts_final_list ,
+                 'ts_final_list': ts_final_list,
 
                  }
     if 'tsErrorList' in data:
