@@ -5,7 +5,7 @@ from django.contrib import messages
 from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
     projectType, Task, Activity, Report,\
-    TimeSheetEntry, Milestone
+    TimeSheetEntry, Milestone, MilestoneType
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -184,6 +184,8 @@ class TimeSheetEntryAdmin(admin.ModelAdmin):
         qs = qs.filter(approved=1, hold=1)
         return qs
 
+class MilestoneTypeAdmin(admin.ModelAdmin):
+    list_display = ('milestone_type', 'is_financial')
 
 
 admin.site.register(Project, ProjectAdmin)
@@ -193,3 +195,4 @@ admin.site.register(projectType, projectTypeAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
+admin.site.register(MilestoneType, MilestoneTypeAdmin)

@@ -531,13 +531,8 @@ class Milestone(UpdateDate):
     closedon = models.DateTimeField(default=None, null=True, blank=True,
                                     verbose_name="Closed On",
                                     editable=False)
-    financial = models.BooleanField(default=False,
-                                    verbose_name="Financial",
-                                    blank=False,
-                                    null=False
-                                    )
     reason = models.CharField(default=None, blank=True, max_length=100,
-                              verbose_name="Reason for change", null=True)
+                              verbose_name="Reason", null=True)
     is_final_milestone = models.BooleanField(verbose_name="Is Final Milestone", default=False)
     check_schedule_deviation = models.BooleanField(verbose_name="Check Schedule Deviation")
 
