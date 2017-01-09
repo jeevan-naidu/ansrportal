@@ -1468,7 +1468,7 @@ def weekwisereport(month, userlist):
     available = 0
     unavailable = 0
     holiday = 0
-    for val in range(0, currentmontdetail[0]):
+    for val in range(1, currentmontdetail[0]):
         if month == 1:
             datecheck = date(year=date.today().year-1, month=12, day=previousmonthdays - val)
         else:
