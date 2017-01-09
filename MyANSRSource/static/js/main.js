@@ -501,7 +501,7 @@ app.firstTimeTotal = function() {
         var billableTotal = Number($('.total-billable-hours').text()),
             idleTotal = Number($('.total-idle-hours').text()),
             notBillableTotal = Number($('.total-non-billable-hours').text()),
-            total_leave_hours  Number($('.total-leave-hours').text()),
+            total_leave_hours =  Number($('.total-leave-hours').text() ),
             $total = $('.timesheet-grand-total'),
             total = billableTotal + idleTotal + notBillableTotal + total_leave_hours ;
 

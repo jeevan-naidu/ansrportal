@@ -381,8 +381,8 @@
                                                  <li>
                                                         <a href="/myansrsource/timesheet/approve">
                                                             <span class="menu-text">Approve Timesheet</span>
-                                                            {% if unapprovedts > 0 %}
-                                                                <span class="menu-badge"><span class="badge vd_bg-red">{{ unapprovedts }}</span></span>
+                                                            {% if request.session.unapprovedts and request.session.unapprovedts  > 0 %}
+                                                                <span class="menu-badge"><span class="badge vd_bg-red">{{ request.session.unapprovedts }}</span></span>
                                                             {% else %}
                                                                 <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
                                                             {% endif %}

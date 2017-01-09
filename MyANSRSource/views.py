@@ -3150,10 +3150,14 @@ def leaveappliedinweek(user, wkstart, wkend):
     return weekleave
 
 
-def status_member(team_members):
+def status_member(team_members, ignore_previous_year=False):
     status = {}
     week_collection = []
-    for s in weeks_list_till_date(False):
+    if not ignore_previous_year:
+        optional_variable = False
+    else:
+        optional_variable = True
+    for s in weeks_list_till_date(optional_variable):
         for_week = str(str(s[0].day) + "-" + s[0].strftime("%b")) + " - " + \
                    str(str(s[1].day) + "-" + s[1].strftime("%b"))
         week_collection.append(for_week)
@@ -3175,6 +3179,7 @@ def status_member(team_members):
             status[for_week]['status'][members.user.id] = result
     # print "in function " ,  type(week_collection)
     status_dict = {}
+    unapproved_count  = 0
     for k, v in status.iteritems():
         status_dict[k] = {}
         status_dict[k]['wkstart'] ={}
@@ -3182,14 +3187,16 @@ def status_member(team_members):
         if all(value == True for value in v['status'].values()):
             status_dict[k]['status'] = "approved"
         elif all(value == False for value in v['status'].values()):
+            unapproved_count +=1
             status_dict[k]['status'] = "not_approved"
         elif True in v['status'].values() and False in v['status'].values():
+            unapproved_count += 1
             status_dict[k]['status'] = "partial"
         status_dict[k] ['wkstart']= v['wkstart']
         status_dict[k]['wkend'] = v['wkend']
 
     # print json.dumps(status_dict)
-    return status_dict, week_collection
+    return status_dict, week_collection, unapproved_count
 
 
 def date_range_picker(request, employee=None):
@@ -3206,7 +3213,7 @@ def date_range_picker(request, employee=None):
     # print mondays_list
 
     weeks_list = [x for x in weeks_list_till_date(False)]
-    print weeks_list
+    # print weeks_list
 
     ts_week_info_dict = {}
     for dict_obj in weeks_timesheetEntry_list:
@@ -3475,8 +3482,8 @@ class ApproveTimesheetView(TemplateView):
 
         start_date = dates['start']
         end_date = dates['end']
-        status, week_collection = status_member(team_members)
-        print status
+        status, week_collection, unapproved_count = status_member(team_members)
+        # print status
         # print start_date, end_date
         # print start_date, end_date
         for members in team_members:
@@ -3681,7 +3688,6 @@ def Dashboard(request):
     for eachRec in nonfinancialM:
         eachRec['milestoneDate'] = eachRec['milestoneDate'].strftime('%Y-%m-%d')
 
-
     weeks_list = [x for x in weeks_list_till_date()]
     count = 0
     for s, e in weeks_list:
@@ -3812,7 +3818,7 @@ def Dashboard(request):
     )
     myPeerReqCount = len(myReq)
     myReportee = employee.models.Employee.objects.filter(
-        manager=request.user.employee)
+        manager=request.user.employee , user__is_active=True)
     isManager = 0
     employee_color = Employee.objects.get(user_id=request.user.id)
     if employee_color.color:
@@ -3822,6 +3828,9 @@ def Dashboard(request):
     request.session['color'] = employee_color
     if myReportee:
         isManager = 1
+    team_members = Employee.objects.filter((Q(manager_id=request.user.employee) |
+                                            Q(employee_assigned_id=request.user.employee)), user__is_active=True)
+    request.session['unapprovedts'] = status_member(myReportee,True)[2]
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -3843,7 +3852,7 @@ def Dashboard(request):
         'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,
-        'unapprovedts': unApprovedTimeSheet,
+        'unapprovedts':  request.session['unapprovedts'],
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
         'isManager': isManager,
