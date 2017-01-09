@@ -34,9 +34,59 @@ ul{list-style: none;padding-left: 0px;}
                 <strong>info!</strong> {{message}}.
                </div>
                {% else %}
-                <div class="alert alert-success">
-                <strong>Success!</strong> {{message}}.
-               </div>
+                    {% if message.tags == 'info' %}
+                        <script>
+                        function getParameterByName(name, url)
+                                {
+                                    if (!url) {
+                                      url = window.location.href;
+                                    }
+                                    name = name.replace(/[\[\]]/g, "\\$&");
+                                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                                        results = regex.exec(url);
+                                    if (!results) return null;
+                                    if (!results[2]) return '';
+                                    return decodeURIComponent(results[2].replace(/\+/g, " "));
+                                }
+                         swal({
+                                  title: "Exit Interview Happend?",
+                                  text: "please click the choices below!",
+                                  type: "warning",
+                                  showCancelButton: true,
+                                  confirmButtonClass: "btn-danger",
+                                  confirmButtonText: "Yes!",
+                                  cancelButtonText: "No!",
+                                  closeOnConfirm: false,
+                                  closeOnCancel: false
+                                },
+
+                               function(isConfirm) {
+                                      if (isConfirm) {
+                                      id = getParameterByName('id');
+                                       value = id;
+                                          $.ajax({
+                                                url : "/exitapp/update-auth/",
+                                                type : "GET",
+                                                data : { 'id':value },
+                                                success : function(json) {
+                                                swal("Completed!", "Employee has been removed from auth table.", "success");
+                                                    console.log("success");
+                                                }
+                                                });
+
+                                      }
+                                      else
+                                      {
+                                        swal("Cancelled", "Exit interview is mandatory", "error");
+                                      }
+                                });
+                        </script>
+                    {% endif %}
+                    {% if message.tags == 'success' %}
+                    <div class="alert alert-success">
+                    <strong>Success!</strong> {{message}}.
+                  </div>
+               {% endif %}
                {% endif %}
                {% endfor %}
                {% endif %}

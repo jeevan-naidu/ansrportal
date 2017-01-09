@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, HttpResponse
 from django.views.generic import View
 from django.contrib.auth.models import User
 from .models import ResignationInfo, EmployeeClearanceInfo
@@ -8,7 +8,7 @@ from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, Li
 from django.utils import timezone
 from employee.models import Employee
 from django.contrib import messages
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from datetime import datetime, date
 
@@ -18,6 +18,17 @@ from datetime import datetime, date
 
 def __unicode__(self):
     return unicode(self.user)
+
+
+def updateauthtable(request):
+    value = request.GET['id']
+    exit_id = ResignationInfo.objects.get(id=value)
+    value = User.objects.get(id=exit_id.User_id)
+    value.is_staff = 0
+    value.is_active = 0
+    value.is_superuser = 0
+    value.save()
+    return HttpResponse('success')
 
 
 class ExitFormAdd(View):
@@ -32,11 +43,11 @@ class ExitFormAdd(View):
         form = UserExitForm(request.POST)
         if form.is_valid():
             try:
+                import ipdb; ipdb.set_trace()
                 userid = request.user.id
                 user_email = User.objects.get(id=userid)
-                # import ipdb; ipdb.set_trace()
-                # mgr_id = Employee.objects.filter(user_id=userid).values('manager_id')
-                # manager = Employee.objects.filter(employee_assigned_id=mgr_id).values('user_id')
+                # mgr_id = Employee.objects.filter(user_id=userid).get('manager_id')
+                # manager = Employee.objects.filter(employee_assigned_id=mgr_id).get('user_id')
                 # manager.user.email
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
@@ -156,7 +167,7 @@ class ResignationAcceptance(View):
                 user_email = User.objects.get(id=k)
                 i = 0
                 try:
-                    if i ==0:
+                    if i == 0:
                         PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
                         messages.error(request, 'Your response has been submitted successfully')
                     value = ResignationInfo.objects.get(User_id=k)
@@ -210,6 +221,7 @@ class ClearanceFormView(View):
             user_email = User.objects.get(id=user_detail.User_id)
             form = request.POST
             count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
+            print count
             if 'hr_approval' in form:
                 if count == 5:
                     hr_approval = form['hr_approval']
@@ -222,6 +234,7 @@ class ClearanceFormView(View):
                                               department="HR", status_on=time, dept_feedback=hr_feedback,
                                               dept_due=hr_amount).save()
                         messages.success(request, 'Your response has been submitted successfully')
+                        messages.info(request, 'Done')
                     except Exception as programmingerror:
                         print programmingerror
                 else:
