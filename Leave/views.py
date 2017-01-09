@@ -1454,7 +1454,6 @@ def weekdetail(week, month):
 
 
 def weekwisereport(month, userlist):
-    # import ipdb;ipdb.set_trace()
     weekreport = []
     weekreportdetail = {}
     currentmontdetail = monthrange(date.today().year, month)
