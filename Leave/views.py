@@ -1454,6 +1454,7 @@ def weekdetail(week, month):
 
 
 def weekwisereport(month, userlist):
+    # import ipdb;ipdb.set_trace()
     weekreport = []
     weekreportdetail = {}
     currentmontdetail = monthrange(date.today().year, month)
@@ -1483,6 +1484,16 @@ def weekwisereport(month, userlist):
                 unavailable += 1
             else:
                 holiday += 1
+    if currentmontdetail[0] == 6:
+        weekreportdetail['available'] = available
+        weekreportdetail['unavailable'] = unavailable
+        weekreportdetail['holiday'] = holiday
+        weekreport.append(weekreportdetail)
+        available = 0
+        unavailable = 0
+        holiday = 0
+        weekreportdetail = {}
+
     for val in range(1, dayscount+1):
         date1 = date(year=date.today().year, month=month, day=val)
         if date1.strftime("%A") == 'Saturday':

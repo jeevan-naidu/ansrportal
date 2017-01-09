@@ -482,7 +482,7 @@ class Designation(UpdateDate, UpdateBy):
     steps = models.IntegerField(verbose_name="Ladder Step")
 
     def __unicode__(self):
-        return self.name + " | " + self.role.name
+        return self.name
 
     class Meta:
         verbose_name = 'Designation'

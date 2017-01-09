@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
 from employee.models import Employee, PreviousEmployment, EmpAddress,\
     FamilyMember, Education, Designation, TeamMember, Attendance, EmployeeCompanyInformation
-from forms import EmployeeChoiceField
+from forms import EmployeeChoiceField, DesignationChoiceField
 import CompanyMaster
 
 
@@ -253,6 +253,7 @@ class EmployeeCompanyRelatedInformationAdmin(admin.ModelAdmin):
             kwargs['form_class'] = EmployeeChoiceField
         if db_field.name == 'designation':
             kwargs["queryset"] = CompanyMaster.models.Designation.objects.filter(is_active=True).order_by('name')
+            kwargs['form_class'] = DesignationChoiceField
         return super(EmployeeCompanyRelatedInformationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(Attendance, AttendanceAdmin)
