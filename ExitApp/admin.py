@@ -9,11 +9,11 @@ class ClearanceInfoAdmin(admin.ModelAdmin):
 
 
 class ResignationInfoAdmin(admin.ModelAdmin,):
-    list_display = ['last_date', 'hr_accepted', 'emp_reason', 'manager_accepted', 'last_date_accepted']
+    list_display = ['last_date', 'hr_accepted', 'emp_reason', 'manager_accepted', 'last_date_accepted', 'exit_interview_notes', 'exit_interview_flag']
 
 
 class EmployeeClearanceInfoAdmin(admin.ModelAdmin):
-    list_display =['resignationInfo', 'dept_status', 'dept_feedback', 'dept_due', ]
+    list_display =['resignationInfo',  'department', 'dept_status', 'dept_feedback', 'dept_due']
 
 
 admin.site.register(ResignationInfo, ResignationInfoAdmin)

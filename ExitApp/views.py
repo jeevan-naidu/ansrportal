@@ -22,12 +22,18 @@ def __unicode__(self):
 
 def updateauthtable(request):
     value = request.GET['id']
+    exit_summary = request.GET['message']
+    exit_flag = request.GET['exitflag']
     exit_id = ResignationInfo.objects.get(id=value)
     value = User.objects.get(id=exit_id.User_id)
     value.is_staff = 0
     value.is_active = 0
     value.is_superuser = 0
     value.save()
+    exit_id.exit_interview_notes = exit_summary
+    exit_id.exit_interview_flag = exit_flag
+    exit_id.save()
+
     return HttpResponse('success')
 
 
@@ -43,7 +49,7 @@ class ExitFormAdd(View):
         form = UserExitForm(request.POST)
         if form.is_valid():
             try:
-                import ipdb; ipdb.set_trace()
+                # import ipdb; ipdb.set_trace()
                 userid = request.user.id
                 user_email = User.objects.get(id=userid)
                 # mgr_id = Employee.objects.filter(user_id=userid).get('manager_id')
@@ -58,7 +64,7 @@ class ExitFormAdd(View):
                 if start_date > last_date:
                     messages.error(request, 'Your Last Date Should be Greater than resignation Date')
                     return render(request, "userexit.html", context)
-                ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
+                ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0, is_active=1).save()
                 value = Employee.objects.get(user_id=userid)
                 value.resignation = start_date
                 value.exit = last_date
@@ -221,7 +227,6 @@ class ClearanceFormView(View):
             user_email = User.objects.get(id=user_detail.User_id)
             form = request.POST
             count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
-            print count
             if 'hr_approval' in form:
                 if count == 5:
                     hr_approval = form['hr_approval']
@@ -237,8 +242,10 @@ class ClearanceFormView(View):
                         messages.info(request, 'Done')
                     except Exception as programmingerror:
                         print programmingerror
+                elif count == 6:
+                    messages.success(request, 'Nothing to Update')
                 else:
-                    messages.error(request, 'Hr is not suppose to fill unless all department have checked')
+                    messages.error(request, 'Hr is not suppose to update unless all department have checked')
             else:
                 hr_approval = 1
 
