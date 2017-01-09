@@ -470,7 +470,7 @@ class Designation(UpdateDate, UpdateBy):
     name = models.CharField(
         verbose_name="Designation Name",
         max_length=40,
-        unique=True,
+        unique=False,
     )
     role = models.ForeignKey(Role)
     career_band_code = models.ForeignKey(
@@ -482,11 +482,12 @@ class Designation(UpdateDate, UpdateBy):
     steps = models.IntegerField(verbose_name="Ladder Step")
 
     def __unicode__(self):
-        return self.name
+        return self.name + " | " + self.role.name
 
     class Meta:
         verbose_name = 'Designation'
         verbose_name_plural = 'Designations'
+
 
 class KRA(UpdateDate, UpdateBy):
     designation = models.ForeignKey(Designation)

@@ -471,7 +471,10 @@ class Attendance(models.Model):
 class EmployeeCompanyInformation(UpdateDate, UpdateBy):
     employee = models.ForeignKey(Employee, verbose_name="Employee")
     is_billable = models.BooleanField(default=True, verbose_name="Is Billable")
-    billable_date = models.DateField(verbose_name="Effective Date of Billability", blank=True, null=True)
+    billable_date = models.DateField(verbose_name="Effective Date of Billability",
+                                     blank=True,
+                                     null=True,
+                                     default="01/01/2017")
     department = models.ForeignKey(Department, verbose_name="Department")
     designation = models.ForeignKey(CompanyMaster.models.Designation, verbose_name="Designation")
     company = models.ForeignKey(Company, default=None, verbose_name="Company", blank=True, null=True)
