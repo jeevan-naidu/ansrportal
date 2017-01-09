@@ -496,7 +496,7 @@ $(document).ready(function() {
                     dataType :'json',
                     data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
                     success: function (data) {
-                    // console.log(JSON.stringify(data));
+                    console.log(JSON.stringify(data));
                     time_iterate(data);
                     },
 
