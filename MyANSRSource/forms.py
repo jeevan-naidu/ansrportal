@@ -577,6 +577,7 @@ class ProjectFlagForm(forms.ModelForm):
             "planned-effort-input form-control"
         self.fields['totalValue'].widget.attrs['class'] = \
             "total-value-input form-control"
+        self.fields['totalValue'].widget.attrs['min'] = 8
         self.fields['startDate'].widget.attrs['class'] = \
             "start-date-input form-control"
         self.fields['endDate'].widget.attrs['class'] = \
