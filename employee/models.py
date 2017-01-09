@@ -474,7 +474,7 @@ class EmployeeCompanyInformation(UpdateDate, UpdateBy):
     billable_date = models.DateField(verbose_name="Effective Date of Billability",
                                      blank=True,
                                      null=True,
-                                     default="01/01/2017")
+                                     default="2017-01-01")
     department = models.ForeignKey(Department, verbose_name="Department")
     designation = models.ForeignKey(CompanyMaster.models.Designation, verbose_name="Designation")
     company = models.ForeignKey(Company, default=None, verbose_name="Company", blank=True, null=True)
