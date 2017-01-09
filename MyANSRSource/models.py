@@ -202,7 +202,7 @@ class Project(models.Model):
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
-                                        validators=[MinValueValidator(0)])
+                                        validators=[MinValueValidator(8)])
     contingencyEffort = models.IntegerField(default=0,
                                             blank=True,
                                             null=True,
