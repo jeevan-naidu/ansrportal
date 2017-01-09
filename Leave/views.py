@@ -1354,8 +1354,8 @@ def report(request):
     userid = [user.user_id for user in userlist]
     userlist = User.objects.filter(id__in=userid, is_active=True)
     context['weekreport'] = weekwisereport(month, userlist)
-    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, 1)
     current_week_no = current_week()
+    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, current_week_no)
     context['current_week_no'] = current_week_no
     context['startdate'] = weekdetail(current_week_no, month)
     context['enddate'] = context['startdate'] + timedelta(5)
