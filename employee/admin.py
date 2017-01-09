@@ -3,7 +3,8 @@ from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 
 from employee.models import Employee, PreviousEmployment, EmpAddress,\
     FamilyMember, Education, Designation, TeamMember, Attendance, EmployeeCompanyInformation
-from forms import EmployeeChoiceField
+from forms import EmployeeChoiceField, DesignationChoiceField
+import CompanyMaster
 
 
 class EmpAddressInline(admin.StackedInline):
@@ -229,9 +230,9 @@ class AttendanceAdmin(admin.ModelAdmin):
 
 
 class EmployeeCompanyRelatedInformationAdmin(admin.ModelAdmin):
-    fields = ['employee', 'department', 'designation', 'company', 'pnl', 'practice',
+    fields = ['employee',  'company', 'pnl', 'designation', 'department', 'practice',
               'sub_practice', 'is_billable', 'billable_date']
-    list_display = ('employee', 'department', 'designation', 'company', 'pnl',
+    list_display = ('employee',  'company', 'pnl', 'designation', 'department',
                     'practice', 'sub_practice', 'is_billable', 'billable_date', )
 
     def save_model(self, request, obj, form, change):
@@ -250,6 +251,9 @@ class EmployeeCompanyRelatedInformationAdmin(admin.ModelAdmin):
         if db_field.name == 'employee':
             kwargs["queryset"] = Employee.objects.filter(user__is_active=True).order_by('user__first_name')
             kwargs['form_class'] = EmployeeChoiceField
+        if db_field.name == 'designation':
+            kwargs["queryset"] = CompanyMaster.models.Designation.objects.filter(is_active=True).order_by('name')
+            kwargs['form_class'] = DesignationChoiceField
         return super(EmployeeCompanyRelatedInformationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(Attendance, AttendanceAdmin)

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
+from CompanyMaster.models import UpdateDate
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -201,7 +202,7 @@ class Project(models.Model):
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name="Planned Effort",
-                                        validators=[MinValueValidator(0)])
+                                        validators=[MinValueValidator(8)])
     contingencyEffort = models.IntegerField(default=0,
                                             blank=True,
                                             null=True,
@@ -496,3 +497,4 @@ class SendEmail(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+

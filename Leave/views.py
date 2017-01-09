@@ -1354,8 +1354,8 @@ def report(request):
     userid = [user.user_id for user in userlist]
     userlist = User.objects.filter(id__in=userid, is_active=True)
     context['weekreport'] = weekwisereport(month, userlist)
-    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, 1)
     current_week_no = current_week()
+    context['leavereport'] = leavereportweeklybasedonuser(month, userlist, current_week_no)
     context['current_week_no'] = current_week_no
     context['startdate'] = weekdetail(current_week_no, month)
     context['enddate'] = context['startdate'] + timedelta(5)
@@ -1454,6 +1454,7 @@ def weekdetail(week, month):
 
 
 def weekwisereport(month, userlist):
+    # import ipdb;ipdb.set_trace()
     weekreport = []
     weekreportdetail = {}
     currentmontdetail = monthrange(date.today().year, month)
@@ -1468,21 +1469,35 @@ def weekwisereport(month, userlist):
     unavailable = 0
     holiday = 0
     for val in range(0, currentmontdetail[0]):
-        if month == 1:
-            datecheck = date(year=date.today().year-1, month=12, day=previousmonthdays - val)
+        if currentmontdetail[0] == 6 and val == 0:
+            pass
         else:
-            datecheck = date(year=date.today().year, month=month - 1, day=previousmonthdays - val)
-        for user in userlist:
-            check = leavecheck(user, datecheck)
-            if check == 0:
-                available += 1
-            elif check == 1:
-                available += .5
-                unavailable += .5
-            elif check == 2:
-                unavailable += 1
+            if month == 1:
+                datecheck = date(year=date.today().year - 1, month=12, day=previousmonthdays - val)
             else:
-                holiday += 1
+                datecheck = date(year=date.today().year, month=month - 1, day=previousmonthdays - val)
+            for user in userlist:
+                check = leavecheck(user, datecheck)
+                if check == 0:
+                    available += 1
+                elif check == 1:
+                    available += .5
+                    unavailable += .5
+                elif check == 2:
+                    unavailable += 1
+                else:
+                    holiday += 1
+
+    if currentmontdetail[0] == 6:
+        weekreportdetail['available'] = available
+        weekreportdetail['unavailable'] = unavailable
+        weekreportdetail['holiday'] = holiday
+        weekreport.append(weekreportdetail)
+        available = 0
+        unavailable = 0
+        holiday = 0
+        weekreportdetail = {}
+
     for val in range(1, dayscount+1):
         date1 = date(year=date.today().year, month=month, day=val)
         if date1.strftime("%A") == 'Saturday':
@@ -1528,7 +1543,7 @@ def leavecheck(user, date):
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
                                                     to_date__gte=date,
-                                                    status__in=['open', 'approved']).exclude(leave_type=11)
+                                                    status__in=['open', 'approved']).exclude(leave_type__in=[11,14,15])
     holiday = Holiday.objects.all().values('date')
 
     if len(leaveapplied) > 1:
