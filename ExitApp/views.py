@@ -55,6 +55,7 @@ class ExitFormAdd(View):
                 # mgr_id = Employee.objects.filter(user_id=userid).get('manager_id')
                 # manager = Employee.objects.filter(employee_assigned_id=mgr_id).get('user_id')
                 # manager.user.email
+                today_date = date.today()
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
                 start_date = form.cleaned_data['start_date']
@@ -63,6 +64,9 @@ class ExitFormAdd(View):
                 time = timezone.now()
                 if start_date > last_date:
                     messages.error(request, 'Your Last Date Should be Greater than resignation Date')
+                    return render(request, "userexit.html", context)
+                if start_date < today_date:
+                    messages.error(request, 'Your Resignation Date Should be of today')
                     return render(request, "userexit.html", context)
                 ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
                 value = Employee.objects.get(user_id=userid)
