@@ -20,10 +20,10 @@ def __unicode__(self):
     return unicode(self.user)
 
 
-def updateauthtable(request):
+def exitnoteupdate(request):
     value = request.GET['id']
     exit_summary = request.GET['message']
-    exit_flag = request.GET['exitflag']
+    exit_flag = request.GET['exit_flag']
     exit_id = ResignationInfo.objects.get(id=value)
     value = User.objects.get(id=exit_id.User_id)
     value.is_staff = 0
@@ -335,7 +335,7 @@ class ClearanceFormView(View):
 class ClearanceList(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin']).exists():
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin', 'myansrsourcePM']).exists():
             d = date.today()
             final_val = d + timedelta(days=1)
             allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val)

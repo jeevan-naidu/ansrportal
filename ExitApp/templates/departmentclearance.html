@@ -65,7 +65,7 @@ ul{list-style: none;padding-left: 0px;}
                                      $.ajax({
                                                 url : "/exitapp/update-auth/",
                                                 type : "GET",
-                                                data : { 'id':value, 'exitflag':exit_flag, 'message':inputValue},
+                                                data : { 'id':value, 'exit_flag':exit_flag, 'message':inputValue},
                                                 success : function(json) {
                                                 swal("Completed!", "Employee has been removed from auth table.", "success");
                                                     console.log("success");
@@ -85,7 +85,7 @@ ul{list-style: none;padding-left: 0px;}
                                           $.ajax({
                                                 url : "/exitapp/update-auth/",
                                                 type : "GET",
-                                                data : { 'id':value, 'exitflag':exit_flag, 'message':inputValue},
+                                                data : { 'id':value, 'exit_flag':exit_flag, 'message':inputValue},
                                                 success : function(json) {
                                                 swal("Completed!", "Employee has been removed from auth table.", "success");
                                                     console.log("success");

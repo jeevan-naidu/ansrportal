@@ -25,8 +25,8 @@ class ExitappPermissionCheckMiddleware(object):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
 
-        if 'exitapp/exitkj-acceptance' in request.path or 'exitapp/clearance-listkj/' in request.path:
-            if request.user.groups.filter(name=settings.EXITAPP_GROUP_NAME).exists():
+        if 'exitapp/exit-acceptance' in request.path or 'exitapp/clearance-list/' in request.path or 'exitapp/clearance/' in request.path:
+            if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin']).exists():
                 return None  # allow the users who is in the group
             else:
                 if request.user.is_authenticated():
