@@ -65,7 +65,7 @@ class ExitFormAdd(View):
                 if start_date > last_date:
                     messages.error(request, 'Your Last Date Should be Greater than resignation Date')
                     return render(request, "userexit.html", context)
-                if start_date < today_date:
+                if start_date <= today_date:
                     messages.error(request, 'Your Resignation Date Should be of today')
                     return render(request, "userexit.html", context)
                 ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
