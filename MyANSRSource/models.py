@@ -362,7 +362,9 @@ class ProjectMilestone(models.Model):
     project = models.ForeignKey(Project)
     milestoneDate = models.DateField(verbose_name="Milestone Date",
                                      default=timezone.now)
-    name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name")
+    description = models.CharField(default=None, blank=False, max_length=1000,
+                                   null=True, verbose_name="Description")
+    # name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name")
     amount = models.DecimalField(default=0.0,
                                  max_digits=12,
                                  decimal_places=2,
