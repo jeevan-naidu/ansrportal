@@ -336,8 +336,7 @@ class ProjectMilestone(models.Model):
     project = models.ForeignKey(Project)
     milestoneDate = models.DateField(verbose_name="Milestone Date",
                                      default=timezone.now)
-    description = models.CharField(default=None, blank=False, max_length=1000,
-                                   null=True, verbose_name="Description")
+    name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name")
     amount = models.DecimalField(default=0.0,
                                  max_digits=12,
                                  decimal_places=2,
@@ -498,3 +497,29 @@ class SendEmail(models.Model):
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
 
+
+class MilestoneType(models.Model):
+    milestone_type = models.CharField(max_length=50, verbose_name="Milestone Type")
+    is_financial = models.BooleanField(default=False, verbose_name="Is Financial")
+
+    def __unicode__(self):
+        return self.milestone_type
+
+    class Meta:
+        verbose_name = "Milestone Type"
+        verbose_name_plural = "Milestone Types"
+
+
+class Milestone(UpdateDate):
+    milestone_type = models.ForeignKey(MilestoneType)
+    name = models.CharField(default=None, blank=False, max_length=100,
+                            null=True, verbose_name="name")
+    is_final_milestone = models.BooleanField(verbose_name="Is Final Milestone", default=False)
+    check_schedule_deviation = models.BooleanField(verbose_name="Check Schedule Deviation")
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Project Milestones"
+        verbose_name = "Project Milestone"
