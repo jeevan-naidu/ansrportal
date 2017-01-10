@@ -9,7 +9,7 @@ class ClearanceInfoAdmin(admin.ModelAdmin):
 
 
 class ResignationInfoAdmin(admin.ModelAdmin,):
-    list_display = ['last_date', 'hr_accepted', 'emp_reason', 'manager_accepted', 'last_date_accepted', 'exit_interview_notes', 'exit_interview_flag']
+    list_display = ['last_date', 'hr_accepted', 'emp_reason', 'manager_accepted', 'last_date_accepted','exit_interview_notes', 'exit_interview_flag', 'rehire_hr', 'rehire_manager', 'backup_taken']
 
 
 class EmployeeClearanceInfoAdmin(admin.ModelAdmin):

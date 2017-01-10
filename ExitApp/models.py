@@ -22,7 +22,10 @@ Department = (
 class ResignationInfo(models.Model):
     User = models.ForeignKey(User, unique=True)
     emp_reason = models.CharField(verbose_name="Reason", blank=False, max_length=250,)
-    hr_accepted = models.NullBooleanField (verbose_name="HR clearance", null=True, blank=True)
+    hr_accepted = models.NullBooleanField(verbose_name="HR clearance", null=True, blank=True)
+    rehire_hr = models.NullBooleanField(verbose_name="HR Concent fo rehire", null=True, blank=True)
+    rehire_manager = models.NullBooleanField(verbose_name="Manager Concent for rehire", null=True, blank=True)
+    backup_taken = models.NullBooleanField(verbose_name="system Back up Taken or not ", null=True, blank=True)
     manager_accepted = models.NullBooleanField (verbose_name="manager clearance", null=True, blank=True)
     last_date = models.DateField(verbose_name="Last Date Opted By employee", blank=True)
     last_date_accepted = models.DateField(verbose_name="Last Date Accepted By Organisation", blank=True, null=True)
@@ -58,7 +61,7 @@ class EmployeeClearanceInfo(models.Model):
 
     class Meta:
         verbose_name = 'Employee Clearance Info'
-        unique_together = ('department', 'status_by',)
+        unique_together = ('department', 'status_by', 'resignationInfo')
 
 
 

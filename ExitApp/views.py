@@ -65,8 +65,8 @@ class ExitFormAdd(View):
                 if start_date > last_date:
                     messages.error(request, 'Your Last Date Should be Greater than resignation Date')
                     return render(request, "userexit.html", context)
-                if start_date <= today_date:
-                    messages.error(request, 'Your Resignation Date Should be of today')
+                if start_date < today_date:
+                    messages.error(request, 'Please select Resignation Date today or after')
                     return render(request, "userexit.html", context)
                 ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
                 value = Employee.objects.get(user_id=userid)
@@ -74,7 +74,7 @@ class ExitFormAdd(View):
                 value.exit = last_date
                 value.save()
                 ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email)
-                messages.success(request, 'Your Resignation has been Submitted')
+                messages.success(request, 'Thanks ! Your Resignation has been Submitted')
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
                 print programmingerror
@@ -209,9 +209,7 @@ class ClearanceFormView(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         id = request.GET.get('id')
-        approved_applicant = ResignationInfo.objects.all().filter(id=id)
-        clearance_data = EmployeeClearanceInfo.objects.all()
-        context['approved_candidate'] = approved_applicant
+        clearance_data = EmployeeClearanceInfo.objects.all().filter(resignationInfo_id=id)
         context['clearance_data'] = clearance_data
         return render(request, "departmentclearance.html", context)
 
@@ -219,9 +217,7 @@ class ClearanceFormView(View):
         context = {"form": ""}
         form = request.POST
         id = request.GET.get('id')
-        approved_applicant = ResignationInfo.objects.all().filter(id=id)
-        clearance_data = EmployeeClearanceInfo.objects.all()
-        context['approved_candidate'] = approved_applicant
+        clearance_data = EmployeeClearanceInfo.objects.all().filter(id=id)
         context['clearance_data'] = clearance_data
         try:
             resignee_id = request.GET.get('id')

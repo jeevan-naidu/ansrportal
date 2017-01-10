@@ -120,9 +120,6 @@ ul{list-style: none;padding-left: 0px;}
                           <th>Accept</th>
                         </tr>
                       </thead>
-    {% for candidate in approved_candidate %}
-
-                      {% if candidate.hr_accepted == True and candidate.manager_accepted == True %}
                       <tbody>
                       <tr>
                           <td>1</td>
@@ -186,9 +183,6 @@ ul{list-style: none;padding-left: 0px;}
                         </tr>
                       <tr>
                         <td>6</td>
-                          {% for f in clearance_data %}
-
-                          {% endfor%}
                           <td class="center">HR</td>
                           <td class="center"><input {% if request.user|has_group:'myansrsourceHR' == False %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  clearance_data%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="hr_amount" id = "hramount" class ="amountbox form-control input-sm"/></td>
                           <td><input {% if request.user|has_group:'myansrsourceHR' == False %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  clearance_data%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="hr_feedback" class="form-control input-sm"></td>
@@ -201,13 +195,6 @@ ul{list-style: none;padding-left: 0px;}
                         </tr>
                       <tr>
                       </tbody>
-
-
-
-<!-- Set of Modals -->
-
-    {% endif %}
-    {% endfor %}
                     </table>
                         <input type ="submit" value="Submit" class="exitbutton btn btn-primary pull-right">
 </form>
