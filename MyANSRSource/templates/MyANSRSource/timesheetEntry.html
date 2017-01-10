@@ -57,7 +57,7 @@
 				</h6>
 			</td>
 			{% for k, v in attendance.items %}
-				<td class="text-center">
+				<td class="text-right">
 				<b>{{ v }}</b>
 				</td>
 			{% endfor %}
@@ -66,25 +66,25 @@
 			<td colspan="2" class="text-right">
 				<strong>Timesheet Hours</strong>
 			</td>
-			<td class="text-center">
+			<td class="text-right">
                 <strong class="ts-mon-total-hr">{{ tsTotal.mondayTotal }}</strong>
 			</td>
-			<td class="text-center">
+			<td class="text-right">
                 <strong class="ts-tue-total-hr">{{ tsTotal.tuesdayTotal }}</strong>
 			</td>
-			<td class="text-center">
+			<td class="text-right">
                 <strong class="ts-wed-total-hr">{{ tsTotal.wednesdayTotal }}</strong>
 			</td>
-			<td class="text-center">
+			<td class="text-right">
                 <strong class="ts-thu-total-hr">{{ tsTotal.thursdayTotal }}</strong>
 			</td>
-			<td class="text-center">
+			<td class="text-right">
                 <strong class="ts-fri-total-hr">{{ tsTotal.fridayTotal }}</strong>
 			</td>
-			<td class="text-center">
+			<td class="text-right">
                 <strong class="ts-sat-total-hr">{{ tsTotal.saturdayTotal }}</strong>
 			</td>
-			<td class="text-center">
+			<td class="text-right">
                 <strong class="ts-sun-total-hr">{{ tsTotal.sundayTotal }}</strong>
 			</td>
 		</tr>
@@ -92,14 +92,15 @@
 		<tr>
 			<th class="res-10-per">Project <span class="required">*</span></th>
 			<th class="res-10-per">Task <span class="required">*</span></th>
-			<th class="res-10-per">Mon</th>
-			<th class="res-10-per">Tue</th>
-			<th>Wed</th>
-			<th>Thu</th>
-			<th>Fri</th>
-			<th>Sat</th><th>Sun</th>
-			<th>Total</th>
-			<th>Delete</th>
+			<th class="res-10-per text-right">Mon</th>
+			<th class="res-10-per text-right">Tue</th>
+			<th class="text-right">Wed</th>
+			<th class="text-right">Thu</th>
+			<th class="text-right">Fri</th>
+			<th class="text-right">Sat</th>
+			<th class="text-right">Sun</th>
+			<th class="text-right">Total</th>
+			<th class="text-right">Delete</th>
 		</tr>
 		</thead>
 		<tbody>
