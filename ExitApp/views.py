@@ -335,7 +335,7 @@ class ClearanceFormView(View):
 class ClearanceList(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin', 'myansrsourcePM']).exists():
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
             d = date.today()
             final_val = d + timedelta(days=1)
             allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val)
