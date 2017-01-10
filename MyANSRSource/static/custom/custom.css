@@ -200,7 +200,12 @@ iframe{
     background: #ff5d5d;
     border: 1px solid #f74343;
 }
-
+.timesheet-input-small{border:0px solid black !important;padding: 0px !important;}
+input.timesheet-input-small:focus, textarea.timesheet-input-small:focus {
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+.no-hover-background:hover{background: transparent !important;}
 
 
 
