@@ -141,11 +141,11 @@
                                     {% with dayclass=data.label|add:"-t" %}
                                         
 
-                                            <!-- <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{% if tdata.value > 0 %} {{ tdata.value }} {% else %} 0 {% endif %}</span>H -->
+                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{% if tdata.value > 0 %} {{ tdata.value }} {% else %} 0 {% endif %}</span>H
 
 
 
-                                            <input type="text" name="" class="text-right b-hours set-zero {{ dayclass }} timesheet-input-small hours-input" value="{% if tdata.value > 0 %} {{ tdata.value }} {% else %} 0 {% endif %}">
+                                            <!-- <input type="text" name="" class="text-right b-hours set-zero {{ dayclass }} timesheet-input-small hours-input" value="{% if tdata.value > 0 %}{{ tdata.value }}{% else %}0{% endif %}"> -->
                                         
                                     {% endwith %}
 									{{ tdata }}

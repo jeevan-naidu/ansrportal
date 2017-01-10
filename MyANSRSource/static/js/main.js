@@ -1192,7 +1192,7 @@ app.getSum = function($elements, $outputElement) {
                   }
                 }
 
-                /*$dayPopoverBtn.popover({
+                $dayPopoverBtn.popover({
                     trigger: 'click',
                     html: true,
                     placement: 'bottom',
@@ -1200,7 +1200,7 @@ app.getSum = function($elements, $outputElement) {
                     callback: function(){
                         $('input.hours-input').focus();
                     }
-                });*/
+                });
 
 
                 var primaryCb = function(e) {
@@ -1473,11 +1473,7 @@ console.log("oiii");
 
                 $dayPopoverBtn.on('shown.bs.popover', primaryCb);
 
-                $('html').click(function(){
-                    primaryCb();
-                });
-
-                $bTask.on({
+/*                $bTask.on({
                     change: primaryCb
                 });
 
@@ -1504,7 +1500,7 @@ console.log("oiii");
                     console.log('rTotalView trigged');
                     var $popover = $('.popover');
                     $popover.popover('hide');
-                });
+                });*/
 
             }
         };
