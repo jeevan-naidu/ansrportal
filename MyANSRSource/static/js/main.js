@@ -1473,7 +1473,7 @@ console.log("oiii");
 
                 $dayPopoverBtn.on('shown.bs.popover', primaryCb);
 
-/*                $bTask.on({
+                $bTask.on({
                     change: primaryCb
                 });
 
@@ -1500,7 +1500,7 @@ console.log("oiii");
                     console.log('rTotalView trigged');
                     var $popover = $('.popover');
                     $popover.popover('hide');
-                });*/
+                });
 
             }
         };
