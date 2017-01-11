@@ -20,6 +20,27 @@ def __unicode__(self):
     return unicode(self.user)
 
 
+def revertresignation(request):
+    user_id = request.user.id
+    note = request.GET['message']
+    try:
+        value = Employee.objects.get(user_id=user_id)
+        value.resignation = '1111-11-11'
+        value.exit = '1111-11-11'
+        value.save()
+        exit_revert = ResignationInfo.objects.get(User_id=user_id)
+        exit_revert.exit_revert_flag = 1
+        exit_revert.manager_accepted = 0
+        exit_revert.hr_accepted = 0
+        exit_revert.exit_revert_note = note
+        exit_revert.save()
+    except Exception as programmingerror:
+        print programmingerror
+        return HttpResponse(programmingerror)
+
+    return HttpResponse('success')
+
+
 def exitnoteupdate(request):
     value = request.GET['id']
     exit_summary = request.GET['message']
@@ -33,7 +54,6 @@ def exitnoteupdate(request):
     exit_id.exit_interview_notes = exit_summary
     exit_id.exit_interview_flag = exit_flag
     exit_id.save()
-
     return HttpResponse('success')
 
 
@@ -49,7 +69,6 @@ class ExitFormAdd(View):
         form = UserExitForm(request.POST)
         if form.is_valid():
             try:
-                # import ipdb; ipdb.set_trace()
                 userid = request.user.id
                 user_email = User.objects.get(id=userid)
                 # mgr_id = Employee.objects.filter(user_id=userid).get('manager_id')
@@ -68,7 +87,7 @@ class ExitFormAdd(View):
                 if start_date < today_date:
                     messages.error(request, 'Please select Resignation Date today or after')
                     return render(request, "userexit.html", context)
-                ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0).save()
+                ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0, exit_revert_flag=0).save()
                 value = Employee.objects.get(user_id=userid)
                 value.resignation = start_date
                 value.exit = last_date

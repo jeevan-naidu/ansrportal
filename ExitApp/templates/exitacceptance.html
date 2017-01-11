@@ -29,7 +29,6 @@ ul{list-style: none;padding-left: 0px;}
            <div class="panel-body">
                {% if messages %}
                      {% for message in messages %}
-
                <div class="alert alert-success">
                 <strong>Success!</strong> {{message}}.
                </div>
@@ -47,6 +46,7 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Reason</th>
                           </thead>
                    {% for c in resigneedata %}
+                          {%  if c.exit_revert_flag == False %}
                    <tr>
                        <td>{{c}}</td>
                        <td>
@@ -69,6 +69,7 @@ ul{list-style: none;padding-left: 0px;}
                        </td>
                        <td>{{c.emp_reason}}</td>
                    </tr>
+                            {%endif %}
                {% endfor %}
                             {% csrf_token %}
                              </table>

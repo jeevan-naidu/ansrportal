@@ -84,28 +84,59 @@ ul{list-style: none;padding-left: 0px;}
                   <div class="help-block with-errors"></div> 
                   </div>
               </div>
-
                   <input type ="submit" value ="Submit" class="exitbutton btn btn-primary pull-right">
-
-
-
-
             </form>
+                        <button type="button" id = "revertresignation" class="btn btn-primary">Revert</button>
                     </div>
+
                 </div>
               </div>
+
             </div>
 
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-                            <script type="text/javascript">
+<script type="text/javascript">
 
     $(document).ready(function(){
-
       $('.input-group-addon').click(function(){
         $(this).parent().find('input').focus();
       });
+      $( "#revertresignation" ).click(function() {
+      swal({
+              title: "Reason To Revert!",
+              text: "please write your Reason:",
+              type: "input",
+              showCancelButton: true,
+              closeOnConfirm: false,
+              inputPlaceholder: "Write something"
+            }, function (inputValue) {
+              if (inputValue === false) return false;
+              else if (inputValue === "") {
+                swal.showInputError("You need to write something!");
+                return false
+              }
+              else if(inputValue != 'false')
+              {
+                 $.ajax({
+                      url : "/exitapp/revertresignation/",
+                      type : "GET",
+                      data : {'message':inputValue},
+                      success : function(json) {
+                      if (json == 'ResignationInfo matching query does not exist.')
+                      {
+                      swal.showInputError("You cant Revert your resignation without applying");
+                      }
+                      else
+                      {
+                      swal("Thanks!", "", "success");
+                      }
+                      }
+                    });
+              }
+        });
+        });
 
     });
     </script>

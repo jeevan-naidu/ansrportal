@@ -35,7 +35,9 @@ class ResignationInfo(models.Model):
     manager_comment = models.CharField(verbose_name="Manager comment", null=True, blank=True, max_length=1000,)
     hr_comment = models.CharField(verbose_name="HR comment", null=True, blank=True, max_length=1000,)
     exit_interview_notes = models.CharField(verbose_name="Exit Interview Summary", null=True, blank=True, max_length=2000,)
-    exit_interview_flag = models.NullBooleanField(verbose_name="Exit Interview Happened or Not", null=True,blank=True)
+    exit_interview_flag = models.NullBooleanField(verbose_name="Exit Interview Happened or Not", null=True, blank=True)
+    exit_revert_flag = models.NullBooleanField(verbose_name="Resignation Withdraw ?", null=True, blank=True)
+    exit_revert_note = models.CharField(verbose_name="Note for Reverting the resignation", null=True, blank=True, max_length=2000,)
 
     def __unicode__(self):
         return unicode(self.User)

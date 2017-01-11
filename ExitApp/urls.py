@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from views import ExitFormAdd, ResignationAcceptance, ClearanceFormView, ClearanceList, exitnoteupdate
+from views import ExitFormAdd, ResignationAcceptance, ClearanceFormView, ClearanceList, exitnoteupdate, revertresignation
 from django.contrib.auth.decorators import login_required, user_passes_test
 from autocomplete_light_registry import AutoCompleteRequisitionSearch, AutoCompleteResigneeSearch
 
@@ -18,6 +18,9 @@ urlpatterns = [
                            name='list'),
                        url(r'^update-auth/$',
                            login_required(exitnoteupdate),
+                           name='list'),
+                       url(r'^revertresignation/$',
+                           login_required(revertresignation),
                            name='list'),
 
                        ]
