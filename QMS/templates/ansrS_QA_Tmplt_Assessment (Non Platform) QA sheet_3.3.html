@@ -541,6 +541,11 @@ $('.defect').change(function(e){
 
                 for (var key in data) {
                     if (data.hasOwnProperty(key)) {
+                        if (key == 'configuration_missing') {
+                            sweetAlert("Oops...", "Configuration is missing for Defect Severity Level!", "error");
+                            return false;
+
+                        }
 
                         if(key == 'severity_level'){
 
