@@ -63,7 +63,7 @@ class EmployeeClearanceInfo(models.Model):
 
     class Meta:
         verbose_name = 'Employee Clearance Info'
-        unique_together = ('department', 'status_by', 'resignationInfo')
+        unique_together = ('department', 'resignationInfo')
 
 
 

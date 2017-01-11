@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from datetime import datetime, date
+from django.core.exceptions import PermissionDenied
 
 
 # Create your views here.
@@ -228,15 +229,41 @@ class ClearanceFormView(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         id = request.GET.get('id')
-        clearance_data = EmployeeClearanceInfo.objects.all().filter(resignationInfo_id=id)
-        context['clearance_data'] = clearance_data
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
+            clearance_data = EmployeeClearanceInfo.objects.filter(resignationInfo=id)
+            context['dataresignee'] = clearance_data
+        else:
+            mgrid = Employee.objects.get(user_id=request.user.id)
+            reportee = Employee.objects.filter(manager_id=mgrid)
+            filterdata = []
+            for value in reportee:
+                filterdata.append(value.user.id)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
+            if not allresignee:
+                raise PermissionDenied("Sorry You Don't Have any record")
+            clearance_data = EmployeeClearanceInfo.objects.all().filter(resignationInfo=id)
+            context['dataresignee'] = clearance_data
         return render(request, "departmentclearance.html", context)
 
     def post(self, request):
         context = {"form": ""}
         form = request.POST
         id = request.GET.get('id')
-        clearance_data = EmployeeClearanceInfo.objects.all().filter(id=id)
+
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
+            allresignee = ResignationInfo.objects.all()
+            context['resigneedata'] = allresignee
+        else:
+            mgrid = Employee.objects.get(user_id=request.user.id)
+            reportee = Employee.objects.filter(manager_id=mgrid)
+            filterdata = []
+            for value in reportee:
+                filterdata.append(value.user.id)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
+            if not allresignee:
+                raise PermissionDenied("Sorry You Don't Have any record")
+            context['resigneedata'] = allresignee
+        clearance_data = EmployeeClearanceInfo.objects.filter(id=id)
         context['clearance_data'] = clearance_data
         try:
             resignee_id = request.GET.get('id')
@@ -246,6 +273,8 @@ class ClearanceFormView(View):
             user_email = User.objects.get(id=user_detail.User_id)
             form = request.POST
             count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
+            # import ipdb; ipdb.set_trace()
+            # print count
             if 'hr_approval' in form:
                 if count == 5:
                     hr_approval = form['hr_approval']
