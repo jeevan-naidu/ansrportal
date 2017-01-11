@@ -20,7 +20,7 @@ def __unicode__(self):
     return unicode(self.user)
 
 
-def revertresignation(request):
+def revert_resignation(request):
     user_id = request.user.id
     note = request.GET['message']
     try:
@@ -41,7 +41,7 @@ def revertresignation(request):
     return HttpResponse('success')
 
 
-def exitnoteupdate(request):
+def exit_note_update(request):
     value = request.GET['id']
     exit_summary = request.GET['message']
     exit_flag = request.GET['exit_flag']
