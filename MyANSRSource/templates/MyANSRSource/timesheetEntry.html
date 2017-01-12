@@ -460,6 +460,10 @@
 		    <td class="total-idle-hours text-right">{{ idleTotal }}</td>
                 </tr>
                 <tr>
+					     <tr>
+                    <td>Leave</td>
+		    <td class="total-leave-hours text-right">{{ leave_hours }}</td>
+                </tr>
                     <td>Non-Billable</td>
 		    <td class="total-non-billable-hours text-right">{{ othersTotal }}</td>
                 </tr>
@@ -516,6 +520,7 @@
             $( "#saveTS" ).click(function() {
                 $( "#saveTS" ).hide();
             });
+
         });
 
 
