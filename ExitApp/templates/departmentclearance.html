@@ -171,11 +171,11 @@ ul{list-style: none;padding-left: 0px;}
                       <tr>
                       <td>5</td>
                           <td class="center">Manager</td>
-                          <td class="center"><input {% if request.user|has_group:'myansrsourcePM' == False %} disabled {%endif%} type="number" id = "manager_amount" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="manager_amount" class ="amountbox form-control input-sm"/></td>
-                          <td><input {% if request.user|has_group:'myansrsourcePM' == False %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="manager_feedback" class="form-control input-sm"></td>
+                          <td class="center"><input {% if user|DirectReportee == 0%} disabled {%endif%} type="number" id = "manager_amount" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="manager_amount" class ="amountbox form-control input-sm"/></td>
+                          <td><input {% if user|DirectReportee == 0 %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="manager_feedback" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input {% if request.user|has_group:'myansrsourcePM' == False %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="manager_approval" id="checkbox-6">
+                              <input {% if user|DirectReportee == 0 %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="manager_approval" id="checkbox-6">
                               <label for="checkbox-6"></label>
                             </div>
                           </td>

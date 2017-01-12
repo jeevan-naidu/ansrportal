@@ -56,16 +56,17 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Action</th>
                           </thead>
                    {% for c in resigneedata %}
+                            {{ user |DirectReportee}}
                           {%  if c.exit_revert_flag == False %}
                    <tr>
                        <td>{{c}}<input class="userid" type="hidden" value = "{{c.User_id}}"/></td>
                        <td>
-                        <input  {% if user|IsManager == False %} disabled {%endif%} class ="acceptance" id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
+                        <input  {% if user|DirectReportee == 0 %} disabled {%endif%} class ="acceptance" id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
-                        <textarea {% if user|IsManager == False %} disabled {%endif%} class = "feedback" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
+                        <textarea {% if user|DirectReportee == 0 %} disabled {%endif%} class = "feedback" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
                        </td>
-                       <td><input  {% if user|IsManager == False %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}" type="checkbox" {% if c.rehire_manager == True%}checked{%endif%}></td>
+                       <td><input  {% if user|DirectReportee == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}" type="checkbox" {% if c.rehire_manager == True%}checked{%endif%}></td>
                        <td><input  {% if user|IsManager == False %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
                        <td>
                         <input  {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} class="hrconcent"id="hrconcent_{{c.User_id}}" name="hrconcent_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
@@ -98,7 +99,7 @@ ul{list-style: none;padding-left: 0px;}
              $(this).val(this.checked ? 1 : 0);
             });
             $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
-             {% if user|IsManager and request.user|has_group:'myansrsourceHR' == False%}
+             {% if user|DirectReportee == 1 %}
                   $('.resignation_acceptance').on('click', function(){
                   manager_concent = $(this).parent().parent().find('.acceptance').val();
                   mgr_feedback = $(this).parent().parent().find('.feedback').val();
@@ -119,9 +120,6 @@ ul{list-style: none;padding-left: 0px;}
                                                 });
                 });
             {% else%}
-                {% if user|IsManager and request.user|has_group:'myansrsourceHR' %}
-                 $(".acceptance,.rehiremgr,.backup").attr("disabled", true);
-                {%endif %}
                $('.resignation_acceptance').on('click', function(){
                   hr_concent = $(this).parent().parent().find('.hrconcent').val();
                   hr_feedback = $(this).parent().parent().find('.feedbackhr').val();
