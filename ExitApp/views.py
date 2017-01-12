@@ -60,6 +60,9 @@ def exit_note_update(request):
 
 def update_manager_concent(request):
     id = request.GET['id']
+    mgr_id = Employee.objects.get(user_id=id)
+    manager = Employee.objects.get(employee_assigned_id=mgr_id.manager_id)
+    manageremail = User.objects.get(id=manager.user_id)
     user_email = User.objects.get(id=id)
     final_date = request.GET['final_date']
     mgr_backup = request.GET['mgr_backup']
@@ -75,7 +78,7 @@ def update_manager_concent(request):
     resign_info.last_date = final_date
     resign_info.updated_on = timezone.now()
     resign_info.save()
-    PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, final_date)
+    PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, final_date, manageremail.email)
     return HttpResponse('success')
 
 
@@ -118,9 +121,9 @@ class ExitFormAdd(View):
             try:
                 userid = request.user.id
                 user_email = User.objects.get(id=userid)
-                # mgr_id = Employee.objects.filter(user_id=userid).get('manager_id')
-                # manager = Employee.objects.filter(employee_assigned_id=mgr_id).get('user_id')
-                # manager.user.email
+                mgr_id = Employee.objects.get(user_id=request.user.id)
+                manager = Employee.objects.get(employee_assigned_id=mgr_id.manager_id)
+                manageremail = User.objects.get(id=manager.user_id)
                 today_date = date.today()
                 context["form"] = UserExitForm()
                 last_date = form.cleaned_data['last_date']
@@ -139,7 +142,7 @@ class ExitFormAdd(View):
                 value.resignation = start_date
                 value.exit = last_date
                 value.save()
-                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email)
+                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email, manageremail.email)
                 messages.success(request, 'Thanks ! Your Resignation has been Submitted')
                 return render(request, "userexit.html", context)
             except Exception as programmingerror:
