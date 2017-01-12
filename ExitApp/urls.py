@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from views import ExitFormAdd, ResignationAcceptance, ClearanceFormView, ClearanceList, exit_note_update, revert_resignation
+from views import ExitFormAdd, ResignationAcceptance, ClearanceFormView, ClearanceList, exit_note_update, revert_resignation, update_manager_concent, update_hr_concent
 from django.contrib.auth.decorators import login_required, user_passes_test
 from autocomplete_light_registry import AutoCompleteRequisitionSearch, AutoCompleteResigneeSearch
 
@@ -22,5 +22,11 @@ urlpatterns = [
                        url(r'^revertresignation/$',
                            login_required(revert_resignation),
                            name='list'),
+                       url(r'^update-manager-value/$',
+                           login_required(update_manager_concent),
+                           name="list"),
+                       url(r'^update-hr-value/$',
+                           login_required(update_hr_concent),
+                           name="list"),
 
                        ]

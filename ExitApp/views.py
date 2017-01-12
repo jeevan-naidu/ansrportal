@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from datetime import datetime, date
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 
 
 # Create your views here.
@@ -56,6 +57,52 @@ def exit_note_update(request):
     exit_id.exit_interview_flag = exit_flag
     exit_id.save()
     return HttpResponse('success')
+
+
+def update_manager_concent(request):
+    id = request.GET['id']
+    user_email = User.objects.get(id=id)
+    final_date = request.GET['final_date']
+    mgr_backup = request.GET['mgr_backup']
+    mgr_feedback = request.GET['mgr_feedback']
+    manager_concent = request.GET['manager_concent']
+    rehire_manager = request.GET['manager_rehire']
+    resign_info = ResignationInfo.objects.get(User_id=id)
+    resign_info.rehire_manager = rehire_manager
+    resign_info.manager_comment = mgr_feedback
+    resign_info.last_date_accepted = final_date
+    resign_info.manager_accepted = manager_concent
+    resign_info.backup_taken = mgr_backup
+    resign_info.last_date = final_date
+    resign_info.updated_on = timezone.now()
+    resign_info.save()
+    PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, final_date)
+    return HttpResponse('success')
+
+
+def update_hr_concent(request):
+    id = request.GET['id']
+    user_email = User.objects.get(id=id)
+    final_date = request.GET['final_date']
+    hr_feedback = request.GET['hr_feedback']
+    hr_concent = request.GET['hr_concent']
+    hr_rehire = request.GET['hr_rehire']
+    resign_info = ResignationInfo.objects.get(User_id=id)
+    manager_concent = resign_info.manager_accepted
+    if manager_concent is True:
+        resign_info.rehire_hr = hr_rehire
+        resign_info.hr_comment = hr_feedback
+        resign_info.last_date_accepted = final_date
+        resign_info.hr_accepted = hr_concent
+        resign_info.last_date = final_date
+        resign_info.updated_on = timezone.now()
+        resign_info.save()
+        PostAcceptedMailHR.delay(user_email.first_name, user_email.email, final_date)
+    else:
+        return HttpResponse('HR cant accept without manager approval')
+    return HttpResponse('success')
+
+
 
 
 class ExitFormAdd(View):
@@ -111,7 +158,7 @@ class ResignationAcceptance(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         if request.user.groups.filter(name__in=['myansrsourceHR']).exists():
-            allresignee = ResignationInfo.objects.all()
+            allresignee = ResignationInfo.objects.filter(~Q(User_id=request.user.id))
             context['resigneedata'] = allresignee
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
@@ -121,107 +168,6 @@ class ResignationAcceptance(View):
                 filterdata.append(value.user.id)
             allresignee = ResignationInfo.objects.filter(User__in=filterdata)
             context['resigneedata'] = allresignee
-        return render(request, "exitacceptance.html", context)
-
-    def post(self, request):
-        context = {"form": ""}
-        form = request.POST
-        if request.user.groups.filter(name__in=['myansrsourceHR']).exists():
-            allresignee = ResignationInfo.objects.all()
-            context['resigneedata'] = allresignee
-        else:
-            mgrid = Employee.objects.get(user_id=request.user.id)
-            reportee = Employee.objects.filter(manager_id=mgrid)
-            filterdata = []
-            for value in reportee:
-                filterdata.append(value.user.id)
-            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
-            context['resigneedata'] = allresignee
-        hrconcent_tab ={}
-        hrcomment_tab = {}
-        managerconcent_tab = {}
-        managercomment_tab = {}
-        finaldate_tab = {}
-        # import ipdb; ipdb.set_trace()
-        hrconcent = {k: v for k, v in self.request.POST.items() if k.startswith('hraccepted_')}
-        hrcomment = {k: v for k, v in self.request.POST.items() if k.startswith('hrcomment_')}
-        managerconcent = {k: v for k, v in self.request.POST.items() if k.startswith('manageraccepted_')}
-        managercomment = {k: v for k, v in self.request.POST.items() if k.startswith('managercomment_')}
-        finaldate = {k: v for k, v in self.request.POST.items() if k.startswith('finaldate_')}
-        for k, v in hrconcent.iteritems():
-            tab_id = k.split('_')
-            hrconcent_tab[tab_id[1]] = v
-
-        for k, v in hrcomment.iteritems():
-            tab_id = k.split('_')
-            hrcomment_tab[tab_id[1]] = v
-
-        for k, v in managerconcent.iteritems():
-            tab_id = k.split('_')
-            managerconcent_tab[tab_id[1]] = v
-
-        for k, v in managercomment.iteritems():
-            tab_id = k.split('_')
-            managercomment_tab[tab_id[1]] = v
-
-        for k, v in finaldate.iteritems():
-            tab_id = k.split('_')
-            finaldate_tab[tab_id[1]] = v
-
-        try:
-            i = 0
-            for k, v in hrconcent_tab.iteritems():
-                user_email = User.objects.get(id=k)
-                try:
-                    if i == 0:
-                        PostAcceptedMailHR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
-                        messages.error(request, 'Your response has been submitted successfully')
-                    value = ResignationInfo.objects.get(User=k)
-                    value.hr_accepted = hrconcent_tab[k]
-                    value.hr_comment = hrcomment_tab[k]
-                    value.save()
-                    i = (i+1)
-
-                except Exception as programmingerror:
-                    context['error'] = programmingerror
-                    print programmingerror
-                    context['form'] = form
-                    return render(request, "exitacceptance.html", context)
-        except Exception as programmingerror:
-                context['error'] = programmingerror
-                print programmingerror
-                context['form'] = form
-                return render(request, "exitacceptance.html", context)
-        try:
-            for k, v in managerconcent_tab.iteritems():
-                user_email = User.objects.get(id=k)
-                i = 0
-                try:
-                    if i == 0:
-                        PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, finaldate_tab[k])
-                        messages.error(request, 'Your response has been submitted successfully')
-                    value = ResignationInfo.objects.get(User_id=k)
-                    value.manager_accepted = managerconcent_tab[k]
-                    value.manager_comment = managercomment_tab[k]
-                    value.last_date_accepted = finaldate_tab[k]
-                    value.last_date = finaldate_tab[k]
-                    value.save()
-                    last_date_final = Employee.objects.get(user_id=k)
-                    last_date_final.exit = finaldate_tab[k]
-                    last_date_final.save()
-
-                except Exception as programmingerror:
-                    context['error'] = programmingerror
-                    print programmingerror
-                    context['form'] = form
-                    return render(request, "exitacceptance.html", context)
-
-        except Exception as programmingerror:
-                context['error'] = programmingerror
-                print programmingerror
-                context['form'] = form
-                return render(request, "exitacceptance.html", context)
-
         return render(request, "exitacceptance.html", context)
 
 
