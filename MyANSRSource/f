@@ -1,0 +1,179 @@
+if q_form.is_valid():
+          
+            for form_elements in q_form:
+                if form_elements.cleaned_data['DELETE'] is True:
+                    ReviewReport.objects.filter(
+                        id=form_elements.cleaned_data['qms_id']
+                    ).delete()
+
+                    for k, v in form_elements.cleaned_data.iteritems():
+                        if k == 'tsId':
+                            if v:
+                                approved = TimeSheetEntry.objects.get(
+                                    pk=v).approved
+                       
+                        timesheetDict[k] = v
+                        timesheetDict['approved'] = approved
+                    timesheetList.append(timesheetDict.copy())
+                    timesheetDict.clear()
+           
+                for eachTimesheet in timesheetList:
+                    if eachTimesheet['tsId'] > 0:
+                        billableTS = TimeSheetEntry.objects.filter(
+                            id=eachTimesheet['tsId']
+                        )[0]
+                    else:
+                        billableTS = TimeSheetEntry()
+                    billableTS.wkstart = changedStartDate
+                    
+                    for k, v in eachTimesheet.iteritems():
+                        if k != 'hold':
+                            if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
+                                if v==None:
+                                    v=float(0.0)
+                            if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
+                                if v==None:
+                                    v=float(0.0)
+                            # if k == 'chapter':
+                            #     v = Chapter.objects.get(pk=v)
+                            # if k == 'task':
+                            #     v = Task.objects.get(pk=v)
+                            setattr(billableTS, k, v)
+                    billableTS.save()
+                    global dbSave
+                    dbSave = True
+                    eachTimesheet['tsId'] = billableTS.id
+            else:
+                # Save Timesheet
+                if len(activitiesList):
+                    for eachActivity in activitiesList:
+                        # Getting objects for models
+                        if eachActivity['atId'] > 0:
+                            nonbillableTS = TimeSheetEntry.objects.filter(
+                                id=eachActivity['atId']
+                            )[0]
+                        else:
+                            nonbillableTS = TimeSheetEntry()
+                        # Common values for Billable and Non-Billable
+                        nonbillableTS.wkstart = changedStartDate
+                        nonbillableTS.wkend = changedEndDate
+                        nonbillableTS.activity = eachActivity['activity']
+                        nonbillableTS.teamMember = request.user
+                        if 'save' not in request.POST:
+                            nonbillableTS.approved = True
+                            nonbillableTS.managerFeedback = 'System Approved'
+                            nonbillableTS.hold = True
+                            nonbillableTS.approvedon = datetime.now().replace(
+                                tzinfo=utc)
+                        else:
+                            nonbillableTS.approved = False
+                            nonbillableTS.hold = False
+                        for k, v in eachActivity.iteritems():
+                            if k == 'activity_monday':
+                                nonbillableTS.mondayH = v
+                            elif k == 'activity_tuesday':
+                                nonbillableTS.tuesdayH = v
+                            elif k == 'activity_wednesday':
+                                nonbillableTS.wednesdayH = v
+                            elif k == 'activity_thursday':
+                                nonbillableTS.thursdayH = v
+                            elif k == 'activity_friday':
+                                nonbillableTS.fridayH = v
+                            elif k == 'activity_saturday':
+                                nonbillableTS.saturdayH = v
+                            elif k == 'activity_sunday':
+                                nonbillableTS.sundayH = v
+                            elif k == 'activity_total':
+                                nonbillableTS.totalH = v
+                            elif k == 'activity_feedback':
+                                nonbillableTS.feedback = v
+                            elif k == 'activity':
+                                nonbillableTS.activity = v
+                        nonbillableTS.save()
+                        global dbSave
+                        dbSave = True
+                        eachActivity['atId'] = nonbillableTS.id
+                for eachTimesheet in timesheetList:
+                    if eachTimesheet['tsId'] > 0:
+                        billableTS = TimeSheetEntry.objects.filter(
+                            id=eachTimesheet['tsId']
+                        )[0]
+                    else:
+                        billableTS = TimeSheetEntry()
+                    billableTS.wkstart = changedStartDate
+                    billableTS.wkend = changedEndDate
+                    billableTS.teamMember = request.user
+                    billableTS.billable = True
+                    if 'save' not in request.POST:
+                        billableTS.approved = True
+                        billableTS.managerFeedback = 'System Approved'
+                        billableTS.hold = True
+                        billableTS.approvedon = datetime.now().replace(
+                            tzinfo=utc)
+                    else:
+                        billableTS.approved = False
+                        billableTS.hold = False
+                    for k, v in eachTimesheet.iteritems():
+                        if k != 'hold' and k != 'approved':
+                            if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
+                                if v==None:
+                                    v=float(0.0)
+                            if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
+                                if v == None:
+                                    v = float(0.0)
+                            # if k == 'chapter':
+                            #     v = Chapter.objects.get(pk=v)
+                            # if k == 'task':
+                            #     v = Task.objects.get(pk=v)
+
+                            setattr(billableTS, k, v)
+                    billableTS.save()
+                    global dbSave
+                    dbSave = True
+                    eachTimesheet['tsId'] = billableTS.id
+            dates = switchWeeks(request)
+            for eachtsList in timesheetList:
+                if eachtsList['tsId']:
+                    ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
+                    eachtsList['hold'] = ts.hold
+            tsContent = timesheetList
+            atContent = activitiesList
+            tsErrorList = []
+            atErrorList = []
+
+            approvedSet = set()
+            autoApprovedSet = set()
+            holdSet = set()
+            saveSet = set()
+            for eachTS in tsContent:
+                if eachtsList['tsId']:
+                    tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
+                    if eachTS['approved']:
+                        approvedSet.add(tsObj.project.projectId)
+                    elif eachTS['hold']:
+                        if tsObj.approved:
+                            autoApprovedSet.add(tsObj.project.projectId)
+                        else:
+                            holdSet.add(tsObj.project.projectId)
+                    elif 'save' in request.POST:
+                        saveSet.add(tsObj.project.projectId)
+
+            if len(approvedSet) > 0:
+                messages.success(
+                    request, 'Timesheet approved :' + unicode_to_string(approvedSet))
+                hold_button = True
+            if len(autoApprovedSet) > 0:
+                messages.success(
+                    request, 'Timesheet auto-approved by the system :' +
+                    unicode_to_string(autoApprovedSet))
+                hold_button = True
+            if len(holdSet) > 0:
+                messages.info(
+                    request, 'Timesheet sent to your manager :' +
+                    unicode_to_string(holdSet))
+                hold_button = True
+            if len(saveSet) > 0:
+                messages.info(
+                    request, 'Timesheet has been saved:' +
+                    unicode_to_string(saveSet))
+                hold_button = False

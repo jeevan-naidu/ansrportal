@@ -221,7 +221,7 @@ class Project(models.Model):
                                      max_digits=12,
                                      decimal_places=2,
                                      verbose_name="Total Value",
-                                     validators=[MinValueValidator(0.0)])
+                                     validators=[MinValueValidator(8.0)])
     closed = models.BooleanField(
         default=False,
         null=False,

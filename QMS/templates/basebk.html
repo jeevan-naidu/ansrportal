@@ -1,0 +1,472 @@
+{% extends 'master.html' %}
+{% load static from staticfiles %}
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">  
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+
+<div class="row">
+
+    
+    <div class="col-sm-12">
+
+
+
+
+
+        <div class="panel widget">
+            <div class="panel-heading vd_bg-grey">
+
+                <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
+                    {% if messages %}
+            {% for message in messages %}
+                {% if message.tags %}
+                    <div class= "alert alert-{{ message.tags }}">
+                        <a class="panel-close close" data-dismiss="alert">x</a>
+                        <p >{{ message }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+            </div>
+            <div class="panel-body table-responsive">
+            <form class="form-horizontal " id="filter_form" role="form" method="post" >
+              {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-sm-12 qms-selectors">
+                        <div class="col-sm-3"><span>Project : {{ form.project.errors }}</span>{{ form.project}}</div>
+
+                        <div class="col-sm-3"><span>Chapter : {{ form.chapter.errors }} </span>{{form.chapter}}</div>
+
+                        <div class="col-sm-3"><span>Author : {{form.author.errors}}</span>{{form.author}}</div>
+
+                        <div class="col-sm-2"><input type="submit" value="submit" name="" class="btn btn-primary btn-sm" style="margin-top: -1px;"></div>
+
+                    </div>
+                    <input type="hidden" name="active_tab" id="active_tab" value="er1"/>
+                    <input type="hidden" name="template_name" id="template_id" value="{{template_id}}"/>
+                </div><!-- ./qms-selectors row -->
+
+                <div class="qms-summary">
+
+
+
+                </div>
+
+
+
+                <ul class="nav nav-tabs" >
+                    <li class="active review " id="er1" ><a href="#tab1" data-toggle="tab" >ER1</a></li>
+                    <li class="review" id="er2" ><a href="#tab2" data-toggle="tab" >ER2</a></li>
+                </ul><!-- ./tab -->
+
+
+
+
+
+
+            <br>               
+                <div class="tab-content mgbt-xs-20">
+                    <div class="tab-pane active" id="tab1">
+
+
+
+                        <table class="table  table-striped qa-table" id="data-tables">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Review Item</th>
+                                    <th>Defect</th>
+                                    <th>Type</th>
+                                    <th>Severity</th>
+                                    <th>Classification</th>
+                                    <th>Fixed</th>
+                                    <th>Fixed By</th>
+                                    <th>Remarks</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if reports %}
+                                {% for obj in reports %}
+                                <tr class="gradeX">
+                                    <td>{{forloop.counter}}</td>
+                                    <td class="qa-editable">
+                                      <p class="">{{obj.review_item}}</p>
+                                        <input type="{{obj.review_item}}" placeholder="{{obj.review_item}}" class="input-sm hidden">
+                                                          </td>
+                                    <td class="qa-editable">
+                                      <p>{{obj.defect}}</p>
+                                      <input type="text" placeholder="{{obj.defect}}" class="input-sm hidden">
+                                    </td>
+                                    <td class="qa-editable">
+                                      <select placeholder="Select Option" id= "severityType_{{obj.id}}" class="defect" class="input-sm hidden">
+                                         {% if  defect_master %}
+                                            {% for severity_type in defect_master %}
+                                                <option value="{{severity_type.id}}" {% if severity_type == obj.defect_severity_level.severity_type %} selected {% endif %}> {{severity_type}} </option>
+                                            {% endfor %}
+                                        {% endif %}
+                                      </select>
+                                    </td>
+                                    <td class="" id="level_{{obj.id}}"><p>{{obj.defect_severity_level.severity_level}}</p></td>
+                                    <td class="" id="classification_{{obj.id}}"><p>{{obj.defect_severity_level.defect_classification}}</p></td>
+                                    <td class="qa-editable">
+                                      <p>{{obj.is_fixed|yesno:"Yes,No"}}</p>
+                                      <input type="text" placeholder="{{obj.is_fixed|yesno:'Yes,No'}}" class="input-sm hidden">
+                                    </td>
+                                    <td class="qa-editable">
+                                    <p>{{obj.fixed_by.first_name}} {{obj.fixed_by.last_name}}</p>
+                                    <input type="text" placeholder="{{obj.fixed_by.first_name}} {{obj.fixed_by.last_name}}" class="input-sm hidden">
+                                    </td>
+                                    <td class="qa-editable">
+                                      <p>{{obj.remarks}}</p>
+                                      <input type="text" placeholder="{{obj.remarks}}" class="input-sm hidden">
+                                    </td>
+                                    <td>
+                                        <div class="edit-buttons">
+                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-facebook edit_button" data-toggle="modal" data-target="#editModal">
+                                                <i class="fa fa-pencil fa-fw "></i>
+                                            </a>
+                                                                      <div class="edit_record" style="display:none">
+
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">S.No.:</label>
+                    <div class="col-sm-6">
+                        <label class="control-label">{{forloop.counter}}</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Review Item:</label>
+                    <div class="col-sm-6">
+                       <textarea type="text" class="form-control">{{obj.review_item}} </textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Defect:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control">{{obj.defect}}</textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Type:</label>
+                    <div class="col-sm-6">
+                       <select placeholder="Select Option" id= "severityType_{{obj.id}}" class="defect" class="input-sm hidden">
+                                         {% if  defect_master %}
+                                            {% for severity_type in defect_master %}
+                                                <option value="{{severity_type.id}}" {% if severity_type == obj.defect_severity_level.severity_type %} selected {% endif %}> {{severity_type}} </option>
+                                            {% endfor %}
+                                        {% endif %}
+                                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Severity:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">{{obj.defect_severity_level.severity_level}}</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Classification:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">{{obj.defect_severity_level.defect_classification}}</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Fixed By:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">{{obj.fixed_by}}</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Remarks:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control">{{obj.remarks}}</textarea>
+                    </div>
+                  </div>
+
+                                            </div>
+                                            <a class="btn vd_btn vd_round-btn btn-xs vd_bg-red">
+                                                <i class="fa fa-times fa-fw "></i>
+                                            </a>                 
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                                                                                  
+                            {% endfor %} {% endif %}
+                            </tbody>
+                        </table>
+
+
+
+
+                    </div><!-- ./tab -->
+
+
+                    <div class="tab-pane" id="tab2"></div><!-- ./tab -->
+
+
+
+                </div><!-- ./ .tab-content -->
+
+
+                </form>
+
+            </div><!-- ./panel body -->
+            <div class="panel-footer clearfix">
+                             
+                <div class="btn btn-info btn-sm pull-right">Review Completed</div> 
+                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#addModal">Add Item</div>  
+
+            </div>
+        </div>
+
+                
+    </div>
+
+</div><!-- ./row main -->
+
+
+
+
+
+<!-- Modal Area -->
+
+<!-- Add Modal -->
+
+<div id="addModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+
+        <form class="form-horizontal">    
+              <div class="modal-header vd_bg-blue vd_white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">The Add Modal</h4>
+              </div>
+              <div class="modal-body">
+
+
+
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">S.No.:</label>
+                    <div class="col-sm-6">
+                        <label class="control-label">132</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Review Item:</label>
+                    <div class="col-sm-6">
+                      <select type="text" class="form-control">
+                          <option>Option 1</option>
+                          <option>Option 2</option>
+                          <option>Option 3</option>
+                          <option>Option 4</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Defect:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Type:</label>
+                    <div class="col-sm-6">
+                      <select type="text" class="form-control">
+                          <option>Type 1</option>
+                          <option>Type 2</option>
+                          <option>Type 3</option>
+                          <option>Type 4</option>
+                      </select>
+                    </div>
+                  </div> 
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Severity:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">Autogenerated</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Classification:</label>
+                    <div class="col-sm-6">
+                      <label class="control-label">Autogenerated</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Fixed By:</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="email">Remarks:</label>
+                    <div class="col-sm-6">
+                      <textarea type="text" class="form-control"></textarea>
+                    </div>
+                  </div> 
+
+
+
+
+
+
+              </div>
+              <div class="modal-footer vd_bg-white vd_white">
+              <hr>
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div>
+        </form>
+
+
+    </div>
+
+  </div>
+</div>
+
+
+<div id="editModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+
+        <form class="form-horizontal">
+              <div class="modal-header vd_bg-blue vd_white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">The Edit Modal</h4>
+              </div>
+              <div class="modal-body edit_body">
+
+
+
+
+
+
+
+              </div>
+              <div class="modal-footer vd_bg-white vd_white">
+              <hr>
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div> </form>
+            </div>
+
+
+
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript">
+    
+
+        $(function() {
+
+        $('.review').click(function(){
+            $('#active_tab').val(this.id);
+        });
+
+        $('.edit_button').click(function(){ console.log("edit clicked");
+            var edit_record = $(this).siblings(".edit_record").html();
+            console.log(edit_record);
+            $(".edit_body").html(edit_record);
+        });
+        $('#data-tables').dataTable({
+          searching: false,
+          scrollCollapse: true
+        });
+
+        });// End of document ready
+
+$('.defect').change(function(){
+    var obj_id = this.id.split('_');
+    $.ajax({
+            url: 'fetch_severity/',
+            type: 'GET',
+            dataType :'json',
+            data: {"template_id": $('#template_id').val() , "severity_type" :  $('#severityType_'+obj_id[1]).val()},
+            success: function (data) {
+                $('#level_'+obj_id[1]).text(data.severity_level);
+                $('#classification_'+obj_id[1]).text(data.defect_classification);
+
+            },
+
+    });
+});
+</script>
+
+
+<style type="text/css">
+    
+.btn.pull-right{margin-left: 15px}
+
+.qms-selectors .form-inline{margin-right: 30px;}
+
+.edit-buttons{width: 65px;}
+.gradeX a.vd_btn{margin-right: 0px !important;}
+
+.select2.select2-container{min-width: 0px !important;width: 150px !important;}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f3f1f1;
+}
+.qa-editable{cursor: pointer;}
+.qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+</style>
+
+<script type="text/javascript">
+// UI Scripts
+
+
+$(document).ready(function(){
+
+  $('td.qa-editable').click(function(){
+    $(this).find('.hidden').removeClass('hidden');
+    $(this).find('p').addClass('hidden');
+  })
+
+})// ./ doc.ready 
+
+</script>
+
+
+
+{% endblock %}

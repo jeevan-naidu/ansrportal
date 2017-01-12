@@ -206,7 +206,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myansrsource",
+        "NAME": "obfuscate",
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
@@ -365,8 +365,8 @@ MANAGER = 'myansrsourcePM'
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = 'root'
-BROKER_PASSWORD = 'Welcome#2677'
-BROKER_VHOST = "ansrvhost"
+BROKER_PASSWORD = 'root'
+BROKER_VHOST = "/ansr"
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

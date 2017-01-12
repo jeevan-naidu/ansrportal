@@ -215,7 +215,7 @@ def SingleTeamMemberReport(request):
     return render(request,
                   'MyANSRSource/reportsinglemember.html',
                   {'form': form, 'data': newReport, 'fresh': fresh,
-                   'minProd': minProd, 'maxProd': maxProd, 'avgProd': avgProd,
+                   'minProd': None, 'maxProd': None, 'avgProd': None,
                    'project': projectH, 'nonProject': nonProjectH,
                    'grandTotal': grdTotal, 'startDate': startDate,
                    'endDate': endDate, 'member': member,'for_project':for_project,
@@ -264,75 +264,75 @@ def SingleProjectReport(request):
                 project=cProject
             ).values('description', 'financial', 'milestoneDate',
                      'amount', 'closed').order_by('milestoneDate')
-            taskData = TimeSheetEntry.objects.filter(
-                project=cProject
-            ).values(
-                'task__name'
-            ).annotate(monday=Sum('mondayQ'),
-                       tuesday=Sum('tuesdayQ'),
-                       wednesday=Sum('wednesdayQ'),
-                       thursday=Sum('thursdayQ'),
-                       friday=Sum('fridayQ'),
-                       saturday=Sum('saturdayQ'),
-                       sunday=Sum('sundayQ')
-                       ).order_by('task__name')
+            # taskData = TimeSheetEntry.objects.filter(
+            #     project=cProject
+            # ).values(
+            #     'task__name'
+            # ).annotate(monday=Sum('mondayQ'),
+            #            tuesday=Sum('tuesdayQ'),
+            #            wednesday=Sum('wednesdayQ'),
+            #            thursday=Sum('thursdayQ'),
+            #            friday=Sum('fridayQ'),
+            #            saturday=Sum('saturdayQ'),
+            #            sunday=Sum('sundayQ')
+            #            ).order_by('task__name')
             orderbyList = ['task__name']
             ts = TimeSheetEntry.objects.filter(
                 project=cProject).values('task__name')
             avgTaskData = getAvgProd(request, ts, orderbyList)
             minTaskData = getMinProd(request, ts, orderbyList)
             maxTaskData = getMaxProd(request, ts, orderbyList)
-            taskNames = TimeSheetEntry.objects.filter(
-                project=cProject
-            ).values('task__name',
-                     'task__norm').order_by('task__name').distinct()
-            for eachTaskName in taskNames:
-                d = {}
-                memberData = TimeSheetEntry.objects.filter(
-                    project=cProject,
-                    task__name=eachTaskName['task__name']
-                ).values(
-                    'teamMember__first_name',
-                    'teamMember__last_name',
-                    'teamMember__id'
-                ).annotate(monday=Sum('mondayQ'),
-                           tuesday=Sum('tuesdayQ'),
-                           wednesday=Sum('wednesdayQ'),
-                           thursday=Sum('thursdayQ'),
-                           friday=Sum('fridayQ'),
-                           saturday=Sum('saturdayQ'),
-                           sunday=Sum('sundayQ')
-                           ).order_by('teamMember__first_name',
-                                      'teamMember__last_name',
-                                      'teamMember__id')
-                d['taskName'] = eachTaskName['task__name']
-                d['norm'] = eachTaskName['task__norm']
-                if len(memberData):
-                    for eachRec in memberData:
-                        eachRec['total'] = 0
-                        for eachDay in days:
-                            eachRec['total'] += eachRec[eachDay]
-                    totals = [eachRec['total'] for eachRec in memberData]
-                    max_member = totals.index(max(totals))
-                    cUser = User.objects.get(
-                        pk=memberData[max_member]['teamMember__id'])
-                    eId = Employee.objects.filter(
-                        user=cUser).values('employee_assigned_id')
-                    d['top'] = u"{0} {1} ({2})".format(
-                        memberData[max_member]['teamMember__first_name'],
-                        memberData[max_member]['teamMember__last_name'],
-                        eId[0]['employee_assigned_id']
-                    )
-                topPerformer.append(d)
-            for eachData in taskData:
-                units = []
-                for k, v in eachData.iteritems():
-                    if k != 'task__name':
-                        units.append(v)
-                eachData['min'] = min(units)
-                eachData['max'] = max(units)
-                eachData['avg'] = round(sum(units) / len(units), 2)
-                eachData['median'] = numpy.median(units)
+            # taskNames = TimeSheetEntry.objects.filter(
+            #     project=cProject
+            # ).values('task__name',
+            #          'task__norm').order_by('task__name').distinct()
+            # for eachTaskName in taskNames:
+            #     d = {}
+            #     memberData = TimeSheetEntry.objects.filter(
+            #         project=cProject,
+            #         task__name=eachTaskName['task__name']
+            #     ).values(
+            #         'teamMember__first_name',
+            #         'teamMember__last_name',
+            #         'teamMember__id'
+            #     ).annotate(monday=Sum('mondayQ'),
+            #                tuesday=Sum('tuesdayQ'),
+            #                wednesday=Sum('wednesdayQ'),
+            #                thursday=Sum('thursdayQ'),
+            #                friday=Sum('fridayQ'),
+            #                saturday=Sum('saturdayQ'),
+            #                sunday=Sum('sundayQ')
+            #                ).order_by('teamMember__first_name',
+            #                           'teamMember__last_name',
+            #                           'teamMember__id')
+            #     d['taskName'] = eachTaskName['task__name']
+            #     d['norm'] = eachTaskName['task__norm']
+            #     if len(memberData):
+            #         for eachRec in memberData:
+            #             eachRec['total'] = 0
+            #             for eachDay in days:
+            #                 eachRec['total'] += eachRec[eachDay]
+            #         totals = [eachRec['total'] for eachRec in memberData]
+            #         max_member = totals.index(max(totals))
+            #         cUser = User.objects.get(
+            #             pk=memberData[max_member]['teamMember__id'])
+            #         eId = Employee.objects.filter(
+            #             user=cUser).values('employee_assigned_id')
+            #         d['top'] = u"{0} {1} ({2})".format(
+            #             memberData[max_member]['teamMember__first_name'],
+            #             memberData[max_member]['teamMember__last_name'],
+            #             eId[0]['employee_assigned_id']
+            #         )
+            #     topPerformer.append(d)
+            # for eachData in taskData:
+            #     units = []
+            #     for k, v in eachData.iteritems():
+            #         if k != 'task__name':
+            #             units.append(v)
+            #     eachData['min'] = min(units)
+            #     eachData['max'] = max(units)
+            #     eachData['avg'] = round(sum(units) / len(units), 2)
+            #     eachData['median'] = numpy.median(units)
             tsData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
@@ -439,22 +439,22 @@ def SingleProjectReport(request):
                 if len(tsData):
                     for eachTsData in tsData:
                         eachTsData['status'] = cProject.closed
-                if len(taskData):
-                    for eachData in taskData:
-                        for eachMinData in minTaskData:
-                            if eachData['task__name'] == eachMinData['task__name']:
-                                eachData['min'] = eachMinData['min']
-                        for eachMaxData in maxTaskData:
-                            if eachData['task__name'] == eachMaxData['task__name']:
-                                eachData['max'] = eachMaxData['max']
-                        for eachAvgData in avgTaskData:
-                            if eachData['task__name'] == eachAvgData['task__name']:
-                                eachData['avg'] = eachAvgData['avg']
-                        for eachTopData in topPerformer:
-                            if eachData['task__name'] == eachTopData['taskName']:
-                                eachData['norm'] = eachTopData['norm']
-                                eachData['top'] = eachTopData['top']
-                report = [basicData, newCR, msData, tsData, taskData, topPerformer]
+                # if len(taskData):
+                #     for eachData in taskData:
+                #         for eachMinData in minTaskData:
+                #             if eachData['task__name'] == eachMinData['task__name']:
+                #                 eachData['min'] = eachMinData['min']
+                #         for eachMaxData in maxTaskData:
+                #             if eachData['task__name'] == eachMaxData['task__name']:
+                #                 eachData['max'] = eachMaxData['max']
+                #         for eachAvgData in avgTaskData:
+                #             if eachData['task__name'] == eachAvgData['task__name']:
+                #                 eachData['avg'] = eachAvgData['avg']
+                #         for eachTopData in topPerformer:
+                #             if eachData['task__name'] == eachTopData['taskName']:
+                #                 eachData['norm'] = eachTopData['norm']
+                #                 eachData['top'] = eachTopData['top']
+                report = [basicData, newCR, msData, tsData,  topPerformer]
                 sheetName = ['Basic Information',
                              'Change Requests',
                              'Milestones',
@@ -486,9 +486,9 @@ def SingleProjectReport(request):
                   'MyANSRSource/reportsingleproject.html',
                   {'form': form, 'basicData': basicData, 'fresh': fresh,
                    'crData': crData, 'tsData': tsData, 'msData': msData,
-                   'minTaskData': minTaskData, 'maxTaskData': maxTaskData,
-                   'avgTaskData': avgTaskData,
-                   'topPerformer': topPerformer, 'taskData': taskData,
+                   'minTaskData': None, 'maxTaskData': None,
+                   'avgTaskData': None,
+                   'topPerformer': None, 'taskData': None,
                    'actualTotal': actualTotal, 'plannedTotal': plannedTotal,
                    'deviation': deviation, 'balanceTotal': balanceTotal,
                    'red': red, 'closed': closed}
@@ -1607,67 +1607,73 @@ def getMemberExactTsHours(request, start, end, report):
 
 @login_required
 def getMinProd(request, ts, orderbyList):
-    newTs = ts.annotate(
-        monday=Min('mondayQ'),
-        tuesday=Min('tuesdayQ'),
-        wednesday=Min('wednesdayQ'),
-        thursday=Min('thursdayQ'),
-        friday=Min('fridayQ'),
-        saturday=Min('saturdayQ'),
-        sunday=Min('sundayQ'),
-    ).order_by(*orderbyList)
-    for eachRec in newTs:
-        eachRec['min'] = 0
-        l = []
-        for k, v in eachRec.iteritems():
-            if k in days:
-                l.append(v)
-        if len(l):
-            eachRec['min'] = min(l)
-    return newTs
+    return None
+    # newTs = ts.annotate(
+    #     monday=Min('mondayQ'),
+    #     tuesday=Min('tuesdayQ'),
+    #     wednesday=Min('wednesdayQ'),
+    #     thursday=Min('thursdayQ'),
+    #     friday=Min('fridayQ'),
+    #     saturday=Min('saturdayQ'),
+    #     sunday=Min('sundayQ'),
+    # ).order_by(*orderbyList)
+    # for eachRec in newTs:
+    #     eachRec['min'] = 0
+    #     l = []
+    #     for k, v in eachRec.iteritems():
+    #         if k in days:
+    #             l.append(v)
+    #     if len(l):
+    #         eachRec['min'] = min(l)
+    #
+    # return newTs
 
 
 @login_required
 def getMaxProd(request, ts, orderbyList):
-    newTs = ts.annotate(
-        monday=Max('mondayQ'),
-        tuesday=Max('tuesdayQ'),
-        wednesday=Max('wednesdayQ'),
-        thursday=Max('thursdayQ'),
-        friday=Max('fridayQ'),
-        saturday=Max('saturdayQ'),
-        sunday=Max('sundayQ'),
-    ).order_by(*orderbyList)
-    for eachRec in newTs:
-        eachRec['max'] = 0
-        l = []
-        for k, v in eachRec.iteritems():
-            if k in days:
-                l.append(v)
-        if len(l):
-            eachRec['max'] = max(l)
-    return newTs
+    return None
+    # newTs = ts.annotate(
+    #     monday=Max('mondayQ'),
+    #     tuesday=Max('tuesdayQ'),
+    #     wednesday=Max('wednesdayQ'),
+    #     thursday=Max('thursdayQ'),
+    #     friday=Max('fridayQ'),
+    #     saturday=Max('saturdayQ'),
+    #     sunday=Max('sundayQ'),
+    # ).order_by(*orderbyList)
+    # for eachRec in newTs:
+    #     eachRec['max'] = 0
+    #     l = []
+    #     for k, v in eachRec.iteritems():
+    #         if k in days:
+    #             l.append(v)
+    #     if len(l):
+    #         eachRec['max'] = max(l)
+    #
+    # return newTs
 
 
 @login_required
 def getAvgProd(request, ts, orderbyList):
-    newTs = ts.annotate(
-        monday=Avg('mondayQ'),
-        tuesday=Avg('tuesdayQ'),
-        wednesday=Avg('wednesdayQ'),
-        thursday=Avg('thursdayQ'),
-        friday=Avg('fridayQ'),
-        saturday=Avg('saturdayQ'),
-        sunday=Avg('sundayQ'),
-    ).order_by(*orderbyList)
-    for eachRec in newTs:
-        eachRec['avg'] = 0
-        total = 0
-        for k, v in eachRec.iteritems():
-            if k in days:
-                total += v
-        eachRec['avg'] = round((total / 7), 2)
-    return newTs
+    return None
+    # newTs = ts.annotate(
+    #     monday=Avg('mondayQ'),
+    #     tuesday=Avg('tuesdayQ'),
+    #     wednesday=Avg('wednesdayQ'),
+    #     thursday=Avg('thursdayQ'),
+    #     friday=Avg('fridayQ'),
+    #     saturday=Avg('saturdayQ'),
+    #     sunday=Avg('sundayQ'),
+    # ).order_by(*orderbyList)
+    # for eachRec in newTs:
+    #     eachRec['avg'] = 0
+    #     total = 0
+    #     for k, v in eachRec.iteritems():
+    #         if k in days:
+    #             total += v
+    #     eachRec['avg'] = round((total / 7), 2)
+    #
+    # return newTs
 
 
 def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
