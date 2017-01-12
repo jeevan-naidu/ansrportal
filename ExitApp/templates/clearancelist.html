@@ -36,7 +36,7 @@ ul{list-style: none;padding-left: 0px;}
         <th>Sr.No</th>
         <th>Name</th>
         <th>Last Date</th>
-        <th>Action</th>
+        <th>Clearance status</th>
 		  </tr>
     </thead>
 {% for c in approved_candidate %}
@@ -47,7 +47,7 @@ ul{list-style: none;padding-left: 0px;}
         <td>{{c.last_date_accepted | date:"M d, Y"}}</td>
         <td>
           <a href="/exitapp/clearance/?id={{c.id}}">
-            <button type="button" class="btn btn-primary btn-xs showlist" value ="{{c.id}}">Accept</button>
+            <button type="button" class="btn btn-primary btn-xs showlist" value ="{{c.id}}">Clear</button>
           </a>
         </td>
       </tr>

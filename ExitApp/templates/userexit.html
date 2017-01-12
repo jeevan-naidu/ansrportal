@@ -27,7 +27,7 @@
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
     padding: 5px 8px;
 }
-.exitbutton{margin-left: 15px;}
+.exitbutton{margin-left: 5px;}
 ul{list-style: none;padding-left: 0px;}
 
 .yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}
@@ -91,8 +91,8 @@ ul{list-style: none;padding-left: 0px;}
 
               <div class="form-group">
 
-                  <input type ="submit" value ="Submit" class="exitbutton btn btn-primary pull-right">
-                  <button type="button" id = "revertresignation" class="btn btn-primary pull-right">Revert</button>
+                  <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
+                  <button type="button" id = "revertresignation" class="btn btn-primary btn-sm pull-right">Revert</button>
 
               </div>
 
@@ -150,6 +150,13 @@ ul{list-style: none;padding-left: 0px;}
               }
         });
         });
+
+
+      // Disabling text input in date fields
+
+      $('.date input').on('keypress', function(key) {
+          if(key.charCode < 48 || key.charCode > 57) return false;
+      });
 
     });
     </script>
