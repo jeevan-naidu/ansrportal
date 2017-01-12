@@ -4,7 +4,7 @@
 {% load permissions %}
 {% load static from staticfiles %}
 {% block siteTitle %}Candidate Clearance Report{% endblock %}
-{% block pageTitle %}Resignation Clearance Profile{% endblock %}
+{% block pageTitle %}Resignation Clearance : {{user.first_name}} {{user.last_name}} {% endblock %}
 {% block content  %}
      <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />

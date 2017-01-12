@@ -27,7 +27,7 @@
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
     padding: 5px 8px;
 }
-.exitbutton{margin-top:28px;}
+.exitbutton{margin-left: 5px;}
 ul{list-style: none;padding-left: 0px;}
 
 .yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}
@@ -36,15 +36,18 @@ ul{list-style: none;padding-left: 0px;}
 .select2-container .select2-selection--single{height: 30px;}
 
 </style>
-                    <div class="panel-body">
-                        {% if messages %}
-                     {% for message in messages %}
-                        {% if message.tags == 'error' %}
-                        <div class="alert alert-danger">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
-                            <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong></div>
-                        {% else %}
-                          <div class="alert alert-success">
+        <div class="panel-body">
+            {% if messages %}
+         {% for message in messages %}
+            {% if message.tags == 'error' %}
+              <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                <i class="icon-cross"></i>
+                </button>
+                <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
+              </div>
+            {% else %}
+              <div class="alert alert-success">
                 <strong>Success!</strong> {{message}}.
                </div>
                         {% endif%}
@@ -83,10 +86,20 @@ ul{list-style: none;padding-left: 0px;}
                     {{ form.comment }}
                   <div class="help-block with-errors"></div> 
                   </div>
+              </div>              
+
+
+              <div class="form-group">
+
+                  <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
+                  <button type="button" id = "revertresignation" class="btn btn-primary btn-sm pull-right">Revert</button>
+
               </div>
-                  <input type ="submit" value ="Submit" class="exitbutton btn btn-primary pull-right">
+
+
+
+
             </form>
-                        <button type="button" id = "revertresignation" class="btn btn-primary">Revert</button>
                     </div>
 
                 </div>
@@ -137,6 +150,13 @@ ul{list-style: none;padding-left: 0px;}
               }
         });
         });
+
+
+      // Disabling text input in date fields
+
+      $('.date input').on('keypress', function(key) {
+          if(key.charCode < 48 || key.charCode > 57) return false;
+      });
 
     });
     </script>
