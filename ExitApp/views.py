@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, HttpResponse
 from django.views.generic import View
-from django.contrib.auth.models import User
 from .models import ResignationInfo, EmployeeClearanceInfo
 from forms import UserExitForm
 from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, LibraryClearanceMail, FinanceClearanceMail, AdminClearanceMail, MGRClearanceMail, HRClearanceMail, FacilityClearanceMail
@@ -9,8 +8,8 @@ from django.utils import timezone
 from employee.models import Employee
 from django.contrib import messages
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
-from datetime import datetime, date
+from datetime import timedelta
+from datetime import date
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 
