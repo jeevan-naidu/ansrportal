@@ -71,14 +71,10 @@ def IsManager(user):
     return settings.MANAGER in UserGroupsList
 
 @register.filter('DirectReportee')
-def DirectReportee(user):
-    mgrid = employee.models.Employee.objects.get(user_id=user.id)
-    reportee = employee.models.Employee.objects.filter(manager_id=mgrid)
-    filterdata = []
-    for value in reportee:
-        filterdata.append(value.user.id)
-    allresignee = ExitApp.models.ResignationInfo.objects.filter(User__in=filterdata)
-    if allresignee:
+def DirectReportee(user, request):
+    mgrid = employee.models.Employee.objects.get(user_id=request.id)
+    reportee = employee.models.Employee.objects.filter(manager_id=mgrid, user_id=user)
+    if reportee:
         reportee_flag = 1
     else:
         reportee_flag = 0
