@@ -42,7 +42,7 @@ from Grievances.models import Grievances
 from django.core.urlresolvers import reverse_lazy
 
 
-# from ldap import LDAPError
+from ldap import LDAPError
 # views for ansr
 
 FORMS = [
@@ -880,314 +880,26 @@ def billable_hours(ts_obj):
     return ts_obj.filter(
         activity__isnull=True,
         task__taskType__in=['B', 'N']
-    ).values('totalH', 'project__totalValue')
+    ).values('totalH', 'project__totalValue' ,'project__internal')
 
 
 def billable_value(billable_hours_obj):
     b_total = 0
-    zero_value = 0
-    non_zero_value = 0
-    print "billable", billable_hours_obj
-    exit()
+    internal_value = 0
+    external_value = 0
     for billable in billable_hours_obj:
-        if billable['project__totalValue'] == 0:
-            zero_value += billable['totalH']
+        if billable['project__internal'] == 1:
+            internal_value += billable['totalH']
         else:
-            non_zero_value += billable['totalH']
+            external_value += billable['totalH']
         b_total += billable['totalH']
-    return zero_value, non_zero_value, b_total
+    return internal_value, external_value, b_total
 
 
 def non_billable_hours(ts_obj):
     return ts_obj.filter(
         project__isnull=True
     ).values('totalH')
-
-#
-# def renderTimesheet(request, data):
-#     ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(request)
-#     attendance = {}
-#     tsObj = time_sheet_for_the_week(data['weekstartDate'], data['weekendDate'], request)
-#     billableHours = billable_hours(tsObj)
-#     idleHours = tsObj.filter(
-#         activity__isnull=True,
-#         task__taskType='I'
-#     ).values('totalH')
-#     othersHours = non_billable_hours(tsObj)
-#
-#     zero_value, non_zero_value, bTotal = billable_value(billableHours)
-#     idleTotal = 0
-#     for idle in idleHours:
-#         idleTotal += idle['totalH']
-#     othersTotal = 0
-#     for others in othersHours:
-#         othersTotal += others['totalH']
-#     total = bTotal + idleTotal + othersTotal
-#     days = ['monday', 'tuesday', 'wednesday', 'thursday',
-#             'friday', 'saturday', 'sunday']
-#     d = {}
-#     for eachDay in days:
-#         newK = u'{0}Total'.format(eachDay)
-#         d[newK] = 0
-#         if 'atErrorList' not in data:
-#             if len(data['atFormList']):
-#                 for eachData in data['atFormList']:
-#                     k = u'activity_{0}'.format(eachDay)
-#                     if k in eachData:
-#                         d[newK] += eachData[k]
-#         if 'tsErrorList' not in data:
-#             if len(data['tsFormList']):
-#                 for eachData in data['tsFormList']:
-#                     k = u'{0}H'.format(eachDay)
-#                     if k in eachData:
-#                         d[newK] += eachData[k]
-#     endDate1 = request.GET.get('enddate', '')
-#     date = datetime.now().date()
-#     if request.GET.get("week") == 'prev':
-#         endDate1 = request.GET.get('enddate', '')
-#         date = datetime.now().date()
-#         if endDate1:
-#             date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
-#             date -= timedelta(days=13)
-#         else:
-#             date = data['weekstartDate']
-#
-#     elif request.GET.get("week") == 'next':
-#         endDate1 = request.GET.get('enddate', '')
-#         date = datetime.now().date()
-#         if endDate1:
-#             date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
-#             date += timedelta(days=1)
-#         else:
-#             date = data['weekstartDate']
-#
-#     else:
-#         date = data['weekstartDate']
-#
-#     tsform = TimesheetFormset(request.user, date)
-#     if len(data['tsFormList']):
-#         tsFormset = formset_factory(tsform,
-#                                     extra=data['extra'],
-#                                     max_num=1,
-#                                     can_delete=True)
-#     else:
-#         tsFormset = formset_factory(tsform,
-#                                     extra=1,
-#                                     max_num=1,
-#                                     can_delete=True)
-#     if len(data['atFormList']):
-#         atFormset = formset_factory(ActivityForm,
-#                                     extra=data['extra'],
-#                                     max_num=1,
-#                                     can_delete=True)
-#     else:
-#         atFormset = formset_factory(ActivityForm,
-#                                     extra=1,
-#                                     max_num=1,
-#                                     can_delete=True)
-#
-#     if len(data['tsFormList']) and len(data['atFormList']):
-#         atFormset = atFormset(initial=data['atFormList'], prefix='at')
-#         tsFormset = tsFormset(initial=data['tsFormList'])
-#     elif len(data['tsFormList']):
-#         tsFormset = tsFormset(initial=data['tsFormList'])
-#         atFormset = atFormset(prefix='at')
-#     elif len(data['atFormList']):
-#         atFormset = atFormset(initial=data['atFormList'], prefix='at')
-#     else:
-#         atFormset = atFormset(prefix='at')
-#
-#     if hasattr(request.user, 'employee'):
-#         attendanceObj = employee.models.Attendance.objects.filter(
-#             employee=request.user.employee,
-#             attdate__range=[data['weekstartDate'], data['weekendDate']]
-#         )
-#         attendance = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
-#         for eachObj in attendanceObj:
-#             if eachObj.swipe_out is not None or eachObj.swipe_in is not None:
-#                 if eachObj.swipe_out is None:
-#                     timediff = eachObj.swipe_in
-#                     atttime = u"{0}:{1}".format(timediff.second // 3600,
-#                                                 (timediff.second % 3600) // 60)
-#                 elif eachObj.swipe_in is None:
-#                     timediff = eachObj.swipe_out
-#                     atttime = u"{0}:{1}".format(timediff.second // 3600,
-#                                                 (timediff.second % 3600) // 60)
-#                 else:
-#                     timediff = eachObj.swipe_out - eachObj.swipe_in
-#                     atttime = u"{0}:{1}".format(timediff.seconds // 3600,
-#                                                 (timediff.seconds % 3600) // 60)
-#                 attendance[u'{0}'.format(eachObj.attdate.weekday())] = atttime
-#
-#         attendance = OrderedDict(sorted(attendance.items(), key=lambda t: t[0]))
-#
-#     ocWeek = datetime.now().date() - data['weekstartDate']
-#     prevWeekBlock = False
-#     if ocWeek.days > 6:
-#         pwActivityData = TimeSheetEntry.objects.filter(
-#             Q(
-#                 wkstart=data['weekstartDate'],
-#                 wkend=data['weekendDate'],
-#                 teamMember=request.user,
-#                 project__isnull=True
-#             )
-#         ).values('approved', 'hold')
-#         if len(pwActivityData):
-#             if pwActivityData[0]['approved']:
-#                 prevWeekBlock = True
-#             elif pwActivityData[0]['hold']:
-#                 prevWeekBlock = True
-#
-#     finalData = {'weekstartDate': data['weekstartDate'],
-#                  'weekendDate': data['weekendDate'],
-#                  'disabled': data['disabled'],
-#                  'shortDays': ['Mon', 'Tue', 'Wed', 'Thu',
-#                                'Fri', 'Sat', 'Sun'],
-#                  'hold_button': data['hold_button'],
-#                  'billableHours': billableHours,
-#                  'idleHours': idleHours,
-#                  'zero_value': zero_value,
-#                  'non_zero_value': non_zero_value,
-#                  'bTotal': bTotal,
-#                  'idleTotal': idleTotal,
-#                  'attendance': attendance,
-#                  'othersTotal': othersTotal,
-#                  'tsTotal': d,
-#                  'prevWeekBlock': prevWeekBlock,
-#                  'total': total,
-#                  'tsFormset': tsFormset,
-#                  'atFormset': atFormset,
-#                  'mondays_list': mondays_list,
-#                  'ts_week_info_dict': ts_week_info_dict,
-#                  'ts_final_list': ts_final_list
-#                  }
-#     if 'tsErrorList' in data:
-#         finalData['tsErrorList'] = data['tsErrorList']
-#     if 'atErrorList' in data:
-#         finalData['atErrorList'] = data['atErrorList']
-#     return render(request, 'MyANSRSource/timesheetEntry.html', finalData)
-
-#
-# @login_required
-# @permission_required('MyANSRSource.approve_timesheet')
-# def ApproveTimesheet(request):
-#     if request.method == 'GET':
-#         manager = Employee.objects.get(user_id=request.user)
-#         team_members = Employee.objects.filter((Q(manager_id=manager) |
-#                                                 Q(employee_assigned_id=manager)), user__is_active=True)
-#         # print team_members.query
-#         dates = switchWeeks(request)
-#         ts_data_list = {}
-#         # print  team_members
-#         # print dates
-#         for members in team_members:
-#             ts_data_list[members.user_id] = {}
-#             ts_data_list[members.user_id] = getTSDataList(request, dates['start'], dates['end'], members.user_id)
-#             ts_obj = time_sheet_for_the_week(dates['start'], dates['end'], request)
-#             billable_hours_obj = billable_hours(ts_obj)
-#             zero_value, non_zero_value, b_total = billable_value(billable_hours_obj)
-#             ts_data_list[members.user_id]['zero_value'] = str(zero_value)
-#             ts_data_list[members.user_id]['non_zero_value'] = str(non_zero_value)
-#             ts_data_list[members.user_id]['b_total'] = str(b_total)
-#             # print ts_data_list
-#         return render(request, 'MyANSRSource/timesheetApprove.html', ts_data_list)
-#
-#     if request.method == 'POST':
-#         for i in range(1, int(request.POST.get('totalValue')) + 1):
-#             choice = "choice" + str(i)
-#             mem = "mem" + str(i)
-#             start = "start" + str(i)
-#             end = "end" + str(i)
-#             fb = "fb" + str(i)
-#             if start in request.POST:
-#                 startDate = date.fromordinal(int(request.POST.get(start)))
-#             if end in request.POST:
-#                 endDate = date.fromordinal(int(request.POST.get(end)))
-#             if choice in request.POST:
-#                 if request.POST.get(choice) != 'hold':
-#                     updateTS = TimeSheetEntry.objects.filter(
-#                         teamMember__id=int(request.POST.get(mem)),
-#                         wkstart=startDate,
-#                         wkend=endDate
-#                     )
-#                     for eachTS in updateTS:
-#                         if request.POST.get(choice) == 'redo':
-#                             eachTS.hold = False
-#                             eachTS.approved = False
-#                             eachTS.managerFeedback = request.POST.get(fb)
-#                         else:
-#                             eachTS.hold = True
-#                             eachTS.approved = True
-#                             eachTS.managerFeedback = request.POST.get(fb)
-#                         eachTS.save()
-#         return HttpResponseRedirect('/myansrsource/dashboard')
-#     else:
-#         data = TimeSheetEntry.objects.filter(
-#             project__projectmanager__user=request.user,
-#             hold=True, approved=False
-#         ).values('teamMember', 'teamMember__first_name',
-#                  'teamMember__id',
-#                  'teamMember__employee__employee_assigned_id',
-#                  'teamMember__last_name', 'wkstart', 'wkend'
-#                  ).order_by('teamMember', 'wkstart', 'wkend').distinct()
-#
-#         tsList = []
-#         if len(data):
-#             for eachTS in data:
-#                 tsData = {}
-#                 tsData['member'] = eachTS['teamMember__first_name'] + ' :  ' + eachTS['teamMember__last_name'] + \
-#                                    ' (' + eachTS['teamMember__employee__employee_assigned_id'] + ')'
-#                 tsData['mem'] = eachTS['teamMember__id']
-#                 tsData['wkstart'] = eachTS['wkstart']
-#                 tsData['wkstartNum'] = eachTS['wkstart'].toordinal()
-#                 tsData['wkend'] = eachTS['wkend']
-#                 tsData['wkendNum'] = eachTS['wkend'].toordinal()
-#                 totalNon = TimeSheetEntry.objects.filter(
-#                     wkstart=eachTS['wkstart'],
-#                     wkend=eachTS['wkend'],
-#                     teamMember=eachTS['teamMember'],
-#                     hold=True, approved=False,
-#                     project__isnull=True
-#                 ).values('project').annotate(
-#                     monday=Sum('mondayH'),
-#                     tuesday=Sum('tuesdayH'),
-#                     wednesday=Sum('wednesdayH'),
-#                     thursday=Sum('thursdayH'),
-#                     friday=Sum('fridayH'),
-#                     saturday=Sum('saturdayH'),
-#                     sunday=Sum('sundayH')
-#                 )
-#                 tsData['NHours'] = sum(
-#                     [eachRec[eachDay] for eachDay in days for eachRec in totalNon])
-#                 totalProjects = TimeSheetEntry.objects.filter(
-#                     wkstart=eachTS['wkstart'],
-#                     wkend=eachTS['wkend'],
-#                     teamMember=eachTS['teamMember'],
-#                     hold=True,
-#                     approved=False,
-#                     project__isnull=False).values(
-#                     'project',
-#                     'project__projectId',
-#                     'project__name',
-#                     'exception').distinct()
-#                 tsData['projects'] = []
-#                 for eachProject in totalProjects:
-#                     project = {}
-#                     project['name'] = eachProject[
-#                                           'project__projectId'] + ' :  ' + eachProject['project__name']
-#                     project['exception'] = eachProject['exception']
-#                     project['BHours'] = getHours(request, eachTS['wkstart'],
-#                                                  eachTS['wkend'],
-#                                                  eachTS['teamMember'],
-#                                                  eachProject['project'], 'B')
-#                     project['IHours'] = getHours(request, eachTS['wkstart'],
-#                                                  eachTS['wkend'],
-#                                                  eachTS['teamMember'],
-#                                                  eachProject['project'], 'I')
-#                     tsData['projects'].append(project)
-#                 tsList.append(tsData)
-#         unTsData = {'timesheetInfo': tsList}
-#         return render(request, 'MyANSRSource/timesheetApprove.html', unTsData)
 
 
 @login_required
@@ -3128,7 +2840,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         atData.clear()
     if user_id:
         total_list .append({'monday_total': monday_total, 'tuesday_total': tuesday_total,
-                            'wednesday_total': wednesday_total, 'thurusday_total': thursday_total,
+                            'wednesday_total': wednesday_total, 'thursday_total': thursday_total,
                             'friday_total': friday_total, 'saturday_total': saturday_total,
                             'sunday_total': sunday_total})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
@@ -3235,25 +2947,6 @@ def date_range_picker(request, employee=None):
     # print ts_final_list
     return ts_final_list, mondays_list, ts_week_info_dict
 
-def billable_hours(ts_obj):
-    return ts_obj.filter(
-        activity__isnull=True,
-        task__taskType__in=['B', 'N']
-    ).values('totalH', 'project__totalValue')
-
-
-def billable_value(billable_hours_obj):
-    b_total = 0
-    zero_value = 0
-    non_zero_value = 0
-    for billable in billable_hours_obj:
-        if billable['project__totalValue'] == 0:
-            zero_value += billable['totalH']
-        else:
-            non_zero_value += billable['totalH']
-        b_total += billable['totalH']
-    return zero_value, non_zero_value, b_total
-
 
 def renderTimesheet(request, data):
     ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(request)
@@ -3268,7 +2961,7 @@ def renderTimesheet(request, data):
         project__isnull=True
     ).values('totalH')
 
-    zero_value, non_zero_value, bTotal = billable_value(billableHours)
+    internal_value, external_value, bTotal = billable_value(billableHours)
     idleTotal = 0
     for idle in idleHours:
         idleTotal += idle['totalH']
@@ -3401,8 +3094,8 @@ def renderTimesheet(request, data):
                  'hold_button': data['hold_button'],
                  'billableHours': billableHours,
                  'idleHours': idleHours,
-                 'zero_value': zero_value,
-                 'non_zero_value': non_zero_value,
+                 'internal_value': internal_value,
+                 'external_value': external_value,
                  'bTotal': bTotal,
                  'leave_hours': leave_hours,
                  'idleTotal': idleTotal,
@@ -3495,9 +3188,9 @@ class ApproveTimesheetView(TemplateView):
                     non_billable_total += float(others['totalH'])
                 ts_data_list[members]['non_billable_total'] = non_billable_total
                 billable_hours_obj = billable_hours(ts_obj)
-                zero_value, non_zero_value, b_total = billable_value(billable_hours_obj)
-                ts_data_list[members]['zero_value'] = zero_value
-                ts_data_list[members]['non_zero_value'] = non_zero_value
+                internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                ts_data_list[members]['internal_value'] = internal_value
+                ts_data_list[members]['external_value'] = external_value
                 ts_data_list[members]['b_total'] = b_total
                 ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
             context['ts_data_list'] = ts_data_list
@@ -3570,7 +3263,7 @@ class ApproveTimesheetView(TemplateView):
             messages.success(self.request, "Records updated Successfully")
         else:
             messages.error(self.request, "Unable  to Process The Records ")
-        return HttpResponseRedirect(reverse_lazy('approve_time_sheet'))
+        return HttpResponseRedirect('/myansrsource/timesheet/approve?startdate='+self.request.POST.get('weekstartDate')+'&enddate='+self.request.POST.get('weekendDate')+'')
 
 
 @login_required
@@ -3592,9 +3285,9 @@ def getHours(request, wstart, wend, mem, project, label):
 
 @login_required
 def Dashboard(request):
+
     todays_date = datetime.now().date()
-    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day,
-                                             date_of_birthO__month=todays_date.month, user_id__is_active=True)
+    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day, date_of_birthO__month=todays_date.month, user_id__is_active=True)
     if request.method == 'POST':
         myremainder = MyRemainderForm(request.POST)
         btg = BTGReportForm(request.POST)
@@ -3899,7 +3592,7 @@ def checkUser(userName, password, request, form):
                 'Invalid userid & password / User could not be found \
                 on Active Directory.')
             return loginResponse(request, form, 'MyANSRSource/index.html')
-    except Exception as e:
+    except LDAPError as e:
         messages.error(
             request,
             'This user has LDAP setup issue:' + str(e))

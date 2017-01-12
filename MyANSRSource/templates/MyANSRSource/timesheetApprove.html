@@ -3,13 +3,10 @@
 {% block siteTitle %}Timesheet{% endblock %}
 
 {% load permissions %}
+{% load emoticons_tags %}
 {% block pageTitle %}
 Approve Timesheet
-{% for message in messages %}
-    <li class="{{ message.tags }}">
-    {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
-    </li>
-{% endfor %}
+
 {% endblock %}
 {% block switch_dates %}
 <div class="dropdown week-selector pull-left">
@@ -64,14 +61,14 @@ Approve Timesheet
                 </div>
             </div>
 
-
+{% if ts_data_list_approved_false or ts_data_list_approved_true %}
 <table class="table table-striped" id="timesheet-approve-table">
   <thead>
     <tr>
       <th>Employee Id</th>
       <th>Name</th>
-      <th>Billable </th>
-      <th>Billable (0$)</th>
+      <th>Billable (External) </th>
+      <th>Billable (Internal)</th>
       <th>Non-Billable </th>
       <th>Leave</th>
       <th class="text-center">Options</th>
@@ -86,8 +83,8 @@ Approve Timesheet
       <td>
       <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
       </td>
-      <td>{{values.non_zero_value}}</td>
-      <td>{{values.zero_value}}  </td>
+      <td>{{values.external_value}}</td>
+      <td>{{values.internal_value}}  </td>
       <td>{{values.non_billable_total}}</td>
       <td> {{values.leave_hours}} </td>
 
@@ -158,8 +155,8 @@ Approve Timesheet
       <td>
       <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
       </td>
-      <td>{{values.non_zero_value}}</td>
-      <td>{{values.zero_value}} </td>
+      <td>{{values.external_value}}</td>
+      <td>{{values.internal_value}} </td>
       <td>{{values.non_billable_total}}</td>
       <td> {{values.leave_hours}} </td>
 
@@ -211,8 +208,11 @@ Approve Timesheet
 
   </tbody>
 </table>
-        {% if ts_data_list_approved_true or ts_data_list_approved_false %}
             <input type="submit" name="submit" class="btn btn-primary btn-sm pull-right" value="Submit">
+        {% else %}
+            {% emoticons %}
+        <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week :( </span>
+            {% endemoticons %}
         {% endif %}
         <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
         <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">

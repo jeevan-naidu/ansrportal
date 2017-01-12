@@ -12,60 +12,60 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 from django.conf import global_settings
 import logging
-# # For LDAP
-# import ldap
-# from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
-# from django_auth_ldap.config import NestedActiveDirectoryGroupType
+# For LDAP
+import ldap
+from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
+from django_auth_ldap.config import NestedActiveDirectoryGroupType
 
 # setup celery
 import djcelery
 djcelery.setup_loader()
 
-# AUTH_LDAP_GLOBAL_OPTIONS = {
-#     ldap.OPT_X_TLS_REQUIRE_CERT: False,
-#     ldap.OPT_REFERRALS: False,
-#     ldap.OPT_DEBUG_LEVEL: 0,
-#     ldap.OPT_PROTOCOL_VERSION: 3,
-# }
+AUTH_LDAP_GLOBAL_OPTIONS = {
+    ldap.OPT_X_TLS_REQUIRE_CERT: False,
+    ldap.OPT_REFERRALS: False,
+    ldap.OPT_DEBUG_LEVEL: 0,
+    ldap.OPT_PROTOCOL_VERSION: 3,
+}
 
 AUTHENTICATION_BACKENDS = [
-    # 'django_auth_ldap.backend.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# AUTH_LDAP_SERVER_URI = "ldap://ansr-blr-pdc.ansr.com"
-# AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
-# AUTH_LDAP_BIND_PASSWORD = "Welcome123"
-#
-#
-# AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
-#     LDAPSearch(
-#         "OU=ANSR Users,DC=ANSR,DC=com",
-#         ldap.SCOPE_SUBTREE,
-#         '(sAMAccountName=%(user)s)'),
-#     LDAPSearch(
-#         "DC=ANSR,DC=com",
-#         ldap.SCOPE_SUBTREE,
-#         '(sAMAccountName=%(user)s)'))
-#
-# # Set up the basic group
-# AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-#     "OU=ANSRsource,DC=ANSR,DC=com",
-#     ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)
-# # (objectClass=organizationalUnit))')
-#
-# # !important! set group type
-# AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
-#
-# AUTH_LDAP_VERSION = 3
-#
-#
-# AUTH_LDAP_USER_ATTR_MAP = {
-#     "first_name": "givenName",
-#     "last_name": "sn",
-#     "email": "mail",
-#     "username": "sAMAccountName"
-# }
+AUTH_LDAP_SERVER_URI = "ldap://ansr-blr-pdc.ansr.com"
+AUTH_LDAP_BIND_DN = "MyAnsrSource@ANSR.com"  # AD accepts this format only!!!
+AUTH_LDAP_BIND_PASSWORD = "Welcome123"
+
+
+AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
+    LDAPSearch(
+        "OU=ANSR Users,DC=ANSR,DC=com",
+        ldap.SCOPE_SUBTREE,
+        '(sAMAccountName=%(user)s)'),
+    LDAPSearch(
+        "DC=ANSR,DC=com",
+        ldap.SCOPE_SUBTREE,
+        '(sAMAccountName=%(user)s)'))
+
+# Set up the basic group
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+    "OU=ANSRsource,DC=ANSR,DC=com",
+    ldap.SCOPE_SUBTREE)  # , '(|(objectClass=Group)
+# (objectClass=organizationalUnit))')
+
+# !important! set group type
+AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
+
+AUTH_LDAP_VERSION = 3
+
+
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
+    "username": "sAMAccountName"
+}
 
 """  Turn this on for LDAP Group  based authentication
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
@@ -144,6 +144,7 @@ INSTALLED_APPS = [
     'Hire',
     'Library',
     'formtools',
+    'emoticons',
 
 ]
 
@@ -206,7 +207,7 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "obfuscate",
+        "NAME": "myansrsource",
         "USER": "root",
         "PASSWORD": "root",
         "HOST": "localhost",
@@ -365,8 +366,8 @@ MANAGER = 'myansrsourcePM'
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = 'root'
-BROKER_PASSWORD = 'root'
-BROKER_VHOST = "/ansr"
+BROKER_PASSWORD = 'Welcome#2677'
+BROKER_VHOST = "ansrvhost"
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

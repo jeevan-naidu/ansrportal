@@ -44,3 +44,4 @@ uWSGI==2.0.14
 wcwidth==0.1.7
 XlsxWriter==0.7.3
 xlwt==1.1.2
+django-emoticons
