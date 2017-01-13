@@ -69,12 +69,12 @@ ul{list-style: none;padding-left: 0px;}
                        <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}" type="checkbox" {% if c.rehire_manager == True%}checked{%endif%}></td>
                        <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
                        <td>
-                        <input  {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} class="hrconcent"id="hrconcent_{{c.User_id}}" name="hrconcent_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
+                        <input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrconcent"id="hrconcent_{{c.User_id}}" name="hrconcent_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
-                        <textarea {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} id="feedbackhr_{{c.User_id}}" maxlength="1000" name="feedbackhr_{{c.User_id}}" class="form-control input-sm feedbackhr">{{c.hr_comment}}</textarea>
+                        <textarea {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} id="feedbackhr_{{c.User_id}}" maxlength="1000" name="feedbackhr_{{c.User_id}}" class="form-control input-sm feedbackhr">{{c.hr_comment}}</textarea>
                        </td>
-                       <td><input  {% if request.user|has_group:'myansrsourceHR' == False %} disabled {%endif%} class="hrrehire" id="hrrehire_{{c.User_id}}" name="hrrehire_{{c.User_id}}" type="checkbox" {% if c.rehire_hr == True%}checked{%endif%}></td>
+                       <td><input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrrehire" id="hrrehire_{{c.User_id}}" name="hrrehire_{{c.User_id}}" type="checkbox" {% if c.rehire_hr == True%}checked{%endif%}></td>
 
                         <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
@@ -86,20 +86,13 @@ ul{list-style: none;padding-left: 0px;}
                        <td><button type="button" class="btn btn-primary btn-sm resignation_acceptance" id ="">Save</button></td>
                    </tr>
                             {%endif %}
-               {% endfor %}
-                            {% csrf_token %}
-                             </table>
-           </div>
-        <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
-        <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
-        <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-                    <script type="text/javascript">
+                            <script type="text/javascript">
             $(function () {
             $('.acceptance,.rehiremgr,.backup,.hrconcent,.hrrehire').on('click', function () {
              $(this).val(this.checked ? 1 : 0);
             });
             $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
-             {% if c.User_id|DirectReportee:user == 1 and request.user|has_group:'myansrsourceHR' == False%}
+             {% if c.User_id|DirectReportee:user == 1 and request.user|has_group:'myansrsourceHR' == True%}
                   $('.resignation_acceptance').on('click', function(){
                   manager_concent = $(this).parent().parent().find('.acceptance').val();
                   mgr_feedback = $(this).parent().parent().find('.feedback').val();
@@ -120,7 +113,7 @@ ul{list-style: none;padding-left: 0px;}
                                                 });
                 });
             {% else%}
-              {% if request.user|has_group:'myansrsourceHR' == True and c.User_id|DirectReportee:user == 1 %}
+              {% if request.user|has_group:'myansrsourceHR' == True and c.User_id|DirectReportee:user == 0 %}
                $('.resignation_acceptance').on('click', function(){
                   hr_concent = $(this).parent().parent().find('.hrconcent').val();
                   hr_feedback = $(this).parent().parent().find('.feedbackhr').val();
@@ -145,8 +138,39 @@ ul{list-style: none;padding-left: 0px;}
                 });
                 {% endif %}
             {%endif%}
+            {% if c.User_id|DirectReportee:user == 1 and request.user|has_group:'myansrsourceHR' == False%}
+             $('.resignation_acceptance').on('click', function(){
+             alert('mgr')
+                  manager_concent = $(this).parent().parent().find('.acceptance').val();
+                  mgr_feedback = $(this).parent().parent().find('.feedback').val();
+                  manager_rehire = $(this).parent().parent().find('.rehiremgr').val();
+                  mgr_backup = $(this).parent().parent().find('.backup').val();
+                  final_date = $(this).parent().parent().find('.finaldate').val();
+                  user_id = $(this).parent().parent().find('.userid').val();
+                  $.ajax({
+                                               url : "/exitapp/update-manager-value/",
+                                                type : "GET",
+                                                data : { 'final_date':final_date, 'mgr_backup':mgr_backup,'id':user_id, 'manager_concent':manager_concent, 'mgr_feedback':mgr_feedback,'manager_rehire':manager_rehire},
+                                                success : function(json) {
+                                                if (json == 'success'){
+                                                swal("Completed!", "Employee data has been submitted.", "success");
+                                                    console.log("json");
+                                                }
+                                                }
+                                                });
+                });
+                {% endif %}
             });
         </script>
+               {% endfor %}
+                            {% csrf_token %}
+                             </table>
+           </div>
+        <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+
     </div>
   </div>
 </div>
