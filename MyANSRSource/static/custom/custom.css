@@ -208,7 +208,7 @@ textarea.input-border-btm{background: #fbfbfb}
 
 .radio-mod{padding-left:5px;display:inline-block;margin:2px 2px;}
 .radio-mod label{
-  padding: 2px 5px !important;
+  padding: 3px 5px !important;
   color: #70C0C5;
   background-color: #D8C5BF;
   background-color: #fff;
@@ -231,7 +231,7 @@ textarea.input-border-btm{background: #fbfbfb}
 /* end of for approval screen */
 
 .radio-padding-mod{padding: 0px !important;}
-.green-padding-mod{padding: 6px 15px 1px !important;}
+.green-padding-mod{padding: 6px 11px 1px !important;}
 
 #timesheet-approve-report .modal-dialog{width: 1200px}
 .total-table{font-weight: bold !important;}

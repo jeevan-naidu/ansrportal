@@ -189,13 +189,7 @@ Approve Timesheet
 
 
 <td class="timesheet-approve-options text-center green-padding-mod">
-<!--     <div class="checkbox checkbox-danger radio-mod btn-xs">
-        <input id="already_approved" type="checkbox" name="" class="reject" value="" disabled>
-        <label for="already_approved"  class="noselect disable-select">
-        Already Approved
-        </label>
-    </div> -->
-<label class="btn-xs btn-success">Approved</label>
+<label class="btn-xs btn-success pull-left">Approved</label>
 </td>
 
     <td class="menu-action">
@@ -493,11 +487,14 @@ $(document).ready(function() {
             })
 
 
-             $('.approve-reject-options .employee').on('click', function()  { console.log("click");
+             $('.employee').on('click', function()  { console.log("click");
 
                   // Enabling approve and reject checkboxes
-
-                  $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
+                  console.log(this);
+                  if ($(this).parent().parent().hasClass('approve-reject-options')) {
+                    console.log(this)
+                    $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
+                  }
 
                   $.ajax({
                     url: '/myansrsource/timesheet/time_sheet_employee',
