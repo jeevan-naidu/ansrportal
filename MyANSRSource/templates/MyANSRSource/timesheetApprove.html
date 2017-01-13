@@ -94,13 +94,16 @@ Approve Timesheet
                           <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                              <label class="col-sm-4 control-label">Feedback </label>
-                              <div class="col-sm-7 controls">
-                                <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
-                              </div>
-
+                          <div class="row">
+                            <div class="col-sm-12">                        
+                              <div class="form-group">
+                                <label class="col-sm-4 control-label">Feedback </label>
+                                <div class="col-sm-7 controls">
+                                  <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
+                                </div>
                             </div>
+                          </div>
+                        </div>
 
 
 
@@ -137,7 +140,7 @@ Approve Timesheet
 
     <td class="menu-action">
       <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow">
-        <i class="fa fa-envelope"></i>
+        <i class="fa fa-comments-o"></i>
       </a>
     </td>
 
@@ -185,19 +188,19 @@ Approve Timesheet
 
 
 
-<td class="timesheet-approve-options text-center radio-padding-mod">
-    <div class="checkbox checkbox-danger radio-mod btn-xs">
+<td class="timesheet-approve-options text-center green-padding-mod">
+<!--     <div class="checkbox checkbox-danger radio-mod btn-xs">
         <input id="already_approved" type="checkbox" name="" class="reject" value="" disabled>
         <label for="already_approved"  class="noselect disable-select">
         Already Approved
         </label>
-    </div>
-
+    </div> -->
+<label class="btn-xs btn-success">Approved</label>
 </td>
 
     <td class="menu-action">
       <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow">
-        <i class="fa fa-envelope"></i>
+        <i class="fa fa-comments-o"></i>
       </a>
     </td>
 
