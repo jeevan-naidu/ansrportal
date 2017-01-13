@@ -3,7 +3,7 @@
 {% block siteTitle %}Timesheet{% endblock %}
 
 {% load permissions %}
-{% load emoticons_tags %}
+<!-- {% load emoticons_tags %} -->
 {% block pageTitle %}
 Approve Timesheet
 
@@ -78,7 +78,7 @@ Approve Timesheet
   <tbody>
 
   {% for team_members,values in ts_data_list_approved_false.iteritems %}
-    <tr class="odd gradeX">
+    <tr class="odd gradeX approve-reject-options">
       <td>{{team_members.employee_assigned_id}} </td>
       <td>
       <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
@@ -187,8 +187,13 @@ Approve Timesheet
 
 
 
-<td class="timesheet-approve-options text-center">
-   <div><span> Already Approved</span></div>
+<td class="timesheet-approve-options text-center radio-padding-mod">
+    <div class="checkbox checkbox-danger radio-mod btn-xs">
+        <input id="already_approved" type="checkbox" name="" class="reject" value="" disabled>
+        <label for="already_approved"  class="noselect disable-select">
+        Already Approved
+        </label>
+    </div>
 
 </td>
 
@@ -250,8 +255,8 @@ Approve Timesheet
                           <th>Wed</th>
                           <th>Thu</th>
                           <th>Fri</th>
-                          <th>Thu</th>
-                          <th>Fri</th>
+                          <th>Sat</th>
+                          <th>Sun</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -283,8 +288,8 @@ Approve Timesheet
                           <th>Wed</th>
                           <th>Thu</th>
                           <th>Fri</th>
-                          <th>Thu</th>
-                          <th>Fri</th>
+                          <th>Sat</th>
+                          <th>Sun</th>
                         </tr>
                       </thead>
 
@@ -313,8 +318,8 @@ Approve Timesheet
                           <th>Wed</th>
                           <th>Thu</th>
                           <th>Fri</th>
-                          <th>Thu</th>
-                          <th>Fri</th>
+                          <th>Sat</th>
+                          <th>Sun</th>
                         </tr>
                       </thead>
                         <tr class="total-row">
@@ -399,6 +404,7 @@ var time_iterate = function(e){
         $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[time_key]['mondayH']);
         $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
         $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
+        $('.project-time-row:last-child td.thursdayH').html(time_obj.tsData[time_key]['thursdayH']);
         $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
@@ -428,6 +434,7 @@ var time_iterate = function(e){
         $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
         $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
         $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
+        $('.activity-time-row:last-child td.activity_thursday').html(time_obj.atData[time_key]['activity_thursday']);
         $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
         $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
         $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
@@ -438,6 +445,7 @@ var time_iterate = function(e){
         $('.activity-time-row:last-child td.activity_monday').html('nil');
         $('.activity-time-row:last-child td.activity_tuesday').html('nil');
         $('.activity-time-row:last-child td.activity_wednesday').html('nil');
+        $('.activity-time-row:last-child td.activity_thursday').html('nil');
         $('.activity-time-row:last-child td.activity_friday').html('nil');
         $('.activity-time-row:last-child td.activity_saturday').html('nil');
         $('.activity-time-row:last-child td.activity_sunday').html('nil');
@@ -484,7 +492,7 @@ $(document).ready(function() {
             })
 
 
-             $('.employee').on('click', function()  { console.log("click");
+             $('.approve-reject-options .employee').on('click', function()  { console.log("click");
 
                   // Enabling approve and reject checkboxes
 
