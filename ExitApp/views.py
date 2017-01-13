@@ -181,6 +181,8 @@ class ClearanceFormView(View):
             clearance_data = EmployeeClearanceInfo.objects.filter(resignationInfo=id)
             candidate_detail = ResignationInfo.objects.filter(id=id)
             context['dataresignee'] = clearance_data
+            if not candidate_detail:
+                raise PermissionDenied("Sorry You Don't Have any record")
             context['candidate_detail'] = candidate_detail
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
@@ -194,6 +196,8 @@ class ClearanceFormView(View):
             clearance_data = EmployeeClearanceInfo.objects.all().filter(resignationInfo=id)
             candidate_detail = ResignationInfo.objects.filter(id=id)
             context['candidate_detail'] = candidate_detail
+            if not candidate_detail:
+                raise PermissionDenied("Sorry You Don't Have any record")
             context['dataresignee'] = clearance_data
         return render(request, "departmentclearance.html", context)
 
@@ -201,12 +205,13 @@ class ClearanceFormView(View):
         context = {"form": ""}
         form = request.POST
         id = request.GET.get('id')
-
         if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
             allresignee = ResignationInfo.objects.all()
             context['resigneedata'] = allresignee
             candidate_detail = ResignationInfo.objects.filter(id=id)
             context['candidate_detail'] = candidate_detail
+            clearance_data = EmployeeClearanceInfo.objects.filter(resignationInfo=id)
+            context['dataresignee'] = clearance_data
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
             reportee = Employee.objects.filter(manager_id=mgrid)
@@ -219,9 +224,9 @@ class ClearanceFormView(View):
             context['resigneedata'] = allresignee
             candidate_detail = ResignationInfo.objects.filter(id=id)
             context['candidate_detail'] = candidate_detail
-        clearance_data = EmployeeClearanceInfo.objects.filter(id=id)
-
-        context['clearance_data'] = clearance_data
+            clearance_data = EmployeeClearanceInfo.objects.filter(resignationInfo=id)
+            context['dataresignee'] = clearance_data
+            print context
         try:
             resignee_id = request.GET.get('id')
             statusby_id = request.user.id
@@ -230,8 +235,6 @@ class ClearanceFormView(View):
             user_email = User.objects.get(id=user_detail.User_id)
             form = request.POST
             count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
-            # import ipdb; ipdb.set_trace()
-            # print count
             if 'hr_approval' in form:
                 if count == 5:
                     hr_approval = form['hr_approval']
