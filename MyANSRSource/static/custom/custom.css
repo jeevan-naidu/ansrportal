@@ -12,6 +12,8 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
 .radio-mod input:checked + label.ansr-brown{color: #fff !important; background: #bd8f58 !important}
 */
 
+.vd_bg-green.disabled{background: #82cea8 !important}
+
 /* Bootstrap extensions */
 
 .no-pad-left{padding-left: 0px;}
