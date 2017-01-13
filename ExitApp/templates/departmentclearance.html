@@ -4,7 +4,7 @@
 {% load permissions %}
 {% load static from staticfiles %}
 {% block siteTitle %}Candidate Clearance Report{% endblock %}
-{% block pageTitle %}Resignation Clearance : {{user.first_name}} {{user.last_name}} {% endblock %}
+{% block pageTitle %}Resignation Clearance :  {% for c in candidate_detail%} {{c}} {% endfor%} {% endblock %}
 {% block content  %}
      <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
@@ -120,9 +120,7 @@ ul{list-style: none;padding-left: 0px;}
                         </tr>
                       </thead>
                       <tbody>
-                      {% for c in allresignee%}
-                       {{c}}
-                      {% endfor%}
+                      {% for c in candidate_detail%}
                       <tr>
                           <td>1</td>
                           <td class="center">Library</td>
@@ -186,16 +184,17 @@ ul{list-style: none;padding-left: 0px;}
                       <tr>
                         <td>6</td>
                           <td class="center">HR</td>
-                          <td class="center"><input {% if request.user|has_group:'myansrsourceHR' == False %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="hr_amount" id = "hramount" class ="amountbox form-control input-sm"/></td>
-                          <td><input {% if request.user|has_group:'myansrsourceHR' == False %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="hr_feedback" class="form-control input-sm"></td>
+                          <td class="center"><input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="hr_amount" id = "hramount" class ="amountbox form-control input-sm"/></td>
+                          <td><input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="hr_feedback" class="form-control input-sm"></td>
                           <td class="menu-action">
                             <div class="vd_checkbox checkbox-success pull-right">
-                              <input {% if request.user|has_group:'myansrsourceHR' == False %} disabled title="unauthorized user"{%endif%} type="checkbox"{% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="hr_approval" id="checkbox-4">
+                              <input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="checkbox"{% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="hr_approval" id="checkbox-4">
                               <label for="checkbox-4"></label>
                             </div>
                           </td>
                         </tr>
                       <tr>
+                      {% endfor%}
                       </tbody>
                     </table>
                         <input type ="submit" value="Submit" class="exitbutton btn btn-primary pull-right">

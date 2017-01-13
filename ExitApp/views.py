@@ -168,7 +168,7 @@ class ResignationAcceptance(View):
             filterdata = []
             for value in reportee:
                 filterdata.append(value.user.id)
-            allresignee = ResignationInfo.objects.filter(User__in=filterdata)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata).exclude(User_id=request.user.id)
             context['resigneedata'] = allresignee
         return render(request, "exitacceptance.html", context)
 
@@ -179,7 +179,9 @@ class ClearanceFormView(View):
         id = request.GET.get('id')
         if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
             clearance_data = EmployeeClearanceInfo.objects.filter(resignationInfo=id)
+            candidate_detail = ResignationInfo.objects.filter(id=id)
             context['dataresignee'] = clearance_data
+            context['candidate_detail'] = candidate_detail
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
             reportee = Employee.objects.filter(manager_id=mgrid)
@@ -190,6 +192,8 @@ class ClearanceFormView(View):
             if not allresignee:
                 raise PermissionDenied("Sorry You Don't Have any record")
             clearance_data = EmployeeClearanceInfo.objects.all().filter(resignationInfo=id)
+            candidate_detail = ResignationInfo.objects.filter(id=id)
+            context['candidate_detail'] = candidate_detail
             context['dataresignee'] = clearance_data
         return render(request, "departmentclearance.html", context)
 
@@ -201,6 +205,8 @@ class ClearanceFormView(View):
         if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
             allresignee = ResignationInfo.objects.all()
             context['resigneedata'] = allresignee
+            candidate_detail = ResignationInfo.objects.filter(id=id)
+            context['candidate_detail'] = candidate_detail
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
             reportee = Employee.objects.filter(manager_id=mgrid)
@@ -211,7 +217,10 @@ class ClearanceFormView(View):
             if not allresignee:
                 raise PermissionDenied("Sorry You Don't Have any record")
             context['resigneedata'] = allresignee
+            candidate_detail = ResignationInfo.objects.filter(id=id)
+            context['candidate_detail'] = candidate_detail
         clearance_data = EmployeeClearanceInfo.objects.filter(id=id)
+
         context['clearance_data'] = clearance_data
         try:
             resignee_id = request.GET.get('id')
@@ -334,7 +343,7 @@ class ClearanceList(View):
         if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
             d = date.today()
             final_val = d + timedelta(days=1)
-            allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val)
+            allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val).exclude(User_id=request.user.id)
             context['approved_candidate'] = allresignee
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
@@ -344,7 +353,7 @@ class ClearanceList(View):
             final_val = d + timedelta(days=1)
             for value in reportee:
                 filterdata.append(value.user.id)
-            allresignee = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted__lte=final_val)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted__lte=final_val).exclude(User_id=request.user.id)
             context['approved_candidate'] = allresignee
         return render(request, "clearancelist.html", context)
 
