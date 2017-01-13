@@ -1,7 +1,7 @@
 /* ansr classes */
 
 /*.ansr-brown{background: #ce9b5e !important; border: 1px solid #bd8f58}*/
-.ansr-green{background: #98b733 !important; border: 1px solid #8eaf25}
+/*.ansr-green{background: #98b733 !important; border: 1px solid #8eaf25}
 .ansr-notification-green{background: #7cbb52 !important}
 
 .menu-icon.ansr-brown{color: #bd8f58 !important; border-color: #bd8f58 !important}
@@ -10,7 +10,7 @@
 label.ansr-brown{color: #bd8f58 !important; border-color: #bd8f58 !important}
 label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; background: #bd8f58 !important }
 .radio-mod input:checked + label.ansr-brown{color: #fff !important; background: #bd8f58 !important}
-
+*/
 
 /* Bootstrap extensions */
 

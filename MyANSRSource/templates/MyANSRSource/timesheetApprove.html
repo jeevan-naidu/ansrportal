@@ -54,7 +54,7 @@ Approve Timesheet
 <div class="panel pb-15">
 
     <div class="panel-body">
-                <button id="reminder_mail" class="btn btn-primary btn-xs pull-right ansr-green" style="margin-bottom: 5px;">Send Mail</button>
+                <button id="reminder_mail" class="btn btn-xs vd_btn vd_bg-blue pull-right" style="margin-bottom: 5px;">Send Reminder</button>
                 <form method="post" action=""> {% csrf_token %}
 
 
@@ -124,14 +124,14 @@ Approve Timesheet
 
   <div class="checkbox checkbox-success radio-mod btn-xs">
         <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}" disabled>
-        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect disable-select ansr-brown">
+        <label for="approve_{{team_members.user.id}}"  data-placement="top" data-toggle="tooltip" data-original-title="View Timesheet First" class="ansr-orange-mod noselect disable-select ansr-brown">
         Approve
         </label>
     </div>
 
     <div class="checkbox checkbox-danger radio-mod btn-xs">
         <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}" disabled>
-        <label for="reject_{{team_members.user.id}}"  class="noselect disable-select ansr-brown">
+        <label for="reject_{{team_members.user.id}}"  data-placement="top" data-toggle="tooltip" data-original-title="View Timesheet First"  class="noselect disable-select ansr-brown">
         Reject
         </label>
     </div>
@@ -169,12 +169,16 @@ Approve Timesheet
                           <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
                         </div>
                         <div class="modal-body">
-                          <div class="form-group">
-                            <label class="col-sm-4 control-label">Feedback </label>
-                            <div class="col-sm-7 controls">
-                              <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
+                          <div class="row">
+                            <div class="col-sm-12">                        
+                              <div class="form-group">
+                                <label class="col-sm-4 control-label">Feedback </label>
+                                <div class="col-sm-7 controls">
+                                  <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
+                                </div>
                             </div>
                           </div>
+                        </div>
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
@@ -189,7 +193,7 @@ Approve Timesheet
 
 
 <td class="timesheet-approve-options text-center green-padding-mod">
-<label class="btn-xs btn-success ansr-notification-green">Approved</label>
+<label class="btn-xs vd_btn vd_bg-green disabled">Approved</label>
 </td>
 
     <td class="menu-action">
@@ -208,7 +212,7 @@ Approve Timesheet
 
   </tbody>
 </table>
-            <input type="submit" name="submit" class="btn btn-primary btn-sm pull-right ansr-green" value="Submit">
+            <input type="submit" name="submit" class="btn btn-sm vd_btn vd_bg-green pull-right" value="Submit">
         {% else %}
             {% emoticons %}
         <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week :( </span>
@@ -277,14 +281,14 @@ Approve Timesheet
                     <table class="table table-hover activity-table">
                       <thead>
                         <tr>
-                          <th style="width: 600px;">Activity</th>
-                          <th>Mon</th>
-                          <th>Tue</th>
-                          <th>Wed</th>
-                          <th>Thu</th>
-                          <th>Fri</th>
-                          <th>Sat</th>
-                          <th>Sun</th>
+                          <th style="width: 600px;">Non-Billable</th>
+                          <th><span class="invisible">Mon</span></th>
+                          <th><span class="invisible">Tue</span></th>
+                          <th><span class="invisible">Wed</span></th>
+                          <th><span class="invisible">Thu</span></th>
+                          <th><span class="invisible">Fri</span></th>
+                          <th><span class="invisible">Sat</span></th>
+                          <th><span class="invisible">Sun</span></th>
                         </tr>
                       </thead>
 
@@ -307,14 +311,14 @@ Approve Timesheet
                     <table class="table table-hover total-table">
                       <thead>
                         <tr>
-                          <th class="invisible" style="width: 600px;">Activity</th>
-                          <th>Mon</th>
-                          <th>Tue</th>
-                          <th>Wed</th>
-                          <th>Thu</th>
-                          <th>Fri</th>
-                          <th>Sat</th>
-                          <th>Sun</th>
+                          <th class="invisible" style="width: 600px;">Non-Billable</th>
+                          <th><span class="invisible">Mon</span></th>
+                          <th><span class="invisible">Tue</span></th>
+                          <th><span class="invisible">Wed</span></th>
+                          <th><span class="invisible">Thu</span></th>
+                          <th><span class="invisible">Fri</span></th>
+                          <th><span class="invisible">Sat</span></th>
+                          <th><span class="invisible">Sun</span></th>
                         </tr>
                       </thead>
                         <tr class="total-row">
@@ -494,6 +498,7 @@ $(document).ready(function() {
                   if ($(this).parent().parent().hasClass('approve-reject-options')) {
                     console.log(this)
                     $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
+                    $(this).parent().parent().find('label').removeAttr(' data-toggle data-placement data-original-title');
                   }
 
                   $.ajax({
