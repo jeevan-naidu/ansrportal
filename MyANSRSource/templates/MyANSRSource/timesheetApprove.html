@@ -53,13 +53,11 @@ Approve Timesheet
 
 <div class="panel pb-15">
 
-    <div class="panel-body"><form method="post" action=""> {% csrf_token %}
-           <div class="form-inline approve-reject pull-right">
-                <div class="checkbox checkbox-success radio-mod btn-xs">
-                  <input type='checkbox' id="reminder_mail" name="reminder_mail" value="send"  data-toggle='tooltip' data-placement='right' data-original-title="Send mail to those didn't submit their time-sheet" class='checkbox'/>
-                  <label for="reminder_mail"  class="ansr-orange-mod noselect disable-select">Send Reminder Mail</label>
-                </div>
-            </div>
+    <div class="panel-body">
+                <button id="reminder_mail" class="btn btn-primary btn-xs pull-right" style="margin-bottom: 5px;">Send Mail</button>
+                <form method="post" action=""> {% csrf_token %}
+
+
 
 {% if ts_data_list_approved_false or ts_data_list_approved_true %}
 <table class="table table-striped" id="timesheet-approve-table">
