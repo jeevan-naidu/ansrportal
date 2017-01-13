@@ -54,7 +54,7 @@ Approve Timesheet
 <div class="panel pb-15">
 
     <div class="panel-body">
-                <button id="reminder_mail" class="btn btn-primary btn-xs pull-right" style="margin-bottom: 5px;">Send Mail</button>
+                <button id="reminder_mail" class="btn btn-primary btn-xs pull-right ansr-green" style="margin-bottom: 5px;">Send Mail</button>
                 <form method="post" action=""> {% csrf_token %}
 
 
@@ -124,14 +124,14 @@ Approve Timesheet
 
   <div class="checkbox checkbox-success radio-mod btn-xs">
         <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}" disabled>
-        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect disable-select">
+        <label for="approve_{{team_members.user.id}}"  class="ansr-orange-mod noselect disable-select ansr-brown">
         Approve
         </label>
     </div>
 
     <div class="checkbox checkbox-danger radio-mod btn-xs">
         <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}" disabled>
-        <label for="reject_{{team_members.user.id}}"  class="noselect disable-select">
+        <label for="reject_{{team_members.user.id}}"  class="noselect disable-select ansr-brown">
         Reject
         </label>
     </div>
@@ -139,7 +139,7 @@ Approve Timesheet
 </td>
 
     <td class="menu-action">
-      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow">
+      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
         <i class="fa fa-comments-o"></i>
       </a>
     </td>
@@ -189,11 +189,11 @@ Approve Timesheet
 
 
 <td class="timesheet-approve-options text-center green-padding-mod">
-<label class="btn-xs btn-success pull-left">Approved</label>
+<label class="btn-xs btn-success ansr-notification-green">Approved</label>
 </td>
 
     <td class="menu-action">
-      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow">
+      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
         <i class="fa fa-comments-o"></i>
       </a>
     </td>
@@ -208,7 +208,7 @@ Approve Timesheet
 
   </tbody>
 </table>
-            <input type="submit" name="submit" class="btn btn-primary btn-sm pull-right" value="Submit">
+            <input type="submit" name="submit" class="btn btn-primary btn-sm pull-right ansr-green" value="Submit">
         {% else %}
             {% emoticons %}
         <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week :( </span>
