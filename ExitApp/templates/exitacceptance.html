@@ -140,7 +140,6 @@ ul{list-style: none;padding-left: 0px;}
             {%endif%}
             {% if c.User_id|DirectReportee:user == 1 and request.user|has_group:'myansrsourceHR' == False%}
              $('.resignation_acceptance').on('click', function(){
-             alert('mgr')
                   manager_concent = $(this).parent().parent().find('.acceptance').val();
                   mgr_feedback = $(this).parent().parent().find('.feedback').val();
                   manager_rehire = $(this).parent().parent().find('.rehiremgr').val();
