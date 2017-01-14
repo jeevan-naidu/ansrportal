@@ -58,7 +58,7 @@
 			</div>
 		{% endif %}
 	{% endfor %}
-	<table class="table table-condensed table-responsive">
+	<table class="table table-condensed table-responsive" id="project_table" >
 	{% for form in tsFormset %}
 		{{ form.errors }}
 		{% if forloop.first %}
@@ -460,6 +460,10 @@
 		    <td class="total-idle-hours text-right">{{ idleTotal }}</td>
                 </tr>
                 <tr>
+					     <tr>
+                    <td>Leave</td>
+		    <td class="total-leave-hours text-right">{{ leave_hours }}</td>
+                </tr>
                     <td>Non-Billable</td>
 		    <td class="total-non-billable-hours text-right">{{ othersTotal }}</td>
                 </tr>
@@ -504,8 +508,21 @@
             },
             function(isConfirm) {
                 if (isConfirm) {
-                  $("#timesheet").submit();
-                  swal("Done!", "Your timesheet is submitted", "success");
+                    var count = 0 ;
+                     $('[id^=id_form][id$=DELETE]' ).each(function(){
+                        if (this.checked) {
+                            console.log(this.id);
+                            count +=1;
+                        }
+                    });
+                    if($( "#project_table > tbody > tr " ).length == count ) {
+                            swal("warning!"," You Can't Submit Your Time Sheet Without Entering Details For Project ");
+                            e.preventDefault();
+                    }
+                    else  {
+                        $("#timesheet").submit();
+                        swal("Done!", "Your timesheet is submitted", "success");
+                    }
                 }
                 else
                   swal("Stay Cool", "You can still edit your timesheet", "success");
@@ -516,6 +533,7 @@
             $( "#saveTS" ).click(function() {
                 $( "#saveTS" ).hide();
             });
+
         });
 
 
