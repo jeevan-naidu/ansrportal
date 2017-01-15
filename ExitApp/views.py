@@ -173,6 +173,15 @@ class ResignationAcceptance(View):
         return render(request, "exitacceptance.html", context)
 
 
+class ResignationAcceptanceHR(View):
+    def get(self, request):
+        context = {"form": "", "data": ""}
+        allresignee = ResignationInfo.objects.filter(~Q(User_id=request.user.id))
+        context['resigneedata'] = allresignee
+
+        return render(request, "exitacceptance.html", context)
+
+
 class ClearanceFormView(View):
     def get(self, request):
         context = {"form": "", "data": ""}
