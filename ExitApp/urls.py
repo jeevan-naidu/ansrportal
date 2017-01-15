@@ -11,7 +11,7 @@ urlpatterns = [
                            login_required(ResignationAcceptance.as_view()),
                            name='exitacceptance'),
                        url(r'^hr-acceptance/$',
-                           (ResignationAcceptanceHR.as_view()),
+                           login_required(ResignationAcceptanceHR.as_view()),
                            name='hrapproval'),
                        url(r'^clearance/$',
                            login_required(ClearanceFormView.as_view()),
