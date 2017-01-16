@@ -2713,7 +2713,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 teamMember=user,
                 activity__isnull=True
             )
-        ).values('id', 'project', 'project__name', 'location', 'chapter' 'task__name', 'mondayH',
+        ).values('id', 'project', 'project__name', 'task__name', 'mondayH',
                  'tuesdayH', 'wednesdayH',
                  'thursdayH', 'fridayH', 'hold',
                  'saturdayH', 'sundayH', 'approved',
