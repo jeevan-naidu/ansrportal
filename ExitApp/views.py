@@ -90,18 +90,14 @@ def update_hr_concent(request):
     hr_concent = request.GET['hr_concent']
     hr_rehire = request.GET['hr_rehire']
     resign_info = ResignationInfo.objects.get(User_id=id)
-    manager_concent = resign_info.manager_accepted
-    if manager_concent is True:
-        resign_info.rehire_hr = hr_rehire
-        resign_info.hr_comment = hr_feedback
-        resign_info.last_date_accepted = final_date
-        resign_info.hr_accepted = hr_concent
-        resign_info.last_date = final_date
-        resign_info.updated_on = timezone.now()
-        resign_info.save()
-        PostAcceptedMailHR.delay(user_email.first_name, user_email.email, final_date)
-    else:
-        return HttpResponse('HR cant accept without manager approval')
+    resign_info.rehire_hr = hr_rehire
+    resign_info.hr_comment = hr_feedback
+    resign_info.last_date_accepted = final_date
+    resign_info.hr_accepted = hr_concent
+    resign_info.last_date = final_date
+    resign_info.updated_on = timezone.now()
+    resign_info.save()
+    PostAcceptedMailHR.delay(user_email.first_name, user_email.email, final_date)
     return HttpResponse('success')
 
 
@@ -159,17 +155,13 @@ class ExitFormAdd(View):
 class ResignationAcceptance(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        if request.user.groups.filter(name__in=['myansrsourceHR']).exists():
-            allresignee = ResignationInfo.objects.filter(~Q(User_id=request.user.id))
-            context['resigneedata'] = allresignee
-        else:
-            mgrid = Employee.objects.get(user_id=request.user.id)
-            reportee = Employee.objects.filter(manager_id=mgrid)
-            filterdata = []
-            for value in reportee:
-                filterdata.append(value.user.id)
-            allresignee = ResignationInfo.objects.filter(User__in=filterdata).exclude(User_id=request.user.id)
-            context['resigneedata'] = allresignee
+        mgrid = Employee.objects.get(user_id=request.user.id)
+        reportee = Employee.objects.filter(manager_id=mgrid)
+        filterdata = []
+        for value in reportee:
+            filterdata.append(value.user.id)
+        allresignee = ResignationInfo.objects.filter(User__in=filterdata).exclude(User_id=request.user.id)
+        context['resigneedata'] = allresignee
         return render(request, "exitacceptance.html", context)
 
 
@@ -178,8 +170,7 @@ class ResignationAcceptanceHR(View):
         context = {"form": "", "data": ""}
         allresignee = ResignationInfo.objects.filter(~Q(User_id=request.user.id))
         context['resigneedata'] = allresignee
-
-        return render(request, "exitacceptance.html", context)
+        return render(request, "hracceptance.html", context)
 
 
 class ClearanceFormView(View):

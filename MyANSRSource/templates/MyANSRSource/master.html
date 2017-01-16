@@ -721,7 +721,7 @@
                                         <li>
 
                                                 <a href="javascript:" data-action="click-trigger" class="open">
-                                                    <span class="menu-text">Resign</span>
+                                                    <span class="menu-text">Exit</span>
                                                     <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                                 </a>
                                                 <div class="child-menu" data-action="click-target">
@@ -731,11 +731,18 @@
                                                     <span class="menu-text">Enter Resignation</span>
                                                 </a>
                                             </li>
-                                                 {% if user|IsManager or request.user|has_group:'myansrsourceHR' %}
+                                                 {% if user|IsManager %}
                                             <li>
 
                                                 <a href="/exitapp/exit-acceptance/">
-                                                    <span class="menu-text">Manager/HR Approval</span>
+                                                    <span class="menu-text">Manager Approval</span>
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            {% if request.user|has_group:'myansrsourceHR' %}
+                                            <li>
+                                                <a href="/exitapp/hr-acceptance/">
+                                                    <span class="menu-text">HR Approval</span>
                                                 </a>
                                             </li>
                                             {% endif %}

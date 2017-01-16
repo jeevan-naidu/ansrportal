@@ -48,9 +48,6 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Manager Feedback</th>
                             <th class="mw-ra">Manager Elligible for ReHire</th>
                             <th class="">Backup Taken</th>
-                            <th class="mw-ra">HR Acceptance</th>
-                            <th class="mw-ra">HR Feedback</th>
-                            <th class="mw-ra">HR Elligible for Rehire</th>
                             <th class="">Last Date</th>
                             <th class="">Reason</th>
                             <th class="">Action</th>
@@ -69,14 +66,6 @@ ul{list-style: none;padding-left: 0px;}
                        <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}" type="checkbox" {% if c.rehire_manager == True%}checked{%endif%}></td>
                        <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
                        <td>
-                        <input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrconcent"id="hrconcent_{{c.User_id}}" name="hrconcent_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
-                       </td>
-                       <td>
-                        <textarea {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} id="feedbackhr_{{c.User_id}}" maxlength="1000" name="feedbackhr_{{c.User_id}}" class="form-control input-sm feedbackhr">{{c.hr_comment}}</textarea>
-                       </td>
-                       <td><input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrrehire" id="hrrehire_{{c.User_id}}" name="hrrehire_{{c.User_id}}" type="checkbox" {% if c.rehire_hr == True%}checked{%endif%}></td>
-
-                        <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
                          <input name="finaldate_{{c.User_id}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
@@ -86,13 +75,13 @@ ul{list-style: none;padding-left: 0px;}
                        <td><button type="button" class="btn btn-primary btn-sm resignation_acceptance" id ="">Save</button></td>
                    </tr>
                             {%endif %}
+                            {% endfor %}
                             <script type="text/javascript">
             $(function () {
             $('.acceptance,.rehiremgr,.backup,.hrconcent,.hrrehire').on('click', function () {
              $(this).val(this.checked ? 1 : 0);
             });
             $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
-             {% if c.User_id|DirectReportee:user == 1 and request.user|has_group:'myansrsourceHR' == True%}
                   $('.resignation_acceptance').on('click', function(){
                   manager_concent = $(this).parent().parent().find('.acceptance').val();
                   mgr_feedback = $(this).parent().parent().find('.feedback').val();
@@ -112,56 +101,9 @@ ul{list-style: none;padding-left: 0px;}
                                                 }
                                                 });
                 });
-            {% else%}
-              {% if request.user|has_group:'myansrsourceHR' == True and c.User_id|DirectReportee:user == 0 %}
-               $('.resignation_acceptance').on('click', function(){
-                  hr_concent = $(this).parent().parent().find('.hrconcent').val();
-                  hr_feedback = $(this).parent().parent().find('.feedbackhr').val();
-                  hr_rehire = $(this).parent().parent().find('.hrrehire').val();
-                  final_date = $(this).parent().parent().find('.finaldate').val();
-                  user_id = $(this).parent().parent().find('.userid').val();
-                   $.ajax({
-                                               url : "/exitapp/update-hr-value/",
-                                                type : "GET",
-                                                data : { 'final_date':final_date, 'hr_concent':hr_concent,'id':user_id, 'hr_feedback':hr_feedback,'hr_rehire':hr_rehire},
-                                                success : function(json) {
-                                                if (json == 'success'){
-                                                swal("Completed!", "Employee data has been submitted.", "success");
-                                                    console.log(json);
-                                                }
-                                                else{
-                                                swal("cancelled", "HR can't accept without manager approval", "error" );
-                                                }
-                                                }
-                                                });
-
-                });
-                {% endif %}
-            {%endif%}
-            {% if c.User_id|DirectReportee:user == 1 and request.user|has_group:'myansrsourceHR' == False%}
-             $('.resignation_acceptance').on('click', function(){
-                  manager_concent = $(this).parent().parent().find('.acceptance').val();
-                  mgr_feedback = $(this).parent().parent().find('.feedback').val();
-                  manager_rehire = $(this).parent().parent().find('.rehiremgr').val();
-                  mgr_backup = $(this).parent().parent().find('.backup').val();
-                  final_date = $(this).parent().parent().find('.finaldate').val();
-                  user_id = $(this).parent().parent().find('.userid').val();
-                  $.ajax({
-                                               url : "/exitapp/update-manager-value/",
-                                                type : "GET",
-                                                data : { 'final_date':final_date, 'mgr_backup':mgr_backup,'id':user_id, 'manager_concent':manager_concent, 'mgr_feedback':mgr_feedback,'manager_rehire':manager_rehire},
-                                                success : function(json) {
-                                                if (json == 'success'){
-                                                swal("Completed!", "Employee data has been submitted.", "success");
-                                                    console.log("json");
-                                                }
-                                                }
-                                                });
-                });
-                {% endif %}
             });
         </script>
-               {% endfor %}
+
                             {% csrf_token %}
                              </table>
            </div>
