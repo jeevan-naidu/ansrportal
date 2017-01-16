@@ -53,7 +53,7 @@ ul{list-style: none;padding-left: 0px;}
                           </thead>
                    {% for c in resigneedata %}
 
-                          {%  if c.exit_revert_flag == False %}
+                          {%  if c.exit_revert_flag == False and c.manager_accepted == True%}
                    <tr>
                        <td>{{c}}<input class="userid" type="hidden" value = "{{c.User_id}}"/></td>
                        <td>
