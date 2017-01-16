@@ -191,7 +191,7 @@ class MilestoneTypeAdmin(admin.ModelAdmin):
 
 
 class MilestoneAdmin(admin.ModelAdmin):
-    list_display = ('milestone_type', 'name', 'is_final_milestone', 'check_schedule_deviation')
+    list_display = ('name', 'milestone_type', 'is_final_milestone', 'check_schedule_deviation')
 
 
 admin.site.register(Project, ProjectAdmin)
