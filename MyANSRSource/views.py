@@ -476,8 +476,6 @@ def Timesheet(request):
                     eachTimesheet['tsId'] = billableTS.id
             else:
                 # Save Timesheet
-                import ipdb;
-                ipdb.set_trace()
                 if len(activitiesList):
                     for eachActivity in activitiesList:
                         # Getting objects for models
@@ -2715,7 +2713,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 teamMember=user,
                 activity__isnull=True
             )
-        ).values('id', 'project', 'project__name',  'task__name', 'mondayH',
+        ).values('id', 'project', 'project__name', 'location', 'chapter' 'task__name', 'mondayH',
                  'tuesdayH', 'wednesdayH',
                  'thursdayH', 'fridayH', 'hold',
                  'saturdayH', 'sundayH', 'approved',
@@ -2730,7 +2728,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 teamMember=user,
                 activity__isnull=True
             )
-        ).values('id', 'project', 'project__name', 'task', 'mondayH',
+        ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
                  'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
                  'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
                  'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
@@ -2763,6 +2761,10 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                     tsData['project'] = v
                 if k == 'project__name':
                     tsData['project_name'] = v
+                if k == 'location':
+                    tsData['location'] = v
+                if k == 'chapter':
+                    tsData['chapter'] = v
                 if k == 'task':
                     tsData['task'] = v
                 if k == 'mondayH':
