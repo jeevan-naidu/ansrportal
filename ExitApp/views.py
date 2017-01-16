@@ -226,7 +226,6 @@ class ClearanceFormView(View):
             context['candidate_detail'] = candidate_detail
             clearance_data = EmployeeClearanceInfo.objects.filter(resignationInfo=id)
             context['dataresignee'] = clearance_data
-            print context
         try:
             resignee_id = request.GET.get('id')
             statusby_id = request.user.id
@@ -235,6 +234,9 @@ class ClearanceFormView(View):
             user_email = User.objects.get(id=user_detail.User_id)
             form = request.POST
             count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
+            mgr_id = Employee.objects.get(user_id=request.user.id)
+            manager = Employee.objects.get(employee_assigned_id=mgr_id.manager_id)
+            manageremail = User.objects.get(id=manager.user_id)
             if 'hr_approval' in form:
                 if count == 5:
                     hr_approval = form['hr_approval']
