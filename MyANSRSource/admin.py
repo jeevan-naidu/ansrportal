@@ -5,7 +5,7 @@ from django.contrib import messages
 from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
     projectType, Task, Activity, Report,\
-    TimeSheetEntry
+    TimeSheetEntry, Milestone, MilestoneType
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -163,14 +163,15 @@ class TaskAdmin(admin.ModelAdmin):
         return qs.filter(active=True)
 
 
-
 class ProjectTeamMemberAdmin(admin.ModelAdmin):
     list_display = ('member', 'role',
                     'startDate', 'plannedEffort')
 
+
 def update_timesheet(modeladmin, request, queryset):
     queryset.update(approved=0, hold=0)
 update_timesheet.short_description = "Cancel Approved Timesheet"
+
 
 class TimeSheetEntryAdmin(admin.ModelAdmin):
     list_display = ('teamMember', 'wkstart', 'wkend')
@@ -185,6 +186,13 @@ class TimeSheetEntryAdmin(admin.ModelAdmin):
         return qs
 
 
+class MilestoneTypeAdmin(admin.ModelAdmin):
+    list_display = ('milestone_type', 'is_financial')
+
+
+class MilestoneAdmin(admin.ModelAdmin):
+    list_display = ('milestone_type', 'name', 'is_final_milestone', 'check_schedule_deviation')
+
 
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Report, ReportAdmin)
@@ -193,3 +201,6 @@ admin.site.register(projectType, projectTypeAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
+admin.site.register(MilestoneType, MilestoneTypeAdmin)
+admin.site.register(Milestone, MilestoneAdmin)
+
