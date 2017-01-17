@@ -241,6 +241,9 @@ def TimesheetFormset(currentUser,enddate):
         tsId = forms.IntegerField(label="id",
                                   required=False,
                                   widget=forms.HiddenInput())
+        is_internal = forms.BooleanField(label="is_internal",
+                                         required=False,
+                                         widget=forms.HiddenInput())
         approved = forms.BooleanField(label="approved",
                                       required=False)
         hold = forms.BooleanField(label="hold",
@@ -330,6 +333,10 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalH'].widget.attrs[
                 'class'
             ] = "t-hours-hidden d-item set-zero"
+
+            self.fields['is_internal'].widget.attrs[
+                'class'
+            ] = "t-hours-hidden d-item set-zero is_internal"
             self.fields['mondayH'].widget.attrs['value'] = 0
             self.fields['mondayQ'].widget.attrs['value'] = 0.0
             self.fields['tuesdayH'].widget.attrs['value'] = 0
@@ -347,6 +354,7 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['totalQ'].widget.attrs['value'] = 0.0
             self.fields['tsId'].widget.attrs['value'] = 0
+            self.fields['is_internal'].widget.attrs['value'] = 0
             self.fields['projectType'].widget.attrs['value'] = 'Q'
     return TimeSheetEntryForm
 

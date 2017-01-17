@@ -102,6 +102,8 @@ app.getTaskChapter = function(selValue, currRow) {
             success: function(data) {
                 len = data.flag
                 data = data.data;
+                is_internal = currRow.find('.is_internal')
+                is_internal.value(data.internal)
                 var dataLen = data.length,
                     options = '',
                     $tasks = $('.b-task'),
@@ -1294,7 +1296,9 @@ app.getSum = function($elements, $outputElement) {
                 };
 
                 $dayPopoverBtn.on('shown.bs.popover', primaryCb);
-
+                $dayPopoverBtn.on('click', function() {
+                   console.log("gsdggsd");
+                });
                 $bTask.on({
                     change: primaryCb
                 });

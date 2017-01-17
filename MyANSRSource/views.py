@@ -4475,6 +4475,7 @@ def GetChapters(request, projectid):
 
 
 def GetTasks(request, projectid):
+    project_obj = Project.objects.get(pk=projectid)
     try:
         tasks = Task.objects.filter(
             projectType=Project.objects.get(pk=projectid).projectType,
@@ -4489,10 +4490,11 @@ def GetTasks(request, projectid):
         diff=diff.days
         if diff<0:
             diff=0
-        data = {'data': list(tasks), 'flag':diff}
+        data = {'data': list(tasks), 'flag': diff}
     except Task.DoesNotExist:
         diff=0
-        data = {'data': list(), 'flag':diff}
+        data = {'data': list(), 'flag': diff}
+    data['internal'] = project_obj.internal
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 def GetHolidays(request, memberid):

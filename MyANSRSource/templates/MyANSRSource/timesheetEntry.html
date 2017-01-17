@@ -107,6 +107,8 @@
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field.label }}</td>
 				{% endif %}
+
+
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
@@ -137,6 +139,9 @@
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
 				{% if 'pt' in field.label %}
+					<td style="display: none">{{ field }}</td>
+				{% endif %}
+            {% if 'is_internal' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
 			{% endfor %}
@@ -463,6 +468,14 @@
 					     <tr>
                     <td>Leave</td>
 		    <td class="total-leave-hours text-right">{{ leave_hours }}</td>
+                </tr>
+						     <tr>
+                    <td>Internal</td>
+		    <td class="total-internal-hours text-right">{{ internal_value }}</td>
+                </tr>
+						     <tr>
+                    <td>External</td>
+		    <td class="total-external-hours text-right">{{ external_value }}</td>
                 </tr>
                     <td>Non-Billable</td>
 		    <td class="total-non-billable-hours text-right">{{ othersTotal }}</td>
