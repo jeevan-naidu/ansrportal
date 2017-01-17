@@ -18,7 +18,7 @@ class TimeSheetWeeklyReminder(Task):
                                     })
         mail_obj = EmailMessage('Time sheet Weekly Submission Reminder',
                                 msg_html, settings.EMAIL_HOST_USER, email_list,
-                                cc=email_list)
+                                cc=[user.email])
 
         mail_obj.content_subtype = 'html'
         try:
