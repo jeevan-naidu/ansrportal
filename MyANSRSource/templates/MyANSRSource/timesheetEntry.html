@@ -143,14 +143,14 @@
 			{% for data in form.visible_fields %}
 			{% spaceless %}
 			{% if data.label in shortDays %}
-					<td style="position:relative">
+					<td style="position:relative;max-width: 60px">
+
+
+
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
-								{% if data.value %}
-									<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">
-								{% else %}
-									<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">
-								{% endif %}
+								
+<!-- 									<a class="btn btn-default day-popover-button {% if data.value %} disabled {% endif %} fixed-btn-size" href="javascript:;"> -->
 							{% endif %}
 						{% endfor %}
                             <span style="display: none;">
@@ -179,16 +179,26 @@
 							{% for tdata in form.hidden_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
                                     {% with dayclass=data.label|add:"-t" %}
-                                        {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
-                                        {% else %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H
-                                        {% endif %}
+                                        
+
+
+
+<!-- Existing element -->
+                                            <!-- <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{% if tdata.value > 0 %} {{ tdata.value }} {% else %} 0 {% endif %}</span>H -->
+
+<!-- New element -->
+
+											<input type="text" name="" class="form-control" style="max-width: 75px;">
+
+
+
+                                        
+
                                     {% endwith %}
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
-						</a>
+<!-- 						</a> -->
 					</td>
 				{% elif data.label == 'Total' %}
 					<td>
