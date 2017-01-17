@@ -3143,17 +3143,15 @@ def send_reminder_mail(request):
     user = User.objects.get(id=user_id)
     team_members = Employee.objects.filter(manager_id=user.employee.employee_assigned_id,
                                            user__is_active=True)
+    print start_date, end_date
 
     for members in team_members:
-            # try:
         result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                               teamMember=members.user).exists()
+                                               teamMember=members.user, hold=True).exists()
         if not result:
             user_obj = User.objects.get(id=int(members.user.id))
             email_list.append(user_obj.email)
-
-    manager_name = user.first_name + ' ' + request.user.last_name
-    TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
+    # TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
     json_obj = {'status': True}
     return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
 
