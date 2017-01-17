@@ -660,7 +660,6 @@ def Timesheet(request):
 def get_time_sheet(request, is_approve=False):
     # GET request
     # Switch dates back and forth
-    print "get time"
     dates = switchWeeks(request)
 
     # Getting Data for timesheet and activity
@@ -738,8 +737,6 @@ def get_time_sheet(request, is_approve=False):
     if not is_approve:
         return data
     else:
-        # print json.dumps(str(data))
-        # return data
         return HttpResponse(
             json.dumps(data),
             content_type="application/json"
@@ -750,7 +747,6 @@ def time_sheet_employee(request):
 
     s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
                       datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
-    print json.dumps(s)
     return HttpResponse(
             json.dumps(s),
             content_type="application/json"
@@ -827,7 +823,6 @@ def leaveappliedinweek(user, wkstart, wkend):
 
 def date_range_picker(request):
     mondays_list = [x for x in get_mondays_list_till_date()]
-    # print  "LIST", mondays_list
 
     # list of dict with mentioned ts entry columns
     weeks_timesheetEntry_list = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart__in=mondays_list). \
@@ -1851,7 +1846,6 @@ def GetTasks(request, projectid):
         a1 = request.GET.get('endDate')
         date = datetime(year=int(a1[4:8]), month=int(a1[2:4]), day=int(a1[0:2])).date()
         project_obj = Project.objects.get(pk=projectid)
-        # print project_obj.totalValue
         diff = date - project_obj.endDate
         diff = diff.days
         if diff < 0:
@@ -1860,7 +1854,6 @@ def GetTasks(request, projectid):
     except Task.DoesNotExist:
         diff = 0
         data = {'data': list(), 'flag': diff, 'total_value': str(project_obj.totalValue)}
-    # print data
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -2049,513 +2042,11 @@ def loginResponse(request, form, template):
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
-#
-# def get_mondays_list_till_date():
-#     '''generate all days that are Mondays in the current year
-#     returns only monday(date object)'''
-#     current_date = datetime.now().date()
-#     jan1 = date(current_date.year, 1, 1)
-#
-#     # find first Monday (which could be this day)
-#     monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
-#
-#     while 1:
-#
-#         if monday.year != current_date.year or monday > current_date:
-#             break
-#         yield monday
-#         monday += timedelta(days=7)
-
-
-# diff between above function get_mondays_list_till_date() and below function weeks_list_till_date
-# is only in the yield statement
-#
-# def weeks_list_till_date():
-#     '''generate week(monday to sunday) for the current year
-#     returns tuple for with 2 objects: week_start and week_end'''
-#     current_date = datetime.now().date()
-#
-#     jan1 = date(current_date.year, 1, 1)
-#
-#     # find first Monday (which could be this day)
-#     monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
-#
-#     while 1:
-#
-#         if monday.year != current_date.year or monday > current_date:
-#             break
-#         yield (monday, monday + timedelta(days=6))
-#         monday += timedelta(days=7)
-
 
 # to convert unicode strings to string with apostrophe removed from each project name
 def unicode_to_string(resultant_set):
     return str([x.encode('UTF8') for x in resultant_set]).replace("'", "")
 
-#
-# @login_required
-# @permission_required('MyANSRSource.enter_timesheet')
-# def Timesheet(request):
-#     # Creating Formset
-#     # Week Calculation.
-#     leaveDayWork = False
-#     # Getting the form values and storing it to DB.
-#
-#
-#     if request.method == 'POST':
-#         # Getting the forms with submitted values
-#         hold_button = False
-#
-#         # for timesheet bug which showed project not available  error message by vivek
-#         tmp_date = datetime.now().date()
-#         tmp_date -= timedelta(days=7)
-#         endDate1 = request.GET.get('enddate', '')
-#         if request.GET.get("week") == 'prev':
-#             if endDate1:
-#                 tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
-#                 tmp_date -= timedelta(days=13)
-#
-#         elif request.GET.get("week") == 'next':
-#             if endDate1:
-#                 tmp_date = datetime(year=int(endDate1[4:8]), month=int(endDate1[2:4]), day=int(endDate1[0:2]))
-#                 tmp_date += timedelta(days=1)
-#         else:
-#             startdate = request.GET.get('startdate', '')
-#             if startdate:
-#                 tmp_date = datetime(year=int(startdate[4:8]), month=int(startdate[2:4]), day=int(startdate[0:2]))
-#         tsform = TimesheetFormset(request.user, tmp_date)
-#         tsFormset = formset_factory(
-#             tsform, extra=1, max_num=1, can_delete=True
-#         )
-#         atFormset = formset_factory(
-#             ActivityForm, extra=1, max_num=1, can_delete=True
-#         )
-#         timesheets = tsFormset(request.POST)
-#         activities = atFormset(request.POST, prefix='at')
-#         dbSave = False
-#
-#         # User values for timsheet
-#         if timesheets.is_valid() and activities.is_valid():
-#             changedStartDate = datetime.strptime(
-#                 request.POST.get('startdate'), '%d%m%Y'
-#             ).date()
-#             changedEndDate = datetime.strptime(
-#                 request.POST.get('enddate'), '%d%m%Y'
-#             ).date()
-#             mondayTotal = float(0.0)
-#             tuesdayTotal = float(0.0)
-#             wednesdayTotal = float(0.0)
-#             thursdayTotal = float(0.0)
-#             fridayTotal = float(0.0)
-#             saturdayTotal = float(0.0)
-#             sundayTotal = float(0.0)
-#             weekTotal = float(0.0)
-#             billableTotal = float(0.0)
-#             nonbillableTotal = float(0.0)
-#             weekHolidays = []
-#             (timesheetList, activitiesList,
-#              timesheetDict, activityDict) = ([], [], {}, {})
-#             if hasattr(request.user, 'employee'):
-#                 locationId = request.user.employee.location
-#                 weekHolidays = Holiday.objects.filter(
-#                     location=locationId,
-#                     date__range=[changedStartDate, changedEndDate]
-#                 ).values('date')
-#                 weekTotalValidate = 40 - (8 * len(weekHolidays))
-#                 weekTotalValidate = float(weekTotalValidate)
-#                 weekTotalExtra = weekTotalValidate + 4
-#             else:
-#                 weekHolidays = []
-#                 weekTotalValidate = 40
-#                 weekTotalExtra = 4
-#             for timesheet in timesheets:
-#                 if timesheet.cleaned_data['DELETE'] is True:
-#                     TimeSheetEntry.objects.filter(
-#                         id=timesheet.cleaned_data['tsId']
-#                     ).delete()
-#                 else:
-#                     for holiday in weekHolidays:
-#                         holidayDay = u'{0}H'.format(
-#                             holiday['date'].strftime('%A').lower()
-#                         )
-#                         if timesheet.cleaned_data[holidayDay] > 0:
-#                             leaveDayWork = True
-#                     del (timesheet.cleaned_data['DELETE'])
-#                     del (timesheet.cleaned_data['monday'])
-#                     del (timesheet.cleaned_data['tuesday'])
-#                     del (timesheet.cleaned_data['wednesday'])
-#                     del (timesheet.cleaned_data['thursday'])
-#                     del (timesheet.cleaned_data['friday'])
-#                     del (timesheet.cleaned_data['saturday'])
-#                     del (timesheet.cleaned_data['sunday'])
-#                     del (timesheet.cleaned_data['total'])
-#                     approved = False
-#                     for k, v in timesheet.cleaned_data.iteritems():
-#                         if k == 'tsId':
-#                             if v:
-#                                 approved = TimeSheetEntry.objects.get(
-#                                     pk=v).approved
-#                         if k == 'mondayH':
-#                             if isinstance(v, float):
-#                                 mondayTotal += float(v)
-#                             else:
-#                                 mondayTotal += float(0.0)
-#                         elif k == 'tuesdayH':
-#                             if isinstance(v, float):
-#                                 tuesdayTotal += float(v)
-#                             else:
-#                                 tuesdayTotal += float(0.0)
-#                         elif k == 'wednesdayH':
-#                             if isinstance(v, float):
-#                                 wednesdayTotal += float(v)
-#                             else:
-#                                 wednesdayTotal += float(0.0)
-#                         elif k == 'thursdayH':
-#                             if isinstance(v, float):
-#                                 thursdayTotal += float(v)
-#                             else:
-#                                 thursdayTotal += float(0.0)
-#                         elif k == 'fridayH':
-#                             if isinstance(v, float):
-#                                 fridayTotal += float(v)
-#                             else:
-#                                 fridayTotal += float(0.0)
-#                         elif k == 'saturdayH':
-#                             if isinstance(v, float):
-#                                 saturdayTotal += float(v)
-#                             else:
-#                                 saturdayTotal += float(0.0)
-#                         elif k == 'sundayH':
-#                             if isinstance(v, float):
-#                                 sundayTotal += float(v)
-#                             else:
-#                                 sundayTotal += float(0.0)
-#                         elif k == 'totalH':
-#                             billableTotal += float(v)
-#                             weekTotal += float(v)
-#                         timesheetDict[k] = v
-#                         timesheetDict['approved'] = approved
-#                     timesheetList.append(timesheetDict.copy())
-#                     timesheetDict.clear()
-#             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
-#                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
-#                     (fridayTotal > 24) | (saturdayTotal > 24) | \
-#                     (sundayTotal > 24):
-#                 messages.error(request, 'You can only work for 24 hours a day')
-#             for activity in activities:
-#                 if activity.cleaned_data['activity'] is not None:
-#                     if activity.cleaned_data['DELETE'] is True:
-#                         TimeSheetEntry.objects.filter(
-#                             id=activity.cleaned_data['atId']
-#                         ).delete()
-#                     else:
-#                         del (activity.cleaned_data['DELETE'])
-#                         for k, v in activity.cleaned_data.iteritems():
-#                             if k == 'activity_monday':
-#                                 mondayTotal += float(v)
-#                             elif k == 'activity_tuesday':
-#                                 tuesdayTotal += float(v)
-#                             elif k == 'activity_wednesday':
-#                                 wednesdayTotal += float(v)
-#                             elif k == 'activity_thursday':
-#                                 thursdayTotal += float(v)
-#                             elif k == 'activity_friday':
-#                                 fridayTotal += float(v)
-#                             elif k == 'activity_saturday':
-#                                 saturdayTotal += float(v)
-#                             elif k == 'activity_sunday':
-#                                 sundayTotal += float(v)
-#                             elif k == 'activity_total':
-#                                 nonbillableTotal += float(v)
-#                                 weekTotal += float(v)
-#                             activityDict[k] = v
-#                         activitiesList.append(activityDict.copy())
-#                         activityDict.clear()
-#             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
-#                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
-#                     (fridayTotal > 24) | (saturdayTotal > 24) | \
-#                     (sundayTotal > 24):
-#                 messages.error(request, 'You can only work for 24 hours a day')
-#             elif ('save' not in request.POST) and (
-#                         weekTotal < weekTotalValidate - 0.05):
-#                 messages.error(request,
-#                                u'Your total timesheet activity for \
-#                                this week is below {0} hours'.format(
-#                                    weekTotalValidate))
-#             elif (weekTotal > weekTotalExtra) | \
-#                     (billableTotal > weekTotalExtra) | \
-#                     (nonbillableTotal > weekTotalValidate) | \
-#                     (leaveDayWork is True):
-#                 if len(activitiesList):
-#                     for eachActivity in activitiesList:
-#                         # Getting objects for models
-#                         if eachActivity['atId'] > 0:
-#                             nonbillableTS = TimeSheetEntry.objects.get(
-#                                 pk=eachActivity['atId']
-#                             )
-#                         else:
-#                             nonbillableTS = TimeSheetEntry()
-#                         # Common values for Billable and Non-Billable
-#                         nonbillableTS.wkstart = changedStartDate
-#                         nonbillableTS.wkend = changedEndDate
-#                         nonbillableTS.teamMember = request.user
-#                         if 'save' not in request.POST:
-#                             nonbillableTS.hold = True
-#                         if (weekTotal > 40):
-#                             nonbillableTS.exception = \
-#                                 "Week's total is more than 40 hours"
-#                         elif nonbillableTotal > 40:
-#                             nonbillableTS.exception = \
-#                                 'NonBillable activity more than 40 Hours'
-#                         for k, v in eachActivity.iteritems():
-#                             if k == 'activity_monday':
-#                                 nonbillableTS.mondayH = v
-#                             elif k == 'activity_tuesday':
-#                                 nonbillableTS.tuesdayH = v
-#                             elif k == 'activity_wednesday':
-#                                 nonbillableTS.wednesdayH = v
-#                             elif k == 'activity_thursday':
-#                                 nonbillableTS.thursdayH = v
-#                             elif k == 'activity_friday':
-#                                 nonbillableTS.fridayH = v
-#                             elif k == 'activity_saturday':
-#                                 nonbillableTS.saturdayH = v
-#                             elif k == 'activity_sunday':
-#                                 nonbillableTS.sundayH = v
-#                             elif k == 'activity_total':
-#                                 nonbillableTS.totalH = v
-#                             elif k == 'activity_feedback':
-#                                 nonbillableTS.feedback = v
-#                             elif k == 'activity':
-#                                 nonbillableTS.activity = v
-#                         nonbillableTS.save()
-#                         global dbSave
-#                         dbSave = True
-#                         eachActivity['atId'] = nonbillableTS.id
-#                 for eachTimesheet in timesheetList:
-#                     if eachTimesheet['tsId'] > 0:
-#                         billableTS = TimeSheetEntry.objects.filter(
-#                             id=eachTimesheet['tsId']
-#                         )[0]
-#                     else:
-#                         billableTS = TimeSheetEntry()
-#                     billableTS.wkstart = changedStartDate
-#                     billableTS.wkend = changedEndDate
-#                     billableTS.teamMember = request.user
-#                     if 'save' not in request.POST:
-#                         billableTS.hold = True
-#                     billableTS.billable = True
-#                     if (weekTotal > 40):
-#                         billableTS.exception = \
-#                             "Week's total is more than 40 hours"
-#                     elif billableTotal > 40:
-#                         billableTS.exception = \
-#                             'Billable activity more than 40 Hours'
-#                     elif leaveDayWork is True:
-#                         billableTS.exception = 'Worked on Holiday'
-#                     for k, v in eachTimesheet.iteritems():
-#                         if k != 'hold':
-#                             if k in (
-#                             'mondayQ', 'tuesdayQ', 'wednesdayQ', 'thursdayQ', 'fridayQ', 'saturdayQ', 'sundayQ'):
-#                                 if v == None:
-#                                     v = float(0.0)
-#                             if k in (
-#                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
-#                                 if v == None:
-#                                     v = float(0.0)
-#                             if k == 'totalH':
-#                                 print v
-#                             # if k == 'chapter':
-#                             #     v = Chapter.objects.get(pk=v)
-#                             # if k == 'task':
-#                             #     v = Task.objects.get(pk=v)
-#                             setattr(billableTS, k, v)
-#                     billableTS.save()
-#                     global dbSave
-#                     dbSave = True
-#                     eachTimesheet['tsId'] = billableTS.id
-#             else:
-#                 # Save Timesheet
-#                 if len(activitiesList):
-#                     for eachActivity in activitiesList:
-#                         # Getting objects for models
-#                         if eachActivity['atId'] > 0:
-#                             nonbillableTS = TimeSheetEntry.objects.filter(
-#                                 id=eachActivity['atId']
-#                             )[0]
-#                         else:
-#                             nonbillableTS = TimeSheetEntry()
-#                         # Common values for Billable and Non-Billable
-#                         nonbillableTS.wkstart = changedStartDate
-#                         nonbillableTS.wkend = changedEndDate
-#                         nonbillableTS.activity = eachActivity['activity']
-#                         nonbillableTS.teamMember = request.user
-#                         if 'save' not in request.POST:
-#                             # nonbillableTS.approved = True
-#                             # nonbillableTS.managerFeedback = 'System Approved'
-#                             nonbillableTS.hold = True
-#                             nonbillableTS.approvedon = datetime.now().replace(
-#                                 tzinfo=utc)
-#                         else:
-#                             nonbillableTS.approved = False
-#                             nonbillableTS.hold = False
-#                         for k, v in eachActivity.iteritems():
-#                             if k == 'activity_monday':
-#                                 nonbillableTS.mondayH = v
-#                             elif k == 'activity_tuesday':
-#                                 nonbillableTS.tuesdayH = v
-#                             elif k == 'activity_wednesday':
-#                                 nonbillableTS.wednesdayH = v
-#                             elif k == 'activity_thursday':
-#                                 nonbillableTS.thursdayH = v
-#                             elif k == 'activity_friday':
-#                                 nonbillableTS.fridayH = v
-#                             elif k == 'activity_saturday':
-#                                 nonbillableTS.saturdayH = v
-#                             elif k == 'activity_sunday':
-#                                 nonbillableTS.sundayH = v
-#                             elif k == 'activity_total':
-#                                 nonbillableTS.totalH = v
-#                             elif k == 'activity_feedback':
-#                                 nonbillableTS.feedback = v
-#                             elif k == 'activity':
-#                                 nonbillableTS.activity = v
-#                         nonbillableTS.save()
-#                         global dbSave
-#                         dbSave = True
-#                         eachActivity['atId'] = nonbillableTS.id
-#                 for eachTimesheet in timesheetList:
-#                     if eachTimesheet['tsId'] > 0:
-#                         billableTS = TimeSheetEntry.objects.filter(
-#                             id=eachTimesheet['tsId']
-#                         )[0]
-#                     else:
-#                         billableTS = TimeSheetEntry()
-#                     billableTS.wkstart = changedStartDate
-#                     billableTS.wkend = changedEndDate
-#                     billableTS.teamMember = request.user
-#                     billableTS.billable = True
-#                     if 'save' not in request.POST:
-#                         # billableTS.approved = True
-#                         # billableTS.managerFeedback = 'System Approved'
-#                         billableTS.hold = True
-#                         billableTS.approvedon = datetime.now().replace(
-#                             tzinfo=utc)
-#                     else:
-#                         billableTS.approved = False
-#                         billableTS.hold = False
-#                     for k, v in eachTimesheet.iteritems():
-#                         if k != 'hold' and k != 'approved':
-#                             if k in (
-#                             'mondayQ', 'tuesdayQ', 'wednesdayQ', 'thursdayQ', 'fridayQ', 'saturdayQ', 'sundayQ'):
-#                                 if v == None:
-#                                     v = float(0.0)
-#                             if k in (
-#                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
-#                                 if v == None:
-#                                     v = float(0.0)
-#                             if k == 'totalH':
-#                                 print v
-#                             # if k == 'chapter':
-#                             #     v = Chapter.objects.get(pk=v)
-#                             # if k == 'task':
-#                             #     v = Task.objects.get(pk=v)
-#
-#                             setattr(billableTS, k, v)
-#                     billableTS.save()
-#                     global dbSave
-#                     dbSave = True
-#                     eachTimesheet['tsId'] = billableTS.id
-#             dates = switchWeeks(request)
-#             for eachtsList in timesheetList:
-#                 if eachtsList['tsId']:
-#                     ts = TimeSheetEntry.objects.get(pk=eachtsList['tsId'])
-#                     eachtsList['hold'] = ts.hold
-#             tsContent = timesheetList
-#             atContent = activitiesList
-#             tsErrorList = []
-#             atErrorList = []
-#
-#             approvedSet = set()
-#             autoApprovedSet = set()
-#             holdSet = set()
-#             saveSet = set()
-#             for eachTS in tsContent:
-#                 if eachtsList['tsId']:
-#                     tsObj = TimeSheetEntry.objects.get(pk=eachTS['tsId'])
-#                     if eachTS['approved']:
-#                         approvedSet.add(tsObj.project.projectId)
-#                     elif eachTS['hold']:
-#                         if tsObj.approved:
-#                             autoApprovedSet.add(tsObj.project.projectId)
-#                         else:
-#                             holdSet.add(tsObj.project.projectId)
-#                     elif 'save' in request.POST:
-#                         saveSet.add(tsObj.project.projectId)
-#
-#             if len(approvedSet) > 0:
-#                 messages.success(
-#                     request, 'Timesheet approved :' + unicode_to_string(approvedSet))
-#                 hold_button = True
-#             if len(autoApprovedSet) > 0:
-#                 messages.success(
-#                     request, 'Timesheet auto-approved by the system :' +
-#                              unicode_to_string(autoApprovedSet))
-#                 hold_button = True
-#             if len(holdSet) > 0:
-#                 messages.info(
-#                     request, 'Timesheet sent to your manager :' +
-#                              unicode_to_string(holdSet))
-#                 hold_button = True
-#             if len(saveSet) > 0:
-#                 messages.info(
-#                     request, 'Timesheet has been saved:' +
-#                              unicode_to_string(saveSet))
-#                 hold_button = False
-#         else:
-#             # Switch dates back and forth
-#             dates = switchWeeks(request)
-#             tsErrorList = timesheets.errors
-#             tsContent = [k.cleaned_data for k in timesheets]
-#             for eachErrorData in tsContent:
-#                 for k, v in eachErrorData.iteritems():
-#                     if k == 'project':
-#                         ptype = Project.objects.filter(
-#                             id=eachErrorData['project'].id
-#                         ).values('projectType__code')[0]['projectType__code']
-#                         eachErrorData['projectType'] = ptype
-#             atErrorList = activities.errors
-#             atContent = [k.cleaned_data for k in activities]
-#
-#         if len(tsContent):
-#             for eachContent in tsContent:
-#                 if 'project' in eachContent:
-#                     eachContent['projectType'] = eachContent[
-#                         'project'].projectType.code
-#
-#         # Constructing status of timesheet
-#
-#         data = {'weekstartDate': dates['start'],
-#                 'weekendDate': dates['end'],
-#                 'disabled': dates['disabled'],
-#                 'extra': 0,
-#                 'hold_button': hold_button,
-#                 'tsErrorList': tsErrorList,
-#                 'atErrorList': atErrorList,
-#                 'tsFormList': tsContent,
-#                 'atFormList': atContent}
-#         global dbSave
-#         if dbSave:
-#             getRelativeUrl = request.META['HTTP_REFERER']
-#             getRelativeUrl = getRelativeUrl.split("/")[3:]
-#             getRelativeUrl = "/".join(i for i in getRelativeUrl)
-#             return HttpResponseRedirect('/' + getRelativeUrl)
-#
-#         return renderTimesheet(request, data)
-#     else:
-#         # GET request
-#         data = get_time_sheet(request)
-#         return renderTimesheet(request, data)
 
 
 def get_time_sheet(request, is_approve=False):
@@ -2750,7 +2241,6 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     sunday_total = 0.0
     for eachData in cwTimesheetData:
         for k, v in eachData.iteritems():
-            # print k,v
             if user_id:
                 v = str(v)
             if user_id:
@@ -2890,7 +2380,6 @@ def status_member(team_members, ignore_previous_year=False):
             except:
                 result = False
             status[for_week]['status'][members.user.id] = result
-    # print "in function " ,  type(week_collection)
     status_dict = {}
     unapproved_count  = 0
     for k, v in status.iteritems():
@@ -2908,7 +2397,6 @@ def status_member(team_members, ignore_previous_year=False):
         status_dict[k] ['wkstart']= v['wkstart']
         status_dict[k]['wkend'] = v['wkend']
 
-    # print json.dumps(status_dict)
     return status_dict, week_collection, unapproved_count
 
 
@@ -2922,7 +2410,6 @@ def date_range_picker(request, employee=None):
     mondays_list = [str(x.strftime("%b") + "-" + str(x.day)) for x in mondays_list]
 
     weeks_list = [x for x in weeks_list_till_date(False)]
-    # print weeks_list
 
     ts_week_info_dict = {}
     for dict_obj in weeks_timesheetEntry_list:
@@ -2948,7 +2435,6 @@ def date_range_picker(request, employee=None):
             wkend = str(tup[1]).split('-')[::-1]
             ts_final_list.append({ 'for_week': for_week, 'wkstart': "".join([x for x in wkstart]),
                                   'wkend': "".join([x for x in wkend]), 'filled': False})
-    # print ts_final_list
     return ts_final_list, mondays_list, ts_week_info_dict
 
 
@@ -3124,14 +2610,12 @@ def renderTimesheet(request, data):
 
 def pull_members_week(employee,start_date,end_date) :
     leave_flag = leaveappliedinweek(employee.user, start_date, end_date)
-    # print "leave flag", leave_flag
     leave_hours = 0
     for flag in leave_flag:
         if flag == 4:
             leave_hours += 4
         elif flag == 8:
             leave_hours += 8
-    # print leave_hours
     return leave_hours
 
 
@@ -3143,15 +2627,13 @@ def send_reminder_mail(request):
     user = User.objects.get(id=user_id)
     team_members = Employee.objects.filter(manager_id=user.employee.employee_assigned_id,
                                            user__is_active=True)
-    print start_date, end_date
-
     for members in team_members:
         result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                teamMember=members.user, hold=True).exists()
         if not result:
             user_obj = User.objects.get(id=int(members.user.id))
             email_list.append(user_obj.email)
-    # TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
+    TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
     json_obj = {'status': True}
     return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
 
@@ -3171,9 +2653,6 @@ class ApproveTimesheetView(TemplateView):
         start_date = dates['start']
         end_date = dates['end']
         status, week_collection, unapproved_count = status_member(team_members)
-        # print status
-        # print start_date, end_date
-        # print start_date, end_date
         for members in team_members:
             non_billable_total = 0.0
             ts_obj = time_sheet_for_the_week(start_date, end_date, members, True)
@@ -3208,17 +2687,11 @@ class ApproveTimesheetView(TemplateView):
         for k, v in ts_data_list.iteritems():
 
             if v['approved_status']:
-                # print  k,v
                 ts_data_list_approved_true[k] = v
-                # print ts_data_list_reordered
             else:
-                # print "else",  k, v
                 ts_data_list_approved_false[k] = v
         context['ts_data_list_approved_false'] = ts_data_list_approved_false
         context['ts_data_list_approved_true'] = ts_data_list_approved_true
-        # print "false",ts_data_list_approved_false
-        # print "true",ts_data_list_approved_true
-        # print ts_data_list_approved_true
         return context
 
     def post(self, request, **kwargs):
@@ -3246,7 +2719,6 @@ class ApproveTimesheetView(TemplateView):
 
                 except Exception as e:
                     fail += 1
-                    print str(e)
                     logger.error(
                         u'Unable to make changes(approve) for time sheet approval  {0}{1}{2} and the error is  {3} '
                         u' '.format(start_date, end_date, user_id, str(e)))

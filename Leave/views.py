@@ -148,13 +148,8 @@ class Dashboard(View):
         LeaveAdmin = False
         userCheck = False
         user_id = request.user.id
-        # leave_summary = LeaveSummary.objects.filter(user=user_id,
-        #                                             year=date.today().year).values('leave_type__leave_type',
-        #                                                                            'applied',
-        #                                                                            'approved',
-        #                                                                            'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                    year=2016).values('leave_type__leave_type',
+                                                    year=date.today().year).values('leave_type__leave_type',
                                                                                    'applied',
                                                                                    'approved',
                                                                                    'balance')
@@ -219,16 +214,11 @@ class Dashboard(View):
             LeaveAdmin = True
         elif  int(user_id) == int(request.user.id):
             userCheck = True
-        # leave_summary = LeaveSummary.objects.filter(user=user_id,
-        #                                           year=date.today().year).values('leave_type__leave_type',
-        #                                                                          'applied',
-        #                                                                          'approved',
-        #                                                                          'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                    year=2016).values('leave_type__leave_type',
-                                                                                   'applied',
-                                                                                   'approved',
-                                                                                   'balance')
+                                                  year=date.today().year).values('leave_type__leave_type',
+                                                                                 'applied',
+                                                                                 'approved',
+                                                                                 'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
@@ -1542,7 +1532,10 @@ def leavecheck(user, date):
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
                                                     to_date__gte=date,
-                                                    status__in=['open', 'approved']).exclude(leave_type__in=[11,14,15])
+                                                    status__in=['open', 'approved']).exclude(leave_type__in=[11,
+                                                                                                             14,
+                                                                                                             15,
+                                                                                                             13])
     holiday = Holiday.objects.all().values('date')
 
     if len(leaveapplied) > 1:
