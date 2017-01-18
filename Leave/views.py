@@ -831,7 +831,6 @@ class LeaveListView(ListView):
 def update_leave_application(request, status):
     status_tmp = status.split('_')
     exception = False
-    import ipdb; ipdb.set_trace()
     if request.POST.get('remark_'+status_tmp[1]):
         remark_tmp = request.POST.get('remark_'+status_tmp[1]).strip()
     else:
