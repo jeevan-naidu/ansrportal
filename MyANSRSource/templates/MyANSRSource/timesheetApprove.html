@@ -13,43 +13,42 @@ Approve Timesheet
 {% if exception_message %}
  <p> Sorry You Don't Have Any Direct Report {% else %}
 {% block switch_dates %}
-
-        <div class="dropdown week-selector pull-left">
-          <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          <i class="fa fa-calendar" style="margin-right:5px;color:#999"></i>
-            {{ weekstartDate|date:"d-M" }} - {{ weekendDate|date:"d-M" }}
-            <!-- <span class="caret"></span> -->
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-               {% for date_range in week_collection  %}
-                   <li>{% with result=status_dict|get_item:date_range %}
-                       {% for k,v in result.items %}
-                            {% if k == 'status'  and v == 'approved' %}
-                                 <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="filled">
-                                   {{ date_range }}
+<div class="dropdown week-selector pull-left">
+  <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+  <i class="fa fa-calendar" style="margin-right:5px;color:#999"></i>
+    {{ weekstartDate|date:"d-M" }} - {{ weekendDate|date:"d-M" }}
+    <!-- <span class="caret"></span> -->
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+       {% for date_range in week_collection  %}
+           <li>{% with result=status_dict|get_item:date_range %}
+               {% for k,v in result.items %}
+                    {% if k == 'status'  and v == 'approved' %}
+                         <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="filled">
+                           {{ date_range }}
+                         </a>
+                    {% else %}
+                        {% if k == 'status' and v == 'partial' %}
+                                <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="incomplete">
+                                   {{ date_range}}
                                  </a>
-                            {% else %}
-                                {% if k == 'status' and v == 'partial' %}
-                                        <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="incomplete">
-                                           {{ date_range}}
-                                         </a>
-                                {% endif %}
-                                {% if  k == 'status' and v == 'not_approved'  %}
-                                    <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="unfilled">
-                                            {{ date_range}}
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                       {% endfor %} {%endwith %}
-                   </li>
-              {% endfor %}
+                        {% endif %}
+                        {% if  k == 'status' and v == 'not_approved'  %}
+                            <a href="approve?startdate={{ result.wkstart }}&enddate={{ result.wkend }}" data-value="action" class="unfilled">
+                                    {{ date_range}}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+               {% endfor %} {%endwith %}
+           </li>
+      {% endfor %}
 
-          </ul>
-        </div>
+  </ul>
+</div>
+
 
 
 {% endblock %}
-
 {% block timesheetContent %}
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
