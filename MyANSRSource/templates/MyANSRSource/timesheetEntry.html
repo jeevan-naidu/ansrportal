@@ -151,45 +151,45 @@
 					<td style="position:relative">
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
-								{% if data.value %}
-									<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">
-								{% else %}
-									<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">
-								{% endif %}
+								<!--{% if data.value %}-->
+									<!--<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">-->
+								<!--{% else %}-->
+									<!--<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">-->
+								<!--{% endif %}-->
 							{% endif %}
 						{% endfor %}
-                            <span style="display: none;">
-							{% for tdata in form.hidden_fields %}
-								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
-									{% for typeData in form.hidden_fields %}
-										{% if 'projectType' in typeData.id_for_label %}
-											{% if tdata.value > 0 %}
-												<span class="b-questions set-zero">{{ tdata.value }}</span>
-												<span class="project-unit">{{ typeData.value }}</span>
-											{% else %}
-												<span class="b-questions set-zero">0</span>
-												{% if typeData.value == None %}
-													<span class="project-unit set-q">Q</span>
-												{% else %}
-													<span class="project-unit set-q">{{ typeData.value }}</span>
-												{% endif %}
-											{% endif %}
-										{% endif %}
-									{% endfor %}
-									{{ tdata }}
-								{% endif %}
-							{% endfor %}
-                            </span>
+                            <!--<span style="display: none;">-->
+							<!--{% for tdata in form.hidden_fields %}-->
+								<!--{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}-->
+									<!--{% for typeData in form.hidden_fields %}-->
+										<!--{% if 'projectType' in typeData.id_for_label %}-->
+											<!--{% if tdata.value > 0 %}-->
+												<!--<span class="b-questions set-zero">{{ tdata.value }}</span>-->
+												<!--<span class="project-unit">{{ typeData.value }}</span>-->
+											<!--{% else %}-->
+												<!--<span class="b-questions set-zero">0</span>-->
+												<!--{% if typeData.value == None %}-->
+													<!--<span class="project-unit set-q">Q</span>-->
+												<!--{% else %}-->
+													<!--<span class="project-unit set-q">{{ typeData.value }}</span>-->
+												<!--{% endif %}-->
+											<!--{% endif %}-->
+										<!--{% endif %}-->
+									<!--{% endfor %}-->
+									<!--{{ tdata }}-->
+								<!--{% endif %}-->
+							<!--{% endfor %}-->
+                            <!--</span>-->
 
-							{% for tdata in form.hidden_fields %}
+							{% for tdata in form.visible_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-                                    {% with dayclass=data.label|add:"-t" %}
-                                        {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
-                                        {% else %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H
-                                        {% endif %}
-                                    {% endwith %}
+                                    <!--{% with dayclass=data.label|add:"-t" %}-->
+                                        <!--{% if tdata.value > 0 %}-->
+                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H-->
+                                        <!--{% else %}-->
+                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H-->
+                                        <!--{% endif %}-->
+                                    <!--{% endwith %}-->
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
