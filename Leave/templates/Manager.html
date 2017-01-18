@@ -38,8 +38,115 @@
         </div>
     </div>
     <!--  End messages-->
+<div class="row">
+            <div class="col-md-12">
+                <div class="Lv-ApLvHeader">
+
+
+
+                  <!-- Start content	-->
+                  <form class="form-horizontal " id="filter_form" role="form" method="post" >
+                  <div class="row margin-top11">
+                      {% csrf_token %}
+                      <div class="col-md-12 col-sm-6 ">
+
+                              <div class="form-group form-inline short-date mb-0">
+                                  <label for="from_date">From :&nbsp;</label>
+                                  {{form.from_date}}
+                                  <!--<select class="form-control filter_class " id="month" name="month">-->
+                                      <!--<option value ="default">-&#45;&#45;&#45;&#45;</option>-->
+                                      <!--{% for value, text in months_choices %}-->
+                                          <!--<option value="{{value}}" {%if month|safe == value|safe %} selected {% endif %}>{{text}}-{%now "Y"%} </option>-->
+                                      <!--{%endfor%}-->
+                                  <!--</select>-->
+
+                                  &nbsp;&nbsp;
+                                  <label for="to_date">To :&nbsp;</label>
+                                  {{form.to_date}}
+                                  &nbsp;&nbsp;
+                                  <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
+                                  <select class="form-control filter_class input-sm" id="application_status" name="application_status">
+
+                                    <option value ="all">All</option>
+                                      {% for value, text in APPLICATION_STATUS %}
+                                          {% if value != 'applied' %}
+                                              <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
+                                          {% endif %}
+                                      {%endfor%}
+
+
+                                  </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                                  {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
+                                      <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
+                                          <option value="" selected >Applied To</option>
+                                           {% for managers in apply_to %}
+                                              <option value="{{managers.1}}" {%if post_apply_to|safe == managers.1|safe %} selected {% endif %}>{{managers.0}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  {%endif%}
+                                  <select class="form-control filter_class input-sm" id="users" name="users">
+                                      <option value="" selected >Applied By</option>
+                                       {% for employee in users %}
+                                          <option value="{{employee.user.id}}"{%if post_users|safe == employee.user.id|safe %} selected {% endif %} >{{employee.user.username}}</option>
+                                      {% endfor %}
+                                  </select>
+                                  <div class="export-btn">
+
+                                  <input type="submit" id="submit_button" class="btn btn-primary btn-sm btn-ansr-orange" value ="Search" name="filter"/>
+                                  <input type="reset" id="reset_button" class="btn btn-danger btn-sm btn-ansr-orange" value ="Reset" name="cancel"/>
+                                  </div>
+
+
+                                      {%if leave_list%}
+
+                                      <div class="pull-right export-btn-2">
+
+
+
+                                                  <!--<input type="submit" class="pull-right btn btn-sm btn-danger btn-ansr-orange" value = "Export" name="export"/>-->
+
+
+
+                                                 <b style="line-height:30px;">Total : {{leave_list|length}} &nbsp;&nbsp;&nbsp;</b>
+                                              </div>
+                                      {% endif %}
+
+
+
+
+                              </div>
+
+
+
+
+
+                      </div>
+
+                      <div class="col-md-1 col-sm-6">
+          <!--                <div class="pull-right ">
+                              <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
+                          </div>-->
+
+
+
+                      </div>
+                  </div>
+
+
+                  </form>
+
+
+
+
+
+                </div><!-- end of Lv-ApLvHeader -->
+                <hr>
+
+            </div>
+        </div>
 
     <div class="container Lv-themeTxtColor ">
+
 
 
 
