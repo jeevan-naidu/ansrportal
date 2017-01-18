@@ -3165,60 +3165,64 @@ class ApproveTimesheetView(TemplateView):
         manager = Employee.objects.get(user_id=self.request.user)
         team_members = Employee.objects.filter((Q(manager_id=manager) |
                                                 Q(employee_assigned_id=manager)), user__is_active=True)
-        dates = switchWeeks(self.request)
-        ts_data_list = {}
+        if team_members:
+            dates = switchWeeks(self.request)
+            ts_data_list = {}
 
-        start_date = dates['start']
-        end_date = dates['end']
-        status, week_collection, unapproved_count = status_member(team_members)
-        # print status
-        # print start_date, end_date
-        # print start_date, end_date
-        for members in team_members:
-            non_billable_total = 0.0
-            ts_obj = time_sheet_for_the_week(start_date, end_date, members, True)
-            if ts_obj:
-                ts_data_list[members] = {}
-                for s in ts_obj:
-                    a = 0
-                    while a == 0:
-                        ts_data_list[members]['approved_status'] = s.approved
-                        a += 1
+            start_date = dates['start']
+            end_date = dates['end']
+            status, week_collection, unapproved_count = status_member(team_members)
+            # print status
+            # print start_date, end_date
+            # print start_date, end_date
+            for members in team_members:
+                non_billable_total = 0.0
+                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True)
+                if ts_obj:
+                    ts_data_list[members] = {}
+                    for s in ts_obj:
+                        a = 0
+                        while a == 0:
+                            ts_data_list[members]['approved_status'] = s.approved
+                            a += 1
 
-                non_billable_obj = non_billable_hours(ts_obj)
-                for others in non_billable_obj:
-                    non_billable_total += float(others['totalH'])
-                ts_data_list[members]['non_billable_total'] = non_billable_total
-                billable_hours_obj = billable_hours(ts_obj)
-                internal_value, external_value, b_total = billable_value(billable_hours_obj)
-                ts_data_list[members]['internal_value'] = internal_value
-                ts_data_list[members]['external_value'] = external_value
-                ts_data_list[members]['b_total'] = b_total
-                ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
-            context['ts_data_list'] = ts_data_list
-            context['ts_final_list'] = ts_final_list
-            context['weekstartDate'] = dates['start']
-            context['weekendDate'] = dates['end']
-            context['status_dict'] = status
-            context['disabled'] = dates['disabled']
-        context['week_collection'] = week_collection[::-1]
-        ts_data_list_approved_false = {}
-        ts_data_list_approved_true = {}
+                    non_billable_obj = non_billable_hours(ts_obj)
+                    for others in non_billable_obj:
+                        non_billable_total += float(others['totalH'])
+                    ts_data_list[members]['non_billable_total'] = non_billable_total
+                    billable_hours_obj = billable_hours(ts_obj)
+                    internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                    ts_data_list[members]['internal_value'] = internal_value
+                    ts_data_list[members]['external_value'] = external_value
+                    ts_data_list[members]['b_total'] = b_total
+                    ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
+                context['ts_data_list'] = ts_data_list
+                context['ts_final_list'] = ts_final_list
+                context['weekstartDate'] = dates['start']
+                context['weekendDate'] = dates['end']
+                context['status_dict'] = status
+                context['disabled'] = dates['disabled']
+            context['week_collection'] = week_collection[::-1]
+            print "?" ,  status
+            ts_data_list_approved_false = {}
+            ts_data_list_approved_true = {}
 
-        for k, v in ts_data_list.iteritems():
+            for k, v in ts_data_list.iteritems():
 
-            if v['approved_status']:
-                # print  k,v
-                ts_data_list_approved_true[k] = v
-                # print ts_data_list_reordered
-            else:
-                # print "else",  k, v
-                ts_data_list_approved_false[k] = v
-        context['ts_data_list_approved_false'] = ts_data_list_approved_false
-        context['ts_data_list_approved_true'] = ts_data_list_approved_true
-        # print "false",ts_data_list_approved_false
-        # print "true",ts_data_list_approved_true
-        # print ts_data_list_approved_true
+                if v['approved_status']:
+                    # print  k,v
+                    ts_data_list_approved_true[k] = v
+                    # print ts_data_list_reordered
+                else:
+                    # print "else",  k, v
+                    ts_data_list_approved_false[k] = v
+            context['ts_data_list_approved_false'] = ts_data_list_approved_false
+            context['ts_data_list_approved_true'] = ts_data_list_approved_true
+            # print "false",ts_data_list_approved_false
+            # print "true",ts_data_list_approved_true
+            # print ts_data_list_approved_true
+        else:
+            context['exception'] = "you don't have any team members"
         return context
 
     def post(self, request, **kwargs):

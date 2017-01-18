@@ -102,6 +102,8 @@ app.getTaskChapter = function(selValue, currRow) {
             success: function(data) {
                 len = data.flag
                 data = data.data;
+//                is_internal = currRow.find('.is_internal')
+//                is_internal.value(data.internal)
                 var dataLen = data.length,
                     options = '',
                     $tasks = $('.b-task'),
@@ -830,7 +832,10 @@ app.getSum = function($elements, $outputElement) {
                 $element = $(this);
                 curId = $element.attr('id');
                 curName = $element.attr('name');
-
+                curValue = $element.attr('value');
+                if (curValue) {
+                    $element.attr('value', 0);
+                }
                 if (curId) {
                     curId = curId.replace(app.getIdNo(curId), newRowId);
                     $element.attr('id', curId);
@@ -852,10 +857,10 @@ app.getSum = function($elements, $outputElement) {
                         if (!$element.hasClass('project-unit')) {
                             if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
                                 $element.val('0');
-                                //console.log('input');
+                                console.log('input');
                             } else {
                                 $element.text('0');
-                                //console.log('not input');
+                                console.log('not input');
                             }
                         }
 
@@ -953,15 +958,18 @@ app.getSum = function($elements, $outputElement) {
                 }
 
                 if ($element.hasClass('set-zero')) {
+                console.log("set zero");
                     var elementType2 = $element.prop('tagName');
                     if (elementType2 === 'SELECT' || elementType2 === 'INPUT') {
+                        console.log("val"+$element.attr('value'))
                         $element.attr('value', 0);
-                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     } else {
                         $element.text('0');
                     }
+//                     console.log(" after val"+$element.attr('value'))
                 }
-
+ if ($element.hasClass('b-hours-hiddenn')) {  console.log(' im in ' ); $element.attr('value', 0); }
                 if ($element.hasClass('remove-sel-options')) {
                     var elementType3 = $element.prop('tagName');
                     if (elementType3 === 'SELECT') {
@@ -984,7 +992,11 @@ app.getSum = function($elements, $outputElement) {
 
 
                 console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
-
+if (curValue) { console.log("if cal");
+console.log("id----" +$element.attr('id'));
+                    $element.attr('value', 0);
+                    console.log( $element.attr('value'));
+                }
             });
 
 
@@ -1017,6 +1029,7 @@ app.getSum = function($elements, $outputElement) {
                 app.changeProject();
                 app.autoFillInit(app.rowProject, app.rowChapter);
             }
+            console.log("end");
         };
 
         var del = function() {
@@ -1294,7 +1307,9 @@ app.getSum = function($elements, $outputElement) {
                 };
 
                 $dayPopoverBtn.on('shown.bs.popover', primaryCb);
-
+                $dayPopoverBtn.on('click', function() {
+                   console.log("gsdggsd");
+                });
                 $bTask.on({
                     change: primaryCb
                 });
