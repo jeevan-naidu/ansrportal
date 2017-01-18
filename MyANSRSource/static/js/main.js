@@ -805,7 +805,8 @@ app.getSum = function($elements, $outputElement) {
 
             newRow = lastRow.clone();
             newRowId = lastRowId + 1;
-
+//            newRow1 = $(newRow);
+//            console.log(newRow1[0].outerHTML);
             lastRow.after(newRow);
 
             $formFields = newRow.find('select, input, div, span');
@@ -833,9 +834,9 @@ app.getSum = function($elements, $outputElement) {
                 curId = $element.attr('id');
                 curName = $element.attr('name');
                 curValue = $element.attr('value');
-                if (curValue) {
-                    $element.attr('value', 0);
-                }
+//                if (curValue) {
+//                    $element.attr('value', 'dfndfn');
+//                }
                 if (curId) {
                     curId = curId.replace(app.getIdNo(curId), newRowId);
                     $element.attr('id', curId);
@@ -958,18 +959,18 @@ app.getSum = function($elements, $outputElement) {
                 }
 
                 if ($element.hasClass('set-zero')) {
-                console.log("set zero");
+//                console.log("set zero");
                     var elementType2 = $element.prop('tagName');
                     if (elementType2 === 'SELECT' || elementType2 === 'INPUT') {
-                        console.log("val"+$element.attr('value'))
-                        $element.attr('value', 0);
+//                        console.log("val"+$element.attr('value'))
+                        $element.attr('value', 110);
+                        alert($element.attr('value'));
 //                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     } else {
                         $element.text('0');
                     }
 //                     console.log(" after val"+$element.attr('value'))
                 }
- if ($element.hasClass('b-hours-hiddenn')) {  console.log(' im in ' ); $element.attr('value', 0); }
                 if ($element.hasClass('remove-sel-options')) {
                     var elementType3 = $element.prop('tagName');
                     if (elementType3 === 'SELECT') {
@@ -977,7 +978,7 @@ app.getSum = function($elements, $outputElement) {
                             .remove()
                             .end()
                             .append('<option value>-----</option>');
-                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     }
                 }
 
@@ -991,12 +992,12 @@ app.getSum = function($elements, $outputElement) {
                 }
 
 
-                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
-if (curValue) { console.log("if cal");
-console.log("id----" +$element.attr('id'));
-                    $element.attr('value', 0);
-                    console.log( $element.attr('value'));
-                }
+//                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//if (curValue) { console.log("if cal");
+//console.log("id----" +$element.attr('id'));
+//                    $element.attr('value', 0);
+//                    console.log( $element.attr('value'));
+//                }
             });
 
 
