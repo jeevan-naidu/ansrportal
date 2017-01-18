@@ -693,10 +693,6 @@ span:hover .booked-by{display: block}
 .vd_mega-menu-content{padding: 0px;} /* Remove when more entries are added to  */
 
 
-/* Timesheet */
-
-.bb0{border-bottom: 0px !important}
-#timesheet-non-billable legend, #timesheet legend{padding-bottom: 10px;}
 
 /* Leave Report */
 

@@ -367,10 +367,10 @@
                                     <div class="child-menu" data-action="click-target">
                                         <ul>
                                             <li>
-                                                <a href="/myansrsource/timesheet/entry">
+                                                <a href="/myansrsource/timesheet/entry" data-toggle="enter" title="Badge number indicates number of  weeks, time sheet have not been submitted (Current Year)">
                                                     <span class="menu-text">Enter Timesheet</span>
-                                                    {% if TSProjectsCount > 0 %}
-                                                        <span class="menu-badge"><span class="badge vd_bg-red">{{ TSProjectsCount }}</span></span>
+                                                    {% if request.session.TSProjectsCount and request.session.TSProjectsCount > 0 %}
+                                                        <span class="menu-badge"><span class="badge vd_bg-red">{{ request.session.TSProjectsCount }}</span></span>
                                                     {% else %}
                                                         <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
                                                     {% endif %}
@@ -379,10 +379,10 @@
 
                                             {% if user|approve_timesheet %}
                                                  <li>
-                                                        <a href="/myansrsource/timesheet/approve">
+                                                        <a href="/myansrsource/timesheet/approve" data-toggle="appprove" title="Badge number indicates number of weeks, time sheet have not been approved (Current Year)">
                                                             <span class="menu-text">Approve Timesheet</span>
-                                                            {% if unapprovedts > 0 %}
-                                                                <span class="menu-badge"><span class="badge vd_bg-red">{{ unapprovedts }}</span></span>
+                                                            {% if request.session.unapprovedts and request.session.unapprovedts  > 0 %}
+                                                                <span class="menu-badge"><span class="badge vd_bg-red">{{ request.session.unapprovedts }}</span></span>
                                                             {% else %}
                                                                 <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
                                                             {% endif %}
@@ -1267,7 +1267,8 @@
     <script type="text/javascript">
 /*        $(document).ready(function() {
             "use strict";
-
+        $('[data-toggle="enter"]').tooltip();
+        $('[data-toggle="approve"]').tooltip();
             $('#data-tables').dataTable();
         });*/
     </script>
