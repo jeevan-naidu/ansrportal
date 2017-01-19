@@ -221,7 +221,7 @@ class Project(models.Model):
                                      max_digits=12,
                                      decimal_places=2,
                                      verbose_name="Total Value",
-                                     validators=[MinValueValidator(8.0)])
+                                     validators=[MinValueValidator(0.0)])
     closed = models.BooleanField(
         default=False,
         null=False,
@@ -349,7 +349,8 @@ class Milestone(UpdateDate):
     name = models.CharField(default=None, blank=False, max_length=100,
                             null=True, verbose_name="name")
     is_final_milestone = models.BooleanField(verbose_name="Is Final Milestone", default=False)
-    check_schedule_deviation = models.BooleanField(verbose_name="Check Schedule Deviation")
+    check_schedule_deviation = models.BooleanField(verbose_name="Check Schedule Deviation", default=False)
+
 
     def __unicode__(self):
         return self.name
@@ -357,6 +358,7 @@ class Milestone(UpdateDate):
     class Meta:
         verbose_name_plural = "Project Milestones"
         verbose_name = "Project Milestone"
+
 
 class ProjectMilestone(models.Model):
     project = models.ForeignKey(Project)

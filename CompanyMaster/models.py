@@ -372,7 +372,7 @@ class Practice(UpdateDate, UpdateBy):
     )
     name = models.CharField(
         verbose_name="Practice Name",
-        max_length=20,
+        max_length=40,
     )
     department = models.ForeignKey(Department,
                                    blank=True,
@@ -451,7 +451,7 @@ class Role(UpdateDate):
     )
     name = models.CharField(
         verbose_name="Role Name",
-        max_length=20,
+        max_length=40,
     )
     is_active = models.BooleanField(
         verbose_name="Is Active",
