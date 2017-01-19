@@ -205,16 +205,12 @@ def TimesheetFormset(currentUser,enddate):
                                     max_digits=12,
                                     decimal_places=2, widget=forms.HiddenInput()
                                     )
-        totalQ = forms.DecimalField(label="Questions",
-                                    max_digits=12,
-                                    decimal_places=2
-                                    )
 
         tsId = forms.IntegerField(label="id",
-                                  required=False,
+                                  required=False, widget=forms.HiddenInput(),
                                   )
-        is_internal = forms.IntegerField(label="id",
-                                  required=False, widget=forms.HiddenInput()
+        is_internal = forms.IntegerField(label="is_internal",
+                                         required=False, widget=forms.HiddenInput()
                                   )
         approved = forms.BooleanField(label="approved",
                                       required=False)
@@ -241,6 +237,8 @@ def TimesheetFormset(currentUser,enddate):
                     project_obj = Project.objects.get(id=int(project_id))
                 except:
                     project_obj = project_id
+                self.fields['is_internal'].widget.attrs['prev_value'] = project_obj.internal
+
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
                 self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
             self.fields['location'].queryset = OfficeLocation.objects.filter(
@@ -250,7 +248,7 @@ def TimesheetFormset(currentUser,enddate):
                 billable-select-project set-empty"
             self.fields['tsId'].widget.attrs['class'] = "set-zero"
             self.fields['location'].widget.attrs['class'] = \
-                "form-control d-item set-zero"
+                "form-control  d-item set-zero"
             self.fields['chapter'].widget.attrs[
                 'class'] = "form-control d-item b-chapter \
                 remove-sel-options set-zero"
@@ -260,31 +258,35 @@ def TimesheetFormset(currentUser,enddate):
 
             self.fields['mondayH'].widget.attrs[
                 'class'
-            ] = " form-control  b-hours-hiddenn d-item set-zero"
+            ] = " form-control Mon-t  b-hours d-item set-zero"
 
             self.fields['tuesdayH'].widget.attrs[
                 'class'
-            ] = " form-control  b-hours-hiddenn d-item set-zero"
+            ] = " form-control Tue-t b-hours d-item set-zero"
 
             self.fields['wednesdayH'].widget.attrs[
                 'class'
-            ] = " form-control  b-hours-hiddenn d-item set-zero"
+            ] = " form-control Wed-t b-hours d-item set-zero"
 
             self.fields['thursdayH'].widget.attrs[
                 'class'
-            ] = "form-control  b-hours-hiddenn d-item set-zero"
+            ] = "form-control Thu-t b-hours d-item set-zero"
 
             self.fields['fridayH'].widget.attrs[
                 'class'
-            ] = "form-control  b-hours-hiddenn d-item set-zero"
+            ] = "form-control Fri-t b-hours d-item set-zero"
 
             self.fields['saturdayH'].widget.attrs[
                 'class'
-            ] = "form-control  b-hours-hiddenn d-item set-zero"
+            ] = "form-control Sat-t b-hours d-item set-zero"
 
             self.fields['sundayH'].widget.attrs[
                 'class'
-            ] = "form-control  b-hours-hiddenn d-item set-zero"
+            ] = "form-control Sun-t b-hours d-item set-zero"
+
+            self.fields['is_internal'].widget.attrs[
+                'class'
+            ] = "form-control is_internal"
 
             self.fields['totalH'].widget.attrs[
                 'class'

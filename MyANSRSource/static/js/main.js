@@ -91,19 +91,33 @@ app.calcCurRowChangeDate = function($tableEle) {
 
 
 app.getTaskChapter = function(selValue, currRow) {
+    var total_val = currRow.find('.is_internal')
+    console.log(currRow.get(0).id)
     endDate = document.getElementsByName('enddate')[0].value;
     if (selValue) {
         $.ajax({
             url: '/myansrsource/gettask/' + selValue + '/',
             dataType: 'json',
+            async:false,
             data: {
                 endDate: endDate
             },
             success: function(data) {
-                len = data.flag
+                len = data.flag;
+                console.log( "b4"+$('#'+is_internal_id).val());
+                $('#'+is_internal_id).val(data['is_internal']);
+                console.log("af"+ $('#'+is_internal_id).val());
+//                console.log(data['total_value'])
+//                if (parseFloat(data['total_value']) !=0) {
+//                    var row_total = parseFloat($(currRow).find('span.t-hours').text());
+//                    var non_zero_value = parseFloat($('.non_zero_value').text());
+//                    var zero_value = parseFloat($('.zero_value').text());
+////                    $('.zero_value').text(zero_value - row_total)
+////                    $('.non_zero_value').text(zero_value + row_total)
+//                }
                 data = data.data;
-//                is_internal = currRow.find('.is_internal')
-//                is_internal.value(data.internal)
+//                console.log("pid"+currRow.attr('id'));
+
                 var dataLen = data.length,
                     options = '',
                     $tasks = $('.b-task'),
@@ -182,11 +196,16 @@ app.getTaskChapter = function(selValue, currRow) {
             url: '/myansrsource/getchapters/' + selValue + '/',
             dataType: 'json',
             success: function(data) {
+
+                var cur_is_internal_obj_id = currRow.find('.is_internal').get(0).id ;
+                var s = data.is_internal ? 1 : 0;
+                $('#'+cur_is_internal_obj_id).val(s);
                 data = data.data;
                 var dataLen = data.length,
                     options = '',
                     $chapters = $('.b-chapter'),
                     i;
+//                console.log("proj id"+$('.billable-select-project').attr('id')) ;
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
                 }
@@ -247,7 +266,7 @@ app.setActive = function($elements, arr) {
         }
     }
 };
-
+var is_internal_id = 0;
 app.changeProject = function() {
 
     app.billableSelectProject.on('change', function() {
@@ -256,9 +275,63 @@ app.changeProject = function() {
             $projectUnitsElement = $row.find('.project-unit'),
             selectedValue = Number($this.val()),
             selectedProject;
+            var id = this.id.split('-');
+            is_internal_id = id[0]+'-'+id[1]+'-is_internal' ;
+//            console.log("current_project_value"+current_project_value);
+            console.log("project_value"+$('#'+project_value_id).val());
+
+
 
         app.getTaskChapter(selectedValue, $row);
 
+        var prev_value = parseFloat($('#'+is_internal_id).data('prev_value'));
+        var curr_value = parseFloat($('#'+is_internal_id).val())
+        console.log("prev_value"+prev_value+'--curr_value--'+curr_value);
+//        setTimeout(function(){
+//    //do what you need here
+//}, 2000);
+var row_total = parseFloat($($row).find('span.t-hours').text());
+        if (prev_value != curr_value && curr_value == 0 ){
+//       $('#'+project_value_id).val(data['total_value']);
+            console.log("val"+$('#'+is_internal_id).val())
+
+//            if (parseFloat( $('#'+project_value_id).val()) !=0  ) {
+    //            var row_total = parseFloat($($row).find('span.t-hours').text());
+                var non_zero_value = parseFloat($('.external').text());
+                var zero_value = parseFloat($('.internal').text());
+//                console.log("row_total"+row_total);
+//                console.log("non_zero_value"+non_zero_value);
+//                console.log("zero_value"+zero_value);
+                 var z_v = zero_value + row_total
+                var n_v = non_zero_value - row_total
+//                console.log("$=0  zero_value + row_total "+ (zero_value)+'+'+(row_total) +'--'+ (z_v))
+//                console.log("  $>0 minus non_zero_value - row_total "+(non_zero_value)+'-'+(row_total) +'--'+ (n_v))
+                $('.zero_value').text(z_v)
+                $('.non_zero_value').text(Math.abs(n_v))
+//            }
+             }
+            else if (prev_value != curr_value && curr_value !=0  ) {
+//                console.log("!=0");
+    //            var row_total = parseFloat($($row).find('span.t-hours').text());
+                var non_zero_value = parseFloat($('.external').text());
+                var zero_value = parseFloat($('.internal').text());
+//                console.log("row_total"+row_total);
+                console.log("external"+non_zero_value);
+
+
+                console.log("internal"+zero_value);
+
+//                $=0 zero_value - row_total 10-2--8
+//main.js:315 $>0 non_zero_value + row_total 2+2--4
+
+                var z_v = zero_value - row_total
+                var n_v = non_zero_value + row_total
+//                console.log("$=0 zero_value - row_total "+ (zero_value)+'-'+(row_total) +'--'+ (z_v))
+//                console.log("$>0 non_zero_value + row_total "+(non_zero_value)+'+'+(row_total) +'--'+ (n_v))
+
+                $('.zero_value').text(Math.abs(z_v))
+                $('.non_zero_value').text(n_v)
+            }
 
         // get current project by id
         if (selectedValue != 0) {
@@ -269,6 +342,7 @@ app.changeProject = function() {
 
             $projectUnitsElement.text(app.curProjectUnitShort);
         }
+         $('#'+is_internal_id).data('prev_value', $('#'+is_internal_id).val());
     });
 };
 
@@ -342,20 +416,29 @@ app.firstTimeTotal = function() {
             $cRowTHours = $cRow.find('.t-hours');
             $cRowBTHoursHidden = $cRow.find('.r-total-billable-hours');
             $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
+//            $cRow_is_internal_id = $cRow.find('.is_internal').get(0).id ;
+            var prev_value = $cRow.find('.is_internal').data('prev_value');
+            var cur_value = $cRow.find('.is_internal').val();
+            console.log("prev_value"+prev_value+'-cur_value-'+cur_value);
 
-
+//            var prev_value_is_internal  =
             for (i = 0; i < cRowItemsLen; i += 1) {
-                cRowItemHour = Number($(cRowHours[i]).text());
-                cRowItemQuestion = Number($(cRowQuestions[i]).text());
+                cRowItemHour = Number($(cRowHours[i]).val());
+//                cRowItemQuestion = Number($(cRowQuestions[i]).text());
 
                 cRowHourTotal += cRowItemHour;
-                cRowQuestionTotal += cRowItemQuestion;
+//                console.log("cRowHourTotal"+cRowHourTotal);
+//                cRowQuestionTotal += cRowItemQuestion;
             }
-
+            console.log("cRowHourTotal"+cRowHourTotal);
             // To Dom
+            if (prev_value ==  1 &&  cur_value == 0 ) {
+                var cur_total = $cRowTHours.text()
+
+            }
             $cRowTHours.text(cRowHourTotal.toFixed(2));
             $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
-
+            var current_$cRowBTHoursHidden_value = $cRowBTHoursHidden.val()
             if (cRowTask === 'I') {
                 idleHoursTotal += cRowHourTotal;
                 idleQuestionTotal += cRowQuestionTotal;
@@ -369,6 +452,11 @@ app.firstTimeTotal = function() {
 
                 $cRowBTHoursHidden.val(cRowHourTotal);
                 $cRowITHoursHidden.val(0);
+            }
+            if (cRowHourTotal > current_$cRowBTHoursHidden_value ) {
+
+
+
             }
         });
 
@@ -515,6 +603,7 @@ app.firstTimeTotal = function() {
     app.init = function() {
         app.getActiveTaskChapter();
         getTastChaptersEachProject();
+
     };
 
     $(document).ajaxStop(function() {
@@ -805,8 +894,7 @@ app.getSum = function($elements, $outputElement) {
 
             newRow = lastRow.clone();
             newRowId = lastRowId + 1;
-//            newRow1 = $(newRow);
-//            console.log(newRow1[0].outerHTML);
+
             lastRow.after(newRow);
 
             $formFields = newRow.find('select, input, div, span');
@@ -833,10 +921,7 @@ app.getSum = function($elements, $outputElement) {
                 $element = $(this);
                 curId = $element.attr('id');
                 curName = $element.attr('name');
-                curValue = $element.attr('value');
-//                if (curValue) {
-//                    $element.attr('value', 'dfndfn');
-//                }
+
                 if (curId) {
                     curId = curId.replace(app.getIdNo(curId), newRowId);
                     $element.attr('id', curId);
@@ -858,10 +943,10 @@ app.getSum = function($elements, $outputElement) {
                         if (!$element.hasClass('project-unit')) {
                             if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
                                 $element.val('0');
-                                console.log('input');
+                                //console.log('input');
                             } else {
                                 $element.text('0');
-                                console.log('not input');
+                                //console.log('not input');
                             }
                         }
 
@@ -959,18 +1044,18 @@ app.getSum = function($elements, $outputElement) {
                 }
 
                 if ($element.hasClass('set-zero')) {
-//                console.log("set zero");
                     var elementType2 = $element.prop('tagName');
-                    if (elementType2 === 'SELECT' || elementType2 === 'INPUT') {
-//                        console.log("val"+$element.attr('value'))
-                        $element.attr('value', 110);
-                        alert($element.attr('value'));
-//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
-                    } else {
+                    if (elementType2 === 'SELECT' ){
+                        $element.attr('value', 0);
+                    }
+                    else if( elementType2 === 'INPUT') {
+                            $($element).val(0);
+                    }
+                    else {
                         $element.text('0');
                     }
-//                     console.log(" after val"+$element.attr('value'))
                 }
+
                 if ($element.hasClass('remove-sel-options')) {
                     var elementType3 = $element.prop('tagName');
                     if (elementType3 === 'SELECT') {
@@ -978,7 +1063,7 @@ app.getSum = function($elements, $outputElement) {
                             .remove()
                             .end()
                             .append('<option value>-----</option>');
-//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     }
                 }
 
@@ -992,12 +1077,8 @@ app.getSum = function($elements, $outputElement) {
                 }
 
 
-//                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
-//if (curValue) { console.log("if cal");
-//console.log("id----" +$element.attr('id'));
-//                    $element.attr('value', 0);
-//                    console.log( $element.attr('value'));
-//                }
+                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+
             });
 
 
@@ -1030,7 +1111,6 @@ app.getSum = function($elements, $outputElement) {
                 app.changeProject();
                 app.autoFillInit(app.rowProject, app.rowChapter);
             }
-            console.log("end");
         };
 
         var del = function() {
@@ -1112,6 +1192,7 @@ app.getSum = function($elements, $outputElement) {
         };
 
         var billableTotalFun = function() {
+        console.log("billableTotalFun");
             if (options.billableTotal) {
                 var $totalBillableHours = $('.total-billable-hours'),
                     $totalIdleHours = $('.total-idle-hours');
@@ -1132,8 +1213,8 @@ app.getSum = function($elements, $outputElement) {
                     content: popoverCon
                 });
 
-
-                var primaryCb = function(e) {
+//                console.log("b4 pcb");
+                var primaryCb = function(e) { console.log(this.id);
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -1145,7 +1226,7 @@ app.getSum = function($elements, $outputElement) {
                         $totalHours = $curRow.find('.t-hours'),
                         $totalQuestionsHidden = $curRow.find('.t-questions-hidden'),
                         $totalHoursHidden = $curRow.find('.t-hours-hidden'),
-                        curRowQuestionsLen = $curRowQuestions.length,
+                        curRowQuestionsLen = $curRowHours.length,
                         $curQuestionsView = $curDayBtn.find('.b-questions'),
                         $curHoursView = $curDayBtn.find('.b-hours'),
                         $curQuestionsHidden = $curDayBtn.find('.b-questions-hidden'),
@@ -1161,10 +1242,11 @@ app.getSum = function($elements, $outputElement) {
                         $curSelectProject = $curRow.find('.billable-select-project'),
                         selectedValue = Number($curSelectProject.val()),
                         selectedProject;
-
+//                    console.log("$totalHours"+$($totalHours).text());
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
+//                        console.log("val"+$($curHoursInput).val());
                     };
 
                     var projectUnitViewToPopUp = function() {
@@ -1193,7 +1275,11 @@ app.getSum = function($elements, $outputElement) {
                     projectUnitViewToPopUp();
 
                     viewToInput();
-
+                    $('input').not('.24-check').on('change input ', function(event){
+                    console.log("focusin keyup click")
+//                        console.log("Saving value " + $(this).val());
+                       $(this).data('prev_value', parseFloat($(this).val()).toFixed(2));
+                    });
                     var calculateTotal = function() {
                         var questionsTemp = 0,
                             hoursTemp = 0,
@@ -1204,6 +1290,7 @@ app.getSum = function($elements, $outputElement) {
                             curTotalIdleHours = 0,
                             curTotalBillableHours = 0,
                             $curTotalIdleHoursHidden = $curRow.find('.r-total-idle-hours'),
+//                             cur_is_internal_obj = $currRow.find('.is_internal');
                             $curTotalBillableHoursHidden = $curRow.find('.r-total-billable-hours');
 
                         console.log('curTaskType: ' + curTaskType);
@@ -1213,10 +1300,10 @@ app.getSum = function($elements, $outputElement) {
                         } else {
                             $curRow.removeClass('idle-row').addClass('billable-row');
                         }
-
+//                        console.log('curRowQuestionsLen: ' + $curRow.length);
                         for (i = 0; i < curRowQuestionsLen; i += 1) {
                             curQuestions = Number($($curRowQuestions[i]).text());
-                            curHours = Number($($curRowHours[i]).text());
+                            curHours = Number($($curRowHours[i]).val());
 
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
@@ -1230,6 +1317,8 @@ app.getSum = function($elements, $outputElement) {
 
                         $totalQuestions.text(questionsTemp.toFixed(2));
                         $totalHours.text(hoursTemp.toFixed(2));
+//                         var cur_is_internal_obj_id = $cur_is_internal_obj.get(0).id ;
+//                         console.log(":cal is_obj" +cur_is_internal_obj_id);
 
                         $totalQuestionsHidden.val(questionsTemp.toFixed(2));
                         $totalHoursHidden.val(hoursTemp.toFixed(2));
@@ -1283,7 +1372,6 @@ app.getSum = function($elements, $outputElement) {
 
                     var inputToView = function() {
                         var curInput = $curHoursInput.val();
-                        console.log(curInput);
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
                         if (tsInput) {
                             $curQuestionsView.text($curQuestionsInput.val());
@@ -1302,43 +1390,23 @@ app.getSum = function($elements, $outputElement) {
                     }, calculateTotal);
 
                     $curHoursInput.on({
+                        change : inputToView,
                         keyup: inputToView,
                         click: inputToView
                     }, calculateTotal);
                 };
 
-                $dayPopoverBtn.on('shown.bs.popover', primaryCb);
-                $dayPopoverBtn.on('click', function() {
-                   console.log("gsdggsd");
-                });
+
+
                 $bTask.on({
                     change: primaryCb
                 });
-
-                $dayPopoverBtn.on('show.bs.popover', function() {
-                    var $popover = $('.popover');
-                    $popover.popover('hide');
+                $('.b-hours').on({
+                    change: primaryCb ,
+                    click: primaryCb ,
+                    oninput: primaryCb ,
                 });
 
-
-                $dayPopoverBtn.on('keyup', function(e) {
-                    if (e.keyCode === 9) {
-                        $(this).trigger('click');
-                    }
-                });
-
-                $(document).on('keyup', function(e) {
-                    if (e.keyCode === 27) {
-                        var $popover = $('.popover');
-                        $popover.popover('hide');
-                    }
-                });
-
-                $rowTotalView.on('focus', function() {
-                    console.log('rTotalView trigged');
-                    var $popover = $('.popover');
-                    $popover.popover('hide');
-                });
 
             }
         };
@@ -1710,13 +1778,11 @@ $.ajaxSetup({
     }
 });
 
+$("[name$='project']").on('focus', function(){
+    console.log("focus")
+    var tmp_id = this.id.split('-');
+    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+    console.log("pre"+$('#'+tmp_is_internal_id).data('prev_value'));
+});
 
-// function ShowAjaxLoader(element, width, height){
-//     element.show();
-//     // element.width(width).height(height);
-//     return false;
-// }
-// function HideAjaxLoader(element){
-//     element.fadeOut();
-//     return false;
-// }

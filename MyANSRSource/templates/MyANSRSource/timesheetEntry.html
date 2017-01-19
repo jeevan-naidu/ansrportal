@@ -138,9 +138,7 @@
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
-				{% if 'pt' in field.label %}
-					<td style="display: none">{{ field }}</td>
-				{% endif %}
+
             {% if 'is_internal' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
@@ -158,11 +156,11 @@
 								<!--&lt;!&ndash;{% endif %}&ndash;&gt;-->
 							<!--{% endif %}-->
 						<!--{% endfor %}-->
-                            <!--<span style="display: none;">-->
+                            <!--&lt;!&ndash;<span style="display: none;">&ndash;&gt;-->
 							<!--{% for tdata in form.hidden_fields %}-->
-								<!--{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}-->
+								<!--{% if data.label|lower in tdata.id_for_label  %}-->
 									<!--{% for typeData in form.hidden_fields %}-->
-										<!--{% if 'projectType' in typeData.id_for_label %}-->
+										<!--{% if 'tsId' in typeData.id_for_label %}-->
 											<!--{% if tdata.value > 0 %}-->
 												<!--<span class="b-questions set-zero">{{ tdata.value }}</span>-->
 												<!--<span class="project-unit">{{ typeData.value }}</span>-->

@@ -459,9 +459,9 @@ def Timesheet(request):
                         billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold':
-                            if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
-                                if v==None:
-                                    v=float(0.0)
+                            # if k in ('mondayQ','tuesdayQ','wednesdayQ','thursdayQ','fridayQ','saturdayQ','sundayQ'):
+                            #     if v==None:
+                            #         v=float(0.0)
                             if k in ('mondayH','tuesdayH','wednesdayH','thursdayH','fridayH','saturdayH','sundayH'):
                                 if v==None:
                                     v=float(0.0)
@@ -546,10 +546,10 @@ def Timesheet(request):
                         billableTS.hold = False
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold' and k != 'approved':
-                            if k in (
-                            'mondayQ', 'tuesdayQ', 'wednesdayQ', 'thursdayQ', 'fridayQ', 'saturdayQ', 'sundayQ'):
-                                if v == None:
-                                    v = float(0.0)
+                            # if k in (
+                            # 'mondayQ', 'tuesdayQ', 'wednesdayQ', 'thursdayQ', 'fridayQ', 'saturdayQ', 'sundayQ'):
+                            #     if v == None:
+                            #         v = float(0.0)
                             if k in (
                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
                                 if v == None:
@@ -2717,7 +2717,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                  'tuesdayH', 'wednesdayH',
                  'thursdayH', 'fridayH', 'hold',
                  'saturdayH', 'sundayH', 'approved',
-                 'totalH', 'managerFeedback',  'project__totalValue',
+                 'totalH', 'managerFeedback',  'project__internal',
                  'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
                  )
     else:
@@ -2729,10 +2729,10 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 activity__isnull=True
             )
         ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
-                 'mondayQ', 'tuesdayQ', 'tuesdayH', 'wednesdayQ', 'wednesdayH',
-                 'thursdayH', 'thursdayQ', 'fridayH', 'fridayQ', 'hold',
-                 'saturdayH', 'saturdayQ', 'sundayH', 'sundayQ', 'approved',
-                 'totalH', 'totalQ', 'managerFeedback', 'project__projectType__code', 'project__totalValue',
+                   'tuesdayH',  'wednesdayH',
+                 'thursdayH',  'fridayH',  'hold',
+                 'saturdayH',  'sundayH',  'approved',
+                 'totalH',  'managerFeedback', 'project__projectType__code', 'project__internal',
                  'teamMember__employee__employee_assigned_id',
                  )
 
@@ -2794,8 +2794,9 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 tsData['feedback'] = v
             if k == 'id':
                 tsData['tsId'] = v
-            if k == 'project__totalValue':
-                tsData['project_value'] = v
+
+            if k == 'project__internal':
+                tsData['is_internal'] = v
 
             if k == 'project__projectType__code':
                 tsData['projectType'] = v
@@ -4474,6 +4475,7 @@ def GetChapters(request, projectid):
         json_chapters = {'data': list(chapters)}
     except Project.DoesNotExist:
         json_chapters = {'data': list()}
+    json_chapters['is_internal'] = projectObj.internal
     return HttpResponse(json.dumps(json_chapters),
                         content_type="application/javascript")
 
