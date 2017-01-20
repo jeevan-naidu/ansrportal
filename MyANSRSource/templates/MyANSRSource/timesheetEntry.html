@@ -41,11 +41,17 @@
 	<legend>
 	Project Effort
 		<span class="pull-right">
-			<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
+			<a type="submit" value="submit" class="btn btn vd_btn vd_bg-green btn-xs" id="timesheet-billable-add-btn">
 				<span class="glyphicon glyphicon-plus"></span>
 				Add Project effort Item
 			</a>
 		</span>
+		<span class="pull-right" style="margin-right: 5px">
+			<a value="submit" class="btn btn vd_btn vd_bg-green btn-xs" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
+				Feedback
+			</a>
+		</span>
+
 	</legend>
 
     {{ tsFormset.management_form }}
@@ -337,7 +343,7 @@
 	<legend>
 	Non - Project Effort
 	<span class="pull-right">
-		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn-success btn-xs">
+		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn vd_btn vd_bg-green btn-xs">
 			<span class="glyphicon glyphicon-plus"></span>
 			Add Non-project effort Item
 		</a>
@@ -503,6 +509,45 @@
             <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right">Save</button>
         {% endif %}
         </div>
+
+
+<!-- Modal Area -->
+
+
+                  <div class="modal fade" id="timesheet-feedback-modal" tabindex="-1" role="dialog" aria-labelledby="timesheet-feedback" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Feedback Modal</h4>
+                        </div>
+                        <div class="modal-body"> 
+                        	<form class="form-horizontal">
+	                            <div class="form-group">
+	                              <label class="col-sm-4 control-label">Enter Feedback</label>
+	                              <div class="col-sm-7 controls">
+	                                <textarea class="input-border-btm" type="text"></textarea>
+	                              </div>
+
+	                            </div>
+	                            <br style="clear:both">
+                            </form>
+                        
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn vd_btn vd_bg-green">Save changes</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content --> 
+                    </div>
+                    <!-- /.modal-dialog --> 
+                  </div>
+                  <!-- /.modal --> 
+
+
+
+
 	<script>
 
  		$(document).on("click", "#submitTS", function(e) {
@@ -560,6 +605,16 @@
 
         $(document).ready(function(){
         	$('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+        })
+
+        $(document).ready(function(){
+        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
+			   if ($(this).find('textarea').val() ) {
+			   		$('#timesheet-feedback-button').removeClass('vd_bg-green').addClass('vd_bg-yellow');
+			   }else{
+			   		$('#timesheet-feedback-button').removeClass('vd_bg-yellow').addClass('vd_bg-green');			   	
+			   }
+			})
         })
 
 
