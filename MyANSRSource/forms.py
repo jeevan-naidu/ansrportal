@@ -237,7 +237,9 @@ def TimesheetFormset(currentUser,enddate):
                     project_obj = Project.objects.get(id=int(project_id))
                 except:
                     project_obj = project_id
-                self.fields['is_internal'].widget.attrs['prev_value'] = project_obj.internal
+                print project_obj.internal
+                self.fields['is_internal'].widget.attrs['prev_value'] = int(project_obj.internal)
+                self.fields['is_internal'].widget.attrs['value'] = int(project_obj.internal)
 
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
                 self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
@@ -286,7 +288,7 @@ def TimesheetFormset(currentUser,enddate):
 
             self.fields['is_internal'].widget.attrs[
                 'class'
-            ] = "form-control is_internal"
+            ] = "form-control is_internal set-zero"
 
             self.fields['totalH'].widget.attrs[
                 'class'
@@ -300,7 +302,7 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['sundayH'].widget.attrs['value'] = 0
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['tsId'].widget.attrs['value'] = 0
-            self.fields['is_internal'].widget.attrs['value'] = 0
+            # self.fields['is_internal'].widget.attrs['value'] = 0
             # self.fields['projectType'].widget.attrs['value'] = 'Q'
     return TimeSheetEntryForm
 

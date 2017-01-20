@@ -1826,18 +1826,6 @@ def ViewProject(request):
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
 
-def GetChapters(request, projectid):
-    try:
-        projectObj = Project.objects.get(pk=projectid)
-        chapters = Chapter.objects.filter(
-            book=projectObj.book).values(
-            'id',
-            'name')
-        json_chapters = {'data': list(chapters)}
-    except Project.DoesNotExist:
-        json_chapters = {'data': list()}
-    return HttpResponse(json.dumps(json_chapters),
-                        content_type="application/javascript")
 
 
 def GetTasks(request, projectid):
@@ -1856,10 +1844,10 @@ def GetTasks(request, projectid):
         diff = diff.days
         if diff < 0:
             diff = 0
-        data = {'data': list(tasks), 'flag': diff, 'total_value': str(project_obj.totalValue)}
+        data = {'data': list(tasks), 'flag': diff}
     except Task.DoesNotExist:
         diff = 0
-        data = {'data': list(), 'flag': diff, 'total_value': str(project_obj.totalValue)}
+        data = {'data': list(), 'flag': diff}
     # print data
     return HttpResponse(json.dumps(data), content_type="application/json")
 
@@ -2796,7 +2784,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 tsData['tsId'] = v
 
             if k == 'project__internal':
-                tsData['is_internal'] = v
+                tsData['is_internal'] = int(v)
 
             if k == 'project__projectType__code':
                 tsData['projectType'] = v
@@ -4475,7 +4463,7 @@ def GetChapters(request, projectid):
         json_chapters = {'data': list(chapters)}
     except Project.DoesNotExist:
         json_chapters = {'data': list()}
-    json_chapters['is_internal'] = projectObj.internal
+    json_chapters['is_internal'] = int(projectObj.internal)
     return HttpResponse(json.dumps(json_chapters),
                         content_type="application/javascript")
 
