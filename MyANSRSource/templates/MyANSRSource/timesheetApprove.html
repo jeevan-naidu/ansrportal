@@ -9,8 +9,10 @@ Approve Timesheet
 
 {% endblock %}
 
-{% if not exception %}
+
+
 {% block switch_dates %}
+{% if not exception_message %}
 <div class="dropdown week-selector pull-left">
   <button class="btn btn-default dropdown-toggle left-text" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
   <i class="fa fa-calendar" style="margin-right:5px;color:#999"></i>
@@ -44,10 +46,14 @@ Approve Timesheet
   </ul>
 </div>
 
-
+{% endif %}
 
 {% endblock %}
+
+
+
 {% block timesheetContent %}
+{% if not exception_message %}
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
@@ -97,7 +103,7 @@ Approve Timesheet
                         </div>
                         <div class="modal-body">
                           <div class="row">
-                            <div class="col-sm-12">                        
+                            <div class="col-sm-12">
                               <div class="form-group">
                                 <label class="col-sm-4 control-label">Feedback </label>
                                 <div class="col-sm-7 controls">
@@ -172,7 +178,7 @@ Approve Timesheet
                         </div>
                         <div class="modal-body">
                           <div class="row">
-                            <div class="col-sm-12">                        
+                            <div class="col-sm-12">
                               <div class="form-group">
                                 <label class="col-sm-4 control-label">Feedback </label>
                                 <div class="col-sm-7 controls">
@@ -216,9 +222,9 @@ Approve Timesheet
 </table>
             <input type="submit" name="submit" class="btn btn-sm vd_btn vd_bg-green pull-right" value="Submit">
         {% else %}
-            {% emoticons %}
+            <!--{% emoticons %}-->
         <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week </span>
-            {% endemoticons %}
+            <!--{% endemoticons %}-->
         {% endif %}
         <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
         <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
@@ -552,11 +558,11 @@ $(document).ready(function() {
 
 } ); // ./doc-ready
 </script>
+{% else %} <span> Sorry You Don't have Any Direct Report</span>
 
-
-
-
+{% endif %}
 {% endblock %}
+
 
 
 

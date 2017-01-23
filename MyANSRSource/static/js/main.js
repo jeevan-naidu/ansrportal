@@ -200,6 +200,9 @@ app.getTaskChapter = function(selValue, currRow) {
                 var cur_is_internal_obj_id = currRow.find('.is_internal').get(0).id ;
 //                var s = data.is_internal ? 1 : 0;
                 $('#'+cur_is_internal_obj_id).val(data.is_internal);
+                 var mondayH = this.id.split('-');
+                 mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
+                 $('#'+mondayH).trigger('change');
                 data = data.data;
                 var dataLen = data.length,
                     options = '',
@@ -1852,5 +1855,20 @@ $("[name$='project']").on('change', function(){
     var mondayH = this.id.split('-');
     mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
     $('#'+mondayH).trigger('change');
+
+//      $.ajax({
+//                url: '/myansrsource/is_internal',
+//                dataType: 'json',
+//                data: {
+//                    id: this.value
+//                },
+//                success: function(data) {
+//                    app.projectsList = data.data;
+//                },
+//                error: function(data) {
+//                    console.log('Error: ' + data);
+//                }
+//            });
+
 });
 

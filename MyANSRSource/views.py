@@ -3192,7 +3192,6 @@ class ApproveTimesheetView(TemplateView):
                 context['status_dict'] = status
                 context['disabled'] = dates['disabled']
             context['week_collection'] = week_collection[::-1]
-            print "?" ,  status
             ts_data_list_approved_false = {}
             ts_data_list_approved_true = {}
 
@@ -3211,7 +3210,7 @@ class ApproveTimesheetView(TemplateView):
             # print "true",ts_data_list_approved_true
             # print ts_data_list_approved_true
         else:
-            context['exception'] = "you don't have any team members"
+            context['exception_message'] = "you don't have any team members"
         return context
 
     def post(self, request, **kwargs):
@@ -4547,3 +4546,6 @@ def Logout(request):
         from django.contrib.auth.models import AnonymousUser
         request.user = AnonymousUser()
     return HttpResponseRedirect('/myansrsource')
+
+def is_internal(request):
+    pass
