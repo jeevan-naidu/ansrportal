@@ -98,7 +98,7 @@ app.getTaskChapter = function(selValue, currRow) {
         $.ajax({
             url: '/myansrsource/gettask/' + selValue + '/',
             dataType: 'json',
-            async:false,
+//            async:false,
             data: {
                 endDate: endDate
             },
@@ -342,7 +342,7 @@ app.changeProject = function() {
 
             $projectUnitsElement.text(app.curProjectUnitShort);
         }
-         $('#'+is_internal_id).data('prev_value', parseInt($('#'+is_internal_id).val()));
+//         $('#'+is_internal_id).data('prev_value', parseInt($('#'+is_internal_id).val()));
     });
 };
 
@@ -417,9 +417,9 @@ app.firstTimeTotal = function() {
             $cRowBTHoursHidden = $cRow.find('.r-total-billable-hours');
             $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
 //            $cRow_is_internal_id = $cRow.find('.is_internal').get(0).id ;
-            var prev_value = parseInt($cRow.find('.is_internal').data('prev_value'));
-            var cur_value = parseInt($cRow.find('.is_internal').val());
-            console.log("prev_value"+prev_value+'-cur_value-'+cur_value);
+//            var prev_value = parseInt($cRow.find('.is_internal').data('prev_value'));
+//            var cur_value = parseInt($cRow.find('.is_internal').val());
+//            console.log("prev_value"+prev_value+'-cur_value-'+cur_value);
 
 //            var prev_value_is_internal  =
             for (i = 0; i < cRowItemsLen; i += 1) {
@@ -432,10 +432,10 @@ app.firstTimeTotal = function() {
             }
             console.log("cRowHourTotal"+cRowHourTotal);
             // To Dom
-            if (prev_value ==  1 &&  cur_value == 0 ) {
-                var cur_total = $cRowTHours.text()
-
-            }
+//            if (prev_value ==  1 &&  cur_value == 0 ) {
+//                var cur_total = $cRowTHours.text()
+//
+//            }
             $cRowTHours.text(cRowHourTotal.toFixed(2));
             $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
 
@@ -1847,5 +1847,10 @@ $("[name$='project']").on('focus', function(){
     var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
     $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
     console.log("pre"+$('#'+tmp_is_internal_id).data('prev_value'));
+});
+$("[name$='project']").on('change', function(){
+    var mondayH = this.id.split('-');
+    mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
+    $('#'+mondayH).trigger('change');
 });
 

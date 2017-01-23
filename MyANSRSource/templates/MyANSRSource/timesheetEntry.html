@@ -388,7 +388,7 @@
 		</thead>
 		<tbody>
 		{% endif %}
-		<tr>
+		<tr> {{form.hidden_fields}}
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field }}</td>

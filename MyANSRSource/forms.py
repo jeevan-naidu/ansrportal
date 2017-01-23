@@ -90,7 +90,7 @@ class ActivityForm(forms.Form):
 
     atId = forms.IntegerField(label="id",
                               required=False,
-                              )
+                              widget=forms.HiddenInput())
     approved = forms.BooleanField(label="approved",
                                   required=False)
     hold = forms.BooleanField(label="hold",
@@ -240,9 +240,11 @@ def TimesheetFormset(currentUser,enddate):
                 print project_obj.internal
                 self.fields['is_internal'].widget.attrs['prev_value'] = int(project_obj.internal)
                 self.fields['is_internal'].widget.attrs['value'] = int(project_obj.internal)
-
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
                 self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
+            else:
+                self.fields['is_internal'].widget.attrs['prev_value'] = 1
+                self.fields['is_internal'].widget.attrs['value'] = 1
             self.fields['location'].queryset = OfficeLocation.objects.filter(
                 active=True)
             self.fields['project'].widget.attrs[
