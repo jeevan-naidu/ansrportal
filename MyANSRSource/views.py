@@ -617,7 +617,7 @@ def Timesheet(request):
             tsErrorList = timesheets.errors
             tsContent = [k.cleaned_data for k in timesheets]
             for eachErrorData in tsContent:
-                for k, v in eachErrorData.iteritems():
+                for k, v in eachErrorData.items():
                     if k == 'project':
                         ptype = Project.objects.filter(
                             id=eachErrorData['project'].id
