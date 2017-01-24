@@ -546,19 +546,10 @@ def Timesheet(request):
                         billableTS.hold = False
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold' and k != 'approved':
-                            # if k in (
-                            # 'mondayQ', 'tuesdayQ', 'wednesdayQ', 'thursdayQ', 'fridayQ', 'saturdayQ', 'sundayQ'):
-                            #     if v == None:
-                            #         v = float(0.0)
                             if k in (
                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
                                 if v == None:
                                     v = float(0.0)
-
-                            # if k == 'chapter':
-                            #     v = Chapter.objects.get(pk=v)
-                            # if k == 'task':
-                            #     v = Task.objects.get(pk=v)
 
                             setattr(billableTS, k, v)
                     billableTS.save()
@@ -750,7 +741,6 @@ def time_sheet_employee(request):
 
     s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
                       datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
-    print json.dumps(s)
     return HttpResponse(
             json.dumps(s),
             content_type="application/json"
@@ -819,17 +809,9 @@ def leaveappliedinweek(user, wkstart, wkend):
             weekleave.append(0)
     return weekleave
 
-# def members_status (team_members) :
-#     status = {}
-#     for members in team_members:
-#         status[str(members.user)] = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=dates['start'],
-#                                                                   approved=True).exists()
 
 def date_range_picker(request):
     mondays_list = [x for x in get_mondays_list_till_date()]
-    # print  "LIST", mondays_list
-
-    # list of dict with mentioned ts entry columns
     weeks_timesheetEntry_list = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart__in=mondays_list). \
         values('wkstart', 'wkend', 'hold', 'approved').distinct()
 
@@ -917,8 +899,6 @@ def getHours(request, wstart, wend, mem, project, label):
         sunday=Sum('sundayH')
     )
     return sum([eachRec[eachDay] for eachDay in days for eachRec in ts])
-
-
 
 
 def checkUser(userName, password, request, form):
@@ -1826,8 +1806,6 @@ def ViewProject(request):
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
 
-
-
 def GetTasks(request, projectid):
     try:
         tasks = Task.objects.filter(
@@ -1910,139 +1888,9 @@ def Logout(request):
     return HttpResponseRedirect('/myansrsource')
 
 
-import logging
-
-logger = logging.getLogger('MyANSRSource')
-import json
-from collections import OrderedDict
-from django.contrib.auth.decorators import permission_required
-
-from django.forms.utils import ErrorList
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, logout
-from django.contrib.auth.models import User
-from django.contrib import auth, messages
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
-from formtools.wizard.views import SessionWizardView
-from django.forms.formsets import formset_factory
-from datetime import datetime, timedelta, date
-from django.db.models import Q, Sum
-from django.utils.timezone import utc
-from django.conf import settings
-from employee.models import Employee
-from Leave.views import leavecheck, daterange
-
-from fb360.models import Respondent
-
-from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport
-
-from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
-    ActivityForm, TimesheetFormset, ProjectFlagForm, \
-    ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
-    MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm, BTGReportForm
-
-import CompanyMaster
-import employee
-from employee.models import Remainder
-from CompanyMaster.models import Holiday, HRActivity
-from Grievances.models import Grievances
-
-# from ldap import LDAPError
-
-# views for ansr
-
-FORMS = [
-    ("Define Project", ProjectBasicInfoForm),
-    ("Basic Information", ProjectFlagForm),
-]
-TEMPLATES = {
-    "Define Project": "MyANSRSource/projectDefinition.html",
-    "Basic Information": "MyANSRSource/projectBasicInfo.html",
-}
-
-CFORMS = [
-    ("My Projects", ChangeProjectForm),
-    ("Change Basic Information", ChangeProjectBasicInfoForm),
-]
-CTEMPLATES = {
-    "My Projects": "MyANSRSource/changeProject.html",
-    "Change Basic Information": "MyANSRSource/changeProjectBasicInfo.html",
-}
-
-TMFORMS = [
-    ("My Projects", ChangeProjectForm),
-    ("Manage Milestones", formset_factory(
-        CloseProjectMilestoneForm,
-        extra=1,
-        max_num=1,
-        can_delete=True
-    )),
-]
-TMTEMPLATES = {
-    "My Projects": "MyANSRSource/manageMilestone.html",
-    "Manage Milestones": "MyANSRSource/manageProjectMilestone.html",
-}
-
-TLFORMS = [
-    ("My Projects", ChangeProjectForm),
-    ("Manage Project Leader", changeProjectLeaderForm),
-]
-TLTEMPLATES = {
-    "My Projects": "MyANSRSource/manageProjectLead.html",
-    "Manage Project Leader": "MyANSRSource/manageProjectTeamLead.html",
-}
-
-MEMBERFORMS = [
-    ("My Projects", ChangeProjectForm),
-    ("Manage Team", formset_factory(
-        ChangeProjectTeamMemberForm,
-        extra=1,
-        max_num=1,
-        can_delete=True
-    )),
-]
-MEMBERTEMPLATES = {
-    "My Projects": "MyANSRSource/manageProjectTeam.html",
-    "Manage Team": "MyANSRSource/manageProjectMember.html",
-}
-
-days = ['monday', 'tuesday', 'wednesday', 'thursday',
-        'friday', 'saturday', 'sunday']
-
-
-def index(request):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect('/myansrsource/dashboard')
-    elif request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            return checkUser(
-                form.cleaned_data['userid'],
-                form.cleaned_data['password'],
-                request, form)
-    else:
-        form = LoginForm()
-    return loginResponse(request, form, 'MyANSRSource/index.html')
-
-
-def loginResponse(request, form, template):
-    data = {'form': form if form else LoginForm(request.POST), }
-    return render(request, template, data)
-
-
-def append_tsstatus_msg(request, tsSet, msg):
-    messages.info(request, msg + str(tsSet))
 
 
 
-
-# to convert unicode strings to string with apostrophe removed from each project name
-def unicode_to_string(resultant_set):
-    return str([x.encode('UTF8') for x in resultant_set]).replace("'", "")
 
 
 
@@ -2636,15 +2484,13 @@ def send_reminder_mail(request):
     user = User.objects.get(id=user_id)
     team_members = Employee.objects.filter(manager_id=user.employee.employee_assigned_id,
                                            user__is_active=True)
-    print start_date, end_date
-
     for members in team_members:
         result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                teamMember=members.user, hold=True).exists()
         if not result:
             user_obj = User.objects.get(id=int(members.user.id))
             email_list.append(user_obj.email)
-    # TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
+    TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
     json_obj = {'status': True}
     return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
 
@@ -2742,7 +2588,6 @@ class ApproveTimesheetView(TemplateView):
 
                 except Exception as e:
                     fail += 1
-                    print str(e)
                     logger.error(
                         u'Unable to make changes(approve) for time sheet approval  {0}{1}{2} and the error is  {3} '
                         u' '.format(start_date, end_date, user_id, str(e)))
@@ -2752,6 +2597,9 @@ class ApproveTimesheetView(TemplateView):
                     TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                   teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
                                                                                 hold=False)
+                    user_obj = User.object.get(id=user_id)
+                    TimeSheetRejectionNotification(request.user, str(user_obj.email), start_date,
+                                                   end_date, feedback_dict[user_id])
                 except Exception as e:
                     fail += 1
                     logger.error(
@@ -3966,7 +3814,6 @@ def GetChapters(request, projectid):
         json_chapters = {'data': list(chapters)}
     except Project.DoesNotExist:
         json_chapters = {'data': list()}
-    json_chapters['is_internal'] = int(projectObj.internal)
     return HttpResponse(json.dumps(json_chapters),
                         content_type="application/javascript")
 
@@ -3991,7 +3838,6 @@ def GetTasks(request, projectid):
     except Task.DoesNotExist:
         diff=0
         data = {'data': list(), 'flag': diff}
-    data['internal'] = project_obj.internal
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 def GetHolidays(request, memberid):
@@ -4053,12 +3899,9 @@ def Logout(request):
 
 
 def is_internal(request):
-    print "oi"
     try:
         obj = Project.objects.get(pk=request.GET.get('project_id'))
         internal = obj.internal
-    except Exception as e:
-        print str(e)
+    except :
         internal = 0
-    print int(internal)
     return HttpResponse(json.dumps({'is_internal': int(internal)}), content_type="application/json")
