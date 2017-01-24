@@ -4547,5 +4547,14 @@ def Logout(request):
         request.user = AnonymousUser()
     return HttpResponseRedirect('/myansrsource')
 
+
 def is_internal(request):
-    pass
+    print "oi"
+    try:
+        obj = Project.objects.get(pk=request.GET.get('project_id'))
+        internal = obj.internal
+    except Exception as e:
+        print str(e)
+        internal = 0
+    print int(internal)
+    return HttpResponse(json.dumps({'is_internal': int(internal)}), content_type="application/json")
