@@ -276,30 +276,32 @@ app.changeProject = function() {
 
        var mondayH = this.id.split('-');
     $(this).blur();
-      $.ajax({
-                url: '/myansrsource/get_internal',
-                dataType: 'json',
-//                async:false,
-                data: {
-                    project_id: this.value
-                },
+    if(this.value != ''){
+          $.ajax({
+                    url: '/myansrsource/get_internal',
+                    dataType: 'json',
+    //                async:false,
+                    data: {
+                        project_id: this.value
+                    },
 
-                success: function(data) {
+                    success: function(data) {
 
-                    var is_internal_id = mondayH[0]+'-'+mondayH[1]+'-is_internal';
-//                    console.log("change"+data.is_internal)
-                    $('#'+is_internal_id).val(parseInt(data.is_internal));
-                    mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
-                    is_changed =true;
-//                      console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
-                    $('#'+mondayH).trigger('change');
-                    is_changed =false;
-//                    console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
-                },
-                error: function(data) {
-                    console.log('Error: ' + data);
-                }
-            });
+                        var is_internal_id = mondayH[0]+'-'+mondayH[1]+'-is_internal';
+    //                    console.log("change"+data.is_internal)
+                        $('#'+is_internal_id).val(parseInt(data.is_internal));
+                        mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
+                        is_changed =true;
+    //                      console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
+                        $('#'+mondayH).trigger('change');
+                        is_changed =false;
+    //                    console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
+                    },
+                    error: function(data) {
+                        console.log('Error: ' + data);
+                    }
+                });
+    }
         var $this = $(this),
             $row = $this.closest('tr'),
             $projectUnitsElement = $row.find('.project-unit'),
@@ -432,7 +434,7 @@ app.firstTimeTotal = function() {
 
             grandTotal = 0,
             $grandTotal = $('.timesheet-grand-total');
-
+            console.log("$grandTotal"+$grandTotal);
         helper.forEach(bTask, function(item) {
             cRowHourTotal = 0;
             cRowQuestionTotal = 0;
@@ -502,8 +504,8 @@ app.firstTimeTotal = function() {
 
             nonBillableTotal += cRowNonBillableTotal;
         });
-
-        grandTotal = billableHoursTotal + idleHoursTotal + nonBillableTotal;
+        total_leave_hours =  Number($('.total-leave-hours').text() ),
+        grandTotal = billableHoursTotal + idleHoursTotal + nonBillableTotal+total_leave_hours;
 
 
         // To Dom
@@ -542,7 +544,7 @@ app.firstTimeTotal = function() {
 
 
 
-    app.timeSheetGrandTotal = function() {
+    app.timeSheetGrandTotal = function() { alert("");
         var billableTotal = Number($('.total-billable-hours').text()),
             idleTotal = Number($('.total-idle-hours').text()),
             notBillableTotal = Number($('.total-non-billable-hours').text()),
@@ -552,7 +554,7 @@ app.firstTimeTotal = function() {
 
 
         $total.text((total).toFixed(2));
-
+        console.log("total_leave_hours"+total_leave_hours+"total"+total);
         return total;
     };
 
