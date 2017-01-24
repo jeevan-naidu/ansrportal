@@ -544,7 +544,7 @@ app.firstTimeTotal = function() {
 
 
 
-    app.timeSheetGrandTotal = function() { alert("");
+    app.timeSheetGrandTotal = function() {
         var billableTotal = Number($('.total-billable-hours').text()),
             idleTotal = Number($('.total-idle-hours').text()),
             notBillableTotal = Number($('.total-non-billable-hours').text()),
