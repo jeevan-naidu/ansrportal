@@ -273,7 +273,7 @@ app.setActive = function($elements, arr) {
 app.changeProject = function() {
 
     app.billableSelectProject.on('change', function() {
-        console.log("changed");
+
        var mondayH = this.id.split('-');
     $(this).blur();
     if(this.value != ''){
@@ -302,20 +302,68 @@ app.changeProject = function() {
                     }
                 });
     }
-    else if(this.value == '') {
-        is_changed =null;
-        var id = this.id.split('-') ;
-        mondayH = id[0]+'-'+id[1]+'-mondayH';
-        $('#'+mondayH).trigger('change');
-    }
         var $this = $(this),
             $row = $this.closest('tr'),
             $projectUnitsElement = $row.find('.project-unit'),
             selectedValue = Number($this.val()),
             selectedProject;
+//            var id = this.id.split('-');
+//            is_internal_id = id[0]+'-'+id[1]+'-is_internal' ;
+////            console.log("current_project_value"+current_project_value);
+//            console.log("project_value"+$('#'+project_value_id).val());
+//
+
 
         app.getTaskChapter(selectedValue, $row);
 
+//        var prev_value = parseFloat($('#'+is_internal_id).data('prev_value'));
+//        var curr_value = parseFloat($('#'+is_internal_id).val())
+//        console.log("prev_value"+prev_value+'--curr_value--'+curr_value);
+////        setTimeout(function(){
+//    //do what you need here
+////}, 2000);
+//var row_total = parseFloat($($row).find('span.t-hours').text());
+//        if (prev_value != curr_value && curr_value == 0 ){
+////       $('#'+project_value_id).val(data['total_value']);
+//            console.log("val"+$('#'+is_internal_id).val())
+//
+////            if (parseFloat( $('#'+project_value_id).val()) !=0  ) {
+//    //            var row_total = parseFloat($($row).find('span.t-hours').text());
+//                var non_zero_value = parseFloat($('.external').text());
+//                var zero_value = parseFloat($('.internal').text());
+////                console.log("row_total"+row_total);
+////                console.log("non_zero_value"+non_zero_value);
+////                console.log("zero_value"+zero_value);
+//                 var z_v = zero_value + row_total
+//                var n_v = non_zero_value - row_total
+////                console.log("$=0  zero_value + row_total "+ (zero_value)+'+'+(row_total) +'--'+ (z_v))
+////                console.log("  $>0 minus non_zero_value - row_total "+(non_zero_value)+'-'+(row_total) +'--'+ (n_v))
+//                $('.zero_value').text(z_v)
+//                $('.non_zero_value').text(Math.abs(n_v))
+////            }
+//             }
+//            else if (prev_value != curr_value && curr_value !=0  ) {
+////                console.log("!=0");
+//    //            var row_total = parseFloat($($row).find('span.t-hours').text());
+//                var non_zero_value = parseFloat($('.external').text());
+//                var zero_value = parseFloat($('.internal').text());
+////                console.log("row_total"+row_total);
+//                console.log("external"+non_zero_value);
+//
+//
+//                console.log("internal"+zero_value);
+//
+////                $=0 zero_value - row_total 10-2--8
+////main.js:315 $>0 non_zero_value + row_total 2+2--4
+//
+//                var z_v = zero_value - row_total
+//                var n_v = non_zero_value + row_total
+////                console.log("$=0 zero_value - row_total "+ (zero_value)+'-'+(row_total) +'--'+ (z_v))
+////                console.log("$>0 non_zero_value + row_total "+(non_zero_value)+'+'+(row_total) +'--'+ (n_v))
+//
+//                $('.zero_value').text(Math.abs(z_v))
+//                $('.non_zero_value').text(n_v)
+//            }
 
         // get current project by id
         if (selectedValue != 0) {
@@ -325,9 +373,6 @@ app.changeProject = function() {
             app.norms = selectedProject.project__maxProductivityUnits;
 
             $projectUnitsElement.text(app.curProjectUnitShort);
-        }
-        else{
-        console.log("may be im breaking")
         }
 //         $('#'+is_internal_id).data('prev_value', parseInt($('#'+is_internal_id).val()));
     });
@@ -1196,8 +1241,8 @@ app.getSum = function($elements, $outputElement) {
                     content: popoverCon
                 });
 
-
-                var primaryCb = function(e) {  console.log("in pcb");
+//                console.log("b4 pcb");
+                var primaryCb = function(e) { console.log(this.id);
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -1264,8 +1309,8 @@ app.getSum = function($elements, $outputElement) {
 ////                        console.log("Saving value " + $(this).val());
 //                       $(this).data('prev_value', parseFloat($(this).val()).toFixed(2));
 //                    });
-                    var calculateTotal = function() { console.log("calculateTotal " );
-//                    console.log(this);
+                    var calculateTotal = function() {
+                    console.log(this);
                         var questionsTemp = 0,
                             hoursTemp = 0,
                             curQuestions,
@@ -1302,13 +1347,13 @@ app.getSum = function($elements, $outputElement) {
                                 curTotalBillableHours += curHours;
                             }
                         }
-//                        console.log("th"+typeof(parseFloat($totalHours.text())));
+                        console.log("th"+typeof(parseFloat($totalHours.text())));
                         var cur_$totalHours = parseFloat($totalHours.text());
 //                        cur_$totalHours = parseFloat(cur_$totalHours).toFixed(2);
 //                        console.log("cur_$totalHours"+cur_$totalHours+'-'+typeof(cur_$totalHours));
                         var prev_value_is_internal = parseInt($($is_internal).data('prev_value'));
                         var cur_value_is_internal = parseInt($($is_internal).val());
-//                        console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
+                        console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
                         var calculated_total = parseFloat(hoursTemp);
 //                        calculated_total =calculated_total;
 //                        calculated_total = parseFloat(calculated_total);
@@ -1319,18 +1364,9 @@ app.getSum = function($elements, $outputElement) {
                         var internal_total = parseFloat($('.total-internal-hours').text());
 //                        internal_total = parseFloat(internal_total);
                         var external_total = parseFloat( $('.total-external-hours').text() );
-                        console.log("prev"+prev_value_is_internal +';cur'+cur_value_is_internal +"is_changed"+is_changed);
-                        if(is_changed == null) {
-                            if(prev_value_is_internal)  {
-                                $('.total-internal-hours').text((internal_total-cur_$totalHours).toFixed(2));
-                            }
-                            else {
-                             $('.total-external-hours').text(parseFloat(external_total-cur_$totalHours).toFixed(2));
-                            }
-                            is_changed = false;
-                        }
+//                        console.log("prev"+prev_value_is_internal +';cur'+cur_value_is_internal);
                         // internal  -> external
-                        else if(is_changed === true) {
+                        if(is_changed === true) {
                             if (prev_value_is_internal > cur_value_is_internal) {console.log("1->0");
                                 console.log("internal_total  "+internal_total+"calculated_total  "+calculated_total+"  external_total  "+external_total+"  $totalHours  "+cur_$totalHours);
                                 console.log("total"+external_total+calculated_total);
@@ -1865,4 +1901,68 @@ $("[name$='project']").on('focus', function(){
 
 });
 is_changed =false;
+//$("[name$='project']").on('change', function(){ alert();
+//    var mondayH = this.id.split('-');
+//    $(this).blur();
+//      $.ajax({
+//                url: '/myansrsource/get_internal',
+//                dataType: 'json',
+////                async:false,
+//                data: {
+//                    project_id: this.value
+//                },
+//
+//                success: function(data) {
+//
+//                    var is_internal_id = mondayH[0]+'-'+mondayH[1]+'-is_internal';
+////                    console.log("change"+data.is_internal)
+//                    $('#'+is_internal_id).val(parseInt(data.is_internal));
+//                    mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
+//                    is_changed =true;
+////                      console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
+//                    $('#'+mondayH).trigger('change');
+//                    is_changed =false;
+////                    console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
+//                },
+//                error: function(data) {
+//                    console.log('Error: ' + data);
+//                }
+//            });
+//
+//});
+//
+//
+//$(function() {
+//   $("#id_form-4-project").on('change', function(){ alert();
+//    var mondayH = this.id.split('-');
+//    $(this).blur();
+//      $.ajax({
+//                url: '/myansrsource/get_internal',
+//                dataType: 'json',
+////                async:false,
+//                data: {
+//                    project_id: this.value
+//                },
+//
+//                success: function(data) {
+//
+//                    var is_internal_id = mondayH[0]+'-'+mondayH[1]+'-is_internal';
+////                    console.log("change"+data.is_internal)
+//                    $('#'+is_internal_id).val(parseInt(data.is_internal));
+//                    mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
+//                    is_changed =true;
+////                      console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
+//                    $('#'+mondayH).trigger('change');
+//                    is_changed =false;
+////                    console.log("prev value ---  "+$('#'+is_internal_id).data('prev_value') +" --- curr value ---   "+$('#'+is_internal_id).val());
+//                },
+//                error: function(data) {
+//                    console.log('Error: ' + data);
+//                }
+//            });
+//
+//});
+//
+//
+//});
 

@@ -522,7 +522,7 @@
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel">Feedback </h4>
                         </div>
-                        <div class="modal-body"> 
+                        <div class="modal-body">
 	                            <div class="form-group">
 	                              <label class="col-sm-4 control-label">Manager Feedback : </label>
 	                              <div class="col-sm-7 controls">
@@ -535,16 +535,30 @@
                         </div>
 
                       </div>
-                      <!-- /.modal-content --> 
+                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-dialog --> 
+                    <!-- /.modal-dialog -->
                   </div>
-                  <!-- /.modal --> 
+                  <!-- /.modal -->
 
 
 
 
 	<script>
+    $(window).load(function(){
+      // var x = document.getElementById("#id_form-0-tsId").type()
+      // debugger;
+      var x = document.getElementsByClassName('ansr-disabled');
+
+
+      if(x.length > 0){
+        // document.getElementById("#timesheet-billable-add-btn").style.display = 'none';
+        // document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';
+        $("#timesheet-billable-add-btn").attr("disabled", true);
+        $("#timesheet-non-billable-add-btn").attr("disabled", true);;
+
+      }
+    });
 
  		$(document).on("click", "#submitTS", function(e) {
             swal({
@@ -583,7 +597,14 @@
 
         $(function() {
             $( "#saveTS" ).click(function() {
+              // debugger;
+              var a = document.getElementById("#id_form-0-project");
+
+                if (a != null){
+
+
                 $( "#saveTS" ).hide();
+              }
             });
 
         });
@@ -608,7 +629,7 @@
 			   if ($(this).find('textarea').val() ) {
 			   		$('#timesheet-feedback-button').removeClass('vd_bg-green').addClass('vd_bg-yellow');
 			   }else{
-			   		$('#timesheet-feedback-button').removeClass('vd_bg-yellow').addClass('vd_bg-green');			   	
+			   		$('#timesheet-feedback-button').removeClass('vd_bg-yellow').addClass('vd_bg-green');
 			   }
 			})
         })
