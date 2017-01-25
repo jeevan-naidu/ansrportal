@@ -28,7 +28,7 @@ class TimeSheetWeeklyReminder(Task):
                 u'Unable to send time sheet reminder mail for   {0}{1}{2} and the error is {3}'
                 u' '.format(from_date, to_date, email_list, str(e)))
 
-tasks.register(TimeSheetWeeklyReminder)
+
 
 
 class TimeSheetRejectionNotification(Task):
@@ -50,4 +50,5 @@ class TimeSheetRejectionNotification(Task):
                 u'Unable to send time sheet rejection reminder mail for   {0}{1}{2} and the error is {3}'
                 u' '.format(from_date, to_date, email_list, str(e)))
 
+tasks.register(TimeSheetWeeklyReminder)
 tasks.register(TimeSheetRejectionNotification)
