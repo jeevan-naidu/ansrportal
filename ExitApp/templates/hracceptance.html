@@ -78,7 +78,7 @@ ul{list-style: none;padding-left: 0px;}
                             <script type="text/javascript">
             $(function () {
             $('.acceptance,.rehiremgr,.backup,.hrconcent,.hrrehire').on('click', function () {
-             $(this).val(this.checked ? 1 : 0);
+             $(this).val(this.checked ? 'on' : '');
             });
             $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
                $('.resignation_acceptance').on('click', function(){
