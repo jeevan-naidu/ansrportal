@@ -2599,7 +2599,7 @@ class ApproveTimesheetView(TemplateView):
                     TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                   teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
                                                                                 hold=False)
-                    user_obj = User.object.get(id=user_id)
+                    user_obj = User.objects.get(id=user_id)
                     TimeSheetRejectionNotification(request.user, str(user_obj.email), start_date,
                                                    end_date, feedback_dict[user_id])
                 except Exception as e:
