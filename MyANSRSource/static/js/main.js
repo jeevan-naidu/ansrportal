@@ -31,7 +31,7 @@ helper.sumOfArr = function(arr) {
     return sum.toFixed(2);
 };
 
-// argument element must be jQuery element
+// argument element must be jQuery al
 helper.getValOrText = function($ele) {
     var eleVal;
     if ($ele.prop('tagName') === 'SELECT' || $ele.prop('tagName') === 'INPUT') {
@@ -1965,4 +1965,3 @@ is_changed =false;
 //
 //
 //});
-

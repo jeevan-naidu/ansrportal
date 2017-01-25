@@ -545,6 +545,20 @@
 
 
 	<script>
+    $(window).load(function(){
+      // var x = document.getElementById("#id_form-0-tsId").type()
+      // debugger;
+      var x = document.getElementsByClassName('ansr-disabled');
+
+
+      if(x.length > 0){
+        // document.getElementById("#timesheet-billable-add-btn").style.display = 'none';
+        // document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';
+        $("#timesheet-billable-add-btn").attr("disabled", true);
+        $("#timesheet-non-billable-add-btn").attr("disabled", true);;
+
+      }
+    });
 
  		$(document).on("click", "#submitTS", function(e) {
             swal({
