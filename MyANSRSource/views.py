@@ -20,7 +20,7 @@ from django.conf import settings
 from employee.models import Employee
 from Leave.views import leavecheck, daterange
 from django.views.generic import View , TemplateView
-from tasks import TimeSheetWeeklyReminder
+from tasks import TimeSheetWeeklyReminder ,TimeSheetRejectionNotification
 from fb360.models import Respondent
 
 
@@ -2088,7 +2088,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         for k, v in eachData.iteritems():
             # print k,v
             if user_id:
-                v = str(v)
+                if k != 'project__internal':
+                    v = str(v)
             if user_id:
 
                 if k == 'teamMember__employee__employee_assigned_id':
@@ -2132,6 +2133,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 tsData['tsId'] = v
 
             if k == 'project__internal':
+                # print type(v)
                 tsData['is_internal'] = int(v)
 
             if k == 'project__projectType__code':
