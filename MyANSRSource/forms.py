@@ -700,9 +700,10 @@ class ProjectPerfomanceReportForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
+        pmflag = kwargs.pop('pmvalue')
         super(ProjectPerfomanceReportForm, self).__init__(*args, **kwargs)
         self.fields['project'].queryset = Project.objects.filter(
-            id__in=helper.get_my_project_list(currentUser)).order_by('name')
+            id__in=helper.get_my_project_list(currentUser, pmflag)).order_by('name')
         # self.fields['project'].widget = autocomplete_light.ChoiceWidget('ProjectAutocompleteProjects')
         self.fields['project'].widget.attrs['class'] = "form-control"
         # self.fields['project'].widget.attrs['placeholder'] = 'Enter a Project Name /Project Id'
