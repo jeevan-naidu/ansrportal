@@ -1819,7 +1819,6 @@ def csrf_failure(request, reason=""):
     return render(request, 'MyANSRSource/csrfFailure.html', {'reason': reason})
 
 
-
 @login_required
 def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
