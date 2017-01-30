@@ -1212,7 +1212,6 @@ app.getSum = function($elements, $outputElement) {
 
                     viewToInput();
                     var calculateTotal = function() {
-                    console.log(this);
                         var questionsTemp = 0,
                             hoursTemp = 0,
                             curQuestions,
