@@ -335,8 +335,9 @@ def Timesheet(request):
                             else:
                                 sundayTotal += float(0.0)
                         elif k == 'totalH':
-                            billableTotal += float(v)
-                            weekTotal += float(v)
+                            billableTotal = mondayTotal + tuesdayTotal + wednesdayTotal + \
+                                             thursdayTotal + fridayTotal + saturdayTotal + sundayTotal
+                            weekTotal = billableTotal
                         timesheetDict[k] = v
                         timesheetDict['approved'] = approved
                     timesheetList.append(timesheetDict.copy())
@@ -370,8 +371,9 @@ def Timesheet(request):
                             elif k == 'activity_sunday':
                                 sundayTotal += float(v)
                             elif k == 'activity_total':
-                                nonbillableTotal += float(v)
-                                weekTotal += float(v)
+                                nonbillableTotal = mondayTotal + tuesdayTotal + wednesdayTotal + \
+                                             thursdayTotal + fridayTotal + saturdayTotal + sundayTotal
+                                weekTotal = nonbillableTotal
                             activityDict[k] = v
                         activitiesList.append(activityDict.copy())
                         activityDict.clear()
