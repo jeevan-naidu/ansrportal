@@ -44,48 +44,48 @@ class ActivityForm(forms.Form):
                                          max_digits=12,
                                          min_value=0.0,
                                          max_value=24.0,
-                                         decimal_places=2,
+                                         decimal_places=2
                                          )
     activity_tuesday = forms.DecimalField(label="Tue",
                                           max_digits=12,
                                           min_value=0.0,
                                           max_value=24.0,
-                                          decimal_places=2,
+                                          decimal_places=2
                                           )
     activity_wednesday = forms.DecimalField(label="Wed",
                                             max_digits=12,
                                             min_value=0.0,
                                             max_value=24.0,
-                                            decimal_places=2,
+                                            decimal_places=2
                                             )
     activity_thursday = forms.DecimalField(label="Thu",
                                            max_digits=12,
                                            min_value=0.0,
                                            max_value=24.0,
-                                           decimal_places=2,
+                                           decimal_places=2
                                            )
     activity_friday = forms.DecimalField(label="Fri",
                                          max_digits=12,
                                          min_value=0.0,
                                          max_value=24.0,
-                                         decimal_places=2,
+                                         decimal_places=2
                                          )
     activity_saturday = forms.DecimalField(label="Sat",
                                            max_digits=12,
                                            min_value=0.0,
                                            max_value=24.0,
-                                           decimal_places=2,
+                                           decimal_places=2
                                            )
     activity_sunday = forms.DecimalField(label="Sun",
                                          max_digits=12,
                                          min_value=0.0,
                                          max_value=24.0,
-                                         decimal_places=2,
+                                         decimal_places=2
                                          )
     activity_total = forms.DecimalField(label="Total",
                                         max_digits=12,
                                         min_value=0.0,
-                                        decimal_places=2,
+                                        decimal_places=2
                                         )
 
     atId = forms.IntegerField(label="id",
@@ -148,99 +148,70 @@ def TimesheetFormset(currentUser,enddate):
         )
 
         chapter = forms.ModelChoiceField(widget=forms.Select(), queryset=Chapter.objects.none(),label="Chapter",)
-        projectType = forms.CharField(label="pt",
-                                      widget=forms.HiddenInput())
+        # projectType = forms.CharField(label="pt",
+        #                               )
         task = forms.ModelChoiceField(widget=forms.Select(), queryset=Task.objects.none(), label="Task",)
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
+                                     decimal_places=2
+
                                      , required=False)
-        mondayQ = forms.DecimalField(label="Questions",
-                                     max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
-                                     , required=False)
+
         tuesday = forms.CharField(label="Tue", required=False)
         tuesdayH = forms.DecimalField(label="Hours",
                                       max_digits=12,
-                                      decimal_places=2,
-                                      widget=forms.HiddenInput()
+                                      decimal_places=2
+
                                       , required=False)
-        tuesdayQ = forms.DecimalField(label="Questions",
-                                      max_digits=12,
-                                      decimal_places=2,
-                                      widget=forms.HiddenInput()
-                                      , required=False)
+
         wednesday = forms.CharField(label="Wed", required=False)
         wednesdayH = forms.DecimalField(label="Hours",
                                         max_digits=12,
-                                        decimal_places=2,
-                                        widget=forms.HiddenInput()
+                                        decimal_places=2
+
                                         , required=False)
-        wednesdayQ = forms.DecimalField(label="Questions",
-                                        max_digits=12,
-                                        decimal_places=2,
-                                        widget=forms.HiddenInput()
-                                        , required=False)
+
         thursday = forms.CharField(label="Thu", required=False)
         thursdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
-                                       decimal_places=2,
-                                       widget=forms.HiddenInput()
+                                       decimal_places=2
+
                                        , required=False)
-        thursdayQ = forms.DecimalField(label="Questions",
-                                       max_digits=12,
-                                       decimal_places=2,
-                                       widget=forms.HiddenInput()
-                                       , required=False)
+
         friday = forms.CharField(label="Fri", required=False)
         fridayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
+                                     decimal_places=2
+
                                      , required=False)
-        fridayQ = forms.DecimalField(label="Questions",
-                                     max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
-                                     , required=False)
+
         saturday = forms.CharField(label="Sat", required=False)
         saturdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
-                                       decimal_places=2,
-                                       widget=forms.HiddenInput()
+                                       decimal_places=2
+
                                        , required=False)
-        saturdayQ = forms.DecimalField(label="Questions",
-                                       max_digits=12,
-                                       decimal_places=2,
-                                       widget=forms.HiddenInput()
-                                       , required=False)
+
         sunday = forms.CharField(label="Sun", required=False)
         sundayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
+                                     decimal_places=2
+
                                      , required=False)
-        sundayQ = forms.DecimalField(label="Questions",
-                                     max_digits=12,
-                                     decimal_places=2,
-                                     widget=forms.HiddenInput()
-                                     , required=False)
+
         total = forms.CharField(label="Total", required=False)
         totalH = forms.DecimalField(label="Hours",
                                     max_digits=12,
-                                    decimal_places=2,
-                                    widget=forms.HiddenInput())
-        totalQ = forms.DecimalField(label="Questions",
-                                    max_digits=12,
-                                    decimal_places=2,
-                                    widget=forms.HiddenInput())
+                                    decimal_places=2, widget=forms.HiddenInput()
+                                    )
 
         tsId = forms.IntegerField(label="id",
-                                  required=False,
-                                  widget=forms.HiddenInput())
+                                  required=False, widget=forms.HiddenInput(),
+                                  )
+        is_internal = forms.IntegerField(label="is_internal",
+                                         required=False, widget=forms.HiddenInput()
+                                  )
         approved = forms.BooleanField(label="approved",
                                       required=False)
         hold = forms.BooleanField(label="hold",
@@ -266,88 +237,79 @@ def TimesheetFormset(currentUser,enddate):
                     project_obj = Project.objects.get(id=int(project_id))
                 except:
                     project_obj = project_id
+                print project_obj.internal
+                self.fields['is_internal'].widget.attrs['data-prev_value'] = int(project_obj.internal)
+                self.fields['is_internal'].widget.attrs['value'] = int(project_obj.internal)
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
                 self.fields['task'].queryset = Task.objects.filter(projectType=project_obj.projectType, active=True)
+            else:
+                self.fields['is_internal'].widget.attrs['data-prev_value'] = 1
+                self.fields['is_internal'].widget.attrs['value'] = 1
             self.fields['location'].queryset = OfficeLocation.objects.filter(
                 active=True)
+            # self.fields['project'].widget.attrs['required'] = "required"
+            # self.fields['chapter'].widget.attrs['required'] = "required"
+            # self.fields['task'].widget.attrs['required'] = "required"
+
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
             self.fields['tsId'].widget.attrs['class'] = "set-zero"
             self.fields['location'].widget.attrs['class'] = \
-                "form-control d-item set-zero"
+                "form-control  d-item set-zero"
             self.fields['chapter'].widget.attrs[
                 'class'] = "form-control d-item b-chapter \
                 remove-sel-options set-zero"
             self.fields['task'].widget.attrs[
                 'class'
             ] = "form-control d-item b-task remove-sel-options set-zero"
-            self.fields['mondayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+
             self.fields['mondayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item set-zero"
-            self.fields['tuesdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            ] = " form-control Mon-t  b-hours d-item set-zero"
+
             self.fields['tuesdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item set-zero"
-            self.fields['wednesdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            ] = " form-control Tue-t b-hours d-item set-zero"
+
             self.fields['wednesdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item set-zero"
-            self.fields['thursdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            ] = " form-control Wed-t b-hours d-item set-zero"
+
             self.fields['thursdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item set-zero"
-            self.fields['fridayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            ] = "form-control Thu-t b-hours d-item set-zero"
+
             self.fields['fridayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item set-zero"
-            self.fields['saturdayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            ] = "form-control Fri-t b-hours d-item set-zero"
+
             self.fields['saturdayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item set-zero"
-            self.fields['sundayQ'].widget.attrs[
-                'class'
-            ] = "b-questions-hidden d-item set-zero"
+            ] = "form-control Sat-t b-hours d-item set-zero"
+
             self.fields['sundayH'].widget.attrs[
                 'class'
-            ] = "b-hours-hidden d-item set-zero"
-            self.fields['totalQ'].widget.attrs[
+            ] = "form-control Sun-t b-hours d-item set-zero"
+
+            self.fields['is_internal'].widget.attrs[
                 'class'
-            ] = "t-questions-hidden d-item set-zero"
+            ] = "form-control is_internal set-zero"
+
             self.fields['totalH'].widget.attrs[
                 'class'
-            ] = "t-hours-hidden d-item set-zero"
+            ] = "form-control t-hours-hidden d-item set-zero"
             self.fields['mondayH'].widget.attrs['value'] = 0
-            self.fields['mondayQ'].widget.attrs['value'] = 0.0
             self.fields['tuesdayH'].widget.attrs['value'] = 0
-            self.fields['tuesdayQ'].widget.attrs['value'] = 0.0
             self.fields['wednesdayH'].widget.attrs['value'] = 0
-            self.fields['wednesdayQ'].widget.attrs['value'] = 0.0
             self.fields['thursdayH'].widget.attrs['value'] = 0
-            self.fields['thursdayQ'].widget.attrs['value'] = 0.0
             self.fields['fridayH'].widget.attrs['value'] = 0
-            self.fields['fridayQ'].widget.attrs['value'] = 0.0
             self.fields['saturdayH'].widget.attrs['value'] = 0
-            self.fields['saturdayQ'].widget.attrs['value'] = 0.0
             self.fields['sundayH'].widget.attrs['value'] = 0
-            self.fields['sundayQ'].widget.attrs['value'] = 0.0
             self.fields['totalH'].widget.attrs['value'] = 0
-            self.fields['totalQ'].widget.attrs['value'] = 0.0
             self.fields['tsId'].widget.attrs['value'] = 0
-            self.fields['projectType'].widget.attrs['value'] = 'Q'
+            # self.fields['is_internal'].widget.attrs['value'] = 0
+            # self.fields['projectType'].widget.attrs['value'] = 'Q'
     return TimeSheetEntryForm
 
 
@@ -443,7 +405,7 @@ class ChangeProjectForm(forms.ModelForm):
 
 class ChangeProjectBasicInfoForm(forms.ModelForm):
 
-    id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
+    id = forms.IntegerField(label="BasicInfoId", )
     reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG)
     remark = forms.CharField(max_length=100, required=False)
     class Meta:
@@ -473,7 +435,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 
 
 class ChangeProjectTeamMemberForm(forms.ModelForm):
-    id = forms.IntegerField(label="teamRecId", widget=forms.HiddenInput())
+    id = forms.IntegerField(label="teamRecId", )
     member = forms.ModelChoiceField(
         queryset=User.objects.all(),
         # label="Project Leader",
@@ -518,7 +480,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 
 class CloseProjectMilestoneForm(forms.ModelForm):
 
-    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
+    id = forms.IntegerField(label="msRecId", )
 
     class Meta:
         model = ProjectMilestone
