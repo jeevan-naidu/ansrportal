@@ -233,7 +233,6 @@ def SingleProjectReport(request):
     actualTotal, plannedTotal, balanceTotal, deviation = 0, 0, 0, 0
     red, closed = False, False
     form = ProjectPerfomanceReportForm(user=request.user, pmvalue='set')
-    # Andrea and Zainab Issue set one flag
     if request.method == 'POST':
         fresh = 0
         reportData = ProjectPerfomanceReportForm(request.POST,
