@@ -81,7 +81,27 @@ class LibraryClearanceMail(Task):
 
         mail_obj = EmailMessage('Resignation Acceptance',
                                 msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                cc=[])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+                    logger.error(
+                        "Unable To send Mail To The Authorities For"
+                        "The Following Exit Applicant : Date time : ")
+                    return "failed"
+        else:
+            logger.debug('send successful')
+
+
+class AdayBeforeEmail(Task):
+    def run(self, username, user_email, ):
+        msg_html = render_to_string('email_templates/resingedcandidateemail.html',
+                                    {'registered_by': username, })
+
+        mail_obj = EmailMessage(username + ' Last day',
+                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
+                                cc=[])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -155,13 +175,14 @@ class FacilityClearanceMail(Task):
 
 
 class MGRClearanceMail(Task):
-    def run(self, username, user_email, ):
+    def run(self, username, user_email, mgr_email):
         msg_html = render_to_string('email_templates/MGR_email.html',
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email,
+                                                                     mgr_email],
+                                cc=[''])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -197,10 +218,10 @@ class HRClearanceMail(Task):
 tasks.register(ExitEmailSendTask)
 tasks.register(PostAcceptedMailMGR)
 tasks.register(PostAcceptedMailHR)
-# tasks.register(AdminClearanceMail)
-# tasks.register(ITClearanceMail)
-# tasks.register(LibraryClearanceMail)
-# tasks.register(FacilityClearanceMail)
-# tasks.register(HRClearanceMail)
-# tasks.register(MGRClearanceMail)
-# tasks.register(FacilityClearanceMail)
+tasks.register(AdayBeforeEmail)
+tasks.register(AdminClearanceMail)
+tasks.register(LibraryClearanceMail)
+tasks.register(FacilityClearanceMail)
+tasks.register(HRClearanceMail)
+tasks.register(MGRClearanceMail)
+tasks.register(FacilityClearanceMail)

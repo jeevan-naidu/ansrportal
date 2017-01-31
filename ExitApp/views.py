@@ -3,7 +3,9 @@ from django.shortcuts import render, HttpResponse
 from django.views.generic import View
 from .models import ResignationInfo, EmployeeClearanceInfo
 from forms import UserExitForm
-from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, LibraryClearanceMail, FinanceClearanceMail, AdminClearanceMail, MGRClearanceMail, HRClearanceMail, FacilityClearanceMail
+from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, \
+    LibraryClearanceMail, FinanceClearanceMail, AdminClearanceMail, MGRClearanceMail, \
+    HRClearanceMail, FacilityClearanceMail, AdayBeforeEmail
 from django.utils import timezone
 from employee.models import Employee
 from django.contrib import messages
@@ -133,7 +135,9 @@ class ExitFormAdd(View):
                 if start_date < today_date:
                     messages.error(request, 'Please select Resignation Date today or after')
                     return render(request, "userexit.html", context)
-                ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown, reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0, manager_accepted=0, exit_revert_flag=0).save()
+                ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown,
+                                reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0,
+                                manager_accepted=0, exit_revert_flag=0).save()
                 value = Employee.objects.get(user_id=userid)
                 value.resignation = start_date
                 value.exit = last_date
@@ -177,7 +181,8 @@ class ClearanceFormView(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         id = request.GET.get('id')
-        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support',
+                                                'LibraryAdmin',]).exists():
             clearance_data = EmployeeClearanceInfo.objects.filter(resignationInfo=id)
             candidate_detail = ResignationInfo.objects.filter(id=id)
             context['dataresignee'] = clearance_data
@@ -205,7 +210,8 @@ class ClearanceFormView(View):
         context = {"form": ""}
         form = request.POST
         id = request.GET.get('id')
-        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support',
+                                                'LibraryAdmin']).exists():
             allresignee = ResignationInfo.objects.all()
             context['resigneedata'] = allresignee
             candidate_detail = ResignationInfo.objects.filter(id=id)
@@ -234,20 +240,19 @@ class ClearanceFormView(View):
             user_email = User.objects.get(id=user_detail.User_id)
             form = request.POST
             count = EmployeeClearanceInfo.objects.filter(resignationInfo_id=resignee_id).count()
-            mgr_id = Employee.objects.get(user_id=request.user.id)
-            manager = Employee.objects.get(employee_assigned_id=mgr_id.manager_id)
-            manageremail = User.objects.get(id=manager.user_id)
+
             if 'hr_approval' in form:
                 if count == 5:
                     hr_approval = form['hr_approval']
                     hr_amount = form['hr_amount']
                     hr_feedback = form['hr_feedback']
+                    mgr_id = Employee.objects.get(user_id=request.user.id)
                     try:
-                        HRClearanceMail.delay(user_email.first_name, user_email.email)
                         EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=hr_approval,
                                               status_by_id=statusby_id,
                                               department="HR", status_on=time, dept_feedback=hr_feedback,
                                               dept_due=hr_amount).save()
+                        HRClearanceMail.delay(user_email.first_name, user_email.email)
                         messages.success(request, 'Your response has been submitted successfully')
                         messages.info(request, 'Done')
                     except Exception as programmingerror:
@@ -264,11 +269,11 @@ class ClearanceFormView(View):
                 facility_amount = form['facility_amount']
                 facility_feedback = form['facility_feedback']
                 try:
-                    FacilityClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=facility_approval,
                                           status_by_id=statusby_id,
                                           department="FAC", status_on=time, dept_feedback=facility_feedback,
                                           dept_due=facility_amount).save()
+                    FacilityClearanceMail.delay(user_email.first_name, user_email.email)
                     messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
@@ -279,26 +284,31 @@ class ClearanceFormView(View):
                 finance_amount = form['finance_amount']
                 finance_feedback = form['finance_feedback']
                 try:
-                    FinanceClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=finance_approval,
                                           status_by_id=statusby_id,
                                           department="FIN", status_on=time, dept_feedback=finance_feedback,
                                           dept_due=finance_amount).save()
+                    FinanceClearanceMail.delay(user_email.first_name, user_email.email)
                     messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
             else:
                 finance_approval =1
             if 'manager_approval' in form:
+                urlid = request.GET.get('id')
+                user_id = ResignationInfo.objects.values('User_id').filter(id=urlid)
+                mgr_id = Employee.objects.get(user_id=user_id)
+                manager = Employee.objects.get(employee_assigned_id=mgr_id.manager_id)
+                manager_email = User.objects.get(id=manager.user_id)
                 manager_approval = form['manager_approval']
                 manager_amount = form['manager_amount']
                 manager_feedback = form['manager_feedback']
                 try:
-                    MGRClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=manager_approval,
                                           status_by_id=statusby_id,
                                           department="MGR", status_on=time, dept_feedback=manager_feedback,
                                           dept_due=manager_amount).save()
+                    MGRClearanceMail.delay(user_email.first_name, user_email.email, manager_email.email)
                     messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
@@ -309,11 +319,11 @@ class ClearanceFormView(View):
                 admin_approval = form['admin_approval']
                 admin_feedback = form['admin_feedback']
                 try:
-                    AdminClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=admin_approval,
                                           status_by_id=statusby_id,
                                           department="IT", status_on=time, dept_feedback=admin_feedback,
                                           dept_due=admin_amount).save()
+                    AdminClearanceMail.delay(user_email.first_name, user_email.email)
                     messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
@@ -324,10 +334,10 @@ class ClearanceFormView(View):
                 lib_amount = form['lib_amount']
                 library_feedback = form['library_feedback']
                 try:
-                    LibraryClearanceMail.delay(user_email.first_name, user_email.email)
                     EmployeeClearanceInfo(resignationInfo_id=resignee_id, dept_status=library_approval, status_by_id=statusby_id,
                                           department="LIB", status_on=time, dept_feedback=library_feedback,
                                           dept_due=lib_amount).save()
+                    LibraryClearanceMail.delay(user_email.first_name, user_email.email)
                     messages.success(request, 'Your response has been submitted successfully')
                 except Exception as programmingerror:
                     print programmingerror
@@ -345,10 +355,13 @@ class ClearanceFormView(View):
 class ClearanceList(View):
     def get(self, request):
         context = {"form": "", "data": ""}
-        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support', 'LibraryAdmin',]).exists():
+        if request.user.groups.filter(name__in=['myansrsourceHR', 'BookingRoomAdmin', 'Finance', 'IT-support',
+                                                'LibraryAdmin']).exists():
             d = date.today()
             final_val = d + timedelta(days=1)
-            allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val).exclude(User_id=request.user.id)
+            allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val).exclude(
+                User_id=request.user.id)
+            print allresignee
             context['approved_candidate'] = allresignee
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)
@@ -358,7 +371,14 @@ class ClearanceList(View):
             final_val = d + timedelta(days=1)
             for value in reportee:
                 filterdata.append(value.user.id)
-            allresignee = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted__lte=final_val).exclude(User_id=request.user.id)
+            allresignee = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted__lte=final_val).exclude(
+                User_id=request.user.id)
+            email_candidate = ResignationInfo.objects.filter(User__in=filterdata, last_date_accepted=final_val).exclude(
+                User_id=request.user.id)
+            for data in email_candidate:
+                candidate_first_name = User.objects.values('first_name', 'email').filter(id=data.User_id)
+                for key in candidate_first_name:
+                    AdayBeforeEmail.delay(key['first_name'], key['email'])
             context['approved_candidate'] = allresignee
         return render(request, "clearancelist.html", context)
 
