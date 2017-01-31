@@ -228,7 +228,17 @@ def TimesheetFormset(currentUser,enddate):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             ).order_by('name')
-
+            hold_value = self.fields['hold'].initial or self.initial.get('hold') or \
+                         self.fields['hold'].widget.value_from_datadict(self.data, self.files, self.add_prefix('hold'))
+            if hold_value:
+                self.fields['mondayH'].widget.attrs['readonly'] = True
+                self.fields['tuesdayH'].widget.attrs['readonly'] = True
+                self.fields['wednesdayH'].widget.attrs['readonly'] = True
+                self.fields['thursdayH'].widget.attrs['readonly'] = True
+                self.fields['fridayH'].widget.attrs['readonly'] = True
+                self.fields['saturdayH'].widget.attrs['readonly'] = True
+                self.fields['sundayH'].widget.attrs['readonly'] = True
+                self.fields['totalH'].widget.attrs['readonly'] = True
             project_id = self.fields['project'].initial\
                          or self.initial.get('project') \
                          or self.fields['project'].widget.value_from_datadict(self.data, self.files, self.add_prefix('project'))
@@ -237,7 +247,6 @@ def TimesheetFormset(currentUser,enddate):
                     project_obj = Project.objects.get(id=int(project_id))
                 except:
                     project_obj = project_id
-                print project_obj.internal
                 self.fields['is_internal'].widget.attrs['data-prev_value'] = int(project_obj.internal)
                 self.fields['is_internal'].widget.attrs['value'] = int(project_obj.internal)
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
