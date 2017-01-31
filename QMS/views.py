@@ -607,9 +607,9 @@ def fetch_author(request):
 
     try:
         chapter_component = ChapterComponent.objects.get(chapter=chapter_id, component=component_id)
-        author = QASheetHeader.objects.filter(project=project_id,
+        author = QASheetHeader.objects.filter(project_id=project_id,
                                               chapter_component=chapter_component).values_list('author', flat=True)[0]
-    except:
+    except Exception as e:
         author = None
     # obj = User.objects.get(pk=user)
     team_members = {}
