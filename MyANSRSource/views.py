@@ -335,9 +335,8 @@ def Timesheet(request):
                             else:
                                 sundayTotal += float(0.0)
                         elif k == 'totalH':
-                            billableTotal = mondayTotal + tuesdayTotal + wednesdayTotal + \
-                                             thursdayTotal + fridayTotal + saturdayTotal + sundayTotal
-                            weekTotal = billableTotal
+                            billableTotal += float(v)
+                            weekTotal += float(v)
                         timesheetDict[k] = v
                         timesheetDict['approved'] = approved
                     timesheetList.append(timesheetDict.copy())
@@ -371,9 +370,8 @@ def Timesheet(request):
                             elif k == 'activity_sunday':
                                 sundayTotal += float(v)
                             elif k == 'activity_total':
-                                nonbillableTotal = mondayTotal + tuesdayTotal + wednesdayTotal + \
-                                             thursdayTotal + fridayTotal + saturdayTotal + sundayTotal
-                                weekTotal = nonbillableTotal
+                                nonbillableTotal += float(v)
+                                weekTotal += float(v)
                             activityDict[k] = v
                         activitiesList.append(activityDict.copy())
                         activityDict.clear()
@@ -382,6 +380,7 @@ def Timesheet(request):
                     (fridayTotal > 24) | (saturdayTotal > 24) | \
                     (sundayTotal > 24):
                 messages.error(request, 'You can only work for 24 hours a day')
+
             elif ('save' not in request.POST) and (
                         weekTotal < weekTotalValidate - 0.05):
                 messages.error(request,
