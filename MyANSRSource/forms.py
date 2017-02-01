@@ -269,7 +269,10 @@ def TimesheetFormset(currentUser,enddate):
             # self.fields['project'].widget.attrs['required'] = "required"
             # self.fields['chapter'].widget.attrs['required'] = "required"
             # self.fields['task'].widget.attrs['required'] = "required"
-
+            self.fields['project'].widget.attrs['required'] = True
+            self.fields['location'].widget.attrs['required'] = True
+            self.fields['chapter'].widget.attrs['required'] = True
+            self.fields['task'].widget.attrs['required'] = True
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
