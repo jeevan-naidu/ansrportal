@@ -103,14 +103,23 @@ def update_hr_concent(request):
     return HttpResponse('success')
 
 
-
-
 class ExitFormAdd(View):
     def get(self, request):
-        context = {"form": ""}
-        form = UserExitForm()
-        context["form"] = form
-        return render(request, "userexit.html", context)
+        try:
+            initial_data = ResignationInfo.objects.get(User_id=request.user.id)
+            resignation_date = Employee.objects.get(user_id = request.user.id)
+            if initial_data:
+                context = {"form": ""}
+                form = UserExitForm(
+                    initial={'start_date': resignation_date.resignation, 'reason_dropdown': initial_data.emp_reason,
+                             'last_date': initial_data.last_date, 'comment': initial_data.reason_optional})
+                context["form"] = form
+                return render(request, "userexit.html", context)
+        except Exception as programmingerror:
+            context = {"form": ""}
+            form = UserExitForm()
+            context["form"] = form
+            return render(request, "userexit.html", context)
 
     def post(self, request):
         context = {"form": ""}
@@ -135,16 +144,30 @@ class ExitFormAdd(View):
                 if start_date < today_date:
                     messages.error(request, 'Please select Resignation Date today or after')
                     return render(request, "userexit.html", context)
-                ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown,
-                                reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0,
-                                manager_accepted=0, exit_revert_flag=0).save()
-                value = Employee.objects.get(user_id=userid)
-                value.resignation = start_date
-                value.exit = last_date
-                value.save()
-                ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email, manageremail.email)
-                messages.success(request, 'Thanks ! Your Resignation has been Submitted')
-                return render(request, "userexit.html", context)
+                try:
+                    updated_value = ResignationInfo.objects.get(User_id= userid)
+                    value = Employee.objects.get(user_id=userid)
+                    value.resignation = form.cleaned_data['start_date']
+                    value.exit = form.cleaned_data['last_date']
+                    value.save()
+                    if updated_value:
+                        updated_value.last_date = form.cleaned_data['last_date']
+                        updated_value.reason_optional = form.cleaned_data['comment']
+                        updated_value.emp_reason = form.cleaned_data['reason_dropdown']
+                        updated_value.save()
+                        messages.success(request, 'Thanks ! Your Resignation data has been Updated')
+                        return render(request, "userexit.html", context)
+                except Exception as programmingerror:
+                    ResignationInfo(User_id=userid, last_date=last_date, emp_reason=reason_dropdown,
+                                    reason_optional=comment, created_on=time, updated_on=time, hr_accepted=0,
+                                    manager_accepted=0, exit_revert_flag=0).save()
+                    value = Employee.objects.get(user_id=userid)
+                    value.resignation = start_date
+                    value.exit = last_date
+                    value.save()
+                    ExitEmailSendTask.delay(request.user, last_date, start_date, user_email.email, manageremail.email)
+                    messages.success(request, 'Thanks ! Your Resignation has been Submitted')
+                    return render(request, "userexit.html", context)
             except Exception as programmingerror:
                 print programmingerror
                 messages.error(request, 'You Have already applyed for your Resignation')
