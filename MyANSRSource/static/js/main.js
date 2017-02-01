@@ -506,6 +506,77 @@ app.firstTimeTotal = function() {
         total($fri, $friTotal);
         total($sat, $satTotal);
         total($sun, $sunTotal);
+        var a = ($mon, $monTotal).text();
+        var b = ($tue, $tueTotal).text();
+        var c = ($wed, $wedTotal).text();
+        var d = ($thu, $thuTotal).text();
+        var e = ($fri, $friTotal).text();
+        var f = ($sat, $satTotal).text();
+        var g = ($sun, $sunTotal).text();
+
+        if(a > 24) {
+          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
+          $('.Mon-t').val(0)
+          $('.ts-mon-total-hr').text('0.00')
+          $('.t-hours.set-zero').text('0.00')
+          $('.total-internal-hours.text-right').text('0.00')
+          $('.total-billable-hours.text-right').text('0.00')
+          $('.timesheet-grand-total.text-right').text('0.00')
+        }
+        if(b > 24) {
+          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
+          $('.Tue-t').val(0)
+          $('.ts-tue-total-hr').text('0.00')
+          $('.t-hours.set-zero').text('0.00')
+          $('.total-internal-hours.text-right').text('0.00')
+          $('.total-billable-hours.text-right').text('0.00')
+          $('.timesheet-grand-total.text-right').text('0.00')
+        }
+        if(c > 24) {
+          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
+          $('.Wed-t').val(0)
+          $('.ts-wed-total-hr').text('0.00')
+          $('.t-hours.set-zero').text('0.00')
+          $('.total-internal-hours.text-right').text('0.00')
+          $('.total-billable-hours.text-right').text('0.00')
+          $('.timesheet-grand-total.text-right').text('0.00')
+        }
+        if(d > 24) {
+          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
+          $('.Thu-t').val(0)
+          $('.ts-thu-total-hr').text('0.00')
+          $('.t-hours.set-zero').text('0.00')
+          $('.total-internal-hours.text-right').text('0.00')
+          $('.total-billable-hours.text-right').text('0.00')
+          $('.timesheet-grand-total.text-right').text('0.00')
+        }
+        if(e > 24) {
+          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
+          $('.Fri-t').val(0)
+          $('.ts-fri-total-hr').text('0.00')
+          $('.t-hours.set-zero').text('0.00')
+          $('.total-internal-hours.text-right').text('0.00')
+          $('.total-billable-hours.text-right').text('0.00')
+          $('.timesheet-grand-total.text-right').text('0.00')
+        }
+        if(f > 24) {
+          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
+          $('.Sat-t').val(0)
+          $('.ts-sat-total-hr').text('0.00')
+          $('.t-hours.set-zero').text('0.00')
+          $('.total-internal-hours.text-right').text('0.00')
+          $('.total-billable-hours.text-right').text('0.00')
+          $('.timesheet-grand-total.text-right').text('0.00')
+        }
+        if(g > 24) {
+          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
+          $('.Sun-t').val(0)
+          $('.ts-sun-total-hr').text('0.00')
+          $('.t-hours.set-zero').text('0.00')
+          $('.total-internal-hours.text-right').text('0.00')
+          $('.total-billable-hours.text-right').text('0.00')
+          $('.timesheet-grand-total.text-right').text('0.00')
+        }
 
 
     };
