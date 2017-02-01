@@ -154,56 +154,66 @@ def TimesheetFormset(currentUser,enddate):
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
+                                     min_value=0.0,
+                                     max_value=24.0,
                                      decimal_places=2
-
                                      , required=False)
 
         tuesday = forms.CharField(label="Tue", required=False)
         tuesdayH = forms.DecimalField(label="Hours",
                                       max_digits=12,
+                                      min_value=0.0,
+                                      max_value=24.0,
                                       decimal_places=2
-
                                       , required=False)
 
         wednesday = forms.CharField(label="Wed", required=False)
         wednesdayH = forms.DecimalField(label="Hours",
                                         max_digits=12,
+                                        min_value=0.0,
+                                        max_value=24.0,
                                         decimal_places=2
-
                                         , required=False)
 
         thursday = forms.CharField(label="Thu", required=False)
         thursdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
+                                       min_value=0.0,
+                                       max_value=24.0,
                                        decimal_places=2
-
                                        , required=False)
 
         friday = forms.CharField(label="Fri", required=False)
         fridayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
+                                     min_value=0.0,
+                                     max_value=24.0,
                                      decimal_places=2
-
                                      , required=False)
 
         saturday = forms.CharField(label="Sat", required=False)
         saturdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
+                                       min_value=0.0,
+                                       max_value=24.0,
                                        decimal_places=2
-
                                        , required=False)
 
         sunday = forms.CharField(label="Sun", required=False)
         sundayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
+                                     min_value=0.0,
+                                     max_value=24.0,
                                      decimal_places=2
-
                                      , required=False)
 
         total = forms.CharField(label="Total", required=False)
         totalH = forms.DecimalField(label="Hours",
                                     max_digits=12,
-                                    decimal_places=2, widget=forms.HiddenInput()
+                                    min_value=0.0,
+                                    max_value=24.0,
+                                    decimal_places=2,
+                                    widget=forms.HiddenInput()
                                     )
 
         tsId = forms.IntegerField(label="id",
