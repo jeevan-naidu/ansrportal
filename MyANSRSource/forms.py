@@ -154,56 +154,66 @@ def TimesheetFormset(currentUser,enddate):
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
+                                     min_value=0.0,
+                                     max_value=24.0,
                                      decimal_places=2
-
                                      , required=False)
 
         tuesday = forms.CharField(label="Tue", required=False)
         tuesdayH = forms.DecimalField(label="Hours",
                                       max_digits=12,
+                                      min_value=0.0,
+                                      max_value=24.0,
                                       decimal_places=2
-
                                       , required=False)
 
         wednesday = forms.CharField(label="Wed", required=False)
         wednesdayH = forms.DecimalField(label="Hours",
                                         max_digits=12,
+                                        min_value=0.0,
+                                        max_value=24.0,
                                         decimal_places=2
-
                                         , required=False)
 
         thursday = forms.CharField(label="Thu", required=False)
         thursdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
+                                       min_value=0.0,
+                                       max_value=24.0,
                                        decimal_places=2
-
                                        , required=False)
 
         friday = forms.CharField(label="Fri", required=False)
         fridayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
+                                     min_value=0.0,
+                                     max_value=24.0,
                                      decimal_places=2
-
                                      , required=False)
 
         saturday = forms.CharField(label="Sat", required=False)
         saturdayH = forms.DecimalField(label="Hours",
                                        max_digits=12,
+                                       min_value=0.0,
+                                       max_value=24.0,
                                        decimal_places=2
-
                                        , required=False)
 
         sunday = forms.CharField(label="Sun", required=False)
         sundayH = forms.DecimalField(label="Hours",
                                      max_digits=12,
+                                     min_value=0.0,
+                                     max_value=24.0,
                                      decimal_places=2
-
                                      , required=False)
 
         total = forms.CharField(label="Total", required=False)
         totalH = forms.DecimalField(label="Hours",
                                     max_digits=12,
-                                    decimal_places=2, widget=forms.HiddenInput()
+                                    min_value=0.0,
+                                    max_value=24.0,
+                                    decimal_places=2,
+                                    widget=forms.HiddenInput()
                                     )
 
         tsId = forms.IntegerField(label="id",
@@ -228,7 +238,17 @@ def TimesheetFormset(currentUser,enddate):
                     Q(project__projectManager=currentUser.id)
                 ).values('project_id')
             ).order_by('name')
-
+            hold_value = self.fields['hold'].initial or self.initial.get('hold') or \
+                         self.fields['hold'].widget.value_from_datadict(self.data, self.files, self.add_prefix('hold'))
+            if hold_value:
+                self.fields['mondayH'].widget.attrs['readonly'] = True
+                self.fields['tuesdayH'].widget.attrs['readonly'] = True
+                self.fields['wednesdayH'].widget.attrs['readonly'] = True
+                self.fields['thursdayH'].widget.attrs['readonly'] = True
+                self.fields['fridayH'].widget.attrs['readonly'] = True
+                self.fields['saturdayH'].widget.attrs['readonly'] = True
+                self.fields['sundayH'].widget.attrs['readonly'] = True
+                self.fields['totalH'].widget.attrs['readonly'] = True
             project_id = self.fields['project'].initial\
                          or self.initial.get('project') \
                          or self.fields['project'].widget.value_from_datadict(self.data, self.files, self.add_prefix('project'))
@@ -237,7 +257,6 @@ def TimesheetFormset(currentUser,enddate):
                     project_obj = Project.objects.get(id=int(project_id))
                 except:
                     project_obj = project_id
-                print project_obj.internal
                 self.fields['is_internal'].widget.attrs['data-prev_value'] = int(project_obj.internal)
                 self.fields['is_internal'].widget.attrs['value'] = int(project_obj.internal)
                 self.fields['chapter'].queryset = Chapter.objects.filter(book=project_obj.book)
@@ -250,7 +269,10 @@ def TimesheetFormset(currentUser,enddate):
             # self.fields['project'].widget.attrs['required'] = "required"
             # self.fields['chapter'].widget.attrs['required'] = "required"
             # self.fields['task'].widget.attrs['required'] = "required"
-
+            self.fields['project'].widget.attrs['required'] = True
+            self.fields['location'].widget.attrs['required'] = True
+            self.fields['chapter'].widget.attrs['required'] = True
+            self.fields['task'].widget.attrs['required'] = True
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
                 billable-select-project set-empty"
