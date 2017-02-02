@@ -562,7 +562,7 @@ $(document).ready(function() {
                           dataType :'json',
                           data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
                           success: function (data) {
-                              swal("Voila", "Reminder Mail is sent Successfully!", "success")
+                              swal("Ok", "Reminder Mail is sent Successfully!", "success")
                           },
 
                         });
