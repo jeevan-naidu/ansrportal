@@ -543,16 +543,31 @@ $(document).ready(function() {
         });
 
       $('#reminder_mail').on('click', function()  {
-              $.ajax({
-                url: '/myansrsource/timesheet/send_reminder_mail',
-                type: 'GET',
-                dataType :'json',
-                data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
-                success: function (data) {
-                    swal("Voila", "Reminder Mail is sent Successfully!", "success")
-                },
 
-              });
+                  swal({   title: "Send Reminder?",
+                    text: "Press YES to send a reminder mail",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "YES",
+                    cancelButtonText: "NO",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                    },
+                    function(isConfirm) {
+                      if (isConfirm) {
+                        $.ajax({
+                          url: '/myansrsource/timesheet/send_reminder_mail',
+                          type: 'GET',
+                          dataType :'json',
+                          data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
+                          success: function (data) {
+                              swal("Voila", "Reminder Mail is sent Successfully!", "success")
+                          },
+
+                        });
+                      }});
+
       });
 
 
