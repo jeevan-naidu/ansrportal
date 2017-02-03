@@ -917,17 +917,19 @@ var totalhourshidden;
                     $(rowCountInitialElement).attr('value', rowCount);
                 }
 
+                if ($element.hasClass('is_internal'))
+                 {  console.log("is internal")
+                    $element.val('1');
+                 }
                 if (options.defaultValues.setZeroList) {
                     if (options.defaultValues.setZeroList.indexOf(index) !== -1) {
                         // For project unit not set zero
                         if (!$element.hasClass('project-unit')) {
                             if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
                                 $element.val('0');
-                                //console.log('input');
                             } else {
                                 $element.text('0');
-                                //console.log('not input');
-                            }
+                           }
                         }
 
                     }
@@ -1029,8 +1031,12 @@ var totalhourshidden;
                         $element.attr('value', 0);
                     }
                     else if( elementType2 === 'INPUT') {
-                            $($element).val(0);
-                             $($element).data('prev_value',0);
+                            if(!$element.hasClass('is_internal'))
+                                $($element).val(0);
+                            else  {
+                                $($element).val(1);
+                                $($element).data('prev_value',1);
+                            }
                     }
                     else {
                         $element.text('0');
@@ -1044,7 +1050,7 @@ var totalhourshidden;
                             .remove()
                             .end()
                             .append('<option value>-----</option>');
-                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     }
                 }
 
@@ -1058,7 +1064,7 @@ var totalhourshidden;
                 }
 
 
-                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
 
             });
 
