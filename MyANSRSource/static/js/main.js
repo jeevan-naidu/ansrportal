@@ -329,7 +329,6 @@ app.firstTimeTotal = function() {
             cRowItemQuestion,
             $totalBillableHours = $('.total-billable-hours'),
             $totalIdleHours = $('.total-idle-hours'),
-
             cRowHourTotal = 0,
             cRowQuestionTotal = 0,
 
@@ -393,6 +392,7 @@ app.firstTimeTotal = function() {
                 billableQuestionTotal += cRowQuestionTotal;
 
                 $cRowBTHoursHidden.val(cRowHourTotal);
+
                 $cRowITHoursHidden.val(0);
             }
         });
@@ -401,6 +401,7 @@ app.firstTimeTotal = function() {
             cRowNonBillableTotal = 0;
             cRowNonBillable = $(item).closest('tr');
             $nonBillableItemsHour = cRowNonBillable.find('.Mon-t, .Tue-t, .Wed-t, .Thu-t, .Fri-t, .Sat-t, .Sun-t');
+
             $cRowNonBillableTotal = cRowNonBillable.find('.r-total');
 
             helper.forEach($nonBillableItemsHour, function(item) {
@@ -415,6 +416,7 @@ app.firstTimeTotal = function() {
             nonBillableTotal += cRowNonBillableTotal;
         });
         total_leave_hours =  Number($('.total-leave-hours').text() ),
+
         grandTotal = billableHoursTotal + idleHoursTotal + nonBillableTotal+total_leave_hours;
 
 
@@ -485,6 +487,7 @@ app.firstTimeTotal = function() {
             $satTotal = $('.ts-sat-total-hr'),
             $sunTotal = $('.ts-sun-total-hr');
 
+
         function total($arr, $output) {
             var tempArr = [],
                 tempTotal = 0;
@@ -498,6 +501,13 @@ app.firstTimeTotal = function() {
 
             $output.text(tempTotal);
         }
+        var mon = $('.ts-mon-total-hr').text()
+        var tue = $('.ts-tue-total-hr').text()
+        var wed = $('.ts-wed-total-hr').text()
+        var thu = $('.ts-thu-total-hr').text()
+        var fri = $('.ts-fri-total-hr').text()
+        var sat = $('.ts-sat-total-hr').text()
+        var sun = $('.ts-sun-total-hr').text()
 
         total($mon, $monTotal);
         total($tue, $tueTotal);
@@ -506,79 +516,37 @@ app.firstTimeTotal = function() {
         total($fri, $friTotal);
         total($sat, $satTotal);
         total($sun, $sunTotal);
-        var a = ($mon, $monTotal).text();
-        var b = ($tue, $tueTotal).text();
-        var c = ($wed, $wedTotal).text();
-        var d = ($thu, $thuTotal).text();
-        var e = ($fri, $friTotal).text();
-        var f = ($sat, $satTotal).text();
-        var g = ($sun, $sunTotal).text();
-
-        if(a > 24) {
-          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
-          $('.Mon-t').val(0)
-          $('.ts-mon-total-hr').text('0.00')
-          $('.t-hours.set-zero').text('0.00')
-          $('.total-internal-hours.text-right').text('0.00')
-          $('.total-billable-hours.text-right').text('0.00')
-          $('.timesheet-grand-total.text-right').text('0.00')
-        }
-        if(b > 24) {
-          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
-          $('.Tue-t').val(0)
-          $('.ts-tue-total-hr').text('0.00')
-          $('.t-hours.set-zero').text('0.00')
-          $('.total-internal-hours.text-right').text('0.00')
-          $('.total-billable-hours.text-right').text('0.00')
-          $('.timesheet-grand-total.text-right').text('0.00')
-        }
-        if(c > 24) {
-          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
-          $('.Wed-t').val(0)
-          $('.ts-wed-total-hr').text('0.00')
-          $('.t-hours.set-zero').text('0.00')
-          $('.total-internal-hours.text-right').text('0.00')
-          $('.total-billable-hours.text-right').text('0.00')
-          $('.timesheet-grand-total.text-right').text('0.00')
-        }
-        if(d > 24) {
-          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
-          $('.Thu-t').val(0)
-          $('.ts-thu-total-hr').text('0.00')
-          $('.t-hours.set-zero').text('0.00')
-          $('.total-internal-hours.text-right').text('0.00')
-          $('.total-billable-hours.text-right').text('0.00')
-          $('.timesheet-grand-total.text-right').text('0.00')
-        }
-        if(e > 24) {
-          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
-          $('.Fri-t').val(0)
-          $('.ts-fri-total-hr').text('0.00')
-          $('.t-hours.set-zero').text('0.00')
-          $('.total-internal-hours.text-right').text('0.00')
-          $('.total-billable-hours.text-right').text('0.00')
-          $('.timesheet-grand-total.text-right').text('0.00')
-        }
-        if(f > 24) {
-          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
-          $('.Sat-t').val(0)
-          $('.ts-sat-total-hr').text('0.00')
-          $('.t-hours.set-zero').text('0.00')
-          $('.total-internal-hours.text-right').text('0.00')
-          $('.total-billable-hours.text-right').text('0.00')
-          $('.timesheet-grand-total.text-right').text('0.00')
-        }
-        if(g > 24) {
-          sweetAlert("Oops...", "Please fill below 24 hours!", "error");
-          $('.Sun-t').val(0)
-          $('.ts-sun-total-hr').text('0.00')
-          $('.t-hours.set-zero').text('0.00')
-          $('.total-internal-hours.text-right').text('0.00')
-          $('.total-billable-hours.text-right').text('0.00')
-          $('.timesheet-grand-total.text-right').text('0.00')
-        }
 
 
+        // function hourcheck() {
+        var a = [($monTotal).text(),($tueTotal).text(),($wedTotal).text(),($thuTotal).text(),($friTotal).text(),($satTotal).text(),($sunTotal).text()]
+        var b = 0
+
+
+        console.log(totalhours.text())
+
+        for (i = 0; i <= a.length; i += 1) {
+          // var b = b+a[i];
+          // console.log(parseInt(b))
+          // ~~sanjay
+
+            if(a[i] > 24) {
+              $('#'+tempp_id).parent().parent().parent().find('strong').text()
+              $('#'+tempp_id).val(b)
+              $('#id_form-[i]-totalH').text(totalhours.text('0.00'))
+              total($mon, $monTotal);
+              total($tue, $tueTotal);
+              total($wed, $wedTotal);
+              total($thu, $thuTotal);
+              total($fri, $friTotal);
+              total($sat, $satTotal);
+              total($sun, $sunTotal);
+                // console.log(a[i])
+              sweetAlert("Oops...", "Please fill below 24 hours! You cannot save untill you enter correct time!", "error");
+            }
+
+
+          }
     };
 
     app.tsInputIsValid = function($elem, str) {
@@ -851,6 +819,10 @@ app.getSum = function($elements, $outputElement) {
 
 // Form control plugin
 ;
+var tempp;
+var tempp_id;
+var totalhours;
+var totalhourshidden;
 (function() {
     $.fn.dynamicForm = function(options) {
         var $table = $(this),
@@ -1226,6 +1198,8 @@ app.getSum = function($elements, $outputElement) {
                 var primaryCb = function(e) { console.log(this.id);
                     e.preventDefault();
                     e.stopPropagation();
+                    tempp = $(this);
+                    tempp_id = this.id;
 
                     var $curDayBtn = $(this),
                         $curRow = $curDayBtn.closest('tr'),
@@ -1252,6 +1226,9 @@ app.getSum = function($elements, $outputElement) {
                         $curSelectProject = $curRow.find('.billable-select-project'),
                         selectedValue = Number($curSelectProject.val()),
                         selectedProject;
+                        totalhours = $totalHours
+                        totalhourshidden = $totalHoursHidden
+
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
@@ -1294,7 +1271,6 @@ app.getSum = function($elements, $outputElement) {
                             $curTotalIdleHoursHidden = $curRow.find('.r-total-idle-hours'),
                             $curTotalBillableHoursHidden = $curRow.find('.r-total-billable-hours');
 
-
                         if (curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
                         } else {
@@ -1316,7 +1292,7 @@ app.getSum = function($elements, $outputElement) {
                         var cur_$totalHours = parseFloat($totalHours.text());
                         var prev_value_is_internal = parseInt($($is_internal).data('prev_value'));
                         var cur_value_is_internal = parseInt($($is_internal).val());
-                        console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
+                        // console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
                         var calculated_total = parseFloat(hoursTemp);
                         var diff = Math.abs( parseFloat($totalHours.text())-(parseFloat(hoursTemp)))
                         diff = parseFloat(diff).toFixed(2);
@@ -1324,8 +1300,8 @@ app.getSum = function($elements, $outputElement) {
                         var external_total = parseFloat( $('.total-external-hours').text() );
                         if(is_changed === true) {
                             if (prev_value_is_internal > cur_value_is_internal) {console.log("1->0");
-                                console.log("internal_total  "+internal_total+"calculated_total  "+calculated_total+"  external_total  "+external_total+"  $totalHours  "+cur_$totalHours);
-                                console.log("total"+external_total+calculated_total);
+                                // console.log("internal_total  "+internal_total+"calculated_total  "+calculated_total+"  external_total  "+external_total+"  $totalHours  "+cur_$totalHours);
+                                // console.log("total"+external_total+calculated_total);
                                     $('.total-internal-hours').text((internal_total-cur_$totalHours).toFixed(2));
 
 
@@ -1339,7 +1315,7 @@ app.getSum = function($elements, $outputElement) {
                         }
                         else {
                             if(cur_value_is_internal ) {
-                                 console.log("1-1-1");
+                                //  console.log("1-1-1");
                                 if(calculated_total > cur_$totalHours ) {
                                     var total_sum = parseFloat(internal_total)+ parseFloat(diff);
                                     $('.total-internal-hours').text(total_sum.toFixed(2))
