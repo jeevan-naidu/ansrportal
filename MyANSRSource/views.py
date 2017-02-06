@@ -1351,16 +1351,17 @@ class CreateProjectWizard(SessionWizardView):
                 logger.error(
                     "Financial Milestone step has step data as none" +
                     str(form._errors))
-        print form
         return form
 
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
+        import ipdb; ipdb.set_trace()
         if self.steps.current == 'Basic Information':
             if self.get_cleaned_data_for_step('Define Project') is not None:
                 pt = self.get_cleaned_data_for_step(
                     'Define Project')['projectType']
+                print pt
                 data = {'pt': projectType.objects.get(id=pt.id).description}
             else:
                 logger.error(

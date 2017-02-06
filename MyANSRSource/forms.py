@@ -366,7 +366,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
     Delvcordinator = forms.ModelChoiceField(
         queryset=User.objects.all(),
         label="Delievery Co-ordinator",
-        widget=autocomplete.ModelSelect2Multiple(attrs={
+        widget=autocomplete.ModelSelect2(attrs={
             # Set some placeholder
             'data-placeholder': 'Type Delievery Co-ordinator Name ...',
             # Only trigger autocompletion after 3 characters have been typed
