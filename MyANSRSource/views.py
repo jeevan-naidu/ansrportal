@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.files.storage import FileSystemStorage
 from formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta, date
@@ -1350,6 +1351,7 @@ class CreateProjectWizard(SessionWizardView):
                 logger.error(
                     "Financial Milestone step has step data as none" +
                     str(form._errors))
+        print form
         return form
 
     def get_context_data(self, form, **kwargs):
@@ -1689,6 +1691,7 @@ createProject = CreateProjectWizard.as_view(FORMS)
 @login_required
 @permission_required('MyANSRSource.create_project')
 def WrappedCreateProjectView(request):
+    file_storage = ''
     return createProject(request)
 
 

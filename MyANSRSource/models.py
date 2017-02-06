@@ -6,6 +6,8 @@ from django.utils import timezone
 import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 from CompanyMaster.models import UpdateDate
+import datetime, os
+from django.core.files.storage import FileSystemStorage
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -25,6 +27,36 @@ days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z-]*$',
                               'Only alphanumeric characters are allowed.')
+
+PROJECTFINTYPE = (
+    ('FP', 'Fixed Price'),
+    ('T&M', 'T&M')
+)
+
+#upload path for sow and estimation
+
+
+def change_file_path(instance, filename):
+    ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
+    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-) '''
+
+    import random
+    import string
+
+    # random_str length will be 16 which will be combination of (4 digits + 4 characters + 4 digits + 4 characters)
+    random_str = "".join([random.choice(string.uppercase) for i in range(0, 4)]) + "".join(
+        [random.choice(string.digits) for i in range(0, 4)]) + \
+                 "".join([random.choice(string.lowercase) for i in range(0, 4)]) + "".join(
+        [random.choice(string.digits) for i in range(0, 4)])
+
+    # return string seperated by hyphen eg:
+    random_str = random_str[:4] + "-" + random_str[4:8] + "-" + random_str[8:12] + "-" + random_str[12:]
+    filetype = filename.split(".")[-1].lower()
+    filename = random_str + "." + filetype
+    path = "MyANSRSource/uploads/" + str(datetime.datetime.now().year) + "/" + str(
+        datetime.datetime.now().month) + "/" + str(datetime.datetime.now().day) + "/"
+    os_path = os.path.join(path, filename)
+    return os_path
 
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
@@ -227,6 +259,12 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Closed"
     )
+    projectFinType = models.CharField(verbose_name='Project Fin Type ', choices=PROJECTFINTYPE, max_length=40,
+                                      blank=True)
+    deliveryManager = models.IntegerField(verbose_name='Project Delievery Manager',  blank=True)
+    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
+    Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
+                                          verbose_name="Upload project Estimation Document")
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

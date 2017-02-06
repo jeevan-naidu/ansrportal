@@ -8,6 +8,7 @@ from MyANSRSource.models import Book, Project, ProjectTeamMember, \
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
+from django.utils.safestring import mark_safe
 import datetime
 import calendar
 import helper
@@ -335,8 +336,23 @@ def TimesheetFormset(currentUser,enddate):
     return TimeSheetEntryForm
 
 
+# Form Class to create milestones for project
+class changeProjectLeaderForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ('projectManager',)
+        widgets = {
+            'projectManager': autocomplete.ModelSelect2Multiple()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
+        self.fields['projectManager'].widget.attrs['class'] = "form-control"
+
+
 # Form Class to create project
-class ProjectBasicInfoForm(forms.ModelForm):
+class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
     book = forms.ModelChoiceField(
         queryset=Book.objects.all(),
         label="Book/Title",
@@ -347,37 +363,70 @@ class ProjectBasicInfoForm(forms.ModelForm):
             # 'data-minimum-input-length': 3,
         }, ),
         required=True, )
-    # projectManager = forms.ModelChoiceField(
-    #     # queryset=User.objects.all(),
-    #     label="Project Leader",
-    #     widget=autocomplete.ModelSelect2Multiple(
-    #         # url='AutocompleteUser'
-    #     ),
-    #     required=True, )
+    Delvcordinator = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Delievery Co-ordinator",
+        widget=autocomplete.ModelSelect2Multiple(attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type Delievery Co-ordinator Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+    DeliveryManager = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Delivery Manager",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type Delievery Manager Name ...',
+        }
+            # url='AutocompleteUser'
+        ),
+        required=True, )
+    # Sowdocument = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+    #     "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+    # # Add Bootstrap widgets
+    # Sowdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+    #                                      'data-iconName': 'glyphicon glyphicon-paperclip'}
+    # Estimationdocument = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+    #     "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+    # # Add Bootstrap widgets
+    # Estimationdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+    #                             'data-iconName': 'glyphicon glyphicon-paperclip'}
 
     class Meta:
         model = Project
         fields = (
             'projectType',
-            'bu',
+            'projectFinType',
             'customer',
+            'startDate',
+            'endDate',
             'name',
+            'bu',
             'customerContact',
             'book',
             'projectManager',
             'signed',
             'currentProject',
-        )
+            'Delvcordinator',
+            'DeliveryManager',
+            # 'Sowdocument',
+            # 'Estimationdocument',
+
+            )
         widgets = {
+            # 'DelieveryCo-ordinator': autocomplete.ModelSelect2Multiple(),
+            'endDate': DateTimePicker(options=dateTimeOption),
+            'startDate': DateTimePicker(options=dateTimeOption),
             'currentProject': forms.RadioSelect(
                 choices=[(True, 'New Development'), (False, 'Revision')]
             ),
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
             ),
-            'projectManager': autocomplete.ModelSelect2Multiple()
-        }
+            'projectManager': autocomplete.ModelSelect2Multiple(),
 
+        }
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
@@ -407,6 +456,16 @@ class ProjectBasicInfoForm(forms.ModelForm):
             "form-control"
         self.fields['signed'].widget.attrs['class'] = \
             "form-control"
+        self.fields['projectFinType'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['startDate'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['projectFinType'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['Delvcordinator'].widget.attrs['class'] = "form-control"
+        self.fields['DeliveryManager'].widget.attrs['class'] = "form-control"
 
 
 # Change Project Basic Form
@@ -430,6 +489,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
     id = forms.IntegerField(label="BasicInfoId", )
     reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG)
     remark = forms.CharField(max_length=100, required=False)
+
     class Meta:
         model = ProjectChangeInfo
         fields = (
@@ -568,22 +628,6 @@ class ProjectFlagForm(forms.ModelForm):
             "end-date-input form-control"
 
 
-# Form Class to create milestones for project
-class changeProjectLeaderForm(forms.ModelForm):
-
-    class Meta:
-        model = Project
-        fields = ('projectManager',)
-        widgets = {
-            'projectManager': autocomplete.ModelSelect2Multiple()
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
-        self.fields['projectManager'].widget.attrs['class'] = "form-control"
-
-
-
 class MyRemainderForm(forms.ModelForm):
 
     class Meta:
@@ -653,9 +697,6 @@ class TeamMemberPerfomanceReportForm(forms.ModelForm):
         fields = (
             'member',
         )
-
-
-
 
     def __init__(self, *args, **kwargs):
         super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)

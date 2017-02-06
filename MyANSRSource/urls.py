@@ -16,7 +16,6 @@ urlpatterns = [
         AutocompleteUser.as_view(),
         name='AutocompleteUser',
     ),
-
     url(
         r'^AutocompleteBook/$',
         AutocompleteBook.as_view(),
