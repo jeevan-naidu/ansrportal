@@ -1095,11 +1095,6 @@ class LeaveManageView(LeaveListView):
                                                                   apply_to=apply_to)  # status,user, apply_to
                 open_count = len(leave_list)
 
-                # if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
-                #     leave_list = LeaveApplications.objects.filter(status=status, user=employee,
-                #                                                   apply_to=apply_to)  # status,user, apply_to
-                #     print leave_list.query
-                #     print "status,user, apply_to"
 
                 if status == '' and from_date != '' and to_date != '' and apply_to != '' and employee != '':
                     leave_list = LeaveApplications.objects.filter(apply_to=apply_to, user=employee,
@@ -1120,35 +1115,6 @@ class LeaveManageView(LeaveListView):
             #                                leave_list.to_session, leave_list.leave_type)
 
             leave_days = total_leave_days(leave_list)
-            # Export code commented
-            # if 'export' in request.POST:
-            #     if from_date == '' and to_date == '' and status == '' and apply_to == '' \
-            #             and employee == '':
-            #         if self.request.user.groups.filter(name=settings.LEAVE_ADMIN_GROUP).exists():
-            #             leave_list_export = leave_list_all(self.request.user, True)
-            #         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
-            #             leave_list_export = leave_list_all(self.request.user, False)
-            #
-            #     else:
-            #         leave_list_export = leave_list
-            #     leave_days = total_leave_days(leave_list_export)
-            #
-            #     fields = ['user__employee__employee_assigned_id', 'user__first_name', 'leave_type__leave_type',
-            #               'from_date', 'to_date', 'applied_on', 'modified_on',
-            #               'apply_to__first_name', 'status', 'reason', 'id']
-            #
-            #     column_names = ['Employee Id', 'Employee Name ', 'Leave Type', 'From Date',
-            #                     'To Date', 'Applied Date', 'Action Taken On',
-            #                     'Applied to', 'Status', 'Reason', 'Days']
-            #
-            #     file_name = "Leave Report - " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-            #
-            #     try:
-            #         return export_xlwt_overridden(file_name, column_names,
-            #                                       leave_list_export.values_list(*fields), leave_days)
-            #     except Exception, e:
-            #         logger.error(e)
-
             if leave_list and leave_list.count > 0:
                 self.request.session['leave_list'] = leave_list
                 leave_list = paginator_handler(self.request, self.request.session['leave_list'])
@@ -1173,12 +1139,12 @@ class LeaveManageView(LeaveListView):
                            'post_apply_to': self.request.POST.get('apply_to'),
                            'post_users': self.request.POST.get('users'),
                            'form': form})
-            return HttpResponseRedirect("/leave/manage")    # filter functionality code ends here
+            # return HttpResponseRedirect("/leave/manage")    # filter functionality code ends here
 
         else:
             messages.success(self.request, "Successfully Updated")
 
-        return HttpResponseRedirect("/leave/manage")
+            return HttpResponseRedirect("/leave/manage")
 
 
 
