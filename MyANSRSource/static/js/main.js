@@ -1061,7 +1061,7 @@ app.getSum = function($elements, $outputElement) {
             lastRowId = app.getIdNo(lastRowId);
             lastRowId = Number(lastRowId);
 
-            newRow = lastRow.clone();
+            newRow = $(lastRow).clone(true).off();
             newRowId = lastRowId + 1;
 
             lastRow.after(newRow);
@@ -1614,6 +1614,7 @@ app.getSum = function($elements, $outputElement) {
                 $bTask.on({
                     change: primaryCb
                 });
+
                 $('.b-hours').on({
                     change: primaryCb ,
                 });
