@@ -211,7 +211,6 @@ def TimesheetFormset(currentUser,enddate):
         totalH = forms.DecimalField(label="Hours",
                                     max_digits=12,
                                     min_value=0.0,
-                                    max_value=24.0,
                                     decimal_places=2,
                                     widget=forms.HiddenInput()
                                     )
