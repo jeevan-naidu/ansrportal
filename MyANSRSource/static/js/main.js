@@ -91,7 +91,8 @@ app.calcCurRowChangeDate = function($tableEle) {
 
 
 app.getTaskChapter = function(selValue, currRow) {
-
+    var total_val = currRow.find('.is_internal')
+    console.log(currRow.get(0).id)
     endDate = document.getElementsByName('enddate')[0].value;
     if (selValue) {
         $.ajax({
@@ -198,10 +199,6 @@ app.getTaskChapter = function(selValue, currRow) {
             },
             error: function(data) {
                 console.log('Error: ' + data);
-            },
-            complete : function(data) {
-
-
             }
         });
     } else {
@@ -210,30 +207,6 @@ app.getTaskChapter = function(selValue, currRow) {
         currRow.find(".b-task").html(options);
         currRow.find(".b-chapter").html(options);
     }
-
-
-               var is_internal = currRow.find('.is_internal').attr('id');
-                 var mondayH = is_internal.split('-');
-
-//          $.ajax({
-//                    url: '/myansrsource/get_internal',
-//                    dataType: 'json',
-//                    data: {
-//                        project_id: selValue
-//                    },
-//
-//                    success: function(data) { console.log("success internal")
-//                        $('#'+is_internal).val(parseInt(data.is_internal));
-//                        mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
-//                        is_changed =true;
-//                        console.log("mon trigger");
-//                        is_changed =false;
-////                        $(this).unbind('change');
-//                    },
-//                    error: function(data) {
-//                        console.log('Error: ' + data);
-//                    }
-//                });
 };
 
 app.getActiveTaskChapter = function() {
@@ -502,36 +475,35 @@ app.setActive = function($elements, arr) {
 //var is_internal_id = 0;
 app.changeProject = function() {
 
-    app.billableSelectProject.on('change', function() {
+    app.billableSelectProject.on('change', function(e) {
 
-//       var mondayH = this.id.split('-');
-////    $(this).blur();
-////    if(this.value != ''){
-//          $.ajax({
-//                    url: '/myansrsource/get_internal',
-//                    dataType: 'json',
-//    //                async:false,
-//                    data: {
-//                        project_id: this.value
-//                    },
-//
-//                    success: function(data) {
-//
-//                        var is_internal_id = mondayH[0]+'-'+mondayH[1]+'-is_internal';
-//                        $('#'+is_internal_id).val(parseInt(data.is_internal));
-//                        mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
-//                        is_changed =true;
-////                        $('#'+mondayH).trigger('change')
-////                            change: primaryCb ,
-//
-//                        console.log("mon trigger");
-//                        is_changed =false;
-//                        $(this).unbind('change');
-//                    },
-//                    error: function(data) {
-//                        console.log('Error: ' + data);
-//                    }
-//                });
+       var mondayH = this.id.split('-');
+    $(this).blur();
+//    if(this.value != ''){
+          $.ajax({
+                    url: '/myansrsource/get_internal',
+                    dataType: 'json',
+    //                async:false,
+                    data: {
+                        project_id: this.value
+                    },
+
+                    success: function(data) {
+
+                        var is_internal_id = mondayH[0]+'-'+mondayH[1]+'-is_internal';
+                        $('#'+is_internal_id).val(parseInt(data.is_internal));
+                        mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
+                        is_changed =true;
+//                        $('#'+mondayH).one(trigger('change'));
+//                            change: primaryCb ,
+
+                        console.log("mon trigger");
+                        is_changed =false;
+                    },
+                    error: function(data) {
+                        console.log('Error: ' + data);
+                    }
+                });
 //    }
         var $this = $(this),
             $row = $this.closest('tr'),
@@ -539,6 +511,11 @@ app.changeProject = function() {
             selectedValue = Number($this.val()),
             selectedProject;
         app.getTaskChapter(selectedValue, $row);
+
+ var tmp_id = this.id.split('-');
+    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+
 
 
         // get current project by id
@@ -550,7 +527,9 @@ app.changeProject = function() {
 
             $projectUnitsElement.text(app.curProjectUnitShort);
         }
-    });
+   e.stopImmediatePropagation();
+    return false; });
+
 };
 
 // Get particular object from array of object
@@ -609,7 +588,6 @@ app.firstTimeTotal = function() {
 
             grandTotal = 0,
             $grandTotal = $('.timesheet-grand-total');
-            console.log("$grandTotal"+$grandTotal);
         helper.forEach(bTask, function(item) {
             cRowHourTotal = 0;
             cRowQuestionTotal = 0;
@@ -2017,8 +1995,8 @@ $("[name$='project']").on('focus', function(){
     $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
 });
 is_changed =false;
-$("[name$='project']").on('change', function(){
-    var tmp_id = this.id.split('-');
-    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
-    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
-});
+//$("[name$='project']").on('change', function(){
+//    var tmp_id = this.id.split('-');
+//    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+//    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+//});
