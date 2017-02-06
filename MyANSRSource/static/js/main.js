@@ -494,7 +494,7 @@ app.changeProject = function() {
                         $('#'+is_internal_id).val(parseInt(data.is_internal));
                         mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
                         is_changed =true;
-//                        $('#'+mondayH).one(trigger('change'));
+                        $('#'+mondayH).trigger('change');
 //                            change: primaryCb ,
 
                         console.log("mon trigger");
@@ -1583,7 +1583,7 @@ app.getSum = function($elements, $outputElement) {
 
                     calculateTotal();
 
-                    var inputToView = function() {
+                    var inputToView = function() { console.log("itv");
                         var curInput = $curHoursInput.val();
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
                         if (tsInput) {
@@ -1597,10 +1597,10 @@ app.getSum = function($elements, $outputElement) {
                         }
                     };
 
-                    $curQuestionsInput.on({
-                        keyup: inputToView,
-                        click: inputToView
-                    }, calculateTotal);
+//                    $curQuestionsInput.on({
+//                        keyup: inputToView,
+//                        click: inputToView
+//                    }, calculateTotal);
 
                     $curHoursInput.on({
                         change : inputToView,
