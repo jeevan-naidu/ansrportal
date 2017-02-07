@@ -28,7 +28,21 @@ lib64/
 parts/
 sdist/
 var/
-migrations/
+BookMyRoom/migrations/
+CompanyMaster/migrations/
+Library/migrations/
+Hire/migrations/
+Leave/migrations/
+Salesforce/migrations/
+employee/migrations/
+CompanyMaster/migrations/
+MyANSRSource/migrations/
+fb360/migrations/
+Grievances/migrations/
+GrievanceAdmin/migrations/
+Reports/migrations/
+ExitApp/migrations/
+static/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -64,7 +78,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# Avoid ansrsourceLogs, Client Activities 
+# Avoid ansrsourceLogs, Client Activities
 backup/
 logs/
 errorlogs
