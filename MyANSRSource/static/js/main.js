@@ -176,7 +176,7 @@ app.getTaskChapter = function(selValue, currRow) {
 
             error: function(data) {
                 console.log('Error: ' + data);
-                alert(data.responseText)
+                // alert(data.responseText)
             }
         });
 
@@ -398,6 +398,7 @@ app.firstTimeTotal = function() {
         });
 
         helper.forEach(nonBillableTotalItems, function(item) {
+
             cRowNonBillableTotal = 0;
             cRowNonBillable = $(item).closest('tr');
             $nonBillableItemsHour = cRowNonBillable.find('.Mon-t, .Tue-t, .Wed-t, .Thu-t, .Fri-t, .Sat-t, .Sun-t');
@@ -467,6 +468,9 @@ app.firstTimeTotal = function() {
 
         $total.text((total).toFixed(2));
         console.log("total_leave_hours"+total_leave_hours+"total"+total);
+        temppooooo = $(this);
+        temppp = this.id;
+        console.log(temppooooo)
         return total;
     };
 
@@ -521,19 +525,22 @@ app.firstTimeTotal = function() {
         // function hourcheck() {
         var a = [($monTotal).text(),($tueTotal).text(),($wedTotal).text(),($thuTotal).text(),($friTotal).text(),($satTotal).text(),($sunTotal).text()]
         var b = 0
-
-
-        console.log(totalhours.text())
-
-        for (i = 0; i <= a.length; i += 1) {
+        for (i = 0; i < a.length; i += 1) {
           // var b = b+a[i];
           // console.log(parseInt(b))
           // ~~sanjay
-
+          // alert("caller is " + arguments.callee.caller.toString());
+          var th = new Array();
+          console.log('totalhours' + totalhours.text())
             if(a[i] > 24) {
+
+              // console.log(this.id)
               $('#'+tempp_id).parent().parent().parent().find('strong').text()
               $('#'+tempp_id).val(b)
-              $('#id_form-[i]-totalH').text(totalhours.text('0.00'))
+              // $('#'+temp_non).val(b)
+              $('.t-hours.set-zero').val($('.form-control.t-hours-hidden.d-item.set-zero').val())
+              $('.form-control.total.input-field.r-total').val()
+
               total($mon, $monTotal);
               total($tue, $tueTotal);
               total($wed, $wedTotal);
@@ -543,9 +550,8 @@ app.firstTimeTotal = function() {
               total($sun, $sunTotal);
                 // console.log(a[i])
               sweetAlert("Oops...", "Please fill below 24 hours! You cannot save untill you enter correct time!", "error");
+
             }
-
-
           }
     };
 
@@ -819,6 +825,7 @@ app.getSum = function($elements, $outputElement) {
 
 // Form control plugin
 ;
+var temp_non;
 var tempp;
 var tempp_id;
 var totalhours;
@@ -898,6 +905,7 @@ var totalhourshidden;
 
             // Increment the id and name value
             $formFields.each(function(index) {
+
                 $element = $(this);
                 curId = $element.attr('id');
                 curName = $element.attr('name');
@@ -917,19 +925,17 @@ var totalhourshidden;
                     $(rowCountInitialElement).attr('value', rowCount);
                 }
 
-                if ($element.hasClass('is_internal'))
-                 {  console.log("is internal")
-                    $element.val('1');
-                 }
                 if (options.defaultValues.setZeroList) {
                     if (options.defaultValues.setZeroList.indexOf(index) !== -1) {
                         // For project unit not set zero
                         if (!$element.hasClass('project-unit')) {
                             if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
                                 $element.val('0');
+                                //console.log('input');
                             } else {
                                 $element.text('0');
-                           }
+                                //console.log('not input');
+                            }
                         }
 
                     }
@@ -1031,12 +1037,8 @@ var totalhourshidden;
                         $element.attr('value', 0);
                     }
                     else if( elementType2 === 'INPUT') {
-                            if(!$element.hasClass('is_internal'))
-                                $($element).val(0);
-                            else  {
-                                $($element).val(1);
-                                $($element).data('prev_value',1);
-                            }
+                            $($element).val(0);
+                             $($element).data('prev_value',0);
                     }
                     else {
                         $element.text('0');
@@ -1050,7 +1052,7 @@ var totalhourshidden;
                             .remove()
                             .end()
                             .append('<option value>-----</option>');
-//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     }
                 }
 
@@ -1064,7 +1066,7 @@ var totalhourshidden;
                 }
 
 
-//                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
 
             });
 
@@ -1128,6 +1130,8 @@ var totalhourshidden;
                 var $days = $table.find('.days');
 
                 var totalDays = function() {
+                  // debugger;
+                  tempp_id = this.id;
                     var $curEle = $(this),
                         $curRow = $curEle.closest('tr'),
                         $curDays = $curRow.find('.days'),
@@ -1152,6 +1156,7 @@ var totalhourshidden;
                     }
 
                     var nonBillableTotalFun = function() {
+                      // debugger;
                         for (i = 0; i < totalListLen; i += 1) {
                             curTotalNonBillable = Number($($totalList[i]).val());
 
@@ -1172,8 +1177,8 @@ var totalhourshidden;
                 };
 
                 $days.on({
-                    keyup: totalDays,
-                    click: totalDays
+                    change: totalDays,
+                    change: totalDays
                 });
             }
         };
@@ -1181,9 +1186,9 @@ var totalhourshidden;
         var billableTotalFun = function() {
 //        console.log("billableTotalFun");
             if (options.billableTotal) {
+
                 var $totalBillableHours = $('.total-billable-hours'),
                     $totalIdleHours = $('.total-idle-hours');
-
 
                 var $dayPopoverBtn = $table.find('.day-popover-button');
                 var $bTask = $table.find('.b-task'),
@@ -1201,10 +1206,11 @@ var totalhourshidden;
                 });
 
 //                console.log("b4 pcb");
-                var primaryCb = function(e) { console.log(this.id);
+                var primaryCb = function(e) {
+                  // debugger;
                     e.preventDefault();
                     e.stopPropagation();
-                    tempp = $(this);
+
                     tempp_id = this.id;
 
                     var $curDayBtn = $(this),
@@ -1234,7 +1240,7 @@ var totalhourshidden;
                         selectedProject;
                         totalhours = $totalHours
                         totalhourshidden = $totalHoursHidden
-
+                        currow = $curRowHours
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
