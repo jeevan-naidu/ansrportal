@@ -78,42 +78,17 @@
                                   </div>
 
 
-                                      {%if leave_list%}
-
-                                      <div class="pull-right export-btn-2">
-
-
-
-                                                  <!--<input type="submit" class="pull-right btn btn-sm btn-danger btn-ansr-orange" value = "Export" name="export"/>-->
-
-
-
-                                                 <b style="line-height:30px;">Total : {{leave_list|length}} &nbsp;&nbsp;&nbsp;</b>
+                                      {%if open%}
+                                  <div class="pull-right export-btn-2">
+                                                 <b style="line-height:30px;">Total : {{open|length}} &nbsp;&nbsp;&nbsp;</b>
                                               </div>
                                       {% endif %}
-
-
-
-
                               </div>
-
-
-
-
-
                       </div>
 
                       <div class="col-md-1 col-sm-6">
-          <!--                <div class="pull-right ">
-                              <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
-                          </div>-->
-
-
-
                       </div>
                   </div>
-
-
                   </form>
 
 
@@ -617,6 +592,14 @@
                 $('.reject_all').prop('checked', false);
             }
 
+
+        });
+        $('#submit_button').click(function(){
+              var result  =  date_validation('id_from_date','id_to_date');
+              if (result === false) return false;
+
+             var inputs = input_elements_validation('filter_class', 'leave/leavelist');
+             if (inputs === false) return false;
 
         });
     });
