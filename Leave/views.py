@@ -154,7 +154,7 @@ class Dashboard(View):
         #                                                                            'approved',
         #                                                                            'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                    year=2016).values('leave_type__leave_type',
+                                                    year=2017).values('leave_type__leave_type',
                                                                                    'applied',
                                                                                    'approved',
                                                                                    'balance')
@@ -225,7 +225,7 @@ class Dashboard(View):
         #                                                                          'approved',
         #                                                                          'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                    year=2016).values('leave_type__leave_type',
+                                                    year=2017).values('leave_type__leave_type',
                                                                                    'applied',
                                                                                    'approved',
                                                                                    'balance')
