@@ -531,9 +531,10 @@ app.firstTimeTotal = function() {
           // ~~sanjay
           // alert("caller is " + arguments.callee.caller.toString());
           var th = new Array();
-          console.log('totalhours' + totalhours.text())
-            if(a[i] > 24) {
 
+
+            if(a[i] > 24) {
+              // alert("hgdaas")
               // console.log(this.id)
               $('#'+tempp_id).parent().parent().parent().find('strong').text()
               $('#'+tempp_id).val(b)
@@ -549,7 +550,7 @@ app.firstTimeTotal = function() {
               total($sat, $satTotal);
               total($sun, $sunTotal);
                 // console.log(a[i])
-              sweetAlert("Oops...", "Please fill below 24 hours! You cannot save untill you enter correct time!", "error");
+              sweetAlert("Oops...", "you are amazing, you can't work for more than 24 hours a day!!", "error");
 
             }
           }
