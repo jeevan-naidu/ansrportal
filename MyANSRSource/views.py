@@ -542,7 +542,7 @@ def Timesheet(request):
                         if k != 'hold' and k != 'approved':
                             if k in (
                             'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
-                                if v == None:
+                                if v is None:
                                     v = float(0.0)
 
                             setattr(billableTS, k, v)

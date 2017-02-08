@@ -908,7 +908,6 @@ class LeaveManageView(LeaveListView):
         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
             context['all'] = LeaveApplications.objects.filter(apply_to=self.request.user, status='open')
             context['open'] = context['leave_list_inherit'].filter(status='open', apply_to=self.request.user)
-            print len(context['open'])
         context['open_count'] = len(context['open'])
         context['open'] = paginator_handler(self.request, context['open'])
         return context
@@ -1055,6 +1054,7 @@ class LeaveManageView(LeaveListView):
                     leave_list = LeaveApplications.objects.filter(apply_to=apply_to,
                                                                   from_date__range=[from_date,
                                                                                     to_date], status='open')  # apply_to, date
+                    open_count = len(leave_list)
 
             except:
                 leave_list = None
