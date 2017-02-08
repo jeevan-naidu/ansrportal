@@ -353,3 +353,5 @@ span.book-count{font-weight: bold}
 
 .leave-report-table thead{border: 1px solid #464a4c;}
 .leave-report-table th{background-color: #464A4C !important;color: #fff;}
+
+#timesheet-approve-table_filter{display: none;}
