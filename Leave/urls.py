@@ -15,6 +15,8 @@ urlpatterns = [
                            name=u'list_leave_all'),
                        url(r'^manage/$', login_required(LeaveManageView.as_view(template_name='Manager.html')),
                            name=u'manage_leave_list'),
+                       url(r'^manage/(?P<all>[a-z]+)/$', login_required(LeaveManageView.as_view()),
+                           name=u'manage_leave_list'),
                        url(r'^ShortAttendanceTransact/$', login_required(ShortAttendanceTransact),
                            name=u'ShortAttendanceTransact'),
                        url(r'^ShortAttendanceDetail/$', login_required(ShortAttendanceDetail),
