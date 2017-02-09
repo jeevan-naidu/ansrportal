@@ -1687,8 +1687,9 @@ def leavecheck(user, date):
                                                     status__in=['open', 'approved']).exclude(
         leave_type__in=[11, 13, 8, 14, 15])
     holiday = Holiday.objects.all().values('date')
-
-    if len(leaveapplied) > 1:
+    if date.strftime("%A") in ("Saturday", "Sunday") or date in [datedata['date'] for datedata in holiday]:
+        flag = 1
+    elif len(leaveapplied) > 1:
         flag = 2
     elif leaveapplied and leaveapplied[0].from_date < date and leaveapplied[0].to_date > date:
         flag = 2
