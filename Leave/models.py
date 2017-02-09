@@ -155,3 +155,17 @@ class ShortAttendance(models.Model):
     def __unicode__(self):
       ''' return unicode strings '''
       return '%s' % (self.user.username)
+
+
+class CreditEntry(models.Model):
+    user = models.ForeignKey(User, verbose_name="user", related_name="credited_user")
+    year = models.IntegerField(verbose_name="year")
+    month = models.IntegerField(verbose_name="month")
+    leave_type = models.ForeignKey(LeaveType, default=1)
+    days = models.CharField(verbose_name="days", max_length=5)
+    status_action_by = models.ForeignKey(User, verbose_name="Action_Taken_by")
+    status_action_on = models.DateField(auto_now=True, verbose_name='Status Change date')
+    comments = models.CharField(max_length=100, verbose_name="status_comments")
+
+    def __unicode__(self):
+        return '%s' % (self.user.username + " " + self.leave_type)

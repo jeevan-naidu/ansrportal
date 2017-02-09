@@ -80,3 +80,14 @@ def DirectReportee(user, request):
         reportee_flag = 0
 
     return reportee_flag
+
+@register.filter
+def get_item(dictionary, key):
+    # print dictionary
+    try:
+        s = dictionary.get(key)
+    except:
+        s = 0
+    if s is None:
+        s = 0
+    return s

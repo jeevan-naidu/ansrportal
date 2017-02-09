@@ -232,11 +232,11 @@ def SingleProjectReport(request):
     fresh = 1
     actualTotal, plannedTotal, balanceTotal, deviation = 0, 0, 0, 0
     red, closed = False, False
-    form = ProjectPerfomanceReportForm(user=request.user)
+    form = ProjectPerfomanceReportForm(user=request.user, pmvalue='set')
     if request.method == 'POST':
         fresh = 0
         reportData = ProjectPerfomanceReportForm(request.POST,
-                                                 user=request.user)
+                                                 user=request.user, pmvalue='set')
         if reportData.is_valid():
             cProject = reportData.cleaned_data['project']
             if cProject.closed:
@@ -419,6 +419,7 @@ def SingleProjectReport(request):
                     deviation = 0
             form = ProjectPerfomanceReportForm(
                 user=request.user,
+                pmvalue='set',
                 initial={'project': cProject}
             )
             if 'generate' in request.POST:

@@ -328,20 +328,20 @@
             </span> -->
                                             </a>
                                         </li>
-                                        <li id="test-2" class="one-icon mega-li" title="Yammer" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Yammer</strong><br/>Takes you to yammer.com" data-step=5>
-                                            <a class="mega-link vd_bg-yellow " href="https://www.yammer.com/ansrsource.com/" target="_blank">
-                                                <span class="mega-icon">
-                                                    <i class="demo-icon icon-1471432377_yammer_mod" style="font-size:13px;"></i>
-                                                </span>
-                                            </a>
-
-                                        </li>
-                                        <li id="test" class="one-icon mega-li" title="Library" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Library</strong><br/>Borrow or return books" data-step=6>
+                                        <li id="test" class="one-icon mega-li" title="Library" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Library</strong><br/>Borrow or return books" data-step=5>
                                             <a class="mega-link vd_bg-yellow" href="/library/" >
                                                 <span class="mega-icon">
                                                     <i class="fa fa-book"></i>
                                                 </span>
                                             </a>
+                                        </li>
+                                        <li id="test-2" class="one-icon mega-li" title="myansrsourceHelpDesk" data-placement="bottom" data-toggle="tooltip" data-intro="<strong>Mail</strong><br/>Contact support team" data-step=6>
+                                            <a class="mega-link vd_bg-yellow " href="mailto:myansrsourceHelpDesk@ansrsource.com">
+                                                <span class="mega-icon">
+                                                    <i class="fa fa-envelope" style="font-size:15px;"></i>
+                                                </span>
+                                            </a>
+
                                         </li>
                                     </ul>
                                     {%endif%}
@@ -367,10 +367,10 @@
                                     <div class="child-menu" data-action="click-target">
                                         <ul>
                                             <li>
-                                                <a href="/myansrsource/timesheet/entry">
+                                                <a href="/myansrsource/timesheet/entry" data-toggle="enter" title="Badge number indicates number of  weeks, time sheet have not been submitted (Current Year)">
                                                     <span class="menu-text">Enter Timesheet</span>
-                                                    {% if TSProjectsCount > 0 %}
-                                                        <span class="menu-badge"><span class="badge vd_bg-red">{{ TSProjectsCount }}</span></span>
+                                                    {% if request.session.TSProjectsCount and request.session.TSProjectsCount > 0 %}
+                                                        <span class="menu-badge"><span class="badge vd_bg-red">{{ request.session.TSProjectsCount }}</span></span>
                                                     {% else %}
                                                         <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
                                                     {% endif %}
@@ -379,10 +379,10 @@
 
                                             {% if user|approve_timesheet %}
                                                  <li>
-                                                        <a href="/myansrsource/timesheet/approve">
+                                                        <a href="/myansrsource/timesheet/approve" data-toggle="appprove" title="Badge number indicates number of weeks, time sheet have not been approved (Current Year)">
                                                             <span class="menu-text">Approve Timesheet</span>
-                                                            {% if unapprovedts > 0 %}
-                                                                <span class="menu-badge"><span class="badge vd_bg-red">{{ unapprovedts }}</span></span>
+                                                            {% if request.session.unapprovedts and request.session.unapprovedts  > 0 %}
+                                                                <span class="menu-badge"><span class="badge vd_bg-red">{{ request.session.unapprovedts }}</span></span>
                                                             {% else %}
                                                                 <span class="menu-badge"><span class="badge vd_bg-red">0</span></span>
                                                             {% endif %}
@@ -1337,7 +1337,8 @@
     <script type="text/javascript">
 /*        $(document).ready(function() {
             "use strict";
-
+        $('[data-toggle="enter"]').tooltip();
+        $('[data-toggle="approve"]').tooltip();
             $('#data-tables').dataTable();
         });*/
     </script>

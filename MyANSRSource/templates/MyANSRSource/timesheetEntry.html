@@ -41,11 +41,17 @@
 	<legend>
 	Project Effort
 		<span class="pull-right">
-			<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
+			<a type="submit" value="submit" class="btn btn vd_btn vd_bg-green btn-xs" id="timesheet-billable-add-btn">
 				<span class="glyphicon glyphicon-plus"></span>
 				Add Project effort Item
 			</a>
 		</span>
+		<span class="pull-right" style="margin-right: 5px">
+			<a value="submit" class="btn btn vd_btn vd_bg-green btn-xs" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
+				Feedback
+			</a>
+		</span>
+
 	</legend>
 
     {{ tsFormset.management_form }}
@@ -58,7 +64,7 @@
 			</div>
 		{% endif %}
 	{% endfor %}
-	<table class="table table-condensed table-responsive">
+	<table class="table table-condensed table-responsive" id="project_table" >
 	{% for form in tsFormset %}
 		{{ form.errors }}
 		{% if forloop.first %}
@@ -107,6 +113,8 @@
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field.label }}</td>
 				{% endif %}
+
+
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
@@ -136,7 +144,8 @@
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
-				{% if 'pt' in field.label %}
+
+            {% if 'is_internal' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
 			{% endfor %}
@@ -144,47 +153,47 @@
 			{% spaceless %}
 			{% if data.label in shortDays %}
 					<td style="position:relative">
-						{% for data in form.visible_fields %}
-							{% if 'hold' in data.label %}
-								{% if data.value %}
-									<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">
-								{% else %}
-									<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">
-								{% endif %}
-							{% endif %}
-						{% endfor %}
-                            <span style="display: none;">
-							{% for tdata in form.hidden_fields %}
-								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
-									{% for typeData in form.hidden_fields %}
-										{% if 'projectType' in typeData.id_for_label %}
-											{% if tdata.value > 0 %}
-												<span class="b-questions set-zero">{{ tdata.value }}</span>
-												<span class="project-unit">{{ typeData.value }}</span>
-											{% else %}
-												<span class="b-questions set-zero">0</span>
-												{% if typeData.value == None %}
-													<span class="project-unit set-q">Q</span>
-												{% else %}
-													<span class="project-unit set-q">{{ typeData.value }}</span>
-												{% endif %}
-											{% endif %}
-										{% endif %}
-									{% endfor %}
-									{{ tdata }}
-								{% endif %}
-							{% endfor %}
-                            </span>
+						<!--{% for data in form.visible_fields %}-->
+							<!--{% if 'hold' in data.label %}-->
+								<!--&lt;!&ndash;{% if data.value %}&ndash;&gt;-->
+									<!--&lt;!&ndash;<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">&ndash;&gt;-->
+								<!--&lt;!&ndash;{% else %}&ndash;&gt;-->
+									<!--&lt;!&ndash;<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">&ndash;&gt;-->
+								<!--&lt;!&ndash;{% endif %}&ndash;&gt;-->
+							<!--{% endif %}-->
+						<!--{% endfor %}-->
+                            <!--&lt;!&ndash;<span style="display: none;">&ndash;&gt;-->
+							<!--{% for tdata in form.hidden_fields %}-->
+								<!--{% if data.label|lower in tdata.id_for_label  %}-->
+									<!--{% for typeData in form.hidden_fields %}-->
+										<!--{% if 'tsId' in typeData.id_for_label %}-->
+											<!--{% if tdata.value > 0 %}-->
+												<!--<span class="b-questions set-zero">{{ tdata.value }}</span>-->
+												<!--<span class="project-unit">{{ typeData.value }}</span>-->
+											<!--{% else %}-->
+												<!--<span class="b-questions set-zero">0</span>-->
+												<!--{% if typeData.value == None %}-->
+													<!--<span class="project-unit set-q">Q</span>-->
+												<!--{% else %}-->
+													<!--<span class="project-unit set-q">{{ typeData.value }}</span>-->
+												<!--{% endif %}-->
+											<!--{% endif %}-->
+										<!--{% endif %}-->
+									<!--{% endfor %}-->
+									<!--{{ tdata }}-->
+								<!--{% endif %}-->
+							<!--{% endfor %}-->
+                            <!--</span>-->
 
-							{% for tdata in form.hidden_fields %}
+							{% for tdata in form.visible_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-                                    {% with dayclass=data.label|add:"-t" %}
-                                        {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
-                                        {% else %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H
-                                        {% endif %}
-                                    {% endwith %}
+                                    <!--{% with dayclass=data.label|add:"-t" %}-->
+                                        <!--{% if tdata.value > 0 %}-->
+                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H-->
+                                        <!--{% else %}-->
+                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H-->
+                                        <!--{% endif %}-->
+                                    <!--{% endwith %}-->
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
@@ -334,7 +343,7 @@
 	<legend>
 	Non - Project Effort
 	<span class="pull-right">
-		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn-success btn-xs">
+		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn vd_btn vd_bg-green btn-xs">
 			<span class="glyphicon glyphicon-plus"></span>
 			Add Non-project effort Item
 		</a>
@@ -425,7 +434,7 @@
 											<b>Your Feedback</b>
 										</div>
 										<div class="modal-body">
-											{{ data.value }}
+											{{ feedback }}
 										</div>
 									</div>
 								</div>
@@ -451,15 +460,27 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-		    <td>Billable</td>
-		    <td class="total-billable-hours text-right">{{ bTotal }}</td>
+                <tr style="display:none">
+		    <td >Billable</td>
+		    <td class="total-billable-hours text-right" >{{ bTotal }}</td>
                 </tr>
-                <tr>
+                <tr style="display:none">
                     <td>Idle</td>
 		    <td class="total-idle-hours text-right">{{ idleTotal }}</td>
                 </tr>
                 <tr>
+					     <tr>
+                    <td>Leave</td>
+		    <td class="total-leave-hours text-right">{{ leave_hours }}</td>
+                </tr>
+						     <tr>
+                    <td>Internal</td>
+		    <td class="total-internal-hours text-right">{{ internal_value }}</td>
+                </tr>
+						     <tr>
+                    <td>External</td>
+		    <td class="total-external-hours text-right">{{ external_value }}</td>
+                </tr>
                     <td>Non-Billable</td>
 		    <td class="total-non-billable-hours text-right">{{ othersTotal }}</td>
                 </tr>
@@ -488,12 +509,61 @@
             <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right">Save</button>
         {% endif %}
         </div>
+
+
+<!-- Modal Area -->
+
+
+
+                  <div class="modal fade" id="timesheet-feedback-modal" tabindex="-1" role="dialog" aria-labelledby="timesheet-feedback" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Feedback </h4>
+                        </div>
+                        <div class="modal-body">
+	                            <div class="form-group">
+	                              <label class="col-sm-4 control-label">Manager Feedback : </label>
+	                              <div class="col-sm-7 controls">
+	                                <span>{{feedback}}</span>
+	                              </div>
+
+	                            </div>
+	                            <br style="clear:both">
+
+                        </div>
+
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+
+
+
+
 	<script>
+    $(window).load(function(){
+      // var x = document.getElementById("#id_form-0-tsId").type()
+      // debugger;
+      var x = document.getElementsByClassName('ansr-disabled');
+
+
+      if(x.length > 0){
+        // document.getElementById("#timesheet-billable-add-btn").style.display = 'none';
+        // document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';
+        $("#timesheet-billable-add-btn").attr("disabled", true);
+        $("#timesheet-non-billable-add-btn").attr("disabled", true);;
+
+      }
+    });
 
  		$(document).on("click", "#submitTS", function(e) {
             swal({
               title: "Are you sure?",
-              text: "Once submitted, your timesheet will be approved by the system and cannot be modified. If you want to save for now and change it later, Please click 'No, Cancel' and press the save button. Otherwise Please click 'Yes, Please'",
+              text: "Once submitted, your time sheet will be approved by the system and cannot be modified. If you want to save for now and change it later, Please click 'No, Cancel' and press the save button. Otherwise Please click 'Yes, Please'",
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: "#37950B",
@@ -504,8 +574,21 @@
             },
             function(isConfirm) {
                 if (isConfirm) {
-                  $("#timesheet").submit();
-                  swal("Done!", "Your timesheet is submitted", "success");
+                    var count = 0 ;
+                     $('[id^=id_form][id$=DELETE]' ).each(function(){
+                        if (this.checked) {
+                            console.log(this.id);
+                            count +=1;
+                        }
+                    });
+                    if($( "#project_table > tbody > tr " ).length == count ) {
+                            swal("warning!"," You Can't Submit Your Time Sheet Without Entering Details For Project ");
+                            e.preventDefault();
+                    }
+                    else  {
+                        $("#timesheet").submit();
+                        swal("Done!", "Your timesheet is submitted", "success");
+                    }
                 }
                 else
                   swal("Stay Cool", "You can still edit your timesheet", "success");
@@ -514,8 +597,16 @@
 
         $(function() {
             $( "#saveTS" ).click(function() {
+              // debugger;
+              var a = document.getElementById("#id_form-0-project");
+
+                if (a != null){
+
+
                 $( "#saveTS" ).hide();
+              }
             });
+
         });
 
 
@@ -531,6 +622,16 @@
 
         $(document).ready(function(){
         	$('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+        })
+
+        $(document).ready(function(){
+        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
+			   if ($(this).find('textarea').val() ) {
+			   		$('#timesheet-feedback-button').removeClass('vd_bg-green').addClass('vd_bg-yellow');
+			   }else{
+			   		$('#timesheet-feedback-button').removeClass('vd_bg-yellow').addClass('vd_bg-green');
+			   }
+			})
         })
 
 

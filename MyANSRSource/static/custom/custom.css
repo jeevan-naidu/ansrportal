@@ -1,5 +1,18 @@
+/* ansr classes */
 
+/*.ansr-brown{background: #ce9b5e !important; border: 1px solid #bd8f58}*/
+/*.ansr-green{background: #98b733 !important; border: 1px solid #8eaf25}
+.ansr-notification-green{background: #7cbb52 !important}
 
+.menu-icon.ansr-brown{color: #bd8f58 !important; border-color: #bd8f58 !important}
+.menu-icon.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; background: #bd8f58 !important }
+
+label.ansr-brown{color: #bd8f58 !important; border-color: #bd8f58 !important}
+label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; background: #bd8f58 !important }
+.radio-mod input:checked + label.ansr-brown{color: #fff !important; background: #bd8f58 !important}
+*/
+
+.vd_bg-green.disabled{background: #82cea8 !important}
 
 /* Bootstrap extensions */
 
@@ -9,6 +22,15 @@
 .mr-15{margin-right: 15px;}
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
+
+/* General Classes */
+
+.disable-select {
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+}
 
 
 /* myansr mod */
@@ -170,27 +192,19 @@ iframe{
 
 
 
-/* Checkbox styling */
 
-/*
-input[type="checkbox"].styled {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  box-sizing: borer-box;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  background: url('../images/checks.png')no-repeat;
-  background-position: -3px -3px;
+
+/* Timesheet */
+
+.bb0{border-bottom: 0px !important}
+#timesheet-non-billable legend, #timesheet legend{
+    padding-bottom: 10px;
+/*    background: #f1f1f1;
+    margin: -15px;
+    padding: 5px;*/
 }
-input[type="checkbox"].styled:checked {
-  background: url('../images/checks.png')no-repeat -3px -27px;
-}
-*/
 
 
-/*input[type=checkbox].chk1:before { content:""; display:inline-block; width:12px; height:12px; background:red; }
-input[type=checkbox].chk1:checked:before { background:green; }*/
 
 
 #timesheet input[type=checkbox]:before {
@@ -213,8 +227,42 @@ input[type=checkbox].chk1:checked:before { background:green; }*/
     background: #ff5d5d;
     border: 1px solid #f74343;
 }
+textarea.input-border-btm{background: #fbfbfb}
+#timesheet-approve-table.table .menu-action .menu-icon{margin-top: 1px !important}
 
 
+
+
+
+.radio-mod{padding-left:5px;display:inline-block;margin:2px 2px;}
+.radio-mod label{
+  padding: 3px 5px !important;
+  color: #70C0C5;
+  background-color: #D8C5BF;
+  background-color: #fff;
+  /* border-color: #F59B7B; */
+  border-radius: 3px;
+  border: 1px solid #9C6969;
+  border: 1px solid #CE9797;
+  border:1px solid #70C0C5;
+}
+.radio-mod input{display: none !important;}
+.radio-mod input:checked + label{
+        background: #616161;
+        background: #9C6969;
+        background: #70C0C5;
+        color: white;
+        border-radius:3px;
+        border: 1px solid #70C0C5;
+    }
+.radio-mod label::after, .radio-mod label::before{display:none}
+/* end of for approval screen */
+
+.radio-padding-mod{padding: 0px !important;}
+.green-padding-mod{padding: 6px 11px 1px !important;}
+
+#timesheet-approve-report .modal-dialog{width: 1200px}
+.total-table{font-weight: bold !important;}
 
 
 

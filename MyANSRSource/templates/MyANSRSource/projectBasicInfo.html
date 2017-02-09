@@ -2,7 +2,7 @@
 
 {% block createProjectActive %}class="active"{% endblock %}
 {% block BIactiveClass %}active{% endblock %}
-{% block childform %}{% block masterform %}
+<!--{% block childform %}{% block masterform %}-->
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
         <ul>
@@ -41,7 +41,7 @@
 
                                         <span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
 
-                                    {% else %}
+                                    {% else %}  {{ form.field.errors }}
                                         <span class="col-lg-9">{{ field }}
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
                                         </span>
