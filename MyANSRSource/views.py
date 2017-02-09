@@ -796,6 +796,8 @@ def leaveappliedinweek(user, wkstart, wkend):
             weekleave.append(4)
         elif flag == 2:
             weekleave.append(8)
+        elif flag == 4:
+            weekleave.append(2)
         else:
             weekleave.append(0)
     return weekleave
@@ -1989,18 +1991,18 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                             'sunday_total': sunday_total})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
-
-def leaveappliedinweek(user, wkstart, wkend):
-    weekleave = []
-    for single_date in daterange(wkstart, wkend):
-        flag = leavecheck(user, single_date)
-        if flag == 1:
-            weekleave.append(4)
-        elif flag == 2:
-            weekleave.append(8)
-        else:
-            weekleave.append(0)
-    return weekleave
+#
+# def leaveappliedinweek(user, wkstart, wkend):
+#     weekleave = []
+#     for single_date in daterange(wkstart, wkend):
+#         flag = leavecheck(user, single_date)
+#         if flag == 1:
+#             weekleave.append(4)
+#         elif flag == 2:
+#             weekleave.append(8)
+#         else:
+#             weekleave.append(0)
+#     return weekleave
 
 
 def status_member(team_members, ignore_previous_year=False):
@@ -2276,6 +2278,8 @@ def pull_members_week(employee, start_date, end_date):
             leave_hours += 4
         elif flag == 8:
             leave_hours += 8
+        elif flag == 2:
+            leave_hours += 2
     # print leave_hours
     return leave_hours
 
