@@ -91,7 +91,7 @@ def comp_off_carry_forward(user, leave):
     comp_off_balance = LeaveSummary.objects.filter(user=user,
                                                    leave_type=leave,
                                                    year=previous_year)
-    if comp_off_balance:
+    if float(comp_off_balance[0].balance) > 0.0:
         record, created = LeaveSummary.objects.get_or_create(user=user,
                                                              year=current_year,
                                                              leave_type=leave,
@@ -101,10 +101,10 @@ def comp_off_carry_forward(user, leave):
                                        year=current_year,
                                        month=current_month,
                                        leave_type=leave,
-                                       days=comp_off_balance.balance,
+                                       days=comp_off_balance[0].balance,
                                        status_action_by=admin,
                                        comments="comp_off avail balance carry forward")
-            record.balance = float(record.balance) + float(comp_off_balance.balalnce)
+            record.balance = float(record.balance) + float(comp_off_balance[0].balance)
             record.save()
 
 
