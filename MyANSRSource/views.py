@@ -47,7 +47,7 @@ from ldap import LDAPError
 # views for ansr
 
 FORMS = [
-    ("Define Project", ProjectBasicInfoForm),
+    ("Define Project", ProjectFlagForm),
     ("Basic Information", ProjectFlagForm),
 ]
 TEMPLATES = {
@@ -1356,12 +1356,10 @@ class CreateProjectWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(CreateProjectWizard, self).get_context_data(
             form=form, **kwargs)
-        import ipdb; ipdb.set_trace()
         if self.steps.current == 'Basic Information':
             if self.get_cleaned_data_for_step('Define Project') is not None:
                 pt = self.get_cleaned_data_for_step(
                     'Define Project')['projectType']
-                print pt
                 data = {'pt': projectType.objects.get(id=pt.id).description}
             else:
                 logger.error(
@@ -1692,7 +1690,6 @@ createProject = CreateProjectWizard.as_view(FORMS)
 @login_required
 @permission_required('MyANSRSource.create_project')
 def WrappedCreateProjectView(request):
-    file_storage = ''
     return createProject(request)
 
 

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Book, Project
+from CompanyMaster.models import Practice, SubPractice
 from dal import autocomplete
 
 
@@ -34,5 +35,29 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
         choices = Project.objects.filter(
             Q(name__icontains=q) | Q(projectId__icontains=q)
         )
+        return choices
+
+
+class AutocompletePracticeHead(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = User.objects.filter(first_name__icontains=q)
+        return choices
+
+
+class AutocompletePracticeName(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Practice.objects.filter(name__icontains=q)
+        return choices
+
+
+class AutocompletesubPracticeName(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = SubPractice.objects.filter(name__icontains=q)
         return choices
 

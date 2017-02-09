@@ -6,7 +6,7 @@ from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport
 from bootstrap3_datetime.widgets import DateTimePicker
-from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
+from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, SubPractice
 from employee.models import Remainder
 from django.utils.safestring import mark_safe
 import datetime
@@ -366,7 +366,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
     Delvcordinator = forms.ModelChoiceField(
         queryset=User.objects.all(),
         label="Delievery Co-ordinator",
-        widget=autocomplete.ModelSelect2(attrs={
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             # Set some placeholder
             'data-placeholder': 'Type Delievery Co-ordinator Name ...',
             # Only trigger autocompletion after 3 characters have been typed
@@ -591,12 +591,42 @@ class CloseProjectMilestoneForm(forms.ModelForm):
 
 # Project Flag Form
 class ProjectFlagForm(forms.ModelForm):
+    practicename = forms.ModelChoiceField(
+        queryset=Practice.objects.all(),
+        label="Select Practice",
+        widget=autocomplete.ModelSelect2(url='AutocompletePracticeName', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type Practice Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+
+    subpractice = forms.ModelChoiceField(
+        queryset=SubPractice.objects.all(),
+        label="Select sub Practice",
+        widget=autocomplete.ModelSelect2(url='AutocompletesubPracticeName', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type sub Practice Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+    practicehead = forms.ModelChoiceField(
+        queryset=Practice.objects.all(),
+        label="Select Practice Head",
+        widget=autocomplete.ModelSelect2(url='AutocompletePracticeHead', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type  Practice Head Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+
 
     class Meta:
         model = Project
         fields = (
-            'startDate',
-            'endDate',
             'plannedEffort',
             'totalValue',
             'po',
@@ -622,10 +652,10 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['totalValue'].widget.attrs['class'] = \
             "total-value-input form-control"
         self.fields['plannedEffort'].widget.attrs['min'] = 8
-        self.fields['startDate'].widget.attrs['class'] = \
-            "start-date-input form-control"
-        self.fields['endDate'].widget.attrs['class'] = \
-            "end-date-input form-control"
+        self.fields['practicename'].widget.attrs['class'] = "form-control"
+        self.fields['subpractice'].widget.attrs['class'] = "form-control"
+        self.fields['practicehead'].widget.attrs['class'] = "form-control"
+
 
 
 class MyRemainderForm(forms.ModelForm):

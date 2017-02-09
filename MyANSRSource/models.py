@@ -233,7 +233,7 @@ class Project(models.Model):
                                            Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
-                                        verbose_name="Planned Effort",
+                                        verbose_name=" Total Planned Effort",
                                         validators=[MinValueValidator(8)])
     contingencyEffort = models.IntegerField(default=0,
                                             blank=True,
@@ -252,7 +252,7 @@ class Project(models.Model):
     totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,
-                                     verbose_name="Total Value",
+                                     verbose_name="Project Value",
                                      validators=[MinValueValidator(0.0)])
     closed = models.BooleanField(
         default=False,
