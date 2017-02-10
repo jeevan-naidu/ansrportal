@@ -456,7 +456,7 @@ app.firstTimeTotal = function() {
 
 
 
-
+// ~~
     app.timeSheetGrandTotal = function() {
         var billableTotal = Number($('.total-billable-hours').text()),
             idleTotal = Number($('.total-idle-hours').text()),
@@ -465,12 +465,7 @@ app.firstTimeTotal = function() {
             $total = $('.timesheet-grand-total'),
             total = billableTotal + idleTotal + notBillableTotal + total_leave_hours ;
 
-
         $total.text((total).toFixed(2));
-        console.log("total_leave_hours"+total_leave_hours+"total"+total);
-        temppooooo = $(this);
-        temppp = this.id;
-        console.log(temppooooo)
         return total;
     };
 
@@ -521,27 +516,16 @@ app.firstTimeTotal = function() {
         total($sat, $satTotal);
         total($sun, $sunTotal);
 
-
         // function hourcheck() {
         var a = [($monTotal).text(),($tueTotal).text(),($wedTotal).text(),($thuTotal).text(),($friTotal).text(),($satTotal).text(),($sunTotal).text()]
         var b = 0
         for (i = 0; i < a.length; i += 1) {
-          // var b = b+a[i];
-          // console.log(parseInt(b))
-          // ~~sanjay
-          // alert("caller is " + arguments.callee.caller.toString());
-          var th = new Array();
+          if(a[i] > 24) {
+            // debugger;
+              $('#'+cur_id).val(b)
 
-
-            if(a[i] > 24) {
-              // alert("hgdaas")
-              // console.log(this.id)
-              $('#'+tempp_id).parent().parent().parent().find('strong').text()
-              $('#'+tempp_id).val(b)
-              // $('#'+temp_non).val(b)
-              $('.t-hours.set-zero').val($('.form-control.t-hours-hidden.d-item.set-zero').val())
-              $('.form-control.total.input-field.r-total').val()
-
+              $('.form-control.t-hours-hidden.d-item.set-zero').text($('.r-total-idle-hours.set-zero').val())
+              var last_edited_id = '#'+cur_id
               total($mon, $monTotal);
               total($tue, $tueTotal);
               total($wed, $wedTotal);
@@ -549,8 +533,18 @@ app.firstTimeTotal = function() {
               total($fri, $friTotal);
               total($sat, $satTotal);
               total($sun, $sunTotal);
-                // console.log(a[i])
+
+              if(cur_id = cur_id.match(/id_form/g)){
+                $('#project_table tr:last-child').find('.t-hours.set-zero').text(curtotal)
+              }
+              else
+              {
+                $(last_edited_id).parent().parent().find('td:eq(9)').find('.form-control.total.input-field.r-total').val(curtotalnon)
+
+                }
               sweetAlert("Oops...", "you are amazing, you can't work for more than 24 hours a day!!", "error");
+
+              // alert($('#'+cur_id).val())
 
             }
           }
@@ -695,6 +689,7 @@ app.firstTimeTotal = function() {
 
             // Calculate PlannedEffort when change effort
             app.calcPlannedEffortCurRow = function(e) {
+
                 item = $(this);
                 row = item.closest('tr');
                 starDateItem = row.find('.pro-start-date');
@@ -826,11 +821,10 @@ app.getSum = function($elements, $outputElement) {
 
 // Form control plugin
 ;
-var temp_non;
-var tempp;
-var tempp_id;
-var totalhours;
-var totalhourshidden;
+
+var cur_id;
+var curtotal;
+var curtotalnon;
 (function() {
     $.fn.dynamicForm = function(options) {
         var $table = $(this),
@@ -1082,6 +1076,7 @@ var totalhourshidden;
                 app.proPlannedEffortPercentItems.on({
                     'keyup': app.calcPlannedEffortCurRow,
                     'click': app.calcPlannedEffortCurRow
+
                 });
 
                 app.getEffortCurRowId();
@@ -1132,7 +1127,7 @@ var totalhourshidden;
 
                 var totalDays = function() {
                   // debugger;
-                  tempp_id = this.id;
+                  cur_id = this.id;
                     var $curEle = $(this),
                         $curRow = $curEle.closest('tr'),
                         $curDays = $curRow.find('.days'),
@@ -1150,7 +1145,8 @@ var totalhourshidden;
                         curTotalNonBillable,
                         tempTotalNonBillable = 0,
                         totalNonBillable;
-
+                        curtotalnon = $curTotal.val()
+                        // ~~~~
                     for (i = 0; i < $curDaysLen; i += 1) {
                         $curDay = Number($($curDays[i]).val());
                         temp += $curDay;
@@ -1212,7 +1208,7 @@ var totalhourshidden;
                     e.preventDefault();
                     e.stopPropagation();
 
-                    tempp_id = this.id;
+                    cur_id = this.id;
 
                     var $curDayBtn = $(this),
                         $curRow = $curDayBtn.closest('tr'),
@@ -1239,9 +1235,7 @@ var totalhourshidden;
                         $curSelectProject = $curRow.find('.billable-select-project'),
                         selectedValue = Number($curSelectProject.val()),
                         selectedProject;
-                        totalhours = $totalHours
-                        totalhourshidden = $totalHoursHidden
-                        currow = $curRowHours
+
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
@@ -1303,6 +1297,7 @@ var totalhourshidden;
                             }
                         }
                         var cur_$totalHours = parseFloat($totalHours.text());
+                        curtotal = cur_$totalHours
                         var prev_value_is_internal = parseInt($($is_internal).data('prev_value'));
                         var cur_value_is_internal = parseInt($($is_internal).val());
                         // console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
@@ -1316,7 +1311,6 @@ var totalhourshidden;
                                 // console.log("internal_total  "+internal_total+"calculated_total  "+calculated_total+"  external_total  "+external_total+"  $totalHours  "+cur_$totalHours);
                                 // console.log("total"+external_total+calculated_total);
                                     $('.total-internal-hours').text((internal_total-cur_$totalHours).toFixed(2));
-
 
                                 $('.total-external-hours').text((parseFloat(external_total+calculated_total)).toFixed(2));
                             }
@@ -1386,6 +1380,7 @@ var totalhourshidden;
 
                             for (i = 0; i < rTotalBillableHoursListLen; i += 1) {
                                 curBillableTotal = Number($($rTotalBillableHoursList[i]).val());
+
                                 tempBillableTotal += curBillableTotal;
                             }
 
@@ -1431,19 +1426,23 @@ var totalhourshidden;
                     $curHoursInput.on({
                         change : inputToView,
                         keyup: inputToView,
-                        click: inputToView
+                        click: inputToView,
+
                     }, calculateTotal);
                 };
 
 
 
                 $bTask.on({
-                    change: primaryCb
+                    change: primaryCb,
+                    click: primaryCb,
+
                 });
                 $('.b-hours').on({
                     change: primaryCb ,
-//                    click: primaryCb ,
+                    click: primaryCb ,
                     oninput: primaryCb ,
+
                 });
 
 
