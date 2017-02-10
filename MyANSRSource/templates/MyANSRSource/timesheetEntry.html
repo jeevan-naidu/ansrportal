@@ -543,7 +543,14 @@
 
       }
     });
-
+    function check_project() {
+        if($('#id_form-0-project').children('option').length == 1) {
+            sweetAlert("Oops...", "Please Contact Your Manager, You Don't Have Any Project Assigned To  Save The Time Sheet!", "error");
+            $('#submitTS ,#saveTS ,#timesheet-billable-add-btn , #timesheet-non-billable-add-btn').remove();
+            return false;
+        }
+        else return true;
+    }
  		$(document).on("click", "#submitTS", function(e) {
             swal({
               title: "Are you sure?",
@@ -558,10 +565,10 @@
             },
             function(isConfirm) {
                 if (isConfirm) {
+
                     var count = 0 ;
                      $('[id^=id_form][id$=DELETE]' ).each(function(){
                         if (this.checked) {
-                            console.log(this.id);
                             count +=1;
                         }
                     });
@@ -579,15 +586,17 @@
             });
          });
 
+        window.onload = function() {
+         check_project();
+        };
+
         $(function() {
-            $( "#saveTS" ).click(function() {
+
+            $( "#saveTS" ).click(function(e) {
               // debugger;
               var a = document.getElementById("#id_form-0-project");
-
-                if (a != null){
-
-
-                $( "#saveTS" ).hide();
+              if (a != null){
+                  $( "#saveTS" ).hide();
               }
             });
 
@@ -639,6 +648,8 @@
 .popover.fade.bottom{background-color: rgba(255, 255, 255, 0);border:0px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0);}
 .popover.fade.bottom .arrow{display: none;}
 .popover-content{height:0px;width:0px;padding:0px}
+
+
 </style>
 
 
