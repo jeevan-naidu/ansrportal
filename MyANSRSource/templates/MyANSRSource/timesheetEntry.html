@@ -47,7 +47,7 @@
 			</a>
 		</span>
 		<span class="pull-right" style="margin-right: 5px">
-			<a value="submit" class="btn btn vd_btn vd_bg-green btn-xs" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
+			<a value="submit" class="btn btn vd_btn vd_bg-green btn-xs disabled" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
 				Feedback
 			</a>
 		</span>
@@ -108,7 +108,9 @@
 			</td>
 		</tr>
 
-            	<tr>
+<!-- old code -->
+
+<!--             	<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field.label }}</td>
@@ -135,6 +137,30 @@
 				{% endif %}
 			{% endfor %}
             	</tr>
+ -->
+
+<!-- new code -->
+
+<tr>
+<td style="display: none">id</td>
+<th class="res-14-per">Project <span class="required">*</span></th>
+<th class="res-14-per">Location <span class="required">*</span></th>
+<th class="res-14-per">Chapter/Subtitle <span class="required">*</span></th>
+<th class="res-14-per">Task <span class="required">*</span></th>
+<th>Mon</th>
+<th>Tue</th>
+<th>Wed</th>
+<th>Thu</th>
+<th>Fri</th>
+<th>Sat</th>
+<th>Sun</th>
+<th>Total</th>
+<th>Delete</th>
+</tr>
+
+
+
+
 		</thead>
 		<tbody>
 		{% endif %}
@@ -153,47 +179,10 @@
 			{% spaceless %}
 			{% if data.label in shortDays %}
 					<td style="position:relative">
-						<!--{% for data in form.visible_fields %}-->
-							<!--{% if 'hold' in data.label %}-->
-								<!--&lt;!&ndash;{% if data.value %}&ndash;&gt;-->
-									<!--&lt;!&ndash;<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">&ndash;&gt;-->
-								<!--&lt;!&ndash;{% else %}&ndash;&gt;-->
-									<!--&lt;!&ndash;<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">&ndash;&gt;-->
-								<!--&lt;!&ndash;{% endif %}&ndash;&gt;-->
-							<!--{% endif %}-->
-						<!--{% endfor %}-->
-                            <!--&lt;!&ndash;<span style="display: none;">&ndash;&gt;-->
-							<!--{% for tdata in form.hidden_fields %}-->
-								<!--{% if data.label|lower in tdata.id_for_label  %}-->
-									<!--{% for typeData in form.hidden_fields %}-->
-										<!--{% if 'tsId' in typeData.id_for_label %}-->
-											<!--{% if tdata.value > 0 %}-->
-												<!--<span class="b-questions set-zero">{{ tdata.value }}</span>-->
-												<!--<span class="project-unit">{{ typeData.value }}</span>-->
-											<!--{% else %}-->
-												<!--<span class="b-questions set-zero">0</span>-->
-												<!--{% if typeData.value == None %}-->
-													<!--<span class="project-unit set-q">Q</span>-->
-												<!--{% else %}-->
-													<!--<span class="project-unit set-q">{{ typeData.value }}</span>-->
-												<!--{% endif %}-->
-											<!--{% endif %}-->
-										<!--{% endif %}-->
-									<!--{% endfor %}-->
-									<!--{{ tdata }}-->
-								<!--{% endif %}-->
-							<!--{% endfor %}-->
-                            <!--</span>-->
 
 							{% for tdata in form.visible_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-                                    <!--{% with dayclass=data.label|add:"-t" %}-->
-                                        <!--{% if tdata.value > 0 %}-->
-                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H-->
-                                        <!--{% else %}-->
-                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H-->
-                                        <!--{% endif %}-->
-                                    <!--{% endwith %}-->
+
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
@@ -201,12 +190,13 @@
 					</td>
 				{% elif data.label == 'Total' %}
 					<td>
+					<!-- total section -->
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
-									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" style="border: 1px solid #D5D5D5;padding: 2px 10px 0px;border-radius: 4px; width: auto;min-width: 0px;box-shadow: inset 0 1px 1px rgba(0,0,0,.075);background: #eeeeee" href="javascript:;">
 								{% else %}
-									<a class="lh-30 btn-default row-total-view fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view fixed-btn-size" style="border: 1px solid #D5D5D5;padding: 2px 10px 0px;border-radius: 4px; width: auto;min-width: 0px;box-shadow: inset 0 1px 1px rgba(0,0,0,.075);background: #eeeeee" href="javascript:;">
 								{% endif %}
 							{% endif %}
 						{% endfor %}
@@ -455,8 +445,8 @@
             <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th>Description</th>
-                    <th>Hours</th>
+                    <th style="background-color: #464A4C ;color: #fff;">Description</th>
+                    <th style="background-color: #464A4C ;color: #fff;">Hours</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -522,14 +512,8 @@
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel">Feedback </h4>
                         </div>
-                        <div class="modal-body">
-	                            <div class="form-group">
-	                              <label class="col-sm-4 control-label">Manager Feedback : </label>
-	                              <div class="col-sm-7 controls">
-	                                <span>{{feedback}}</span>
-	                              </div>
-
-	                            </div>
+                        <div class="modal-body" style="padding: 50px;text-align: justify;line-height: 20px;">
+	                                <span class="feedback-span">{{feedback}}</span>
 	                            <br style="clear:both">
 
                         </div>
@@ -625,13 +609,17 @@
         })
 
         $(document).ready(function(){
-        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
+/*        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
 			   if ($(this).find('textarea').val() ) {
 			   		$('#timesheet-feedback-button').removeClass('vd_bg-green').addClass('vd_bg-yellow');
 			   }else{
 			   		$('#timesheet-feedback-button').removeClass('vd_bg-yellow').addClass('vd_bg-green');
 			   }
-			})
+			})*/
+
+			if ($('.feedback-span').text().length > 0) {
+				$('#timesheet-feedback-button').removeClass('disabled');
+			}
         })
 
 
