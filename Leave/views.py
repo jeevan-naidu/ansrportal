@@ -148,16 +148,16 @@ class Dashboard(View):
         LeaveAdmin = False
         userCheck = False
         user_id = request.user.id
-        # leave_summary = LeaveSummary.objects.filter(user=user_id,
-        #                                             year=date.today().year).values('leave_type__leave_type',
-        #                                                                            'applied',
-        #                                                                            'approved',
-        #                                                                            'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                    year=2017).values('leave_type__leave_type',
+                                                    year=date.today().year).values('leave_type__leave_type',
                                                                                    'applied',
                                                                                    'approved',
                                                                                    'balance')
+        # leave_summary = LeaveSummary.objects.filter(user=user_id,
+        #                                             year=2017).values('leave_type__leave_type',
+        #                                                                            'applied',
+        #                                                                            'approved',
+        #                                                                            'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)

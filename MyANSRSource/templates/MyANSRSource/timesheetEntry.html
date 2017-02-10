@@ -513,7 +513,7 @@
                           <h4 class="modal-title" id="myModalLabel">Feedback </h4>
                         </div>
                         <div class="modal-body" style="padding: 50px;text-align: justify;line-height: 20px;">
-	                                <span class="feedback-span">{{feedback}}</span>
+	                                <span class="feedback-span"> {%if feedback %} {{feedback}} {%else %}  {% endif %}</span>
 	                            <br style="clear:both">
 
                         </div>
