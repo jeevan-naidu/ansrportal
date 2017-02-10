@@ -41,6 +41,8 @@ a{color: #337ab7}
 
 .vd_navbar{background-color: #4a7973}
 
+.vd_panel-menu .popover{display: none !important;}
+
 .vd_title-section{padding-bottom: 9px}
 
 .vd_panel-header h4{font-weight: 100}
