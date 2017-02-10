@@ -170,7 +170,9 @@
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
-
+				{% if 'pt' in field.label %}
+					<td style="display: none">{{ field }}</td>
+				{% endif %}
             {% if 'is_internal' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
