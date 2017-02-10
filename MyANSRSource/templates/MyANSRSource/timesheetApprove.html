@@ -147,7 +147,7 @@ Approve Timesheet
 </td>
 
     <td class="menu-action">
-      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
+      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown" disabled>
         <i class="fa fa-comments-o"></i>
       </a>
     </td>
@@ -205,7 +205,7 @@ Approve Timesheet
 </td>
 
     <td class="menu-action">
-      <a data-toggle="modal"  disabled data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
+      <a data-toggle="modal"  disabled data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown" disabled>
         <i class="fa fa-comments-o"></i>
       </a>
     </td>
@@ -503,6 +503,7 @@ $(document).ready(function() {
 
                   // Enabling approve and reject checkboxes
                   console.log(this);
+                  $(this).parent().parent().find('a.menu-icon').removeAttr('disabled');
                   if ($(this).parent().parent().hasClass('approve-reject-options')) {
                     console.log(this)
                     $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
