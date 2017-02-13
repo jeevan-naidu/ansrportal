@@ -9,10 +9,13 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')
+
         choices = User.objects.filter(
                 Q(is_superuser=False) & Q(is_active=True) & Q(email__icontains=q)
             )
-        logger.error(u'q {0}'.format(choices))
+        logger.error(u'q {0}'.format(q))
+        logger.error(u'choices {0}'.format(choices))
+        print choices
         return choices
 
 
