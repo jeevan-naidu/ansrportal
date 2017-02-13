@@ -259,8 +259,12 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Closed"
     )
-    projectFinType = models.CharField(verbose_name='Project Fin Type ', choices=PROJECTFINTYPE, max_length=40,
-                                      blank=True)
+    PracticeName = models.CharField(verbose_name='Practice Name', max_length=200, null=True, blank=True)
+    projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=40,
+                                      blank=True, null=True)
+
+    SubPractice = models.CharField(verbose_name='Sub Practice', max_length=200, null=True, blank=True)
+    PracticeHead = models.CharField(verbose_name='Practice Head', max_length=100, null=True, blank=True)
     deliveryManager = models.IntegerField(verbose_name='Project Delievery Manager',  blank=True)
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
