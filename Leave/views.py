@@ -153,6 +153,11 @@ class Dashboard(View):
                                                                                    'applied',
                                                                                    'approved',
                                                                                    'balance')
+        # leave_summary = LeaveSummary.objects.filter(user=user_id,
+        #                                             year=2017).values('leave_type__leave_type',
+        #                                                                            'applied',
+        #                                                                            'approved',
+        #                                                                            'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
@@ -214,11 +219,16 @@ class Dashboard(View):
             LeaveAdmin = True
         elif  int(user_id) == int(request.user.id):
             userCheck = True
+        # leave_summary = LeaveSummary.objects.filter(user=user_id,
+        #                                           year=date.today().year).values('leave_type__leave_type',
+        #                                                                          'applied',
+        #                                                                          'approved',
+        #                                                                          'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                  year=date.today().year).values('leave_type__leave_type',
-                                                                                 'applied',
-                                                                                 'approved',
-                                                                                 'balance')
+                                                    year=2017).values('leave_type__leave_type',
+                                                                                   'applied',
+                                                                                   'approved',
+                                                                                   'balance')
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
@@ -892,65 +902,14 @@ def update_leave_application(request, status):
 class LeaveManageView(LeaveListView):
     def get_context_data(self, **kwargs):
         context = super(LeaveManageView, self).get_context_data(**kwargs)
-
-        if self.request.user.groups.filter(name=settings.LEAVE_ADMIN_GROUP).exists():
-            if 'all' in self.kwargs:
-                context['leave_list'] = leave_list_all(None, False)
-
-            else:
-                context['leave_list'] = LeaveApplications.objects.filter().order_by("-from_date")
-            context['users'] = Employee.objects.filter(user__is_active=True).order_by('user__username')
-
-        elif self.request.user.groups.filter(name='myansrsourcePM').exists():
-            if 'all' in self.kwargs:
-                context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user)
-            else:
-                context['leave_list'] = LeaveApplications.objects.filter(apply_to=self.request.user
-                                                                         ).order_by("status", "-from_date")
-            context['users'] = Employee.objects.filter \
-                (manager__user=self.request.user).order_by('manager__user__username')
-
-        else:
-            raise PermissionDenied
-        context['leave_list_count'] = len(context['leave_list'])
-
-        #
-
-        context['APPLICATION_STATUS'] = APPLICATION_STATUS
-        context['LEAVE_TYPES_CHOICES'] = LEAVE_TYPES_CHOICES
-        context['SESSION_STATUS'] = SESSION_STATUS
-        context['BUTTON_NAME'] = BUTTON_NAME
-        context['leave_days'] = total_leave_days(context['leave_list'])
-
-        context['months_choices'] = months_choices
-        context['apply_to'] = Employee.objects.exclude(manager__user__first_name__isnull=True). \
-            values_list('manager__user__username', 'manager__user__id').distinct().order_by('manager__user__username')
-        self.request.session['apply_to'] = context['apply_to']
-        # context['users'] = User.objects.filter(is_active=True)
-        self.request.session['users'] = context['users']
-        form = LeaveListViewForm()
-        context['form'] = form
-
-        if 'page' not in self.request.GET:
-            if 'leave_list' in self.request.session:
-                del self.request.session['leave_list']
-
-        if 'leave_list' in self.request.session:
-            context['leave_list'] = self.request.session['leave_list']
-        context['leave_list_inherit'] = context['leave_list']
-        context['leave_list'] = paginator_handler(self.request, context['leave_list'])
-
-        context = super(LeaveManageView, self).get_context_data(**kwargs)
         if self.request.user.groups.filter(name=settings.LEAVE_ADMIN_GROUP).exists():
             context['all'] = LeaveApplications.objects.all()
             context['open'] = context['leave_list_inherit'].filter(status='open')
         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
-            context['all'] = LeaveApplications.objects.filter(apply_to=self.request.user)
+            context['all'] = LeaveApplications.objects.filter(apply_to=self.request.user, status='open')
             context['open'] = context['leave_list_inherit'].filter(status='open', apply_to=self.request.user)
         context['open_count'] = len(context['open'])
         context['open'] = paginator_handler(self.request, context['open'])
-        # print context['open_count']
-        #
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1024,83 +983,78 @@ class LeaveManageView(LeaveListView):
                 if status != '' and from_date != '' and to_date != '' and apply_to != '' and employee != '':
                     leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to,
                                                                   from_date__range=[from_date, to_date],
-                                                                  user=employee)  # all chosen
+                                                                  user=employee,status='open')  # all chosen
                     open_count = len(leave_list)
 
                 if status != '' and from_date == '' and to_date == '' and apply_to == '' and employee == '':
-                    leave_list = LeaveApplications.objects.filter(status__in=status_list)  # only status
+                    leave_list = LeaveApplications.objects.filter(status__in=status_list,status='open')  # only status
                     open_count = len(leave_list)
 
                 if status == '' and from_date != '' and to_date != '' and apply_to == '' and employee == '':
-                    leave_list = LeaveApplications.objects.filter(from_date__range=[from_date, to_date])  # only date
+                    leave_list = LeaveApplications.objects.filter(from_date__range=[from_date, to_date],status='open')  # only date
                     open_count = len(leave_list)
 
                 if status == '' and from_date == '' and to_date == '' and apply_to != '' and employee == '':
-                    leave_list = LeaveApplications.objects.filter(apply_to=apply_to)  # only apply_to
+                    leave_list = LeaveApplications.objects.filter(apply_to=apply_to, status='open')  # only apply_to
                     open_count = len(leave_list)
 
                 if status == '' and from_date == '' and to_date == '' and apply_to == '' and employee != '':
-                    leave_list = LeaveApplications.objects.filter(user=employee)  # only user
+                    leave_list = LeaveApplications.objects.filter(user=employee, status='open')  # only user
                     open_count = len(leave_list)
 
                 if status != '' and from_date == '' and to_date == '' and apply_to != '' and employee == '':
                     leave_list = LeaveApplications.objects.filter(status__in=status_list,
-                                                                  apply_to=apply_to)  # status and apply_to
+                                                                  apply_to=apply_to, status='open')  # status and apply_to
                     open_count = len(leave_list)
 
                 if status != '' and from_date == '' and to_date == '' and apply_to == '' and employee != '':
                     leave_list = LeaveApplications.objects.filter(status__in=status_list,
-                                                                  user=employee)  # status and user
+                                                                  user=employee, status='open')  # status and user
                     open_count = len(leave_list)
 
                 if status == '' and from_date == '' and to_date == '' and apply_to != '' and employee != '':
-                    leave_list = LeaveApplications.objects.filter(user=employee, apply_to=apply_to)  # user and apply_to
+                    leave_list = LeaveApplications.objects.filter(user=employee, apply_to=apply_to, status='open')  # user and apply_to
                     open_count = len(leave_list)
 
                 if status != '' and from_date != '' and to_date != '' and apply_to == '' and employee == '':
                     leave_list = LeaveApplications.objects.filter(status__in=status_list,
-                                                                  from_date__range=[from_date, to_date])  # status, date
+                                                                  from_date__range=[from_date, to_date], status='open')  # status, date
                     open_count = len(leave_list)
 
                 if status == '' and from_date != '' and to_date != '' and apply_to == '' and employee != '':
                     leave_list = LeaveApplications.objects.filter(user=employee,
-                                                                  from_date__range=[from_date, to_date])  # user, date
+                                                                  from_date__range=[from_date, to_date], status='open')  # user, date
                     open_count = len(leave_list)
 
                 if status != '' and from_date != '' and to_date != '' and apply_to == '' and employee != '':
                     leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee,
                                                                   from_date__range=[from_date,
-                                                                                    to_date])  # status,user, date
+                                                                                    to_date], status='open')  # status,user, date
                     open_count = len(leave_list)
 
                 if status != '' and from_date != '' and to_date != '' and apply_to != '' and employee == '':
                     leave_list = LeaveApplications.objects.filter(status__in=status_list, apply_to=apply_to,
                                                                   from_date__range=[from_date,
-                                                                                    to_date])  # status,apply_to, date
+                                                                                    to_date], status='open')  # status,apply_to, date
                     open_count = len(leave_list)
 
                 if status != '' and from_date == '' and to_date == '' and apply_to != '' and employee != '':
                     leave_list = LeaveApplications.objects.filter(status__in=status_list, user=employee,
-                                                                  apply_to=apply_to)  # status,user, apply_to
+                                                                  apply_to=apply_to, status='open')  # status,user, apply_to
                 open_count = len(leave_list)
-
-                # if status != '' and from_date == '' and to_date == ''and apply_to != '' and employee != '':
-                #     leave_list = LeaveApplications.objects.filter(status=status, user=employee,
-                #                                                   apply_to=apply_to)  # status,user, apply_to
-                #     print leave_list.query
-                #     print "status,user, apply_to"
 
                 if status == '' and from_date != '' and to_date != '' and apply_to != '' and employee != '':
                     leave_list = LeaveApplications.objects.filter(apply_to=apply_to, user=employee,
                                                                   from_date__range=[from_date,
-                                                                                    to_date])  # apply_to,user, date
+                                                                                    to_date], status='open')  # apply_to,user, date
                     open_count = len(leave_list)
 
                 if status == '' and from_date != '' \
                         and to_date != '' and apply_to != '' and employee == '':
                     leave_list = LeaveApplications.objects.filter(apply_to=apply_to,
                                                                   from_date__range=[from_date,
-                                                                                    to_date])  # apply_to, date
+                                                                                    to_date], status='open')  # apply_to, date
+                    open_count = len(leave_list)
 
             except:
                 leave_list = None
@@ -1109,35 +1063,6 @@ class LeaveManageView(LeaveListView):
             #                                leave_list.to_session, leave_list.leave_type)
 
             leave_days = total_leave_days(leave_list)
-            # Export code commented
-            # if 'export' in request.POST:
-            #     if from_date == '' and to_date == '' and status == '' and apply_to == '' \
-            #             and employee == '':
-            #         if self.request.user.groups.filter(name=settings.LEAVE_ADMIN_GROUP).exists():
-            #             leave_list_export = leave_list_all(self.request.user, True)
-            #         elif self.request.user.groups.filter(name='myansrsourcePM').exists():
-            #             leave_list_export = leave_list_all(self.request.user, False)
-            #
-            #     else:
-            #         leave_list_export = leave_list
-            #     leave_days = total_leave_days(leave_list_export)
-            #
-            #     fields = ['user__employee__employee_assigned_id', 'user__first_name', 'leave_type__leave_type',
-            #               'from_date', 'to_date', 'applied_on', 'modified_on',
-            #               'apply_to__first_name', 'status', 'reason', 'id']
-            #
-            #     column_names = ['Employee Id', 'Employee Name ', 'Leave Type', 'From Date',
-            #                     'To Date', 'Applied Date', 'Action Taken On',
-            #                     'Applied to', 'Status', 'Reason', 'Days']
-            #
-            #     file_name = "Leave Report - " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-            #
-            #     try:
-            #         return export_xlwt_overridden(file_name, column_names,
-            #                                       leave_list_export.values_list(*fields), leave_days)
-            #     except Exception, e:
-            #         logger.error(e)
-
             if leave_list and leave_list.count > 0:
                 self.request.session['leave_list'] = leave_list
                 leave_list = paginator_handler(self.request, self.request.session['leave_list'])
@@ -1147,7 +1072,7 @@ class LeaveManageView(LeaveListView):
             return render(self.request,
                           self.template_name,
                           {'leave_list': leave_list,
-                           'open_count':open_count,
+                           'open_count': open_count,
                            'open': leave_list,
                            'APPLICATION_STATUS': APPLICATION_STATUS,
                            'LEAVE_TYPES_CHOICES': LEAVE_TYPES_CHOICES,
@@ -1162,14 +1087,12 @@ class LeaveManageView(LeaveListView):
                            'post_apply_to': self.request.POST.get('apply_to'),
                            'post_users': self.request.POST.get('users'),
                            'form': form})
-            return HttpResponseRedirect("/leave/manage")    # filter functionality code ends here
+            # return HttpResponseRedirect("/leave/manage")    # filter functionality code ends here
 
         else:
             messages.success(self.request, "Successfully Updated")
 
-        return HttpResponseRedirect("/leave/manage")
-
-
+            return HttpResponseRedirect("/leave/manage")
 
 
 #This method returns the transction for the user in short leave table
@@ -1758,39 +1681,40 @@ def weekwisereport(month, userlist):
 
 
 def leavecheck(user, date):
+
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
                                                     to_date__gte=date,
-                                                    status__in=['open', 'approved']).exclude(leave_type__in=[11,
-                                                                                                             14,
-                                                                                                             15,
-                                                                                                             13])
+                                                    status__in=['open', 'approved']).exclude(
+        leave_type__in=[11, 8, 14, 15])
     holiday = Holiday.objects.all().values('date')
-
-    if len(leaveapplied) > 1:
+    if not leaveapplied:
+        flag = 0
+    elif date.strftime("%A") in ("Saturday", "Sunday"):
+        flag = 0
+    elif date in [datedata['date'] for datedata in holiday]:
+        flag = 3
+    elif len(leaveapplied) > 1:
         flag = 2
-    elif leaveapplied and leaveapplied[0].from_date < date and leaveapplied[0].to_date > date:
+    elif leaveapplied[0].leave_type_id == 13:
+        flag = 4
+    elif leaveapplied[0].from_date < date and leaveapplied[0].to_date > date:
         flag = 2
-    elif leaveapplied and\
-                    leaveapplied[0].from_date == date and\
+    elif leaveapplied[0].from_date == date and\
                     leaveapplied[0].to_date > date and\
                     leaveapplied[0].from_session == 'session_first':
         flag = 2
-    elif leaveapplied and\
-                    leaveapplied[0].from_date < date and\
+    elif leaveapplied[0].from_date < date and\
                     leaveapplied[0].to_date == date and\
                     leaveapplied[0].to_session == 'session_second':
         flag = 2
-    elif leaveapplied and\
-                    leaveapplied[0].from_date == date and\
+    elif leaveapplied[0].from_date == date and\
                     leaveapplied[0].to_date == date and\
                     leaveapplied[0].from_session == 'session_first'and\
             leaveapplied[0].to_session == 'session_second':
         flag = 2
     elif leaveapplied:
         flag = 1
-    elif date in [datedata['date'] for datedata in holiday]:
-        flag = 3
     else:
         flag = 0
     return flag

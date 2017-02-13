@@ -182,14 +182,12 @@
   	$(".remark").keyup(function() {
 
         if($(this).val().trim().length != 0 ) {
-        console.log("im in");
             $("#update").prop('disabled', false);
         }
         else {
             not_empty=0;
             $(".remark").each(function() {
                 if($(this).val().trim().length != 0) {
-                console.log("count"+not_empty);
                     not_empty+=1 ;
                     $("#update").prop('disabled', false);
                 }
@@ -199,10 +197,8 @@
     });
 
         $("#update").click(function() {
-            console.log("update");
 
          $(".release_checkbox").each(function(index) {
-         console.log("inside release/");
             if(this.checked) {
                 $("#update").prop('disabled', false);
                  cancel_id[index]=($(this).attr('data-value'));
@@ -210,14 +206,12 @@
 
             });
          $(".remark").each(function() {
-            <!--console.log($(this).val() +'&#45;&#45;'+this.value);-->
                 if($(this).val().trim().length != 0) {
                     remarks[this.id]=$(this).val();
                 }
                 else {
                 $("#update").prop('disabled', true);
             }
-                <!--console.log("remarks&#45;&#45;"+remarks);-->
 
          });
 
@@ -454,7 +448,6 @@ $(document).ready(function(){
 		})// end of each
 
 
-		console.log("dom ready " + JSON.stringify(obj_id_load));
 
 	}// end of bookings_init
 
@@ -491,7 +484,6 @@ $(document).ready(function(){
 				}
 			})
 
-			console.log("on submit" + JSON.stringify(obj_temp_submit));
 
 			})
 

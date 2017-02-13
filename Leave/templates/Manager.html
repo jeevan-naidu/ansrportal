@@ -25,6 +25,15 @@
     <div class="container-fluid">
         <div class="row">
 
+<style type="text/css">
+
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+</style>
+
+
             {% if messages %}
                 {% for message in messages %}
                     {% if message.tags %}
@@ -52,30 +61,11 @@
 
                               <div class="form-group form-inline short-date mb-0">
                                   <label for="from_date">From :&nbsp;</label>
-                                  {{form.from_date}}
-                                  <!--<select class="form-control filter_class " id="month" name="month">-->
-                                      <!--<option value ="default">-&#45;&#45;&#45;&#45;</option>-->
-                                      <!--{% for value, text in months_choices %}-->
-                                          <!--<option value="{{value}}" {%if month|safe == value|safe %} selected {% endif %}>{{text}}-{%now "Y"%} </option>-->
-                                      <!--{%endfor%}-->
-                                  <!--</select>-->
-
-                                  &nbsp;&nbsp;
+                                  {{form.from_date}}                                  &nbsp;&nbsp;
                                   <label for="to_date">To :&nbsp;</label>
                                   {{form.to_date}}
                                   &nbsp;&nbsp;
                                   <!--<label for="application_status">Select status&nbsp;:&nbsp;</label>-->
-                                  <select class="form-control filter_class input-sm" id="application_status" name="application_status">
-
-                                    <option value ="all">All</option>
-                                      {% for value, text in APPLICATION_STATUS %}
-                                          {% if value != 'applied' %}
-                                              <option value="{{value}}" {%if post_application_status|safe == value|safe %} selected {% endif %} >{{text}}</option>
-                                          {% endif %}
-                                      {%endfor%}
-
-
-                                  </select>&nbsp;&nbsp;&nbsp;&nbsp;
                                   {% if request.user|has_group:"myansrsourceHR"  or request.user.is_superuser%}
                                       <select class="form-control filter_class input-sm" id="apply_to" name="apply_to">
                                           <option value="" selected >Applied To</option>
@@ -97,42 +87,17 @@
                                   </div>
 
 
-                                      {%if leave_list%}
-
-                                      <div class="pull-right export-btn-2">
-
-
-
-                                                  <!--<input type="submit" class="pull-right btn btn-sm btn-danger btn-ansr-orange" value = "Export" name="export"/>-->
-
-
-
-                                                 <b style="line-height:30px;">Total : {{leave_list|length}} &nbsp;&nbsp;&nbsp;</b>
+                                      {%if open%}
+                                  <div class="pull-right export-btn-2">
+                                                 <b style="line-height:30px;">Total : {{open|length}} &nbsp;&nbsp;&nbsp;</b>
                                               </div>
                                       {% endif %}
-
-
-
-
                               </div>
-
-
-
-
-
                       </div>
 
                       <div class="col-md-1 col-sm-6">
-          <!--                <div class="pull-right ">
-                              <input type="submit" class="pull-right btn btn-xs btn-danger" value = "Export" name="export"/>
-                          </div>-->
-
-
-
                       </div>
                   </div>
-
-
                   </form>
 
 
@@ -551,10 +516,9 @@
 
 
 {% block page_specific_JS %}
-{##}
-{#    <script src="/static/js/jquery.min.js"></script>#}
-{#    <script src="/static/js/bootstrap.min.js"></script>#}
-{#    <script src="/static/js/scripts.js"></script>#}
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/static/js/date_validation.js"></script>
 
     <script>
 
@@ -567,10 +531,11 @@
         $('#btn-ansr-orange').popover('show');
     	$('.remarks').attr('maxlength','');
 						var text_max = 500;
+						$('.btn btn-info btn-xs.remark').on('click',function(){
 						var text_length = $('.remarks').val().length;
 						var text_remaining = text_max - text_length;
 						$('#textarea_remaining').html(text_max + ' characters remaining');
-
+                });
 						$('.remarks').keyup(function() {
 							text_length = $(this).val().length;
 							text_remaining = text_max - text_length;
@@ -637,6 +602,14 @@
                 $('.reject_all').prop('checked', false);
             }
 
+
+        });
+        $('#submit_button').click(function(){
+              var result  =  date_validation('id_from_date','id_to_date');
+              if (result === false) return false;
+
+             var inputs = input_elements_validation('filter_class', 'leave/manage');
+             if (inputs === false) return false;
 
         });
     });

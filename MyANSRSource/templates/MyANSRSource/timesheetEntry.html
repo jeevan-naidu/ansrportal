@@ -41,11 +41,17 @@
 	<legend>
 	Project Effort
 		<span class="pull-right">
-			<a type="submit" value="submit" class="btn btn-success btn-xs" id="timesheet-billable-add-btn">
+			<a type="submit" value="submit" class="btn btn vd_btn vd_bg-green btn-xs" id="timesheet-billable-add-btn">
 				<span class="glyphicon glyphicon-plus"></span>
 				Add Project effort Item
 			</a>
 		</span>
+		<span class="pull-right" style="margin-right: 5px">
+			<a value="submit" class="btn btn-primary vd_btn btn-xs disabled" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
+				Feedback
+			</a>
+		</span>
+
 	</legend>
 
     {{ tsFormset.management_form }}
@@ -102,11 +108,15 @@
 			</td>
 		</tr>
 
-            	<tr>
+<!-- old code -->
+
+<!--             	<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field.label }}</td>
 				{% endif %}
+
+
 			{% endfor %}
 			{% for data in form.visible_fields %}
 				{% if 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
@@ -127,6 +137,30 @@
 				{% endif %}
 			{% endfor %}
             	</tr>
+ -->
+
+<!-- new code -->
+
+<tr>
+<td style="display: none">id</td>
+<th class="res-14-per">Project <span class="required">*</span></th>
+<th class="res-14-per">Location <span class="required">*</span></th>
+<th class="res-14-per">Chapter/Subtitle <span class="required">*</span></th>
+<th class="res-14-per">Task <span class="required">*</span></th>
+<th>Mon</th>
+<th>Tue</th>
+<th>Wed</th>
+<th>Thu</th>
+<th>Fri</th>
+<th>Sat</th>
+<th>Sun</th>
+<th>Total</th>
+<th>Delete</th>
+</tr>
+
+
+
+
 		</thead>
 		<tbody>
 		{% endif %}
@@ -139,52 +173,18 @@
 				{% if 'pt' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
+            {% if 'is_internal' in field.label %}
+					<td style="display: none">{{ field }}</td>
+				{% endif %}
 			{% endfor %}
 			{% for data in form.visible_fields %}
 			{% spaceless %}
 			{% if data.label in shortDays %}
 					<td style="position:relative">
-						{% for data in form.visible_fields %}
-							{% if 'hold' in data.label %}
-								{% if data.value %}
-									<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">
-								{% else %}
-									<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">
-								{% endif %}
-							{% endif %}
-						{% endfor %}
-                            <span style="display: none;">
-							{% for tdata in form.hidden_fields %}
-								{% if data.label|lower in tdata.id_for_label and 'Q' in tdata.id_for_label %}
-									{% for typeData in form.hidden_fields %}
-										{% if 'projectType' in typeData.id_for_label %}
-											{% if tdata.value > 0 %}
-												<span class="b-questions set-zero">{{ tdata.value }}</span>
-												<span class="project-unit">{{ typeData.value }}</span>
-											{% else %}
-												<span class="b-questions set-zero">0</span>
-												{% if typeData.value == None %}
-													<span class="project-unit set-q">Q</span>
-												{% else %}
-													<span class="project-unit set-q">{{ typeData.value }}</span>
-												{% endif %}
-											{% endif %}
-										{% endif %}
-									{% endfor %}
-									{{ tdata }}
-								{% endif %}
-							{% endfor %}
-                            </span>
 
-							{% for tdata in form.hidden_fields %}
+							{% for tdata in form.visible_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-                                    {% with dayclass=data.label|add:"-t" %}
-                                        {% if tdata.value > 0 %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H
-                                        {% else %}
-                                            <span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H
-                                        {% endif %}
-                                    {% endwith %}
+
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
@@ -192,12 +192,13 @@
 					</td>
 				{% elif data.label == 'Total' %}
 					<td>
+					<!-- total section -->
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
-									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" style="border: 1px solid #D5D5D5;padding: 2px 10px 0px;border-radius: 4px; width: auto;min-width: 0px;box-shadow: inset 0 1px 1px rgba(0,0,0,.075);background: #eeeeee" href="javascript:;">
 								{% else %}
-									<a class="lh-30 btn-default row-total-view fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view fixed-btn-size" style="border: 1px solid #D5D5D5;padding: 2px 10px 0px;border-radius: 4px; width: auto;min-width: 0px;box-shadow: inset 0 1px 1px rgba(0,0,0,.075);background: #eeeeee" href="javascript:;">
 								{% endif %}
 							{% endif %}
 						{% endfor %}
@@ -334,7 +335,7 @@
 	<legend>
 	Non - Project Effort
 	<span class="pull-right">
-		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn-success btn-xs">
+		<a type="submit" value="submit" id="timesheet-non-billable-add-btn" class="btn btn vd_btn vd_bg-green btn-xs">
 			<span class="glyphicon glyphicon-plus"></span>
 			Add Non-project effort Item
 		</a>
@@ -425,7 +426,7 @@
 											<b>Your Feedback</b>
 										</div>
 										<div class="modal-body">
-											{{ data.value }}
+											{{ feedback }}
 										</div>
 									</div>
 								</div>
@@ -446,16 +447,16 @@
             <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th>Description</th>
-                    <th>Hours</th>
+                    <th style="background-color: #464A4C ;color: #fff;">Description</th>
+                    <th style="background-color: #464A4C ;color: #fff;">Hours</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-		    <td>Billable</td>
-		    <td class="total-billable-hours text-right">{{ bTotal }}</td>
+                <tr style="display:none">
+		    <td >Billable</td>
+		    <td class="total-billable-hours text-right" >{{ bTotal }}</td>
                 </tr>
-                <tr>
+                <tr style="display:none">
                     <td>Idle</td>
 		    <td class="total-idle-hours text-right">{{ idleTotal }}</td>
                 </tr>
@@ -463,6 +464,14 @@
 					     <tr>
                     <td>Leave</td>
 		    <td class="total-leave-hours text-right">{{ leave_hours }}</td>
+                </tr>
+						     <tr>
+                    <td>Internal</td>
+		    <td class="total-internal-hours text-right">{{ internal_value }}</td>
+                </tr>
+						     <tr>
+                    <td>External</td>
+		    <td class="total-external-hours text-right">{{ external_value }}</td>
                 </tr>
                     <td>Non-Billable</td>
 		    <td class="total-non-billable-hours text-right">{{ othersTotal }}</td>
@@ -485,19 +494,69 @@
 
 <div style="margin-bottom:15px;" class="clearfix">
         {% if hold_button %}
-            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space" disabled="disabled">Submit</a>
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right" disabled="disabled">Save</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space" disabled="disabled">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right" disabled="disabled">Save</button>
         {% else %}
-            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space">Submit</a>
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right">Save</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right">Save</button>
         {% endif %}
         </div>
-	<script>
 
+
+<!-- Modal Area -->
+
+
+
+                  <div class="modal fade" id="timesheet-feedback-modal" tabindex="-1" role="dialog" aria-labelledby="timesheet-feedback" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Feedback </h4>
+                        </div>
+                        <div class="modal-body" style="padding: 50px;text-align: justify;line-height: 20px;">
+	                                <span class="feedback-span">{%if feedback %}{{feedback}}{%else %}{% endif %}</span>
+	                            <br style="clear:both">
+
+                        </div>
+
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+
+
+
+
+	<script>
+    $(window).load(function(){
+      // var x = document.getElementById("#id_form-0-tsId").type()
+      // debugger;
+      var x = document.getElementsByClassName('ansr-disabled');
+
+
+      if(x.length > 0){
+        // document.getElementById("#timesheet-billable-add-btn").style.display = 'none';
+        // document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';
+        $("#timesheet-billable-add-btn").attr("disabled", true);
+        $("#timesheet-non-billable-add-btn").attr("disabled", true);;
+
+      }
+    });
+    function check_project() {
+        if($('#id_form-0-project').children('option').length == 1) {
+            sweetAlert("Oops...", "Please Contact Your Manager, You Don't Have Any Project Assigned To  Save The Time Sheet!", "error");
+            $('#submitTS ,#saveTS ,#timesheet-billable-add-btn , #timesheet-non-billable-add-btn').remove();
+            return false;
+        }
+        else return true;
+    }
  		$(document).on("click", "#submitTS", function(e) {
             swal({
               title: "Are you sure?",
-              text: "Once submitted, your timesheet will be approved by the system and cannot be modified. If you want to save for now and change it later, Please click 'No, Cancel' and press the save button. Otherwise Please click 'Yes, Please'",
+              text: "Once submitted, your time sheet will be approved by the system and cannot be modified. If you want to save for now and change it later, Please click 'No, Cancel' and press the save button. Otherwise Please click 'Yes, Please'",
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: "#37950B",
@@ -508,10 +567,10 @@
             },
             function(isConfirm) {
                 if (isConfirm) {
+
                     var count = 0 ;
                      $('[id^=id_form][id$=DELETE]' ).each(function(){
                         if (this.checked) {
-                            console.log(this.id);
                             count +=1;
                         }
                     });
@@ -529,9 +588,18 @@
             });
          });
 
+        window.onload = function() {
+         check_project();
+        };
+
         $(function() {
-            $( "#saveTS" ).click(function() {
-                $( "#saveTS" ).hide();
+
+            $( "#saveTS" ).click(function(e) {
+              // debugger;
+              var a = document.getElementById("#id_form-0-project");
+              if (a != null){
+                  $( "#saveTS" ).hide();
+              }
             });
 
         });
@@ -551,6 +619,20 @@
         	$('body').addClass("nav-left-hide remove-navbar nav-left-medium");
         })
 
+        $(document).ready(function(){
+/*        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
+			   if ($(this).find('textarea').val() ) {
+			   		$('#timesheet-feedback-button').removeClass('vd_bg-green').addClass('vd_bg-yellow');
+			   }else{
+			   		$('#timesheet-feedback-button').removeClass('vd_bg-yellow').addClass('vd_bg-green');
+			   }
+			})*/
+
+			if ($('.feedback-span').text().length > 0) {
+				$('#timesheet-feedback-button').removeClass('disabled');
+			}
+        })
+
 
 	</script>
 
@@ -568,6 +650,8 @@
 .popover.fade.bottom{background-color: rgba(255, 255, 255, 0);border:0px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0);}
 .popover.fade.bottom .arrow{display: none;}
 .popover-content{height:0px;width:0px;padding:0px}
+
+
 </style>
 
 

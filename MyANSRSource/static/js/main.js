@@ -91,6 +91,8 @@ app.calcCurRowChangeDate = function($tableEle) {
 
 
 app.getTaskChapter = function(selValue, currRow) {
+    var total_val = currRow.find('.is_internal')
+//    console.log(currRow.get(0).id)
     endDate = document.getElementsByName('enddate')[0].value;
     if (selValue) {
         $.ajax({
@@ -100,8 +102,10 @@ app.getTaskChapter = function(selValue, currRow) {
                 endDate: endDate
             },
             success: function(data) {
-                len = data.flag
+                len = data.flag;
+
                 data = data.data;
+
                 var dataLen = data.length,
                     options = '',
                     $tasks = $('.b-task'),
@@ -110,23 +114,31 @@ app.getTaskChapter = function(selValue, currRow) {
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
-                for (j = 12; j > 5; j--) {
+                for (j = 13; j > 6; j--) {
                     $(currRow[0].cells[j]).find('*').attr('disabled', false);
                     $(currRow[0].cells[j]).find("*").removeAttr("tabindex");
                 }
-                for (j = 12; j > 12 - len; j--) {
+                for (j = 13; j > 13 - len; j--) {
+
+
                     switch (j) {
+                        case 13:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
                         case 12:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+
                                 break;
                             }
                         case 11:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-
                                 break;
                             }
                         case 10:
@@ -148,12 +160,6 @@ app.getTaskChapter = function(selValue, currRow) {
                                 break;
                             }
                         case 7:
-                            {
-                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                                break;
-                            }
-                        case 6:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
@@ -244,18 +250,53 @@ app.setActive = function($elements, arr) {
             $element.find('option[value=' + arr[i] + ']').attr('selected', 'selected');
         }
     }
-};
+};//
 
+
+//var is_internal_id = 0;
 app.changeProject = function() {
 
-    app.billableSelectProject.on('change', function() {
+    app.billableSelectProject.on('change', function(e) {
+
+       var mondayH = this.id.split('-');
+    $(this).blur();
+//    if(this.value != ''){
+          $.ajax({
+                    url: '/myansrsource/get_internal',
+                    dataType: 'json',
+    //                async:false,
+                    data: {
+                        project_id: this.value
+                    },
+
+                    success: function(data) {
+
+                        var is_internal_id = mondayH[0]+'-'+mondayH[1]+'-is_internal';
+                        $('#'+is_internal_id).val(parseInt(data.is_internal));
+                        mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
+                        is_changed =true;
+                        $('#'+mondayH).trigger('change');
+//                            change: primaryCb ,
+
+//                        console.log("mon trigger");
+                        is_changed =false;
+                    },
+                    error: function(data) {
+                        console.log('Error: ' + data);
+                    }
+                });
+//    }
         var $this = $(this),
             $row = $this.closest('tr'),
             $projectUnitsElement = $row.find('.project-unit'),
             selectedValue = Number($this.val()),
             selectedProject;
-
         app.getTaskChapter(selectedValue, $row);
+
+ var tmp_id = this.id.split('-');
+    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+
 
 
         // get current project by id
@@ -267,7 +308,9 @@ app.changeProject = function() {
 
             $projectUnitsElement.text(app.curProjectUnitShort);
         }
-    });
+   e.stopImmediatePropagation();
+    return false; });
+
 };
 
 // Get particular object from array of object
@@ -326,7 +369,6 @@ app.firstTimeTotal = function() {
 
             grandTotal = 0,
             $grandTotal = $('.timesheet-grand-total');
-
         helper.forEach(bTask, function(item) {
             cRowHourTotal = 0;
             cRowQuestionTotal = 0;
@@ -341,15 +383,13 @@ app.firstTimeTotal = function() {
             $cRowBTHoursHidden = $cRow.find('.r-total-billable-hours');
             $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
 
-
             for (i = 0; i < cRowItemsLen; i += 1) {
-                cRowItemHour = Number($(cRowHours[i]).text());
-                cRowItemQuestion = Number($(cRowQuestions[i]).text());
+                cRowItemHour = Number($(cRowHours[i]).val());
+
 
                 cRowHourTotal += cRowItemHour;
-                cRowQuestionTotal += cRowItemQuestion;
-            }
 
+            }
             // To Dom
             $cRowTHours.text(cRowHourTotal.toFixed(2));
             $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
@@ -387,8 +427,8 @@ app.firstTimeTotal = function() {
 
             nonBillableTotal += cRowNonBillableTotal;
         });
-
-        grandTotal = billableHoursTotal + idleHoursTotal + nonBillableTotal;
+        total_leave_hours =  Number($('.total-leave-hours').text() ),
+        grandTotal = billableHoursTotal + idleHoursTotal + nonBillableTotal+total_leave_hours;
 
 
         // To Dom
@@ -437,7 +477,7 @@ app.firstTimeTotal = function() {
 
 
         $total.text((total).toFixed(2));
-
+//        console.log("total_leave_hours"+total_leave_hours+"total"+total);
         return total;
     };
 
@@ -513,6 +553,7 @@ app.firstTimeTotal = function() {
     app.init = function() {
         app.getActiveTaskChapter();
         getTastChaptersEachProject();
+
     };
 
     $(document).ajaxStop(function() {
@@ -852,11 +893,9 @@ app.getSum = function($elements, $outputElement) {
                         if (!$element.hasClass('project-unit')) {
                             if ($element.prop('tagName') === 'INPUT' || $element.prop('tagName') === 'SELECT') {
                                 $element.val('0');
-                                //console.log('input');
                             } else {
                                 $element.text('0');
-                                //console.log('not input');
-                            }
+                           }
                         }
 
                     }
@@ -954,10 +993,18 @@ app.getSum = function($elements, $outputElement) {
 
                 if ($element.hasClass('set-zero')) {
                     var elementType2 = $element.prop('tagName');
-                    if (elementType2 === 'SELECT' || elementType2 === 'INPUT') {
+                    if (elementType2 === 'SELECT' ){
                         $element.attr('value', 0);
-                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
-                    } else {
+                    }
+                    else if( elementType2 === 'INPUT') {
+                            if(!$element.hasClass('is_internal'))
+                                $($element).val(0);
+                            else  {
+                                $($element).val(1);
+                                $($element).data('prev_value',1);
+                            }
+                    }
+                    else {
                         $element.text('0');
                     }
                 }
@@ -969,7 +1016,7 @@ app.getSum = function($elements, $outputElement) {
                             .remove()
                             .end()
                             .append('<option value>-----</option>');
-                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                        console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
                     }
                 }
 
@@ -983,7 +1030,7 @@ app.getSum = function($elements, $outputElement) {
                 }
 
 
-                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
+//                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
 
             });
 
@@ -1098,6 +1145,7 @@ app.getSum = function($elements, $outputElement) {
         };
 
         var billableTotalFun = function() {
+//        console.log("billableTotalFun");
             if (options.billableTotal) {
                 var $totalBillableHours = $('.total-billable-hours'),
                     $totalIdleHours = $('.total-idle-hours');
@@ -1118,10 +1166,9 @@ app.getSum = function($elements, $outputElement) {
                     content: popoverCon
                 });
 
-
                 var primaryCb = function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
+                    e.stopImmediatePropagation();
 
                     var $curDayBtn = $(this),
                         $curRow = $curDayBtn.closest('tr'),
@@ -1129,9 +1176,10 @@ app.getSum = function($elements, $outputElement) {
                         $curRowHours = $curRow.find('.b-hours'),
                         $totalQuestions = $curRow.find('.t-questions'),
                         $totalHours = $curRow.find('.t-hours'),
+                        $is_internal = $curRow.find('.is_internal'),
                         $totalQuestionsHidden = $curRow.find('.t-questions-hidden'),
                         $totalHoursHidden = $curRow.find('.t-hours-hidden'),
-                        curRowQuestionsLen = $curRowQuestions.length,
+                        curRowQuestionsLen = $curRowHours.length,
                         $curQuestionsView = $curDayBtn.find('.b-questions'),
                         $curHoursView = $curDayBtn.find('.b-hours'),
                         $curQuestionsHidden = $curDayBtn.find('.b-questions-hidden'),
@@ -1147,7 +1195,6 @@ app.getSum = function($elements, $outputElement) {
                         $curSelectProject = $curRow.find('.billable-select-project'),
                         selectedValue = Number($curSelectProject.val()),
                         selectedProject;
-
                     var viewToInput = function() {
                         $($curQuestionsInput).val(curQuestionsViewText);
                         $($curHoursInput).val(curHoursViewText);
@@ -1158,7 +1205,6 @@ app.getSum = function($elements, $outputElement) {
                         if (selectedValue != 0) {
                             selectedProject = app.getById(app.projectsList, 'project__id', selectedValue);
 
-                            //console.log(selectedProject);
                             app.curProjectUnitShort = selectedProject.project__projectType__code;
                             app.curProjectUnit = selectedProject.project__projectType__description;
                             app.norms = selectedProject.project__maxProductivityUnits;
@@ -1179,7 +1225,6 @@ app.getSum = function($elements, $outputElement) {
                     projectUnitViewToPopUp();
 
                     viewToInput();
-
                     var calculateTotal = function() {
                         var questionsTemp = 0,
                             hoursTemp = 0,
@@ -1192,17 +1237,15 @@ app.getSum = function($elements, $outputElement) {
                             $curTotalIdleHoursHidden = $curRow.find('.r-total-idle-hours'),
                             $curTotalBillableHoursHidden = $curRow.find('.r-total-billable-hours');
 
-                        console.log('curTaskType: ' + curTaskType);
 
                         if (curTaskType === 'I') {
                             $curRow.removeClass('billable-row').addClass('idle-row');
                         } else {
                             $curRow.removeClass('idle-row').addClass('billable-row');
                         }
-
                         for (i = 0; i < curRowQuestionsLen; i += 1) {
                             curQuestions = Number($($curRowQuestions[i]).text());
-                            curHours = Number($($curRowHours[i]).text());
+                            curHours = Number($($curRowHours[i]).val());
 
                             questionsTemp += curQuestions;
                             hoursTemp += curHours;
@@ -1213,10 +1256,63 @@ app.getSum = function($elements, $outputElement) {
                                 curTotalBillableHours += curHours;
                             }
                         }
+                        var cur_$totalHours = parseFloat($totalHours.text());
+                        var prev_value_is_internal = parseInt($($is_internal).data('prev_value'));
+                        var cur_value_is_internal = parseInt($($is_internal).val());
+//                        console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
+                        var calculated_total = parseFloat(hoursTemp);
+                        var diff = Math.abs( parseFloat($totalHours.text())-(parseFloat(hoursTemp)))
+                        diff = parseFloat(diff).toFixed(2);
+                        var internal_total = parseFloat($('.total-internal-hours').text());
+                        var external_total = parseFloat( $('.total-external-hours').text() );
+                        if(is_changed === true) {
+                            if (prev_value_is_internal > cur_value_is_internal) {
+                            //console.log("1->0");
+//                                console.log("internal_total  "+internal_total+"calculated_total  "+calculated_total+"  external_total  "+external_total+"  $totalHours  "+cur_$totalHours);
+//                                console.log("total"+external_total+calculated_total);
+                                    $('.total-internal-hours').text((internal_total-cur_$totalHours).toFixed(2));
 
+
+                                $('.total-external-hours').text((parseFloat(external_total+calculated_total)).toFixed(2));
+                            }
+                            //external - > internal
+                            else if (cur_value_is_internal > prev_value_is_internal) {
+//                            console.log("0->1");
+                                    $('.total-internal-hours').text(parseFloat(internal_total+calculated_total).toFixed(2));
+                                    $('.total-external-hours').text(parseFloat(external_total-cur_$totalHours).toFixed(2));
+                            }
+                        }
+                        else {
+                            if(cur_value_is_internal ) {
+//                                 console.log("1-1-1");
+                                if(calculated_total > cur_$totalHours ) {
+                                    var total_sum = parseFloat(internal_total)+ parseFloat(diff);
+                                    $('.total-internal-hours').text(total_sum.toFixed(2))
+
+                                }
+                                else if (calculated_total < cur_$totalHours )  {
+                                     var total_sum = parseFloat(internal_total) - parseFloat(diff);
+                                     $('.total-internal-hours').text(total_sum.toFixed(2))
+                                }
+
+                            }
+
+                            else if(!(cur_value_is_internal )) {
+//                            console.log("0-0-0");
+                                if(calculated_total > cur_$totalHours ) {
+                                    var total_sum = parseFloat(external_total)+ parseFloat(diff);
+                                    $('.total-external-hours').text(total_sum.toFixed(2))
+
+                                }
+                                else if (calculated_total < cur_$totalHours )  {
+                                     var total_sum = parseFloat(external_total) - parseFloat(diff);
+                                     $('.total-external-hours').text(total_sum.toFixed(2))
+                                }
+
+                            }
+                        }
                         $totalQuestions.text(questionsTemp.toFixed(2));
-                        $totalHours.text(hoursTemp.toFixed(2));
-
+                         $totalHours.text(hoursTemp.toFixed(2));
                         $totalQuestionsHidden.val(questionsTemp.toFixed(2));
                         $totalHoursHidden.val(hoursTemp.toFixed(2));
 
@@ -1263,13 +1359,15 @@ app.getSum = function($elements, $outputElement) {
 
                         totalIdleAndBillableHours();
 
+
+
+
                     };
 
                     calculateTotal();
 
                     var inputToView = function() {
                         var curInput = $curHoursInput.val();
-                        console.log(curInput);
                         var tsInput = app.tsInputIsValid($curHoursInput, $curHoursInput.val());
                         if (tsInput) {
                             $curQuestionsView.text($curQuestionsInput.val());
@@ -1282,47 +1380,28 @@ app.getSum = function($elements, $outputElement) {
                         }
                     };
 
-                    $curQuestionsInput.on({
-                        keyup: inputToView,
-                        click: inputToView
-                    }, calculateTotal);
+//                    $curQuestionsInput.on({
+//                        keyup: inputToView,
+//                        click: inputToView
+//                    }, calculateTotal);
 
                     $curHoursInput.on({
+                        change : inputToView,
                         keyup: inputToView,
-                        click: inputToView
-                    }, calculateTotal);
+                        click: inputToView,
+                    });
+
                 };
 
-                $dayPopoverBtn.on('shown.bs.popover', primaryCb);
+
 
                 $bTask.on({
                     change: primaryCb
                 });
-
-                $dayPopoverBtn.on('show.bs.popover', function() {
-                    var $popover = $('.popover');
-                    $popover.popover('hide');
+                $('.b-hours').on({
+                    change: primaryCb ,
                 });
 
-
-                $dayPopoverBtn.on('keyup', function(e) {
-                    if (e.keyCode === 9) {
-                        $(this).trigger('click');
-                    }
-                });
-
-                $(document).on('keyup', function(e) {
-                    if (e.keyCode === 27) {
-                        var $popover = $('.popover');
-                        $popover.popover('hide');
-                    }
-                });
-
-                $rowTotalView.on('focus', function() {
-                    console.log('rTotalView trigged');
-                    var $popover = $('.popover');
-                    $popover.popover('hide');
-                });
 
             }
         };
@@ -1446,7 +1525,7 @@ app.workingDaysBetweenDates = function(startDate, endDate) {
         }
     }
 
-    console.log('holidayCount:' + holidayCount);
+//    console.log('holidayCount:' + holidayCount);
 
     return days - holidayCount;
 };
@@ -1646,7 +1725,7 @@ $.fn.getMemberHolidayList = function(options) {
                 }
             }
 
-            console.log(app.holidaysList);
+//            console.log(app.holidaysList);
         },
         error: function(data) {
             console.log("ERROR:  " + data);
@@ -1694,13 +1773,14 @@ $.ajaxSetup({
     }
 });
 
-
-// function ShowAjaxLoader(element, width, height){
-//     element.show();
-//     // element.width(width).height(height);
-//     return false;
-// }
-// function HideAjaxLoader(element){
-//     element.fadeOut();
-//     return false;
-// }
+$("[name$='project']").on('focus', function(){
+    var tmp_id = this.id.split('-');
+    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+});
+is_changed =false;
+//$("[name$='project']").on('change', function(){
+//    var tmp_id = this.id.split('-');
+//    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+//    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+//});
