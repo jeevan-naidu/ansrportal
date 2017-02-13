@@ -9,11 +9,14 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')
+        logger.error(u'q {0}'.format(q))
         try:
             choices = User.objects.filter(
                 Q(is_superuser=False) & Q(is_active=True)
             )
+            logger.error(u'q {0}'.format(choices))
             choices = choices.filter(email__icontains=q)
+            logger.error(u'q {0}'.format(choices))
         except Exception as e:
             logger.error(
             u'auto complete  {0} {1}'
