@@ -148,7 +148,7 @@ def TimesheetFormset(currentUser,enddate):
         )
 
         chapter = forms.ModelChoiceField(widget=forms.Select(), queryset=Chapter.objects.none(),label="Chapter",)
-        # projectType = forms.CharField(label="pt", widget=forms.HiddenInput())
+        projectType = forms.CharField(label="pt", widget=forms.HiddenInput())
         task = forms.ModelChoiceField(widget=forms.Select(), queryset=Task.objects.none(), label="Task",)
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",

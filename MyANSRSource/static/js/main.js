@@ -114,23 +114,31 @@ app.getTaskChapter = function(selValue, currRow) {
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
-                for (j = 12; j > 5; j--) {
+                for (j = 13; j > 6; j--) {
                     $(currRow[0].cells[j]).find('*').attr('disabled', false);
                     $(currRow[0].cells[j]).find("*").removeAttr("tabindex");
                 }
-                for (j = 12; j > 12 - len; j--) {
+                for (j = 13; j > 13 - len; j--) {
+
+
                     switch (j) {
+                        case 13:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
                         case 12:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+
                                 break;
                             }
                         case 11:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-
                                 break;
                             }
                         case 10:
@@ -152,12 +160,6 @@ app.getTaskChapter = function(selValue, currRow) {
                                 break;
                             }
                         case 7:
-                            {
-                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                                break;
-                            }
-                        case 6:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
