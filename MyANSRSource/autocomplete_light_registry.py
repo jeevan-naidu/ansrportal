@@ -13,6 +13,7 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
         choices = User.objects.filter(
                 Q(is_superuser=False) & Q(is_active=True) & Q(email__icontains=q)
             )
+        logger.error(u'q {0}'.format(choices.query))
         logger.error(u'q {0}'.format(q))
         logger.error(u'choices {0}'.format(choices))
         print choices
