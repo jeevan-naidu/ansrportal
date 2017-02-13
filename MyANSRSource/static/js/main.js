@@ -520,34 +520,34 @@ app.firstTimeTotal = function() {
         var a = [($monTotal).text(),($tueTotal).text(),($wedTotal).text(),($thuTotal).text(),($friTotal).text(),($satTotal).text(),($sunTotal).text()]
         var b = 0
         for (i = 0; i < a.length; i += 1) {
-          if(a[i] > 24) {
-            // debugger;
-              $('#'+cur_id).val(b)
+        if(a[i] > 24) {
+          // debugger;
+            $('#'+cur_id).val(b)
 
-              $('.form-control.t-hours-hidden.d-item.set-zero').text($('.r-total-idle-hours.set-zero').val())
-              var last_edited_id = '#'+cur_id
-              total($mon, $monTotal);
-              total($tue, $tueTotal);
-              total($wed, $wedTotal);
-              total($thu, $thuTotal);
-              total($fri, $friTotal);
-              total($sat, $satTotal);
-              total($sun, $sunTotal);
+            $('.form-control.t-hours-hidden.d-item.set-zero').text($('.r-total-idle-hours.set-zero').val())
+            var last_edited_id = '#'+cur_id
+            total($mon, $monTotal);
+            total($tue, $tueTotal);
+            total($wed, $wedTotal);
+            total($thu, $thuTotal);
+            total($fri, $friTotal);
+            total($sat, $satTotal);
+            total($sun, $sunTotal);
 
-              if(cur_id = cur_id.match(/id_form/g)){
-                $('#project_table tr:last-child').find('.t-hours.set-zero').text(curtotal)
-              }
-              else
-              {
-                $(last_edited_id).parent().parent().find('td:eq(9)').find('.form-control.total.input-field.r-total').val(curtotalnon)
-
-                }
-              sweetAlert("Oops...", "you are amazing, you can't work for more than 24 hours a day!!", "error");
-
-              // alert($('#'+cur_id).val())
-
+            if(cur_id = cur_id.match(/id_form/g)){
+              $('#project_table tr:last-child').find('.t-hours.set-zero').text(curtotal)
             }
+            else
+            {
+              $('#non_project_table tr:last-child').find('.form-control.total.input-field.r-total').val(curtotalnon)
+
+              }
+            sweetAlert("Oops...", "You cannot enter more than 24 hours a day.", "error");
+
+            // alert($('#'+cur_id).val())
+
           }
+        }
     };
 
     app.tsInputIsValid = function($elem, str) {
