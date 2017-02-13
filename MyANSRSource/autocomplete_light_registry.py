@@ -2,21 +2,17 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Book, Project
 from dal import autocomplete
-import logging
-logger = logging.getLogger('MyANSRSource')
+
 
 class AutocompleteUser(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-
         choices = User.objects.filter(
-                Q(is_superuser=False) & Q(is_active=True) & Q(email__icontains=q)
-            )
-        logger.error(u'q {0}'.format(choices.query))
-        logger.error(u'q {0}'.format(q))
-        logger.error(u'choices {0}'.format(choices))
-        print choices
+            Q(is_superuser=False) & Q(is_active=True)
+        )
+
+        choices = choices.filter(email__icontains=q)
         return choices
 
 
