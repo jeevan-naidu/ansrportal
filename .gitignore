@@ -41,6 +41,7 @@ fb360/migrations/
 Grievances/migrations/
 GrievanceAdmin/migrations/
 Reports/migrations/
+ExitApp/migrations/
 static/
 *.egg-info/
 .installed.cfg

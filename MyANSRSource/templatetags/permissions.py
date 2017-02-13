@@ -71,7 +71,11 @@ def IsManager(user):
 
 @register.filter
 def get_item(dictionary, key):
-    s = dictionary.get(key)
+    # print dictionary
+    try:
+        s = dictionary.get(key)
+    except:
+        s = 0
     if s is None:
         s = 0
     return s
