@@ -329,7 +329,7 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['tsId'].widget.attrs['value'] = 0
             # self.fields['is_internal'].widget.attrs['value'] = 0
-            # self.fields['projectType'].widget.attrs['value'] = 'Q'
+            self.fields['projectType'].widget.attrs['value'] = 'Q'
     return TimeSheetEntryForm
 
 
