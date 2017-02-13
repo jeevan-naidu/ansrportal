@@ -12,6 +12,7 @@ FEED_SUCCESS_DIR = os.path.join(FEED_DIR,  "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR,  "error")
 FEED_DELIMITER = ","
 
+
 class Command(BaseCommand):
     help = 'Upload Leave summary.'
 
@@ -48,13 +49,16 @@ def feedData(filereader):
 
 def insertToDb1(data_file):
     try:
-        for val in range(0, int(data_file[4])):
             authorname = data_file[1]
-            authorname = authorname.split(",")
-            if len(authorname)>1:
-                author, created1 = Author.objects.get_or_create(name=authorname[1], surname=authorname[0])
+            authorname = authorname.split(" ")
+            first_name = authorname[0]
+            surname = authorname[1:]
+            if surname:
+                surname = reduce(lambda x, y: x + " " + y, surname)
             else:
-                author, created1 = Author.objects.get_or_create(name=authorname[0], surname='')
+                surname = ""
+
+            author, created1 = Author.objects.get_or_create(name=first_name, surname=surname)
             publisher, created2 = Publisher.objects.get_or_create(name=data_file[3])
             Book(title=data_file[0],
                  ISBN=1111111111111,
