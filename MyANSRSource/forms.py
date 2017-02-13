@@ -148,8 +148,7 @@ def TimesheetFormset(currentUser,enddate):
         )
 
         chapter = forms.ModelChoiceField(widget=forms.Select(), queryset=Chapter.objects.none(),label="Chapter",)
-        # projectType = forms.CharField(label="pt",
-        #                               )
+        projectType = forms.CharField(label="pt", widget=forms.HiddenInput())
         task = forms.ModelChoiceField(widget=forms.Select(), queryset=Task.objects.none(), label="Task",)
         monday = forms.CharField(label="Mon", required=False)
         mondayH = forms.DecimalField(label="Hours",
@@ -330,7 +329,7 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalH'].widget.attrs['value'] = 0
             self.fields['tsId'].widget.attrs['value'] = 0
             # self.fields['is_internal'].widget.attrs['value'] = 0
-            # self.fields['projectType'].widget.attrs['value'] = 'Q'
+            self.fields['projectType'].widget.attrs['value'] = 'Q'
     return TimeSheetEntryForm
 
 
@@ -426,7 +425,7 @@ class ChangeProjectForm(forms.ModelForm):
 
 class ChangeProjectBasicInfoForm(forms.ModelForm):
 
-    id = forms.IntegerField(label="BasicInfoId", )
+    id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
     reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG)
     remark = forms.CharField(max_length=100, required=False)
     class Meta:
@@ -456,7 +455,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 
 
 class ChangeProjectTeamMemberForm(forms.ModelForm):
-    id = forms.IntegerField(label="teamRecId", )
+    id = forms.IntegerField(label="teamRecId",widget=forms.HiddenInput() )
     member = forms.ModelChoiceField(
         queryset=User.objects.all(),
         # label="Project Leader",
@@ -501,7 +500,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 
 class CloseProjectMilestoneForm(forms.ModelForm):
 
-    id = forms.IntegerField(label="msRecId", )
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput() )
 
     class Meta:
         model = ProjectMilestone

@@ -206,14 +206,12 @@
 
             });
          $(".remark").each(function() {
-            <!--console.log($(this).val() +'&#45;&#45;'+this.value);-->
                 if($(this).val().trim().length != 0) {
                     remarks[this.id]=$(this).val();
                 }
                 else {
                 $("#update").prop('disabled', true);
             }
-                <!--console.log("remarks&#45;&#45;"+remarks);-->
 
          });
 

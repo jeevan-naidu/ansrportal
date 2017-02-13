@@ -41,6 +41,8 @@ a{color: #337ab7}
 
 .vd_navbar{background-color: #4a7973}
 
+.vd_panel-menu .popover{display: none !important;}
+
 .vd_title-section{padding-bottom: 9px}
 
 .vd_panel-header h4{font-weight: 100}
@@ -353,3 +355,5 @@ span.book-count{font-weight: bold}
 
 .leave-report-table thead{border: 1px solid #464a4c;}
 .leave-report-table th{background-color: #464A4C !important;color: #fff;}
+
+#timesheet-approve-table_filter{display: none;}

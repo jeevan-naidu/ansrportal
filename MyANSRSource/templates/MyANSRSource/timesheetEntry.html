@@ -47,7 +47,7 @@
 			</a>
 		</span>
 		<span class="pull-right" style="margin-right: 5px">
-			<a value="submit" class="btn btn vd_btn vd_bg-green btn-xs" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
+			<a value="submit" class="btn btn-primary vd_btn btn-xs disabled" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
 				Feedback
 			</a>
 		</span>
@@ -108,7 +108,9 @@
 			</td>
 		</tr>
 
-            	<tr>
+<!-- old code -->
+
+<!--             	<tr>
 			{% for field in form.hidden_fields %}
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field.label }}</td>
@@ -135,6 +137,30 @@
 				{% endif %}
 			{% endfor %}
             	</tr>
+ -->
+
+<!-- new code -->
+
+<tr>
+<td style="display: none">id</td>
+<th class="res-14-per">Project <span class="required">*</span></th>
+<th class="res-14-per">Location <span class="required">*</span></th>
+<th class="res-14-per">Chapter/Subtitle <span class="required">*</span></th>
+<th class="res-14-per">Task <span class="required">*</span></th>
+<th>Mon</th>
+<th>Tue</th>
+<th>Wed</th>
+<th>Thu</th>
+<th>Fri</th>
+<th>Sat</th>
+<th>Sun</th>
+<th>Total</th>
+<th>Delete</th>
+</tr>
+
+
+
+
 		</thead>
 		<tbody>
 		{% endif %}
@@ -144,7 +170,9 @@
 				{% if 'id' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
-
+				{% if 'pt' in field.label %}
+					<td style="display: none">{{ field }}</td>
+				{% endif %}
             {% if 'is_internal' in field.label %}
 					<td style="display: none">{{ field }}</td>
 				{% endif %}
@@ -153,47 +181,10 @@
 			{% spaceless %}
 			{% if data.label in shortDays %}
 					<td style="position:relative">
-						<!--{% for data in form.visible_fields %}-->
-							<!--{% if 'hold' in data.label %}-->
-								<!--&lt;!&ndash;{% if data.value %}&ndash;&gt;-->
-									<!--&lt;!&ndash;<a class="btn btn-default day-popover-button disabled fixed-btn-size" href="javascript:;">&ndash;&gt;-->
-								<!--&lt;!&ndash;{% else %}&ndash;&gt;-->
-									<!--&lt;!&ndash;<a class="btn btn-default day-popover-button fixed-btn-size" href="javascript:;">&ndash;&gt;-->
-								<!--&lt;!&ndash;{% endif %}&ndash;&gt;-->
-							<!--{% endif %}-->
-						<!--{% endfor %}-->
-                            <!--&lt;!&ndash;<span style="display: none;">&ndash;&gt;-->
-							<!--{% for tdata in form.hidden_fields %}-->
-								<!--{% if data.label|lower in tdata.id_for_label  %}-->
-									<!--{% for typeData in form.hidden_fields %}-->
-										<!--{% if 'tsId' in typeData.id_for_label %}-->
-											<!--{% if tdata.value > 0 %}-->
-												<!--<span class="b-questions set-zero">{{ tdata.value }}</span>-->
-												<!--<span class="project-unit">{{ typeData.value }}</span>-->
-											<!--{% else %}-->
-												<!--<span class="b-questions set-zero">0</span>-->
-												<!--{% if typeData.value == None %}-->
-													<!--<span class="project-unit set-q">Q</span>-->
-												<!--{% else %}-->
-													<!--<span class="project-unit set-q">{{ typeData.value }}</span>-->
-												<!--{% endif %}-->
-											<!--{% endif %}-->
-										<!--{% endif %}-->
-									<!--{% endfor %}-->
-									<!--{{ tdata }}-->
-								<!--{% endif %}-->
-							<!--{% endfor %}-->
-                            <!--</span>-->
 
 							{% for tdata in form.visible_fields %}
 								{% if data.label|lower in tdata.id_for_label and 'H' in tdata.id_for_label %}
-                                    <!--{% with dayclass=data.label|add:"-t" %}-->
-                                        <!--{% if tdata.value > 0 %}-->
-                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">{{ tdata.value }}</span>H-->
-                                        <!--{% else %}-->
-                                            <!--<span class="b-hours {{ dayclass }} set-zero" data-original-title="">0</span>H-->
-                                        <!--{% endif %}-->
-                                    <!--{% endwith %}-->
+
 									{{ tdata }}
 								{% endif %}
 							{% endfor %}
@@ -201,12 +192,13 @@
 					</td>
 				{% elif data.label == 'Total' %}
 					<td>
+					<!-- total section -->
 						{% for data in form.visible_fields %}
 							{% if 'hold' in data.label %}
 								{% if data.value %}
-									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view disabled fixed-btn-size" style="border: 1px solid #D5D5D5;padding: 2px 10px 0px;border-radius: 4px; width: auto;min-width: 0px;box-shadow: inset 0 1px 1px rgba(0,0,0,.075);background: #eeeeee" href="javascript:;">
 								{% else %}
-									<a class="lh-30 btn-default row-total-view fixed-btn-size" href="javascript:;">
+									<a class="lh-30 btn-default row-total-view fixed-btn-size" style="border: 1px solid #D5D5D5;padding: 2px 10px 0px;border-radius: 4px; width: auto;min-width: 0px;box-shadow: inset 0 1px 1px rgba(0,0,0,.075);background: #eeeeee" href="javascript:;">
 								{% endif %}
 							{% endif %}
 						{% endfor %}
@@ -455,8 +447,8 @@
             <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th>Description</th>
-                    <th>Hours</th>
+                    <th style="background-color: #464A4C ;color: #fff;">Description</th>
+                    <th style="background-color: #464A4C ;color: #fff;">Hours</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -502,11 +494,11 @@
 
 <div style="margin-bottom:15px;" class="clearfix">
         {% if hold_button %}
-            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space" disabled="disabled">Submit</a>
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right" disabled="disabled">Save</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space" disabled="disabled">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right" disabled="disabled">Save</button>
         {% else %}
-            <a id="submitTS" value="submit" name="submit" class="btn btn-danger pull-right pull-right-space">Submit</a>
-            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-danger pull-right">Save</button>
+            <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right">Save</button>
         {% endif %}
         </div>
 
@@ -522,14 +514,8 @@
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel">Feedback </h4>
                         </div>
-                        <div class="modal-body">
-	                            <div class="form-group">
-	                              <label class="col-sm-4 control-label">Manager Feedback : </label>
-	                              <div class="col-sm-7 controls">
-	                                <span>{{feedback}}</span>
-	                              </div>
-
-	                            </div>
+                        <div class="modal-body" style="padding: 50px;text-align: justify;line-height: 20px;">
+	                                <span class="feedback-span">{%if feedback %}{{feedback}}{%else %}{% endif %}</span>
 	                            <br style="clear:both">
 
                         </div>
@@ -559,7 +545,14 @@
 
       }
     });
-
+    function check_project() {
+        if($('#id_form-0-project').children('option').length == 1) {
+            sweetAlert("Oops...", "Please Contact Your Manager, You Don't Have Any Project Assigned To  Save The Time Sheet!", "error");
+            $('#submitTS ,#saveTS ,#timesheet-billable-add-btn , #timesheet-non-billable-add-btn').remove();
+            return false;
+        }
+        else return true;
+    }
  		$(document).on("click", "#submitTS", function(e) {
             swal({
               title: "Are you sure?",
@@ -574,10 +567,10 @@
             },
             function(isConfirm) {
                 if (isConfirm) {
+
                     var count = 0 ;
                      $('[id^=id_form][id$=DELETE]' ).each(function(){
                         if (this.checked) {
-                            console.log(this.id);
                             count +=1;
                         }
                     });
@@ -595,15 +588,17 @@
             });
          });
 
+        window.onload = function() {
+         check_project();
+        };
+
         $(function() {
-            $( "#saveTS" ).click(function() {
+
+            $( "#saveTS" ).click(function(e) {
               // debugger;
               var a = document.getElementById("#id_form-0-project");
-
-                if (a != null){
-
-
-                $( "#saveTS" ).hide();
+              if (a != null){
+                  $( "#saveTS" ).hide();
               }
             });
 
@@ -625,13 +620,17 @@
         })
 
         $(document).ready(function(){
-        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
+/*        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
 			   if ($(this).find('textarea').val() ) {
 			   		$('#timesheet-feedback-button').removeClass('vd_bg-green').addClass('vd_bg-yellow');
 			   }else{
 			   		$('#timesheet-feedback-button').removeClass('vd_bg-yellow').addClass('vd_bg-green');
 			   }
-			})
+			})*/
+
+			if ($('.feedback-span').text().length > 0) {
+				$('#timesheet-feedback-button').removeClass('disabled');
+			}
         })
 
 
@@ -651,6 +650,8 @@
 .popover.fade.bottom{background-color: rgba(255, 255, 255, 0);border:0px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0);}
 .popover.fade.bottom .arrow{display: none;}
 .popover-content{height:0px;width:0px;padding:0px}
+
+
 </style>
 
 
