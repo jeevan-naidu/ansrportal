@@ -500,13 +500,7 @@ app.firstTimeTotal = function() {
 
             $output.text(tempTotal);
         }
-        var mon = $('.ts-mon-total-hr').text()
-        var tue = $('.ts-tue-total-hr').text()
-        var wed = $('.ts-wed-total-hr').text()
-        var thu = $('.ts-thu-total-hr').text()
-        var fri = $('.ts-fri-total-hr').text()
-        var sat = $('.ts-sat-total-hr').text()
-        var sun = $('.ts-sun-total-hr').text()
+
 
         total($mon, $monTotal);
         total($tue, $tueTotal);
@@ -525,7 +519,7 @@ app.firstTimeTotal = function() {
             $('#'+cur_id).val(b)
 
             $('.form-control.t-hours-hidden.d-item.set-zero').text($('.r-total-idle-hours.set-zero').val())
-            var last_edited_id = '#'+cur_id
+
             total($mon, $monTotal);
             total($tue, $tueTotal);
             total($wed, $wedTotal);
@@ -1146,7 +1140,7 @@ var curtotalnon;
                         tempTotalNonBillable = 0,
                         totalNonBillable;
                         curtotalnon = $curTotal.val()
-                        // ~~~~
+
                     for (i = 0; i < $curDaysLen; i += 1) {
                         $curDay = Number($($curDays[i]).val());
                         temp += $curDay;
