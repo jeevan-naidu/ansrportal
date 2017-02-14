@@ -404,3 +404,13 @@ right: 15px;
 .table .menu-action{padding-top:7px !important;}
 .select-name{float: left;}
 .order-number{width: 50px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;}
+
+.qms-dashboard-table td span.defect-span{
+    background: #868b8e;
+    color: #fff;
+    width: 25px;
+    display: inline-block;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 15px;
+}

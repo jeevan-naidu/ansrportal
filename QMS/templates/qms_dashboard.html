@@ -32,56 +32,80 @@
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-dot-circle-o"></i> </span> Data Tables Example </h3>
                   </div> -->
                   <div class="panel-body table-responsive">
-                    <table class="table table-striped leave-report-table" id="data-tables">
+                    <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
                       <thead>
                         <tr>
                           <th>ID</th>
                           <th>Name</th>
-                          <th>Defect</th>
+                          <th>Defect &nbsp; [ S1, S2, S3 ]</th>
                           <th>Field 1</th>
                           <th>Field 2</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr class="odd gradeX">
-                          <td>1</td>
+                          <td><a href="#" data-toggle="modal" data-target="#myModal">1</a></td>
                           <td>Name of first project</td>
-                          <td>S3</td>
+                          <td>
+                            <span class="defect-span defect-s1">32</span>
+                            <span class="defect-span defect-s2">14</span>
+                            <span class="defect-span defect-s3">5</span>
+                          </td>
                           <td class="center">Lorem Ipsum</td>
                           <td class="center">Lorem Ipsum</td>
                         </tr>
                         <tr class="even gradeC">
                           <td>2</td>
                           <td>Name of second project</td>
-                          <td>S1</td>
+                          <td>                          
+                            <span class="defect-span defect-s1">32</span>
+                            <span class="defect-span defect-s2">14</span>
+                            <span class="defect-span defect-s3">5</span>
+                          </td>
                           <td class="center">Lorem Ipsum</td>
                           <td class="center">Lorem Ipsum</td>
                         </tr>
                         <tr class="odd gradeX">
                           <td>3</td>
                           <td>Name of third project</td>
-                          <td>S2</td>
+                          <td>                          
+                            <span class="defect-span defect-s1">32</span>
+                            <span class="defect-span defect-s2">14</span>
+                            <span class="defect-span defect-s3">5</span>
+                          </td>
                           <td class="center">Lorem Ipsum</td>
                           <td class="center">Lorem Ipsum</td>
                         </tr>
                         <tr class="even gradeC">
                           <td>4</td>
                           <td>Name of fourth project</td>
-                          <td>S2</td>
+                          <td>                          
+                            <span class="defect-span defect-s1">32</span>
+                            <span class="defect-span defect-s2">14</span>
+                            <span class="defect-span defect-s3">5</span>
+                          </td>
                           <td class="center">Lorem Ipsum</td>
                           <td class="center">Lorem Ipsum</td>
                         </tr>
                         <tr class="odd gradeX">
                           <td>5</td>
                           <td>Name of fifth project</td>
-                          <td>S3</td>
+                          <td>                          
+                            <span class="defect-span defect-s1">32</span>
+                            <span class="defect-span defect-s2">14</span>
+                            <span class="defect-span defect-s3">5</span>
+                          </td>
                           <td class="center">Lorem Ipsum</td>
                           <td class="center">Lorem Ipsum</td>
                         </tr>
                         <tr class="even gradeC">
                           <td>6</td>
                           <td>Name of sixth project</td>
-                          <td>S1</td>
+                          <td>                          
+                            <span class="defect-span defect-s1">32</span>
+                            <span class="defect-span defect-s2">14</span>
+                            <span class="defect-span defect-s3">5</span>
+                          </td>
                           <td class="center">Lorem Ipsum</td>
                           <td class="center">Lorem Ipsum</td>
                         </tr>
@@ -96,6 +120,32 @@
 			 </div><!-- ./col -->
 			</div><!-- ./row -->
 
+
+<!-- Modal Area -->
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                        </div>
+                        <div class="modal-body"> 
+
+                          <p><span>Lorem Ipsum</span> : Dolor sit amet</p>
+                          <p><span>Lorem Ipsum</span> : Dolor sit amet</p>
+                        
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content --> 
+                    </div>
+                    <!-- /.modal-dialog --> 
+                  </div>
+                  <!-- /.modal --> 
 
 
 
