@@ -54,8 +54,6 @@ def IsActiveShortAttendance(value):
 
 @register.filter(name='isManager')  # added for grievance admin module
 def choose_reportee(user):
-    if user.is_anonymous:  # condition added to handled employee dont have entry in employee table
-        return 0
     myReportee = employee.models.Employee.objects.filter(
         manager=user.employee)
     is_manager = 0
@@ -68,13 +66,10 @@ def IsManager(user):
     UserGroupsList = user.groups.all().values_list('name', flat=True)
     return settings.MANAGER in UserGroupsList
 
+
 @register.filter
 def get_item(dictionary, key):
-    # print dictionary
-    try:
-        s = dictionary.get(key)
-    except:
-        s = 0
+    s = dictionary.get(key)
     if s is None:
         s = 0
     return s

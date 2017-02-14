@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
-from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser
+from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,\
+    AutocompleteBook,AutocompleteUser, AutoCompleteUserProjectSpecific
 from Reports import views as milestonreporteviews
 from .views import ApproveTimesheetView
 from django.contrib.auth.decorators import login_required, permission_required
@@ -22,6 +23,13 @@ urlpatterns = [
         AutocompleteBook.as_view(),
         name='AutocompleteBook',
     ),
+
+    url(
+        r'^AutoCompleteUserProjectSpecific/$',
+        AutoCompleteUserProjectSpecific.as_view(),
+        name='AutoCompleteUserProjectSpecific',
+    ),
+
     url(r'^getchapters/(?P<projectid>[0-9]+)/$',
         views.GetChapters,
         name=u'getchapters'),

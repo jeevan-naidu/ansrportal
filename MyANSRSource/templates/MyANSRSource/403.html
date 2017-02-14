@@ -12,18 +12,12 @@
             col-lg-offset-1 jumbotron shadow"> 
             <div class="col-lg-12 col-md-12 col-xs-12">
 		    <h2>Sorry, You don't have permission to access this feature</h2>
-            {%if "grievances_admin" not in request.path %}
-                <button class="btn btn-default" onclick="goBack()">
-                <i class="fa fa-arrow-left"></i>
-                    Go Back
-                </button>
-            {%else%}
+
                 <a href="/myansrsource/dashboard" class="btn btn-default ">
                     <i class="fa fa-home fa-lg"></i>
                       
 			    home
 		        </a>
-            {%endif%}
 		    <script>
 			function goBack() {
 			    window.history.back()
