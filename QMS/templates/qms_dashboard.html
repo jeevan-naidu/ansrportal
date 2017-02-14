@@ -2,7 +2,7 @@
 {% load static from staticfiles %}
 
 {% block siteTitle %}QMS{% endblock %}
-{% block pageTitle %}QMS{% endblock %}
+{% block pageTitle %}Dashboard{% endblock %}
 {% block content  %}
 
 
@@ -14,22 +14,67 @@
 
             <div class="row">
               <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-sm-12 qms-selectors">
+
+
+                        </div>
+
+                    </div><!-- ./qms-selectors row -->
+
+
+
+
+
                 <div class="panel widget">
-                  <div class="panel-heading vd_bg-grey">
+<!--                   <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-dot-circle-o"></i> </span> Data Tables Example </h3>
-                  </div>
+                  </div> -->
                   <div class="panel-body table-responsive">
-                    <table class="table table-striped" id="data-tables">
+                    <table class="table table-striped leave-report-table" id="data-tables">
                       <thead>
                         <tr>
-                          <th>Rendering engine</th>
-                          <th>Browser</th>
-                          <th>Platform(s)</th>
-                          <th>Engine version</th>
-                          <th>CSS grade</th>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Defect</th>
+                          <th>Field 1</th>
+                          <th>Field 2</th>
                         </tr>
                       </thead>
                       <tbody>
+                        <tr class="odd gradeX">
+                          <td>Trident</td>
+                          <td>Internet
+                            Explorer 4.0</td>
+                          <td>Win 95+</td>
+                          <td class="center"> 4</td>
+                          <td class="center">X</td>
+                        </tr>
+                        <tr class="even gradeC">
+                          <td>Trident</td>
+                          <td>Internet
+                            Explorer 5.0</td>
+                          <td>Win 95+</td>
+                          <td class="center">5</td>
+                          <td class="center">C</td>
+                        </tr>
+                        <tr class="odd gradeX">
+                          <td>Trident</td>
+                          <td>Internet
+                            Explorer 4.0</td>
+                          <td>Win 95+</td>
+                          <td class="center"> 4</td>
+                          <td class="center">X</td>
+                        </tr>
+                        <tr class="even gradeC">
+                          <td>Trident</td>
+                          <td>Internet
+                            Explorer 5.0</td>
+                          <td>Win 95+</td>
+                          <td class="center">5</td>
+                          <td class="center">C</td>
+                        </tr>
                         <tr class="odd gradeX">
                           <td>Trident</td>
                           <td>Internet
@@ -60,7 +105,8 @@
 
 
 
-
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
 <script type="text/javascript">
 		$(document).ready(function() {

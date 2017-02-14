@@ -357,3 +357,50 @@ span.book-count{font-weight: bold}
 .leave-report-table th{background-color: #464A4C !important;color: #fff;}
 
 #timesheet-approve-table_filter{display: none;}
+
+
+/* QMS */
+
+.qms-selectors .form-inline{margin-right: 30px;}
+
+.edit-buttons{width: 65px;}
+.gradeX a.vd_btn{margin-right: 0px !important;}
+
+.select2.select2-container {min-width: 0px !important;width: 150px !important;margin-right: 10px;}
+.author_dropdown {
+    min-width: 0px !important;
+    width: 150px !important;
+    margin-right: 15px;
+    border: 1px solid #aaaaaa;
+    border-radius: 4px;
+    position: relative;
+    top: 1px;
+    /* color: #999; */
+}
+.table-striped>tbody>tr:nth-of-type(odd) {
+background-color: #f3f1f1;
+}
+.qa-editable{cursor: pointer;}
+.qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+#qms-summary{
+border-top: 1px solid #aaa;
+border-bottom: 1px solid #aaa;
+padding: 15px 0px;
+margin-bottom: 15px;
+transition: all 0.5s ease;
+}
+#qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
+
+#qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
+
+#review_report_form{position:relative}
+#review_report_form td input[type="text"], #review_report_form td select{height:25px}
+.no_questions{
+position: absolute;
+top: -55px;
+right: 15px;
+}
+.table .menu-action{padding-top:7px !important;}
+.select-name{float: left;}
+.order-number{width: 50px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;}
