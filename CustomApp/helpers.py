@@ -34,3 +34,4 @@ def flow_config(module):
 def transition_config(module, activity):
     """Return all the possible steps for a process"""
     return flow_config(module).PROCESS[activity]['transitions']
+

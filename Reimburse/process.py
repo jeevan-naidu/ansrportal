@@ -32,5 +32,6 @@ PROCESS = {
 
 INITIAL = 'reimburse_raise'
 
+DETAIL = ["title", "reason", "amount", "user"]
 TITLE = 'Reimbursement for ANSR Source'
 DESCRIPTION = 'Reimbursement Process '

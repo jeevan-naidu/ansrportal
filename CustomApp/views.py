@@ -119,11 +119,12 @@ class ApproveListView(APIView):
             serialized_data.save_as(role, request, pk, action)
         modal = config.PROCESS[config.INITIAL]['model']
         queryset = get_queryset(request, **kwargs)
-        abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', 'transaction']
-        fields = [f.name for f in modal._meta.get_fields()]
-        fields = filter(lambda x: x not in abstract_fields, fields)
+        # abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', 'transaction']
+        display_fields = config.DETAIL
+        fields = [f.name for f in modal._meta.gt_fields()]
+        fields = filter(lambda x: x in display_fields, fields)
         fields.sort(reverse=True)
-        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields})
+        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields,})
 
 
 
