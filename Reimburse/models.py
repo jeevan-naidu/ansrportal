@@ -21,7 +21,3 @@ class Transaction(AbstractEntity):
     approved_by = ForeignKey(User)
     status = CharField(choices=PROCESS_STATUS, max_length=20)
     reason = TextField(null=True, blank=True)
-
-
-
-

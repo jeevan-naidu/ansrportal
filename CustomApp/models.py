@@ -42,7 +42,7 @@ class AbstractEntity(Model):
 
 
 class AbstractProcess(AbstractEntity):
-    user = ForeignKey(User, related_name='requester')
+    user = ForeignKey(User, related_name='%(class)s_requested_by')
     is_active = BooleanField('Is Active', default=True)
     process_status = CharField(choices=TASK_STATUS, max_length=20, default="In Progress")
     request_status = CharField(choices=REQUEST_STATUS, max_length=20, default="Initiated")

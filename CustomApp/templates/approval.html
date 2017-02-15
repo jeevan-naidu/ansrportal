@@ -1,16 +1,17 @@
+
+{% extends 'master.html' %}
+{% block siteTitle %}Manage Leaves{% endblock %}
+
+{% load static from staticfiles %}
 {% load process_tags %}
 {% load rest_framework %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Approve Page</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
-<body>
+
+{% block pageTitle %}Manage Leaves{% endblock %}
+
+{% block content  %}
+
+
+
 
 <div class="container">
   <h2>Basic List Group</h2>
@@ -66,7 +67,7 @@
      </div>
   </ul>
 
-</div>
+
 <div class="modal fade" id="modal-container-process">
     <div class="modal-dialog">
 
@@ -95,48 +96,7 @@
 
 </div>
 
-</body>
-</html>
-
-<script>
-
-     //ajax request for registering a leave on modal popup open
-  $("#modal-container-process").on('shown.bs.modal', function(e) {
-      button = e.relatedTarget;
-      var status_check = button.id.includes("reject");
-      var container = document.getElementById("modal-container-process-submit");
-      var input1 = document.createElement("input");
-      input1.type = "hidden";
-      input1.name = "id";
-      var input2 = document.createElement("input");
-      input2.type = "hidden";
-      input2.name = "action"
-      if(status_check){
-          pk = button.id.substring(7);
-          action = button.id.substring(0,6);
-          input1.value = pk;
-          input2.value = action;
-          container.appendChild(input1);
-                // Append a line break
-          container.appendChild(document.createElement("br"));
-          container.appendChild(input2);
-                // Append a line break
-          container.appendChild(document.createElement("br"));
-      }
-      else{
-          pk = button.id.substring(8);
-          action = button.id.substring(0,7);
-            input1.value = pk;
-          input2.value = action;
-          container.appendChild(input1);
-                // Append a line break
-          container.appendChild(document.createElement("br"));
-          container.appendChild(input2);
-                // Append a line break
-          container.appendChild(document.createElement("br"));
-      }
-
-  });
 
 
-    </script>
+<script src='{% static 'js/custom_app.js' %}' type="text/javascript"></script>
+{% endblock %}

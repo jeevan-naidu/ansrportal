@@ -1,13 +1,11 @@
-
 {% extends 'master.html' %}
-{% block siteTitle %}Manage Leaves{% endblock %}
+{% block siteTitle %}Manage Process{% endblock %}
 
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
 
-
-{% block pageTitle %}Manage Leaves{% endblock %}
+{% block pageTitle %}Manage Process{% endblock %}
 
 {% block content  %}
 
@@ -189,55 +187,5 @@
                                 <div class="control-value"> Los Angeles </div>
                               </div>
                             </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Country</label>
-                              <div class="col-sm-10 controls">
-                                <div class="control-value"> USA </div>
-                              </div>
-                            </div>
                           </div>
-                          <div class="form-actions-condensed wizard"> <a class="btn vd_btn prev" href="javascript:void(0);"><span class="menu-icon"><i class="fa fa-fw fa-chevron-circle-left"></i></span> Previous</a> <a class="btn vd_btn next" href="javascript:void(0);">Next <span class="menu-icon"><i class="fa fa-fw fa-chevron-circle-right"></i></span></a> <a class="btn vd_btn vd_bg-green finish" href="javascript:void(0);"><span class="menu-icon"><i class="fa fa-fw fa-check"></i></span> Finish</a> </div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <!-- Panel Widget -->
-              </div>
-              <!-- col-md-12 -->
-            </div>
-            <!-- row -->
-
-
-
-<script type="text/javascript">
-$(document).ready(function() {
-  "use strict";
-
-  $('#wizard-1').bootstrapWizard({
-    'tabClass': 'nav nav-pills nav-justified',
-    'nextSelector': '.wizard .next',
-    'previousSelector': '.wizard .prev',
-    'onTabShow' : function(){
-      $('#wizard-1 .finish').hide();
-      $('#wizard-1 .next').show();
-      if ($('#wizard-1 .nav li:last-child').hasClass('active')){
-        $('#wizard-1 .next').hide();
-        $('#wizard-1 .finish').show();
-      }
-    },
-    'onNext': function(){
-      scrollTo('#wizard-1',-100);
-    },
-    'onPrevious': function(){
-      scrollTo('#wizard-1',-100);
-    }
-  });
-
-});
-</script>
-<!-- Specific Page Scripts END -->
-
-
-
-{% endblock %}
+                              {% endblock %}
