@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 {% load permissions %}
 {% block siteTitle %}Candidate Resignation Acceptance{% endblock %}
-{% block pageTitle %}Resignation Acceptance{% endblock %}
+{% block pageTitle %}Resignation Acceptance ( Manager ){% endblock %}
 {% block content  %}
      <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
@@ -26,7 +26,7 @@
 }
 ul{list-style: none;padding-left: 0px;}
     </style>
-           <div class="panel-body">
+
                {% if messages %}
                      {% for message in messages %}
                {% if message.tags == 'error' %}
@@ -44,10 +44,10 @@ ul{list-style: none;padding-left: 0px;}
                         <table class="table table-condensed table-striped myansr-table">
                           <thead>
                             <th class="">Name</th>
-                            <th class="mw-ra">Manager Acceptance</th>
-                            <th class="">Manager Feedback</th>
-                            <th class="mw-ra">Manager Elligible for ReHire</th>
-                            <th class="">Backup Taken</th>
+                            <th class="mw-ra">Acceptance</th>
+                            <th class="">Feedback</th>
+                            <th class="mw-ra">Elligible for ReHire</th>
+                            <th class="">Backed Up</th>
                             <th class="">Last Date</th>
                             <th class="">Reason</th>
                             <th class="">Action</th>
@@ -76,37 +76,37 @@ ul{list-style: none;padding-left: 0px;}
                    </tr>
                             {%endif %}
                             {% endfor %}
-                            <script type="text/javascript">
+      <script type="text/javascript">
             $(function () {
             $('.acceptance,.rehiremgr,.backup,.hrconcent,.hrrehire').on('click', function () {
              $(this).val(this.checked ? 'on' : '');
             });
             $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
-                  $('.resignation_acceptance').on('click', function(){
-                  manager_concent = $(this).parent().parent().find('.acceptance').val();
-                  mgr_feedback = $(this).parent().parent().find('.feedback').val();
-                  manager_rehire = $(this).parent().parent().find('.rehiremgr').val();
-                  mgr_backup = $(this).parent().parent().find('.backup').val();
-                  final_date = $(this).parent().parent().find('.finaldate').val();
-                  user_id = $(this).parent().parent().find('.userid').val();
-                  $.ajax({
-                                               url : "/exitapp/update-manager-value/",
-                                                type : "GET",
-                                                data : { 'final_date':final_date, 'mgr_backup':mgr_backup,'id':user_id, 'manager_concent':manager_concent, 'mgr_feedback':mgr_feedback,'manager_rehire':manager_rehire},
-                                                success : function(json) {
-                                                if (json == 'success'){
-                                                swal("Completed!", "Employee data has been submitted.", "success");
-                                                    console.log("json");
-                                                }
-                                                }
-                                                });
+            $('.resignation_acceptance').on('click', function(){
+            manager_concent = $(this).parent().parent().find('.acceptance').val();
+            mgr_feedback = $(this).parent().parent().find('.feedback').val();
+            manager_rehire = $(this).parent().parent().find('.rehiremgr').val();
+            mgr_backup = $(this).parent().parent().find('.backup').val();
+            final_date = $(this).parent().parent().find('.finaldate').val();
+            user_id = $(this).parent().parent().find('.userid').val();
+            $.ajax({
+               url : "/exitapp/update-manager-value/",
+                type : "GET",
+                data : { 'final_date':final_date, 'mgr_backup':mgr_backup,'id':user_id, 'manager_concent':manager_concent, 'mgr_feedback':mgr_feedback,'manager_rehire':manager_rehire},
+                success : function(json) {
+                if (json == 'success'){
+                swal("Completed!", "Employee data has been submitted.", "success");
+                    console.log("json");
+                }
+                }
                 });
+            });
             });
         </script>
 
                             {% csrf_token %}
                              </table>
-           </div>
+
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>

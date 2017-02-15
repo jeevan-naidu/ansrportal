@@ -15,7 +15,7 @@
 
             <div class="row" id="form-basic">
               <div class="col-md-12">
-                <div class="panel widget">
+
                   <!-- <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
                   </div> -->
@@ -24,7 +24,10 @@
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
     padding: 5px 8px;
 }
+.myansr-table td{background: #fff}
 ul{list-style: none;padding-left: 0px;}
+.submit-holder{padding: 0px 15px;margin-top: -20px;}
+.submit-holder > div{background: #d4d4d4;padding: 10px 15px}
     </style>
            <div class="panel-body">
                {% if messages %}
@@ -197,12 +200,16 @@ ul{list-style: none;padding-left: 0px;}
                       {% endfor%}
                       </tbody>
                     </table>
-                        <input type ="submit" value="Submit" class="exitbutton btn btn-primary pull-right">
+                    <div class="row submit-holder">
+                      <div class="col-sm-12">
+                        <input type ="submit" value="Submit" class="exitbutton btn btn-sm btn-primary pull-right">
+                      </div>
+                    </div>
 </form>
             </div>
                 </div>
               </div>
-            </div>
+
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>

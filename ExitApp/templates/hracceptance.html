@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 {% load permissions %}
 {% block siteTitle %}Candidate Resignation Acceptance{% endblock %}
-{% block pageTitle %}Resignation Acceptance{% endblock %}
+{% block pageTitle %}Resignation Acceptance ( HR ){% endblock %}
 {% block content  %}
      <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
 <link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
@@ -26,7 +26,7 @@
 }
 ul{list-style: none;padding-left: 0px;}
     </style>
-           <div class="panel-body">
+
                {% if messages %}
                      {% for message in messages %}
                {% if message.tags == 'error' %}
@@ -44,9 +44,9 @@ ul{list-style: none;padding-left: 0px;}
                         <table class="table table-condensed table-striped myansr-table">
                           <thead>
                             <th class="">Name</th>
-                            <th class="mw-ra">HR Acceptance</th>
-                            <th class="mw-ra">HR Feedback</th>
-                            <th class="mw-ra">HR Elligible for Rehire</th>
+                            <th class="mw-ra">Acceptance</th>
+                            <th class="">Feedback</th>
+                            <th class="mw-ra">Elligible for ReHire</th>
                             <th class="">Last Date</th>
                             <th class="">Reason</th>
                             <th class="">Action</th>
@@ -106,7 +106,7 @@ ul{list-style: none;padding-left: 0px;}
         </script>
                     {% csrf_token %}
                              </table>
-           </div>
+
         <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
         <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
