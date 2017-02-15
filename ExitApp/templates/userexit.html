@@ -34,8 +34,18 @@ ul{list-style: none;padding-left: 0px;}
 
 #id_requisition_number + .select2-container{min-width: 130px;}
 .select2-container .select2-selection--single{height: 30px;}
-#exit-form .form-control
-
+.submit-holder .form-group{
+  margin-bottom: 0px;
+}
+.submit-holder{
+  margin: -25px;
+  margin-top: 20px;
+  margin-bottom: 0px !important;
+  background: #d4d4d4;
+  padding: 10px 15px;
+}
+.panel .panel-body{padding-bottom: 0px;padding-top: 35px}
+.form-group.has-error{margin-bottom: 5px}
 </style>
         <div class="panel-body">
             {% if messages %}
@@ -57,45 +67,48 @@ ul{list-style: none;padding-left: 0px;}
                    {% endif %}
             <form id="exit-form" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                 {% csrf_token %}
-              <div class="form-group col-sm-6">
-                <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
-                <div class="col-sm-6 controls mxw-250">
-                    {{ form.start_date }}
-                  <div class="help-block with-errors"></div> 
-                  </div>
+
+              <div class="row">                
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
+                  <div class="col-sm-6 controls mxw-250">
+                      {{ form.start_date }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
+                  <div class="col-sm-6 controls mxw-250">
+                     {{ form.reason_dropdown }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>
+
+<br style="clear: both">
+
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Last Date<span class="mandatory-field"> *</span></label>
+                  <div class="col-sm-6 controls mxw-250">
+                      {{ form.last_date }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>
+                
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Comments</label>
+                  <div class="col-sm-6 controls mxw-250">
+                      {{ form.comment }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>              
               </div>
 
-              <div class="form-group col-sm-6">
-                <label class="col-sm-4 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
-                <div class="col-sm-6 controls mxw-250">
-                   {{ form.reason_dropdown }}
-                  <div class="help-block with-errors"></div> 
-                  </div>
+              <div class="row submit-holder">
+                <div class="form-group col-sm-12">
+                    <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
+                </div>
               </div>
-              <div class="form-group col-sm-6">
-                <label class="col-sm-4 control-label" >Last Date<span class="mandatory-field"> *</span></label>
-                <div class="col-sm-6 controls mxw-250">
-                    {{ form.last_date }}
-                  <div class="help-block with-errors"></div> 
-                  </div>
-              </div>
-              
-              <div class="form-group col-sm-6">
-                <label class="col-sm-4 control-label" >Comments</label>
-                <div class="col-sm-6 controls mxw-250">
-                    {{ form.comment }}
-                  <div class="help-block with-errors"></div> 
-                  </div>
-              </div>              
-
-
-              <div class="form-group col-sm-12">
-
-                  <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
-                  <!--<button type="button" id = "revertresignation" class="btn btn-primary btn-sm pull-right">Revert</button>-->
-
-              </div>
-
 
 
 
