@@ -69,39 +69,17 @@
 #birthday-greeting{position: absolute;left: 0px;right: 0px;margin-top: 50px;font-size: 30px;color: #38796e;color:#4C2B08;font-family: 'Roboto Slab', serif;z-index: 1}
 .birthday-name{position: absolute;left: 0px;right: 0px;text-align: center;bottom:5%;}
 .birthday-name p{margin-bottom: 10px;}
-.birthday-name .name{font-weight: bold;font-size: 24px;font-family: 'Roboto Slab', serif; color: #715c4e;color: #FFF}
-.birthday-name .team{font-weight: normal;font-size: 16px;color: #38796e;color: #FFF;font-family: 'Roboto Slab', serif;}
+.birthday-name .name{font-weight: bold;font-size: 24px;font-family: 'Roboto Slab', serif; color: #715c4e;}
+.birthday-name .team{font-weight: normal;font-size: 16px;color: #b57777;font-family: 'Roboto Slab', serif;}
 #birthday-cake{
     position: absolute;
-    background: url('/static/images/valentine/valentine.gif')no-repeat center 80px #FFF;
-    background-size: 70%;
-    background-size: 200px;
+    background: url(/static/images/giphy_birthday.gif)no-repeat center center #fcf0e4;
+    background-size: 100%;
     top: 0px;
     right: 0px;
     left: 0px;
     bottom: 0px;
 }
-
-/* Valentine */
-
-#valentine{
-    position: absolute;
-    bottom: 0px;
-    height: 30%;
-    left: 35px;
-    right: 35px;
-    /*background: #d6b891;*/
-    color: #fff;
-    color: #777;
-}
-#valentine p{
-    font-family: 'Pinyon Script', cursive;
-    font-size: 26px;
-    text-align: center;
-    font-weight: bold;
-    line-height: 32px;
-}
-
 </style>
 
 
@@ -136,13 +114,7 @@
 
 
 {#                        <div id="birthday-greeting" class="text-center">Happy Birthday</div>#}
-                        <div id="birthday-cake">
-                            
-                        <div id="valentine">
-                            <p class="greeting">When love is not madness,<br>it is not love</p>
-                        </div>
-
-                        </div>                      
+                        <div id="birthday-cake"></div>                      
 <!--                         <div id="name-team">
                         <p class="text-center">Ladislav Kovacs</p>
                         <p class="text-center">Team Natus Vincere</p>
@@ -238,9 +210,9 @@ $(window).load(function(){
 
                 })
 
-	{% for eachHoliday in holidayList %}
-	$("#calendar").fullCalendar('renderEvent',{
-	    id :'2',
+    {% for eachHoliday in holidayList %}
+    $("#calendar").fullCalendar('renderEvent',{
+        id :'2',
         title : '{{ eachHoliday.name }}',
         start : '{{ eachHoliday.date }}',
         color :'#009452 !important'},true);
@@ -249,56 +221,56 @@ $(window).load(function(){
 });
 
 
-	$("#Holiday").click(function(){
-		if (document.getElementById('Holiday').checked){
-			{% for eachHoliday in holidayList %}
-			$("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452 !important'},true);
-		{% endfor %}
-		}
-		else{
-		$("#calendar").fullCalendar('removeEvents',2);
-	}
-	});
-	$("#Financial_milestone").click(function(){
-		if (document.getElementById('Financial_milestone').checked){
-			{% for eachMilestone in financialM %}
-			$("#calendar").fullCalendar('renderEvent',{id :'3', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#D6412B !important'},true);
-		{% endfor %}
-		}
-		else{
-		$("#calendar").fullCalendar('removeEvents',3);
-	}
-	});
-	$("#Non_financial_milestone").click(function(){
-		if (document.getElementById('Non_financial_milestone').checked){
-			{% for eachMilestone in nonfinancialM %}
-			$("#calendar").fullCalendar('renderEvent',{id :'4', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#FFBA02 !important'},true);
-		{% endfor %}
-		}
-		else{
-		$("#calendar").fullCalendar('removeEvents',4);
-	}
-	});
-	$("#Learning_and_development").click(function(){
-		if (document.getElementById('Learning_and_development').checked){
-			{% for eachTraining in trainingList %}
-			$("#calendar").fullCalendar('renderEvent',{id :'5', title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}', start : '{{ eachTraining.trainingDate }}', end : '{{ eachTraining.endDate }}', color :'#176CED !important'},true);
-		{% endfor %}
-		}
-		else{
-		$("#calendar").fullCalendar('removeEvents',5);
-	}
-	});
-	$("#Hr_activity").click(function(){
-		if (document.getElementById('Hr_activity').checked){
-			{% for eachAct in hrList %}
-			$("#calendar").fullCalendar('renderEvent',{id :'6', title : '{{ eachAct.name }}', start : '{{ eachAct.date }}', color :'#F04C23 !important'},true);
-		{% endfor %}
-		}
-		else{
-		$("#calendar").fullCalendar('removeEvents',6);
-	}
-	});
+    $("#Holiday").click(function(){
+        if (document.getElementById('Holiday').checked){
+            {% for eachHoliday in holidayList %}
+            $("#calendar").fullCalendar('renderEvent',{id :'2', title : '{{ eachHoliday.name }}', start : '{{ eachHoliday.date }}', color :'#009452 !important'},true);
+        {% endfor %}
+        }
+        else{
+        $("#calendar").fullCalendar('removeEvents',2);
+    }
+    });
+    $("#Financial_milestone").click(function(){
+        if (document.getElementById('Financial_milestone').checked){
+            {% for eachMilestone in financialM %}
+            $("#calendar").fullCalendar('renderEvent',{id :'3', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#D6412B !important'},true);
+        {% endfor %}
+        }
+        else{
+        $("#calendar").fullCalendar('removeEvents',3);
+    }
+    });
+    $("#Non_financial_milestone").click(function(){
+        if (document.getElementById('Non_financial_milestone').checked){
+            {% for eachMilestone in nonfinancialM %}
+            $("#calendar").fullCalendar('renderEvent',{id :'4', title : '{{ eachMilestone.description }}', start : '{{ eachMilestone.milestoneDate }}', color :'#FFBA02 !important'},true);
+        {% endfor %}
+        }
+        else{
+        $("#calendar").fullCalendar('removeEvents',4);
+    }
+    });
+    $("#Learning_and_development").click(function(){
+        if (document.getElementById('Learning_and_development').checked){
+            {% for eachTraining in trainingList %}
+            $("#calendar").fullCalendar('renderEvent',{id :'5', title : '{{ eachTraining.exercise }} - {{ eachTraining.batch }}', start : '{{ eachTraining.trainingDate }}', end : '{{ eachTraining.endDate }}', color :'#176CED !important'},true);
+        {% endfor %}
+        }
+        else{
+        $("#calendar").fullCalendar('removeEvents',5);
+    }
+    });
+    $("#Hr_activity").click(function(){
+        if (document.getElementById('Hr_activity').checked){
+            {% for eachAct in hrList %}
+            $("#calendar").fullCalendar('renderEvent',{id :'6', title : '{{ eachAct.name }}', start : '{{ eachAct.date }}', color :'#F04C23 !important'},true);
+        {% endfor %}
+        }
+        else{
+        $("#calendar").fullCalendar('removeEvents',6);
+    }
+    });
 
 </script>
 
