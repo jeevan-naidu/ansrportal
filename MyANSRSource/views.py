@@ -38,7 +38,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 import CompanyMaster
 import employee
 from employee.models import Remainder
-from CompanyMaster.models import Holiday, HRActivity
+from CompanyMaster.models import Holiday, HRActivity, Practice
 from Grievances.models import Grievances
 from django.core.urlresolvers import reverse_lazy
 
@@ -47,7 +47,8 @@ from ldap import LDAPError
 # views for ansr
 
 FORMS = [
-    ("Define Project", ProjectFlagForm),
+    ("Define Project", ProjectBasicInfoForm),
+    # ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
 ]
 TEMPLATES = {
@@ -103,6 +104,13 @@ MEMBERTEMPLATES = {
 
 days = ['monday', 'tuesday', 'wednesday', 'thursday',
         'friday', 'saturday', 'sunday']
+
+
+def getheadid(request):
+    practicename = request.GET['practicename']
+    head = Practice.objects.get(name=practicename)
+    head_name = User.objects.get(id=head.head_id)
+    return HttpResponse(head_name.first_name)
 
 
 def index(request):
@@ -1266,6 +1274,14 @@ class CreateProjectWizard(SessionWizardView):
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
+        if step == 'Define Project' and form.is_valid():
+            self.request.session['PStartDate'] = form.cleaned_data[
+                'startDate'
+            ].strftime('%Y-%m-%d')
+            self.request.session['PEndDate'] = form.cleaned_data[
+                'endDate'
+            ].strftime('%Y-%m-%d')
+
         if step == 'Basic Information':
             if self.get_cleaned_data_for_step('Define Project') is not None:
                 signed = self.get_cleaned_data_for_step(
@@ -1278,12 +1294,10 @@ class CreateProjectWizard(SessionWizardView):
                 else:
                     logger.error("Basic Information step has signed as none")
                 if form.is_valid():
-                    self.request.session['PStartDate'] = form.cleaned_data[
-                        'startDate'
-                    ].strftime('%Y-%m-%d')
-                    self.request.session['PEndDate'] = form.cleaned_data[
-                        'endDate'
-                    ].strftime('%Y-%m-%d')
+                    a=0
+                    b=0
+                    # self.request.session['PStartDate'] = self.request.session['PStartDate']
+                    # self.request.session['PEndDate'] = self.request.session['PEndDate']
             else:
                 logger.error(
                     "Basic Information step data is None" + str(form._errors))
@@ -1385,14 +1399,14 @@ class CreateProjectWizard(SessionWizardView):
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
-            if k == 'startDate':
-                flagData['displayStartDate'] = v.strftime('%Y-%m-%d')
-                flagData['startDate'] = int(v.strftime('%s'))
-            elif k == 'endDate':
-                flagData['displayEndDate'] = v.strftime('%Y-%m-%d')
-                flagData['endDate'] = int(v.strftime('%s'))
-            else:
-                flagData[k] = v
+            # if k == 'startDate':
+            #     flagData['displayStartDate'] = v.strftime('%Y-%m-%d')
+            #     flagData['startDate'] = int(v.strftime('%s'))
+            # elif k == 'endDate':
+            #     flagData['displayEndDate'] = v.strftime('%Y-%m-%d')
+            #     flagData['endDate'] = int(v.strftime('%s'))
+            # else:
+            flagData[k] = v
         effortTotal = 0
 
         if flagData['plannedEffort']:
@@ -1406,6 +1420,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
         }
+        print data
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
@@ -1598,14 +1613,17 @@ def saveProject(request):
 
     if request.method == 'POST':
         try:
+            import ipdb; ipdb.set_trace()
             pr = Project()
             pr.name = request.POST.get('name')
             pType = projectType.objects.get(
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
-            startDate = datetime.fromtimestamp(
-                int(request.POST.get('startDate'))).date()
+            start = '{: % Y - % m - % d}'.format(int(request.POST.get('startDate')))
+            print start
+
+            startDate = datetime.fromtimestamp(int(request.POST.get('startDate'))).date()
             endDate = datetime.fromtimestamp(
                 int(request.POST.get('endDate'))).date()
             pr.startDate = startDate

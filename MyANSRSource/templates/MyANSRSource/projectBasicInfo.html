@@ -65,10 +65,30 @@
     }());
 
     $(document).ready(function(){
+    $('[id="id_Basic Information-practicename"]').attr("id", "id_BasicInformation-practicename");
+    $('[id="id_Basic Information-PracticeHead"]').attr("id", "id_BasicInformation-PracticeHead");
+    $('[id="id_Basic Information-PracticeHead"]').attr("value", "");
        $("button#browserPrevious").click(function(e){
             window.history.go(-1);
             return false;
         });
+
+         $('#id_BasicInformation-practicename').change(function() {
+              var practicename = $("#id_BasicInformation-practicename option")[0].text;
+              practicename = practicename.substring(practicename.indexOf(' ')+1,practicename.length)
+           $.ajax(
+                   {
+                       type : "GET",
+                       url : '/myansrsource/practicehead/',
+                       data :{'practicename': practicename} ,
+                       success : function(data)
+                       {
+                       document.getElementById('id_BasicInformation-PracticeHead').value=data
+
+                       }
+                   }
+           );
+ })
     });
 
 </script>

@@ -7,6 +7,8 @@ import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 from CompanyMaster.models import UpdateDate
 import datetime, os
+from django.core.validators import URLValidator
+from CompanyMaster.models import Practice, SubPractice
 from django.core.files.storage import FileSystemStorage
 
 TASKTYPEFLAG = (
@@ -242,7 +244,7 @@ class Project(models.Model):
                                             validators=[MinValueValidator(0)])
     projectManager = models.ManyToManyField(User,
                                             through='ProjectManager',
-                                            verbose_name="Project Leader")
+                                            verbose_name="Delievery CO-ordinator")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book/Title",
@@ -259,16 +261,20 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Closed"
     )
-    PracticeName = models.CharField(verbose_name='Practice Name', max_length=200, null=True, blank=True)
+    PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', max_length=200, null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=40,
                                       blank=True, null=True)
-
-    SubPractice = models.CharField(verbose_name='Sub Practice', max_length=200, null=True, blank=True)
+    ProjectCost = models.CharField(verbose_name="Project cost", max_length=100, null=True, blank=True)
+    SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice', max_length=200, null=True, blank=True)
     PracticeHead = models.CharField(verbose_name='Practice Head', max_length=100, null=True, blank=True)
     deliveryManager = models.IntegerField(verbose_name='Project Delievery Manager',  blank=True)
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
                                           verbose_name="Upload project Estimation Document")
+    # SOP = models.ForeignKey(QualitySOP, verbose_name='Quality Sop ID', max_length=10, null=True, blank=True)
+    # Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', max_length=10, null=True, blank=True)
+    # Type = models.ForeignKey(ProjectType, verbose_name='Project Type ID', max_length=10, null=True, blank=True)
+    # Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', max_length=10, null=True, blank=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
@@ -289,10 +295,54 @@ class Project(models.Model):
             )
 
 
+class QualitySOP(models.Model):
+    name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
+    SOPlink = models.TextField(validators=[URLValidator()])
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    class Meta:
+        verbose_name = 'Quality SOP Table'
+
+
 class ProjectManager(models.Model):
     # Creating Explicit M2M, to copy existing FK to M2M
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
+
+
+class ProjectScope(models.Model):
+    scope = models.CharField(verbose_name="Project scope Name", max_length=200)
+    IsActive = models.BooleanField(verbose_name="Active")
+
+    def __unicode__(self):
+        return unicode(self.scope)
+
+    class Meta:
+        verbose_name = "Project Scope Table"
+
+
+# class ProjectType(models.Model):
+#     Project_type = models.CharField(verbose_name="ProjectType", max_length="100")
+#     Is_Active = models.BooleanField(verbose_name="Active")
+#
+#     def __unicode__(self):
+#         return self.Project_type
+#
+#     class Meta:
+#         verbose_name = 'ProjectType Table'
+
+
+class ProjectAsset(models.Model):
+    Asset = models.CharField(verbose_name="Project Asset", max_length=200)
+    Is_Active = models.BooleanField(verbose_name="Active")
+
+    def __unicode__(self):
+        return self.Asset
+
+    class Meta:
+        verbose_name = "Project Asset Table"
 
 
 class TimeSheetEntry(models.Model):
