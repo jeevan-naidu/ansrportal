@@ -126,6 +126,62 @@ ul{list-style: none;padding-left: 0px;}
 <script type="text/javascript">
 
     $(document).ready(function(){
+
+
+/* From < To Date Validation */
+
+            $('body').on('click', function(key) {
+                  
+if (($('#id_start_date').val() != '') && ($('#id_last_date').val() != '') ) {
+
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth()+1; //January is 0!
+                  var yyyy = today.getFullYear();
+
+                  if(dd<10) {
+                      dd='0'+dd
+                  } 
+
+                  if(mm<10) {
+                      mm='0'+mm
+                  } 
+
+                  today = mm+'/'+dd+'/'+yyyy;
+
+                  var from_date = document.getElementById("id_start_date").value;
+                  var to_date = document.getElementById("id_last_date").value;
+
+                  if(from_date >= today){
+                    swal("You cannot fill future date as your education from date!")
+
+                    document.getElementById("id_start_date").activeElement;
+                    // document.getElementById("id_start_date").value = "";
+                  }
+
+                  if(from_date >= to_date){
+                    swal("your education date has ended before starting!")
+                    document.getElementById("id_start_date").activeElement;
+                    document.getElementById("id_last_date").value = "";
+                    $('#id_last_date').focus();
+                    // document.getElementById("id_last_date").activeElement;                    
+                    // document.getElementById("id_start_date").value = "";
+                    // document.getElementById("id_last_date").value = "";
+                  }
+
+}
+
+                });
+
+
+
+
+
+
+
+
+
+
       $('.input-group-addon').click(function(){
         $(this).parent().find('input').focus();
       });

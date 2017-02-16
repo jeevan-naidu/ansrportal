@@ -70,7 +70,7 @@ def IsManager(user):
     UserGroupsList = user.groups.all().values_list('name', flat=True)
     return settings.MANAGER in UserGroupsList
 
-<<<<<<< HEAD
+
 
 @register.filter
 def get_item(dictionary, key):
@@ -82,7 +82,7 @@ def get_item(dictionary, key):
     if s is None:
         s = 0
     return s
-=======
+
 @register.filter('DirectReportee')
 def DirectReportee(user, request):
     mgrid = employee.models.Employee.objects.get(user_id=request.id)
@@ -93,4 +93,4 @@ def DirectReportee(user, request):
         reportee_flag = 0
 
     return reportee_flag
->>>>>>> BUILD-20161118-EXITAPP
+
