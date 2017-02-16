@@ -613,16 +613,6 @@ class ProjectFlagForm(forms.ModelForm):
             # 'data-minimum-input-length': 3,
         }, ),
         required=True, )
-    # practicehead = forms.ModelChoiceField(
-    #     queryset=User.objects.all(),
-    #     label="Select Practice Head",
-    #     widget=autocomplete.ModelSelect2(url='AutocompletePracticeHead', attrs={
-    #         # Set some placeholder
-    #         'data-placeholder': 'Type  Practice Head Name ...',
-    #         # Only trigger autocompletion after 3 characters have been typed
-    #         # 'data-minimum-input-length': 3,
-    #     }, ),
-    #     required=True, )
 
     name = forms.ModelChoiceField(
         queryset=QualitySOP.objects.all(),

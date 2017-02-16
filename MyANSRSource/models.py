@@ -298,6 +298,11 @@ class Project(models.Model):
 class QualitySOP(models.Model):
     name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
     SOPlink = models.TextField(validators=[URLValidator()])
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -315,6 +320,11 @@ class ProjectManager(models.Model):
 class ProjectScope(models.Model):
     scope = models.CharField(verbose_name="Project scope Name", max_length=200)
     IsActive = models.BooleanField(verbose_name="Active")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
 
     def __unicode__(self):
         return unicode(self.scope)
@@ -337,6 +347,11 @@ class ProjectScope(models.Model):
 class ProjectAsset(models.Model):
     Asset = models.CharField(verbose_name="Project Asset", max_length=200)
     Is_Active = models.BooleanField(verbose_name="Active")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
 
     def __unicode__(self):
         return self.Asset

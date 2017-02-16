@@ -31,14 +31,19 @@
         <span class="form-step-no">2</span>
         <label class="form-step-label">Basic Information</label>
     </li>
-    <li class="form-step one-fourth {% block VactiveClass %}{% endblock %}">
+    <li class="form-step one-fourth {% block CIactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
+        <label class="form-step-label">Uploads</label>
+    </li>
+    <li class="form-step one-fourth {% block VactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">4</span>
         <label class="form-step-label">Validate</label>
     </li>
     <li class="form-step one-fourth {% block CactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
-        <span class="form-step-no">4</span>
+        <span class="form-step-no">5</span>
         <label class="form-step-label">Complete!</label>
     </li>
 </ul>
