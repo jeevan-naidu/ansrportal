@@ -1275,12 +1275,8 @@ class CreateProjectWizard(SessionWizardView):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'Define Project' and form.is_valid():
-            self.request.session['PStartDate'] = form.cleaned_data[
-                'startDate'
-            ].strftime('%Y-%m-%d')
-            self.request.session['PEndDate'] = form.cleaned_data[
-                'endDate'
-            ].strftime('%Y-%m-%d')
+            self.request.session['PStartDate'] = form.cleaned_data['startDate'].strftime('%Y-%m-%d')
+            self.request.session['PEndDate'] = form.cleaned_data['endDate'].strftime('%Y-%m-%d')
 
         if step == 'Basic Information':
             if self.get_cleaned_data_for_step('Define Project') is not None:
@@ -1613,19 +1609,12 @@ def saveProject(request):
 
     if request.method == 'POST':
         try:
-            import ipdb; ipdb.set_trace()
             pr = Project()
             pr.name = request.POST.get('name')
-            pType = projectType.objects.get(
-                id=int(request.POST.get('projectType'))
-            )
+            pType = projectType.objects.get(id=int(request.POST.get('projectType')))
             pr.projectType = pType
-            start = '{: % Y - % m - % d}'.format(int(request.POST.get('startDate')))
-            print start
-
-            startDate = datetime.fromtimestamp(int(request.POST.get('startDate'))).date()
-            endDate = datetime.fromtimestamp(
-                int(request.POST.get('endDate'))).date()
+            startDate = request.session['PStartDate']
+            endDate = request.session['PEndDate']
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')
@@ -1634,16 +1623,13 @@ def saveProject(request):
             pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
             pr.currentProject = request.POST.get('currentProject')
             pr.signed = (request.POST.get('signed') == 'True')
-            pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
-                pk=int(request.POST.get('bu'))
-            )
+            pr.bu = CompanyMaster.models.BusinessUnit.objects.get(pk=int(request.POST.get('bu')))
             pr.customer = CompanyMaster.models.Customer.objects.get(
                 pk=int(request.POST.get('customer'))
             )
             pr.internal = pr.customer.internal
             pr.customerContact = request.POST.get('customerContact')
-            pr.book = Book.objects.get(
-                pk=int(request.POST.get('book'))
+            pr.book = Book.objects.get(pk=int(request.POST.get('book'))
             )
 
             projectIdPrefix = u"{0}-{1}-{2}".format(
@@ -1651,7 +1637,6 @@ def saveProject(request):
                 datetime.now().year,
                 str(pr.customer.seqNumber).zfill(3)
             )
-
             pr.projectId = projectIdPrefix
             pr.save()
             pr.customer.seqNumber = pr.customer.seqNumber + 1
