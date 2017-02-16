@@ -59,8 +59,19 @@ class ProcessUpdate(APIView):
             config = get_app_detail(request, **kwargs)
             model = config.PROCESS[config.INITIAL]['model']
             return get_object_or_404(model, pk=pk)
-        except User.DoesNotExist:
+        except:
             raise Http404
+
+    def get_object_detail(self, request, pk, **kwargs):
+        try:
+            config = get_app_detail(request, **kwargs)
+            model = config.PROCESS[config.INITIAL]['model']
+            activity = get_object_or_404(model, pk=pk)
+            transactions = config.PROCESS[config.PROCESS[config.INITIAL]['transitions'][0]]['model'].object.filter(
+
+            )
+        except:
+            pass
 
     def get(self, request, pk, **kwargs):
         config = get_app_detail(request, **kwargs)
@@ -90,7 +101,6 @@ class ApproveListView(APIView):
     template_name = 'templates/approval.html'
 
     def get(self, request, **kwargs):
-        # import ipdb; ipdb.set_trace()
         config = get_app_detail(request, **kwargs)
         transition = config.PROCESS[config.INITIAL]['transitions']
         serializer = config.PROCESS[transition[0]]['serializer']
@@ -124,7 +134,7 @@ class ApproveListView(APIView):
         fields = [f.name for f in modal._meta.gt_fields()]
         fields = filter(lambda x: x in display_fields, fields)
         fields.sort(reverse=True)
-        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields,})
+        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields})
 
 
 
