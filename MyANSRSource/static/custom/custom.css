@@ -33,6 +33,20 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
 }
 
 
+/* myansr mod */
+
+.myansr-table{
+    border: 1px solid #f9f9f9;
+}
+.myansr-table thead{background: #464A4C;color: #fff}
+.myansr-table thead th{padding: 8px 15px !important;}
+.myansr-table td{vertical-align: middle !important;padding: 8px 15px !important;}
+.table-striped.myansr-table>tbody>tr:nth-of-type(even) {
+    background-color: #fff;
+}
+
+
+
 /* Overrides */
 
 a{color: #337ab7}
@@ -344,6 +358,7 @@ span.book-count{font-weight: bold}
 #bar-placeholder .morris-hover.morris-default-style{background: rgb(24, 51, 14)}
 #bar-placeholder .morris-hover-row-label{display: none;}
 
+
 #user-leave-report .dropdown-toggle{min-width: 0px;}
 
 .week-number{
@@ -356,4 +371,20 @@ span.book-count{font-weight: bold}
 .leave-report-table thead{border: 1px solid #464a4c;}
 .leave-report-table th{background-color: #464A4C !important;color: #fff;}
 
+<<<<<<< HEAD
 #timesheet-approve-table_filter{display: none;}
+=======
+
+/* Exit App */
+
+.mw-ra{min-width: 85px;}
+.mxw-250{max-width: 250px !important}
+.mxw-150{max-width: 150px !important}
+
+#exit-form input{max-width: 300px;}
+
+#acceptanceform textarea{max-height: 30px;}
+
+#dept_clearance_form .amountbox{max-width: 100px;}
+
+>>>>>>> BUILD-20161118-EXITAPP

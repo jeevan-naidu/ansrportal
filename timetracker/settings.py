@@ -144,7 +144,11 @@ INSTALLED_APPS = [
     'Hire',
     'Library',
     'formtools',
+<<<<<<< HEAD
     'emoticons',
+=======
+    'ExitApp',
+>>>>>>> BUILD-20161118-EXITAPP
 
 ]
 
@@ -159,6 +163,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
+    'ExitApp.middleware.exitappmiddleware.ExitappPermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p
 TEMPLATES = [
@@ -184,7 +189,9 @@ TEMPLATES = [
 RESTRICTED_URLS = (
     (r'/grievances_admin/(.*)$',),
 )
+RESTRICTED_EXIT_URL = ((r'/exit-acceptance/(.*)$',),)
 GRIEVANCE_ADMIN_GROUP_NAME = 'myansrsourceGrievanceAdmin'
+EXITAPP_GROUP_NAME = 'IT-support'
 GRIEVANCE_ADMIN_MAX_UPLOAD_SIZE = 1000000
 # Session Configuration - enable this only after we get caching working right
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
@@ -209,7 +216,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "root",
+        "PASSWORD": "hundred@100",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -366,8 +373,8 @@ MANAGER = 'myansrsourcePM'
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = 'root'
-BROKER_PASSWORD = 'Welcome#2677'
-BROKER_VHOST = "ansrvhost"
+BROKER_PASSWORD = 'root'
+BROKER_VHOST = "ansr"
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

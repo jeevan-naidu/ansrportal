@@ -19,23 +19,23 @@
 
     <div id="ajax_loader_cancel_leave" class="ajax_bck"><div class="ajax_load_image"></div></div>
     <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
-    	<div class="modal-dialog">
-    		<div class="modal-content">
-    			<div class="modal-header vd_bg-blue vd_white">
-    				<h4 class="modal-title">Leave Details</h4  class="modal-title" >
-    			</div>
-    			<div class="modal-body" id="myModaldata">
-    				<div class="container col-md-12">
-    					<div class="row">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header vd_bg-blue vd_white">
+                    <h4 class="modal-title">Leave Details</h4  class="modal-title" >
+                </div>
+                <div class="modal-body" id="myModaldata">
+                    <div class="container col-md-12">
+                        <div class="row">
 
-    					</div>
-    				</div>
-    			</div>
-    			<div class="modal-footer">
-    				<button class="btn" data-dismiss="modal">Close</button>
-    			</div>
-    		</div>
-    	</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -48,12 +48,12 @@
                         <div class="modal-header vd_bg-blue vd_white">
 
                             <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
-								x
-							</button>
+                                x
+                            </button>
 
                             <h4 class="modal-title" id="myModalLabel">
-								Please Enter Your Leave
-							</h4>
+                                Please Enter Your Leave
+                            </h4>
                         </div>
                         <div class="modal-body min-height-400" id="modal_body">
                           loading...............
@@ -81,12 +81,12 @@
                         <div class="modal-header vd_bg-blue vd_white">
 
                             <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
-								x
-							</button>
+                                x
+                            </button>
 
                             <h4 class="modal-title" id="myModalLabel">
-								Please Enter Your Short Attendance Leave Application
-							</h4>
+                                Please Enter Your Short Attendance Leave Application
+                            </h4>
                         </div>
                         <div class="modal-body min-height-400" id="modal_body_shortleave">
                           loading...............
@@ -117,12 +117,12 @@
                         <div class="modal-header vd_bg-blue vd_white">
 
                             <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
-								x
-							</button>
+                                x
+                            </button>
 
                             <h4 class="modal-title" id="myModalLabel">
-								Please Enter Remark
-							</h4>
+                                Please Enter Remark
+                            </h4>
                         </div>
                         <div class="modal-body min-height-400" id="modal_body_dispute">
                           loading...............
@@ -151,16 +151,14 @@
 
         
 <!-- 
-
         <div class="row">
             <div class="col-md-12">
                 <h3 class="text-center template-header">Welcome to the <b>ansr</b>source leave portal</h3>
                           <hr>
             </div>
-
         </div> -->
 <div id='message'></div>
-        <!--	Start Menu -->
+        <!--    Start Menu -->
         <div class="row">
             <div class="col-md-12 ">
 
@@ -205,13 +203,13 @@
 
             </div>
         </div>
-        <!--	End Menu -->
+        <!--    End Menu -->
 
 
 
 
 
-        <!--	Start content-->
+        <!--    Start content-->
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-5 pad-right-0 pad-0">
@@ -617,7 +615,7 @@
                     <div class="col-md-12 " >
                         <div class="LvTitle form-inline">
 
-							 <b>Transactions:</b> <span id="leave_name">Earned Leave</span>
+                             <b>Transactions:</b> <span id="leave_name">Earned Leave</span>
 
 
                         </div>
@@ -691,7 +689,7 @@
 
           </div><!-- end of col-sm-12-->
         </div>
-        <!--	End content-->
+        <!--    End content-->
 
 
     </div>
@@ -708,24 +706,15 @@ $('.remark').click(function(e){
            $("#remark__"+class_name[1]).show();
            e.preventDefault();
         });
-
-
-
 function refreshBackground() {
         window.location.reload();
     }
 $(document).ready(function() {
-
-
     gridLoad('earned_leave');
-
 //short leave datapopulation
 var openshortleave = {{ ShortLeaveApplied }};
 var approvedshortleave = {{ ShortLeaveAppproved }};
-
-
 shortleavegrid(openshortleave, approvedshortleave);
-
 function shortleavegrid(openshortleave, approvedshortleave){
     if(openshortleave!=0){
         $('#short_leave .applied').text(openshortleave);
@@ -740,18 +729,14 @@ function shortleavegrid(openshortleave, approvedshortleave){
         $('#short_leave .approved').css({'width' : approved_perc+"%"});
       }
 }
-
  $('#short_leave .col-md-12 .row').click(function(){
     removeSelection();
    $('#short_leave .col-md-12 .row').addClass("Lv-Type-Selected");
      var statusdropdown = document.getElementById("month_select");
-
      $("#transaction_status *").attr("disabled", "disabled").off('click');
    shortLeaveGridLoad();
   });
-
 function shortLeaveGridLoad(){
-
     $('.table-bordered').empty();
      $.ajax(
         {
@@ -761,18 +746,14 @@ function shortLeaveGridLoad(){
             success : function(data)
             {
                 $('.table-bordered').append(data);
-
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
                 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-
               },
             }
           );
-
 }
-
 //short leave compleate
   var totalcount = 0;
   {% for leave in leave_summary%}
@@ -781,7 +762,6 @@ function shortLeaveGridLoad(){
   if(leaveType=="maternity_leave"){
     leaveType='None'
   }
-
   {% else %}
   if(leaveType=="paternity_leave"){
     leaveType='None'
@@ -793,7 +773,6 @@ function shortLeaveGridLoad(){
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       totalcount = applied + approved + total;
       $('.total-leave-count-earned').text("("+totalcount+")");
       if(applied!=0){
@@ -815,16 +794,13 @@ function shortLeaveGridLoad(){
         $('#earned_leave .applied').css({'width' : "0%"});
         $('#earned_leave .approved').css({'width' : "0%"});
       }
-
       break;
     }
-
     case 'sick_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       totalcount = applied + approved + total;
       $('.total-leave-count-sick').text("("+totalcount+")");
       if(applied!=0){
@@ -836,7 +812,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#sick_leave .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -849,13 +824,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'casual_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       totalcount = applied + approved + total;
       $('.total-leave-count-casual').text("("+totalcount+")");
       if(applied!=0){
@@ -867,7 +840,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#casual_leave .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -880,13 +852,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'loss_of_pay':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#loss_of_pay .applied').text(applied);
       }
@@ -896,7 +866,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#loss_of_pay .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -909,13 +878,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'bereavement_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#Bereavement .applied').text(applied);
       }
@@ -925,7 +892,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
        $('#Bereavement .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -938,13 +904,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'sabbatical':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#sabbatical .applied').text(applied);
       }
@@ -954,7 +918,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
        $('#sabbatical .total').text("");
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -967,13 +930,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'pay_off':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#pay_off .applied').text(applied);
       }
@@ -983,7 +944,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#pay_off .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -996,13 +956,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'work_from_home':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#work_from_home .applied').text(applied);
       }
@@ -1012,7 +970,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#work_from_home .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -1025,13 +982,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'ooo_dom':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#ooo_dom .applied').text(applied);
       }
@@ -1041,7 +996,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#ooo_dom .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -1054,13 +1008,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'ooo_int':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#ooo_int .applied').text(applied);
       }
@@ -1070,7 +1022,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#ooo_int .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -1083,13 +1034,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'comp_off_avail':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#comp_off_apply .applied').text(applied);
       }
@@ -1099,7 +1048,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#comp_off_apply .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -1112,13 +1060,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'comp_off_earned':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#comp_off .applied').text(applied);
       }
@@ -1128,7 +1074,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#comp_off .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -1141,13 +1086,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'paternity_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#child_care .applied').text(applied);
       }
@@ -1157,7 +1100,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#child_care .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -1170,13 +1112,11 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
     case 'maternity_leave':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
-
       if(applied!=0){
         $('#child_care .applied').text(applied);
       }
@@ -1186,7 +1126,6 @@ function shortLeaveGridLoad(){
       if(total!=0){
       $('#child_care .total').text(total +' days');
       }
-
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
@@ -1199,17 +1138,10 @@ function shortLeaveGridLoad(){
       }
       break;
     }
-
   }
-
   {% endfor %}
-
-
-
-
   //ajax request for registering a leave on modal popup open
   $("#modal-container-252304").on('shown.bs.modal', function(){
-
   $.ajax(
         {
             type : "GET",
@@ -1218,8 +1150,6 @@ function shortLeaveGridLoad(){
             success : function(data)
             {
                 $("#modal_body").html(data);
-
-
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
                 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
@@ -1229,9 +1159,6 @@ function shortLeaveGridLoad(){
             }
           );
           });
-
-
-
 function removeSelection(){
   $("#earned_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#child_care .col-md-12 .row").removeClass("Lv-Type-Selected");
@@ -1248,12 +1175,7 @@ function removeSelection(){
   $("#sabbatical .col-md-12 .row").removeClass("Lv-Type-Selected");
     ///for short leave
     $("#short_leave .col-md-12 .row").removeClass("Lv-Type-Selected");
-
-
 }
-
-
-
 function gridLoad(name){
   getLeaveName = {'sabbatical':'Sabbatical',
       'comp_off_avail':"Comp Off avail",
@@ -1271,7 +1193,6 @@ function gridLoad(name){
       'ooo_dom':'Domestic Travel'};
   leavename = getLeaveName[name];
   $("#leave_name").text(leavename);
-
     $('#transaction_status *').removeAttr("disabled");
   $('.table-bordered').empty();
   $.ajax(
@@ -1282,107 +1203,83 @@ function gridLoad(name){
             success : function(data)
             {
                 $('.table-bordered').append(data);
-
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
                 $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-
               },
             }
           );
-
-
 }
-
 $('#earned_leave .col-md-12 .row').click(function(){
 removeSelection()
  $('#earned_leave .col-md-12 .row').addClass("Lv-Type-Selected");
  gridLoad("earned_leave");
-
 });
-
 $('#sick_leave .col-md-12 .row').click(function(){
 removeSelection();
  $('#sick_leave .col-md-12 .row').addClass("Lv-Type-Selected");
   gridLoad("sick_leave");
-
 });
-
   $('#casual_leave .col-md-12 .row').click(function(){
    removeSelection();
    $('#casual_leave .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("casual_leave");
-
   });
-
   $('#Bereavement .col-md-12 .row').click(function(){
    removeSelection();
    $('#Bereavement .col-md-12 .row').addClass("Lv-Type-Selected");
   gridLoad("bereavement_leave");
   });
-
   $('#loss_of_pay .col-md-12 .row').click(function(){
    removeSelection();
    $('#loss_of_pay .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("loss_of_pay");
   });
-
   $('#comp_off_apply .col-md-12 .row').click(function(){
    removeSelection();
    $('#comp_off_apply .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("comp_off_avail");
   });
-
   $('#comp_off .col-md-12 .row').click(function(){
    removeSelection();
    $('#comp_off .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("comp_off_earned");
   });
-
   $('#pay_off .col-md-12 .row').click(function(){
    removeSelection();
    $('#pay_off .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("pay_off");
   });
-
   $('#work_from_home .col-md-12 .row').click(function(){
     removeSelection();
    $('#work_from_home .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("work_from_home");
   });
-
    $('#ooo_dom .col-md-12 .row').click(function(){
     removeSelection();
    $('#ooo_dom .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("ooo_dom");
   });
-
     $('#ooo_int .col-md-12 .row').click(function(){
     removeSelection();
    $('#ooo_int .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("ooo_int");
   });
-
   $('#sabbatical .col-md-12 .row').click(function(){
     removeSelection();
    $('#sabbatical .col-md-12 .row').addClass("Lv-Type-Selected");
    gridLoad("sabbatical");
   });
-
-
 $('#child_care .col-md-12 .row').click(function(){
   removeSelection();
  $('#child_care .col-md-12 .row').addClass("Lv-Type-Selected");
  {% if male %}
  gridLoad("paternity_leave");
-
  {% else %}
   gridLoad("maternity_leave");
  {% endif %}
-
 });
-
   $("#month_select").change(function(){
     name = $("#leave_name").text();
     LeaveName = {'Sabbatical':'sabbatical',
@@ -1402,9 +1299,7 @@ $('#child_care .col-md-12 .row').click(function(){
     };
   gridLoad(LeaveName[name]);
   });
-
 });
-
   function ShowAjaxLoader(element, width, height){
       element.show();
       element.width(width).height(height);
@@ -1414,23 +1309,21 @@ $('#child_care .col-md-12 .row').click(function(){
       element.fadeOut();
       return false;
     }
-
 var ajax_loader_element = $('#ajax_loader_cancel_leave');
-
     function CancelLeave(val, leavecount){
-    	swal({
-    		title: "Are you sure?",
-    		text: "Do you want to cancel your leave?",
-    		type: "warning",
-    		showCancelButton: true,
-    		confirmButtonColor: "#DD6B55",
-    		confirmButtonText: "Yes, cancel.",
-    		closeOnConfirm: true,
-    		cancelButtonText: "No, return to previous page.",
-    		closeOnCancel: true
-    	},
-    	function(isConfirm) {
-    		if (isConfirm) {
+        swal({
+            title: "Are you sure?",
+            text: "Do you want to cancel your leave?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, cancel.",
+            closeOnConfirm: true,
+            cancelButtonText: "No, return to previous page.",
+            closeOnCancel: true
+        },
+        function(isConfirm) {
+            if (isConfirm) {
            ShowAjaxLoader(ajax_loader_element, 1200, 1200);
               $.ajax(
                     {
@@ -1439,9 +1332,7 @@ var ajax_loader_element = $('#ajax_loader_cancel_leave');
                         data :{'leaveid':val, 'leavecount':leavecount} ,
                         success : function(data)
                         {
-
                             swal("Done!", "Your leave is cancelled", "success");
-
                             window.location.reload();
                             HideAjaxLoader(ajax_loader_element);
                           },
@@ -1452,30 +1343,25 @@ var ajax_loader_element = $('#ajax_loader_cancel_leave');
                           },
                         }
                       );
-
-
-    		}
-    		else
-    				swal("Please click ok", "We have canceled your operation :). Thank You.", "success");
-
+            }
+            else
+                    swal("Please click ok", "We have canceled your operation :). Thank You.", "success");
     });
 }
-
 function AdminCancelLeave(val, leavecount, status){
-
-    	swal({
-    		title: "Are you sure?",
-    		text: "Do you want to cancel your leave?",
-    		type: "warning",
-    		showCancelButton: true,
-    		confirmButtonColor: "#DD6B55",
-    		confirmButtonText: "Yes, cancel.",
-    		closeOnConfirm: true,
-    		cancelButtonText: "No, return to previous page.",
-    		closeOnCancel: true
-    	},
-    	function(isConfirm) {
-    		if (isConfirm) {
+        swal({
+            title: "Are you sure?",
+            text: "Do you want to cancel your leave?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, cancel.",
+            closeOnConfirm: true,
+            cancelButtonText: "No, return to previous page.",
+            closeOnCancel: true
+        },
+        function(isConfirm) {
+            if (isConfirm) {
            ShowAjaxLoader(ajax_loader_element, 1200, 1200);
               $.ajax(
                     {
@@ -1495,17 +1381,11 @@ function AdminCancelLeave(val, leavecount, status){
                           },
                         }
                       );
-
-
-    		}
-    		else
-    				swal("Please click ok", "We have canceled your operation :). Thank You.", "success");
-
+            }
+            else
+                    swal("Please click ok", "We have canceled your operation :). Thank You.", "success");
     });
 }
-
-
-
 function showDetails(leave_id){
   $.ajax(
         {
@@ -1517,17 +1397,14 @@ function showDetails(leave_id){
               $('.LeaveDetails').remove()
               $('#myModal').modal({show:true})
               $('#myModaldata').append(data);
-
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                 + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-
               },
             }
           );
 }
-
 // short leave details
 function shortLeaveDetails(leave_id) {
     $.ajax(
@@ -1539,42 +1416,31 @@ function shortLeaveDetails(leave_id) {
                     $('.LeaveDetails').remove();
                     $('#myModal').modal({show: true});
                     $('#myModaldata').append(data);
-
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     alert("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
                             + "<br>Status : " + textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
-
                 },
             }
     );
 }
-
-
-
 </script>
 
 <script type="text/javascript">
-
 // Height change for right side column
-
 leave_height = function(){
   lv_height = $('.MyLeavesContainer').css('height');
   $('.Lv-TransactionsContainer').css('height', lv_height);
 }
-
 $(window).load(function(){
   leave_height();
-
   $(window).resize(function(){
     leave_height();
   })
   $('.progress-bar-container div .row').click(function(){
     leave_height();
   })
-
 })
-
 </script>
 
 
@@ -1583,13 +1449,12 @@ $(window).load(function(){
 $(window).load(function(){
     $('.select2.select2-container').removeAttr('style');
 })
-
 </script>
 
 
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
 
 
 
@@ -1598,7 +1463,6 @@ $(window).load(function(){
 <!-- Start In-Page Styles -->
 
 <style>
-
 .table-hover>tbody>tr:hover{background-color: #FFF}
 .table-hover>tbody>tr.success:hover>td, .table-hover>tbody>tr.success:hover>th, .table-hover>tbody>tr:hover>.success, .table-hover>tbody>tr>td.success:hover, .table-hover>tbody>tr>th.success:hover{background-color: #DADADA}
 .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
@@ -1606,10 +1470,8 @@ $(window).load(function(){
     background: #f5f5f5;
 }
 .table>tbody>tr.success>td, .table>tbody:hover>tr.success>td{background-color: #FFF}
-
 #F4FEFF
 .template-header{margin-top: 55px;}
-
 /* Space savers */
 .vd_content-section{padding-top: 10px;}
 .Lv-ApLvHeader{margin-bottom: -15px;}
