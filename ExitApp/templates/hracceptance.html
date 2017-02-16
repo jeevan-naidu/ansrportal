@@ -1,0 +1,119 @@
+{% extends 'master.html' %}
+{% load permissions %}
+{% block siteTitle %}Candidate Resignation Acceptance{% endblock %}
+{% block pageTitle %}Resignation Acceptance ( HR ){% endblock %}
+{% block content  %}
+     <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <!-- <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
+                  </div> -->
+
+
+
+<style>
+    .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+ul{list-style: none;padding-left: 0px;}
+    </style>
+
+               {% if messages %}
+                     {% for message in messages %}
+               {% if message.tags == 'error' %}
+               <div class="alert alert-info">
+                <strong>info!</strong> {{message}}.
+               </div>
+               {% else %}
+               <div class="alert alert-success">
+                <strong>Success!</strong> {{message}}.
+               </div>
+               {% endif %}
+               {% endfor %}
+               {% endif %}
+                    <!--<form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">-->
+                        <table class="table table-condensed table-striped myansr-table">
+                          <thead>
+                            <th class="">Name</th>
+                            <th class="mw-ra">Acceptance</th>
+                            <th class="">Feedback</th>
+                            <th class="mw-ra">Elligible for ReHire</th>
+                            <th class="">Last Date</th>
+                            <th class="">Reason</th>
+                            <th class="">Action</th>
+                          </thead>
+                   {% for c in resigneedata %}
+
+                          {%  if c.exit_revert_flag == False and c.manager_accepted == True%}
+                   <tr>
+                       <td>{{c}}<input class="userid" type="hidden" value = "{{c.User_id}}"/></td>
+                       <td>
+                        <input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrconcent"id="hrconcent_{{c.User_id}}" name="hrconcent_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
+                       </td>
+                       <td>
+                        <textarea {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} id="feedbackhr_{{c.User_id}}" maxlength="1000" name="feedbackhr_{{c.User_id}}" class="form-control input-sm feedbackhr">{{c.hr_comment}}</textarea>
+                       </td>
+                       <td><input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrrehire" id="hrrehire_{{c.User_id}}" name="hrrehire_{{c.User_id}}" type="checkbox" {% if c.rehire_hr == True%}checked{%endif%}></td>
+
+                        <td>
+                         <div class='input-group date datetimepicker' id='datetimepicker'>
+                         <input name="finaldate_{{c.User_id}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
+                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                         </div>
+                       </td>
+                       <td>{{c.emp_reason}}</td>
+                       <td><button type="button" class="btn btn-primary btn-sm resignation_acceptance" id ="">Save</button></td>
+                   </tr>
+                            {%endif %}
+                            {% endfor %}
+                            <script type="text/javascript">
+            $(function () {
+            $('.acceptance,.rehiremgr,.backup,.hrconcent,.hrrehire').on('click', function () {
+             $(this).val(this.checked ? 'on' : '');
+            });
+            $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+               $('.resignation_acceptance').on('click', function(){
+                  hr_concent = $(this).parent().parent().find('.hrconcent').val();
+                  hr_feedback = $(this).parent().parent().find('.feedbackhr').val();
+                  hr_rehire = $(this).parent().parent().find('.hrrehire').val();
+                  final_date = $(this).parent().parent().find('.finaldate').val();
+                  user_id = $(this).parent().parent().find('.userid').val();
+                   $.ajax({
+                            url : "/exitapp/update-hr-value/",
+                            type : "GET",
+                            data : { 'final_date':final_date, 'hr_concent':hr_concent,'id':user_id, 'hr_feedback':hr_feedback,'hr_rehire':hr_rehire},
+                            success : function(json) {
+                            if (json == 'success'){
+                            swal("Completed!", "Employee data has been submitted.", "success");
+                                console.log(json);
+                            }
+                            else{
+                            swal("cancelled", "HR can't accept without manager approval", "error" );
+                            }
+                            }
+                            });
+                });
+                });
+        </script>
+                    {% csrf_token %}
+                             </table>
+
+        <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
