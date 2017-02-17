@@ -68,17 +68,17 @@ Approve Timesheet
 
 
 {% if ts_data_list_approved_false or ts_data_list_approved_true %}
-<table class="table table-striped" id="timesheet-approve-table">
+<table class="table table-striped myansr-table" id="timesheet-approve-table">
   <thead>
     <tr>
-      <th style="background-color: #464A4C ;color: #fff;">Employee Id</th>
-      <th style="background-color: #464A4C ;color: #fff;">Name</th>
-      <th style="background-color: #464A4C ;color: #fff;">Billable (External) </th>
-      <th style="background-color: #464A4C ;color: #fff;">Billable (Internal)</th>
-      <th style="background-color: #464A4C ;color: #fff;">Non-Billable </th>
-      <th style="background-color: #464A4C ;color: #fff;">Leave</th>
-      <th style="background-color: #464A4C ;color: #fff;" class="text-center">Options</th>
-      <th style="background-color: #464A4C ;color: #fff;"> Feedback</th>
+      <th>Employee Id</th>
+      <th>Name</th>
+      <th>Billable (External) </th>
+      <th>Billable (Internal)</th>
+      <th>Non-Billable </th>
+      <th>Leave</th>
+      <th class="text-center">Options</th>
+      <th> Feedback</th>
     </tr>
   </thead>
   <tbody>
@@ -482,13 +482,37 @@ var time_iterate = function(e){
 
 } // ./time_iterate function
 
+var employeeTime = function(){
+   $('.employee').on('click', function()  { console.log("click");
 
+        // Enabling approve and reject checkboxes
+        console.log(this);
+        $(this).parent().parent().find('a.menu-icon').removeAttr('disabled');
+        if ($(this).parent().parent().hasClass('approve-reject-options')) {
+          console.log(this)
+          $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
+          $(this).parent().parent().find('label').removeAttr(' data-toggle data-placement data-original-title');
+        }
+
+        $.ajax({
+          url: '/myansrsource/timesheet/time_sheet_employee',
+          type: 'GET',
+          dataType :'json',
+          data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
+          success: function (data) {
+          console.log(JSON.stringify(data));
+          time_iterate(data);
+          },
+
+        });
+  });  
+}
 
 $(document).ready(function() {
                 "use strict";
 
             $('#timesheet-approve-table').dataTable();
-        $("[data-toggle='tooltip']").tooltip();
+            $("[data-toggle='tooltip']").tooltip();
 
             /* Toggle checkbox */
 
@@ -498,30 +522,16 @@ $(document).ready(function() {
               }
             })
 
+            // Firing once
+            employeeTime();
 
-             $('.employee').on('click', function()  { console.log("click");
 
-                  // Enabling approve and reject checkboxes
-                  console.log(this);
-                  $(this).parent().parent().find('a.menu-icon').removeAttr('disabled');
-                  if ($(this).parent().parent().hasClass('approve-reject-options')) {
-                    console.log(this)
-                    $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
-                    $(this).parent().parent().find('label').removeAttr(' data-toggle data-placement data-original-title');
-                  }
-
-                  $.ajax({
-                    url: '/myansrsource/timesheet/time_sheet_employee',
-                    type: 'GET',
-                    dataType :'json',
-                    data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
-                    success: function (data) {
-                    console.log(JSON.stringify(data));
-                    time_iterate(data);
-                    },
-
-                  });
+            // firing after pagination change
+            $('#timesheet-approve-table').on('draw.dt', function() {
+              employeeTime();
             });
+
+
 
         jQuery('.approve , .reject ').click(function(e){
             var class_name = this.value;
