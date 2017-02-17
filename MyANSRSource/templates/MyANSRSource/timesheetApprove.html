@@ -376,8 +376,6 @@ var time_iterate = function(e){
 
   var time_obj = e;
 
-  // console.log(time_obj);
-
   $('.project-time-row').html('');
   $('.activity-time-row').html('');
 
@@ -390,17 +388,11 @@ var time_iterate = function(e){
   for (var time_key in time_obj['tsData']){
     if (time_obj['tsData'].hasOwnProperty(time_key)){
 
-      // Console log section
-
-/*      console.log(time_key);
-      console.log(time_obj['tsData'][time_key]);
-      console.log(time_obj.tsData[0]['id']);*/
 
 
       // Get length
 
       var obj_length = time_obj.tsData.length;
-      // console.log('the project length is ' + obj_length);
 
 
       // Populate project row
@@ -427,12 +419,9 @@ var time_iterate = function(e){
   for (var time_key in time_obj['atData']){
     if (time_obj['atData'].hasOwnProperty(time_key)){
 
-      console.log(time_obj['atData'][0]);
-
       // Get length
 
       var obj_length = time_obj.atData.length;
-      // console.log('activity length is ' + obj_length);
 
       // Populate project row
 
@@ -467,7 +456,6 @@ var time_iterate = function(e){
 
   for (var time_key in time_obj['total_list']){
     if (time_obj['total_list'].hasOwnProperty(time_key)){
-      // console.log(time_obj.total_list[0]['friday_total']);
       $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
       $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
       $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
@@ -487,10 +475,8 @@ var employeeTime = function(){
    $('.employee').on('click', function()  {
 
         // Enabling approve and reject checkboxes
-        // console.log(this);
         $(this).parent().parent().find('a.menu-icon').removeAttr('disabled');
         if ($(this).parent().parent().hasClass('approve-reject-options')) {
-          // console.log(this)
           $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
           $(this).parent().parent().find('label').removeAttr(' data-toggle data-placement data-original-title');
         }
@@ -501,7 +487,6 @@ var employeeTime = function(){
           dataType :'json',
           data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
           success: function (data) {
-          // console.log(JSON.stringify(data));
           time_iterate(data);
           },
 
