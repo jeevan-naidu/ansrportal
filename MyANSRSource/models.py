@@ -174,6 +174,53 @@ class Chapter(models.Model):
     def __unicode__(self):
         return self.name
 
+class QualitySOP(models.Model):
+    name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
+    SOPlink = models.TextField(validators=[URLValidator()])
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    class Meta:
+        verbose_name = 'Quality SOP Table'
+
+
+class ProjectScope(models.Model):
+    scope = models.CharField(verbose_name="Project scope Name", max_length=200)
+    IsActive = models.BooleanField(verbose_name="Active")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return unicode(self.scope)
+
+    class Meta:
+        verbose_name = "Project Scope Table"
+
+
+class ProjectAsset(models.Model):
+    Asset = models.CharField(verbose_name="Project Asset", max_length=200)
+    Is_Active = models.BooleanField(verbose_name="Active")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return self.Asset
+
+    class Meta:
+        verbose_name = "Project Asset Table"
+
 
 class Project(models.Model):
     projectType = models.ForeignKey(
@@ -271,11 +318,10 @@ class Project(models.Model):
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
                                           verbose_name="Upload project Estimation Document")
-    # SOP = models.ForeignKey(QualitySOP, verbose_name='Quality Sop ID', max_length=10, null=True, blank=True)
-    # Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', max_length=10, null=True, blank=True)
+    SOP = models.ForeignKey(QualitySOP, verbose_name='Quality Sop ID', max_length=10, null=True, blank=True)
+    Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', max_length=10, null=True, blank=True)
     # Type = models.ForeignKey(ProjectType, verbose_name='Project Type ID', max_length=10, null=True, blank=True)
-    # Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', max_length=10, null=True, blank=True)
-    # Record Entered / Updated Date
+    Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', max_length=10, null=True, blank=True)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -295,44 +341,12 @@ class Project(models.Model):
             )
 
 
-class QualitySOP(models.Model):
-    name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
-    SOPlink = models.TextField(validators=[URLValidator()])
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-    created_by = models.ForeignKey(User)
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-    class Meta:
-        verbose_name = 'Quality SOP Table'
-
-
 class ProjectManager(models.Model):
     # Creating Explicit M2M, to copy existing FK to M2M
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
 
-
-class ProjectScope(models.Model):
-    scope = models.CharField(verbose_name="Project scope Name", max_length=200)
-    IsActive = models.BooleanField(verbose_name="Active")
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-    created_by = models.ForeignKey(User)
-
-    def __unicode__(self):
-        return unicode(self.scope)
-
-    class Meta:
-        verbose_name = "Project Scope Table"
-
-
+# on Hold Since need clearifications
 # class ProjectType(models.Model):
 #     Project_type = models.CharField(verbose_name="ProjectType", max_length="100")
 #     Is_Active = models.BooleanField(verbose_name="Active")
@@ -342,22 +356,6 @@ class ProjectScope(models.Model):
 #
 #     class Meta:
 #         verbose_name = 'ProjectType Table'
-
-
-class ProjectAsset(models.Model):
-    Asset = models.CharField(verbose_name="Project Asset", max_length=200)
-    Is_Active = models.BooleanField(verbose_name="Active")
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-    created_by = models.ForeignKey(User)
-
-    def __unicode__(self):
-        return self.Asset
-
-    class Meta:
-        verbose_name = "Project Asset Table"
 
 
 class TimeSheetEntry(models.Model):

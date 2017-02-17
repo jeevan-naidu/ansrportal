@@ -23,6 +23,7 @@ from Leave.views import leavecheck, daterange
 from django.views.generic import View , TemplateView
 from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
 from fb360.models import Respondent
+from django.core.files.storage import FileSystemStorage
 
 
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -33,10 +34,11 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm, BTGReportForm
+    changeProjectLeaderForm, BTGReportForm, UploadForm
 
 import CompanyMaster
 import employee
+import os
 from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity, Practice
 from Grievances.models import Grievances
@@ -48,12 +50,13 @@ from ldap import LDAPError
 
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
-    # ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
+    ("Uploads", UploadForm)
 ]
 TEMPLATES = {
     "Define Project": "MyANSRSource/projectDefinition.html",
     "Basic Information": "MyANSRSource/projectBasicInfo.html",
+    "Uploads": "MyANSRSource/ProjectUploads.html",
 }
 
 CFORMS = [
@@ -1268,6 +1271,7 @@ def WrappedChangeProjectView(request):
 
 
 class CreateProjectWizard(SessionWizardView):
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'photos'))
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 

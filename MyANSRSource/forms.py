@@ -456,8 +456,8 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             "form-control"
         self.fields['signed'].widget.attrs['class'] = \
             "form-control"
-        # self.fields['projectFinType'].widget.attrs['class'] = \
-        #     "form-control"
+        self.fields['projectFinType'].widget.attrs['class'] = \
+            "form-control"
         self.fields['startDate'].widget.attrs['class'] = \
             "form-control"
         self.fields['endDate'].widget.attrs['class'] = \
@@ -467,6 +467,24 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         # self.fields['Delvcordinator'].widget.attrs['class'] = "form-control"
         # self.fields['DeliveryManager'].widget.attrs['class'] = "form-control"
 
+
+#Upload Form  fro project screen
+class UploadForm(forms.ModelForm):
+    Sowdocument = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+    Sowdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                         'data-iconName': 'glyphicon glyphicon-paperclip'}
+    Estimationdocument = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+    Estimationdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                'data-iconName': 'glyphicon glyphicon-paperclip'}
+
+    def __init__(self, *args, **kwargs):
+        super(UploadForm, self).__init__(*args, **kwargs)
+        self.fields['Sowdocument'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['Estimationdocument'].widget.attrs['class'] = \
+            "form-control"
 
 # Change Project Basic Form
 class ChangeProjectForm(forms.ModelForm):
@@ -633,7 +651,12 @@ class ProjectFlagForm(forms.ModelForm):
             'ProjectCost',
             'po',
             'salesForceNumber',
-            'PracticeHead'
+            'practicename',
+            'subpractice',
+            'PracticeHead',
+            'name',
+
+
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
