@@ -380,6 +380,7 @@ app.firstTimeTotal = function() {
             cRowItemsLen = cRowHours.length;
             $cRowTQuestions = $cRow.find('.t-questions');
             $cRowTHours = $cRow.find('.t-hours');
+            hidden_hour = $cRow.find('.t-hours-hidden');
             $cRowBTHoursHidden = $cRow.find('.r-total-billable-hours');
             $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
 
@@ -392,6 +393,7 @@ app.firstTimeTotal = function() {
             }
             // To Dom
             $cRowTHours.text(cRowHourTotal.toFixed(2));
+            hidden_hour.val(cRowHourTotal.toFixed(2));
             $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
 
             if (cRowTask === 'I') {
