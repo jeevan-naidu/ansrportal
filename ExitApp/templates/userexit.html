@@ -195,16 +195,10 @@ ul{list-style: none;padding-left: 0px;}
             var from_date = document.getElementById("id_start_date").value;
             var to_date = document.getElementById("id_last_date").value;
 
-            if(from_date >= today){
-              swal("Last date should be earlier than the exit date")
 
-              // document.getElementById("id_start_date").value = "";
-            }
 
             if(from_date >= to_date){
-              swal("The last day cannot be a past date")
-              // document.getElementById("id_start_date").value = "";
-              // document.getElementById("id_last_date").value = "";
+              swal("Last date should not be earlier than the exit date");
             }
 
         }
