@@ -195,9 +195,7 @@ ul{list-style: none;padding-left: 0px;}
             var from_date = document.getElementById("id_start_date").value;
             var to_date = document.getElementById("id_last_date").value;
 
-
-
-            if(from_date >= to_date){
+            if(from_date > to_date){
               swal("Last date should not be earlier than the exit date");
             }
 
