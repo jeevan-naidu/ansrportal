@@ -119,7 +119,7 @@ ul{list-style: none;padding-left: 0px;}
                           <th>Department</th>
                           <th class="mxw-150">Amount</th>
                           <th>Feedback</th>
-                          <th>Accept</th>
+                          <th class="text-center">Accept</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -129,10 +129,10 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center">Library</td>
                           <td class="center"><input {% if request.user|has_group:'LibraryAdmin' == False %} disabled  title="unauthorized user" {%endif%}  type="number" {% for data in  dataresignee%} {% if data.department == "LIB" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="lib_amount" id = "libamount" class="amountbox form-control input-sm"/></td>
                           <td><input  {% if request.user|has_group:'LibraryAdmin' == False %} disabled title="unauthorized user" {%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "LIB" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%}name="library_feedback" class="form-control input-sm"></td>
-                          <td class="menu-action">
-                            <div class="vd_checkbox checkbox-success pull-right">
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
                               <input {% if request.user|has_group:'LibraryAdmin' == False %} disabled title="unauthorized user" {%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "LIB" and data.dept_status == True %} checked {%endif %}{%endfor%} value=2 name="library_approval" id="checkbox-1">
-                              <label for="checkbox-1"></label>
+                              <label class="text-left" for="checkbox-1"></label>
                             </div>
                           </td>
                         </tr>
@@ -141,10 +141,10 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center">IT Admin</td>
                           <td class="center"><input {% if request.user|has_group:'BookingRoomAdmin' == False %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "IT" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%}  name="admin_amount" id = "adminamount" class ="amountbox form-control input-sm"/></td>
                           <td><input {% if request.user|has_group:'BookingRoomAdmin' == False %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "IT" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%}name="admin_feedback" class="form-control input-sm"></td>
-                          <td class="menu-action">
-                            <div class="vd_checkbox checkbox-success pull-right">
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
                               <input {% if request.user|has_group:'BookingRoomAdmin' == False %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "IT" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="admin_approval" id="checkbox-2">
-                              <label for="checkbox-2"></label>
+                              <label class="text-left" for="checkbox-2"></label>
                             </div>
                           </td>
                         </tr>
@@ -153,10 +153,10 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center">Finance</td>
                           <td class="center"><input {% if request.user|has_group:'Finance' == False %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "FIN" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="finance_amount" id = "financeamount" class ="amountbox form-control input-sm"/></td>
                           <td><input type="text" {% if request.user|has_group:'Finance' == False %} disabled title="unauthorized user" {%endif%}  {% for data in  dataresignee%} {% if data.department == "FIN" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="finance_feedback" class="form-control input-sm"></td>
-                          <td class="menu-action">
-                            <div class="vd_checkbox checkbox-success pull-right">
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
                               <input {% if request.user|has_group:'Finance' == False %} disabled title="unauthorized user"{%endif%}  type="checkbox" {% for data in  dataresignee%} {% if data.department == "FIN" and data.dept_status == True %} checked {%endif %}{%endfor%} value=2 name="finance_approval" id="checkbox-3">
-                              <label for="checkbox-3"></label>
+                              <label class="text-left" for="checkbox-3"></label>
                             </div>
                           </td>
                         </tr>
@@ -165,10 +165,10 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center">Facility</td>
                           <td class="center"><input {% if request.user|has_group:'IT-support' == False %} disabled title="unauthorized user"{%endif%}  type="number" {% for data in  dataresignee%} {% if data.department == "FAC" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="facility_amount" id = "facilityamount" class ="amountbox form-control input-sm"/></td>
                           <td><input {% if request.user|has_group:'IT-support' == False %} disabled {%endif%}  type="text" {% for data in  dataresignee%} {% if data.department == "FAC" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="facility_feedback" class="form-control input-sm"></td>
-                          <td class="menu-action">
-                            <div class="vd_checkbox checkbox-success pull-right">
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
                               <input {% if request.user|has_group:'IT-support' == False %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "FAC" and data.dept_status == True %} checked {%endif %}{%endfor%} value=2 name="facility_approval" id="checkbox-5">
-                              <label for="checkbox-5"></label>
+                              <label class="text-left" for="checkbox-5"></label>
                             </div>
                           </td>
                         </tr>
@@ -177,10 +177,10 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center">Manager</td>
                           <td class="center"><input {% if c.User_id|DirectReportee:user == 0%} disabled {%endif%} type="number" id = "manager_amount" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="manager_amount" class ="amountbox form-control input-sm"/></td>
                           <td><input {% if c.User_id|DirectReportee:user == 0 %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="manager_feedback" class="form-control input-sm"></td>
-                          <td class="menu-action">
-                            <div class="vd_checkbox checkbox-success pull-right">
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
                               <input {% if c.User_id|DirectReportee:user == 0 %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="manager_approval" id="checkbox-6">
-                              <label for="checkbox-6"></label>
+                              <label class="text-left" for="checkbox-6"></label>
                             </div>
                           </td>
                         </tr>
@@ -189,10 +189,10 @@ ul{list-style: none;padding-left: 0px;}
                           <td class="center">HR</td>
                           <td class="center"><input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="hr_amount" id = "hramount" class ="amountbox form-control input-sm"/></td>
                           <td><input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="hr_feedback" class="form-control input-sm"></td>
-                          <td class="menu-action">
-                            <div class="vd_checkbox checkbox-success pull-right">
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
                               <input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="checkbox"{% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="hr_approval" id="checkbox-4">
-                              <label for="checkbox-4"></label>
+                              <label class="text-left" for="checkbox-4"></label>
                             </div>
                           </td>
                         </tr>
