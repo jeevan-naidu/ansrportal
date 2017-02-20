@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager, TimeSheetEntry, BTGReport, QualitySOP
+    projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, SubPractice
 from employee.models import Remainder
@@ -470,14 +470,20 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
 
 #Upload Form  fro project screen
 class UploadForm(forms.ModelForm):
-    Sowdocument = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+    Sowdocument = forms.FileField(label='Sow Attachment', required=True, help_text=mark_safe(
         "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
     Sowdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
                                          'data-iconName': 'glyphicon glyphicon-paperclip'}
-    Estimationdocument = forms.FileField(label='Attachment', required=False, help_text=mark_safe(
+    Estimationdocument = forms.FileField(label='Estimation Attachment', required=True, help_text=mark_safe(
         "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
     Estimationdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
                                 'data-iconName': 'glyphicon glyphicon-paperclip'}
+
+    class Meta:
+        model = Project
+        fields = ('Sowdocument',
+                    'Estimationdocument',
+                  )
 
     def __init__(self, *args, **kwargs):
         super(UploadForm, self).__init__(*args, **kwargs)
@@ -485,6 +491,7 @@ class UploadForm(forms.ModelForm):
             "form-control"
         self.fields['Estimationdocument'].widget.attrs['class'] = \
             "form-control"
+
 
 # Change Project Basic Form
 class ChangeProjectForm(forms.ModelForm):
@@ -633,7 +640,7 @@ class ProjectFlagForm(forms.ModelForm):
         required=True, )
 
     name = forms.ModelChoiceField(
-        queryset=QualitySOP.objects.all(),
+        queryset=qualitysop.objects.all(),
         label="Select QualitySOP",
         widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
             # Set some placeholder

@@ -51,7 +51,7 @@ from ldap import LDAPError
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
-    ("Uploads", UploadForm)
+    ("Uploads",  UploadForm)
 ]
 TEMPLATES = {
     "Define Project": "MyANSRSource/projectDefinition.html",
@@ -1271,7 +1271,8 @@ def WrappedChangeProjectView(request):
 
 
 class CreateProjectWizard(SessionWizardView):
-    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'photos'))
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectDocument'))
+
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
@@ -1279,6 +1280,7 @@ class CreateProjectWizard(SessionWizardView):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'Define Project' and form.is_valid():
+            self.request.session['signed'] = form.cleaned_data['signed']
             self.request.session['PStartDate'] = form.cleaned_data['startDate'].strftime('%Y-%m-%d')
             self.request.session['PEndDate'] = form.cleaned_data['endDate'].strftime('%Y-%m-%d')
 

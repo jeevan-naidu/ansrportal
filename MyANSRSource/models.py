@@ -60,6 +60,7 @@ def change_file_path(instance, filename):
     os_path = os.path.join(path, filename)
     return os_path
 
+
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
                             verbose_name="Name")
@@ -174,14 +175,15 @@ class Chapter(models.Model):
     def __unicode__(self):
         return self.name
 
-class QualitySOP(models.Model):
+
+class qualitysop(models.Model):
     name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
     SOPlink = models.TextField(validators=[URLValidator()])
-    createdOn = models.DateTimeField(verbose_name="created Date",
-                                     auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",
-                                     auto_now=True)
-    created_by = models.ForeignKey(User)
+    # createdOn = models.DateTimeField(verbose_name="created Date",
+    #                                  auto_now_add=True)
+    # updatedOn = models.DateTimeField(verbose_name="Updated Date",
+    #                                  auto_now=True)
+    # created_by = models.ForeignKey(User)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -318,7 +320,7 @@ class Project(models.Model):
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
                                           verbose_name="Upload project Estimation Document")
-    SOP = models.ForeignKey(QualitySOP, verbose_name='Quality Sop ID', max_length=10, null=True, blank=True)
+    SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', max_length=10, null=True, blank=True)
     Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', max_length=10, null=True, blank=True)
     # Type = models.ForeignKey(ProjectType, verbose_name='Project Type ID', max_length=10, null=True, blank=True)
     Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', max_length=10, null=True, blank=True)
