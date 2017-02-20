@@ -144,7 +144,6 @@ INSTALLED_APPS = [
     'djcelery',
     'Hire',
     'Library',
-    'formtools',
     'emoticons',
     'QMS',
     'admin_reorder',

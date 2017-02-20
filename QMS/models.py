@@ -157,7 +157,7 @@ class ReviewReport(TimeStampAbstractModel):
     QA_sheet_header = models.ForeignKey(QASheetHeader)
     review_item = models.CharField(max_length=100)
     defect = models.TextField()
-    screen_shot = models.FileField(upload_to='qms', blank=True, null=True)
+    screen_shot = models.FileField(upload_to='qms', blank=True, null=True, verbose_name="upload screen shot")
     defect_severity_level = models.ForeignKey(DefectSeverityLevel)
     is_fixed = models.CharField(max_length=50, blank=True, null=True, choices=fixed_status, verbose_name="Is Fixed?")
     fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by', blank=True, null=True,)

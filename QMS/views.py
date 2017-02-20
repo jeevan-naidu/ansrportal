@@ -1,12 +1,13 @@
-from django.views.generic import View , TemplateView
+from django.views.generic import View , TemplateView ,ListView
 from django.views.generic.edit import CreateView, UpdateView, FormView
-from django.shortcuts import render
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
 import json
+from django.shortcuts import render
 from .forms import *
 from MyANSRSource.models import ProjectTeamMember
 from django.forms.formsets import formset_factory
@@ -14,6 +15,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 import logging
 logger = logging.getLogger('MyANSRSource')
 import os.path
+
 
 try:
     dict.iteritems
@@ -117,6 +119,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
     try:
         # print chapter, "chapter"
         # print active_tab, "active_tab", project, chapter, author
+        result = None
         if active_tab and component is not None:
             try:
                 chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
@@ -131,9 +134,9 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
             # print "else"
             result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
 
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist as e:
         # print "except"
-        result = None
+        logger.error(" {0} ".format(str(e)))
     return result
 
 
@@ -215,6 +218,7 @@ class AssessmentView(TemplateView):
             author = form.cleaned_data['author']
             component = form.cleaned_data['component']
             try:
+
                 # print "im in try"
                 # print project, chapter, author, active_tab
                 request.session['project'] = project
@@ -222,22 +226,28 @@ class AssessmentView(TemplateView):
                 request.session['author'] = author
                 request.session['component'] = component
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
+                if obj is None:
+                    messages.error(self.request, "Sorry configuration is missing please contact your manager")
+                    return render(self.request, self.template_name, {'form': form})
                 if request.user == author:
                     request.session['author_logged_in'] = True
+                    if not obj.review_group_status:
+                        messages.error(self.request, "Sorry You cant access this chapter till review is completed")
+                        return render(self.request, self.template_name, {'form': form})
                 else:
                     request.session['author_logged_in'] = False
-                print obj
+                # print "im here"
                 # if obj is None:
                 #     messages.error(self.request, "Sorry No Records Found")
                 #     return HttpResponseRedirect(reverse('qms'))
 
-                template_obj = get_object_or_404(ProjectTemplateProcessModel, project=project)
-                template_id = request.session['template_id'] = template_obj.id
+                project_template_process_model_obj = ProjectTemplateProcessModel.objects.get(project=project)
+                template_id = request.session['template_id'] = project_template_process_model_obj.template.id
                 request.session['QA_sheet_header_id'] = obj.id
                 defect_master = DefectTypeMaster.objects.all()
                 try:
                     reports = get_review(obj)
-                    print reports
+                    # print reports
                     # request.session['reports'] = list(reports)
 
                 except reports.ObjectDoesNotExist as e:
@@ -348,103 +358,103 @@ class AssessmentView(TemplateView):
                                                              SeverityLevelMaster.objects.filter(is_active=True)
                       .values_list('name', 'id', )})
 
-def qms_data(reports):
-    qms_data = {}
-    qms_data_list = []
-    severity_count = {}
-    if reports and len(reports) != 0:
-        # print"im in"
-        for eachData in reports:
-            # print eachData
-            # count = 0
-            for k, v in eachData.iteritems():
-                qms_data[k] = v
-                if k == 'id':
-                    r_obj = ReviewReport.objects.get(id=int(v))
-                    if r_obj.screen_shot:
-                        qms_data['screen_shot_url'] = r_obj.screen_shot.url
-                        print r_obj.screen_shot.path
-                    else:
-                        qms_data['screen_shot_url'] = None
-                    qms_data['qms_id'] = v
-                if k == 'review_item':
-                    qms_data['review_item'] = v
-
-                if k == 'defect':
-                    qms_data['defect'] = v
-
-                if k == 'defect_severity_level__severity_type':
-                    qms_data['severity_type'] = v
-
-                if k == 'defect_severity_level__severity_level':
-                    qms_data['severity_level'] = v
-                    if v in severity_count:
-                        v = int(v)
-                        severity_count[v] += 1
-                    else:
-                        severity_count[v] = 1
-                        # print count, severity_count, v
-
-                if k == 'defect_severity_level__defect_classification':
-                    qms_data['defect_classification'] = v
-
-                if k == 'is_fixed':
-                    qms_data['is_fixed'] = v
-
-                if k == 'screen_shot':
-                    # url = ReviewReport.objects.get(id=obj.id)
-                    qms_data['screen_shot'] = v
-                    # if v:
-                    #     qms_data['screen_shot_url'] = v
-
-                if k == 'fixed_by__username':
-                    qms_data['fixed_by'] = v
-
-                if k == 'remarks':
-                    qms_data['remarks'] = v
-                    # qms_data['clear_screen_shot'] = False
-            # print qms_data
-            qms_data_list.append(qms_data.copy())
-
-        qms_data.clear()
-    print qms_data_list
-    qms_formset = formset_factory(
-        qms_form, max_num=1, can_delete=True
-    )
-
-    qms_formset = qms_formset(initial=qms_data_list)
-    score = {}
-    tmp_weight = {}
-    defect_density = {}
-    # print severity_count
-    s = SeverityLevelMaster.objects.filter(is_active=True)
-    for k, v in severity_count.iteritems():
-        severity_level_obj = s.get(id=int(k))
-        tmp_weight[k] = float(severity_level_obj.penalty_count) * v
-        score[k] = 100 - (tmp_weight[k])
-        if obj.count > 0:
-            defect_density[k] = (tmp_weight[k] / obj.count) * 100
-        else:
-            defect_density[k] = 0
-
-    total_count = sum(severity_count.itervalues())
-    weight = sum(tmp_weight.itervalues())
-    if weight != 0:
-        total_score = 100 - sum(tmp_weight.itervalues())
-    else:
-        total_score = 0
-    total_defect_density = sum(defect_density.itervalues())
-    return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
-                                                     'reports': reports, 'review_formset': qms_formset,
-                                                     'template_id': template_id,
-                                                     'review_group': get_review_group(), 'questions': obj.count,
-                                                     'severity_count': severity_count,
-                                                     'score': score, 'total_score': total_score,
-                                                     'total_count': total_count, 'defect_density': defect_density,
-                                                     'total_defect_density': total_defect_density,
-                                                     'severity_level':
-                                                         SeverityLevelMaster.objects.filter(is_active=True)
-                  .values_list('name', 'id', )})
+# def qms_data(reports):
+#     qms_data = {}
+#     qms_data_list = []
+#     severity_count = {}
+#     if reports and len(reports) != 0:
+#         # print"im in"
+#         for eachData in reports:
+#             # print eachData
+#             # count = 0
+#             for k, v in eachData.iteritems():
+#                 qms_data[k] = v
+#                 if k == 'id':
+#                     r_obj = ReviewReport.objects.get(id=int(v))
+#                     if r_obj.screen_shot:
+#                         qms_data['screen_shot_url'] = r_obj.screen_shot.url
+#                         print r_obj.screen_shot.path
+#                     else:
+#                         qms_data['screen_shot_url'] = None
+#                     qms_data['qms_id'] = v
+#                 if k == 'review_item':
+#                     qms_data['review_item'] = v
+#
+#                 if k == 'defect':
+#                     qms_data['defect'] = v
+#
+#                 if k == 'defect_severity_level__severity_type':
+#                     qms_data['severity_type'] = v
+#
+#                 if k == 'defect_severity_level__severity_level':
+#                     qms_data['severity_level'] = v
+#                     if v in severity_count:
+#                         v = int(v)
+#                         severity_count[v] += 1
+#                     else:
+#                         severity_count[v] = 1
+#                         # print count, severity_count, v
+#
+#                 if k == 'defect_severity_level__defect_classification':
+#                     qms_data['defect_classification'] = v
+#
+#                 if k == 'is_fixed':
+#                     qms_data['is_fixed'] = v
+#
+#                 if k == 'screen_shot':
+#                     # url = ReviewReport.objects.get(id=obj.id)
+#                     qms_data['screen_shot'] = v
+#                     # if v:
+#                     #     qms_data['screen_shot_url'] = v
+#
+#                 if k == 'fixed_by__username':
+#                     qms_data['fixed_by'] = v
+#
+#                 if k == 'remarks':
+#                     qms_data['remarks'] = v
+#                     # qms_data['clear_screen_shot'] = False
+#             # print qms_data
+#             qms_data_list.append(qms_data.copy())
+#
+#         qms_data.clear()
+#     print qms_data_list
+#     qms_formset = formset_factory(
+#         qms_form, max_num=1, can_delete=True
+#     )
+#
+#     qms_formset = qms_formset(initial=qms_data_list)
+#     score = {}
+#     tmp_weight = {}
+#     defect_density = {}
+#     # print severity_count
+#     s = SeverityLevelMaster.objects.filter(is_active=True)
+#     for k, v in severity_count.iteritems():
+#         severity_level_obj = s.get(id=int(k))
+#         tmp_weight[k] = float(severity_level_obj.penalty_count) * v
+#         score[k] = 100 - (tmp_weight[k])
+#         if obj.count > 0:
+#             defect_density[k] = (tmp_weight[k] / obj.count) * 100
+#         else:
+#             defect_density[k] = 0
+#
+#     total_count = sum(severity_count.itervalues())
+#     weight = sum(tmp_weight.itervalues())
+#     if weight != 0:
+#         total_score = 100 - sum(tmp_weight.itervalues())
+#     else:
+#         total_score = 0
+#     total_defect_density = sum(defect_density.itervalues())
+#     return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
+#                                                      'reports': reports, 'review_formset': qms_formset,
+#                                                      'template_id': template_id,
+#                                                      'review_group': get_review_group(), 'questions': obj.count,
+#                                                      'severity_count': severity_count,
+#                                                      'score': score, 'total_score': total_score,
+#                                                      'total_count': total_count, 'defect_density': defect_density,
+#                                                      'total_defect_density': total_defect_density,
+#                                                      'severity_level':
+#                                                          SeverityLevelMaster.objects.filter(is_active=True)
+#                   .values_list('name', 'id', )})
 
 class ReviewReportManipulationView(AssessmentView):
 
@@ -581,12 +591,15 @@ def fetch_severity(request):
     severity = request.GET.get('severity_type')
     request.session['active_tab'] = request.GET.get('active_tab')
     review_group = ReviewGroup.objects.get(id=request.GET.get('active_tab'))
+    print template_id , severity ,  review_group.id
     try:
         obj = DefectSeverityLevel.objects.filter(template=template_id, severity_type=severity,
-                                             review_master=review_group.review_master)[0]
+                                                 review_master=review_group.review_master)[0]
+        # logger.error("query {0} ".format(obj.query))
         context_data = {'severity_level': str(obj.severity_level), 'defect_classification': str(obj.defect_classification)}
-    except IndexError:
-        context_data = {'configuration_missing':True}
+    except IndexError as e:
+        logger.error("query {0} ".format(str(e)))
+        context_data = {'configuration_missing': True}
 
     return HttpResponse(
             json.dumps(context_data),
@@ -623,3 +636,41 @@ def fetch_author(request):
         content_type="application/json"
     )
 
+
+# def check_permission(request):
+#     project_id = request.GET.get('project_id')
+#     active_tab = request.GET.get('active_tab')
+#
+#     try:
+#         result = QASheetHeader.objects.filter(project_id=project_id, review_group_id=active_tab).\
+#             values_list('review_group_status', flat=True)[0]
+#     except Exception as e:
+#         result = False
+#         logger.error(" check permission for author failed {0} ".format(str(e)))
+#     return HttpResponse(
+#         json.dumps(bool(result)),
+#         content_type="application/json"
+#     )
+
+class DashboardView(ListView):
+    model = ReviewReport
+    template_name = 'qms_dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardView, self).get_context_data(**kwargs)
+        # print "user", self.request.user
+
+        # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
+        s = ReviewReport.objects.filter(QA_sheet_header__project__in=
+                                        ProjectManager.objects.filter(user=self.request.user).values('project')). \
+            values('defect_severity_level', 'QA_sheet_header__project', 'QA_sheet_header__project__endDate').annotate(
+            Count('QA_sheet_header__project'), the_count=Count('defect_severity_level'))
+        for  k in s:
+            print k  # values(
+        # 'defect_severity_level', 'QA_sheet_header__project', 'QA_sheet_header__project__endDate').\
+        # print s.query
+        form = BaseAssessmentTemplateForm()
+        context['form'] = form
+        context['review_group'] = get_review_group()
+
+        return context

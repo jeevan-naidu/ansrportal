@@ -2,6 +2,8 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from .views import *
 from .autocomplete_light_registry import *
+from django.views.generic import TemplateView
+
 urlpatterns = [
     url(r'^$', (AssessmentView.as_view()), name=u'qms'),
     # url(r'^/edit(?P<pk>\d+)/$', login_required(AssessmentReviewEditView.as_view()), name=u'edit_review'),
@@ -22,5 +24,6 @@ urlpatterns = [
         name='AutoCompleteAssignUserProjectSpecific', ),
     url(r'^AutoCompleteChapterSpecificComponent/$', AutoCompleteChapterSpecificComponent.as_view(),
         name='AutoCompleteChapterSpecificComponent', ),
+    url(r'^dashboard/$', (DashboardView.as_view()),  name='qms_dashboard'),# TemplateView.as_view(template_name='qms_dashboard.html')),
 
                        ]
