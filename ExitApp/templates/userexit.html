@@ -197,6 +197,7 @@ ul{list-style: none;padding-left: 0px;}
 
             if(from_date > to_date){
               swal("Last date should not be earlier than the exit date");
+              document.getElementById("id_last_date").value = "";
             }
 
         }
