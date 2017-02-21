@@ -107,7 +107,7 @@ class ExitFormAdd(View):
     def get(self, request):
         try:
             initial_data = ResignationInfo.objects.get(User_id=request.user.id)
-            resignation_date = Employee.objects.get(user_id = request.user.id)
+            resignation_date = Employee.objects.get(user_id=request.user.id)
             if initial_data:
                 context = {"form": ""}
                 form = UserExitForm(
@@ -185,10 +185,15 @@ class ResignationAcceptance(View):
         mgrid = Employee.objects.get(user_id=request.user.id)
         reportee = Employee.objects.filter(manager_id=mgrid)
         filterdata = []
+        resignationdate = []
         for value in reportee:
             filterdata.append(value.user.id)
         allresignee = ResignationInfo.objects.filter(User__in=filterdata).exclude(User_id=request.user.id)
+        for id in allresignee:
+            resignationdate.append(id.User_id)
+        resigndate = Employee.objects.filter(user__in=resignationdate)
         context['resigneedata'] = allresignee
+        context['date'] = resigndate
         return render(request, "exitacceptance.html", context)
 
 
@@ -196,7 +201,12 @@ class ResignationAcceptanceHR(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         allresignee = ResignationInfo.objects.filter(~Q(User_id=request.user.id))
+        resignationdate = []
+        for id in allresignee:
+            resignationdate.append(id.User_id)
+        resigndate = Employee.objects.filter(user__in=resignationdate)
         context['resigneedata'] = allresignee
+        context['date'] = resigndate
         return render(request, "hracceptance.html", context)
 
 
