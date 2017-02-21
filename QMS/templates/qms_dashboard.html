@@ -1,5 +1,6 @@
 {% extends 'master.html' %}
 {% load static from staticfiles %}
+{% load qms_tags %}
 
 {% block siteTitle %}QMS{% endblock %}
 {% block pageTitle %}QMS{% endblock %}
@@ -37,83 +38,30 @@
                         <tr>
                           <th>ID</th>
                           <th>Name</th>
+                            <th>Lead</th>
+                            <th>No.of chapters</th>
                           <th>Defect &nbsp; [ S1, S2, S3 ]</th>
-                          <th>Field 1</th>
-                          <th>Field 2</th>
+                            <th>No. of questions</th>
+                          <th>Defect Density</th>
                         </tr>
                       </thead>
                       <tbody>
+                      {% for obj in projects %}
                         <tr class="odd gradeX">
-                          <td><a href="#" data-toggle="modal" data-target="#myModal">1</a></td>
-                          <td>Name of first project</td>
+                          <td><a href="#" data-toggle="modal" data-target="#myModal">{{obj.project__projectId}}</a></td>
+                          <td>{{obj.project__name}}</td>
+                            <td>{{request.user}}</td>
+                             <td>{{obj.chapter_count}}</td>
                           <td>
-                            <span class="defect-span defect-s1">32</span>
-                            <span class="defect-span defect-s2">14</span>
-                            <span class="defect-span defect-s3">5</span>
+                            <span class="defect-span defect-s1">{{obj.project|get_severity_count:"s1" }}</span>
+                            <span class="defect-span defect-s2">{{obj.project|get_severity_count:"s2" }}</span>
+                            <span class="defect-span defect-s3">{{obj.project|get_severity_count:"s3" }}</span>
                           </td>
-                          <td class="center">Lorem Ipsum</td>
+                          <td class="center">{{obj.project|get_question_count}}</td>
                           <td class="center">Lorem Ipsum</td>
                         </tr>
-                        <tr class="even gradeC">
-                          <td>2</td>
-                          <td>Name of second project</td>
-                          <td>                          
-                            <span class="defect-span defect-s1">32</span>
-                            <span class="defect-span defect-s2">14</span>
-                            <span class="defect-span defect-s3">5</span>
-                          </td>
-                          <td class="center">Lorem Ipsum</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-                        <tr class="odd gradeX">
-                          <td>3</td>
-                          <td>Name of third project</td>
-                          <td>                          
-                            <span class="defect-span defect-s1">32</span>
-                            <span class="defect-span defect-s2">14</span>
-                            <span class="defect-span defect-s3">5</span>
-                          </td>
-                          <td class="center">Lorem Ipsum</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-                        <tr class="even gradeC">
-                          <td>4</td>
-                          <td>Name of fourth project</td>
-                          <td>                          
-                            <span class="defect-span defect-s1">32</span>
-                            <span class="defect-span defect-s2">14</span>
-                            <span class="defect-span defect-s3">5</span>
-                          </td>
-                          <td class="center">Lorem Ipsum</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-                        <tr class="odd gradeX">
-                          <td>5</td>
-                          <td>Name of fifth project</td>
-                          <td>                          
-                            <span class="defect-span defect-s1">32</span>
-                            <span class="defect-span defect-s2">14</span>
-                            <span class="defect-span defect-s3">5</span>
-                          </td>
-                          <td class="center">Lorem Ipsum</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-                        <tr class="even gradeC">
-                          <td>6</td>
-                          <td>Name of sixth project</td>
-                          <td>                          
-                            <span class="defect-span defect-s1">32</span>
-                            <span class="defect-span defect-s2">14</span>
-                            <span class="defect-span defect-s3">5</span>
-                          </td>
-                          <td class="center">Lorem Ipsum</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-
-
-
-
-			     </tbody>
+                     {% endfor %}
+                   </tbody>
 			    </table>
 			   </div><!-- ./panel-body -->
 			  </div><!-- ./panel-widget -->
