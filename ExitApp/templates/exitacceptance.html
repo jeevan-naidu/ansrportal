@@ -53,7 +53,6 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Action</th>
                           </thead>
                    {% for c in resigneedata %}
-                            {% for date in date %}
                      {%  if c.exit_revert_flag == False %}
                    <tr>
                        <td>{{c}}<input class="userid" type="hidden" value = "{{c.User_id}}"/></td>
@@ -67,7 +66,7 @@ ul{list-style: none;padding-left: 0px;}
                        <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
                        <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
-                         <input name="finaldate_{{c.User_id}}" resigndate="{{date.resignation |date:'o-m-d'}}"type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
+                         <input name="finaldate_{{c.User_id}}" data-resign-date="{{c.exit_revert_note |date:'o-m-d'}}"type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                          </div>
                        </td>
@@ -75,7 +74,6 @@ ul{list-style: none;padding-left: 0px;}
                        <td><button type="button" class="btn btn-primary btn-sm resignation_acceptance" id ="">Save</button></td>
                    </tr>
                             {%endif %}
-                            {% endfor%}
                             {% endfor %}
       <script type="text/javascript">
             $(function () {

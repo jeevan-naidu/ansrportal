@@ -14,14 +14,9 @@
         </ul>        
 	</div>
 {% endif %}
-
-                    <div class="panel pb-15">
+                        <div class="panel pb-15">
                         <!-- first widget (vertical tabs) -->
-
                         <div class="panel-body">
-
-
-
             <div class="col-sm-6 center-block">
                 <div class="table-responsive">
                     <table class="table">
@@ -60,9 +55,7 @@
     (function() {
 
     }());
-
     $(document).ready(function(){
-    $('[id="id_Basic Information-practicename"]').attr("id", "id_BasicInformation-practicename");
     $('[id="id_Basic Information-PracticeHead"]').attr("id", "id_BasicInformation-PracticeHead");
     $('[id="id_Basic Information-name"]').attr("id", "id_BasicInformation-name");
     $('[id="id_Basic Information-PracticeHead"]').attr("value", "");
@@ -73,9 +66,8 @@
             return false;
         });
 
-         $('#id_BasicInformation-practicename').change(function() {
-              var practicename = $("#id_BasicInformation-practicename option")[0].text;
-              practicename = practicename.substring(practicename.indexOf(' ')+1,practicename.length)
+         $('.practicevalue').on('change',function() {
+            var practicename = this.value
            $.ajax(
                    {
                        type : "GET",
@@ -90,8 +82,8 @@
            );
  })
 
- $('#id_BasicInformation-name').change(function() {
-              var sop = $("#id_BasicInformation-name option")[0].text;
+ $('#id_BasicInformation-name').on('change', function() {
+              var sop = this.value
                     $.ajax(
                    {
                        type : "GET",
@@ -100,16 +92,11 @@
                        success : function(data)
                        {
                        document.getElementById('soplink').value=data
-
                        }
                    }
            );
  })
-
-
-
-
-    });
+  });
 
 </script>
 

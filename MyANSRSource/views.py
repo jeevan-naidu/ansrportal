@@ -29,7 +29,7 @@ from django.core.files.storage import FileSystemStorage
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail,qualitysop
+    ProjectDetail, qualitysop
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -112,14 +112,14 @@ days = ['monday', 'tuesday', 'wednesday', 'thursday',
 
 def getheadid(request):
     practicename = request.GET['practicename']
-    head = Practice.objects.get(name=practicename)
+    head = Practice.objects.get(id=practicename)
     head_name = User.objects.get(id=head.head_id)
     return HttpResponse(head_name.first_name)
 
 
 def soplink(request):
-    sopname = request.GET['sop']
-    soplink  = qualitysop.objects.get(name=sopname)
+    sopid = request.GET['sop']
+    soplink  = qualitysop.objects.get(id=sopid)
     return HttpResponse(soplink.SOPlink)
 
 
@@ -1625,7 +1625,7 @@ def saveProject(request):
     if request.method == 'POST':
         try:
             pr = Project()
-            pd = Projectdetail()
+            pd = ProjectDetail()
             pr.name = request.POST.get('name')
             pType = projectType.objects.get(id=int(request.POST.get('projectType')))
             pr.projectType = pType

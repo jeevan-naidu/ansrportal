@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset
+from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope
 from CompanyMaster.models import Practice, SubPractice
 from dal import autocomplete
 
@@ -69,4 +69,11 @@ class AutocompleteQualitySOP(autocomplete.Select2QuerySetView):
             choices = qualitysop.objects.filter(name__icontains=q)
         except Exception as e:
             print e
+        return choices
+
+
+class Autocompleteprojectscope(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = ProjectScope.objects.filter(scope__icontains=q)
         return choices

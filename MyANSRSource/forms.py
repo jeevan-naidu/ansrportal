@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset
+    projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, SubPractice
 from employee.models import Remainder
@@ -644,6 +644,17 @@ class ProjectFlagForm(forms.ModelForm):
         }, ),
         required=True, )
 
+    ProjectScope = forms.ModelChoiceField(
+        queryset=ProjectScope.objects.all(),
+        label="Select Project Scope",
+        widget=autocomplete.ModelSelect2(url='Autocompleteprojectscope', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type  Project Scope Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+
     class Meta:
         model = Project
         fields = (
@@ -658,6 +669,7 @@ class ProjectFlagForm(forms.ModelForm):
             'name',
             'SopLink',
             'projectasset',
+            'ProjectScope',
 
         )
         widgets = {
