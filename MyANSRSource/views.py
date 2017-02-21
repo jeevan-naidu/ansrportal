@@ -29,7 +29,7 @@ from django.core.files.storage import FileSystemStorage
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -41,7 +41,7 @@ import CompanyMaster
 import employee
 import os
 from employee.models import Remainder
-from CompanyMaster.models import Holiday, HRActivity, Practice
+from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
 from django.core.urlresolvers import reverse_lazy
 
@@ -1431,7 +1431,6 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
         }
-        print data
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
 
@@ -1621,11 +1620,8 @@ def saveProject(request):
     # Please go back and clean up error handling - for example a int() call
     # with throw ValueError.  You ahve to handle it.  Once you handle how do
     # you send them back to the summary page?
-
     if request.method == 'POST':
         try:
-            import ipdb;            ipdb.set_trace()
-            print request.POST
             pr = Project()
             pr.name = request.POST.get('name')
             pType = projectType.objects.get(id=int(request.POST.get('projectType')))
@@ -1656,7 +1652,6 @@ def saveProject(request):
             )
             pr.projectId = projectIdPrefix
             pr.save()
-            print pr.id
             pr.customer.seqNumber = pr.customer.seqNumber + 1
             pr.customer.save()
             pci = ProjectChangeInfo()
@@ -1687,6 +1682,32 @@ def saveProject(request):
                 senderEmail = settings.EXTERNAL_PROJECT_NOTIFIERS
                 for eachRecp in senderEmail:
                     SendMail(context, eachRecp, 'externalproject')
+            try:
+                pd = ProjectDetail()
+                pd.project_id = pr.id
+                pd.projectFinType = request.POST.get('projectFinType')
+                pd.ProjectCost = request.POST.get('projectCost')
+                sub_practice = request.POST.get('subpractice')
+                sub_practice_id = SubPractice.objects.get(name=sub_practice).id
+                pd.SubPractice_id = sub_practice_id
+                practice_name = request.POST.get('practicename')
+                practice_id = Practice.objects.get(name=practice_name).id
+                pd.PracticeName_id = practice_id
+                del_mgr = request.POST.get('DeliveryManager')
+                del_mgr_id = User.objects.get(username=del_mgr).id
+                pd.deliveryManager_id = del_mgr_id
+                sop = request.POST.get('sopname')
+                sop_id = qualitysop.objects.get(name=sop).id
+                pd.SOP_id = sop_id
+                scope = request.POST.get('ProjectScope')
+                scope_id = ProjectScope.objects.get(scope=scope).id
+                pd.Scope_id = scope_id
+                asset = request.POST.get('projectasset')
+                asset_id = ProjectAsset.objects.get(Asset=asset).id
+                pd.Asset_id = asset_id
+                pd.save()
+            except ValueError as e:
+                logger.exception(e)
 
         except ValueError as e:
             logger.exception(e)
