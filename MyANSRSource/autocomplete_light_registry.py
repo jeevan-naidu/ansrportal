@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project, qualitysop
+from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset
 from CompanyMaster.models import Practice, SubPractice
 from dal import autocomplete
 
@@ -38,12 +38,11 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
         return choices
 
 
-class AutocompletePracticeHead(autocomplete.Select2QuerySetView):
+class AutocompleteProjectAsset(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        head_id = Practice.objects.values_list('head_id')
-        choices = User.objects.filter(is_active=True, id__in=head_id, first_name__icontains=q)
+        choices = ProjectAsset.objects.filter(Asset__icontains=q)
         return choices
 
 

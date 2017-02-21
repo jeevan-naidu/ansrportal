@@ -38,14 +38,11 @@
                                         <span class="col-lg-9">{{ field }}
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
                                         </span>
-
                                         <span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
-
                                     {% else %}  {{ form.field.errors }}
                                         <span class="col-lg-9">{{ field }}
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
                                         </span>
-
                                         <span class="col-lg-3"></span>
 
                                     {% endif %}
@@ -67,7 +64,10 @@
     $(document).ready(function(){
     $('[id="id_Basic Information-practicename"]').attr("id", "id_BasicInformation-practicename");
     $('[id="id_Basic Information-PracticeHead"]').attr("id", "id_BasicInformation-PracticeHead");
+    $('[id="id_Basic Information-name"]').attr("id", "id_BasicInformation-name");
     $('[id="id_Basic Information-PracticeHead"]').attr("value", "");
+    $("#id_BasicInformation-PracticeHead, #soplink").prop("readonly", true);
+
        $("button#browserPrevious").click(function(e){
             window.history.go(-1);
             return false;
@@ -89,6 +89,26 @@
                    }
            );
  })
+
+ $('#id_BasicInformation-name').change(function() {
+              var sop = $("#id_BasicInformation-name option")[0].text;
+                    $.ajax(
+                   {
+                       type : "GET",
+                       url : '/myansrsource/soplink/',
+                       data :{'sop': sop} ,
+                       success : function(data)
+                       {
+                       document.getElementById('soplink').value=data
+
+                       }
+                   }
+           );
+ })
+
+
+
+
     });
 
 </script>

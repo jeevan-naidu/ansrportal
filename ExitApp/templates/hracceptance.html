@@ -40,7 +40,6 @@ ul{list-style: none;padding-left: 0px;}
                {% endif %}
                {% endfor %}
                {% endif %}
-                    <!--<form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">-->
                         <table class="table table-condensed table-striped myansr-table">
                           <thead>
                             <th class="">Name</th>
@@ -52,6 +51,7 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Action</th>
                           </thead>
                    {% for c in resigneedata %}
+                            {% for date in date %}
 
                           {%  if c.exit_revert_flag == False and c.manager_accepted == True%}
                    <tr>
@@ -66,7 +66,7 @@ ul{list-style: none;padding-left: 0px;}
 
                         <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
-                         <input name="finaldate_{{c.User_id}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
+                         <input name="finaldate_{{c.User_id}}" resigndate="{{date.resignation |date:'o-m-d'}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                          </div>
                        </td>
@@ -74,6 +74,7 @@ ul{list-style: none;padding-left: 0px;}
                        <td><button type="button" class="btn btn-primary btn-sm resignation_acceptance" id ="">Save</button></td>
                    </tr>
                             {%endif %}
+                            {%endfor%}
                             {% endfor %}
                             <script type="text/javascript">
             $(function () {

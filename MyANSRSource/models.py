@@ -179,11 +179,11 @@ class Chapter(models.Model):
 class qualitysop(models.Model):
     name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
     SOPlink = models.TextField(validators=[URLValidator()])
-    # createdOn = models.DateTimeField(verbose_name="created Date",
-    #                                  auto_now_add=True)
-    # updatedOn = models.DateTimeField(verbose_name="Updated Date",
-    #                                  auto_now=True)
-    # created_by = models.ForeignKey(User)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -310,20 +310,7 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Closed"
     )
-    PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', max_length=200, null=True, blank=True)
-    projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=40,
-                                      blank=True, null=True)
-    ProjectCost = models.CharField(verbose_name="Project cost", max_length=100, null=True, blank=True)
-    SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice', max_length=200, null=True, blank=True)
-    PracticeHead = models.CharField(verbose_name='Practice Head', max_length=100, null=True, blank=True)
-    deliveryManager = models.IntegerField(verbose_name='Project Delievery Manager',  blank=True)
-    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
-    Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
-                                          verbose_name="Upload project Estimation Document")
-    SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', max_length=10, null=True, blank=True)
-    Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', max_length=10, null=True, blank=True)
-    # Type = models.ForeignKey(ProjectType, verbose_name='Project Type ID', max_length=10, null=True, blank=True)
-    Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', max_length=10, null=True, blank=True)
+
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -341,6 +328,28 @@ class Project(models.Model):
             ("view_all_projects", "View all projects"),
             ("view_all_reports", "View All Reports"),
             )
+
+
+class ProjectDetail(models.Model):
+    project = models.ForeignKey(Project)
+    PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
+    projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
+                                      blank=True, null=True)
+    ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
+    SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
+    deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager', blank=True, null=True)
+    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
+    Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
+                                          verbose_name="Upload project Estimation Document")
+    SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', null=True, blank=True)
+    Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', null=True, blank=True)
+    Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.projectId
+
+    class Meta:
+        verbose_name = "Project Additional Detail Table"
 
 
 class ProjectManager(models.Model):

@@ -78,11 +78,7 @@ class ProjectAdmin(admin.ModelAdmin):
         'plannedEffort',
         'contingencyEffort',
         'totalValue',
-        'PracticeName',
-        'SubPractice',
-        'projectFinType',
-        'PracticeHead',
-        'deliveryManager')
+    )
     fieldsets = [
         ('Basic Information', {
             'fields': [
