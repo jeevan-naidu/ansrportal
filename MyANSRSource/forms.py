@@ -633,7 +633,7 @@ class ProjectFlagForm(forms.ModelForm):
         }, ),
         required=True, )
 
-    name = forms.ModelChoiceField(
+    sopname = forms.ModelChoiceField(
         queryset=qualitysop.objects.all(),
         label="Select QualitySOP",
         widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
@@ -666,7 +666,7 @@ class ProjectFlagForm(forms.ModelForm):
             'practicename',
             'subpractice',
             'PracticeHead',
-            'name',
+            'sopname',
             'SopLink',
             'projectasset',
             'ProjectScope',
@@ -695,6 +695,7 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['projectasset'].widget.attrs['class']= "total-value-input form-control"
         self.fields['PracticeHead'].widget.attrs['id']="id_BasicInformation-PracticeHead"
         self.fields['SopLink'].widget.attrs['id'] = "soplink"
+        self.fields['sopname'].widget.attrs['class']="sopname"
 
 
 class MyRemainderForm(forms.ModelForm):

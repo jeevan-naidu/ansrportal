@@ -1624,8 +1624,9 @@ def saveProject(request):
 
     if request.method == 'POST':
         try:
+            import ipdb;            ipdb.set_trace()
+            print request.POST
             pr = Project()
-            pd = ProjectDetail()
             pr.name = request.POST.get('name')
             pType = projectType.objects.get(id=int(request.POST.get('projectType')))
             pr.projectType = pType
@@ -1655,9 +1656,9 @@ def saveProject(request):
             )
             pr.projectId = projectIdPrefix
             pr.save()
+            print pr.id
             pr.customer.seqNumber = pr.customer.seqNumber + 1
             pr.customer.save()
-
             pci = ProjectChangeInfo()
             pci.project = pr
             pci.crId = u"BL-{0}".format(pr.id)

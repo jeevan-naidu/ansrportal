@@ -346,7 +346,7 @@ class ProjectDetail(models.Model):
     Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', null=True, blank=True)
 
     def __unicode__(self):
-        return self.projectId
+        return self.id
 
     class Meta:
         verbose_name = "Project Additional Detail Table"
