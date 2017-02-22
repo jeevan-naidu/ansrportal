@@ -103,9 +103,11 @@ ul{list-style: none;padding-left: 0px;}
                         </script>
                     {% endif %}
                     {% if message.tags == 'success' %}
+                        {% if forloop.counter == 1 %}
                     <div class="alert alert-success">
                     <strong>Success!</strong> {{message}}.
                   </div>
+               {% endif %}
                {% endif %}
                {% endif %}
                {% endfor %}
