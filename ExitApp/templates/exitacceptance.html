@@ -87,7 +87,11 @@ ul{list-style: none;padding-left: 0px;}
         var end_date = $(this).parent().parent().find('.finaldate').val();
 
         if(start_date > end_date){
-          swal("Last date should not be earlier than the exit date");
+          swal(
+            'Resignation date : ' + start_date,
+            'Last date should not be earlier than the resignation date',
+            'error'
+          )
         }else{
 
 
