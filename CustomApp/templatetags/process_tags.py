@@ -12,3 +12,8 @@ def field_name(process, field):
 
     return attr
 
+
+@register.filter('transaction_name_split')
+def transaction_name_split(name):
+    name_list = name.split("_")
+    return reduce(lambda x, y: x.title() + " " + y.title(), name_list)

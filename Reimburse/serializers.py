@@ -25,15 +25,24 @@ class ReimburseSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ('reason',)
+        fields = ('reason', 'status')
 
-    def save_as(self, role, request, pk, status):
+    def save_as(self, role, request, pk):
         Transaction(
-            status=status,
+            status=self.validated_data['status'],
             reason=self.validated_data['reason'],
             approved_by=request.user,
             reimburse_id=pk,
             role=role
         ).save()
+
+    @staticmethod
+    def transactions(pk, role):
+        transaction = Transaction.objects.filter(reimburse_id=pk,
+                                                 role=role).order_by('id')
+        if transaction:
+            return TransactionSerializer(transaction[0])
+        else:
+            return TransactionSerializer()
 
 

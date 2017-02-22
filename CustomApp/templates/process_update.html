@@ -1,14 +1,9 @@
-
-{% extends 'master.html' %}
-{% block siteTitle %}Manage Leaves{% endblock %}
-
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load static from staticfiles %}
+{% load process_tags %}
 
-
-{% block pageTitle %}Manage Leaves{% endblock %}
-
+{% load rest_framework %}
 {% block content  %}
 
 
@@ -18,188 +13,59 @@
                   <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-magic"></i> </span> Wizard Basic </h3>
                   </div>
-                  <div class="panel-body">
-                    <form class="form-horizontal" action="#" role="form">
+                  <div class="panel-body form-horizontal">
+
                       <div id="wizard-1" class="form-wizard">
                         <ul>
-                          <li><a href="#tab1" data-toggle="tab">
-                            <div class="menu-icon"> 1 </div>
-                            User Profile </a></li>
-                          <li><a href="#tab2" data-toggle="tab">
-                            <div class="menu-icon"> 2 </div>
-                            Address Information </a></li>
-                          <li><a href="#tab3" data-toggle="tab">
-                            <div class="menu-icon"> 3 </div>
-                            Contact Detail </a></li>
-                          <li><a href="#tab4" data-toggle="tab">
-                            <div class="menu-icon"> 4 </div>
-                            Billing Information </a></li>
-                          <li><a href="#tab5" data-toggle="tab">
-                            <div class="menu-icon"> 5 </div>
-                            Confirm </a></li>
+                            {% for name in process_detail %}
+                          <li><a href="#tab{{ forloop.counter }}"  data-toggle="tab">
+                            <div class="menu-icon"> {{ forloop.counter }} </div>
+                            {{ name | transaction_name_split }} </a></li>
+                          {% endfor %}
                         </ul>
+
                         <div class="tab-content">
-                          <div class="tab-pane" id="tab1">
+                        {% for name in process_status_detail %}
+                          <div class="tab-pane" id="tab{{ forloop.counter }}">
                             <div class="row">
                               <div class="col-sm-4">
-                                <div class="form-label">First Name</div>
-                                <input type="text" class="mgbt-xs-20 mgbt-sm-0">
-                              </div>
-                              <div class="col-sm-4">
-                                <div class="form-label">Last Name</div>
-                                <input type="text"  class="">
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col-sm-2">
-                                <div class="form-label">User Name</div>
-                                <input type="text"  class="mgbt-xs-20  mgbt-sm-0">
-                              </div>
-                              <div class="col-sm-6">
-                                <div class="form-label">Email</div>
-                                <input type="email"  class="">
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col-sm-4">
-                                <div class="form-label">Password</div>
-                                <input type="password"  class="mgbt-xs-20  mgbt-sm-0">
-                              </div>
-                              <div class="col-sm-4">
-                                <div class="form-label">Confirm Password</div>
-                                <input type="password"  class="">
-                              </div>
-                            </div>
-                          </div>
-                          <div class="tab-pane" id="tab2">
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Address</label>
-                              <div class="col-sm-7 controls">
-                                <input type="text">
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">City</label>
-                              <div class="col-sm-7 controls">
-                                <input type="text">
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Country</label>
-                              <div class="col-sm-2 controls">
-                                <select >
-                                  <option>USA</option>
-                                  <option>Canada</option>
-                                  <option>UK</option>
-                                  <option>Thailand</option>
-                                  <option>Indonesia</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Post Code</label>
-                              <div class="col-sm-1 controls">
-                                <input type="text"  maxlength="5">
-                              </div>
-                            </div>
-                          </div>
-                          <div class="tab-pane" id="tab3">
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Homephone</label>
+                                  {% for detail in object_detail %}
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><b>{{ detail.0.title }}</b></label>
                               <div class="col-sm-10 controls">
-                                <select class="width-10">
-                                  <option>+1</option>
-                                  <option>+60</option>
-                                  <option>+61</option>
-                                  <option>+62</option>
-                                  <option>+63</option>
-                                </select>
-                                <input type="text" class="width-30">
+                                  {% if detail.0 == "user" %}
+                                      <div class="control-value"> {{ detail.1.first_name }} {{ detail.1.last_name  }} </div>
+                                  {% else %}
+                                      <div class="control-value"> {{ detail.1 }} </div>
+                                  {% endif %}
+
                               </div>
                             </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Handphone</label>
-                              <div class="col-sm-10 controls">
-                                <select class="width-10">
-                                  <option>+1</option>
-                                  <option>+60</option>
-                                  <option>+61</option>
-                                  <option>+62</option>
-                                  <option>+63</option>
-                                </select>
-                                <input type="text" class="width-30">
+                                      {% endfor %}
                               </div>
+
                             </div>
-                          </div>
-                          <div class="tab-pane" id="tab4">
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">CC Number</label>
-                              <div class="col-sm-5 controls">
-                                <input type="text" class="">
-                              </div>
+                          {% if name.0 == current_role %}
+                              <form method="POST" id="activity_form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                              {% render_form name.1 template_pack='rest_framework/vertical' %}
+                                  <button type="submit" class="btn btn-default .btn-lg" value="SUBMIT">SUBMIT</button>
+                                </form>
+                          {% else %}
+                              <fieldset disabled="disabled">
+                          {% render_form name.1 template_pack='rest_framework/vertical' %}
+                               </fieldset>
+                          {% endif %}
+
                             </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">CVV</label>
-                              <div class="col-sm-10 controls">
-                                <input type="text" class="width-10" maxlength="3">
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Expired Date</label>
-                              <div class="col-sm-10 controls">
-                                <select class="width-10">
-                                  <option>January</option>
-                                  <option>February</option>
-                                  <option>March</option>
-                                  <option>April</option>
-                                  <option>May</option>
-                                </select>
-                                <select class="width-10">
-                                  <option>2013</option>
-                                  <option>2014</option>
-                                  <option>2015</option>
-                                  <option>2016</option>
-                                  <option>2017</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="tab-pane" id="tab5">
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">First Name</label>
-                              <div class="col-sm-5 controls">
-                                <div class="control-value"> John </div>
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Last Name</label>
-                              <div class="col-sm-10 controls">
-                                <div class="control-value"> Doe </div>
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Address</label>
-                              <div class="col-sm-10 controls">
-                                <div class="control-value"> Address Examples Here </div>
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">City</label>
-                              <div class="col-sm-10 controls">
-                                <div class="control-value"> Los Angeles </div>
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="col-sm-2 control-label">Country</label>
-                              <div class="col-sm-10 controls">
-                                <div class="control-value"> USA </div>
-                              </div>
-                            </div>
-                          </div>
+{% endfor %}
+
+
+
                           <div class="form-actions-condensed wizard"> <a class="btn vd_btn prev" href="javascript:void(0);"><span class="menu-icon"><i class="fa fa-fw fa-chevron-circle-left"></i></span> Previous</a> <a class="btn vd_btn next" href="javascript:void(0);">Next <span class="menu-icon"><i class="fa fa-fw fa-chevron-circle-right"></i></span></a> <a class="btn vd_btn vd_bg-green finish" href="javascript:void(0);"><span class="menu-icon"><i class="fa fa-fw fa-check"></i></span> Finish</a> </div>
                         </div>
                       </div>
-                    </form>
+
                   </div>
                 </div>
                 <!-- Panel Widget -->
@@ -233,6 +99,52 @@ $(document).ready(function() {
       scrollTo('#wizard-1',-100);
     }
   });
+
+  $("form#activity_form").submit(function(){
+						 var formData = new FormData($(this)[0]);
+
+
+						 swal({   title: "Are you sure?",
+							text: "Do you want to submit?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+
+								 $.ajax({
+									url: "/{{ app_name }}/update/{{ pk }}/",
+									type: 'post',
+									data: formData,
+									success: function (data) {
+									   if (data.record_added) {
+											 swal("Done!", data.success_msg, "success");
+											$("#modal_body").html('');
+                                           window.location=window.location;
+										 }
+									   else{
+										$("#modal_body").html(data);
+									   }
+										HideAjaxLoader($('#ajax_loader_apply_leave'));
+									},
+									error: function(XMLHttpRequest, textStatus, errorThrown) {
+												$("#LeaveForm_errors").html("Oops! Something went wrong on the server. The details are below: "
+													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
+												HideAjaxLoader(ajax_loader_element);
+											},
+									cache: false,
+									contentType: false,
+									processData: false
+								 });
+								}
+							   });
+						 return false;
+					 });
 
 });
 </script>

@@ -2,6 +2,7 @@ from django import template
 from django.contrib.auth.models import Group
 from django.conf import settings
 import employee
+import ExitApp
 register = template.Library()
 
 
@@ -67,6 +68,17 @@ def choose_reportee(user):
 def IsManager(user):
     UserGroupsList = user.groups.all().values_list('name', flat=True)
     return settings.MANAGER in UserGroupsList
+
+@register.filter('DirectReportee')
+def DirectReportee(user, request):
+    mgrid = employee.models.Employee.objects.get(user_id=request.id)
+    reportee = employee.models.Employee.objects.filter(manager_id=mgrid, user_id=user)
+    if reportee:
+        reportee_flag = 1
+    else:
+        reportee_flag = 0
+
+    return reportee_flag
 
 
 @register.filter

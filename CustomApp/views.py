@@ -6,12 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from django.http import Http404
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer
 
 
-from models import get_app_detail, get_queryset, get_role, update_process, is_final
+from models import get_app_detail, get_queryset, get_role, update_process, is_final, get_app_name
 
 
 def process(request):
@@ -62,33 +61,111 @@ class ProcessUpdate(APIView):
         except:
             raise Http404
 
+    def get_process_detail(self, request, **kwargs):
+        config = get_app_detail(request, **kwargs)
+        process_details = list()
+        process_details.append(config.INITIAL)
+        transitions = config.PROCESS[config.INITIAL]['transitions']
+        while transitions[0]:
+            process_details.append(transitions[0])
+            transitions = config.PROCESS[transitions[0]]['transitions']
+        return process_details
+
     def get_object_detail(self, request, pk, **kwargs):
         try:
             config = get_app_detail(request, **kwargs)
-            model = config.PROCESS[config.INITIAL]['model']
-            activity = get_object_or_404(model, pk=pk)
-            transactions = config.PROCESS[config.PROCESS[config.INITIAL]['transitions'][0]]['model'].object.filter(
+            display_fields = config.DETAIL
+            modal = config.PROCESS[config.INITIAL]['model']
+            process = get_object_or_404(modal, pk=pk)
+            fields = [f.name for f in modal._meta.get_fields()]
+            fields = filter(lambda x: x in display_fields, fields)
+            fields_data = list()
+            for field in fields:
+                fields_data.append(getattr(process, field))
+            return zip(fields, fields_data)
+        except:
+            pass
 
-            )
+    def process_status_detail(self, request, pk, **kwargs):
+        try:
+            config = get_app_detail(request, **kwargs)
+            modal = config.PROCESS[config.INITIAL]['model']
+            process = get_object_or_404(modal, pk=pk)
+            current_role = process.role
+            action_taken_for_roles = list()
+            roles_action_detail = list()
+            transitions = config.PROCESS[config.INITIAL]['transitions']
+            roles_selected = config.PROCESS[config.INITIAL]['role']
+            process_role = config.PROCESS[transitions[0]]['role']
+            action_taken_for_roles.append(roles_selected)
+            roles_action_detail.append(config.PROCESS[config.INITIAL]['serializer'](process))
+            while transitions[0]:
+                roles_selected = config.PROCESS[transitions[0]]['role']
+                transitions = config.PROCESS[transitions[0]]['transitions']
+                if roles_selected == current_role:
+                    if roles_selected == "Final":
+                        process_role = "Complete"
+                    else:
+                        next_role = config.PROCESS[transitions[0]]['role']
+                        process_role = next_role
+
+                action_taken_for_roles.append(roles_selected)
+                transactions = config.PROCESS[config.PROCESS[config.INITIAL]['transitions'][0]]['serializer'].\
+                    transactions(pk, roles_selected)
+                roles_action_detail.append(transactions)
+            process_status = zip(action_taken_for_roles, roles_action_detail)
+
+            return [process_status, process_role]
         except:
             pass
 
     def get(self, request, pk, **kwargs):
+
+        app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
         activity = self.get_object(request, pk, **kwargs)
         serializer = process_serializer(activity)
-        return Response({'serializer': serializer, 'pk': pk})
+        process_detail = self.get_process_detail(request, **kwargs)
+        object_detail = self.get_object_detail(request, pk, **kwargs)
+        process_status_detail = self.process_status_detail(request, pk, **kwargs)
+        return Response({'serializer': serializer,
+                         'pk': pk,
+                         'process_detail': process_detail,
+                         'object_detail': object_detail,
+                         'process_status_detail': process_status_detail[0],
+                         'current_role': process_status_detail[1],
+                         'app_name': app_name})
 
     def post(self, request, pk, **kwargs):
+        app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
-        process_serializer = config.PROCESS[config.INITIAL]['serializer']
-        activity = self.get_object(request, pk, **kwargs)
-        serializer = process_serializer(activity, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'serializer': serializer, 'pk': pk})
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        transition = config.PROCESS[config.INITIAL]['transitions']
+        serializer = config.PROCESS[transition[0]]['serializer']
+        model = config.PROCESS[config.INITIAL]['model']
+        serialized_data = serializer(data=request.POST)
+        if serialized_data.is_valid():
+            process_request = model.objects.get(pk=pk)
+            action = serialized_data.validated_data['status']
+            role = get_role(config, action, process_request.role)
+            final = is_final(config, process_request.role)
+            update_process(process_request, role, action, final)
+            serialized_data.save_as(role, request, pk)
+        modal = config.PROCESS[config.INITIAL]['model']
+        display_fields = config.DETAIL
+        fields = [f.name for f in modal._meta.get_fields()]
+        fields = filter(lambda x: x in display_fields, fields)
+        fields.sort(reverse=True)
+        process_detail = self.get_process_detail(request, **kwargs)
+        object_detail = self.get_object_detail(request, pk, **kwargs)
+        process_status_detail = self.process_status_detail(request, pk, **kwargs)
+        return Response({'serializer': serializer,
+                         'pk': pk,
+                         'process_detail': process_detail,
+                         'object_detail': object_detail,
+                         'process_status_detail': process_status_detail[0],
+                         'current_role': process_status_detail[1],
+                         'app_name': app_name})
 
     def delete(self, request, pk, **kwargs):
         activity = self.get_object(request, pk, **kwargs)
@@ -101,40 +178,19 @@ class ApproveListView(APIView):
     template_name = 'templates/approval.html'
 
     def get(self, request, **kwargs):
+        app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
         transition = config.PROCESS[config.INITIAL]['transitions']
         serializer = config.PROCESS[transition[0]]['serializer']
         modal = config.PROCESS[config.INITIAL]['model']
+        transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
         queryset = get_queryset(request, **kwargs)
-        abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', 'transaction']
+        abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', transaction_modal]
         fields = [f.name for f in modal._meta.get_fields()]
         fields = filter(lambda x: x not in abstract_fields, fields)
         fields.sort(reverse=True)
         serializer = serializer()
-        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields})
-
-    def post(self, request, **kwargs):
-        pk = request.POST['id']
-        action = request.POST['action']
-        config = get_app_detail(request, **kwargs)
-        transition = config.PROCESS[config.INITIAL]['transitions']
-        serializer = config.PROCESS[transition[0]]['serializer']
-        model = config.PROCESS[config.INITIAL]['model']
-        serialized_data = serializer(data=request.POST)
-        if serialized_data.is_valid():
-            process_request = model.objects.get(pk=pk)
-            role = get_role(config, action, process_request.role)
-            final = is_final(config, process_request.role)
-            update_process(process_request, role, action, final)
-            serialized_data.save_as(role, request, pk, action)
-        modal = config.PROCESS[config.INITIAL]['model']
-        queryset = get_queryset(request, **kwargs)
-        # abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', 'transaction']
-        display_fields = config.DETAIL
-        fields = [f.name for f in modal._meta.gt_fields()]
-        fields = filter(lambda x: x in display_fields, fields)
-        fields.sort(reverse=True)
-        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields})
+        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name})
 
 
 

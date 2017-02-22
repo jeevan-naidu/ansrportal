@@ -1,0 +1,178 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}Candidate Exit Form{% endblock %}
+{% block pageTitle %}Candidate Exit Form{% endblock %}
+{% block content  %}
+     <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
+                  </div>
+
+
+
+<style>
+
+.autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+.exitbutton{margin-left: 5px;}
+ul{list-style: none;padding-left: 0px;}
+
+.yourlabs-autocomplete.autocomplete-light-widget{max-height: 200px;overflow: auto;}
+
+#id_requisition_number + .select2-container{min-width: 130px;}
+.select2-container .select2-selection--single{height: 30px;}
+.submit-holder .form-group{
+  margin-bottom: 0px;
+}
+.submit-holder{
+  margin: -25px;
+  margin-top: 20px;
+  margin-bottom: 0px !important;
+  background: #d4d4d4;
+  padding: 10px 15px;
+}
+.panel .panel-body{padding-bottom: 0px;padding-top: 35px}
+.form-group.has-error{margin-bottom: 5px}
+</style>
+        <div class="panel-body">
+            {% if messages %}
+         {% for message in messages %}
+            {% if message.tags == 'error' %}
+              <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                <i class="icon-cross"></i>
+                </button>
+                <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
+              </div>
+            {% else %}
+              <div class="alert alert-success">
+                <strong>Success!</strong> {{message}}
+               </div>
+                        {% endif%}
+
+                     {% endfor %}
+                   {% endif %}
+            <form id="exit-form" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
+                {% csrf_token %}
+
+              <div class="row">                
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
+                  <div class="col-sm-6 controls mxw-250">
+                      {{ form.start_date }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
+                  <div class="col-sm-6 controls mxw-250">
+                     {{ form.reason_dropdown }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>
+
+<br style="clear: both">
+
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Last Date<span class="mandatory-field"> *</span></label>
+                  <div class="col-sm-6 controls mxw-250">
+                      {{ form.last_date }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>
+                
+                <div class="form-group col-sm-6">
+                  <label class="col-sm-4 control-label" >Comments</label>
+                  <div class="col-sm-6 controls mxw-250">
+                      {{ form.comment }}
+                    <div class="help-block with-errors"></div> 
+                    </div>
+                </div>              
+              </div>
+
+              <div class="row submit-holder">
+                <div class="form-group col-sm-12">
+                    <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
+                </div>
+              </div>
+
+
+
+            </form>
+                    </div>
+
+                </div>
+              </div>
+
+            </div>
+
+        <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+      $('.input-group-addon').click(function(){
+        $(this).parent().find('input').focus();
+      });
+      $( "#revertresignation" ).click(function() {
+      swal({
+              title: "Reason To Revert!",
+              text: "please write your Reason:",
+              type: "input",
+              showCancelButton: true,
+              closeOnConfirm: false,
+              inputPlaceholder: "Write something"
+            }, function (inputValue) {
+              if (inputValue === false) return false;
+              else if (inputValue === "") {
+                swal.showInputError("You need to write something!");
+                return false
+              }
+              else if(inputValue != 'false')
+              {
+                 $.ajax({
+                      url : "/exitapp/revertresignation/",
+                      type : "GET",
+                      data : {'message':inputValue},
+                      success : function(json) {
+                      if (json == 'ResignationInfo matching query does not exist.')
+                      {
+                      swal.showInputError("You can not Revert your resignation without applying");
+                      }
+                      else
+                      {
+                      swal("Thanks!", "", "success");
+                      }
+                      }
+                    });
+              }
+        });
+        });
+
+
+      // Disabling text input in date fields
+
+      $('.date input').on('keypress', function(key) {
+          if(key.charCode < 48 || key.charCode > 57) return false;
+      });
+
+    });
+    </script>
+
+{% endblock %}
+

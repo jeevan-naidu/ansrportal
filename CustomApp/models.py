@@ -81,14 +81,14 @@ def can_approve(request, config):
 
 
 def get_role(config, status, current_role):
-    result_role = ""
+    result_role = config.PROCESS[config.INITIAL]['role']
     transition = config.PROCESS[config.INITIAL]['transitions']
-    role = config.PROCESS[config.INITIAL]['role']
+    role = result_role
     for i in range(20):
         if current_role == role:
             if status == "approve":
                 result_role = config.PROCESS[transition[0]]['role']
-            else:
+            elif transition[1]:
                 result_role = config.PROCESS[transition[1]]['role']
         if not transition[0]:
             break
@@ -132,6 +132,11 @@ def get_final_role(config):
             break
         transition = config.PROCESS[transition[0]]['transitions']
     return final_role
+
+
+def get_app_name(request, **kwargs):
+    app_title = get_request_params('app_name', request, **kwargs)
+    return app_title
 
 
 

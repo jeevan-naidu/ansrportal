@@ -27,11 +27,12 @@ PROCESS = {
         'method': manager,
         'serializer': TransactionSerializer,
         'transitions': [None, 'manager_approval']
-    }
+    },
+
 }
 
 INITIAL = 'reimburse_raise'
 
-DETAIL = ["title", "reason", "amount", "user"]
+DETAIL = ["title", "reason", "amount", "user", '']
 TITLE = 'Reimbursement for ANSR Source'
 DESCRIPTION = 'Reimbursement Process '
