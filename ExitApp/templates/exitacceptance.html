@@ -61,7 +61,7 @@ ul{list-style: none;padding-left: 0px;}
                         <input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class ="acceptance" id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
-                        <textarea {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class = "feedback" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
+                        <textarea {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class = "feedback" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm noresize">{{c.manager_comment}}</textarea>
                        </td>
                        <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}" type="checkbox" {% if c.rehire_manager == True%}checked{%endif%}></td>
                        <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
