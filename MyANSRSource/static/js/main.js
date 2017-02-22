@@ -92,7 +92,7 @@ app.calcCurRowChangeDate = function($tableEle) {
 
 app.getTaskChapter = function(selValue, currRow) {
     var total_val = currRow.find('.is_internal')
-    console.log(currRow.get(0).id)
+//    console.log(currRow.get(0).id)
     endDate = document.getElementsByName('enddate')[0].value;
     if (selValue) {
         $.ajax({
@@ -114,23 +114,31 @@ app.getTaskChapter = function(selValue, currRow) {
                 for (i = 0; i < dataLen; i++) {
                     options += '<option value="' + data[i].id + '"' + 'data-task-type="' + data[i].taskType + '">' + data[i].name + '</option>';
                 }
-                for (j = 12; j > 5; j--) {
+                for (j = 13; j > 6; j--) {
                     $(currRow[0].cells[j]).find('*').attr('disabled', false);
                     $(currRow[0].cells[j]).find("*").removeAttr("tabindex");
                 }
-                for (j = 12; j > 12 - len; j--) {
+                for (j = 13; j > 13 - len; j--) {
+
+
                     switch (j) {
+                        case 13:
+                            {
+                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
+                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+                                break;
+                            }
                         case 12:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
+
                                 break;
                             }
                         case 11:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-
                                 break;
                             }
                         case 10:
@@ -152,12 +160,6 @@ app.getTaskChapter = function(selValue, currRow) {
                                 break;
                             }
                         case 7:
-                            {
-                                $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
-                                $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
-                                break;
-                            }
-                        case 6:
                             {
                                 $(currRow[0].cells[j]).find("*").attr("disabled", "disabled");
                                 $(currRow[0].cells[j]).find("*").attr("tabindex", "-1");
@@ -248,15 +250,17 @@ app.setActive = function($elements, arr) {
             $element.find('option[value=' + arr[i] + ']').attr('selected', 'selected');
         }
     }
-};
+};//
+
+
 //var is_internal_id = 0;
 app.changeProject = function() {
 
-    app.billableSelectProject.on('change', function() {
+    app.billableSelectProject.on('change', function(e) {
 
        var mondayH = this.id.split('-');
     $(this).blur();
-    if(this.value != ''){
+//    if(this.value != ''){
           $.ajax({
                     url: '/myansrsource/get_internal',
                     dataType: 'json',
@@ -272,19 +276,27 @@ app.changeProject = function() {
                         mondayH = mondayH[0]+'-'+mondayH[1]+'-mondayH';
                         is_changed =true;
                         $('#'+mondayH).trigger('change');
+//                            change: primaryCb ,
+
+//                        console.log("mon trigger");
                         is_changed =false;
                     },
                     error: function(data) {
                         console.log('Error: ' + data);
                     }
                 });
-    }
+//    }
         var $this = $(this),
             $row = $this.closest('tr'),
             $projectUnitsElement = $row.find('.project-unit'),
             selectedValue = Number($this.val()),
             selectedProject;
         app.getTaskChapter(selectedValue, $row);
+
+ var tmp_id = this.id.split('-');
+    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+
 
 
         // get current project by id
@@ -296,7 +308,9 @@ app.changeProject = function() {
 
             $projectUnitsElement.text(app.curProjectUnitShort);
         }
-    });
+   e.stopImmediatePropagation();
+    return false; });
+
 };
 
 // Get particular object from array of object
@@ -355,7 +369,6 @@ app.firstTimeTotal = function() {
 
             grandTotal = 0,
             $grandTotal = $('.timesheet-grand-total');
-            console.log("$grandTotal"+$grandTotal);
         helper.forEach(bTask, function(item) {
             cRowHourTotal = 0;
             cRowQuestionTotal = 0;
@@ -367,6 +380,7 @@ app.firstTimeTotal = function() {
             cRowItemsLen = cRowHours.length;
             $cRowTQuestions = $cRow.find('.t-questions');
             $cRowTHours = $cRow.find('.t-hours');
+            hidden_hour = $cRow.find('.t-hours-hidden');
             $cRowBTHoursHidden = $cRow.find('.r-total-billable-hours');
             $cRowITHoursHidden = $cRow.find('.r-total-idle-hours');
 
@@ -379,6 +393,7 @@ app.firstTimeTotal = function() {
             }
             // To Dom
             $cRowTHours.text(cRowHourTotal.toFixed(2));
+            hidden_hour.val(cRowHourTotal.toFixed(2));
             $cRowTQuestions.text(cRowQuestionTotal.toFixed(2));
 
             if (cRowTask === 'I') {
@@ -464,7 +479,7 @@ app.firstTimeTotal = function() {
 
 
         $total.text((total).toFixed(2));
-        console.log("total_leave_hours"+total_leave_hours+"total"+total);
+//        console.log("total_leave_hours"+total_leave_hours+"total"+total);
         return total;
     };
 
@@ -874,10 +889,6 @@ app.getSum = function($elements, $outputElement) {
                     $(rowCountInitialElement).attr('value', rowCount);
                 }
 
-                if ($element.hasClass('is_internal'))
-                 {  console.log("is internal")
-                    $element.val('1');
-                 }
                 if (options.defaultValues.setZeroList) {
                     if (options.defaultValues.setZeroList.indexOf(index) !== -1) {
                         // For project unit not set zero
@@ -1157,10 +1168,9 @@ app.getSum = function($elements, $outputElement) {
                     content: popoverCon
                 });
 
-//                console.log("b4 pcb");
-                var primaryCb = function(e) { console.log(this.id);
+                var primaryCb = function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
+                    e.stopImmediatePropagation();
 
                     var $curDayBtn = $(this),
                         $curRow = $curDayBtn.closest('tr'),
@@ -1251,30 +1261,32 @@ app.getSum = function($elements, $outputElement) {
                         var cur_$totalHours = parseFloat($totalHours.text());
                         var prev_value_is_internal = parseInt($($is_internal).data('prev_value'));
                         var cur_value_is_internal = parseInt($($is_internal).val());
-                        console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
+//                        console.log("prev_value_is_internal"+prev_value_is_internal+'cur_value_is_internal'+cur_value_is_internal);
                         var calculated_total = parseFloat(hoursTemp);
                         var diff = Math.abs( parseFloat($totalHours.text())-(parseFloat(hoursTemp)))
                         diff = parseFloat(diff).toFixed(2);
                         var internal_total = parseFloat($('.total-internal-hours').text());
                         var external_total = parseFloat( $('.total-external-hours').text() );
                         if(is_changed === true) {
-                            if (prev_value_is_internal > cur_value_is_internal) {console.log("1->0");
-                                console.log("internal_total  "+internal_total+"calculated_total  "+calculated_total+"  external_total  "+external_total+"  $totalHours  "+cur_$totalHours);
-                                console.log("total"+external_total+calculated_total);
+                            if (prev_value_is_internal > cur_value_is_internal) {
+                            //console.log("1->0");
+//                                console.log("internal_total  "+internal_total+"calculated_total  "+calculated_total+"  external_total  "+external_total+"  $totalHours  "+cur_$totalHours);
+//                                console.log("total"+external_total+calculated_total);
                                     $('.total-internal-hours').text((internal_total-cur_$totalHours).toFixed(2));
 
 
                                 $('.total-external-hours').text((parseFloat(external_total+calculated_total)).toFixed(2));
                             }
                             //external - > internal
-                            else if (cur_value_is_internal > prev_value_is_internal) { console.log("0->1");
+                            else if (cur_value_is_internal > prev_value_is_internal) {
+//                            console.log("0->1");
                                     $('.total-internal-hours').text(parseFloat(internal_total+calculated_total).toFixed(2));
                                     $('.total-external-hours').text(parseFloat(external_total-cur_$totalHours).toFixed(2));
                             }
                         }
                         else {
                             if(cur_value_is_internal ) {
-                                 console.log("1-1-1");
+//                                 console.log("1-1-1");
                                 if(calculated_total > cur_$totalHours ) {
                                     var total_sum = parseFloat(internal_total)+ parseFloat(diff);
                                     $('.total-internal-hours').text(total_sum.toFixed(2))
@@ -1287,7 +1299,8 @@ app.getSum = function($elements, $outputElement) {
 
                             }
 
-                            else if(!(cur_value_is_internal )) { console.log("0-0-0");
+                            else if(!(cur_value_is_internal )) {
+//                            console.log("0-0-0");
                                 if(calculated_total > cur_$totalHours ) {
                                     var total_sum = parseFloat(external_total)+ parseFloat(diff);
                                     $('.total-external-hours').text(total_sum.toFixed(2))
@@ -1369,16 +1382,17 @@ app.getSum = function($elements, $outputElement) {
                         }
                     };
 
-                    $curQuestionsInput.on({
-                        keyup: inputToView,
-                        click: inputToView
-                    }, calculateTotal);
+//                    $curQuestionsInput.on({
+//                        keyup: inputToView,
+//                        click: inputToView
+//                    }, calculateTotal);
 
                     $curHoursInput.on({
                         change : inputToView,
                         keyup: inputToView,
-                        click: inputToView
-                    }, calculateTotal);
+                        click: inputToView,
+                    });
+
                 };
 
 
@@ -1388,8 +1402,6 @@ app.getSum = function($elements, $outputElement) {
                 });
                 $('.b-hours').on({
                     change: primaryCb ,
-//                    click: primaryCb ,
-                    oninput: primaryCb ,
                 });
 
 
@@ -1515,7 +1527,7 @@ app.workingDaysBetweenDates = function(startDate, endDate) {
         }
     }
 
-    console.log('holidayCount:' + holidayCount);
+//    console.log('holidayCount:' + holidayCount);
 
     return days - holidayCount;
 };
@@ -1715,7 +1727,7 @@ $.fn.getMemberHolidayList = function(options) {
                 }
             }
 
-            console.log(app.holidaysList);
+//            console.log(app.holidaysList);
         },
         error: function(data) {
             console.log("ERROR:  " + data);
@@ -1769,3 +1781,8 @@ $("[name$='project']").on('focus', function(){
     $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
 });
 is_changed =false;
+//$("[name$='project']").on('change', function(){
+//    var tmp_id = this.id.split('-');
+//    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
+//    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
+//});

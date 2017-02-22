@@ -22,6 +22,7 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
 .mr-15{margin-right: 15px;}
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
+.noresize{resize: none;}
 
 /* General Classes */
 
@@ -32,6 +33,15 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
   user-select: none;
 }
 
+.myansr-table{
+    border: 1px solid #f9f9f9;
+}
+.myansr-table thead{background: #464A4C;color: #fff}
+.myansr-table thead th{padding: 8px 15px !important;}
+.myansr-table td{vertical-align: middle !important;padding: 8px 15px !important;}
+.table-striped.myansr-table>tbody>tr:nth-of-type(even) {
+    background-color: #fff;
+}
 
 /* myansr mod */
 
@@ -54,6 +64,8 @@ a{color: #337ab7}
 .vd_mega-menu-wrapper .vd_mega-menu>.mega-ul>li.one-icon .mega-link:hover, .vd_mega-menu-wrapper .vd_mega-menu>.mega-ul>li.one-icon .mega-link.open{background-color: #f89c2c !important;color: #fff}
 
 .vd_navbar{background-color: #4a7973}
+
+.vd_panel-menu .popover{display: none !important;}
 
 .vd_title-section{padding-bottom: 9px}
 
@@ -368,7 +380,7 @@ span.book-count{font-weight: bold}
 
 .leave-report-table thead{border: 1px solid #464a4c;}
 .leave-report-table th{background-color: #464A4C !important;color: #fff;}
-
+#timesheet-approve-table_filter{display: none;}
 
 /* Exit App */
 
@@ -381,4 +393,3 @@ span.book-count{font-weight: bold}
 #acceptanceform textarea{max-height: 30px;}
 
 #dept_clearance_form .amountbox{max-width: 100px;}
-

@@ -25,6 +25,15 @@
     <div class="container-fluid">
         <div class="row">
 
+<style type="text/css">
+
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+</style>
+
+
             {% if messages %}
                 {% for message in messages %}
                     {% if message.tags %}
@@ -522,10 +531,11 @@
         $('#btn-ansr-orange').popover('show');
     	$('.remarks').attr('maxlength','');
 						var text_max = 500;
+						$('.btn btn-info btn-xs.remark').on('click',function(){
 						var text_length = $('.remarks').val().length;
 						var text_remaining = text_max - text_length;
 						$('#textarea_remaining').html(text_max + ' characters remaining');
-
+                });
 						$('.remarks').keyup(function() {
 							text_length = $(this).val().length;
 							text_remaining = text_max - text_length;

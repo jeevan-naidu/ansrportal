@@ -46,7 +46,11 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Name</th>
                             <th class="mw-ra">Acceptance</th>
                             <th class="">Feedback</th>
+<<<<<<< HEAD
                             <th class="mw-ra">Elligible for ReHire</th>
+=======
+                            <th class="mw-ra">Eligible for ReHire</th>
+>>>>>>> BUILD-20170224
                             <th class="">Backed Up</th>
                             <th class="">Last Date</th>
                             <th class="">Reason</th>
@@ -60,18 +64,30 @@ ul{list-style: none;padding-left: 0px;}
                         <input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class ="acceptance" id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
+<<<<<<< HEAD
                         <textarea {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class = "feedback" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm">{{c.manager_comment}}</textarea>
+=======
+                        <textarea {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class = "feedback noresize" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm noresize">{{c.manager_comment}}</textarea>
+>>>>>>> BUILD-20170224
                        </td>
                        <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}" type="checkbox" {% if c.rehire_manager == True%}checked{%endif%}></td>
                        <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
                        <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
+<<<<<<< HEAD
                          <input name="finaldate_{{c.User_id}}" data-resign-date="{{c.exit_revert_note |date:'o-m-d'}}"type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
+=======
+                         <input name="finaldate_{{c.User_id}}" data-resign-date="{{c.exit_revert_note |date:'o-m-d'}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
+>>>>>>> BUILD-20170224
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                          </div>
                        </td>
                        <td>{{c.emp_reason}}</td>
+<<<<<<< HEAD
                        <td><button type="button" class="btn btn-primary btn-sm resignation_acceptance" id ="">Save</button></td>
+=======
+                       <td><button type="button" class="btn btn-success btn-sm resignation_acceptance" id ="" {% if c.hr_accepted == True%} disabled{%endif%}>Save</button></td>
+>>>>>>> BUILD-20170224
                    </tr>
                             {%endif %}
                             {% endfor %}
@@ -101,6 +117,24 @@ ul{list-style: none;padding-left: 0px;}
                 });
             });
             });
+<<<<<<< HEAD
+=======
+            
+$('document').ready(function(){
+  // Date Validation
+
+  $('.resignation_acceptance').on('click', function(key) {
+        var start_date = $(this).parent().parent().find('.finaldate').attr('data-resign-date');
+        var end_date = $(this).parent().parent().find('.finaldate').val();
+
+        if(start_date > end_date){
+          swal("Last date should not be earlier than the exit date");
+        }
+
+      });
+  // ./ end of date validation
+}) // ./doc.ready  
+>>>>>>> BUILD-20170224
         </script>
                             {% csrf_token %}
                              </table>

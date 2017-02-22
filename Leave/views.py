@@ -148,16 +148,12 @@ class Dashboard(View):
         LeaveAdmin = False
         userCheck = False
         user_id = request.user.id
-        # leave_summary = LeaveSummary.objects.filter(user=user_id,
-        #                                             year=date.today().year).values('leave_type__leave_type',
-        #                                                                            'applied',
-        #                                                                            'approved',
-        #                                                                            'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                    year=2016).values('leave_type__leave_type',
+                                                    year=date.today().year).values('leave_type__leave_type',
                                                                                    'applied',
                                                                                    'approved',
                                                                                    'balance')
+
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
@@ -219,16 +215,12 @@ class Dashboard(View):
             LeaveAdmin = True
         elif  int(user_id) == int(request.user.id):
             userCheck = True
-        # leave_summary = LeaveSummary.objects.filter(user=user_id,
-        #                                           year=date.today().year).values('leave_type__leave_type',
-        #                                                                          'applied',
-        #                                                                          'approved',
-        #                                                                          'balance')
         leave_summary = LeaveSummary.objects.filter(user=user_id,
-                                                    year=2016).values('leave_type__leave_type',
-                                                                                   'applied',
-                                                                                   'approved',
-                                                                                   'balance')
+                                                  year=date.today().year).values('leave_type__leave_type',
+                                                                                 'applied',
+                                                                                 'approved',
+                                                                                 'balance')
+
         employeeDetail = Employee.objects.get(user_id = user_id)
         userDetail = User.objects.get(id = user_id)
         newuser = newJoineeValidation(user_id)
@@ -1055,6 +1047,7 @@ class LeaveManageView(LeaveListView):
                     leave_list = LeaveApplications.objects.filter(apply_to=apply_to,
                                                                   from_date__range=[from_date,
                                                                                     to_date], status='open')  # apply_to, date
+                    open_count = len(leave_list)
 
             except:
                 leave_list = None
@@ -1681,37 +1674,40 @@ def weekwisereport(month, userlist):
 
 
 def leavecheck(user, date):
+
     leaveapplied = LeaveApplications.objects.filter(user=user.id,
                                                     from_date__lte=date,
                                                     to_date__gte=date,
                                                     status__in=['open', 'approved']).exclude(
-        leave_type__in=[11, 13, 8, 14, 15])
+        leave_type__in=[11, 8, 14, 15])
     holiday = Holiday.objects.all().values('date')
-
-    if len(leaveapplied) > 1:
+    if not leaveapplied:
+        flag = 0
+    elif date.strftime("%A") in ("Saturday", "Sunday"):
+        flag = 0
+    elif date in [datedata['date'] for datedata in holiday]:
+        flag = 3
+    elif len(leaveapplied) > 1:
         flag = 2
-    elif leaveapplied and leaveapplied[0].from_date < date and leaveapplied[0].to_date > date:
+    elif leaveapplied[0].leave_type_id == 13:
+        flag = 4
+    elif leaveapplied[0].from_date < date and leaveapplied[0].to_date > date:
         flag = 2
-    elif leaveapplied and\
-                    leaveapplied[0].from_date == date and\
+    elif leaveapplied[0].from_date == date and\
                     leaveapplied[0].to_date > date and\
                     leaveapplied[0].from_session == 'session_first':
         flag = 2
-    elif leaveapplied and\
-                    leaveapplied[0].from_date < date and\
+    elif leaveapplied[0].from_date < date and\
                     leaveapplied[0].to_date == date and\
                     leaveapplied[0].to_session == 'session_second':
         flag = 2
-    elif leaveapplied and\
-                    leaveapplied[0].from_date == date and\
+    elif leaveapplied[0].from_date == date and\
                     leaveapplied[0].to_date == date and\
                     leaveapplied[0].from_session == 'session_first'and\
             leaveapplied[0].to_session == 'session_second':
         flag = 2
     elif leaveapplied:
         flag = 1
-    elif date in [datedata['date'] for datedata in holiday]:
-        flag = 3
     else:
         flag = 0
     return flag

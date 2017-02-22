@@ -109,11 +109,12 @@ class ExitFormAdd(View):
             initial_data = ResignationInfo.objects.get(User_id=request.user.id)
             resignation_date = Employee.objects.get(user_id=request.user.id)
             if initial_data:
-                context = {"form": ""}
+                context = {"form": "", "concent": ""}
                 form = UserExitForm(
                     initial={'start_date': resignation_date.resignation, 'reason_dropdown': initial_data.emp_reason,
                              'last_date': initial_data.last_date, 'comment': initial_data.reason_optional})
                 context["form"] = form
+                context["concent"] = initial_data.manager_accepted
                 return render(request, "userexit.html", context)
         except Exception as programmingerror:
             context = {"form": ""}

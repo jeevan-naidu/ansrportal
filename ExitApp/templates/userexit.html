@@ -68,7 +68,11 @@ ul{list-style: none;padding-left: 0px;}
             <form id="exit-form" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                 {% csrf_token %}
 
+<<<<<<< HEAD
               <div class="row">                
+=======
+              <div class="row">
+>>>>>>> BUILD-20170224
                 <div class="form-group col-sm-6">
                   <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
                   <div class="col-sm-6 controls mxw-250">
@@ -106,7 +110,7 @@ ul{list-style: none;padding-left: 0px;}
 
               <div class="row submit-holder">
                 <div class="form-group col-sm-12">
-                    <input type ="submit" value ="Submit" class="exitbutton btn btn-primary btn-sm pull-right">
+                    <input type ="submit" value ="Submit" {% if concent == True %} disabled{%endif%} class="exitbutton btn btn-success btn-sm pull-right">
                 </div>
               </div>
 
@@ -171,7 +175,45 @@ ul{list-style: none;padding-left: 0px;}
           if(key.charCode < 48 || key.charCode > 57) return false;
       });
 
+<<<<<<< HEAD
     });
+=======
+      // Date Validation
+
+      $('body').on('click', function(key) {
+            
+
+        if ($('#id_last_date').val() != '' ) {            
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+
+            if(dd<10) {
+                dd='0'+dd
+            } 
+
+            if(mm<10) {
+                mm='0'+mm
+            } 
+
+            today = mm+'/'+dd+'/'+yyyy;
+
+            var from_date = document.getElementById("id_start_date").value;
+            var to_date = document.getElementById("id_last_date").value;
+
+            if(from_date > to_date){
+              swal("Last date should not be earlier than the exit date");
+              document.getElementById("id_last_date").value = "";
+            }
+
+        }
+
+          });
+      // ./ end of date validation
+
+    }); // ./ doc.ready
+>>>>>>> BUILD-20170224
     </script>
 
 {% endblock %}

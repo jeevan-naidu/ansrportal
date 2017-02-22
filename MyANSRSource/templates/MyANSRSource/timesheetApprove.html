@@ -68,7 +68,7 @@ Approve Timesheet
 
 
 {% if ts_data_list_approved_false or ts_data_list_approved_true %}
-<table class="table table-striped" id="timesheet-approve-table">
+<table class="table table-striped myansr-table" id="timesheet-approve-table">
   <thead>
     <tr>
       <th>Employee Id</th>
@@ -105,7 +105,7 @@ Approve Timesheet
                           <div class="row">
                             <div class="col-sm-12">
                               <div class="form-group">
-                                <label class="col-sm-4 control-label">Feedback </label>
+                                <label class="col-sm-4 control-label">Enter Your Feedback</label>
                                 <div class="col-sm-7 controls">
                                   <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
                                 </div>
@@ -147,7 +147,7 @@ Approve Timesheet
 </td>
 
     <td class="menu-action">
-      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
+      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown" disabled>
         <i class="fa fa-comments-o"></i>
       </a>
     </td>
@@ -180,7 +180,7 @@ Approve Timesheet
                           <div class="row">
                             <div class="col-sm-12">
                               <div class="form-group">
-                                <label class="col-sm-4 control-label">Feedback </label>
+                                <label class="col-sm-4 control-label">Enter Your Feedback</label>
                                 <div class="col-sm-7 controls">
                                   <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
                                 </div>
@@ -205,7 +205,7 @@ Approve Timesheet
 </td>
 
     <td class="menu-action">
-      <a data-toggle="modal"  disabled data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
+      <a data-toggle="modal"  disabled data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown" disabled>
         <i class="fa fa-comments-o"></i>
       </a>
     </td>
@@ -376,8 +376,6 @@ var time_iterate = function(e){
 
   var time_obj = e;
 
-  // console.log(time_obj);
-
   $('.project-time-row').html('');
   $('.activity-time-row').html('');
 
@@ -390,17 +388,12 @@ var time_iterate = function(e){
   for (var time_key in time_obj['tsData']){
     if (time_obj['tsData'].hasOwnProperty(time_key)){
 
-      // Console log section
-
-/*      console.log(time_key);
-      console.log(time_obj['tsData'][time_key]);
-      console.log(time_obj.tsData[0]['id']);*/
 
 
       // Get length
 
       var obj_length = time_obj.tsData.length;
-      console.log('the project length is ' + obj_length);
+
 
       // Populate project row
 
@@ -426,12 +419,9 @@ var time_iterate = function(e){
   for (var time_key in time_obj['atData']){
     if (time_obj['atData'].hasOwnProperty(time_key)){
 
-      console.log(time_obj['atData'][0]);
-
       // Get length
 
       var obj_length = time_obj.atData.length;
-      console.log('activity length is ' + obj_length);
 
       // Populate project row
 
@@ -466,7 +456,6 @@ var time_iterate = function(e){
 
   for (var time_key in time_obj['total_list']){
     if (time_obj['total_list'].hasOwnProperty(time_key)){
-      console.log(time_obj.total_list[0]['friday_total']);
       $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
       $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
       $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
@@ -482,13 +471,34 @@ var time_iterate = function(e){
 
 } // ./time_iterate function
 
+var employeeTime = function(){
+   $('.employee').on('click', function()  {
 
+        // Enabling approve and reject checkboxes
+        $(this).parent().parent().find('a.menu-icon').removeAttr('disabled');
+        if ($(this).parent().parent().hasClass('approve-reject-options')) {
+          $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
+          $(this).parent().parent().find('label').removeAttr(' data-toggle data-placement data-original-title');
+        }
+
+        $.ajax({
+          url: '/myansrsource/timesheet/time_sheet_employee',
+          type: 'GET',
+          dataType :'json',
+          data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
+          success: function (data) {
+          time_iterate(data);
+          },
+
+        });
+  });  
+}
 
 $(document).ready(function() {
                 "use strict";
 
-            // $('#timesheet-approve-table').dataTable();
-        $("[data-toggle='tooltip']").tooltip();
+            $('#timesheet-approve-table').dataTable();
+            $("[data-toggle='tooltip']").tooltip();
 
             /* Toggle checkbox */
 
@@ -498,29 +508,16 @@ $(document).ready(function() {
               }
             })
 
+            // Firing once
+            employeeTime();
 
-             $('.employee').on('click', function()  { console.log("click");
 
-                  // Enabling approve and reject checkboxes
-                  console.log(this);
-                  if ($(this).parent().parent().hasClass('approve-reject-options')) {
-                    console.log(this)
-                    $(this).parent().parent().find('input[type="checkbox"]').removeAttr('disabled');
-                    $(this).parent().parent().find('label').removeAttr(' data-toggle data-placement data-original-title');
-                  }
-
-                  $.ajax({
-                    url: '/myansrsource/timesheet/time_sheet_employee',
-                    type: 'GET',
-                    dataType :'json',
-                    data: {"user_id":this.getAttribute('data-value') ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
-                    success: function (data) {
-                    console.log(JSON.stringify(data));
-                    time_iterate(data);
-                    },
-
-                  });
+            // firing after pagination change
+            $('#timesheet-approve-table').on('draw.dt', function() {
+              employeeTime();
             });
+
+
 
         jQuery('.approve , .reject ').click(function(e){
             var class_name = this.value;
@@ -543,16 +540,31 @@ $(document).ready(function() {
         });
 
       $('#reminder_mail').on('click', function()  {
-              $.ajax({
-                url: '/myansrsource/timesheet/send_reminder_mail',
-                type: 'GET',
-                dataType :'json',
-                data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
-                success: function (data) {
-                    swal("Voila", "Reminder Mail is sent Successfully!", "success")
-                },
 
-              });
+                  swal({   title: "Send Reminder?",
+                    text: "Press YES to send a reminder mail",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "YES",
+                    cancelButtonText: "NO",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                    },
+                    function(isConfirm) {
+                      if (isConfirm) {
+                        $.ajax({
+                          url: '/myansrsource/timesheet/send_reminder_mail',
+                          type: 'GET',
+                          dataType :'json',
+                          data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
+                          success: function (data) {
+                              swal("Ok", "Reminder Mail is sent Successfully!", "success")
+                          },
+
+                        });
+                      }});
+
       });
 
 
