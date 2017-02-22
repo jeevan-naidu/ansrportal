@@ -22,6 +22,7 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
 .mr-15{margin-right: 15px;}
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
+.modal-lg.modal-xl{width: 1024px;}
 
 /* General Classes */
 
