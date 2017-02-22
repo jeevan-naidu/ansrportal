@@ -71,7 +71,7 @@ ul{list-style: none;padding-left: 0px;}
                          </div>
                        </td>
                        <td>{{c.emp_reason}}</td>
-                       <td><button type="button" class="btn btn-success btn-sm resignation_acceptance" id ="">Save</button></td>
+                       <td><button type="button" class="btn btn-success btn-sm resignation_acceptance" id ="" {% if c.hr_accepted == True%} disabled{%endif%}>Save</button></td>
                    </tr>
                             {%endif %}
                             {% endfor %}

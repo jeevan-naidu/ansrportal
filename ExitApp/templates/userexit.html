@@ -68,7 +68,7 @@ ul{list-style: none;padding-left: 0px;}
             <form id="exit-form" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                 {% csrf_token %}
 
-              <div class="row">                
+              <div class="row">
                 <div class="form-group col-sm-6">
                   <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
                   <div class="col-sm-6 controls mxw-250">
@@ -106,7 +106,7 @@ ul{list-style: none;padding-left: 0px;}
 
               <div class="row submit-holder">
                 <div class="form-group col-sm-12">
-                    <input type ="submit" value ="Submit" class="exitbutton btn btn-success btn-sm pull-right">
+                    <input type ="submit" value ="Submit" {% if concent == True %} disabled{%endif%} class="exitbutton btn btn-success btn-sm pull-right">
                 </div>
               </div>
 
