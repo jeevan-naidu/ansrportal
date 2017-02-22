@@ -191,9 +191,9 @@ class ResignationAcceptance(View):
         allresignee = ResignationInfo.objects.filter(User__in=filterdata).exclude(User_id=request.user.id)
         context['resigneedata'] = []
         for data in allresignee:
-            emloyee_resignation_data = Employee.objects.get(user_id=data.User_id)
-            data.exit_revert_note = emloyee_resignation_data.resignation
-            context['resigneedata'].append(data)
+             emloyee_resignation_data= Employee.objects.get(user_id=data.User_id)
+             data.exit_revert_note = emloyee_resignation_data.resignation
+             context['resigneedata'].append(data)
         return render(request, "exitacceptance.html", context)
 
 
@@ -203,9 +203,10 @@ class ResignationAcceptanceHR(View):
         allresignee = ResignationInfo.objects.filter(~Q(User_id=request.user.id))
         context['resigneedata'] = []
         for data in allresignee:
-            emloyee_resignation_data = Employee.objects.get(user_id=data.User_id)
-            data.exit_revert_note = emloyee_resignation_data.resignation
-            context['resigneedata'].append(data)
+             emloyee_resignation_data= Employee.objects.get(user_id=data.User_id)
+             data.exit_revert_note = emloyee_resignation_data.resignation
+             context['resigneedata'].append(data)
+        return render(request, "hracceptance.html", context)
 
 
 class ClearanceFormView(View):
