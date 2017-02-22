@@ -46,7 +46,7 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Name</th>
                             <th class="mw-ra">Acceptance</th>
                             <th class="">Feedback</th>
-                            <th class="mw-ra">Elligible for ReHire</th>
+                            <th class="mw-ra">Eligible for ReHire</th>
                             <th class="">Backed Up</th>
                             <th class="">Last Date</th>
                             <th class="">Reason</th>
@@ -101,6 +101,21 @@ ul{list-style: none;padding-left: 0px;}
                 });
             });
             });
+            
+$('document').ready(function(){
+  // Date Validation
+
+  $('.resignation_acceptance').on('click', function(key) {
+        var start_date = $(this).parent().parent().find('.finaldate').attr('data-resign-date');
+        var end_date = $(this).parent().parent().find('.finaldate').val();
+
+        if(start_date > end_date){
+          swal("Last date should not be earlier than the exit date");
+        }
+
+      });
+  // ./ end of date validation
+}) // ./doc.ready  
         </script>
                             {% csrf_token %}
                              </table>
