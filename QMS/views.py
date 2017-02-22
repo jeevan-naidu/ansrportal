@@ -665,7 +665,7 @@ class DashboardView(ListView):
                                                                          filter(user=self.request.user).
                                                                          values('project')).\
             values('id', 'project', 'project__projectId', 'project__name').\
-            annotate(chapter_count=Count('project__book__chapter'))
+            annotate(chapter_count=Count('project__book__chapter', 'template_id'))
         # print context['projects']
 
         return context
