@@ -329,7 +329,7 @@ class AssessmentView(TemplateView):
         score = {}
         tmp_weight = {}
         defect_density = {}
-        # print severity_count
+        print severity_count
         s = SeverityLevelMaster.objects.filter(is_active=True)
         for k, v in severity_count.iteritems():
             severity_level_obj = s.get(id=int(k))
@@ -658,110 +658,10 @@ class DashboardView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
-        # print "user", self.request.user
-
         # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
         context['projects'] = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
                                                                          filter(user=self.request.user).
                                                                          values('project')).\
-            values('id', 'project', 'project__projectId', 'project__name').\
-            annotate(chapter_count=Count('project__book__chapter', 'template_id'))
-        # print context['projects']
-
+            values('id', 'project', 'project__projectId', 'project__name', 'template_id').\
+            annotate(chapter_count=Count('project__book__chapter'))
         return context
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     # values('QA_sheet_header__project__name', 'QA_sheet_header__project__customer').annotate(Count('QA_sheet_header__project__customer'))
-        # customers =  ProjectManager.objects.filter(user=self.request.user).values('project__customer__name')
-        # print customers
-        # cust_data = {}
-        # cust_list = []
-        # tmp = {}
-        # for d in customers:
-        #    tmp[d.name] =
-        #     for k,v in d.iteritems():
-        #         if k is 'project__customer__name':
-        #             cust_data[k] = {}
-        #
-        #         cust_list.append(cust_data.copy())
-        #     cust_data.clear()
-        # import json
-        # print json.dumps(cust_list)
-        # print "dict",tmp
-        #
-        #
-        # for k, v in customers.iteritems():
-        #     cust_data[k] = v
-        #     cust_list.append(cust_data.copy())
-        # cust_data.clear()
-        # print cust_list
-        # [{'project': 886L, 'project__customer': 19L}, {'project': 942L, 'project__customer': 19L},
-        #  {'project': 944L, 'project__customer': 19L}, {'project': 1071L, 'project__customer': 19L},
-        #  {'project': 757L, 'project__customer': 19L}, {'project': 1085L, 'project__customer': 19L},
-        #  {'project': 1121L, 'project__customer': 19L}, {'project': 1249L, 'project__customer': 19L},
-        #  {'project': 1487L, 'project__customer': 19L}, {'project': 1830L, 'project__customer': 19L},
-        #  {'project': 1960L, 'project__customer': 19L}]
-
-        # s=  Project.objects.filter(
-        #         #closed=False,
-        #         endDate__gte=enddate,
-        #         #endDate__gte=datetime.date.today(),
-        #         id__in=ProjectTeamMember.objects.filter(
-        #             Q(member=self.request.user) |
-        #             Q(project__projectManager=self.request.user)
-        #         ).values('project_id')
-        #     ).order_by('customer_id')
-        # (1L, 1960L, datetime.date(2017, 3, 31), 2, 2)
-        # (2L, 1960L, datetime.date(2017, 3, 31), 1, 1)
-        # s = {}
-        # tmp = {}
-        # print s
-        # for k in s:
-        #     for key,value in  k.iteritems():
-        #         if key is 'QA_sheet_header__project__name':
-        #             tmp[value] =
-            # if 'QA_sheet_header__project' in s:
-            #     print True
-            # else : print False
-        #     print k['QA_sheet_header__project__endDate']  # values(
-        # 'defect_severity_level', 'QA_sheet_header__project', 'QA_sheet_header__project__endDate').\
-        # print s.query
-
-        # [{'defect_severity_level': 1L, 'QA_sheet_header__project__count': 2, 'defect_severity_level__count': 2,
-        #   'QA_sheet_header__project__endDate': datetime.date(2017, 3, 31), 'QA_sheet_header__project': 1960L},
-        #  {'defect_severity_level': 2L, 'QA_sheet_header__project__count': 1, 'defect_severity_level__count': 1,
-        #   'QA_sheet_header__project__endDate': datetime.date(2017, 3, 31), 'QA_sheet_header__project': 1960L},
-        #  {'defect_severity_level': 1L, 'QA_sheet_header__project__count': 1, 'defect_severity_level__count': 1,
-        #   'QA_sheet_header__project__endDate': datetime.date(2016, 12, 31), 'QA_sheet_header__project': 1487L},
-        #  {'defect_severity_level': 2L, 'QA_sheet_header__project__count': 1, 'defect_severity_level__count': 1,
-        #   'QA_sheet_header__project__endDate': datetime.date(2016, 12, 31), 'QA_sheet_header__project': 1487L}]
-
-        # # form = BaseAssessmentTemplateForm()
-        # # context['form'] = form
-        # context['review_group'] = get_review_group()
-        # context

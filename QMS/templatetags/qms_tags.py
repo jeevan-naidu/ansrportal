@@ -64,13 +64,12 @@ def get_fixed_status(id, val):
     return s
 
 
-@register.filter('get_severity_count')
-def get_count(project, name):
+@register.simple_tag
+def get_severity_count(project, name, template_id):
     s = 0
     try:
-        project_template_process = ProjectTemplateProcessModel.objects.get(project=project)
         severity_level_obj = SeverityLevelMaster.objects.get(name__icontains=name)
-        obj = DefectSeverityLevel.objects.filter(template_id=project_template_process.template_id,
+        obj = DefectSeverityLevel.objects.filter(template_id=template_id,
                                                  severity_level=severity_level_obj)
         review_report = ReviewReport.objects.filter(defect_severity_level__in=obj,
                                                     QA_sheet_header=QASheetHeader.objects.filter(project=project)[0]).\

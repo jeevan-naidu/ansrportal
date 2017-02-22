@@ -53,9 +53,9 @@
                             <td>{{request.user}}</td>
                              <td>{{obj.chapter_count}}</td>
                           <td>
-                            <span class="defect-span defect-s1">{{obj.project|get_severity_count:"s1" }}</span>
-                            <span class="defect-span defect-s2">{{obj.project|get_severity_count:"s2" }}</span>
-                            <span class="defect-span defect-s3">{{obj.project|get_severity_count:"s3" }}</span>
+                            <span class="defect-span defect-s1">{% get_severity_count obj.project "s1" obj.template_id %}</span>
+                            <span class="defect-span defect-s2">{% get_severity_count obj.project "s2" obj.template_id %}</span>
+                            <span class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id %}</span>
                           </td>
                           <td class="center">{{obj.project|get_question_count}}</td>
                           <td class="center">Lorem Ipsum</td>
