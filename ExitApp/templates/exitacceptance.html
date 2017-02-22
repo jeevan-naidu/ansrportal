@@ -67,7 +67,7 @@ ul{list-style: none;padding-left: 0px;}
                        <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
                        <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
-                         <input name="finaldate_{{c.User_id}}" data-resign-date='2017-02-21' type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
+                         <input name="finaldate_{{c.User_id}}" data-resign-date="{{c.exit_revert_note |date:'o-m-d'}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                          </div>
                        </td>

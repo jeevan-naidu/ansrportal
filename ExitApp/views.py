@@ -189,11 +189,11 @@ class ResignationAcceptance(View):
         for value in reportee:
             filterdata.append(value.user.id)
         allresignee = ResignationInfo.objects.filter(User__in=filterdata).exclude(User_id=request.user.id)
-        for id in allresignee:
-            resignationdate.append(id.User_id)
-        resigndate = Employee.objects.filter(user__in=resignationdate)
-        context['resigneedata'] = allresignee
-        context['date'] = resigndate
+        context['resigneedata'] = []
+        for data in allresignee:
+            emloyee_resignation_data = Employee.objects.get(user_id=data.User_id)
+            data.exit_revert_note = emloyee_resignation_data.resignation
+            context['resigneedata'].append(data)
         return render(request, "exitacceptance.html", context)
 
 
@@ -201,12 +201,12 @@ class ResignationAcceptanceHR(View):
     def get(self, request):
         context = {"form": "", "data": ""}
         allresignee = ResignationInfo.objects.filter(~Q(User_id=request.user.id))
-        resignationdate = []
-        for id in allresignee:
-            resignationdate.append(id.User_id)
-        resigndate = Employee.objects.filter(user__in=resignationdate)
-        context['resigneedata'] = allresignee
-        context['date'] = resigndate
+        context['resigneedata'] = []
+        for data in allresignee:
+            emloyee_resignation_data = Employee.objects.get(user_id=data.User_id)
+            data.exit_revert_note = emloyee_resignation_data.resignation
+            context['resigneedata'].append(data)
+
         return render(request, "hracceptance.html", context)
 
 
