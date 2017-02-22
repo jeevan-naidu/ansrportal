@@ -207,8 +207,6 @@ class ResignationAcceptanceHR(View):
             data.exit_revert_note = emloyee_resignation_data.resignation
             context['resigneedata'].append(data)
 
-        return render(request, "hracceptance.html", context)
-
 
 class ClearanceFormView(View):
     def get(self, request):
