@@ -14,13 +14,6 @@
 
             <div class="row" id="form-basic">
               <div class="col-md-12">
-<!--                 <div class="panel widget"> -->
-<!--                   <div class="panel-heading vd_bg-grey">
-                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
-                  </div> -->
-
-
-
 <style>
     .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
@@ -40,9 +33,9 @@ ul{list-style: none;padding-left: 0px;}
 		  </tr>
     </thead>
 {% for c in approved_candidate %}
-      {% if c.hr_accepted == True and c.manager_accepted == True %}
+      {% if c.hr_accepted == True and c.manager_accepted == True and c.exit_interview_notes == None%}
       <tr>
-        <td>{{c.id}}</td>
+        <td>{{forloop.counter}}</td>
         <td>{{c}}</td>
         <td>{{c.last_date_accepted | date:"M d, Y"}}</td>
         <td>
