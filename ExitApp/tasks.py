@@ -19,7 +19,7 @@ class ExitEmailSendTask(Task):
 
         mail_obj = EmailMessage('Employee Resignation Request',
                                 msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email, manager_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                cc=[''])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -33,14 +33,15 @@ class ExitEmailSendTask(Task):
 
 
 class PostAcceptedMailMGR(Task):
-    def run(self, username, user_email, laste_date_accepted, manager_email):
+    def run(self, username, user_email, laste_date_accepted, manager_email, feedback):
         msg_html = render_to_string('email_templates/acceptence_email.html',
                                     {'registered_by': username,
-                                    'last_date_accepted': laste_date_accepted, })
+                                    'last_date_accepted': laste_date_accepted,
+                                     'feedback': feedback})
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email, manager_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                msg_html, settings.EMAIL_HOST_USER, [user_email, manager_email],
+                                cc=[''])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -54,14 +55,15 @@ class PostAcceptedMailMGR(Task):
 
 
 class PostAcceptedMailHR(Task):
-    def run(self, username, user_email, laste_date_accepted, ):
+    def run(self, username, user_email, laste_date_accepted, feedback):
         msg_html = render_to_string('email_templates/acceptence_emailhr.html',
                                     {'registered_by': username,
-                                    'last_date_accepted': laste_date_accepted, })
+                                    'last_date_accepted': laste_date_accepted,
+                                     'feedback': feedback})
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                msg_html, settings.EMAIL_HOST_USER, [user_email],
+                                cc=[''])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -80,7 +82,7 @@ class LibraryClearanceMail(Task):
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
+                                msg_html, settings.EMAIL_HOST_USER, [user_email],
                                 cc=[])
 
         mail_obj.content_subtype = 'html'
@@ -100,7 +102,7 @@ class AdayBeforeEmail(Task):
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage(username + ' Last day',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
+                                msg_html, settings.EMAIL_HOST_USER, [user_email],
                                 cc=[])
 
         mail_obj.content_subtype = 'html'
@@ -120,8 +122,8 @@ class FinanceClearanceMail(Task):
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                msg_html, settings.EMAIL_HOST_USER, [user_email],
+                                cc=[])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -140,8 +142,8 @@ class AdminClearanceMail(Task):
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                msg_html, settings.EMAIL_HOST_USER, [user_email],
+                                cc=[])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -160,8 +162,8 @@ class FacilityClearanceMail(Task):
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                msg_html, settings.EMAIL_HOST_USER, [ user_email],
+                                cc=[])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
@@ -180,7 +182,7 @@ class MGRClearanceMail(Task):
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email,
+                                msg_html, settings.EMAIL_HOST_USER, [ user_email,
                                                                      mgr_email],
                                 cc=[''])
 
@@ -201,8 +203,8 @@ class HRClearanceMail(Task):
                                     {'registered_by': username, })
 
         mail_obj = EmailMessage('Resignation Acceptance',
-                                msg_html, settings.EMAIL_HOST_USER, ['pupul.ranjan@ansrsource.com', user_email],
-                                cc=['balamurugan.rs@ansrsource.com'])
+                                msg_html, settings.EMAIL_HOST_USER, [ user_email],
+                                cc=[])
 
         mail_obj.content_subtype = 'html'
         email_status = mail_obj.send()
