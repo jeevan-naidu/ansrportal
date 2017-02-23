@@ -2500,10 +2500,8 @@ def saveProject(request):
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
-            startDate = datetime.fromtimestamp(
-                int(request.POST.get('startDate'))).date()
-            endDate = datetime.fromtimestamp(
-                int(request.POST.get('endDate'))).date()
+            startDate = request.session['PStartDate']
+            endDate = request.session['PEndDate']
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')

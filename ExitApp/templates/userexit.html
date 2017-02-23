@@ -67,12 +67,7 @@ ul{list-style: none;padding-left: 0px;}
                    {% endif %}
             <form id="exit-form" class="form-horizontal" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">
                 {% csrf_token %}
-
-<<<<<<< HEAD
-              <div class="row">                
-=======
               <div class="row">
->>>>>>> BUILD-20170224
                 <div class="form-group col-sm-6">
                   <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
                   <div class="col-sm-6 controls mxw-250">
@@ -107,13 +102,15 @@ ul{list-style: none;padding-left: 0px;}
                     </div>
                 </div>              
               </div>
-
+ {% if concent == False %}
               <div class="row submit-holder">
                 <div class="form-group col-sm-12">
-                    <input type ="submit" value ="Submit" {% if concent == True %} disabled{%endif%} class="exitbutton btn btn-success btn-sm pull-right">
+
+                        <input type ="submit" value ="Submit" class="exitbutton btn btn-success btn-sm pull-right">
+
                 </div>
               </div>
-
+ {% endif %}
 
 
             </form>
@@ -175,9 +172,7 @@ ul{list-style: none;padding-left: 0px;}
           if(key.charCode < 48 || key.charCode > 57) return false;
       });
 
-<<<<<<< HEAD
     });
-=======
       // Date Validation
 
       $('body').on('click', function(key) {
@@ -212,8 +207,7 @@ ul{list-style: none;padding-left: 0px;}
           });
       // ./ end of date validation
 
-    }); // ./ doc.ready
->>>>>>> BUILD-20170224
+    });
     </script>
 
 {% endblock %}

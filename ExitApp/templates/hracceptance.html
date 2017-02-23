@@ -45,11 +45,7 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Name</th>
                             <th class="mw-ra">Acceptance</th>
                             <th class="">Feedback</th>
-<<<<<<< HEAD
-                            <th class="mw-ra">Elligible for ReHire</th>
-=======
                             <th class="mw-ra">Eligible for ReHire</th>
->>>>>>> BUILD-20170224
                             <th class="">Last Date</th>
                             <th class="">Reason</th>
                             <th class="">Action</th>
@@ -59,17 +55,10 @@ ul{list-style: none;padding-left: 0px;}
                    <tr>
                        <td>{{c}}<input class="userid" type="hidden" value = "{{c.User_id}}"/></td>
                        <td>
-<<<<<<< HEAD
-                        <input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrconcent"id="hrconcent_{{c.User_id}}" name="hrconcent_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
-                       </td>
-                       <td>
-                        <textarea {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} id="feedbackhr_{{c.User_id}}" maxlength="1000" name="feedbackhr_{{c.User_id}}" class="form-control input-sm feedbackhr">{{c.hr_comment}}</textarea>
-=======
                         <input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrconcent" id="hrconcent_{{c.User_id}}" name="hrconcent_{{c.User_id}}" type="checkbox" {% if c.hr_accepted == True%}checked{%endif%}>
                        </td>
                        <td>
                         <textarea {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} id="feedbackhr_{{c.User_id}}" maxlength="1000" name="feedbackhr_{{c.User_id}}" class="form-control input-sm feedbackhr noresize">{{c.hr_comment}}</textarea>
->>>>>>> BUILD-20170224
                        </td>
                        <td><input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrrehire" id="hrrehire_{{c.User_id}}" name="hrrehire_{{c.User_id}}" type="checkbox" {% if c.rehire_hr == True%}checked{%endif%}></td>
 
@@ -80,11 +69,7 @@ ul{list-style: none;padding-left: 0px;}
                          </div>
                        </td>
                        <td>{{c.emp_reason}}</td>
-<<<<<<< HEAD
-                       <td><button type="button" class="btn btn-primary btn-sm resignation_acceptance" id ="">Save</button></td>
-=======
                        <td><button type="button" class="btn btn-success btn-sm resignation_acceptance" id ="">Save</button></td>
->>>>>>> BUILD-20170224
                    </tr>
                             {%endif %}
                             {% endfor %}
@@ -95,6 +80,20 @@ ul{list-style: none;padding-left: 0px;}
             });
             $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
                $('.resignation_acceptance').on('click', function(){
+
+        var start_date = $(this).parent().parent().find('.finaldate').attr('data-resign-date');
+        var end_date = $(this).parent().parent().find('.finaldate').val();
+
+        if(start_date > end_date){
+          // swal("Last date should not be earlier than the resignation date ( " + start_date + " )");
+          swal(
+            'Resignation date : ' + start_date,
+            'Last date should not be earlier than the resignation date',
+            'error'
+          )
+        }else{
+
+
                   hr_concent = $(this).parent().parent().find('.hrconcent').val();
                   hr_feedback = $(this).parent().parent().find('.feedbackhr').val();
                   hr_rehire = $(this).parent().parent().find('.hrrehire').val();
@@ -114,26 +113,10 @@ ul{list-style: none;padding-left: 0px;}
                             }
                             }
                             });
+}
+
                 });
                 });
-<<<<<<< HEAD
-=======
-            
-$('document').ready(function(){
-  // Date Validation
-
-  $('.resignation_acceptance').on('click', function(key) {
-        var start_date = $(this).parent().parent().find('.finaldate').attr('data-resign-date');
-        var end_date = $(this).parent().parent().find('.finaldate').val();
-
-        if(start_date > end_date){
-          swal("Last date should not be earlier than the exit date");
-        }
-
-      });
-  // ./ end of date validation
-}) // ./doc.ready  
->>>>>>> BUILD-20170224
         </script>
                     {% csrf_token %}
                              </table>
