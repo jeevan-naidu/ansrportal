@@ -21,6 +21,5 @@ PROCESS_STATUS = (
 )
 WORKFLOW_APPS = [
     'Reimburse',
-    'leave_request',
     'Invoice'
 ]
