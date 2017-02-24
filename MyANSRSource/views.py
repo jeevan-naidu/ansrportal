@@ -2494,6 +2494,17 @@ def saveProject(request):
 
     if request.method == 'POST':
         try:
+            #: code to check not more than 3 PM per project
+            pm = []
+            for eachId in eval(request.POST.get('pm')):
+                pm.append(eachId)
+            pm_count = len(pm)
+            if pm_count > 3:
+                messages.error(request, "OOPS can't select more than 3 ProjectManger")
+                return render(
+                    request,
+                    'MyANSRSource/projectCreationFailure.html',
+                    {})
             pr = Project()
             pr.name = request.POST.get('name')
             pType = projectType.objects.get(
