@@ -407,7 +407,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
             ),
-            'projectManager': autocomplete.ModelSelect2Multiple(),
+            'projectManager': autocomplete.ModelSelect2Multiple(attrs={'data-placeholder': 'Type Delievery CO-ordinater...'} ),
 
         }
 
@@ -424,7 +424,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         self.fields['projectFinType'].widget.attrs['class'] = \
             "form-control"
         self.fields['projectManager'].widget.attrs['class'] = \
-            "form-control"
+            "form-control coordinatorcount"
         self.fields['bu'].widget.attrs['class'] = \
             "form-control"
         self.fields['customer'].widget.attrs['class'] = \

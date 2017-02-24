@@ -63,7 +63,22 @@
 
     }());
 
-   ;
+    $(document).ready(function(){
+        $('.coordinatorcount').on('change', function(e){
+            var selected = $(e.target).val();
+            if (selected.length >3)
+                {
+                    $('.btn.btn-info.pull-right').prop('disabled', true);
+                    swal("can't select More than 3 Project Manager")
+                }
+            else {
+                    $('.btn.btn-info.pull-right').prop('disabled', false);
+                  }
+
+        })
+
+    });
+
 
 </script>
 {% endblock %}{% endblock %}
