@@ -52,6 +52,7 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Action</th>
                           </thead>
                    {% for c in resigneedata %}
+
                      {%  if c.exit_revert_flag == False and c.exit_interview_notes == None %}
                    <tr>
                        <td>{{c}}<input class="userid" type="hidden" value = "{{c.User_id}}"/></td>
@@ -61,8 +62,8 @@ ul{list-style: none;padding-left: 0px;}
                        <td>
                         <textarea {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class = "feedback noresize" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm noresize">{{c.manager_comment}}</textarea>
                        </td>
-                       <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}"  type="checkbox" {% if c.rehire_manager == True%}checked{%endif%} {% if c.rehire_manager == False%} value="" {%endif%}></td>
-                       <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}"  type="checkbox" {% if c.backup_taken == True%}checked{%endif%} {% if c.backup_taken == False%} value ="" {%endif%}></td>
+                       <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}"  type="checkbox" {% if c.rehire_manager == True%}checked{%endif%} {% if c.rehire_manager == None or c.rehire_manager == False%} value="" {%endif%}></td>
+                       <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}"  type="checkbox" {% if c.backup_taken == True%}checked{%endif%} {% if c.backup_taken == None or c.backup_taken == False%} value ="" {%endif%}></td>
                        <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
                          <input name="finaldate_{{c.User_id}}" data-resign-date="{{c.exit_revert_note |date:'o-m-d'}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />

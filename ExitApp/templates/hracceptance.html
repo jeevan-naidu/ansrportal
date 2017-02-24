@@ -60,7 +60,7 @@ ul{list-style: none;padding-left: 0px;}
                        <td>
                         <textarea {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} id="feedbackhr_{{c.User_id}}" maxlength="1000" name="feedbackhr_{{c.User_id}}" class="form-control input-sm feedbackhr noresize">{{c.hr_comment}}</textarea>
                        </td>
-                       <td><input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrrehire" id="hrrehire_{{c.User_id}}" name="hrrehire_{{c.User_id}}"  type="checkbox" {% if c.rehire_hr == True%}checked{%endif%} {% if c.rehire_hr == False%} value = "" {%endif%}></td>
+                       <td><input  {% if c.User_id|DirectReportee:user == 1 %} disabled {%endif%} class="hrrehire" id="hrrehire_{{c.User_id}}" name="hrrehire_{{c.User_id}}"  type="checkbox" {% if c.rehire_hr == True%}checked{%endif%} {% if c.rehire_hr == False or c.rehire_hr == None%} value = "" {%endif%}></td>
 
                         <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
