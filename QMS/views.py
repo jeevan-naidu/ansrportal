@@ -54,19 +54,19 @@ class ChooseTabs(FormView):
 
         for k, v in order.iteritems():
             order_id = k.split('_')
-            print v
+            # print v
             if v:
                 v = int(v)
             if v and v != 0:
                 order_number[order_id[1]] = v
             else:
-                print 'else'
+                # print 'else'
                 messages.error(self.request, 'Order Number Cannot Be 0')
                 return super(ChooseTabs, self).form_valid(form)
 
         # {u'user_3': u'256', u'user_1': u'255'}
-        print users
-        print order
+        # print users
+        # print order
 
         try:
             ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
@@ -80,14 +80,14 @@ class ChooseTabs(FormView):
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
                                                                            component=form.cleaned_data['component'],
                                                                            created_by=self.request.user, )
-
-        # print cm_obj
-        # print chapter_component
+        print form.cleaned_data['chapter'] , form.cleaned_data['component']
+        print"res", cm_obj
+        print "obj", chapter_component
         # print user_tab
         for k, v in user_tab.iteritems():
             # print form.cleaned_data['author']
             # k = int(k)
-            print k, order_number[k]
+            # print k, order_number[k]
             obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
                                                                   chapter=form.cleaned_data['chapter'],
                                                                   author=form.cleaned_data['author'],
@@ -119,15 +119,18 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
 
     try:
         # print chapter, "chapter"
-        # print active_tab, "active_tab", project, chapter, author
+        print active_tab, "active_tab", project, chapter, author
         result = None
         if active_tab and component is not None:
             try:
                 chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
+                print chapter_component_obj
                 result = QASheetHeader.objects.get(project=project, chapter_component=chapter_component_obj,
                                                    author=author,
                                                    review_group=ReviewGroup.objects.get(id=active_tab))
+                print result
             except Exception as e:
+                print str(e)
                 logger.error(" {0} ".format(str(e)))
                 # print "if"
                 # print result
@@ -296,7 +299,7 @@ class AssessmentView(TemplateView):
                             severity_count[v] += 1
                         else:
                             severity_count[v] = 1
-                            # print count, severity_count, v
+                            print severity_count, v
 
                     if k == 'defect_severity_level__defect_classification':
                         qms_data['defect_classification'] = v
@@ -662,6 +665,51 @@ class DashboardView(ListView):
         context['projects'] = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
                                                                          filter(user=self.request.user).
                                                                          values('project')).\
-            values('id', 'project', 'project__projectId', 'project__name', 'template_id').\
+            values('id', 'project','project_id', 'project__projectId', 'project__name', 'template_id').\
             annotate(chapter_count=Count('project__book__chapter'))
         return context
+
+
+def chapter_summary(request):
+    project_id = request.GET.get('project_id')
+    review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project_id=project_id).\
+        values('QA_sheet_header__chapter_id').distinct()
+    qms_data = {}
+    qms_data_list = []
+    tmp_dict = {}
+    severity_level = SeverityLevelMaster.objects.all()
+    if review_report_obj:
+        for eachData in review_report_obj:
+            for k, v in eachData.iteritems():
+                if k is 'QA_sheet_header__chapter_id':
+                    obj = Chapter.objects.get(id=v)
+                    qms_data[obj.id] = {}
+                    qms_data[obj.id]['name'] = obj.name
+                    tmp_obj = QASheetHeader.objects.filter(project_id=project_id, chapter_id=obj.id)
+                    question_count = tmp_obj.filter().values('id').annotate(q_count=Count('count'))[0]
+                    qa_obj = tmp_obj[0]
+                    qms_data[obj.id]['author'] = qa_obj.author.username
+                    for s in severity_level:
+                        s_count = review_report_obj.filter(defect_severity_level__severity_level=s).\
+                            values('defect_severity_level__severity_level__name', 'QA_sheet_header__count').\
+                            annotate(s_count=Count('defect_severity_level__severity_level'))
+
+                        if not s_count:
+                            qms_data[obj.id][s.name] = 0
+                            tmp_dict[s.name] = 0
+                        else:
+                            for c in s_count:
+                                try:
+                                    qms_data[obj.id][s.name] = c['s_count']
+                                    tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count['q_count']
+                                except Exception as e:
+                                    logger.error(" qms {0} ".format(str(e)))
+                        qms_data[obj.id]['defect_density'] = float(sum(tmp_dict.values()) * 100)
+                        qms_data[obj.id]['questions'] = question_count['q_count']
+            qms_data_list.append(qms_data.copy())
+            qms_data.clear()
+    return HttpResponse(
+        json.dumps(qms_data_list),
+        content_type="application/json"
+    )
+

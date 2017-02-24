@@ -84,6 +84,14 @@ def get_severity_count(project, name, template_id):
     return s
 
 
+@register.simple_tag
+def get_defect_density(s1, s2, s3, q_count):
+    s1_dd = (s1 * 0.5)/q_count
+    s2_dd = (s2 * 0.3)/q_count
+    s3_dd = (s3 * 0.2)/q_count
+    return (s1_dd + s2_dd + s3_dd)*100
+
+
 @register.filter('get_question_count')
 def get_question_count(project):
     s = 0

@@ -48,17 +48,17 @@
                       <tbody>
                       {% for obj in projects %}
                         <tr class="odd gradeX">
-                          <td><a href="#" data-toggle="modal" data-target="#myModal">{{obj.project__projectId}}</a></td>
+                          <td><a href="#" data-toggle="modal" data-target="#myModal" class="project" data-value="{{obj.project_id}}" >{{obj.project__projectId}}</a></td>
                           <td>{{obj.project__name}}</td>
                             <td>{{request.user}}</td>
                              <td>{{obj.chapter_count}}</td>
                           <td>
-                            <span class="defect-span defect-s1">{% get_severity_count obj.project "s1" obj.template_id %}</span>
-                            <span class="defect-span defect-s2">{% get_severity_count obj.project "s2" obj.template_id %}</span>
-                            <span class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id %}</span>
+                            <span class="defect-span defect-s1">{% get_severity_count obj.project "s1" obj.template_id  as s1%} {{s1}} </span>
+                            <span class="defect-span defect-s2">{% get_severity_count obj.project "s2" obj.template_id  as s2%}{{s2}}</span>
+                            <span class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</span>
                           </td>
-                          <td class="center">{{obj.project|get_question_count}}</td>
-                          <td class="center">Lorem Ipsum</td>
+                          {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
+                          <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
                         </tr>
                      {% endfor %}
                    </tbody>
@@ -79,14 +79,14 @@
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel">Modal title</h4>
                         </div>
-                        <div class="modal-body"> 
+                        <div class="modal-body">
 
                     <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
                       <thead>
                         <tr>
-                          <th>ID</th>
-                          <th>Name</th>
-                          <th>Lead</th>
+                          <th>S.No</th>
+                          <th>Chapter</th>
+                          <th>Author</th>
                           <th>No. Of Chapters</th>
                           <th>Defect &nbsp; [ S1, S2, S3 ]</th>
                           <th>No. of Questions</th>
@@ -152,30 +152,41 @@
 
            </tbody>
           </table>
-                        
+
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-green" data-dismiss="modal">Export to Excel</button>
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
                         </div>
                       </div>
-                      <!-- /.modal-content --> 
+                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-dialog --> 
+                    <!-- /.modal-dialog -->
                   </div>
-                  <!-- /.modal --> 
+                  <!-- /.modal -->
 
 
 
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
-
+var obj = [{"11699":{"defect_density":80,"name":"chapter 1","author":"balamurugan.rs","s3":0,"s2":1,"s1":1,"questions":1}},{"699":{"defect_density":80,"name":"MS Excel","author":"sanjay.kunnath","s3":0,"s2":1,"s1":1,"questions":1}}]
 <script type="text/javascript">
 		$(document).ready(function() {
-				"use strict";
-				
-				$('#data-tables').dataTable();
-		} );
+            $('#data-tables').dataTable();
+            $('.project').on('click', function()  {
+                $.ajax({
+                  url: '/qms/chapter_summary',
+                  type: 'GET',
+                  dataType :'json',
+                  data: {"project_id": this.getAttribute('data-value')},
+                  success: function (data) {
+                  console.log(JSON.stringify(data));
+                  <!--time_iterate(data);-->
+                  },
+
+                });
+            });
+		});
 </script>
 
 

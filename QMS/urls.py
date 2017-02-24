@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^choose_tabs/$', (ChooseTabs.as_view()), name='choose_tabs'),
     url(r'^fetch_severity/$', fetch_severity, name=u'fetch_severity'),
     url(r'^fetch_author/$', fetch_author, name=u'fetch_author'),
+    url(r'^chapter_summary/$', chapter_summary, name=u'chapter_summary'),
     url(r'^get_template_process_review/$', get_template_process_review,
         name=u'get_template_process_review'),
     url(r'^AutocompleteProjects/$', AutocompleteProjects.as_view(), name='AutocompleteProjects', ),
