@@ -61,7 +61,7 @@
                          {% for field in fields %}
                              {% if field == "id" %}
                                 {% else %}
-                              <th><b>{{ process| field_name:field }}</b></th>
+                              <td>{{ process| field_name:field }}</td>
                              {% endif %}
 
 
@@ -127,7 +127,7 @@
 <script type="text/javascript">
   
 $('document').ready(function(){
-  // $('#data-tables').dataTable();
+  $('#data-tables').dataTable();
 })
 
 </script>
