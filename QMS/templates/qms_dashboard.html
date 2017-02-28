@@ -81,7 +81,7 @@
                         </div>
                         <div class="modal-body">
 
-                    <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
+                    <table class="table table-striped leave-report-table qms-dashboard-table" id="qms_project_table">
                       <thead>
                         <tr>
                           <th>S.No</th>
@@ -96,52 +96,13 @@
                       <tbody>
                         <tr class="gradeX even" role="row">
                           <td class="sorting_1">INT-2017-002</td>
-                          <td>Ansr Portal Dev 2017 Q1</td>
-                          <td>sanjay.kunnath</td>
-                          <td>36</td>
-                          <td>
-                            <span class="defect-span defect-s1">0</span>
-                            <span class="defect-span defect-s2">0</span>
-                            <span class="defect-span defect-s3">0</span>
-                          </td>
-                          <td class="center">0</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-                        <tr class="gradeX even" role="row">
-                          <td class="sorting_1">INT-2017-002</td>
-                          <td>Ansr Portal Dev 2017 Q1</td>
-                          <td>sanjay.kunnath</td>
-                          <td>36</td>
-                          <td>
-                            <span class="defect-span defect-s1">0</span>
-                            <span class="defect-span defect-s2">0</span>
-                            <span class="defect-span defect-s3">0</span>
-                          </td>
-                          <td class="center">0</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-                        <tr class="gradeX even" role="row">
-                          <td class="sorting_1">INT-2017-002</td>
-                          <td>Ansr Portal Dev 2017 Q1</td>
-                          <td>sanjay.kunnath</td>
-                          <td>36</td>
-                          <td>
-                            <span class="defect-span defect-s1">0</span>
-                            <span class="defect-span defect-s2">0</span>
-                            <span class="defect-span defect-s3">0</span>
-                          </td>
-                          <td class="center">0</td>
-                          <td class="center">Lorem Ipsum</td>
-                        </tr>
-                        <tr class="gradeX even" role="row">
-                          <td class="sorting_1">INT-2017-002</td>
-                          <td>Ansr Portal Dev 2017 Q1</td>
-                          <td>sanjay.kunnath</td>
-                          <td>36</td>
-                          <td>
-                            <span class="defect-span defect-s1">0</span>
-                            <span class="defect-span defect-s2">0</span>
-                            <span class="defect-span defect-s3">0</span>
+                          <td class="chapter">Ansr Portal Dev 2017 Q1</td>
+                          <td class="author">sanjay.kunnath</td>
+                          <td class="">36</td>
+                          <td class="">
+                            <span class="defect-span defect-s1 s1">3</span>
+                            <span class="defect-span defect-s2 s2">24</span>
+                            <span class="defect-span defect-s3 s3">7</span>
                           </td>
                           <td class="center">0</td>
                           <td class="center">Lorem Ipsum</td>
@@ -169,19 +130,67 @@
 
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
-var obj = [{"11699":{"defect_density":80,"name":"chapter 1","author":"balamurugan.rs","s3":0,"s2":1,"s1":1,"questions":1}},{"699":{"defect_density":80,"name":"MS Excel","author":"sanjay.kunnath","s3":0,"s2":1,"s1":1,"questions":1}}]
+
 <script type="text/javascript">
+
+var qms_obj = [
+{"11699":{
+  "defect_density":80,
+  "name":"chapter 1",
+  "author":"balamurugan.rs",
+  "s3":0,
+  "s2":1,
+  "s1":1,
+  "questions":1}
+},
+{"699":{
+  "defect_density":80,
+  "name":"MS Excel",
+  "author":"sanjay.kunnath",
+  "s3":0,
+  "s2":1,
+  "s1":1,
+  "questions":1}
+}
+]
+
+var qms_table_block = $('#qms_project_table tbody tr').html();
+
+project_iterate = function(){
+$('#qms_project_table tbody').html('');
+  for (var qms_key in qms_obj){
+    if (qms_obj.hasOwnProperty(qms_key)){
+      console.log(qms_key);
+      console.log(qms_obj[qms_key]);
+      console.log(qms_table_block);
+
+$('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
+$('#qms_project_table tbody tr:last-child').addClass(qms_key);
+
+
+
+
+    }
+  }
+
+}
+
+
 		$(document).ready(function() {
             $('#data-tables').dataTable();
             $('.project').on('click', function()  {
+
+              project_iterate();
+
+
                 $.ajax({
                   url: '/qms/chapter_summary',
                   type: 'GET',
                   dataType :'json',
                   data: {"project_id": this.getAttribute('data-value')},
                   success: function (data) {
-                  console.log(JSON.stringify(data));
-                  <!--time_iterate(data);-->
+                  // console.log(JSON.stringify(data));
+                  // time_iterate(data);
                   },
 
                 });
