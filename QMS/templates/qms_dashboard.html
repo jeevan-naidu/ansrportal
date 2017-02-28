@@ -157,10 +157,10 @@ var qms_obj = [
 var qms_table_block = $('#qms_project_table tbody tr').html();
 
 project_iterate = function(){
+      qms_count = 1;
 $('#qms_project_table tbody').html('');
   for (var qms_key in qms_obj){
     if (qms_obj.hasOwnProperty(qms_key)){
-
 
 
       var inner_obj = qms_obj[qms_key];
@@ -172,7 +172,7 @@ $('#qms_project_table tbody').html('');
       console.log(inner_obj[inner_key]['author']);
 
       $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
-      $('#qms_project_table tbody tr:last-child .serial_no').html(inner_key);
+      $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
       $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key]['author']);
       $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key]['defect_density']);
       $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key]['name']);
@@ -180,7 +180,7 @@ $('#qms_project_table tbody').html('');
       $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key]['s1']);
       $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key]['s2']);
       $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key]['s3']);
-
+    qms_count++;
 
     }
   }
