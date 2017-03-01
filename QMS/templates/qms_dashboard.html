@@ -133,30 +133,11 @@
 
 <script type="text/javascript">
 
-var qms_obj = [
-{"11699":{
-  "defect_density":80,
-  "name":"chapter 1",
-  "author":"balamurugan.rs",
-  "s3":0,
-  "s2":1,
-  "s1":1,
-  "questions":1}
-},
-{"699":{
-  "defect_density":80,
-  "name":"MS Excel",
-  "author":"sanjay.kunnath",
-  "s3":0,
-  "s2":1,
-  "s1":1,
-  "questions":1}
-}
-]
+
 
 var qms_table_block = $('#qms_project_table tbody tr').html();
 
-project_iterate = function(){
+function project_iterate(qms_obj){
       qms_count = 1;
 $('#qms_project_table tbody').html('');
   for (var qms_key in qms_obj){
@@ -166,11 +147,7 @@ $('#qms_project_table tbody').html('');
       var inner_obj = qms_obj[qms_key];
 
   for (var inner_key in inner_obj){
-    if (inner_obj.hasOwnProperty(inner_key)){      
-      console.log(inner_key);
-      console.log(inner_obj[inner_key]);
-      console.log(inner_obj[inner_key]['author']);
-
+    if (inner_obj.hasOwnProperty(inner_key)){
       $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
       $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
       $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key]['author']);
@@ -190,27 +167,20 @@ $('#qms_project_table tbody').html('');
 
 }
 
-
-		$(document).ready(function() {
-            $('#data-tables').dataTable();
-            $('.project').on('click', function()  {
-
-              project_iterate();
-
-
-                $.ajax({
-                  url: '/qms/chapter_summary',
-                  type: 'GET',
-                  dataType :'json',
-                  data: {"project_id": this.getAttribute('data-value')},
-                  success: function (data) {
-                  // console.log(JSON.stringify(data));
-                  // time_iterate(data);
-                  },
-
-                });
-            });
-		});
+$(document).ready(function() {
+    $('#data-tables').dataTable();
+    $('.project').on('click', function()  {
+        $.ajax({
+            url: '/qms/chapter_summary',
+            type: 'GET',
+            dataType :'json',
+            data: {"project_id": this.getAttribute('data-value')},
+            success: function (data) {
+                project_iterate(data);
+            },
+        });
+    });
+});
 </script>
 
 

@@ -80,9 +80,9 @@ class ChooseTabs(FormView):
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
                                                                            component=form.cleaned_data['component'],
                                                                            created_by=self.request.user, )
-        print form.cleaned_data['chapter'] , form.cleaned_data['component']
-        print"res", cm_obj
-        print "obj", chapter_component
+        # print form.cleaned_data['chapter'] , form.cleaned_data['component']
+        # print"res", cm_obj
+        # print "obj", chapter_component
         # print user_tab
         for k, v in user_tab.iteritems():
             # print form.cleaned_data['author']
@@ -90,10 +90,10 @@ class ChooseTabs(FormView):
             # print k, order_number[k]
             obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
                                                                   chapter=form.cleaned_data['chapter'],
-                                                                  author=form.cleaned_data['author'],
                                                                   chapter_component=cm_obj,
                                                                   review_group_id=int(k),
-                                                                  defaults={'reviewed_by_id': int(v),
+                                                                  defaults={'author': form.cleaned_data['author'],
+                                                                            'reviewed_by_id': int(v),
                                                                             'created_by': self.request.user,
                                                                             'order_number': order_number[k]}, )
             # print obj, created
@@ -686,7 +686,8 @@ def chapter_summary(request):
                     qms_data[obj.id] = {}
                     qms_data[obj.id]['name'] = obj.name
                     tmp_obj = QASheetHeader.objects.filter(project_id=project_id, chapter_id=obj.id)
-                    question_count = tmp_obj.filter().values('id').annotate(q_count=Count('count'))[0]
+                    question_count = sum(tmp_obj.filter().values_list('count', flat=True))
+                    print question_count
                     qa_obj = tmp_obj[0]
                     qms_data[obj.id]['author'] = qa_obj.author.username
                     for s in severity_level:
@@ -701,11 +702,12 @@ def chapter_summary(request):
                             for c in s_count:
                                 try:
                                     qms_data[obj.id][s.name] = c['s_count']
-                                    tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count['q_count']
+                                    tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count
                                 except Exception as e:
                                     logger.error(" qms {0} ".format(str(e)))
-                        qms_data[obj.id]['defect_density'] = float(sum(tmp_dict.values()) * 100)
-                        qms_data[obj.id]['questions'] = question_count['q_count']
+                        tmp_dd = float(sum(tmp_dict.values()) * 100)
+                        qms_data[obj.id]['defect_density'] = str(round(tmp_dd, 2))
+                        qms_data[obj.id]['questions'] = question_count
             qms_data_list.append(qms_data.copy())
             qms_data.clear()
     return HttpResponse(
