@@ -4,7 +4,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope
+    projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
+    MilestoneType
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, SubPractice
 from employee.models import Remainder
@@ -568,12 +569,19 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 class CloseProjectMilestoneForm(forms.ModelForm):
 
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput() )
+    MilestoneName = forms.ModelChoiceField(
+        queryset=MilestoneType.objects.all(),
+        label="Select Milestone Name",
+        widget=autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
+            'data-placeholder': 'Type Milestone Type...'} ),
+        required=True, )
+    MilestoneType = forms.CharField( label=('Milestone Type'), )
 
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'description',
-            'amount', 'closed', 'financial'
+            'milestoneDate', 'MilestoneName', 'MilestoneType',
+            'amount', 'closed'
         )
         widgets = {
             'project': forms.HiddenInput(),
@@ -585,13 +593,16 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = \
             "date-picker d-item form-control"
-        self.fields['description'].widget.attrs['class'] = \
-            "d-item input-item form-control"
-        self.fields['financial'].widget.attrs['class'] = \
-            "d-item input-item form-control"
+        self.fields['MilestoneName'].widget.attrs['class'] = "date-picker d-item form-control MilestoneName"
+        # self.fields['description'].widget.attrs['class'] = \
+        #     "d-item input-item form-control"
+        # self.fields['financial'].widget.attrs['class'] = \
+        #     "d-item input-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['MilestoneType'].widget.attrs['id'] = "MilestoneType"
+
 
 
 # Project Flag Form

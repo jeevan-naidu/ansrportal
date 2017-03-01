@@ -2,12 +2,15 @@ from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
 from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser, \
     AutocompleteProjectAsset, AutocompletePracticeName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
-    Autocompleteprojectscope
+    Autocompleteprojectscope,AutocompleteMilestonetype
 from Reports import views as milestonreporteviews
-from .views import ApproveTimesheetView, getheadid, soplink
+from .views import ApproveTimesheetView, getheadid, soplink, milestonename
 from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
+    url(r'^AutocompleteMilestonetype/$',
+        AutocompleteMilestonetype.as_view(),
+        name='AutocompleteMilestonetype'),
     url(
         r'^AutocompleteProjects/$',
         AutocompleteProjects.as_view(),
@@ -21,6 +24,10 @@ urlpatterns = [
     url(r'^practicehead/$',
         login_required(getheadid),
         name='HeadId'),
+    url(r'^milestonename/$',
+        login_required(milestonename),
+        name='milestonename',
+        ),
     url(r'^soplink/$',
         login_required(soplink),
         name='SopLink'),

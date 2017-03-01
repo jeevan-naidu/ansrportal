@@ -497,7 +497,7 @@ class ProjectMilestone(models.Model):
                                     verbose_name="Closed On",
                                     editable=False)
     financial = models.BooleanField(default=False,
-                                    verbose_name="Financial",
+                                    verbose_name="Deviation",
                                     blank=False,
                                     null=False
                                     )

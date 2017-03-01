@@ -28,7 +28,7 @@ from fb360.models import Respondent
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -120,6 +120,11 @@ def soplink(request):
     soplink  = qualitysop.objects.get(id=sopid)
     return HttpResponse(soplink.SOPlink)
 
+
+def milestonename(request):
+    type_id = request.GET['milestone_type_id']
+    name = Milestone.objects.get(id=type_id).milestone_type
+    return HttpResponse(name)
 
 def index(request):
     if request.user.is_authenticated():
@@ -2012,18 +2017,18 @@ class TrackMilestoneWizard(SessionWizardView):
                         'My Projects'
                     )['My Projects-project']
                     projectObj = Project.objects.get(pk=selectedProjectId)
+                    print projectObj
                     projectTotal = projectObj.totalValue
                     totalRate = 0
                     for eachForm in form:
                         if eachForm.is_valid():
                             totalRate += eachForm.cleaned_data['amount']
-                            if eachForm.cleaned_data['financial'] is False:
-                                if eachForm.cleaned_data['amount'] > 0:
-                                    amount = eachForm.cleaned_data['amount']
-                                    errors = eachForm._errors.setdefault(
-                                        amount, ErrorList())
-                                    errors.append(u'Please select milestone as \
-                                                  financial')
+                            if eachForm.cleaned_data['amount'] > 0:
+                                amount = eachForm.cleaned_data['amount']
+                                errors = eachForm._errors.setdefault(
+                                    amount, ErrorList())
+                                errors.append(u'Please select milestone as \
+                                              financial')
                             elif eachForm.cleaned_data['amount'] == 0:
                                 amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
@@ -2157,6 +2162,7 @@ def WrappedChangeProjectView(request):
 
 class CreateProjectWizard(SessionWizardView):
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectDocument'))
+
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
@@ -2180,6 +2186,11 @@ class CreateProjectWizard(SessionWizardView):
                     logger.error("Basic Information step has signed as none")
                 if form.is_valid():
                     a=0
+        if step == 'Uploads':
+            if form.is_valid():
+                self.request.session['sow'] = (form.cleaned_data['Sowdocument'])
+                self.request.session['estimation'] = (form.cleaned_data['Estimationdocument'])
+
             else:
                 logger.error(
                     "Basic Information step data is None" + str(form._errors))
@@ -2278,6 +2289,7 @@ class CreateProjectWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         basicInfo = [form.cleaned_data for form in form_list][0]
+        upload = [form.cleaned_data for form in form_list][2]
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
@@ -2301,6 +2313,7 @@ class CreateProjectWizard(SessionWizardView):
             'flagData': flagData,
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
+            'upload': upload,
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2597,6 +2610,15 @@ def saveProject(request):
                 asset_id = ProjectAsset.objects.get(Asset=asset).id
                 pd.Asset_id = asset_id
                 pd.save()
+
+            except ValueError as e:
+                logger.exception(e)
+            try:
+                pd_id = pd.id
+                pd_id.Sowdocument = request.session['sow']
+                pd_id.Estimationdocument = request.session['estimation']
+                pd_id.save()
+                FileSystemStorage.delete()
             except ValueError as e:
                 logger.exception(e)
 

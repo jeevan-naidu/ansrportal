@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope
+from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope, Milestone
 from CompanyMaster.models import Practice, SubPractice
 from dal import autocomplete
 
@@ -76,4 +76,11 @@ class Autocompleteprojectscope(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = ProjectScope.objects.filter(scope__icontains=q)
+        return choices
+
+
+class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Milestone.objects.filter(name__icontains=q)
         return choices
