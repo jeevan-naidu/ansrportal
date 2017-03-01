@@ -1,13 +1,9 @@
 import logging
-from django.utils.timezone import get_default_timezone
-from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
-from django.db import IntegrityError
-from django.conf import settings
-from employee.models import Employee
-from Leave.models import LeaveType, LeaveSummary
+from Leave.models import LeaveType, LeaveSummary, CreditEntry
 from django.contrib.auth.models import User
 from datetime import date, timedelta
+from employee.models import Employee
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -29,6 +25,9 @@ def newJoineeCron():
     for user in newUsers:
         try:
             user_temp = User.objects.get(id = user.user_id)
+            current_year = date.today().year
+            current_month = date.today().month
+            admin = User.objects.get(id=35)
             if user_temp.is_active == True:
 
                 leavesummry = LeaveSummary.objects.filter(user = user_temp)
@@ -95,6 +94,13 @@ def newJoineeCron():
                             print "entry got created for {0} {1} leavetype {2}".format(user_temp.first_name,
                                                                                        user_temp.last_name,
                                                                                        leave_type_obj)
+                        CreditEntry.objects.create(user_id=user.user_id,
+                                                   year=current_year,
+                                                   month=current_month,
+                                                   leave_type=leave_type_obj,
+                                                   days=leave_type_obj.count,
+                                                   status_action_by=admin,
+                                                   comments="new joinee leave credit")
 
         except:
             logger.error("error happen for {0} {1} while creating entry in leavesummry table".format(user_temp.first_name,user_temp.last_name))
