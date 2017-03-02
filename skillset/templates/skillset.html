@@ -1,0 +1,71 @@
+{% extends 'master.html' %}
+{% block siteTitle %}Daily Interview Report{% endblock %}
+{% block pageTitle %}Candidate Profile{% endblock %}
+{% block content  %}
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Team Members </h3>
+                  </div>
+
+                  <div class="panel-body">
+                  <div class="row">
+                    <div class="col-sm-2 pull-right">
+                      <select name="" class="input-sm" value={{designation_all}}>
+                        <option>Designation</option>
+                        <option></option>
+                        <option>Default</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-2 pull-right">
+                      <select name="" class="input-sm">
+                        <option>Department</option>
+                        <option>Default</option>
+                        <option>Default</option>
+                      </select>
+                    </div>
+
+                    <div class="col-sm-3">
+                      <input name="" class="input-sm" type="text" />
+                    </div>
+                  </div>
+                  <hr>
+
+                    <table class="table table-striped" id="data-tables">
+                      <thead style="color: #fff;background: #444">
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Designation</th>
+                          <th>Skills</th>
+                          <th>Date Of Update</th>
+                          <th>Joining date</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{{id}}</td>
+                          <td>{{name}}</td>
+                          <td>{{designation}}</td>
+                          <td>{{skills}}</td>
+                          <td>{{date}}</td>
+                          <td>{{doj}}</td>
+                          <td>Dummy data</td>
+                      </tbody>
+                    </table>
+
+
+                  </div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+
+
+
+{% endblock %}

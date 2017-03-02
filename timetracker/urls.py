@@ -29,4 +29,5 @@ urlpatterns = [
                        url(r'^hire/', include('Hire.urls')),
                        url(r'^library/', include('Library.urls')),
                        url(r'^exitapp/', include('ExitApp.urls')),
+                       url(r'^skillset/', include('skillset.urls')),
                        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

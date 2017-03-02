@@ -1579,6 +1579,8 @@ def daterange(start_date, end_date):
 
 
 def weekdetail(week, month):
+    # import ipdb;
+    # ipdb.set_trace()
     currentmontdetail = monthrange(date.today().year, month)
     daysinpreviousmonth = currentmontdetail[0]
     startdate = date(year=date.today().year,

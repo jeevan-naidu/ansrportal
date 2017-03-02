@@ -146,6 +146,7 @@ INSTALLED_APPS = [
     'formtools',
     'emoticons',
     'ExitApp',
+    'skillset',
 
 ]
 
