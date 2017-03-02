@@ -21,27 +21,27 @@
 {% endblock %}
 {% block content %}
 <ul class="form-steps clearfix">
-    <li class="form-step one-fourth {% block DPactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block DPactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">1</span>
         <label class="form-step-label">Define Project</label>
     </li>
-    <li class="form-step one-fourth {% block BIactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block BIactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">2</span>
         <label class="form-step-label">Basic Information</label>
     </li>
-    <li class="form-step one-fourth {% block CIactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block CIactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
         <label class="form-step-label">Uploads</label>
     </li>
-    <li class="form-step one-fourth {% block VactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block VactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">4</span>
         <label class="form-step-label">Validate</label>
     </li>
-    <li class="form-step one-fourth {% block CactiveClass %}{% endblock %}">
+    <li class="form-step one-fifth {% block CactiveClass %}{% endblock %}">
         <span class="form-step-bor"></span>
         <span class="form-step-no">5</span>
         <label class="form-step-label">Complete!</label>
