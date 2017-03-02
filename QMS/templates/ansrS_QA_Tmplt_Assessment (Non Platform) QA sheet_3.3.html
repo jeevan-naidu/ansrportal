@@ -104,7 +104,7 @@
 
                 </div>
 
-
+                {% if review_group %}
                 <ul class="nav nav-tabs">
                     {% for groups in review_group %}
               <li {% if request.session.active_tab|add:"0" == groups.id|add:"0" %} class="active review" {% else %} class="review" {% endif%}id={{groups.id}} >
@@ -114,6 +114,7 @@
                     <!--<li class="review disabled" id="3" ><a href="#tab3" >CE1</a></li> -->
                     {% endfor %}
                 </ul><!-- ./tab -->
+                {% endif %}
 
 
                 <br>

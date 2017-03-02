@@ -144,8 +144,13 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
     return result
 
 
-def get_review_group():
-    return ReviewGroup.objects.all()
+def get_review_group(project=None, chapter=None, is_author=False):
+    obj = ReviewGroup.objects.all()
+    if not is_author and project and chapter:
+        obj = obj.filter(pk__in=QASheetHeader.objects.filter(project=project, chapter=chapter).
+                         values_list('review_group_id', flat=True).order_by('order_number'))
+        print obj
+    return obj
 
 
 def get_template_process_review(request):
@@ -206,7 +211,7 @@ class AssessmentView(TemplateView):
         # print "user", self.request.user
         form = BaseAssessmentTemplateForm()
         context['form'] = form
-        context['review_group'] = get_review_group()
+        # context['review_group'] = get_review_group()
 
         return context
 
@@ -221,6 +226,9 @@ class AssessmentView(TemplateView):
             chapter = form.cleaned_data['chapter']
             author = form.cleaned_data['author']
             component = form.cleaned_data['component']
+
+            if request.user is author:
+                get_review_group(project, chapter, is_author=False)
             try:
 
                 # print "im in try"
@@ -233,7 +241,7 @@ class AssessmentView(TemplateView):
                 if obj is None:
                     messages.error(self.request, "Sorry configuration is missing please contact your manager")
                     return render(self.request, self.template_name, {'form': form})
-                if request.user == author:
+                if request.user is author:
                     request.session['author_logged_in'] = True
                     if not obj.review_group_status:
                         messages.error(self.request, "Sorry You cant access this chapter till review is completed")
@@ -339,7 +347,7 @@ class AssessmentView(TemplateView):
             tmp_weight[k] = float(severity_level_obj.penalty_count) * v
             score[k] = 100 - (tmp_weight[k])
             if obj.count > 0:
-                defect_density[k] = (tmp_weight[k] / obj.count) * 100
+                defect_density[k] = round(((tmp_weight[k] / obj.count) * 100), 2)
             else:
                 defect_density[k] = 0
 
@@ -353,7 +361,7 @@ class AssessmentView(TemplateView):
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
                                                          'template_id': template_id,
-                                                         'review_group': get_review_group(), 'questions': obj.count,
+                                                         'review_group': get_review_group(project), 'questions': obj.count,
                                                          'severity_count': severity_count,
                                                          'score': score, 'total_score': total_score,
                                                          'total_count': total_count, 'defect_density': defect_density,
@@ -460,6 +468,7 @@ class AssessmentView(TemplateView):
 #                                                          SeverityLevelMaster.objects.filter(is_active=True)
 #                   .values_list('name', 'id', )})
 
+
 class ReviewReportManipulationView(AssessmentView):
 
     def post(self, request):
@@ -475,9 +484,7 @@ class ReviewReportManipulationView(AssessmentView):
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
         )
-
         AllowedFileTypes = ['jpg', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml', 'zip', 'gz', '7z']
-
 
         forbidden_file_type = False
 
@@ -497,7 +504,7 @@ class ReviewReportManipulationView(AssessmentView):
                     qms_data.clear()
                     # print qms_data_list
             for obj in qms_data_list:
-                print obj
+                # print obj
                 if obj['qms_id'] > 0:
                     report = ReviewReport.objects.get(id=obj['qms_id'])
                     # print obj['qms_id']
@@ -512,13 +519,10 @@ class ReviewReportManipulationView(AssessmentView):
                     # obj['severity_type'] = report.defect_severity_level.severity_type
                 if obj['screen_shot']:
                     # extension = os.path.splitext(obj['screen_shot'])[1]
-
-
                     # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in AllowedFileTypes:
                     if obj['screen_shot'].name.split(".")[-1] not in AllowedFileTypes:
 
                         messages.error(request, "You can't upload this file type")
-
 
                         forbidden_file_type = True
 
