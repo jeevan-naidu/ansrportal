@@ -10,7 +10,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer
 
 
-from models import get_app_detail, get_queryset, get_role, update_process, is_final, get_app_name
+from models import get_app_detail,\
+    manager_queryset,\
+    get_role,\
+    update_process,\
+    is_final,\
+    get_app_name,\
+    get_process_transactions,\
+    user_queryset
 
 
 def process(request):
@@ -37,15 +44,28 @@ class StartProcess(APIView):
     def get(self, request, **kwargs):
         config = get_app_detail(request, **kwargs)
         serializer = config.PROCESS[config.INITIAL]['serializer']
-        return Response({'serializer': serializer()})
+        app_name = get_app_name(request, **kwargs)
+        config = get_app_detail(request, **kwargs)
+        transition = config.PROCESS[config.INITIAL]['transitions']
+        modal = config.PROCESS[config.INITIAL]['model']
+        transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
+        queryset = user_queryset(request, config)
+        fields = get_process_transactions(modal, transaction_modal)
+        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name})
+
 
     def post(self, request, **kwargs):
         config = get_app_detail(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
         serializer = process_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.saveas(request)
-            return Response({'serializer': serializer}, status.HTTP_201_CREATED)
+            try:
+                serializer.saveas(request)
+                record_added = True
+            except:
+                record_added = False
+
+            return Response({'serializer': serializer, 'record_added': record_added}, status.HTTP_201_CREATED)
         return Response(status.HTTP_400_BAD_REQUEST)
 
 
@@ -120,7 +140,6 @@ class ProcessUpdate(APIView):
             pass
 
     def get(self, request, pk, **kwargs):
-
         app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
@@ -144,6 +163,7 @@ class ProcessUpdate(APIView):
         serializer = config.PROCESS[transition[0]]['serializer']
         model = config.PROCESS[config.INITIAL]['model']
         serialized_data = serializer(data=request.POST)
+        record_added = False
         if serialized_data.is_valid():
             process_request = model.objects.get(pk=pk)
             action = serialized_data.validated_data['status']
@@ -151,6 +171,7 @@ class ProcessUpdate(APIView):
             final = is_final(config, process_request.role)
             update_process(process_request, role, action, final)
             serialized_data.save_as(role, request, pk)
+            record_added = True
         modal = config.PROCESS[config.INITIAL]['model']
         display_fields = config.DETAIL
         fields = [f.name for f in modal._meta.get_fields()]
@@ -165,7 +186,8 @@ class ProcessUpdate(APIView):
                          'object_detail': object_detail,
                          'process_status_detail': process_status_detail[0],
                          'current_role': process_status_detail[1],
-                         'app_name': app_name})
+                         'app_name': app_name,
+                         'record_added':record_added})
 
     def delete(self, request, pk, **kwargs):
         activity = self.get_object(request, pk, **kwargs)
@@ -184,11 +206,8 @@ class ApproveListView(APIView):
         serializer = config.PROCESS[transition[0]]['serializer']
         modal = config.PROCESS[config.INITIAL]['model']
         transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
-        queryset = get_queryset(request, **kwargs)
-        abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', transaction_modal]
-        fields = [f.name for f in modal._meta.get_fields()]
-        fields = filter(lambda x: x not in abstract_fields, fields)
-        fields.sort(reverse=True)
+        queryset = manager_queryset(request, **kwargs)
+        fields = get_process_transactions(modal, transaction_modal)
         serializer = serializer()
         return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name})
 

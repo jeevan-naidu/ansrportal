@@ -57,26 +57,38 @@ def get_app_detail(request, **kwargs):
     return config
 
 
-def get_queryset(request, **kwargs):
+def manager_queryset(request, **kwargs):
     config = get_app_detail(request, **kwargs)
     queryset = can_approve(request, config)
     return queryset
 
+def user_queryset(request, config):
+    queryset = {}
+    model = config.PROCESS[config.INITIAL]['model']
+    queryset['active'] = model.objects.filter(user=request.user,
+                                              is_active=True)
+    queryset['inactive'] = model.objects.filter(user=request.user,
+                                                is_active=False).exclude(request_status__in=['Rolled Back'])
+    queryset['rollback'] = model.objects.filter(user=request.user,
+                                                is_active=False).exclude(request_status__in=['Completed'])
+    return queryset
+
+
 
 def can_approve(request, config):
+
     model = config.PROCESS[config.INITIAL]['model']
+    role = config.PROCESS[config.INITIAL]['role']
     transition = config.PROCESS[config.INITIAL]['transitions']
-    queryset = model.objects.filter(id=0)
-    for i in range(20):
-        if not transition[0]:
-            break
-        transition = transition[0]
-        method = config.PROCESS[transition]['method']
-        role = config.PROCESS[transition]['role']
+    queryset = model.objects.none()
+    while transition[0]:
+        next_transition = transition[0]
+        method = config.PROCESS[next_transition]['method']
         access = method(request, role)
+        role = config.PROCESS[next_transition]['role']
         if access:
             queryset = queryset | access
-        transition = config.PROCESS[transition]['transitions']
+        transition = config.PROCESS[next_transition]['transitions']
     return queryset
 
 
@@ -84,14 +96,12 @@ def get_role(config, status, current_role):
     result_role = config.PROCESS[config.INITIAL]['role']
     transition = config.PROCESS[config.INITIAL]['transitions']
     role = result_role
-    for i in range(20):
+    while transition[0]:
         if current_role == role:
             if status == "approve":
                 result_role = config.PROCESS[transition[0]]['role']
             elif transition[1]:
                 result_role = config.PROCESS[transition[1]]['role']
-        if not transition[0]:
-            break
         role = config.PROCESS[transition[0]]['role']
         transition = config.PROCESS[transition[0]]['transitions']
     return result_role
@@ -138,6 +148,17 @@ def get_app_name(request, **kwargs):
     app_title = get_request_params('app_name', request, **kwargs)
     return app_title
 
+
+def get_process_transactions(modal, transaction_modal):
+    """
+    this methods uses for getting all the Fields for grid view
+    :return: Fields
+    """
+    abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', transaction_modal]
+    fields = [f.name for f in modal._meta.get_fields()]
+    fields = filter(lambda x: x not in abstract_fields, fields)
+    fields.sort(reverse=True)
+    return fields
 
 
 

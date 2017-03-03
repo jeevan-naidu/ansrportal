@@ -5,7 +5,9 @@ from models import Reimburse, Transaction
 class ReimburseSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     title = serializers.CharField(max_length=100, default='')
-    reason = serializers.CharField(max_length=100, default='')
+    reason = serializers.CharField(max_length=1000,
+                                   default='',
+                                   style={'base_template': 'textarea.html', 'rows': 10})
     amount = serializers.IntegerField()
 
     class Meta:
@@ -23,6 +25,9 @@ class ReimburseSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    reason = serializers.CharField(max_length=1000,
+                                   style={'base_template': 'textarea.html', 'rows': 4}
+                                   )
     class Meta:
         model = Transaction
         fields = ('reason', 'status')
