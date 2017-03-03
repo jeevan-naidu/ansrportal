@@ -3,6 +3,19 @@
 
 
 {%block content %}
+{% if messages %}
+         {% for message in messages %}
+            {% if message.tags == 'error' and forloop.counter == 1 %}
+              <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                <i class="icon-cross"></i>
+                </button>
+                <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
+              </div>
+
+{% endif %}
+{% endfor %}
+{% endif %}
 <div class="row">
         <div class="col-lg-10 col-md-12 col-xs-12 col-lg-offset-1  jumbotron shadow"> 
             <div class="col-lg-12 col-md-12 col-xs-12">

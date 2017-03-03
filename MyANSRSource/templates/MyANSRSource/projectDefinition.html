@@ -4,7 +4,6 @@
 {% block DPactiveClass %}active{% endblock %}
 {% block childform %}{% block masterform %}
 
-
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
             {% for field in form %} 
@@ -26,7 +25,7 @@
                             <tr>
                                 <td class="col-lg-6">
                                         {% if field.label == 'New Development' %}
-                                             Project Stage
+                                             <!--Project Stage-->
                                         {% else %}
                                             {{ field.label }}
                                         {% endif %}
@@ -38,8 +37,8 @@
                                 <td class="col-lg-6">
 						{% for radio in field %}
 							{% if field.label == 'New Development' %}
-								<span class="col-lg-1">{{ radio.tag }}</span>
-								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
+								<!--<span class="col-lg-1">{{ radio.tag }}</span>-->
+								<!--<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>-->
 							{% else %}
 								<span class="col-lg-1">{{ radio.tag }}</span>
 								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
@@ -63,5 +62,23 @@
     (function() {
 
     }());
+
+    $(document).ready(function(){
+        $('.coordinatorcount').on('change', function(e){
+            var selected = $(e.target).val();
+            if (selected.length >3)
+                {
+                    $('.btn.btn-info.pull-right').prop('disabled', true);
+                    swal("can't select More than 3 Project Manager")
+                }
+            else {
+                    $('.btn.btn-info.pull-right').prop('disabled', false);
+                  }
+
+        })
+
+    });
+
+
 </script>
 {% endblock %}{% endblock %}

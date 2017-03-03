@@ -6,6 +6,10 @@ from django.utils import timezone
 import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 from CompanyMaster.models import UpdateDate
+import datetime, os
+from django.core.validators import URLValidator
+from CompanyMaster.models import Practice, SubPractice
+from django.core.files.storage import FileSystemStorage
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -25,6 +29,37 @@ days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z-]*$',
                               'Only alphanumeric characters are allowed.')
+
+PROJECTFINTYPE = (
+    ('FP', 'Fixed Price'),
+    ('T&M', 'T&M')
+)
+
+#upload path for sow and estimation
+
+
+def change_file_path(instance, filename):
+    ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
+    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-) '''
+
+    import random
+    import string
+
+    # random_str length will be 16 which will be combination of (4 digits + 4 characters + 4 digits + 4 characters)
+    random_str = "".join([random.choice(string.uppercase) for i in range(0, 4)]) + "".join(
+        [random.choice(string.digits) for i in range(0, 4)]) + \
+                 "".join([random.choice(string.lowercase) for i in range(0, 4)]) + "".join(
+        [random.choice(string.digits) for i in range(0, 4)])
+
+    # return string seperated by hyphen eg:
+    random_str = random_str[:4] + "-" + random_str[4:8] + "-" + random_str[8:12] + "-" + random_str[12:]
+    filetype = filename.split(".")[-1].lower()
+    filename = random_str + "." + filetype
+    path = "MyANSRSource/uploads/" + str(datetime.datetime.now().year) + "/" + str(
+        datetime.datetime.now().month) + "/" + str(datetime.datetime.now().day) + "/"
+    os_path = os.path.join(path, filename)
+    return os_path
+
 
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
@@ -141,6 +176,54 @@ class Chapter(models.Model):
         return self.name
 
 
+class qualitysop(models.Model):
+    name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
+    SOPlink = models.TextField(validators=[URLValidator()])
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    class Meta:
+        verbose_name = 'Quality SOP Table'
+
+
+class ProjectScope(models.Model):
+    scope = models.CharField(verbose_name="Project scope Name", max_length=200)
+    IsActive = models.BooleanField(verbose_name="Active")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return unicode(self.scope)
+
+    class Meta:
+        verbose_name = "Project Scope Table"
+
+
+class ProjectAsset(models.Model):
+    Asset = models.CharField(verbose_name="Project Asset", max_length=200)
+    Is_Active = models.BooleanField(verbose_name="Active")
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    created_by = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return self.Asset
+
+    class Meta:
+        verbose_name = "Project Asset Table"
+
+
 class Project(models.Model):
     projectType = models.ForeignKey(
         projectType,
@@ -201,7 +284,7 @@ class Project(models.Model):
                                            Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
-                                        verbose_name="Planned Effort",
+                                        verbose_name=" Total Planned Effort",
                                         validators=[MinValueValidator(8)])
     contingencyEffort = models.IntegerField(default=0,
                                             blank=True,
@@ -210,7 +293,7 @@ class Project(models.Model):
                                             validators=[MinValueValidator(0)])
     projectManager = models.ManyToManyField(User,
                                             through='ProjectManager',
-                                            verbose_name="Project Leader")
+                                            verbose_name="Delievery CO-ordinator")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book/Title",
@@ -220,14 +303,14 @@ class Project(models.Model):
     totalValue = models.DecimalField(default=0.0,
                                      max_digits=12,
                                      decimal_places=2,
-                                     verbose_name="Total Value",
+                                     verbose_name="Project Value",
                                      validators=[MinValueValidator(0.0)])
     closed = models.BooleanField(
         default=False,
         null=False,
         verbose_name="Project Closed"
     )
-    # Record Entered / Updated Date
+
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -247,10 +330,43 @@ class Project(models.Model):
             )
 
 
+class ProjectDetail(models.Model):
+    project = models.ForeignKey(Project)
+    PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
+    projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
+                                      blank=True, null=True)
+    ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
+    SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
+    deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager', blank=True, null=True)
+    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
+    Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
+                                          verbose_name="Upload project Estimation Document")
+    SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', null=True, blank=True)
+    Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', null=True, blank=True)
+    Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.id
+
+    class Meta:
+        verbose_name = "Project Additional Detail Table"
+
+
 class ProjectManager(models.Model):
     # Creating Explicit M2M, to copy existing FK to M2M
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
+
+# on Hold Since need clearifications
+# class ProjectType(models.Model):
+#     Project_type = models.CharField(verbose_name="ProjectType", max_length="100")
+#     Is_Active = models.BooleanField(verbose_name="Active")
+#
+#     def __unicode__(self):
+#         return self.Project_type
+#
+#     class Meta:
+#         verbose_name = 'ProjectType Table'
 
 
 class TimeSheetEntry(models.Model):

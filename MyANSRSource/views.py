@@ -1,4 +1,5 @@
 import logging
+
 logger = logging.getLogger('MyANSRSource')
 import json
 from collections import OrderedDict
@@ -9,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from formtools.wizard.views import SessionWizardView
@@ -19,39 +21,42 @@ from django.utils.timezone import utc
 from django.conf import settings
 from employee.models import Employee
 from Leave.views import leavecheck, daterange
-from django.views.generic import View , TemplateView
+from django.views.generic import View, TemplateView
 from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
 from fb360.models import Respondent
 
-
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
-    Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport
+    Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm, BTGReportForm
+    changeProjectLeaderForm, BTGReportForm, UploadForm
 
 import CompanyMaster
 import employee
+import os
 from employee.models import Remainder
-from CompanyMaster.models import Holiday, HRActivity
+from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
 from django.core.urlresolvers import reverse_lazy
 
-
 from ldap import LDAPError
+
 # views for ansr
 
 FORMS = [
     ("Define Project", ProjectBasicInfoForm),
     ("Basic Information", ProjectFlagForm),
+    ("Uploads",  UploadForm)
 ]
 TEMPLATES = {
     "Define Project": "MyANSRSource/projectDefinition.html",
     "Basic Information": "MyANSRSource/projectBasicInfo.html",
+    "Uploads": "MyANSRSource/ProjectUploads.html",
 }
 
 CFORMS = [
@@ -103,6 +108,18 @@ MEMBERTEMPLATES = {
 days = ['monday', 'tuesday', 'wednesday', 'thursday',
         'friday', 'saturday', 'sunday']
 
+def getheadid(request):
+    practicename = request.GET['practicename']
+    head = Practice.objects.get(id=practicename)
+    head_name = User.objects.get(id=head.head_id)
+    return HttpResponse(head_name.first_name)
+
+
+def soplink(request):
+    sopid = request.GET['sop']
+    soplink  = qualitysop.objects.get(id=sopid)
+    return HttpResponse(soplink.SOPlink)
+
 
 def index(request):
     if request.user.is_authenticated():
@@ -134,7 +151,6 @@ def get_mondays_list_till_date():
     jan1 = date(current_date.year, 1, 1)
     jan1 = date(current_date.year - 1, 10, 1)  # to shows last 3 months from previous year
 
-
     # find first Monday (which could be this day)
     monday = jan1 + timedelta(days=(7 - jan1.weekday()) % 7)
 
@@ -144,6 +160,7 @@ def get_mondays_list_till_date():
             break
         yield monday
         monday += timedelta(days=7)
+
 
 # diff between above function get_mondays_list_till_date() and below function weeks_list_till_date
 # is only in the yield statement
@@ -165,7 +182,7 @@ def weeks_list_till_date(ignore_last_year=True):
             if monday.year != current_date.year or monday > current_date:
                 break
         else:
-            if(monday.year != current_date.year and monday.month not in previous_year_month) or monday > current_date:
+            if (monday.year != current_date.year and monday.month not in previous_year_month) or monday > current_date:
                 break
         yield (monday, monday + timedelta(days=6))
         monday += timedelta(days=7)
@@ -225,7 +242,6 @@ def Timesheet(request):
             changedEndDate = datetime.strptime(
                 request.POST.get('enddate'), '%d%m%Y'
             ).date()
-
 
             mondayTotal = float(0.0)
             tuesdayTotal = float(0.0)
@@ -457,7 +473,8 @@ def Timesheet(request):
                         billableTS.exception = 'Worked on Holiday'
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold':
-                            if k in ('mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
+                            if k in (
+                            'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
                                 if v is None:
                                     v = float(0.0)
                             setattr(billableTS, k, v)
@@ -538,7 +555,8 @@ def Timesheet(request):
                     for k, v in eachTimesheet.iteritems():
                         if k != 'hold' and k != 'approved':
                             if k in (
-                            'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH', 'sundayH'):
+                                    'mondayH', 'tuesdayH', 'wednesdayH', 'thursdayH', 'fridayH', 'saturdayH',
+                                    'sundayH'):
                                 if v is None:
                                     v = float(0.0)
 
@@ -726,13 +744,12 @@ def get_time_sheet(request, is_approve=False):
 
 
 def time_sheet_employee(request):
-
     s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
                       datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
     return HttpResponse(
-            json.dumps(s),
-            content_type="application/json"
-        )
+        json.dumps(s),
+        content_type="application/json"
+    )
 
 
 @login_required
@@ -784,6 +801,7 @@ def get_activity_hours(user, weekstartDate, ansrEndDate):
              'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
              'managerFeedback', 'approved', 'hold'
              )
+
 
 def leaveappliedinweek(user, wkstart, wkend):
     weekleave = []
@@ -852,7 +870,7 @@ def billable_hours(ts_obj):
     return ts_obj.filter(
         activity__isnull=True,
         task__taskType__in=['B', 'N']
-    ).values('totalH', 'project__totalValue' ,'project__internal')
+    ).values('totalH', 'project__totalValue', 'project__internal')
 
 
 def billable_value(billable_hours_obj):
@@ -1003,7 +1021,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                  'tuesdayH', 'wednesdayH',
                  'thursdayH', 'fridayH', 'hold',
                  'saturdayH', 'sundayH', 'approved',
-                 'totalH', 'managerFeedback',  'project__internal',
+                 'totalH', 'managerFeedback', 'project__internal',
                  'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
                  )
     else:
@@ -1015,10 +1033,10 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 activity__isnull=True
             )
         ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
-                   'tuesdayH',  'wednesdayH',
-                 'thursdayH',  'fridayH',  'hold',
-                 'saturdayH',  'sundayH',  'approved',
-                 'totalH',  'managerFeedback', 'project__projectType__code', 'project__internal',
+                 'tuesdayH', 'wednesdayH',
+                 'thursdayH', 'fridayH', 'hold',
+                 'saturdayH', 'sundayH', 'approved',
+                 'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
                  'teamMember__employee__employee_assigned_id',
                  )
 
@@ -1132,10 +1150,11 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         atDataList.append(atData.copy())
         atData.clear()
     if user_id:
-        total_list .append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
-                            'wednesday_total': str(round(wednesday_total, 2)), 'thursday_total': str(round(thursday_total, 2)),
-                            'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
-                            'sunday_total': str(round(sunday_total, 2))})
+        total_list.append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
+                           'wednesday_total': str(round(wednesday_total, 2)),
+                           'thursday_total': str(round(thursday_total, 2)),
+                           'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
+                           'sunday_total': str(round(sunday_total, 2))})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
 
@@ -1155,7 +1174,7 @@ def status_member(team_members, ignore_previous_year=False):
         wkend_list = str(s[1]).split('-')[::-1]
         wkend = "".join([x for x in wkend_list])
         status[for_week] = {}
-        status[for_week]['status']={}
+        status[for_week]['status'] = {}
         status[for_week]['wkstart'] = wkstart
         status[for_week]['wkend'] = wkend
         for members in team_members:
@@ -1168,20 +1187,20 @@ def status_member(team_members, ignore_previous_year=False):
             status[for_week]['status'][members.user.id] = result
     # print "in function " ,  type(week_collection)
     status_dict = {}
-    unapproved_count  = 0
+    unapproved_count = 0
     for k, v in status.iteritems():
         status_dict[k] = {}
-        status_dict[k]['wkstart'] ={}
+        status_dict[k]['wkstart'] = {}
         status_dict[k]['wkend'] = {}
         if all(value == True for value in v['status'].values()):
             status_dict[k]['status'] = "approved"
         elif all(value == False for value in v['status'].values()):
-            unapproved_count +=1
+            unapproved_count += 1
             status_dict[k]['status'] = "not_approved"
         elif True in v['status'].values() and False in v['status'].values():
             unapproved_count += 1
             status_dict[k]['status'] = "partial"
-        status_dict[k] ['wkstart']= v['wkstart']
+        status_dict[k]['wkstart'] = v['wkstart']
         status_dict[k]['wkend'] = v['wkend']
 
     # print json.dumps(status_dict)
@@ -1222,7 +1241,7 @@ def date_range_picker(request, employee=None):
         else:
             wkstart = str(tup[0]).split('-')[::-1]
             wkend = str(tup[1]).split('-')[::-1]
-            ts_final_list.append({ 'for_week': for_week, 'wkstart': "".join([x for x in wkstart]),
+            ts_final_list.append({'for_week': for_week, 'wkstart': "".join([x for x in wkstart]),
                                   'wkend': "".join([x for x in wkend]), 'filled': False})
     # print ts_final_list
     return ts_final_list, mondays_list, ts_week_info_dict
@@ -1290,7 +1309,8 @@ def renderTimesheet(request, data):
     else:
         date = data['weekstartDate']
     try:
-        feedback = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart=data['weekstartDate'], wkend=data['weekendDate']).values_list('managerFeedback',flat=True)[0]
+        feedback = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart=data['weekstartDate'],
+                                                 wkend=data['weekendDate']).values_list('managerFeedback', flat=True)[0]
     except:
         feedback = ""
     tsform = TimesheetFormset(request.user, date)
@@ -1380,7 +1400,7 @@ def renderTimesheet(request, data):
                  'internal_value': internal_value,
                  'external_value': external_value,
                  'bTotal': bTotal,
-                 'feedback' :feedback,
+                 'feedback': feedback,
                  'leave_hours': leave_hours,
                  'idleTotal': idleTotal,
                  'attendance': attendance,
@@ -1552,7 +1572,8 @@ class ApproveTimesheetView(TemplateView):
             messages.success(self.request, "Records updated Successfully")
         else:
             messages.error(self.request, "Unable  to Process The Records ")
-        return HttpResponseRedirect('/myansrsource/timesheet/approve?startdate='+self.request.POST.get('weekstartDate')+'&enddate='+self.request.POST.get('weekendDate')+'')
+        return HttpResponseRedirect('/myansrsource/timesheet/approve?startdate=' + self.request.POST.get(
+            'weekstartDate') + '&enddate=' + self.request.POST.get('weekendDate') + '')
 
 
 @login_required
@@ -1574,9 +1595,9 @@ def getHours(request, wstart, wend, mem, project, label):
 
 @login_required
 def Dashboard(request):
-
     todays_date = datetime.now().date()
-    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day, date_of_birthO__month=todays_date.month, user_id__is_active=True)
+    birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day,
+                                             date_of_birthO__month=todays_date.month, user_id__is_active=True)
     if request.method == 'POST':
         myremainder = MyRemainderForm(request.POST)
         btg = BTGReportForm(request.POST)
@@ -1595,7 +1616,7 @@ def Dashboard(request):
             updateBtg.member = request.user
             updateBtg.save()
     remainder = MyRemainderForm()
-    #btg = BTGReportForm()
+    # btg = BTGReportForm()
     if hasattr(request.user, 'employee'):
         myRemainders = Remainder.objects.filter(
             user=request.user.employee
@@ -1755,7 +1776,7 @@ def Dashboard(request):
             workingHours = 40 - len(weekHolidays) * 8
     cp = ProjectTeamMember.objects.filter(
         member=request.user,
-        #project__closed=False
+        # project__closed=False
         project__endDate__gte=today
     ).values(
         'project__projectId',
@@ -1767,21 +1788,22 @@ def Dashboard(request):
         'plannedEffort'
     )
 
-    currYear=today.year
-    currMonth=today.month
-    currDay=today.day
-    eddte=datetime(int(currYear),int(currMonth),int(currDay))
-    attendenceDetail=employee.models.Attendance.objects.filter(
-     attdate__lte=eddte,
-     employee_id__user_id=request.user.id).values('swipe_in','swipe_out','attdate').filter(Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(attdate__isnull=False))#.exclude(swipe_in="", swipe_out="", attdate="")
-    swipe_display=[]
-    
-    
+    currYear = today.year
+    currMonth = today.month
+    currDay = today.day
+    eddte = datetime(int(currYear), int(currMonth), int(currDay))
+    attendenceDetail = employee.models.Attendance.objects.filter(
+        attdate__lte=eddte,
+        employee_id__user_id=request.user.id).values('swipe_in', 'swipe_out', 'attdate').filter(
+        Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(
+            attdate__isnull=False))  # .exclude(swipe_in="", swipe_out="", attdate="")
+    swipe_display = []
+
     for val in attendenceDetail:
-        temp={}
-        temp['date']=val['attdate'].strftime('%Y-%m-%d')
-        temp['swipe_in']=val['swipe_in']
-        temp['swipe_out']=val['swipe_out']
+        temp = {}
+        temp['date'] = val['attdate'].strftime('%Y-%m-%d')
+        temp['swipe_in'] = val['swipe_in']
+        temp['swipe_out'] = val['swipe_out']
         swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
@@ -1792,7 +1814,7 @@ def Dashboard(request):
     )
     myPeerReqCount = len(myReq)
     myReportee = employee.models.Employee.objects.filter(
-        manager=request.user.employee , user__is_active=True)
+        manager=request.user.employee, user__is_active=True)
     isManager = 0
     employee_color = Employee.objects.get(user_id=request.user.id)
     if employee_color.color:
@@ -1804,7 +1826,7 @@ def Dashboard(request):
         isManager = 1
     team_members = Employee.objects.filter((Q(manager_id=request.user.employee) |
                                             Q(employee_assigned_id=request.user.employee)), user__is_active=True)
-    request.session['unapprovedts'] = status_member(myReportee,True)[2]
+    request.session['unapprovedts'] = status_member(myReportee, True)[2]
     data = {
         'username': request.user.username,
         'firstname': request.user.first_name,
@@ -1826,7 +1848,7 @@ def Dashboard(request):
         'futureProjects': futureProjects,
         'activeProjects': totalActiveProjects,
         'activeMilestones': activeMilestones,
-        'unapprovedts':  request.session['unapprovedts'],
+        'unapprovedts': request.session['unapprovedts'],
         'myPeerReqCount': myPeerReqCount,
         'totalemp': totalEmployees,
         'isManager': isManager,
@@ -1896,7 +1918,6 @@ def checkUser(userName, password, request, form):
 
 
 class ManageTeamLeaderWizard(SessionWizardView):
-
     def get_template_names(self):
         return [TLTEMPLATES[self.steps.current]]
 
@@ -1945,6 +1966,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
                 pm.save()
         return HttpResponseRedirect('/myansrsource/dashboard')
 
+
 manageTeamLeader = ManageTeamLeaderWizard.as_view(TLFORMS)
 
 
@@ -1955,7 +1977,6 @@ def WrappedManageTeamLeaderView(request):
 
 
 class TrackMilestoneWizard(SessionWizardView):
-
     def get_template_names(self):
         return [TMTEMPLATES[self.steps.current]]
 
@@ -2069,6 +2090,7 @@ def saveData(self, pm, eachData, projectObj):
         pm.closed = eachData['closed']
         pm.save()
 
+
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 
 
@@ -2123,6 +2145,7 @@ def UpdateProjectInfo(request, newInfo):
         logger.error('Exception in UpdateProjectInfo :' + str(e))
         return {'crId': None}
 
+
 changeProject = ChangeProjectWizard.as_view(CFORMS)
 
 
@@ -2133,13 +2156,17 @@ def WrappedChangeProjectView(request):
 
 
 class CreateProjectWizard(SessionWizardView):
-
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectDocument'))
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
     def get_form(self, step=None, data=None, files=None):
         form = super(CreateProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
+        if step == 'Define Project' and form.is_valid():
+            self.request.session['signed'] = form.cleaned_data['signed']
+            self.request.session['PStartDate'] = form.cleaned_data['startDate'].strftime('%Y-%m-%d')
+            self.request.session['PEndDate'] = form.cleaned_data['endDate'].strftime('%Y-%m-%d')
         if step == 'Basic Information':
             if self.get_cleaned_data_for_step('Define Project') is not None:
                 signed = self.get_cleaned_data_for_step(
@@ -2152,12 +2179,7 @@ class CreateProjectWizard(SessionWizardView):
                 else:
                     logger.error("Basic Information step has signed as none")
                 if form.is_valid():
-                    self.request.session['PStartDate'] = form.cleaned_data[
-                        'startDate'
-                    ].strftime('%Y-%m-%d')
-                    self.request.session['PEndDate'] = form.cleaned_data[
-                        'endDate'
-                    ].strftime('%Y-%m-%d')
+                    a=0
             else:
                 logger.error(
                     "Basic Information step data is None" + str(form._errors))
@@ -2284,7 +2306,6 @@ class CreateProjectWizard(SessionWizardView):
 
 
 class ManageTeamWizard(SessionWizardView):
-
     def get_template_names(self):
         return [MEMBERTEMPLATES[self.steps.current]]
 
@@ -2377,15 +2398,15 @@ class ManageTeamWizard(SessionWizardView):
                     else:
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
-                           (eachData['endDate'] == ptm.endDate) and \
-                           (eachData['plannedEffort'] == ptm.plannedEffort) and \
-                           (eachData['member'] == ptm.member) and \
-                           (eachData['datapoint'] == ptm.datapoint) and \
+                                (eachData['endDate'] == ptm.endDate) and \
+                                (eachData['plannedEffort'] == ptm.plannedEffort) and \
+                                (eachData['member'] == ptm.member) and \
+                                (eachData['datapoint'] == ptm.datapoint) and \
                                 (eachData['rate'] == ptm.rate):
                             pass
                         else:
                             ptm.project = project
-                            del(eachData['id'])
+                            del (eachData['id'])
                             for k, v in eachData.iteritems():
                                 setattr(ptm, k, v)
                             ptm.save()
@@ -2393,7 +2414,7 @@ class ManageTeamWizard(SessionWizardView):
                 else:
                     ptm = ProjectTeamMember()
                     ptm.project = project
-                    del(eachData['id'])
+                    del (eachData['id'])
                     for k, v in eachData.iteritems():
                         setattr(ptm, k, v)
                     ptm.save()
@@ -2430,7 +2451,7 @@ def NotifyMember(ptmid, delete):
         l = []
         for eachManager in pm:
             name = eachManager['user__first_name'] + \
-                "  " + eachManager['user__last_name']
+                   "  " + eachManager['user__last_name']
             l.append(name)
         if len(l) > 1:
             manager = ",".join(l)
@@ -2473,16 +2494,25 @@ def saveProject(request):
 
     if request.method == 'POST':
         try:
+            #: code to check not more than 3 PM per project
+            pm = []
+            for eachId in eval(request.POST.get('pm')):
+                pm.append(eachId)
+            pm_count = len(pm)
+            if pm_count > 3:
+                messages.error(request, "OOPS can't select more than 3 ProjectManger")
+                return render(
+                    request,
+                    'MyANSRSource/projectCreationFailure.html',
+                    {})
             pr = Project()
             pr.name = request.POST.get('name')
             pType = projectType.objects.get(
                 id=int(request.POST.get('projectType'))
             )
             pr.projectType = pType
-            startDate = datetime.fromtimestamp(
-                int(request.POST.get('startDate'))).date()
-            endDate = datetime.fromtimestamp(
-                int(request.POST.get('endDate'))).date()
+            startDate = request.session['PStartDate']
+            endDate = request.session['PEndDate']
             pr.startDate = startDate
             pr.endDate = endDate
             pr.po = request.POST.get('po')
@@ -2543,6 +2573,33 @@ def saveProject(request):
                 for eachRecp in senderEmail:
                     SendMail(context, eachRecp, 'externalproject')
 
+            try:
+                pd = ProjectDetail()
+                pd.project_id = pr.id
+                pd.projectFinType = request.POST.get('projectFinType')
+                pd.ProjectCost = request.POST.get('projectCost')
+                sub_practice = request.POST.get('subpractice')
+                sub_practice_id = SubPractice.objects.get(name=sub_practice).id
+                pd.SubPractice_id = sub_practice_id
+                practice_name = request.POST.get('practicename')
+                practice_id = Practice.objects.get(name=practice_name).id
+                pd.PracticeName_id = practice_id
+                del_mgr = request.POST.get('DeliveryManager')
+                del_mgr_id = User.objects.get(username=del_mgr).id
+                pd.deliveryManager_id = del_mgr_id
+                sop = request.POST.get('sopname')
+                sop_id = qualitysop.objects.get(name=sop).id
+                pd.SOP_id = sop_id
+                scope = request.POST.get('ProjectScope')
+                scope_id = ProjectScope.objects.get(scope=scope).id
+                pd.Scope_id = scope_id
+                asset = request.POST.get('projectasset')
+                asset_id = ProjectAsset.objects.get(Asset=asset).id
+                pd.Asset_id = asset_id
+                pd.save()
+            except ValueError as e:
+                logger.exception(e)
+
         except ValueError as e:
             logger.exception(e)
             return render(
@@ -2550,13 +2607,14 @@ def saveProject(request):
                 'MyANSRSource/projectCreationFailure.html',
                 {})
 
-        data = {'projectCode':  projectIdPrefix, 'projectId': pr.id,
+        data = {'projectCode': projectIdPrefix, 'projectId': pr.id,
                 'projectName': pr.name, 'customerId': pr.customer.id}
         return render(request, 'MyANSRSource/projectSuccess.html', data)
     # This is not a post request.  This cannot be possible unless someone is
     # trying to hack things.  Let us just send them back to dashboard.
     else:
         return HttpResponseRedirect(request, '/myansrsource/dashboard')
+
 
 createProject = CreateProjectWizard.as_view(FORMS)
 
@@ -2581,7 +2639,7 @@ def notify(request):
     l = []
     for eachManager in pm:
         name = eachManager['user__first_name'] + \
-            "  " + eachManager['user__last_name']
+               "  " + eachManager['user__last_name']
         l.append(name)
     if len(l) > 1:
         manager = ",".join(l)
@@ -2637,7 +2695,7 @@ def ViewProject(request):
             project=projectObj).values(
             'member__username', 'startDate', 'endDate',
             'plannedEffort', 'rate'
-            )
+        )
         if basicInfo['internal']:
             cleanedMilestoneData = []
         else:
@@ -2657,7 +2715,7 @@ def ViewProject(request):
             'teamMember': cleanedTeamData,
             'milestone': cleanedMilestoneData,
             'changes': changeTracker,
-            }
+        }
         if len(changeTracker):
             closedOn = [
                 eachRec
@@ -2694,18 +2752,19 @@ def GetTasks(request, projectid):
         ).values('code', 'name', 'id', 'taskType', 'norm')
         for eachRec in tasks:
             eachRec['norm'] = float(eachRec['norm'])
-        a1=request.GET.get('endDate')
+        a1 = request.GET.get('endDate')
         date = datetime(year=int(a1[4:8]), month=int(a1[2:4]), day=int(a1[0:2])).date()
-        pEndDate=Project.objects.get(pk=projectid).endDate
-        diff=date-pEndDate
-        diff=diff.days
-        if diff<0:
-            diff=0
-        data = {'data': list(tasks), 'flag':diff}
+        pEndDate = Project.objects.get(pk=projectid).endDate
+        diff = date - pEndDate
+        diff = diff.days
+        if diff < 0:
+            diff = 0
+        data = {'data': list(tasks), 'flag': diff}
     except Task.DoesNotExist:
-        diff=0
-        data = {'data': list(), 'flag':diff}
+        diff = 0
+        data = {'data': list(), 'flag': diff}
     return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 def GetHolidays(request, memberid):
     currentUser = User.objects.get(pk=memberid)
@@ -2725,7 +2784,7 @@ def GetHolidays(request, memberid):
 
 def GetProjectType(request):
     try:
-        strtDate1=request.GET.get('strtDate')
+        strtDate1 = request.GET.get('strtDate')
         date1 = datetime(year=int(strtDate1[4:8]), month=int(strtDate1[2:4]), day=int(strtDate1[0:2])).date()
         typeData = ProjectTeamMember.objects.values(
             'project__id',
@@ -2733,8 +2792,8 @@ def GetProjectType(request):
             'project__projectType__code',
             'project__projectType__description'
         ).filter(project__endDate__gte=date1
-        #project__closed=False
-        )
+                 # project__closed=False
+                 )
         data = {'data': list(typeData)}
     except ProjectTeamMember.DoesNotExist:
         data = {'data': list()}
@@ -2769,6 +2828,6 @@ def is_internal(request):
     try:
         obj = Project.objects.get(pk=request.GET.get('project_id'))
         internal = obj.internal
-    except :
+    except:
         internal = 0
     return HttpResponse(json.dumps({'is_internal': int(internal)}), content_type="application/json")
