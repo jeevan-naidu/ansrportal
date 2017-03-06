@@ -13,18 +13,17 @@
                   <div class="panel-body">
                   <div class="row">
                     <div class="col-sm-2 pull-right">
-                      <select name="" class="input-sm" value={{designation_all}}>
-                        <option>Designation</option>
-                        <option></option>
-                        <option>Default</option>
+                      <select name="" class="input-sm">
+                        {% for department in department %}
+                            <option value="department">{{department}}</option>
+                        {% endfor %}
                       </select>
                     </div>
                     <div class="col-sm-2 pull-right">
                       <select name="" class="input-sm">
-                        <option>Department</option>
-                        <option>Default</option>
-                        <option>Default</option>
-                      </select>
+                        {% for designation in designation_all %}
+                            <option value="designation">{{designation}}</option>
+                        {% endfor %}
                     </div>
 
                     <div class="col-sm-3">
@@ -40,7 +39,7 @@
                           <th>Name</th>
                           <th>Designation</th>
                           <th>Skills</th>
-                          <th>Date Of Update</th>
+                          
                           <th>Joining date</th>
                           <th>Action</th>
                         </tr>
@@ -50,8 +49,8 @@
                           <td>{{id}}</td>
                           <td>{{name}}</td>
                           <td>{{designation}}</td>
-                          <td>{{skills}}</td>
-                          <td>{{date}}</td>
+                          <td>{% for skill in skills %}
+                             {{ skill }} </br>{% endfor %}
                           <td>{{doj}}</td>
                           <td>Dummy data</td>
                       </tbody>
