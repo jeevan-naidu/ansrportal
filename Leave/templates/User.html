@@ -546,7 +546,7 @@
                         </div>
                     </div>
 
-                <div class="row pad5 progress-bar-container" id="international_travel">
+                <div class="row pad5 progress-bar-container" id="ooo_int">
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-4">
@@ -1061,31 +1061,31 @@ function shortLeaveGridLoad(){
     }
 
 
-    case 'international_travel':
+    case 'ooo_int':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
       var approved=({{leave.approved}}>0) ? {{leave.approved}}:0;
       var total=({{leave.balance}}>0) ? {{leave.balance}}:0;
 
       if(applied!=0){
-        $('#international_travel .applied').text(applied);
+        $('#ooo_int .applied').text(applied);
       }
       if(approved!=0){
-      $('#international_travel .approved').text(approved);
+      $('#ooo_int .approved').text(approved);
       }
       if(total!=0){
-      $('#international_travel .total').text(total +' days');
+      $('#ooo_int .total').text(total +' days');
       }
 
       if(applied || approved || total){
         applied_perc = (applied/(applied + approved + total))*100;
         approved_perc = (approved/(applied + approved + total))*100;
-        $('#international_travel .applied').css({'width' : applied_perc+"%"});
-        $('#international_travel .approved').css({'width' : approved_perc+"%"});
+        $('#ooo_int .applied').css({'width' : applied_perc+"%"});
+        $('#ooo_int .approved').css({'width' : approved_perc+"%"});
       }
       else{
-        $('#international_travel .applied').css({'width' : "0%"});
-        $('#international_travel .approved').css({'width' : "0%"});
+        $('#ooo_int .applied').css({'width' : "0%"});
+        $('#ooo_int .approved').css({'width' : "0%"});
       }
       break;
     }
@@ -1248,7 +1248,7 @@ function removeSelection(){
   $("#pay_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#work_from_home .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#ooo_dom .col-md-12 .row").removeClass("Lv-Type-Selected");
-  $("#international_travel .col-md-12 .row").removeClass("Lv-Type-Selected");
+  $("#ooo_int .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#comp_off_apply .col-md-12 .row").removeClass("Lv-Type-Selected");
   $("#sabbatical .col-md-12 .row").removeClass("Lv-Type-Selected");
@@ -1273,7 +1273,7 @@ function gridLoad(name){
       'casual_leave':"Casual Leave",
       'sick_leave': 'Sick Leave',
       'earned_leave': 'Earned Leave' ,
-      'international_travel':'International Travel',
+      'ooo_int':'International Travel',
       'ooo_dom':'Domestic Travel'};
   leavename = getLeaveName[name];
   $("#leave_name").text(leavename);
@@ -1423,14 +1423,14 @@ removeSelection();
    }
   });
 
-    $('#international_travel .col-md-12 .row').click(function(){
+    $('#ooo_int .col-md-12 .row').click(function(){
     removeSelection();
-   $('#international_travel .col-md-12 .row').addClass("Lv-Type-Selected");
+   $('#ooo_int .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
    creditview('International Travel');
    }
    else{
-   gridLoad("international_travel");
+   gridLoad("ooo_int");
    }
 
   });
@@ -1487,7 +1487,7 @@ $('#child_care .col-md-12 .row').click(function(){
         'Sick Leave':'sick_leave',
         'Earned Leave':'earned_leave',
         'Domestic Travel': 'ooo_dom',
-        'International Travel':'international_travel'
+        'International Travel':'ooo_int'
     };
   gridLoad(LeaveName[name]);
   });
