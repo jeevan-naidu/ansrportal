@@ -35,25 +35,31 @@
                     <table class="table table-striped" id="data-tables">
                       <thead style="color: #fff;background: #444">
                         <tr>
-                          <th>ID</th>
+                          <th class="hidden">ID</th>
                           <th>Name</th>
                           <th>Designation</th>
+                            <!--<th>Department</th>-->
                           <th>Skills</th>
-                          
                           <th>Joining date</th>
-                          <th>Action</th>
+
                         </tr>
                       </thead>
+
                       <tbody>
+                      {% for element in lists %}
                         <tr>
-                          <td>{{id}}</td>
-                          <td>{{name}}</td>
-                          <td>{{designation}}</td>
-                          <td>{% for skill in skills %}
+                          <td class="hidden">{{element.id}}</td>
+                          <td>{{element.name}}</td>
+                          <td>{{element.designation}}</td>
+                            <!--<td>{{element.department}}</td>-->
+                          <td>{% for skill in element.skills %}
                              {{ skill }} </br>{% endfor %}
-                          <td>{{doj}}</td>
-                          <td>Dummy data</td>
+                          <td>{{element.doj}}</td>
+
+                        </tr>
+                      {% endfor %}
                       </tbody>
+
                     </table>
 
 
