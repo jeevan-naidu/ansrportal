@@ -1462,11 +1462,11 @@ $('#child_care .col-md-12 .row').click(function(){
 
  {% else %}
   if (value == 'Credit'){
-  creditview('Earned Leave');
+  creditview('Maternity Leave');
   }
   else
   {
-  gridLoad("Maternity Leave");
+  gridLoad("paternity_leave");
   }
  {% endif %}
 
@@ -1668,21 +1668,23 @@ $(window).load(function(){
 
 
 <script type="text/javascript">
-$("#type_select").change(function(){
+$("#type_select").change(function(e){
     value = $(this).val()
    if (value == 'Credit')
        {
-        $('#month_select').hide()
+        $('#month_select').prop('disabled', 'disabled');
         creditview('Earned Leave');
+        e.stopImmediatePropagation();
        }
    else
     {
-        $('#month_select').show()
+        $('#month_select').prop('disabled', false);
     }
 })
 function creditview(name)
 {
         var name = name
+        $('.table-bordered').empty();
         $.ajax(
         {
             type : "GET",
@@ -1690,8 +1692,16 @@ function creditview(name)
             data :{'leave':name,user_id:{{userid}}} ,
             success : function(data)
             {
-                $('.table-bordered tr, .table-bordered tbody').remove();
-                $('.table-bordered').append(data);
+              if(data['balance'])
+              {
+              $('.table-bordered').append(data['balance']);
+               $('.table-bordered').append(data['credit']);
+
+               }
+               else
+               {
+                $('.table-bordered').append(data['credit']);
+                }
 
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
