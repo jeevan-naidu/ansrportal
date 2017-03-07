@@ -119,16 +119,16 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
 
     try:
         # print chapter, "chapter"
-        print active_tab, "active_tab", project, chapter, author
+        # print active_tab, "active_tab", project, chapter, author
         result = None
         if active_tab and component is not None:
             try:
                 chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
-                print chapter_component_obj
+                # print chapter_component_obj
                 result = QASheetHeader.objects.get(project=project, chapter_component=chapter_component_obj,
                                                    author=author,
                                                    review_group=ReviewGroup.objects.get(id=active_tab))
-                print result
+                # print result
             except Exception as e:
                 print str(e)
                 logger.error(" {0} ".format(str(e)))
@@ -193,7 +193,7 @@ def get_template_process_review(request):
                     tab_order[str(ele.review_group)] = None
 
     except ObjectDoesNotExist:
-        tabs = team_members = tab_name = ''
+        tabs, team_members, tab_name = ''
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order}
     # print context_data
@@ -201,6 +201,16 @@ def get_template_process_review(request):
         json.dumps(context_data),
         content_type="application/json"
     )
+
+
+def forbidden_access(self, form, project, message_code):
+    msg_dict = {'not_assigned': "Sorry You are not assigned to review this chapter",
+                "missing_config": "Sorry configuration is missing please contact your manager",
+                "wait": "Sorry You cant access this chapter till review is completed"}
+
+    messages.error(self.request, msg_dict[message_code])
+    return render(self.request, self.template_name, {'form': form,
+                                                     'review_group': get_review_group(project), })
 
 
 class AssessmentView(TemplateView):
@@ -232,21 +242,24 @@ class AssessmentView(TemplateView):
             try:
 
                 # print "im in try"
-                # print project, chapter, author, active_tab
+                # print project.id, chapter, author, active_tab
                 request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
                 request.session['component'] = component
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
+                if obj.reviewed_by_id != request.user:
+                    return forbidden_access(self, form, project, "not_assigned")
+
                 if obj is None:
-                    messages.error(self.request, "Sorry configuration is missing please contact your manager")
-                    return render(self.request, self.template_name, {'form': form})
-                if request.user is author:
+                    return forbidden_access(self, form, project, "config_missing")
+
+                if request.user == author:
                     request.session['author_logged_in'] = True
-                    if not obj.review_group_status:
-                        messages.error(self.request, "Sorry You cant access this chapter till review is completed")
-                        return render(self.request, self.template_name, {'form': form})
+                    if not obj.review_group_status and not obj.author_feedback_status:
+                        return forbidden_access(self, form, project, "wait")
                 else:
+                    # print request.user , author
                     request.session['author_logged_in'] = False
                 # print "im here"
                 # if obj is None:
@@ -271,7 +284,8 @@ class AssessmentView(TemplateView):
                 messages.error(self.request, "Sorry No Records Found")
         else:
             form = BaseAssessmentTemplateForm()
-        qms_form = review_report_base(template_id, project)
+        qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
+                                                                                         component=component))
 
         qms_data = {}
         qms_data_list = []
@@ -307,7 +321,7 @@ class AssessmentView(TemplateView):
                             severity_count[v] += 1
                         else:
                             severity_count[v] = 1
-                            print severity_count, v
+                            # print severity_count, v
 
                     if k == 'defect_severity_level__defect_classification':
                         qms_data['defect_classification'] = v
@@ -340,7 +354,7 @@ class AssessmentView(TemplateView):
         score = {}
         tmp_weight = {}
         defect_density = {}
-        print severity_count
+        # print severity_count
         s = SeverityLevelMaster.objects.filter(is_active=True)
         for k, v in severity_count.iteritems():
             severity_level_obj = s.get(id=int(k))
@@ -691,7 +705,7 @@ def chapter_summary(request):
                     qms_data[obj.id]['name'] = obj.name
                     tmp_obj = QASheetHeader.objects.filter(project_id=project_id, chapter_id=obj.id)
                     question_count = sum(tmp_obj.filter().values_list('count', flat=True))
-                    print question_count
+                    # print question_count
                     qa_obj = tmp_obj[0]
                     qms_data[obj.id]['author'] = qa_obj.author.username
                     for s in severity_level:

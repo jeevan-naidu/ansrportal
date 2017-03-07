@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Project, Chapter
 from simple_history.models import HistoricalRecords
 
-fixed_status = (('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
+fixed_status = (('', '------'), ('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
 
 
 class TimeStampAbstractModel(models.Model):
@@ -149,8 +149,6 @@ class QASheetHeader(TimeStampAbstractModel):
                        " : " + str(self.review_group) +
                        " : " + str(self.chapter)
                        )
-
-
 
 
 class ReviewReport(TimeStampAbstractModel):

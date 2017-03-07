@@ -132,7 +132,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
         # # self.field_order['process_model', 'template', 'review_group', 'project', 'chapter', 'author']
 
 
-def review_report_base(template_id, project_id):
+def review_report_base(template_id, project_obj, chapter_component_obj):
     class ReviewReportForm(forms.Form):
         review_item = forms.CharField()
         qms_id = forms.IntegerField(label="id",
@@ -162,13 +162,25 @@ def review_report_base(template_id, project_id):
 
         class Meta:
             model = ReviewReport
-            fields = ('review_item', 'defect', 'is_fixed', 'fixed_by', 'remarks', 'qms_id', 'screen_shot')
-
+            fields = ('review_item', 'defect', 'severity_type',  'is_fixed',
+                      'fixed_by', 'remarks', 'qms_id', 'screen_shot')
+            # choice_fields = ('severity_type','is_fixed','delete')
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
-            template_obj = ProjectTemplateProcessModel.objects.get(project=project_id)
+            template_obj = ProjectTemplateProcessModel.objects.get(project=project_obj)
             defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
+            try:
+                qa_obj = QASheetHeader.objects.filter(project=project_obj, chapter_component=chapter_component_obj)[0]
+                if qa_obj.review_group_status and qa_obj.author_feedback_status:
+                    for field in self.fields:
+                        self.fields[field].widget.attrs['disabled'] = True
+            except Exception as e:
+                print str(e)
+                pass
+
+                    # self.fields[field].widget.attrs['readonly'] = True
+            # print self.fields
             # project_id_field = self.fields['project'].initial \
             #                    or self.initial.get('project') \
             #                    or self.fields['project'].widget.value_from_datadict(self.data, self.files,
@@ -180,6 +192,7 @@ def review_report_base(template_id, project_id):
             #             project_obj = Project.objects.get(id=int(project_id_field))
             #         except:
             #             project_obj = project_id_field
+                    # print project_obj
             #         self.fields['author'].queryset = ProjectTeamMember.objects.filter(project=project_obj).values(
             #             'member_id')
             # print self.fields['author'].queryset

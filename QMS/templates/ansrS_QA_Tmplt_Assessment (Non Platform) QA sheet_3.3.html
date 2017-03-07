@@ -104,7 +104,6 @@
 
                 </div>
 
-                {% if review_group %}
                 <ul class="nav nav-tabs">
                     {% for groups in review_group %}
               <li {% if request.session.active_tab|add:"0" == groups.id|add:"0" %} class="active review" {% else %} class="review" {% endif%}id={{groups.id}} >
@@ -114,7 +113,6 @@
                     <!--<li class="review disabled" id="3" ><a href="#tab3" >CE1</a></li> -->
                     {% endfor %}
                 </ul><!-- ./tab -->
-                {% endif %}
 
 
                 <br>
@@ -347,7 +345,7 @@
                          <div class="panel-footer clearfix">
                              <input type="submit" id="form-submit" value="submit"
                                     class="btn btn-info btn-sm pull-right"/>
-                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#reviewComplete">Review Completed</div>
+                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
                              <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
                                     value="Add Item" {% if request.session.author_logged_in %} disabled {% endif %}/>
 
@@ -669,6 +667,11 @@ $(document).ready(function(){
 
 
     $(document).ready(function(){
+        if ( $("[id$='review_item']").is('[disabled=disabled]') ) {
+
+            $("[id$='DELETE']").prop('disabled','disabled');
+            $('#form-submit,#add_button,#review_modal').remove();
+        }
         $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
     })
 
