@@ -40,7 +40,6 @@ ul{list-style: none;padding-left: 0px;}
                {% endif %}
                {% endfor %}
                {% endif %}
-                    <!--<form id="acceptanceform" class="form-horizontal" name="acceptanceform" role="form" method="post" enctype="multipart/form-data" data-toggle="validator">-->
                         <table class="table table-condensed table-striped myansr-table">
                           <thead>
                             <th class="">Name</th>
@@ -53,17 +52,18 @@ ul{list-style: none;padding-left: 0px;}
                             <th class="">Action</th>
                           </thead>
                    {% for c in resigneedata %}
+
                      {%  if c.exit_revert_flag == False and c.exit_interview_notes == None %}
                    <tr>
                        <td>{{c}}<input class="userid" type="hidden" value = "{{c.User_id}}"/></td>
                        <td>
-                        <input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class ="acceptance" id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%}>
+                        <input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class ="acceptance" id="manageraccepted_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.manager_accepted == True%}checked{%endif%} {% if c.manager_accepted == False%} value ="" {%endif%}>
                        </td>
                        <td>
                         <textarea {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%} class = "feedback noresize" id="managerfeedback_{{c.User_id}}" maxlength="1000" name="managercomment_{{c.User_id}}" class="form-control input-sm noresize">{{c.manager_comment}}</textarea>
                        </td>
-                       <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}" type="checkbox" {% if c.rehire_manager == True%}checked{%endif%}></td>
-                       <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}" type="checkbox" {% if c.backup_taken == True%}checked{%endif%}></td>
+                       <td><input  {% if c.User_id|DirectReportee:user == 0  %} disabled {%endif%}  class ="rehiremgr" id="rehire_{{c.User_id}}" name="rehire_{{c.User_id}}"  type="checkbox" {% if c.rehire_manager == True%}checked{%endif%} {% if c.rehire_manager == None or c.rehire_manager == False%} value="" {%endif%}></td>
+                       <td><input  {% if c.User_id|DirectReportee:user == 0 %} disabled {%endif%}  class ="backup" id="backup_{{c.User_id}}" name="manageraccepted_{{c.User_id}}"  type="checkbox" {% if c.backup_taken == True%}checked{%endif%} {% if c.backup_taken == None or c.backup_taken == False%} value ="" {%endif%}></td>
                        <td>
                          <div class='input-group date datetimepicker' id='datetimepicker'>
                          <input name="finaldate_{{c.User_id}}" data-resign-date="{{c.exit_revert_note |date:'o-m-d'}}" type='text' class="form-control datepicker input-sm finaldate" value='{{c.last_date |date:"o-m-d"}}'  />
@@ -77,7 +77,7 @@ ul{list-style: none;padding-left: 0px;}
                             {% endfor %}
       <script type="text/javascript">
             $(function () {
-            $('.acceptance,.rehiremgr,.backup,.hrconcent,.hrrehire').on('click', function () {
+            $('.acceptance,.rehiremgr,.backup').on('click', function () {
              $(this).val(this.checked ? 'on' : '');
             });
             $('.datetimepicker').datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
@@ -86,35 +86,32 @@ ul{list-style: none;padding-left: 0px;}
         var start_date = $(this).parent().parent().find('.finaldate').attr('data-resign-date');
         var end_date = $(this).parent().parent().find('.finaldate').val();
 
-        if(start_date > end_date){
-          swal(
-            'Resignation date : ' + start_date,
-            'Last date should not be earlier than the resignation date',
-            'error'
-          )
-        }else{
+            if(start_date > end_date){
+              swal(
+                'Resignation date : ' + start_date,
+                'Last date should not be earlier than the resignation date',
+                'error'
+              )
+                }else{
+                    manager_concent = $(this).parent().parent().find('.acceptance').val();
+                    mgr_feedback = $(this).parent().parent().find('.feedback').val();
+                    manager_rehire = $(this).parent().parent().find('.rehiremgr').val();
+                    mgr_backup = $(this).parent().parent().find('.backup').val();
+                    final_date = $(this).parent().parent().find('.finaldate').val();
+                    user_id = $(this).parent().parent().find('.userid').val();
 
+                    $.ajax({
+                       url : "/exitapp/update-manager-value/",
+                        type : "GET",
+                        data : { 'final_date':final_date, 'mgr_backup':mgr_backup,'id':user_id, 'manager_concent':manager_concent, 'mgr_feedback':mgr_feedback,'manager_rehire':manager_rehire},
+                        success : function(json) {
+                        if (json == 'success'){
+                        swal("Completed!", "Employee data has been submitted.", "success");
+                        }
+                        }
+                        });
 
-
-            manager_concent = $(this).parent().parent().find('.acceptance').val();
-            mgr_feedback = $(this).parent().parent().find('.feedback').val();
-            manager_rehire = $(this).parent().parent().find('.rehiremgr').val();
-            mgr_backup = $(this).parent().parent().find('.backup').val();
-            final_date = $(this).parent().parent().find('.finaldate').val();
-            user_id = $(this).parent().parent().find('.userid').val();
-            $.ajax({
-               url : "/exitapp/update-manager-value/",
-                type : "GET",
-                data : { 'final_date':final_date, 'mgr_backup':mgr_backup,'id':user_id, 'manager_concent':manager_concent, 'mgr_feedback':mgr_feedback,'manager_rehire':manager_rehire},
-                success : function(json) {
-                if (json == 'success'){
-                swal("Completed!", "Employee data has been submitted.", "success");
-                    console.log("json");
                 }
-                }
-                });
-
-        }
 
 
 

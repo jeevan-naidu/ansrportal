@@ -80,12 +80,15 @@ def update_manager_concent(request):
     resign_info.last_date = final_date
     resign_info.updated_on = timezone.now()
     resign_info.save()
+    mgr_id.exit = final_date
+    mgr_id.save()
     PostAcceptedMailMGR.delay(user_email.first_name, user_email.email, final_date, manageremail.email, mgr_feedback)
     return HttpResponse('success')
 
 
 def update_hr_concent(request):
     id = request.GET['id']
+    mgr_id = Employee.objects.get(user_id=id)
     user_email = User.objects.get(id=id)
     final_date = request.GET['final_date']
     hr_feedback = request.GET['hr_feedback']
@@ -99,6 +102,8 @@ def update_hr_concent(request):
     resign_info.last_date = final_date
     resign_info.updated_on = timezone.now()
     resign_info.save()
+    mgr_id.exit = final_date
+    mgr_id.save()
     PostAcceptedMailHR.delay(user_email.first_name, user_email.email, final_date, hr_feedback)
     return HttpResponse('success')
 
