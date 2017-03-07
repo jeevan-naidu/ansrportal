@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
 {% block siteTitle %}Daily Interview Report{% endblock %}
-{% block pageTitle %}Candidate Profile{% endblock %}
+{% block pageTitle %}Skill Set{% endblock %}
 {% block content  %}
 
             <div class="row">
@@ -13,6 +13,7 @@
                   <div class="panel-body">
                   <div class="row">
                     <div class="col-sm-2 pull-right">
+
                       <select name="" class="input-sm" id="department">
                         {% for department in department %}
                             <option value="{{department}}">{{department}}</option>
@@ -31,6 +32,7 @@
                     </div>
                   </div>
                   <hr>
+                    <a href="{% url 'export_users_xls' %}"><input type="button" id="export" value="Export"></a>
 
                     <table class="table table-striped" id="data-tables">
                       <thead style="color: #fff;background: #444">
@@ -74,24 +76,25 @@
             <!-- row -->
 
 
+<script type="text/javascript">
+
+    $("#department").on('change', function() {
+
+    value = this.value
+
+    $.ajax({
+    type: "GET",
+    url : '/skillset/dept',
+    data : {'value':value},
+    success : function(data){
+    var content = $(data).find("#data-tables").html();
+    $("#data-tables").html(content)
+    }
+    });
+    });
 
 
+</script>
 
-    <script  type="text/javascript">
-    
-      $("#department").on('click', function() {
-        
-          value =  this.value
-           $.ajax({
-                type: "GET",
-                url : '/skillset/dept',
-                data : {'value':value},
-                success : function(data){
-                  
-                }
-              });
-      });
-  
-    </script>
 
-  {% endblock %}
+{% endblock %}

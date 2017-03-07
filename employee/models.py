@@ -483,7 +483,7 @@ class EmployeeCompanyInformation(UpdateDate, UpdateBy):
     sub_practice = models.ForeignKey(SubPractice, default=None, verbose_name="Sub Practice", blank=True, null=True)
 
     def __unicode__(self):
-        return unicode(self.department.name)
+        return unicode(self.department)
 
     class Meta:
         verbose_name = 'Employee Company Information'

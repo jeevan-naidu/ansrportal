@@ -5,5 +5,6 @@ from skillset import views
 urlpatterns = [
 
     url(r'^$', views.SkillSet),
-    url(r'^dept$',views.dept),
+    url(r'^dept/$',views.dept),
+    url(r'^export/xls/$', views.export_users_xls, name='export_users_xls'),
 	]
