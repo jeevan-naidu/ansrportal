@@ -13,9 +13,9 @@
                   <div class="panel-body">
                   <div class="row">
                     <div class="col-sm-2 pull-right">
-                      <select name="" class="input-sm">
+                      <select name="" class="input-sm" id="department">
                         {% for department in department %}
-                            <option value="department">{{department}}</option>
+                            <option value="{{department}}">{{department}}</option>
                         {% endfor %}
                       </select>
                     </div>
@@ -37,8 +37,9 @@
                         <tr>
                           <th class="hidden">ID</th>
                           <th>Name</th>
+                          <th>Department</th>
                           <th>Designation</th>
-                            <!--<th>Department</th>-->
+                            
                           <th>Skills</th>
                           <th>Joining date</th>
 
@@ -50,8 +51,9 @@
                         <tr>
                           <td class="hidden">{{element.id}}</td>
                           <td>{{element.name}}</td>
+                          <td>{{element.department}}</td>
                           <td>{{element.designation}}</td>
-                            <!--<td>{{element.department}}</td>-->
+                            
                           <td>{% for skill in element.skills %}
                              {{ skill }} </br>{% endfor %}
                           <td>{{element.doj}}</td>
@@ -73,4 +75,23 @@
 
 
 
-{% endblock %}
+
+
+    <script  type="text/javascript">
+    
+      $("#department").on('click', function() {
+        
+          value =  this.value
+           $.ajax({
+                type: "GET",
+                url : '/skillset/dept',
+                data : {'value':value},
+                success : function(data){
+                  
+                }
+              });
+      });
+  
+    </script>
+
+  {% endblock %}

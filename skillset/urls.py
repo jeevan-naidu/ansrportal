@@ -5,5 +5,5 @@ from skillset import views
 urlpatterns = [
 
     url(r'^$', views.SkillSet),
-
+    url(r'^dept$',views.dept),
 	]
