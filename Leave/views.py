@@ -28,8 +28,6 @@ from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
 import calendar
 from CompanyMaster.models import Holiday
-from django.db.models import Func
-from django.db.models import Sum
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -37,44 +35,6 @@ AllowedFileTypes = ['jpg', 'csv', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'j
 leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
 leaveSessionDictionary = dict(SESSION_STATUS)
 leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home', 'ooo_dom', 'ooo_int']
-
-
-class Month(Func):
-    function = 'EXTRACT'
-    template = '%(function)s(MONTH from %(expressions)s)'
-    output_field = models.IntegerField()
-
-
-def creditview(request):
-    user_id = request.GET.get('user_id')
-    loggedInUser = request.user.id
-    leave = request.GET.get('leave')
-    now = datetime.datetime.now()
-    leave_type = {'Earned Leave': 1, 'Sick Leave': 2, 'Casual Leave': 3, 'Loss Of Pay': 4,
-                  'Bereavement Leave': 5, 'Maternity Leave': 6, 'Paternity Leave': 7, 'Comp Off Earned': 8,
-                  'Comp Off avail': 9, 'Pay Off': 10, 'Work From Home': 11, 'Sabbatical': 12, 'Short Leave': 13, 'Domestic Travel': 14, 'International Travel': 15}
-    credit_data = CreditEntry.objects.filter(user_id=user_id, leave_type_id=leave_type[leave], year=now.year).annotate(mon=Month('month')).values('comments','month').\
-            annotate(day=Sum('days'))
-    count = 0
-    count1 = 0
-    data1 = "<tr class=""><th>Sr.No</th><th>Month</th><th>Days</th><th>Comment</th></tr>"
-    for data in credit_data:
-        count = count + 1
-        data1 =data1+ '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'.\
-            format(count, data["month"],data["day"], data["comments"], )
-    data2 = "<tr class='balanceremove'><th>Sr.No</th><th>Applied</th><th>Approved</th><th>Prev-Year-Balance</th></tr>"
-    if leave == 'Earned Leave':
-        carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(now.year-1)).\
-            values('balance', 'year', 'applied', 'approved')
-        for balance in carry_forward:
-            count1 = count1 + 1
-            data2 = data2 + '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'. \
-                format(count1, balance["applied"], balance["approved"], balance["balance"], )
-    else:
-        data2 =''
-
-    json_data = json.dumps({'credit': data1, 'balance': data2})
-    return HttpResponse(json_data, content_type="application/json")
 
 
 def LeaveTransaction(request):
