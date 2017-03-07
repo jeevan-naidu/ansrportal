@@ -628,14 +628,18 @@
                           <span class="pull-right">
                            <label for="month_select">Select status&nbsp;:&nbsp;</label>
                            <select class="Lv-Tr-SelectMonth input-sm" id="month_select">
-                             {
                                <option>All</option>
                                <option>Open</option>
+                               <option>Approved</option>
+                               <option>Rejected</option>
+                               <option>Cancelled</option>
 
-                           <option>Approved</option>
-                           <option>Rejected</option>
-                           <option>Cancelled</option>
-
+                           </select>
+                           <span class="pull-left">
+                           <label for="type_select">Select Type&nbsp;:&nbsp;</label>
+                           <select class="Lv-Tr-SelectMonth input-sm" id="type_select">
+                               <option>Debit</option>
+                                <option>Credit</option>
                            </select>
                            </span>
 </div>
@@ -703,6 +707,7 @@
 
 
 <script>
+value = '';
 $('.remark').click(function(e){
             var class_name = this.id.split('_');
            $("#remark__"+class_name[1]).show();
@@ -1055,6 +1060,7 @@ function shortLeaveGridLoad(){
       break;
     }
 
+
     case 'ooo_int':
     {
       var applied=({{leave.applied}}>0) ? {{leave.applied}}:0;
@@ -1298,76 +1304,147 @@ function gridLoad(name){
 $('#earned_leave .col-md-12 .row').click(function(){
 removeSelection()
  $('#earned_leave .col-md-12 .row').addClass("Lv-Type-Selected");
- gridLoad("earned_leave");
+ if (value == 'Credit'){
+ creditview('Earned Leave');
+ }
+ else{
+  gridLoad("earned_leave");
+  }
 
 });
 
 $('#sick_leave .col-md-12 .row').click(function(){
 removeSelection();
  $('#sick_leave .col-md-12 .row').addClass("Lv-Type-Selected");
-  gridLoad("sick_leave");
+  if (value == 'Credit'){
+  creditview('Sick Leave');
+  }
+  else{
+    gridLoad("sick_leave");
+    }
 
 });
 
   $('#casual_leave .col-md-12 .row').click(function(){
    removeSelection();
    $('#casual_leave .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('Casual Leave');
+   }
+   else
+   {
    gridLoad("casual_leave");
+   }
 
   });
 
   $('#Bereavement .col-md-12 .row').click(function(){
    removeSelection();
    $('#Bereavement .col-md-12 .row').addClass("Lv-Type-Selected");
-  gridLoad("bereavement_leave");
+  if (value == 'Credit'){
+  creditview('Bereavement Leave');
+    }
+    else
+    {
+    gridLoad("bereavement_leave");
+    }
   });
 
   $('#loss_of_pay .col-md-12 .row').click(function(){
    removeSelection();
    $('#loss_of_pay .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('Loss Of Pay');
+   }
+   else
+   {
    gridLoad("loss_of_pay");
+   }
+
   });
 
   $('#comp_off_apply .col-md-12 .row').click(function(){
    removeSelection();
    $('#comp_off_apply .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('Comp Off avail');
+   }
+   else
+   {
    gridLoad("comp_off_avail");
+   }
   });
 
   $('#comp_off .col-md-12 .row').click(function(){
    removeSelection();
    $('#comp_off .col-md-12 .row').addClass("Lv-Type-Selected");
-   gridLoad("comp_off_earned");
+   if (value == 'Credit'){
+   creditview('Comp Off Earned');
+    }
+    else
+    {
+       gridLoad("comp_off_earned");
+    }
   });
 
   $('#pay_off .col-md-12 .row').click(function(){
    removeSelection();
    $('#pay_off .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('Pay Off');
+   }
+   else
+   {
    gridLoad("pay_off");
+   }
   });
 
   $('#work_from_home .col-md-12 .row').click(function(){
     removeSelection();
    $('#work_from_home .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('Work From Home');
+   }
+   else
+   {
    gridLoad("work_from_home");
+   }
   });
 
    $('#ooo_dom .col-md-12 .row').click(function(){
     removeSelection();
    $('#ooo_dom .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('Domestic Travel');
+   }
+   else
+   {
    gridLoad("ooo_dom");
+   }
   });
 
     $('#ooo_int .col-md-12 .row').click(function(){
     removeSelection();
    $('#ooo_int .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('International Travel');
+   }
+   else{
    gridLoad("ooo_int");
+   }
+
   });
 
   $('#sabbatical .col-md-12 .row').click(function(){
     removeSelection();
    $('#sabbatical .col-md-12 .row').addClass("Lv-Type-Selected");
+   if (value == 'Credit'){
+   creditview('Sabbatical');
+   }
+   else
+   {
    gridLoad("sabbatical");
+   }
   });
 
 
@@ -1375,15 +1452,27 @@ $('#child_care .col-md-12 .row').click(function(){
   removeSelection();
  $('#child_care .col-md-12 .row').addClass("Lv-Type-Selected");
  {% if male %}
+ if (value == 'Credit'){
+ creditview('Paternity Leave');
+ }
+ else
+ {
  gridLoad("paternity_leave");
+ }
 
  {% else %}
-  gridLoad("maternity_leave");
+  if (value == 'Credit'){
+  creditview('Maternity Leave');
+  }
+  else
+  {
+  gridLoad("paternity_leave");
+  }
  {% endif %}
 
 });
 
-  $("#month_select").change(function(){
+  $("#month_select, #type_select").change(function(){
     name = $("#leave_name").text();
     LeaveName = {'Sabbatical':'sabbatical',
         "Comp Off avail":'comp_off_avail',
@@ -1579,21 +1668,60 @@ $(window).load(function(){
 
 
 <script type="text/javascript">
+$("#type_select").change(function(e){
+    value = $(this).val()
+   if (value == 'Credit')
+       {
+        $('#month_select').prop('disabled', 'disabled');
+        creditview('Earned Leave');
+        e.stopImmediatePropagation();
+       }
+   else
+    {
+        $('#month_select').prop('disabled', false);
+    }
+})
+function creditview(name)
+{
+        var name = name
+        $('.table-bordered').empty();
+        $.ajax(
+        {
+            type : "GET",
+            url : '/leave/creeditview/',
+            data :{'leave':name,user_id:{{userid}}} ,
+            success : function(data)
+            {
+              if(data['balance'])
+              {
+              $('.table-bordered').append(data['balance']);
+               $('.table-bordered').append(data['credit']);
+
+               }
+               else
+               {
+                $('.table-bordered').append(data['credit']);
+                }
+
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#modal_body").html("<p style='color:red'>Oops! Something went wrong on the server. The details are below: "
+                + "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+
+              },
+            }
+          );
+          }
     
 $(window).load(function(){
     $('.select2.select2-container').removeAttr('style');
 })
 
+
 </script>
-
-
 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css" />
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
-
-
-
-
 
 <!-- Start In-Page Styles -->
 
@@ -1619,12 +1747,12 @@ $(window).load(function(){
 }
 .MyLeavesContainer h4{margin-bottom: 0px;}
 .select2-container .select2-selection--single{height: 30px;}
+
+
 </style>
 
 <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
-
-
 
 {% endblock %}
