@@ -45,7 +45,7 @@ class Month(Func):
     output_field = models.IntegerField()
 
 
-def creeditview(request):
+def creditview(request):
     user_id = request.GET.get('user_id')
     loggedInUser = request.user.id
     leave = request.GET.get('leave')
