@@ -341,16 +341,20 @@
 
 
                          </table>
-                         {%if review_formset %}
+                         {%if review_formset %}{% is_project_manager project request.user as result %}
                          <div class="panel-footer clearfix">
                              <input type="submit" id="form-submit" value="submit"
                                     class="btn btn-info btn-sm pull-right"/>
-                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
-                             <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
-                                    value="Add Item" {% if request.session.author_logged_in %} disabled {% endif %}/>
+                             {% if request.session.author_logged_in == False or result == True %}
+                                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
+                                <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                    value="Add Item"  />
+                             {% else %}
+                             <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
+                             {% endif %}
 
                          </div>
-                         {%endif %}
+                         {% endif %}
 </form>
 
 
@@ -414,9 +418,9 @@
                         <div class="modal-body"> 
                             <form class="form-horizontal">
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">Field Name : </label>
+                              <label class="col-sm-4 control-label">Comment : </label>
                               <div class="col-sm-7 controls">
-                              <textarea class="input-border-btm" ></textarea>
+                              <textarea class="input-border-btm" id ="review_feedback"></textarea>
                               </div>
 
                             </div>
@@ -425,8 +429,8 @@
                         
                         </div>
                         <div class="modal-footer background-login">
-                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
-                          <button type="button" class="btn vd_btn vd_bg-green">Save changes</button>
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel review </button>
+                          <button type="button" class="btn vd_btn vd_bg-green" id="submit_review">Submit</button>
                         </div>
                       </div>
                       <!-- /.modal-content --> 
@@ -672,6 +676,28 @@ $(document).ready(function(){
             $("[id$='DELETE']").prop('disabled','disabled');
             $('#form-submit,#add_button,#review_modal').remove();
         }
+        $( "#review_completed" ).click(function() {
+            $('#review_feedback').prop('required', true);
+        });
+        $( "#cancel_review" ).click(function() {
+            $('#review_feedback').prop('required', false);
+        });
+
+        $('#submit_review').on('click', function()  {
+        $.ajax({
+            url: '/qms/review_completed',
+            type: 'POST',
+            dataType :'json',
+            data: {"project_id": $('#id_project').val() ,"chapter_id":$('#id_chapter').val(),
+            "review_feedback":$('#review_feedback').val(), "review_group":$('.active review').prop('id')},
+            success: function (data) {
+            if (data == 1)  swal("voila!", "Review is completed!", "success")
+            else sweetAlert("Oops...", "Something went wrong!", "error");
+
+            },
+        });
+    });
+
         $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
     })
 

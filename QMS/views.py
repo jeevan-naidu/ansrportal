@@ -204,8 +204,8 @@ def get_template_process_review(request):
 
 
 def forbidden_access(self, form, project, message_code):
-    msg_dict = {'not_assigned': "Sorry You are not assigned to review this chapter",
-                "missing_config": "Sorry configuration is missing please contact your manager",
+    msg_dict = {'not_assigned': "Sorry You are not assigned to  this chapter",
+                "config_missing": "Sorry configuration is missing please contact your manager",
                 "wait": "Sorry You cant access this chapter till review is completed"}
 
     messages.error(self.request, msg_dict[message_code])
@@ -230,6 +230,7 @@ class AssessmentView(TemplateView):
         # print request.POST
         # reports = template_id = None
         active_tab = request.session['active_tab'] = request.POST.get('active_tab')
+        # print active_tab
         if form.is_valid():
 
             project = form.cleaned_data['project']
@@ -248,23 +249,22 @@ class AssessmentView(TemplateView):
                 request.session['author'] = author
                 request.session['component'] = component
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
-                if obj.reviewed_by_id != request.user:
-                    return forbidden_access(self, form, project, "not_assigned")
-
+                is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
+                # print is_pm, request.user, author
                 if obj is None:
                     return forbidden_access(self, form, project, "config_missing")
-
-                if request.user == author:
-                    request.session['author_logged_in'] = True
-                    if not obj.review_group_status and not obj.author_feedback_status:
-                        return forbidden_access(self, form, project, "wait")
                 else:
-                    # print request.user , author
-                    request.session['author_logged_in'] = False
-                # print "im here"
-                # if obj is None:
-                #     messages.error(self.request, "Sorry No Records Found")
-                #     return HttpResponseRedirect(reverse('qms'))
+                    qms_team_members = [obj.reviewed_by, author]
+                    if request.user == author:
+                        request.session['author_logged_in'] = True
+                        if not obj.review_group_status and not obj.author_feedback_status:
+                            return forbidden_access(self, form, project, "wait")
+                    else:
+                        # print request.user , author
+                        request.session['author_logged_in'] = False
+
+                    if not is_pm and request.user not in qms_team_members:
+                        return forbidden_access(self, form, project, "not_assigned")
 
                 project_template_process_model_obj = ProjectTemplateProcessModel.objects.get(project=project)
                 template_id = request.session['template_id'] = project_template_process_model_obj.template.id
@@ -375,8 +375,9 @@ class AssessmentView(TemplateView):
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
                                                          'template_id': template_id,
-                                                         'review_group': get_review_group(project), 'questions': obj.count,
-                                                         'severity_count': severity_count,
+                                                         'review_group': get_review_group(project),
+                                                         'questions': obj.count,
+                                                         'severity_count': severity_count, 'project': project.id,
                                                          'score': score, 'total_score': total_score,
                                                          'total_count': total_count, 'defect_density': defect_density,
                                                          'total_defect_density': total_defect_density,
@@ -686,6 +687,25 @@ class DashboardView(ListView):
             values('id', 'project','project_id', 'project__projectId', 'project__name', 'template_id').\
             annotate(chapter_count=Count('project__book__chapter'))
         return context
+
+
+def review_completed(request):
+    project_id = request.GET.get('id_project')
+    chapter_id = request.GET.get('id_chapter')
+    review_feedback = request.GET.get('review_feedback')
+    review_group = request.GET.get('review_group')
+    status = 0
+    try:
+        QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
+                                     review_group_id=review_group).update(review_group_status=True,)
+        status = 1
+    except Exception as e:
+        logger.error("check permission for author failed {0} ".format(str(e)))
+
+    return HttpResponse(
+        json.dumps(status),
+        content_type="application/json"
+    )
 
 
 def chapter_summary(request):

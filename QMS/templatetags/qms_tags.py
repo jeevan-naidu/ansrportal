@@ -5,6 +5,7 @@ import employee
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from QMS.models import *
+from MyANSRSource.models import ProjectManager
 import logging
 logger = logging.getLogger('MyANSRSource')
 register = template.Library()
@@ -105,3 +106,8 @@ def get_question_count(project):
     except Exception as e:
         logger.error("qms format{0}", str(e))
     return s
+
+
+@register.simple_tag
+def is_project_manager(project, user):
+    return ProjectManager.objects.filter(project=project, user=user).exists()
