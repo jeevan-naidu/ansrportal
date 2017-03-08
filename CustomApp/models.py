@@ -68,28 +68,28 @@ def user_queryset(request, config):
     queryset['active'] = model.objects.filter(user=request.user,
                                               is_active=True)
     queryset['inactive'] = model.objects.filter(user=request.user,
-                                                is_active=False).exclude(request_status__in=['Rolled Back'])
+                                                is_active=False).exclude(process_status__in=['Rolled Back'])
     queryset['rollback'] = model.objects.filter(user=request.user,
                                                 is_active=False).exclude(request_status__in=['Completed'])
     return queryset
 
 
-
 def can_approve(request, config):
-
     model = config.PROCESS[config.INITIAL]['model']
     role = config.PROCESS[config.INITIAL]['role']
     transition = config.PROCESS[config.INITIAL]['transitions']
-    queryset = model.objects.none()
+    queryset_active = model.objects.none()
+    queryset_inactive = model.objects.none()
     while transition[0]:
         next_transition = transition[0]
         method = config.PROCESS[next_transition]['method']
         access = method(request, role)
         role = config.PROCESS[next_transition]['role']
         if access:
-            queryset = queryset | access
+            queryset_active = queryset_active | access[0]
+            queryset_inactive = queryset_inactive | access[1]
         transition = config.PROCESS[next_transition]['transitions']
-    return queryset
+    return queryset_active, queryset_inactive
 
 
 def get_role(config, status, current_role):
@@ -154,7 +154,7 @@ def get_process_transactions(modal, transaction_modal):
     this methods uses for getting all the Fields for grid view
     :return: Fields
     """
-    abstract_fields = ['creation_date', 'last_updated', 'is_active', 'process_status', transaction_modal]
+    abstract_fields = ['creation_date', 'last_updated', 'is_active', transaction_modal]
     fields = [f.name for f in modal._meta.get_fields()]
     fields = filter(lambda x: x not in abstract_fields, fields)
     fields.sort(reverse=True)

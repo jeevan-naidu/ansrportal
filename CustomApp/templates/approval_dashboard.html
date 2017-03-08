@@ -33,6 +33,7 @@
                           <div class="tab-pane" id="tab_name{{ forloop.counter }}">
                             <div class="row">
                               <div class="col-sm-10">
+                              {% if forloop.counter == 1 %}
                                   {% for detail in object_detail %}
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label" style="text-align: left"><b>{{ detail.0.title }}</b></label>
@@ -46,6 +47,7 @@
                               </div>
                             </div>
                                       {% endfor %}
+                              {% endif %}
                               </div>
 
                             </div>
@@ -55,7 +57,8 @@
                               {% render_form name.1 template_pack='rest_framework/vertical' %}
                                   <div class="form-group"><button type="submit" class="btn btn-success btn-sm pull-right" value="SUBMIT">SUBMIT</button></div>
                                 </form>
-                          {% else %}
+                          {% elif name.0 != 'submitter' %}
+                              {{ name.0 }}
                               <fieldset disabled="disabled">
                           {% render_form name.1 template_pack='rest_framework/vertical' %}
                                </fieldset>
@@ -78,7 +81,7 @@
             </div>
             <!-- row -->
 
-
+<script src='{% static 'js/customapp.js' %}' type="text/javascript"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -104,6 +107,8 @@ $(document).ready(function() {
     }
   });
 
+
+
   $("form#activity_form").submit(function(){
 						 var formData = new FormData($(this)[0]);
 
@@ -122,7 +127,7 @@ $(document).ready(function() {
 								if (isConfirm) {
 
 								 $.ajax({
-									url: "/{{ app_name }}/update/{{ pk }}/",
+									url: "/{{ app_name }}/approve/{{ pk }}/",
 									type: 'post',
 									data: formData,
 									success: function (data) {

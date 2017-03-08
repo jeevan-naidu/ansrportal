@@ -39,7 +39,7 @@ class ProcessListView(generics.ListAPIView, LoginRequiredMixin):
 
 class StartProcess(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'templates/process_form.html'
+    template_name = 'templates/user_dashboard.html'
 
     def get(self, request, **kwargs):
         config = get_app_detail(request, **kwargs)
@@ -63,15 +63,81 @@ class StartProcess(APIView):
                 serializer.saveas(request)
                 record_added = True
             except:
-                record_added = False
+                return Response(status.HTTP_400_BAD_REQUEST)
 
             return Response({'serializer': serializer, 'record_added': record_added}, status.HTTP_201_CREATED)
         return Response(status.HTTP_400_BAD_REQUEST)
 
+class GetProcess(APIView):
+    """
+    Get Process details
+    """
+    renderer_classes = (TemplateHTMLRenderer,)
+    template_name = 'templates/update_form.html'
 
-class ProcessUpdate(APIView):
+    def get_object(self, pk, model):
+        try:
+            return model.objects.get(pk=pk)
+        except model.DoesNotExist:
+            raise Http404
+
+    def get_process(self, request, **kwargs):
+        config = get_app_detail(request, **kwargs)
+        serializer = config.PROCESS[config.INITIAL]['serializer']
+        modal = config.PROCESS[config.INITIAL]['model']
+        return serializer, modal
+
+    def get(self, request, pk, **kwargs):
+        app_name = get_app_name(request, **kwargs)
+        process = self.get_process(request, **kwargs)
+        process_object = self.get_object(pk, process[1])
+        serializer = process[0](process_object)
+        return Response({"serializer":serializer,
+                         "pk":pk,
+                         "app_name":app_name},)
+
+
+
+class UpdateProcess(APIView):
+    """
+    Retrieve, update or delete a process instance
+    """
+    def get_object(self, pk, model):
+        try:
+            return model.objects.get(pk=pk)
+        except model.DoesNotExist:
+            raise Http404
+
+    def get_process(self, request, **kwargs):
+        config = get_app_detail(request, **kwargs)
+        serializer = config.PROCESS[config.INITIAL]['serializer']
+        modal = config.PROCESS[config.INITIAL]['model']
+        return serializer, modal
+
+
+    def put(self, request, pk, **kwargs):
+        process = self.get_process(request, **kwargs)
+        process_object = self.get_object(pk, process[1])
+        serializer = process[0](process_object, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status.HTTP_201_CREATED)
+        return Response({'serializer':serializer})
+
+    def delete(self, request, pk, **kwargs):
+        process = self.get_process(request, **kwargs)
+        process_object = self.get_object(pk, process[1])
+        process_object.process_status = "Rolled Back"
+        process_object.request_status = "Withdrawn"
+        process_object.is_active = False
+        process_object.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProcessApproval(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'templates/process_update.html'
+    template_name = 'templates/approval_dashboard.html'
 
     def get_object(self, request, pk, **kwargs):
         try:
@@ -197,7 +263,7 @@ class ProcessUpdate(APIView):
 
 class ApproveListView(APIView):
     renderer_classes = (TemplateHTMLRenderer,)
-    template_name = 'templates/approval.html'
+    template_name = 'templates/process_form.html'
 
     def get(self, request, **kwargs):
         app_name = get_app_name(request, **kwargs)
