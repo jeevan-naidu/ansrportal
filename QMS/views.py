@@ -206,7 +206,9 @@ def get_template_process_review(request):
 def forbidden_access(self, form, project, message_code):
     msg_dict = {'not_assigned': "Sorry You are not assigned to  this chapter",
                 "config_missing": "Sorry configuration is missing please contact your manager",
-                "wait": "Sorry You cant access this chapter till review is completed"}
+                "wait": "Sorry You cant access this chapter till review is completed",
+                "config_missing_manager": "Hey you didn't configure for this review please do it",
+                }
 
     messages.error(self.request, msg_dict[message_code])
     return render(self.request, self.template_name, {'form': form,
@@ -252,7 +254,11 @@ class AssessmentView(TemplateView):
                 is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
                 # print is_pm, request.user, author
                 if obj is None:
-                    return forbidden_access(self, form, project, "config_missing")
+                    if is_pm:
+                        msg = "config_missing_manager"
+                    else:
+                        msg = "config_missing"
+                    return forbidden_access(self, form, project, msg)
                 else:
                     qms_team_members = [obj.reviewed_by, author]
                     if request.user == author:

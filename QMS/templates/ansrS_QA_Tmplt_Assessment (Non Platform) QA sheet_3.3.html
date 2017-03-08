@@ -686,7 +686,7 @@ $(document).ready(function(){
         $('#submit_review').on('click', function()  {
         $.ajax({
             url: '/qms/review_completed',
-            type: 'POST',
+            type: 'GET',
             dataType :'json',
             data: {"project_id": $('#id_project').val() ,"chapter_id":$('#id_chapter').val(),
             "review_feedback":$('#review_feedback').val(), "review_group":$('.active review').prop('id')},
