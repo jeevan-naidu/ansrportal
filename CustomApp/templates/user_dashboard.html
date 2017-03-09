@@ -24,12 +24,11 @@
                       <option>2015</option>
                     </select>
                   </div>
-     <button >
-     <a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Approve"
-                                class="pull-right btn btn-sm btn-success">
-                                                    {{ app_name }} Raise
-                                                  </a></button>
+
     <div class="panel-body">
+
+     <a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Approve" class="btn btn-sm btn-success" style="margin-bottom: 10px; ">{{ app_name }} Raise</a>
+
                     <ul class="nav nav-tabs">
                       <li class="active"><a href="#tab1" data-toggle="tab">Active</a></li>
                       <li><a href="#tab2" data-toggle="tab">Inactive</a></li>
@@ -67,7 +66,7 @@
 
                         {% endfor %}
                              <th><a id="{{ app_name }}-{{ process| field_name:"id" }}" onclick="delete_process()" data-toggle="modal" title="Approve"
-                                class="pull-right btn btn-sm btn-success">
+                                class="pull-right btn btn-sm btn-success the-right-button">
                                                     Delete
                                                   </a>
                                  <a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process_update" data-toggle="modal" title="Approve"
