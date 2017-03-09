@@ -6,5 +6,6 @@ urlpatterns = [
 
     url(r'^$', views.SkillSet),
     url(r'^dept/$',views.dept),
-    url(r'^export/xls/$', views.export_users_xls, name='export_users_xls'),
+    url(r'^designation/$', views.designation),
+    url(r'^lists/$', views.lists),
 	]

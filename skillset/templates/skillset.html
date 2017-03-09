@@ -1,6 +1,10 @@
 {% extends 'master.html' %}
 {% block siteTitle %}Daily Interview Report{% endblock %}
 {% block pageTitle %}Skill Set{% endblock %}
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</head>
 {% block content  %}
 
             <div class="row">
@@ -15,26 +19,29 @@
                     <div class="col-sm-2 pull-right">
 
                       <select name="" class="input-sm" id="department">
+                          <option value="-----------" id="dept">Department</option>
                         {% for department in department %}
                             <option value="{{department}}">{{department}}</option>
                         {% endfor %}
                       </select>
                     </div>
+
                     <div class="col-sm-2 pull-right">
-                      <select name="" class="input-sm">
+                      <select name="" class="input-sm" id="designation">
+                           <option value="-----------" id="desg">Designation</option>
                         {% for designation in designation_all %}
-                            <option value="designation">{{designation}}</option>
+
+                            <option value="{{designation}}">{{designation}}</option>
                         {% endfor %}
                     </div>
-
                     <div class="col-sm-3">
                       <input name="" class="input-sm" type="text" />
                     </div>
+
                   </div>
-                  <hr>
-                    <a href="{% url 'export_users_xls' %}"><input type="button" id="export" value="Export"></a>
 
                     <table class="table table-striped" id="data-tables">
+                        <h3 class="col-sm-12 text-right"><input type="button" id="export" class="btn vd_bg-green vd_white width-10" value="Export"></h3>
                       <thead style="color: #fff;background: #444">
                         <tr>
                           <th class="hidden">ID</th>
@@ -79,7 +86,7 @@
 <script type="text/javascript">
 
     $("#department").on('change', function() {
-
+    $("#dept").hide();
     value = this.value
 
     $.ajax({
@@ -92,6 +99,39 @@
     }
     });
     });
+
+    $("#designation").on('change', function() {
+    $("#desg").hide();
+    value = this.value
+
+    $.ajax({
+    type: "GET",
+    url : '/skillset/designation',
+    data : {'value':value},
+    success : function(data){
+    var content = $(data).find("#data-tables").html();
+    $("#data-tables").html(content)
+    }
+    });
+    });
+
+    $(document).ready(function() {
+      $("#export").click(function(e) {
+        e.preventDefault();
+
+        //getting data from our table
+        var data_type = 'data:application/vnd.ms-excel';
+        var table = document.getElementById('data-tables');
+        var table_html = table.outerHTML.replace(/ /g, '%20');
+
+        var a = document.createElement('a');
+        a.href = data_type + ', ' + table_html;
+        a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
+        a.click();
+      });
+    });
+
+
 
 
 </script>
