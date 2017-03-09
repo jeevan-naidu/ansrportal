@@ -143,6 +143,9 @@ def LeaveDetails(request):
 # Create your views here.
 class Dashboard(View):
     def get(self, request):
+        from ipdb import set_trace
+        set_trace()
+
         genderFlag = True
         genderMale = False
         LeaveAdmin = False

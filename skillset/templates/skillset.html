@@ -1,4 +1,7 @@
 {% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
 {% block siteTitle %}Daily Interview Report{% endblock %}
 {% block pageTitle %}Skill Set{% endblock %}
 <head>
@@ -6,14 +9,55 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 </head>
 {% block content  %}
-
+<link href="/static/css/site.min.css" rel="stylesheet">
+<link href="/static/css/leave_style.css" rel="stylesheet">
+<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
             <div class="row">
               <div class="col-md-12">
                 <div class="panel widget">
                   <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Team Members </h3>
                   </div>
+                    <div id='message'></div>
+        <!--	Start Menu -->
+        <div class="row">
+            <div class="col-md-12 ">
 
+                <div class="Lv-ApLvHeader">
+                    <div class="row margin-correct">
+
+                        <div class="col-md-6">
+
+                          <div id='message'></div>
+        <!--	Start Menu -->
+
+
+                          <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
+                              {% csrf_token %}
+                              {% bootstrap_messages %}
+
+                                      {% for field in form %}
+                                          {{ field }}
+                                      {% endfor %}
+
+
+
+                        </form>
+                        </div>
+
+
+                    </div>
+                </div><!-- Lv-ApLvHeader -->
+
+                <hr>
+
+            </div>
+        </div>
                   <div class="panel-body">
                   <div class="row">
                     <div class="col-sm-2 pull-right">
@@ -35,7 +79,7 @@
                         {% endfor %}
                     </div>
                     <div class="col-sm-3">
-                      <input name="" class="input-sm" type="text" />
+                      <input name="" type="hidden" />
                     </div>
 
                   </div>
@@ -48,10 +92,8 @@
                           <th>Name</th>
                           <th>Department</th>
                           <th>Designation</th>
-                            
                           <th>Skills</th>
                           <th>Joining date</th>
-
                         </tr>
                       </thead>
 
@@ -62,11 +104,9 @@
                           <td>{{element.name}}</td>
                           <td>{{element.department}}</td>
                           <td>{{element.designation}}</td>
-                            
                           <td>{% for skill in element.skills %}
-                             {{ skill }} </br>{% endfor %}
+                              {{ skill }} </br>{% endfor %}</td>
                           <td>{{element.doj}}</td>
-
                         </tr>
                       {% endfor %}
                       </tbody>
@@ -133,6 +173,13 @@
 
 
 
+
+</script>
+<script type="text/javascript">
+
+$(window).load(function(){
+    $('.select2.select2-container').removeAttr('style');
+})
 
 </script>
 

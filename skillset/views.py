@@ -12,6 +12,7 @@ from models import Skill_Lists, User_Skills
 import xlwt
 from django.http import JsonResponse
 import json
+from Leave.forms import UserListViewForm
 
 
 # Create your views here.
@@ -69,6 +70,9 @@ import json
 
 def SkillSet(request):
     if request.method == 'GET':
+        # from ipdb import set_trace
+        # set_trace()
+        form = UserListViewForm()
         user = request.user
         employee = Employee.objects.get(user_id=user.id)
         designation_all = Designation.objects.all()
@@ -109,7 +113,7 @@ def SkillSet(request):
         skills = User_Skills.objects.filter(employee_id=employee)
 
         return render(request, 'skillset.html',
-                      {'lists': lists, 'designation_all': designation_all, 'department': department})
+                      {'lists': lists, 'form':form, 'designation_all': designation_all, 'department': department})
 
 
 def dept(request):
