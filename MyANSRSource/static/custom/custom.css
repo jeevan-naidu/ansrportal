@@ -358,3 +358,5 @@ span.book-count{font-weight: bold}
 .leave-report-table th{background-color: #464A4C !important;color: #fff;}
 
 #timesheet-approve-table_filter{display: none;}
+
+.reimburse-table .ws-mw{max-width: 200px;word-wrap: break-word;}
