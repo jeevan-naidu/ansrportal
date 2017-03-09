@@ -7,6 +7,9 @@
 </head>
 {% block content  %}
 
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
             <div class="row">
               <div class="col-md-12">
                 <div class="panel widget">
@@ -16,6 +19,9 @@
 
                   <div class="panel-body">
                   <div class="row">
+
+                    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
+
                     <div class="col-sm-2 pull-right">
 
                       <select name="" class="input-sm" id="department">
@@ -33,6 +39,7 @@
 
                             <option value="{{designation}}">{{designation}}</option>
                         {% endfor %}
+                        </select>
                     </div>
                     <div class="col-sm-3">
                       <input name="" class="input-sm" type="text" />
@@ -40,8 +47,9 @@
 
                   </div>
 
+<hr>
+
                     <table class="table table-striped" id="data-tables">
-                        <h3 class="col-sm-12 text-right"><input type="button" id="export" class="btn vd_bg-green vd_white width-10" value="Export"></h3>
                       <thead style="color: #fff;background: #444">
                         <tr>
                           <th class="hidden">ID</th>
@@ -83,6 +91,9 @@
             <!-- row -->
 
 
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
 <script type="text/javascript">
 
     $("#department").on('change', function() {
@@ -116,6 +127,11 @@
     });
 
     $(document).ready(function() {
+
+      "use strict";
+      
+      $('#data-tables').dataTable();
+
       $("#export").click(function(e) {
         e.preventDefault();
 
