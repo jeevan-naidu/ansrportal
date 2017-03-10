@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^$', views.SkillSet),
     url(r'^dept/$',views.dept),
     url(r'^designation/$', views.designation),
+    url(r'^user/$', views.user),
     url(r'^AutocompleteUserSearch/$', login_required(AutocompleteUserSearch.as_view()),
         name=u'AutocompleteUserSearch'),
     url(r'^lists/$', views.lists),

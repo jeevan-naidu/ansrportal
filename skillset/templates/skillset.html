@@ -25,42 +25,43 @@
                   </div>
                     <div id='message'></div>
         <!--	Start Menu -->
-        <div class="row">
-            <div class="col-md-12 ">
 
-                <div class="Lv-ApLvHeader">
-                    <div class="row margin-correct">
-
-                        <div class="col-md-6">
-
-                          <div id='message'></div>
-        <!--	Start Menu -->
-
-
-                          <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
-                              {% csrf_token %}
-                              {% bootstrap_messages %}
-
-                                      {% for field in form %}
-                                          {{ field }}
-                                      {% endfor %}
-
-
-
-                        </form>
-                        </div>
-
-
-                    </div>
-                </div><!-- Lv-ApLvHeader -->
-
-                <hr>
-
-            </div>
-        </div>
                   <div class="panel-body">
                   <div class="row">
                     <div class="col-sm-2 pull-right">
+                        <div class="row">
+                    <div class="col-md-12 ">
+
+                        <div class="Lv-ApLvHeader">
+                            <div class="row margin-correct">
+
+                                <div class="col-md-6">
+
+                                  <div id='message'></div>
+                <!--	Start Menu -->
+
+
+                                  <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
+                                      {% csrf_token %}
+                                      {% bootstrap_messages %}
+
+                                              {% for field in form %}
+                                                  {{ field }}
+                                              {% endfor %}
+
+
+
+                                </form>
+                                </div>
+
+
+                            </div>
+                        </div><!-- Lv-ApLvHeader -->
+
+                        <hr>
+
+                    </div>
+                </div>
 
                       <select name="" class="input-sm" id="department">
                           <option value="-----------" id="dept">Department</option>
@@ -140,6 +141,21 @@
     });
     });
 
+    $('#id_user').on('change',function(){
+    value = this.value
+
+    $.ajax({
+    type: "GET",
+    url : '/skillset/user',
+    data : {'value':value},
+    success : function(data){
+    var content = $(data).find("#data-tables").html();
+    console.log(content)
+    $("#data-tables").html(content)
+    }
+    });
+    });
+
     $("#designation").on('change', function() {
     $("#desg").hide();
     value = this.value
@@ -173,13 +189,6 @@
 
 
 
-
-</script>
-<script type="text/javascript">
-
-$(window).load(function(){
-    $('.select2.select2-container').removeAttr('style');
-})
 
 </script>
 
