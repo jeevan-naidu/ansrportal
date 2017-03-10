@@ -29,49 +29,13 @@
                   <div class="panel-heading vd_bg-grey">
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Team Members </h3>
                   </div>
-                    <div id='message'></div>
-        <!--	Start Menu -->
 
                   <div class="panel-body">
-                      <div class="Lv-ApLvHeader">
-                            <div class="row margin-correct">
-
-                                <div class="col-md-6">
-
-                                  <div id='message'></div>
-                <!--	Start Menu -->
-
-
-                                  <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
-                                      {% csrf_token %}
-                                      {% bootstrap_messages %}
-
-                                              {% for field in form %}
-                                                  {{ field }}
-                                              {% endfor %}
-
-
-
-                                </form>
-                                </div>
-
-
-                            </div>
-                        </div><!-- Lv-ApLvHeader -->
                   <div class="row">
 
                     <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
 
                     <div class="col-sm-2 pull-right">
-                        <div class="row">
-                    <div class="col-md-12 ">
-
-
-
-                        <hr>
-
-                    </div>
-                </div>
 
                       <select name="" class="input-sm" id="department">
                           <option value="-----------" id="dept">Department</option>
@@ -90,7 +54,7 @@
                         {% endfor %}
                         </select>
                     </div>
-                      <div class="col-sm-2 pull-right">
+                    <div class="col-sm-2 pull-right">
                       <select name="" class="input-sm" id="skills">
                            <option value="-----------" id="skill">Skills</option>
                         {% for skills in skills_all %}
@@ -99,7 +63,16 @@
                         {% endfor %}
                         </select>
                     </div>
+                    <div class="col-sm-3">
+                      <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
+                            {% csrf_token %}
+                            {% bootstrap_messages %}
 
+                                    {% for field in form %}
+                                        {{ field }}
+                                    {% endfor %}
+                      </form>
+                    </div>
 
                   </div>
 
