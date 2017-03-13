@@ -642,6 +642,16 @@
                                 <option>Credit</option>
                            </select>
                            </span>
+                           <span class="pull-left">
+                           <label for="type_select">Select Year&nbsp;:&nbsp;</label>
+                           <select class="Lv-Tr-SelectMonth input-sm" id="year_select">
+                               <option value="2016">2016</option>
+                               <option value="2017">2017</option>
+                               <option value="2018">2018</option>
+                               <option value="2019">2019</option>
+                               <option value="2020">2020</option>
+                           </select>
+                           </span>
 </div>
 
 
@@ -668,16 +678,7 @@
     </td>
 </tr>
  
-<!-- ./ Temp Section -->
-
-
-
-
-
-
-
-
-                            </table>
+<!-- ./ Temp Section --> </table>
 </div>
 
 
@@ -707,7 +708,9 @@
 
 
 <script>
+
 value = '';
+year = '';
 $('.remark').click(function(e){
             var class_name = this.id.split('_');
            $("#remark__"+class_name[1]).show();
@@ -720,9 +723,11 @@ function refreshBackground() {
         window.location.reload();
     }
 $(document).ready(function() {
+var curr_year = new Date().getFullYear()
+$("#year_select option[value="+curr_year+"]").attr("selected","selected");
 
 
-    gridLoad('earned_leave');
+    gridLoad('earned_leave',year);
 
 //short leave datapopulation
 var openshortleave = {{ ShortLeaveApplied }};
@@ -1257,10 +1262,18 @@ function removeSelection(){
 
 
 }
+$('#year_select').on('change', function(){
+    year = this.value;
+    if (value == 'Credit'){
+     creditview('Earned Leave',year);
+  }
+  else{
+    gridLoad('earned_leave', year)
+    }
 
+    });
 
-
-function gridLoad(name){
+function gridLoad(name,year=null){
   getLeaveName = {'sabbatical':'Sabbatical',
       'comp_off_avail':"Comp Off avail",
       'paternity_leave':'Paternity',
@@ -1284,7 +1297,7 @@ function gridLoad(name){
         {
             type : "GET",
             url : '/leave/transaction/',
-            data :{'leave':name,'type':$('#month_select').val(),user_id:{{userid}}} ,
+            data :{'leave':name,'year':year,'type':$('#month_select').val(),user_id:{{userid}}} ,
             success : function(data)
             {
                 $('.table-bordered').append(data);
@@ -1308,7 +1321,7 @@ removeSelection()
  creditview('Earned Leave');
  }
  else{
-  gridLoad("earned_leave");
+  gridLoad("earned_leave",year);
   }
 
 });
@@ -1317,10 +1330,10 @@ $('#sick_leave .col-md-12 .row').click(function(){
 removeSelection();
  $('#sick_leave .col-md-12 .row').addClass("Lv-Type-Selected");
   if (value == 'Credit'){
-  creditview('Sick Leave');
+  creditview('Sick Leave',year);
   }
   else{
-    gridLoad("sick_leave");
+    gridLoad("sick_leave",year);
     }
 
 });
@@ -1329,11 +1342,11 @@ removeSelection();
    removeSelection();
    $('#casual_leave .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Casual Leave');
+   creditview('Casual Leave',year);
    }
    else
    {
-   gridLoad("casual_leave");
+   gridLoad("casual_leave",year);
    }
 
   });
@@ -1342,11 +1355,11 @@ removeSelection();
    removeSelection();
    $('#Bereavement .col-md-12 .row').addClass("Lv-Type-Selected");
   if (value == 'Credit'){
-  creditview('Bereavement Leave');
+  creditview('Bereavement Leave',year);
     }
     else
     {
-    gridLoad("bereavement_leave");
+    gridLoad("bereavement_leave",year);
     }
   });
 
@@ -1354,11 +1367,11 @@ removeSelection();
    removeSelection();
    $('#loss_of_pay .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Loss Of Pay');
+   creditview('Loss Of Pay',year);
    }
    else
    {
-   gridLoad("loss_of_pay");
+   gridLoad("loss_of_pay",year);
    }
 
   });
@@ -1367,11 +1380,11 @@ removeSelection();
    removeSelection();
    $('#comp_off_apply .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Comp Off avail');
+   creditview('Comp Off avail',year);
    }
    else
    {
-   gridLoad("comp_off_avail");
+   gridLoad("comp_off_avail",year);
    }
   });
 
@@ -1379,11 +1392,11 @@ removeSelection();
    removeSelection();
    $('#comp_off .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Comp Off Earned');
+   creditview('Comp Off Earned',year);
     }
     else
     {
-       gridLoad("comp_off_earned");
+       gridLoad("comp_off_earned",year);
     }
   });
 
@@ -1391,11 +1404,11 @@ removeSelection();
    removeSelection();
    $('#pay_off .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Pay Off');
+   creditview('Pay Off',year);
    }
    else
    {
-   gridLoad("pay_off");
+   gridLoad("pay_off",year);
    }
   });
 
@@ -1403,11 +1416,11 @@ removeSelection();
     removeSelection();
    $('#work_from_home .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Work From Home');
+   creditview('Work From Home',year);
    }
    else
    {
-   gridLoad("work_from_home");
+   gridLoad("work_from_home",year);
    }
   });
 
@@ -1415,11 +1428,11 @@ removeSelection();
     removeSelection();
    $('#ooo_dom .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Domestic Travel');
+   creditview('Domestic Travel',year);
    }
    else
    {
-   gridLoad("ooo_dom");
+   gridLoad("ooo_dom",year);
    }
   });
 
@@ -1427,10 +1440,10 @@ removeSelection();
     removeSelection();
    $('#ooo_int .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('International Travel');
+   creditview('International Travel',year);
    }
    else{
-   gridLoad("ooo_int");
+   gridLoad("ooo_int",year);
    }
 
   });
@@ -1439,11 +1452,11 @@ removeSelection();
     removeSelection();
    $('#sabbatical .col-md-12 .row').addClass("Lv-Type-Selected");
    if (value == 'Credit'){
-   creditview('Sabbatical');
+   creditview('Sabbatical',year);
    }
    else
    {
-   gridLoad("sabbatical");
+   gridLoad("sabbatical",year);
    }
   });
 
@@ -1453,20 +1466,20 @@ $('#child_care .col-md-12 .row').click(function(){
  $('#child_care .col-md-12 .row').addClass("Lv-Type-Selected");
  {% if male %}
  if (value == 'Credit'){
- creditview('Paternity Leave');
+ creditview('Paternity Leave',year);
  }
  else
  {
- gridLoad("paternity_leave");
+ gridLoad("paternity_leave",year);
  }
 
  {% else %}
   if (value == 'Credit'){
-  creditview('Maternity Leave');
+  creditview('Maternity Leave',year);
   }
   else
   {
-  gridLoad("paternity_leave");
+  gridLoad("paternity_leave",year);
   }
  {% endif %}
 
@@ -1489,7 +1502,7 @@ $('#child_care .col-md-12 .row').click(function(){
         'Domestic Travel': 'ooo_dom',
         'International Travel':'ooo_int'
     };
-  gridLoad(LeaveName[name]);
+  gridLoad(LeaveName[name],year);
   });
 
 });
@@ -1672,16 +1685,20 @@ $("#type_select").change(function(e){
     value = $(this).val()
    if (value == 'Credit')
        {
+        year=new Date().getFullYear()
         $('#month_select').prop('disabled', 'disabled');
-        creditview('Earned Leave');
+        creditview('Earned Leave',year);
+        $("#year_select option[value="+year+"]").attr("selected","selected");
         e.stopImmediatePropagation();
        }
    else
     {
+        year=new Date().getFullYear()
         $('#month_select').prop('disabled', false);
+        $("#year_select option[value="+year+"]").attr("selected","selected");
     }
 })
-function creditview(name)
+function creditview(name,year=null)
 {
         var name = name
         $('.table-bordered').empty();
@@ -1689,7 +1706,7 @@ function creditview(name)
         {
             type : "GET",
             url : '/leave/creditview/',
-            data :{'leave':name,user_id:{{userid}}} ,
+            data :{'leave':name,'year':year,user_id:{{userid}}} ,
             success : function(data)
             {
               if(data['balance'])
@@ -1712,7 +1729,7 @@ function creditview(name)
             }
           );
           }
-    
+
 $(window).load(function(){
     $('.select2.select2-container').removeAttr('style');
 })

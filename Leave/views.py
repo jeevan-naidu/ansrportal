@@ -50,12 +50,17 @@ def creditview(request):
     loggedInUser = request.user.id
     leave = request.GET.get('leave')
     now = datetime.datetime.now()
+    year = request.GET.get('year')
+    if year:
+        year = year
+    else:
+        year = (now.year)
     leave_type = {'Earned Leave': 1, 'Sick Leave': 2, 'Casual Leave': 3, 'Loss Of Pay': 4,
                   'Bereavement Leave': 5, 'Maternity Leave': 6, 'Paternity Leave': 7, 'Comp Off Earned': 8,
                   'Comp Off avail': 9, 'Pay Off': 10, 'Work From Home': 11, 'Sabbatical': 12, 'Short Leave': 13, 'Domestic Travel': 14, 'International Travel': 15}
     month_name = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'June', 7: 'july', 8: 'Aug', 9: 'Sept',
                   10: 'Oct', 11: 'Nov', 12: 'Dec'}
-    credit_data = CreditEntry.objects.filter(user_id=user_id, leave_type_id=leave_type[leave], year=now.year).\
+    credit_data = CreditEntry.objects.filter(user_id=user_id, leave_type_id=leave_type[leave], year=year).\
             annotate(mon=Month('month')).values('comments', 'month').annotate(day=Sum('days'));
     count = 0
     count1 = 0
@@ -64,14 +69,14 @@ def creditview(request):
         count = count + 1
         data1 =data1+ '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'.\
             format(count, month_name[data["month"]],data["day"], data["comments"], )
-    data2 = "<tr class='balanceremove'><th>Sr.No</th><th>Applied</th><th>Approved</th><th>Prev-Year-Balance</th></tr>"
+    data2 = "<tr class='balanceremove'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
     if leave == 'Earned Leave':
         carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(now.year-1)).\
-            values('balance', 'year', 'applied', 'approved')
+            values('balance', 'year', 'applied')
         for balance in carry_forward:
             count1 = count1 + 1
             data2 = data2 + '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'. \
-                format(count1, balance["applied"], balance["approved"], balance["balance"], )
+                format(count1, "Jan", balance["balance"], "Yearly Leave Carrry forward")
     else:
         data2 =''
 
@@ -80,15 +85,21 @@ def creditview(request):
 
 
 def LeaveTransaction(request):
+    now = datetime.datetime.now()
     statusType = request.GET.get('type')
     user_id = request.GET.get('user_id')
+    year = request.GET.get('year')
+    if year:
+        year = year
+    else:
+        year = (now.year)
     loggedInUser = request.user.id
     statusDict = {'Approved': 'approved',
                   'Rejected': 'rejected',
                   'Cancelled': 'cancelled',
                   'Open': 'open'}
     if statusType == 'All':
-        Leave_transact = LeaveApplications.objects.filter(user=user_id,
+        Leave_transact = LeaveApplications.objects.filter(user=user_id, from_date__year=year,
                                                           leave_type__leave_type=request.GET.get('leave')).values('id',
                                                                                                                   'leave_type__leave_type',
                                                                                                                   'from_date',
@@ -99,7 +110,7 @@ def LeaveTransaction(request):
                                                                                                                   'status')
     else:
         Leave_transact = LeaveApplications.objects.filter(status=statusDict[statusType],
-                                                          user=user_id,
+                                                          user=user_id,from_date__year=year,
                                                           leave_type__leave_type=request.GET.get('leave')).values('id',
                                                                                                                   'leave_type__leave_type',
                                                                                                                   'from_date',
