@@ -6,6 +6,7 @@ from MyANSRSource.models import Project, Chapter
 from simple_history.models import HistoricalRecords
 
 fixed_status = (('', '------'), ('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
+team_choices = ((0, 'assessment'), ('1', 'learning'))
 
 
 class TimeStampAbstractModel(models.Model):
@@ -37,6 +38,7 @@ class TemplateMaster(NameMasterAbstractModel, TimeStampAbstractModel):
 
 
 class QMSProcessModel(NameMasterAbstractModel, TimeStampAbstractModel):
+    product_type = models.CharField(max_length=50, blank=True, null=True, choices=team_choices, verbose_name="Product")
     pass
 
 
@@ -94,19 +96,27 @@ class ReviewGroup(models.Model):
         return '%s' % self.name
 
 
-class DefectSeverityLevel(TimeStampAbstractModel):
+class DefectSeverityLevel(NameMasterAbstractModel, TimeStampAbstractModel):
 
-    template = models.ForeignKey(TemplateMaster)
     severity_type = models.ForeignKey(DefectTypeMaster)
     severity_level = models.ForeignKey(SeverityLevelMaster)
     defect_classification = models.ForeignKey(DefectClassificationMaster)
-    review_master = models.ForeignKey(ReviewMaster)
+    product_type = models.CharField(max_length=50, blank=True, null=True, choices=team_choices, verbose_name="Product")
 
     def __unicode__(self):
         """ return unicode strings """
         return '%s' % self.id
         return '%s' % (str(self.severity_type)+": " + str(self.severity_level) + ": "
                        + str(self.defect_classification))
+
+
+class DSLTemplateReviewGroup(NameMasterAbstractModel, TimeStampAbstractModel):
+    template = models.ForeignKey(TemplateMaster)
+    review_master = models.ForeignKey(ReviewMaster)
+
+    def __unicode__(self):
+        """ return unicode strings """
+        return '%s' % self.id
 
 
 class ChapterComponent(TimeStampAbstractModel):
@@ -129,11 +139,13 @@ class QASheetHeader(TimeStampAbstractModel):
     author = models.ForeignKey(User, related_name='QASheetHeader_author', blank=True, null=True,)
     review_group = models.ForeignKey(ReviewGroup)
     reviewed_by = models.ForeignKey(User, related_name='QASheetHeader_reviewed_by')
+    review_group_feedback = models.CharField(max_length=100, blank=True, null=True,)
     review_group_status = models.BooleanField(
         default=False,
         null=False,
         verbose_name=" Is Review Completed "
     )
+    author_feedback = models.CharField(max_length=100, blank=True, null=True,)
     author_feedback_status = models.BooleanField(
         default=False,
         null=False,
