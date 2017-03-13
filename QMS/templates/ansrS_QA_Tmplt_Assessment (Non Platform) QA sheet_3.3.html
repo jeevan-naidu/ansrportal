@@ -1,0 +1,757 @@
+{% extends 'master.html' %}
+{% load static from staticfiles %}
+{% load qms_tags %}
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
+{% load grievances_template_tags %}
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+{{form.media}}
+
+<div class="row">
+
+    
+    <div class="col-sm-12">
+
+
+
+
+
+        <div class="panel widget">
+            <div class="panel-heading vd_bg-grey">
+
+                <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet
+                </h3>
+                {% for dict in formset.errors %}
+    {% for error in dict.values %}
+        {{ error }}
+    {% endfor %}
+{% endfor %}
+                    {% if messages %}
+            {% for message in messages %}
+                {% if message.tags %}
+                    <div class= "alert alert-{{ message.tags }}">
+                        <a class="panel-close close" data-dismiss="alert">x</a>
+                        <p >{{ message }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+            </div>
+            <div class="panel-body table-responsive">
+            <form class="form-horizontal " id="filter_form" role="form" method="post" >
+              {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-sm-12 qms-selectors">
+                        <div class="col-sm-9">
+                          <span>{{ form.project.errors }}</span>{{ form.project}}
+
+                          <span>{{ form.chapter.errors }} </span>{{form.chapter}}
+                            <span>{{form.component.errors}}</span>{{form.component}}
+
+                          <span>{{form.author.errors}}</span>{{form.author}}
+                        </div>
+
+                        <div class="col-sm-3">
+                          <input type="submit" value="Submit" name="" class="btn btn-primary btn-sm pull-right" style="margin-top: -1px;">
+                          <button id="open-summary" class="btn btn-danger btn-sm pull-right" style="margin-top: -1px;">Summary</button>
+                        </div>
+
+                    </div>
+                    <input type="hidden" name="active_tab" id="active_tab" {% if request.session.active_tab %}
+                           value={{request.session.active_tab}} {% else %} value="1" {% endif %}/>
+                    <input type="hidden" name="template_name" id="template_id" value="{{request.session.template_id}}"/>
+                </div><!-- ./qms-selectors row -->
+            </form>
+
+
+                <div id="qms-summary" class="collapsed">
+                    {% if review_formset %}
+                    <table class="table-responsive table-striped width-100">
+                    <tr>
+                        <th>Defect Analysis</th>
+                        <th>Defect Severity</th>
+                        <th>Counts</th>
+                        <th>Score</th>
+                        <th>Defect Density</th>
+                    </tr>
+                        {% for element in severity_level %}
+                    <tr>
+                        <td></td>
+                        <td>{{element.0}}</td>
+                        {% with sev_count=severity_count|get_item:element.1 %}
+                        <td> {{sev_count}}</td>
+                        <td> {{score|get_item:element.1 }}</td>
+                        {% endwith %}
+                        <td>{{defect_density|get_item:element.1 }}%</td>
+
+                    </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>Quality Score</td>
+                            <td></td>
+                            <td>{{total_count}}</td>
+                            <td>{{total_score}}</td>
+                            <td>{{total_defect_density}}</td>
+                        </tr>
+
+
+                    </table>
+                    {% endif %}
+
+                </div>
+
+                <ul class="nav nav-tabs">
+                    {% for groups in review_group %}
+              <li {% if request.session.active_tab|add:"0" == groups.id|add:"0" %} class="active review" {% else %} class="review" {% endif%}id={{groups.id}} >
+                    <a href="#tab1" data-toggle="tab">{{groups}}</a></li>
+
+
+                    <!--<li class="review disabled" id="3" ><a href="#tab3" >CE1</a></li> -->
+                    {% endfor %}
+                </ul><!-- ./tab -->
+
+
+                <br>
+                <div class="tab-content mgbt-xs-20">
+                    <div class="tab-pane active" id="tab1">
+
+                     <form role="form"  id="review_report_form" method="post" enctype="multipart/form-data"  action="{% url 'edit_review' %}">
+                        {% csrf_token %}
+                         <input type="hidden" name="is_author" id="is_author"
+                                value="{{request.session.author_logged_in}}"/>
+                         <input type="hidden" name="active_tab1" id="active_tab1" {% if request.session.active_tab %}
+                                value={{request.session.active_tab}} {% else %} value="1" {% endif %}/>
+
+                         <div class="no_questions">
+                             <label>Enter the number of questions : </label>
+                             <input type="text" name="questions" {%if questions %} value="{{questions}}" {% else %}
+                                    value=0 {% endif %} id="questions" style="width:50px;height:25px">
+                         </div>
+
+
+                         <table class="table  table-striped qa-table" id="review_report_table">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Review Item Number</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Severity</th>
+                                    <th>Classification</th>
+                                     <th>Screen Shot</th>
+                                    <th>Fixed?</th>
+                                    <th>Fixed By</th>
+                                    <th>Remarks</th>
+                                    <th>Delete</th>
+                                    <th>View</th>
+
+                                </tr>
+                            </thead>
+
+
+                             <tbody> {%if review_formset %}
+                                {{review_formset.management_form}}
+                                    {% for form_obj in review_formset%}
+                                    <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
+                                        <td id="sr-{{forloop.counter}}-td">
+                                            {{forloop.counter}}
+                                        </td>
+                                        <td class="" id="review_item-{{forloop.counter}}-td">
+                                            {{form_obj.review_item}} {{form_obj.qms_id}}
+                                        </td>
+
+                                        <td class="" id="defect-{{forloop.counter}}-td">
+                                            {{form_obj.defect}}
+                                        </td>
+                                        <td id="severity_type-{{forloop.counter}}-td">
+                                            {{form_obj.severity_type}}
+                                            <div></div>
+
+                                        </td>
+                                        <td class="" id="severity_level-{{forloop.counter}}-td">
+                                            {{form_obj.severity_level}}
+                                        </td>
+                                        <td class="" id="defect_classification-{{forloop.counter}}-td">
+                                            {{form_obj.defect_classification}}
+                                        </td>
+                                         <td class="" id="screen_shot-{{forloop.counter}}-td">
+                                            {{form_obj.screen_shot}}
+                                       {% comment %} {% if form_obj.screen_shot_url.value %}
+                                             <label>clear screen shot </label><span>{{form_obj.clear_screen_shot}}</span> {% endif %}{% endcomment %}
+
+
+                                        </td>
+                                        <td class="" id="is_fixed-{{forloop.counter}}-td">
+                                            {{form_obj.is_fixed}}
+
+                                        </td>
+                                        <td class="" id="fixed_by-{{forloop.counter}}-td">
+                                            {% if form_obj.fixed_by.value %}{{form_obj.fixed_by.value}} {% endif %}
+                                        </td>
+                                        <td id="remarks-{{forloop.counter}}-td">
+                                            {{form_obj.remarks}}
+                                        </td>
+                                        <td>
+                                            <div class="edit-buttons">
+
+                                                {{form_obj.DELETE}}
+
+                                            </div>
+                                        </td>
+                                        <td class="menu-action" style="min-width:90px;">
+                                            <div class="view_details" style="display:none">
+                                                <div class="modal-dialog modal-lg">
+
+                                                    <!-- Modal content-->
+                                                    <div class="modal-content">
+
+
+                                                        <div class="modal-header vd_bg-blue vd_white">
+                                                            <button type="button" class="close"
+                                                                    data-dismiss="modal">&times;</button>
+                                                            <h4 class="modal-title">View Details</h4>
+                                                        </div>
+
+                                                        <div class="modal-body">
+
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">S.No :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">{{forloop.counter}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Review Item Number :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">{{form_obj.review_item.value}} </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Defect Description :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">{{form_obj.defect.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Defect Type :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">
+                                                                        {{form_obj.severity_type.value|get_severity_type:form_obj.severity_type.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Severity :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">{{form_obj.severity_level.value|get_severity_level:form_obj.severity_level.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Defect Classification :</label>
+                                                                <div class="col-sm-9"><label class="control-label">{{form_obj.defect_classification.value|get_severity_classification:form_obj.defect_classification.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Screen Shot:</label>
+                                                                <div class="col-sm-9">
+                                                                    {% if form_obj.screen_shot_url.value %}
+                                                                    <label class="control-label">
+                        <a target="_blank" href="{{form_obj.screen_shot_url.value}}">
+                        {% if form_obj.screen_shot_url.value|GetFileTypeFromName == 'xls' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'xlsx' %}
+                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="50px" width="50px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'pdf' %}
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="50px" width="50px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'doc' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'docx'  %}
+                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="50px" width="50px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpeg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'png' %}
+                            <img alt="A jpeg file" src="{{form_obj.screen_shot_url.value }}" height="50px" width="50px">
+                            {% elif  form_obj.screen_shot_url.value|GetFileTypeFromName == 'zip'  or  form_obj.screen_shot_url.value|GetFileTypeFromName == '7z' %}
+                            <img alt="A zip file" src="/static/images/file_type_icons/zip_icon.png" height="50px" width="50px">
+                            {% elif  form_obj.screen_shot_url.value|GetFileTypeFromName == 'gz' %}
+                            <img alt="A gz file" src="/static/images/file_type_icons/gz_icon.png" height="50px" width="50px">
+
+                        {% endif %}
+                    </a>
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                    </label>
+                                                                    {% else %}
+                                                                        <label>--</label> {% endif %}
+
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Is Fixed :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">
+                                                                        {{form_obj.is_fixed.value|get_fixed_status:form_obj.is_fixed.value}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Fixed By :</label>
+                                                                <div class="col-sm-9">
+                                                                  {% if form_obj.fixed_by.value%}  <label class="control-label">
+                                                                    {{form_obj.fixed_by.value}}</label>
+                                                                    {% else %}<label class="control-label"> --</label>{%endif%}
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Remarks :</label>
+                                                                <div class="col-sm-9">
+                                                                    <label class="control-label">{{form_obj.remarks.value}}</label>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div><!-- ./modal body -->
+                                                        <div class="modal-footer background-login">
+                                                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                                                        </div>
+
+
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <a data-original-title="view" data-placement="top"
+                                               class="btn menu-icon vd_green view_button" data-toggle="modal"
+                                               data-target="#viewModal">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+
+
+                                        </td>
+                                    </tr>
+                             {% endfor %} {%endif %}
+                            </tbody>
+
+
+                         </table>
+                         {%if review_formset %}{% is_project_manager project request.user as result %}
+                         <div class="panel-footer clearfix">
+                             <input type="submit" id="form-submit" value="submit"
+                                    class="btn btn-info btn-sm pull-right"/>
+                             {% if request.session.author_logged_in == False or result == True %}
+                                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
+                                <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                    value="Add Item"  />
+                             {% else %}
+                             <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
+                             {% endif %}
+
+                         </div>
+                         {% endif %}
+</form>
+
+
+
+                    </div><!-- ./tab -->
+
+
+                    <div class="tab-pane" id="tab2">
+                      
+
+                    </div><!-- ./tab -->
+
+                    <div class="tab-pane" id="tab3">
+                      
+                      
+                    </div><!-- ./tab -->
+
+                </div><!-- ./ .tab-content -->
+                <!--<div class="panel-footer clearfix">-->
+                 <!--<input type="submit" value="submit" class="btn btn-info btn-sm pull-right"/>-->
+                <!--<div class="btn btn-info btn-sm pull-right">Review Completed</div>-->
+                <!--<div class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#addModal">Add Item</div>-->
+
+            <!--</div>-->
+
+
+
+            </div><!-- ./panel body -->
+
+        </div>
+
+                
+    </div>
+
+</div><!-- ./row main -->
+
+
+
+
+
+<!-- Modal Area -->
+
+<!-- Add Modal -->
+
+<div id="viewModal" class="modal fade" role="dialog">
+
+</div>
+
+
+
+<!-- Review Completed Modal -->
+
+ <!-- Modal -->
+                  <div class="modal fade" id="reviewComplete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Review Completed</h4>
+                        </div>
+                        <div class="modal-body"> 
+                            <form class="form-horizontal">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Comment : </label>
+                              <div class="col-sm-7 controls">
+                              <textarea class="input-border-btm" id ="review_feedback"></textarea>
+                              </div>
+
+                            </div>
+                            
+                          </form>
+                        
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel review </button>
+                          <button type="button" class="btn vd_btn vd_bg-green" id="submit_review">Submit</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content --> 
+                    </div>
+                    <!-- /.modal-dialog --> 
+                  </div>
+                  <!-- /.modal --> 
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript">
+
+        $(function() {
+            if( $('#is_author').val() === 'True') {
+                $('[name$=review_item], [name$=defect]').prop('readonly',true);
+                $('[id^=severity_type]').addClass('disabled-defect');
+            }
+            $('.view_button').click(function(){
+            var view_details = $(this).siblings(".view_details").html();
+            $("#viewModal").html(view_details);
+            $('.modal-body').addClass('clearfix');
+            });
+            $("#add_button").on('click', function() {
+                var $tr    = $('#review_report_table tr:last')
+                var $clone = $tr.clone( true, true );
+                $clone.find('text , input , textarea').val('');
+                var increment_id = 0;
+                $tr.after($clone);
+                 $clone.find("td,input, select, textarea").each(function(index) {
+                 <!--console.log("index "+index);-->
+                 if (index==0) { console.log("sr"+ $(this).text());
+                    var val = $(this).text(); //console.log("var"+val);
+                    sr_no = parseInt(val)+1;// console.log("sr_no "+sr_no);
+                    $(this).text(sr_no);
+                 }
+                 tmp_id = this.id; //console.log("tmp_id"+tmp_id);
+                 id=tmp_id.split('-');
+                 increment_id = parseInt(id[1]); //console.log((increment_id) )
+                  increment_id =++increment_id;
+                  //console.log((increment_id) )
+                 new_id = id[0]+'-'+increment_id+'-'+id[2]
+
+                 <!--console.log(this.id);-->
+                 <!--console.log("new id " + new_id)-->
+                 $(this).attr('id',new_id);
+                 var new_name = new_id.substring(3)
+                 $(this).attr('name',new_id);
+                 $(this).val('');
+
+                 if(id[2] == 'qms_id') $(this).val(0)
+                 if (this.nodeName != "TD")  $(this).attr('name',new_name);
+
+                 <!--$(this).closest('td').attr('id',new_id);-->
+                });
+                total_form = ++increment_id;
+                 var  current_count = parseInt($('#id_form-TOTAL_FORMS').val()) ;
+                 current_count +=1 ;
+                 $('#id_form-TOTAL_FORMS').val(current_count);
+                 console.log($('#id_form-TOTAL_FORMS').val())
+            });
+
+
+
+        $('.review').click(function(){
+           is_set = 0
+           $('#active_tab , #active_tab1').val(this.id);
+           $('.filter_form').each(function(i, obj) {
+                console.log(obj.name+'--'+obj.value);
+                if (obj.value != '') is_set++;
+
+           });
+           if (is_set!=0 && is_set==$('.filter_form').length)   $('#filter_form').submit();
+        });
+
+        $('.edit_button').click(function(){ console.log("edit clicked");
+            var edit_record = $(this).siblings(".edit_record").html();
+            console.log(edit_record);
+            $(".edit_body").html(edit_record);
+        });
+/*        $('#review_report_table').dataTable({
+          searching: false,
+          scrollCollapse: true
+        });*/
+
+
+
+
+function fetchSeverityClassification(obj,is_media=False ) {
+
+        var obj_id = obj.id.split('-');
+        if (is_media ) {
+            severity_type = $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_type').val()
+            severity_level =  $(obj).val()
+        }
+        else {
+            severity_type =  $(obj).val()
+            severity_level = $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').val()
+        }
+        if( S(obj).data('product_type') != 1) return false;
+        $.ajax({
+                url: '/qms/fetch_severity/',
+                type: 'GET',
+                dataType :'json',
+                data: {"template_id": $('#template_id').val() ,
+                "severity_type" : severity_type ,
+                "active_tab" :$('#active_tab').val() ,
+                "severity_level":severity_level },
+                success: function (data) {
+                    var output = [];
+
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        if (key == 'configuration_missing') {
+                            sweetAlert("Oops...", "Configuration is missing for Defect Severity Level!", "error");
+                            return false;
+
+                        }
+
+                        if(key == 'severity_level'){
+
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
+                                value: data[key],
+                                text: data[key],
+                                selected :'selected',
+                            }));
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('readonly',true);
+                        }
+
+                        if(key == 'defect_classification'){
+
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                                value: data[key],
+                                text: data[key],
+                                selected :'selected',
+                            }));
+                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('readonly',true);
+                        }
+
+                    }
+                }
+
+
+
+                },
+
+        });
+}
+
+
+$('.defect').change(function(e){
+        if( S(this).data('product_type') == 1) return false;
+        else return fetchSeverityClassification(this)
+});
+
+
+
+$('.severity_level').change(function(e){
+        if( S(this).data('product_type') != 1) return false;
+        else return fetchSeverityClassification(this , True)
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ });// End of document ready
+</script>
+
+
+<style type="text/css">
+
+    .btn.pull-right{margin-left: 15px}
+
+.qms-selectors .form-inline{margin-right: 30px;}
+
+.edit-buttons{width: 65px;}
+.gradeX a.vd_btn{margin-right: 0px !important;}
+
+.select2.select2-container{min-width: 0px !important;width: 150px !important;margin-right: 15px;}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f3f1f1;
+}
+.qa-editable{cursor: pointer;}
+.qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+#qms-summary{
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  padding: 15px 0px;
+  margin-bottom: 15px;
+  transition: all 0.5s ease;   
+}
+#qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
+
+#qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
+
+    #review_report_form{position:relative}
+    #review_report_form td input[type="text"], #review_report_form td select{height:25px}
+    .no_questions{
+    position: absolute;
+    top: -55px;
+    right: 15px;
+    }
+    .table .menu-action{padding-top:7px !important;}
+
+    #viewModal .form-group > label{text-align: right; font-weight: bold !important;}
+
+
+#review_report_table.table>thead>tr>th, #review_report_table.table>tbody>tr>th, #review_report_table.table>tfoot>tr>th, #review_report_table.table>thead>tr>td, #review_report_table.table>tbody>tr>td, #review_report_table.table>tfoot>tr>td{padding: 4px 15px }
+#review_report_table{margin-bottom: 0px;}
+#review_report_table.table .menu-action .menu-icon{margin-top: -3px;}
+
+/* Disabling defect type */
+
+td.disabled-defect{position: relative;}
+td.disabled-defect div{
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+ input[type=file]{
+        color:transparent;
+    }
+td[id*='review_item'] input{width: 40px;}
+
+</style>
+
+<script type="text/javascript">
+// UI Scripts
+
+
+$(document).ready(function(){
+
+    $('#open-summary').click(function(e){
+    e.preventDefault();
+    if($(this).hasClass('btn-danger')){
+      $(this).removeClass('btn-danger');
+      $(this).addClass('btn-default');
+      $('#qms-summary').removeClass('collapsed');
+    }else if($(this).hasClass('btn-default')){
+      $(this).removeClass('btn-default');
+      $(this).addClass('btn-danger');
+      $('#qms-summary').addClass('collapsed');
+    }
+    })
+
+    $('td.qa-editable').click(function(){
+    $(this).find('.hidden').removeClass('hidden');
+    $(this).find('p').addClass('hidden');
+    })
+
+
+    $(document).ready(function(){
+        if ( $("[id$='review_item']").is('[disabled=disabled]') ) {
+
+            $("[id$='DELETE']").prop('disabled','disabled');
+            $('#form-submit,#add_button,#review_modal').remove();
+        }
+        $( "#review_completed" ).click(function() {
+            $('#review_feedback').prop('required', true);
+        });
+        $( "#cancel_review" ).click(function() {
+            $('#review_feedback').prop('required', false);
+        });
+
+        $('#submit_review').on('click', function()  {
+        $.ajax({
+            url: '/qms/review_completed',
+            type: 'GET',
+            dataType :'json',
+            data: {"project_id": $('#id_project').val() ,"chapter_id":$('#id_chapter').val(),
+            "review_feedback":$('#review_feedback').val(), "review_group":$('.active review').prop('id')},
+            success: function (data) {
+            if (data == 1)  swal("voila!", "Review is completed!", "success")
+            else sweetAlert("Oops...", "Something went wrong!", "error");
+
+            },
+        });
+    });
+
+        $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+    })
+
+
+})// ./ doc.ready 
+
+</script>
+
+
+
+{% endblock %}

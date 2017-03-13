@@ -1,0 +1,188 @@
+{% extends 'master.html' %}
+{% load static from staticfiles %}
+{% load qms_tags %}
+
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
+
+
+
+
+            <div class="row">
+              <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-sm-12 qms-selectors">
+
+
+                        </div>
+
+                    </div><!-- ./qms-selectors row -->
+
+
+
+
+
+                <div class="panel widget">
+<!--                   <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-dot-circle-o"></i> </span> Data Tables Example </h3>
+                  </div> -->
+                  <div class="panel-body table-responsive">
+                    <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                            <th>Lead</th>
+                            <th>No.of chapters</th>
+                          <th>Defect &nbsp; [ S1, S2, S3 ]</th>
+                            <th>No. of questions</th>
+                          <th>Defect Density</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for obj in projects %}
+                        <tr class="odd gradeX">
+                          <td><a href="#" data-toggle="modal" data-target="#myModal" class="project" data-value="{{obj.project_id}}" >{{obj.project__projectId}}</a></td>
+                          <td>{{obj.project__name}}</td>
+                            <td>{{request.user}}</td>
+                             <td>{{obj.chapter_count}}</td>
+                          <td>
+                            <span class="defect-span defect-s1">{% get_severity_count obj.project "s1" obj.template_id  as s1%} {{s1}} </span>
+                            <span class="defect-span defect-s2">{% get_severity_count obj.project "s2" obj.template_id  as s2%}{{s2}}</span>
+                            <span class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</span>
+                          </td>
+                          {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
+                          <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
+                        </tr>
+                     {% endfor %}
+                   </tbody>
+			    </table>
+			   </div><!-- ./panel-body -->
+			  </div><!-- ./panel-widget -->
+			 </div><!-- ./col -->
+			</div><!-- ./row -->
+
+
+<!-- Modal Area -->
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-xl">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                        </div>
+                        <div class="modal-body">
+
+                    <table class="table table-striped leave-report-table qms-dashboard-table" id="qms_project_table">
+                      <thead>
+                        <tr>
+                          <th>S.No</th>
+                          <th>Chapter</th>
+                          <th>Author</th>
+                          <th>Defect &nbsp; [ S1, S2, S3 ]</th>
+                          <th>No. of Questions</th>
+                          <th>Defect Density</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="gradeX even" role="row">
+                          <td class="sorting_1 serial_no">INT-2017-002</td>
+                          <td class="chapter">Ansr Portal Dev 2017 Q1</td>
+                          <td class="author">sanjay.kunnath</td>
+                          <td class="">
+                            <span class="defect-span defect-s1 s1">3</span>
+                            <span class="defect-span defect-s2 s2">24</span>
+                            <span class="defect-span defect-s3 s3">7</span>
+                          </td>
+                          <td class="center questions">0</td>
+                          <td class="center defect_density">Lorem Ipsum</td>
+                        </tr>
+
+
+
+
+           </tbody>
+          </table>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-green" data-dismiss="modal">Export to Excel</button>
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+<script type="text/javascript">
+
+
+
+var qms_table_block = $('#qms_project_table tbody tr').html();
+
+function project_iterate(qms_obj){
+      qms_count = 1;
+$('#qms_project_table tbody').html('');
+  for (var qms_key in qms_obj){
+    if (qms_obj.hasOwnProperty(qms_key)){
+
+
+      var inner_obj = qms_obj[qms_key];
+
+  for (var inner_key in inner_obj){
+    if (inner_obj.hasOwnProperty(inner_key)){
+      $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
+      $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
+      $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key]['author']);
+      $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key]['defect_density']);
+      $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key]['name']);
+      $('#qms_project_table tbody tr:last-child .questions').html(inner_obj[inner_key]['questions']);
+      $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key]['s1']);
+      $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key]['s2']);
+      $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key]['s3']);
+    qms_count++;
+
+    }
+  }
+
+    }
+  }
+
+}
+
+$(document).ready(function() {
+    $('#data-tables').dataTable();
+    $('.project').on('click', function()  {
+        $.ajax({
+            url: '/qms/chapter_summary',
+            type: 'GET',
+            dataType :'json',
+            data: {"project_id": this.getAttribute('data-value')},
+            success: function (data) {
+                project_iterate(data);
+            },
+        });
+    });
+});
+</script>
+
+
+
+
+
+{% endblock %}

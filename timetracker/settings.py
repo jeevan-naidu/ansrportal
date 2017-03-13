@@ -143,10 +143,12 @@ INSTALLED_APPS = [
     'djcelery',
     'Hire',
     'Library',
-    'formtools',
     'emoticons',
-    'ExitApp',
-
+    'QMS',
+    'admin_reorder',
+    # "pinax.notifications",
+    'simple_history',
+     'ExitApp',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -159,7 +161,10 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
+     # 'admin_reorder.middleware.ModelAdminReorder',
+    'simple_history.middleware.HistoryRequestMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
+    'QMS.middleware.qms_middleware.QMSPermissionCheckMiddleware',
     'ExitApp.middleware.exitappmiddleware.ExitappPermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p
@@ -390,3 +395,43 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+# refer this link to configure https://pypi.python.org/pypi/django-modeladmin-reorder/
+# ADMIN_REORDER = (
+#     {'app': 'QMS', 'models': ('QMS.TemplateMaster', 'QMS.ProjectTemplate', 'QMS.DefectTypeMaster',
+#                               'QMS.SeverityLevelMaster', 'QMS.DefectClassificationMaster', 'QMS.ReviewMaster',
+#                               'QMS.ReviewGroup', 'QMS.DefectSeverityLevel', 'QMS.WorkPacket',
+#                               'QMS.QASheetHeader', 'QMS.ReviewReport')},'auth',
+#     # Keep original label and models
+#     'sites',
+#     'employee',
+#     'CompanyMaster',
+#     'MyANSRSource',
+#     'Salesforce',
+#     'Leave',
+#     'Reports',
+#     'Hire',
+#     'BookMyRoom',
+#     'Library',
+#
+#     # # Rename app
+#     # {'app': 'auth', 'label': 'Authorisation'},
+#
+#     # Reorder app models
+#
+#     'fb360',
+#     'Grievances',
+#     'GrievanceAdmin',
+#     # # Exclude models
+#     # {'app': 'auth', 'models': ('auth.User', )},
+#     #
+#     # # Cross-linked models
+#     # {'app': 'auth', 'models': ('auth.User', 'sites.Site')},
+#     #
+#     # # models with custom name
+#     # {'app': 'auth', 'models': (
+#     #     'auth.Group',
+#     #     {'model': 'auth.User', 'label': 'Staff'},
+#     # )},
+# )
