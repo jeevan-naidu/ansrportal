@@ -54,7 +54,7 @@ def creditview(request):
     if year:
         year = year
     else:
-        year = (now.year)
+        year = now.year
     leave_type = {'Earned Leave': 1, 'Sick Leave': 2, 'Casual Leave': 3, 'Loss Of Pay': 4,
                   'Bereavement Leave': 5, 'Maternity Leave': 6, 'Paternity Leave': 7, 'Comp Off Earned': 8,
                   'Comp Off avail': 9, 'Pay Off': 10, 'Work From Home': 11, 'Sabbatical': 12, 'Short Leave': 13, 'Domestic Travel': 14, 'International Travel': 15}
@@ -92,7 +92,8 @@ def LeaveTransaction(request):
     if year:
         year = year
     else:
-        year = (now.year)
+        year = now.year
+    logger.error(year)
     loggedInUser = request.user.id
     statusDict = {'Approved': 'approved',
                   'Rejected': 'rejected',
@@ -110,7 +111,7 @@ def LeaveTransaction(request):
                                                                                                                   'status')
     else:
         Leave_transact = LeaveApplications.objects.filter(status=statusDict[statusType],
-                                                          user=user_id,from_date__year=year,
+                                                          user=user_id, from_date__year=year,
                                                           leave_type__leave_type=request.GET.get('leave')).values('id',
                                                                                                                   'leave_type__leave_type',
                                                                                                                   'from_date',
@@ -119,7 +120,7 @@ def LeaveTransaction(request):
                                                                                                                    'to_session',
                                                                                                                   'days_count',
                                                                                                                   'status')
-
+    logger.error(Leave_transact)
     count = 0
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:

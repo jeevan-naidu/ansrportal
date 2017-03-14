@@ -1733,6 +1733,10 @@ function creditview(name,year=null)
 $(window).load(function(){
     $('.select2.select2-container').removeAttr('style');
 })
+$('#year_select').on('change',function(){
+   $('.col-md-12 .row').removeClass("Lv-Type-Selected")
+ $('#earned_leave .col-md-12 .row').addClass("Lv-Type-Selected");
+ });
 
 
 </script>
