@@ -93,7 +93,7 @@ def LeaveTransaction(request):
         year = year
     else:
         year = now.year
-    logger.error(year)
+    logger.error(" result {0} ".format(str(year)))
     loggedInUser = request.user.id
     statusDict = {'Approved': 'approved',
                   'Rejected': 'rejected',
@@ -120,7 +120,7 @@ def LeaveTransaction(request):
                                                                                                                    'to_session',
                                                                                                                   'days_count',
                                                                                                                   'status')
-    logger.error(Leave_transact)
+    logger.error(" result {0} ".format(str(Leave_transact)))
     count = 0
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:
