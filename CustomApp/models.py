@@ -7,7 +7,26 @@ from django.db.models import (
     ForeignKey)
 from helpers import get_request_params, flow_config
 from constants import TASK_STATUS, REQUEST_STATUS
+import datetime, os
 
+
+def content_file_name(instance, filename):
+    ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
+    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-) '''
+
+    import random
+    import string
+
+    # random_str length will be 16 which will be combination of (4 digits + 4 characters + 4 digits + 4 characters)
+    random_str =  "".join([random.choice(string.uppercase) for i in range(0,4)]) + "".join([random.choice(string.digits) for i in range(0,4)]) + \
+                    "".join([random.choice(string.lowercase) for i in range(0,4)]) + "".join([random.choice(string.digits) for i in range(0,4)])
+
+    random_str =  random_str[:4] + "-" + random_str[4:8] + "-" + random_str[8:12] + "-" + random_str[12:]
+    filetype = filename.split(".")[-1].lower()
+    filename = random_str +"." +  filetype
+    path = "CustomApp/uploads/" + str(datetime.datetime.now().year) + "/" + str(datetime.datetime.now().month) + "/" + str(datetime.datetime.now().day) + "/"
+    os_path = os.path.join(path, filename)
+    return os_path
 
 class AbstractEntity(Model):
     """Common attributes for all models"""
@@ -44,8 +63,8 @@ class AbstractEntity(Model):
 class AbstractProcess(AbstractEntity):
     user = ForeignKey(User, related_name='%(class)s_requested_by')
     is_active = BooleanField('Is Active', default=True)
-    process_status = CharField(choices=TASK_STATUS, max_length=20, default="In Progress")
-    request_status = CharField(choices=REQUEST_STATUS, max_length=20, default="Initiated")
+    process_status = CharField(choices=TASK_STATUS, max_length=40, default="In Progress")
+    request_status = CharField(choices=REQUEST_STATUS, max_length=40, default="Initiated")
 
     class Meta:
         abstract = True
@@ -96,32 +115,38 @@ def get_role(config, status, current_role):
     result_role = config.PROCESS[config.INITIAL]['role']
     transition = config.PROCESS[config.INITIAL]['transitions']
     role = result_role
+    tranc_role = ""
     while transition[0]:
         if current_role == role:
             if status == "approve":
                 result_role = config.PROCESS[transition[0]]['role']
+                tranc_role = result_role
+                next_role = config.PROCESS[transition[0]]['transitions']
+                if next_role[0]:
+                    process_status = "Pending approval from " + config.PROCESS[next_role[0]]['role']
+                else:
+                    process_status = "completed"
             elif transition[1]:
                 result_role = config.PROCESS[transition[1]]['role']
+                tranc_role = config.PROCESS[transition[0]]['role']
+                process_status = "Rejected by " + tranc_role
+            else:
+                tranc_role = config.PROCESS[transition[0]]['role']
+                process_status = "Process need Change from user"
+
+
         role = config.PROCESS[transition[0]]['role']
         transition = config.PROCESS[transition[0]]['transitions']
-    return result_role
+    return result_role, tranc_role, process_status
 
 
-def update_process(process, role, status, final):
-    if status == "approve" and final:
-        process.role = role
-        process.process_status = "Completed"
+def update_process(process, role, status):
+    if status == "completed":
         process.request_status = "Completed"
         process.is_active = False
-        process.save()
-    elif status == "approve":
-        process.role = role
-        process.process_status = "Initiated"
-        process.request_status = "In Progress"
-        process.save()
-    else:
-        process.role = role
-        process.save()
+    process.process_status = status
+    process.role = role
+    process.save()
 
 
 def is_final(config, current_role):

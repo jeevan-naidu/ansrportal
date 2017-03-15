@@ -37,14 +37,12 @@
                             <tr>
                                 {% for field in fields %}
 
-                                    {% if field == "request_status" %}
-                        <th><b>Request Status</b></th>
-                                    {% elif field == "id" %}
-                                        {% elif field == "process_status" %}
-                                        <th><b>Process Status</b></th>
-                                        {% else %}
-                                        <th><b>{{ field|title }}</b></th>
+
+                                    {% if field != 'id' %}
+
+                                   <th><b>{{ field|transaction_name_split }}</b></th>
                                     {% endif %}
+
 
 
                                 {% endfor %}
@@ -56,6 +54,15 @@
                              <tr>
                          {% for field in fields %}
                              {% if field == "id" %}
+                                  {% elif field == 'attachment' %}
+                                 <td class="ws-mw">
+                                 <div class="" >
+         <!-- Attachments start -->
+                 <a target="_blank" href="{{process| field_name:field }}">
+                       Attachment
+                   </a>
+                 </div>
+                                 </td>
                                 {% else %}
                               <td>{{ process| field_name:field }}</td>
                              {% endif %}
@@ -80,13 +87,9 @@
                             <tr>
                                 {% for field in fields %}
 
-                                    {% if field == "request_status" %}
-                        <th><b>Request Status</b></th>
-                                    {% elif field == "id" %}
-                                        {% elif field == "process_status" %}
-                                        <th><b>Process Status</b></th>
-                                        {% else %}
-                                        <th><b>{{ field|title }}</b></th>
+                                   {% if field != 'id' %}
+
+                                   <th><b>{{ field|transaction_name_split }}</b></th>
                                     {% endif %}
 
 
@@ -99,6 +102,15 @@
                              <tr>
                          {% for field in fields %}
                              {% if field == "id" %}
+                                  {% elif field == 'attachment' %}
+                                 <td class="ws-mw">
+                                 <div class="" >
+         <!-- Attachments start -->
+                 <a target="_blank" href="{{process| field_name:field }}">
+                       Attachment
+                   </a>
+                 </div>
+                                 </td>
                                 {% else %}
                               <td>{{ process| field_name:field }}</td>
                              {% endif %}

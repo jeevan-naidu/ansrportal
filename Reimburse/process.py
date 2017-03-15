@@ -23,7 +23,7 @@ PROCESS = {
     'finance_approval': {
         'name': 'Finance Approval',
         'model': Transaction,
-        'role': 'Final',
+        'role': 'Finance',
         'method': hr,
         'serializer': TransactionSerializer,
         'transitions': [None, 'manager_approval']
@@ -33,6 +33,6 @@ PROCESS = {
 
 INITIAL = 'reimburse_raise'
 
-DETAIL = ["title", "reason", "amount", "user", '']
+DETAIL = ["bill_no", "bill_date", "vendor_name", "user", 'nature_of_expenses', 'amount']
 TITLE = 'Reimbursement for ANSR Source'
 DESCRIPTION = 'Reimbursement Process '

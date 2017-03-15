@@ -42,12 +42,12 @@
                             <tr>
                                 {% for field in fields %}
 
-                                    {% if field == "request_status" %}
-                        <th><b>Request Status</b></th>
-                                    {% elif field == "id" %}
-                                        {% else %}
-                                        <th><b>{{ field|title }}</b></th>
+
+                                        {% if field != 'id' %}
+
+                                   <th><b>{{ field|transaction_name_split }}</b></th>
                                     {% endif %}
+
 
 
                                 {% endfor %}
@@ -58,12 +58,24 @@
                         {% for process in queryset.active %}
                              <tr>
                          {% for field in fields %}
+                             {% with fields_val=process|field_name:field  %}
                              {% if field == "id" %}
+                                 {% elif field == 'attachment' and  fields_val %}
+                                 <td class="ws-mw">
+                                 <div class="" >
+         <!-- Attachments start -->
+
+                   <a target="_blank" href="{{ fields_val }}">
+                       Attachment
+                   </a>
+
+                 </div>
+                                 </td>
                                 {% else %}
-                              <td class="ws-mw">{{ process| field_name:field }}</td>
+                              <td class="ws-mw">{{ fields_val }}</td>
                              {% endif %}
 
-
+{% endwith %}
                         {% endfor %}
                              <th><a id="{{ app_name }}-{{ process| field_name:"id" }}" onclick="delete_process()" data-toggle="modal" title="Approve"
                                 class="pull-right btn btn-sm btn-success the-right-button">
@@ -88,11 +100,9 @@
                             <tr>
                                 {% for field in fields %}
 
-                                    {% if field == "request_status" %}
-                        <th><b>Request Status</b></th>
-                                    {% elif field == "id" %}
-                                        {% else %}
-                                        <th><b>{{ field|title }}</b></th>
+                                  {% if field != 'id' %}
+
+                                   <th><b>{{ field|transaction_name_split }}</b></th>
                                     {% endif %}
 
 
@@ -105,6 +115,15 @@
                              <tr>
                          {% for field in fields %}
                              {% if field == "id" %}
+                                 {% elif field == 'attachment' %}
+                                 <td class="ws-mw">
+                                 <div class="" >
+         <!-- Attachments start -->
+                 <a target="_blank" href="{{process| field_name:field }}">
+                       Attachment
+                   </a>
+                 </div>
+                                 </td>
                                 {% else %}
                               <td class="ws-mw">{{ process| field_name:field }}</td>
                              {% endif %}
@@ -124,15 +143,10 @@
                           <thead>
                             <tr>
                                 {% for field in fields %}
+                                    {% if field != 'id' %}
 
-                                    {% if field == "request_status" %}
-                        <th><b>Request Status</b></th>
-                                    {% elif field == "id" %}
-                                        {% else %}
-                                        <th><b>{{ field|title }}</b></th>
+                                   <th><b>{{ field|transaction_name_split }}</b></th>
                                     {% endif %}
-
-
                                 {% endfor %}
 
                             </tr>
@@ -142,6 +156,15 @@
                              <tr>
                          {% for field in fields %}
                              {% if field == "id" %}
+                                 {% elif field == 'attachment' %}
+                                 <td class="ws-mw">
+                                 <div class="" >
+         <!-- Attachments start -->
+                 <a target="_blank" href="{{process| field_name:field }}">
+                       Attachment
+                   </a>
+                 </div>
+                                 </td>
                                 {% else %}
                               <td class="ws-mw">{{ process| field_name:field }}</td>
                              {% endif %}
@@ -180,7 +203,7 @@
 							</h4>
                         </div>
                         <div class="modal-body min-height-400" id="modal_body">
-                          <form method="POST" id="process_create">
+                          <form method="POST" id="process_create" enctype="multipart/form-data" >
     {% csrf_token %}
     {% render_form serializer template_pack='rest_framework/vertical' %}
     <input type="submit" class="btn btn-default" value="Raise">
@@ -232,7 +255,8 @@
 
 $('document').ready(function(){
   $('#data-tables').dataTable();
-});
+})
+
 $('form#process_create').submit(function(e){
     var formData = new FormData($(this)[0]);
 						 form_id = $(this)[0].id;

@@ -8,6 +8,7 @@ from rest_framework import generics
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.parsers import FileUploadParser, MultiPartParser, FormParser
 
 
 from models import get_app_detail,\
@@ -60,7 +61,7 @@ class StartProcess(APIView):
         serializer = process_serializer(data=request.data)
         if serializer.is_valid():
             try:
-                serializer.saveas(request)
+                serializer.save_as(request)
                 record_added = True
             except:
                 return Response(status.HTTP_400_BAD_REQUEST)
@@ -72,6 +73,8 @@ class GetProcess(APIView):
     """
     Get Process details
     """
+    # serializer_class = FileUploaderSerializer
+    parser_classes = (FileUploadParser,MultiPartParser, FormParser)
     renderer_classes = (TemplateHTMLRenderer,)
     template_name = 'templates/update_form.html'
 
@@ -91,7 +94,7 @@ class GetProcess(APIView):
         app_name = get_app_name(request, **kwargs)
         process = self.get_process(request, **kwargs)
         process_object = self.get_object(pk, process[1])
-        serializer = process[0](process_object)
+        serializer = process[0](process_object, partial=True)
         return Response({"serializer":serializer,
                          "pk":pk,
                          "app_name":app_name},)
@@ -189,8 +192,8 @@ class ProcessApproval(APIView):
                 roles_selected = config.PROCESS[transitions[0]]['role']
                 transitions = config.PROCESS[transitions[0]]['transitions']
                 if roles_selected == current_role:
-                    if roles_selected == "Final":
-                        process_role = "Complete"
+                    if is_final(config, roles_selected):
+                        process_role = config.PROCESS[transitions[0]]['role']
                     else:
                         next_role = config.PROCESS[transitions[0]]['role']
                         process_role = next_role
@@ -199,6 +202,7 @@ class ProcessApproval(APIView):
                 transactions = config.PROCESS[config.PROCESS[config.INITIAL]['transitions'][0]]['serializer'].\
                     transactions(pk, roles_selected)
                 roles_action_detail.append(transactions)
+
             process_status = zip(action_taken_for_roles, roles_action_detail)
 
             return [process_status, process_role]
@@ -234,9 +238,9 @@ class ProcessApproval(APIView):
             process_request = model.objects.get(pk=pk)
             action = serialized_data.validated_data['status']
             role = get_role(config, action, process_request.role)
-            final = is_final(config, process_request.role)
-            update_process(process_request, role, action, final)
-            serialized_data.save_as(role, request, pk)
+            # final = is_final(config, process_request.role)
+            update_process(process_request, role[0], role[2])
+            serialized_data.save_as(role[1], request, pk)
             record_added = True
         modal = config.PROCESS[config.INITIAL]['model']
         display_fields = config.DETAIL
