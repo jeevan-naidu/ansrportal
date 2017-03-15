@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^AutocompleteProcessModel/$', AutocompleteProcessModel.as_view(), name='AutocompleteProcessModel', ),
     url(r'^AutocompleteTemplates/$', AutocompleteTemplates.as_view(), name='AutocompleteTemplates', ),
     url(r'^AutocompleteReviewGroup/$', AutocompleteReviewGroup.as_view(), name='AutocompleteReviewGroup', ),
+    url(r'^AutoCompleteUserProjectSpecific/$', AutoCompleteUserProjectSpecific.as_view(), name='AutoCompleteUserProjectSpecific', ),
     url(r'^AutoCompleteAssignUserProjectSpecific/$', AutoCompleteAssignUserProjectSpecific.as_view(),
         name='AutoCompleteAssignUserProjectSpecific', ),
     url(r'^AutoCompleteChapterSpecificComponent/$', AutoCompleteChapterSpecificComponent.as_view(),

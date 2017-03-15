@@ -149,9 +149,18 @@ var obj_tab_order = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"Edi
                     "tab_order":{"Editor Review 2":"0","Editor Review 3":"3","Editor Review 1":"4"},
                     "team_members":{"352":"KanakaPrakash","354":"AkshayFernandes"},
                     "user_tab":{"Editor Review 2":354,"Editor Review 3":352,"Editor Review 1":354}
-                }    */            
+                }    */
 
-
+<!--var new_obj = {"team_members": {"785": "pupul.ranjan", "562": "sujay.suresh",-->
+                <!--"534": "vivek.pradhan", "471": "sanjay.kunnath", "571": "shalini.bhagat",-->
+<!--"541": "Janaki.BS"}, "config_missing": false,-->
+ <!--"tabs": {"CE(CE2)": false,-->
+ <!--"CE(CE1)": true, "ER(ER1)": true, "EUT(EUT1)": true, "ER(ER3)": false,-->
+  <!--"ER(ER2)": false, "EUT(EUT2)": false},-->
+  <!--"tab_name": {"CE(CE2)": 21,-->
+ <!--"CE(CE1)": 20, "ER(ER1)": 17, "EUT(EUT1)": 22, "ER(ER3)": 19,-->
+  <!--"ER(ER2)": 18, "EUT(EUT2)": 23}, "tab_order": {},-->
+   <!--"user_tab": {}}-->
 
 // Get the html for .form-group
 var domObj = $('.qms-allocators').html();
@@ -210,7 +219,7 @@ function resetBtn(){
 function assignMandatory(theObj){
     for (var key in theObj['user_tab']){
         if(theObj['user_tab'].hasOwnProperty(key)){
-            // console.log('the key is ' + key + ' and the value is ' + theObj['user_tab'][key]);
+            <!--console.log('the key is ' + key + ' and the value is ' + theObj['user_tab'][key]);-->
             $('.form-group span:contains('+ key +')').parent().parent().find('select option[value=' + theObj['user_tab'][key] + ']').prop("selected", true);
             // console.log(the_form_group);
             // $('#id_author option[value=""]').prop("selected", true);
@@ -235,17 +244,16 @@ function populateForm (theObj){
       if (theObj['tab_name'].hasOwnProperty(key)) {     // opening object
         if (theObj['tabs'][theObj['tab_name'][key]] == true || typeof(theObj['user_tab'][theObj['tab_name'][key]]) == 'number') {
             $('.qms-allocators').append(domObj);
-             console.log('user_'+key +'---'+'order_'+key)
             $('.qms-allocators .form-group:last-child select').attr('name',  "user_"+key);
             $('.qms-allocators .form-group:last-child input.order-number').attr('name',  "order_"+key);
-                        $('.qms-allocators .form-group:last-child input.order-number').attr('required',  true);
+            $('.qms-allocators .form-group:last-child input.order-number').attr('required',  true);
 
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 
             populateNames(theObj);
 
         }else{
-            $('select#select-field').html('');
+            <!--$('select#select-field').html('');-->
             $('select#select-field').append("<option name=" + key + " >" + theObj['tab_name'][key] + "</option>");
         }
 
@@ -403,6 +411,11 @@ $(document).ready(function(){
                 dataType :'json',
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
+                if (data['config_missing'] == 'True') {
+                    sweetAlert("Oops...", "Configuration is missing!", "error");
+                    return false;
+
+                }
                 console.log(data);
                     populateForm(data);
                     orderTabs(data);

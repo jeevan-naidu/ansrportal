@@ -160,6 +160,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj):
         remarks = forms.CharField(required=False,)
         screen_shot = forms.FileField(required=False,)
         instruction = forms.CharField(required=False,)
+
         class Meta:
             model = ReviewReport
             fields = ('review_item', 'defect', 'severity_type',  'is_fixed',
@@ -171,10 +172,13 @@ def review_report_base(template_id, project_obj, chapter_component_obj):
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
             self.fields['severity_level'].widget.attrs['class'] = 'severity_level'
             template_obj = ProjectTemplateProcessModel.objects.get(project=project_obj)
-            defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
+            # defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
             product_type = QMSProcessModel.objects.filter(id__in=
-                                                          ProjectTemplateProcessModel.objetcs.filter
-                                                          (project=project_obj)).values_list('product_type', flat=True)[0]
+                                                          ProjectTemplateProcessModel.objects.filter
+                                                          (project=project_obj).
+                                                          values_list('qms_process_model',
+                                                                      flat=True)).values_list('product_type',
+                                                                                              flat=True)[0]
             try:
                 qa_obj = QASheetHeader.objects.filter(project=project_obj, chapter_component=chapter_component_obj)[0]
                 if qa_obj.review_group_status and qa_obj.author_feedback_status:
@@ -217,11 +221,12 @@ def review_report_base(template_id, project_obj, chapter_component_obj):
             # self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.filter\
             #     (id=defect_type_master_obj.defect_classification)
             # print DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)
-            self.fields['defect_classification'].widget.attrs['disabled'] = True
+
             self.fields['severity_level'].widget.attrs['disabled'] = True
             self.fields['severity_type'].widget.attrs['data-product_type'] = int(product_type)
             if not product_type:
                 self.fields['instruction'].widget.attrs['hidden'] = True
+                self.fields['defect_classification'].widget.attrs['disabled'] = True
             # self.fields['author'].widget.attrs['class'] = 'author_dropdown'
 
             # print defect_type_master_obj

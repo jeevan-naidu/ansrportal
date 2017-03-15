@@ -91,10 +91,32 @@ class ComponentMaster(NameMasterAbstractModel, TimeStampAbstractModel):
 class ReviewGroup(models.Model):
     name = models.CharField(max_length=100)
     review_master = models.ForeignKey(ReviewMaster)
+    alias = models.CharField(max_length=20, blank=True, null=True, verbose_name="alias/display name for review group",
+                             editable=False)
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % self.name
+        return '%s' % str(self.alias)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            try:
+                last_pk = ReviewGroup.objects.filter(name__icontains=self.name).count()
+                last_pk += 1
+                self.alias = ''.join((self.name, "(", str(last_pk), ")"))
+            except:
+                self.alias = ''.join((self.name, "(1)"))
+        else:
+            alias = self.alias.split("(")
+            self.alias = ''.join((self.name, "(", str(alias[1])))
+
+        super(ReviewGroup, self).save(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+
+       print "im in update"
+       super(ReviewGroup, self).save(*args, **kwargs)
+
 
 
 class DefectSeverityLevel(TimeStampAbstractModel):

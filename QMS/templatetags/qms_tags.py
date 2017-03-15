@@ -32,8 +32,10 @@ register.filter(is_in)
 @register.filter('get_severity_level')
 def get_severity_level(id, pk):
     try:
+        print "pk" , pk
         s = SeverityLevelMaster.objects.get(id=pk)
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist as e:
+        print str(e)
         s = None
     return s
 

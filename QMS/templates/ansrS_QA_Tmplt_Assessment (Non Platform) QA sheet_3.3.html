@@ -11,7 +11,7 @@
 
 <div class="row">
 
-    
+
     <div class="col-sm-12">
 
 
@@ -62,7 +62,7 @@
 
                     </div>
                     <input type="hidden" name="active_tab" id="active_tab" {% if request.session.active_tab %}
-                           value={{request.session.active_tab}} {% else %} value="1" {% endif %}/>
+                           value={{request.session.active_tab}} {% else %} value="lambda" {% endif %}/>
                     <input type="hidden" name="template_name" id="template_id" value="{{request.session.template_id}}"/>
                 </div><!-- ./qms-selectors row -->
             </form>
@@ -106,9 +106,13 @@
 
                 <ul class="nav nav-tabs">
                     {% for groups in review_group %}
+                    {% if request.session.active_tab and request.session.active_tab  != 'lambda'  %}
               <li {% if request.session.active_tab|add:"0" == groups.id|add:"0" %} class="active review" {% else %} class="review" {% endif%}id={{groups.id}} >
                     <a href="#tab1" data-toggle="tab">{{groups}}</a></li>
-
+                {% else %}
+                    <li {% if forloop.counter == 1 %} class="active review" {% else %} class="review" {% endif%} id={{groups.id}} >
+                    <a href="#tab1" data-toggle="tab">{{groups}}</a></li>
+                    {% endif %}
 
                     <!--<li class="review disabled" id="3" ><a href="#tab3" >CE1</a></li> -->
                     {% endfor %}
@@ -124,7 +128,7 @@
                          <input type="hidden" name="is_author" id="is_author"
                                 value="{{request.session.author_logged_in}}"/>
                          <input type="hidden" name="active_tab1" id="active_tab1" {% if request.session.active_tab %}
-                                value={{request.session.active_tab}} {% else %} value="1" {% endif %}/>
+                                value={{request.session.active_tab}} {% else %} value="lambda" {% endif %}/>
 
                          <div class="no_questions">
                              <label>Enter the number of questions : </label>
@@ -142,6 +146,7 @@
                                     <th>Type</th>
                                     <th>Severity</th>
                                     <th>Classification</th>
+
                                      <th>Screen Shot</th>
                                     <th>Fixed?</th>
                                     <th>Fixed By</th>
@@ -177,6 +182,9 @@
                                         </td>
                                         <td class="" id="defect_classification-{{forloop.counter}}-td">
                                             {{form_obj.defect_classification}}
+                                        </td>
+                                        <td class="" id="instruction-{{forloop.counter}}-td">
+                                            {{form_obj.instruction}}
                                         </td>
                                          <td class="" id="screen_shot-{{forloop.counter}}-td">
                                             {{form_obj.screen_shot}}
@@ -275,17 +283,17 @@
 
                         {% endif %}
                     </a>
-                                                                        
-                                                                        
-                                                                        
-                                                                        
-                                                                        
-                                                                        
-                                                                        
-                                                                        
-                                                                        
-                                                                        
-                                                                        
+
+
+
+
+
+
+
+
+
+
+
                                                                     </label>
                                                                     {% else %}
                                                                         <label>--</label> {% endif %}
@@ -363,13 +371,13 @@
 
 
                     <div class="tab-pane" id="tab2">
-                      
+
 
                     </div><!-- ./tab -->
 
                     <div class="tab-pane" id="tab3">
-                      
-                      
+
+
                     </div><!-- ./tab -->
 
                 </div><!-- ./ .tab-content -->
@@ -386,7 +394,7 @@
 
         </div>
 
-                
+
     </div>
 
 </div><!-- ./row main -->
@@ -415,7 +423,7 @@
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel">Review Completed</h4>
                         </div>
-                        <div class="modal-body"> 
+                        <div class="modal-body">
                             <form class="form-horizontal">
                             <div class="form-group">
                               <label class="col-sm-4 control-label">Comment : </label>
@@ -424,20 +432,32 @@
                               </div>
 
                             </div>
-                            
+
                           </form>
-                        
+
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel review </button>
                           <button type="button" class="btn vd_btn vd_bg-green" id="submit_review">Submit</button>
                         </div>
                       </div>
-                      <!-- /.modal-content --> 
+                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-dialog --> 
+                    <!-- /.modal-dialog -->
                   </div>
-                  <!-- /.modal --> 
+                  <!-- /.modal -->
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -521,7 +541,7 @@
 
 
 
-function fetchSeverityClassification(obj,is_media=False ) {
+function fetchSeverityClassification(obj,is_media=false ) {
 
         var obj_id = obj.id.split('-');
         if (is_media ) {
@@ -529,10 +549,11 @@ function fetchSeverityClassification(obj,is_media=False ) {
             severity_level =  $(obj).val()
         }
         else {
+        console.log(" not media");
             severity_type =  $(obj).val()
             severity_level = $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').val()
         }
-        if( S(obj).data('product_type') != 1) return false;
+        if( $(obj).data('product_type') != 1) return false;
         $.ajax({
                 url: '/qms/fetch_severity/',
                 type: 'GET',
@@ -542,6 +563,7 @@ function fetchSeverityClassification(obj,is_media=False ) {
                 "active_tab" :$('#active_tab').val() ,
                 "severity_level":severity_level },
                 success: function (data) {
+                console.log("sucess");
                     var output = [];
 
                 for (var key in data) {
@@ -584,14 +606,14 @@ function fetchSeverityClassification(obj,is_media=False ) {
 
 
 $('.defect').change(function(e){
-        if( S(this).data('product_type') == 1) return false;
+        if( $(this).data('product_type') == 1) return false;
         else return fetchSeverityClassification(this)
 });
 
 
 
 $('.severity_level').change(function(e){
-        if( S(this).data('product_type') != 1) return false;
+        if( $(this).data('product_type') == 0) return false;
         else return fetchSeverityClassification(this , True)
 
 });
@@ -652,7 +674,7 @@ $('.severity_level').change(function(e){
   border-bottom: 1px solid #aaa;
   padding: 15px 0px;
   margin-bottom: 15px;
-  transition: all 0.5s ease;   
+  transition: all 0.5s ease;
 }
 #qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
 
@@ -748,7 +770,7 @@ $(document).ready(function(){
     })
 
 
-})// ./ doc.ready 
+})// ./ doc.ready
 
 </script>
 
