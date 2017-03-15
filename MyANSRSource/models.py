@@ -10,6 +10,7 @@ import datetime, os
 from django.core.validators import URLValidator
 from CompanyMaster.models import Practice, SubPractice
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -38,28 +39,7 @@ PROJECTFINTYPE = (
 #upload path for sow and estimation
 
 
-def change_file_path(instance, filename):
-    ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
-    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-) '''
-
-    import random
-    import string
-
-    # random_str length will be 16 which will be combination of (4 digits + 4 characters + 4 digits + 4 characters)
-    random_str = "".join([random.choice(string.uppercase) for i in range(0, 4)]) + "".join(
-        [random.choice(string.digits) for i in range(0, 4)]) + \
-                 "".join([random.choice(string.lowercase) for i in range(0, 4)]) + "".join(
-        [random.choice(string.digits) for i in range(0, 4)])
-
-    # return string seperated by hyphen eg:
-    random_str = random_str[:4] + "-" + random_str[4:8] + "-" + random_str[8:12] + "-" + random_str[12:]
-    filetype = filename.split(".")[-1].lower()
-    filename = random_str + "." + filetype
-    path = "MyANSRSource/uploads/" + str(datetime.datetime.now().year) + "/" + str(
-        datetime.datetime.now().month) + "/" + str(datetime.datetime.now().day) + "/"
-    os_path = os.path.join(path, filename)
-    return os_path
-
+file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectDocument'))
 
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
@@ -338,8 +318,8 @@ class ProjectDetail(models.Model):
     ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
     SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
     deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager', blank=True, null=True)
-    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
-    Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
+    Sowdocument = models.FileField(upload_to=file_storage, blank=True, null=True, verbose_name="Upload Project SOW")
+    Estimationdocument = models.FileField(upload_to=file_storage, blank=True, null=True,
                                           verbose_name="Upload project Estimation Document")
     SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', null=True, blank=True)
     Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', null=True, blank=True)

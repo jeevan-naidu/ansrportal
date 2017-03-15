@@ -2180,6 +2180,11 @@ class CreateProjectWizard(SessionWizardView):
                     logger.error("Basic Information step has signed as none")
                 if form.is_valid():
                     a=0
+        if step == 'Uploads':
+            if form.is_valid():
+                self.request.session['sow'] = (form.cleaned_data['Sowdocument'])
+                self.request.session['estimation'] = (form.cleaned_data['Estimationdocument'])
+
             else:
                 logger.error(
                     "Basic Information step data is None" + str(form._errors))
@@ -2278,6 +2283,7 @@ class CreateProjectWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         basicInfo = [form.cleaned_data for form in form_list][0]
+        upload = [form.cleaned_data for form in form_list][2]
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
         for k, v in [form.cleaned_data for form in form_list][1].iteritems():
@@ -2301,6 +2307,7 @@ class CreateProjectWizard(SessionWizardView):
             'flagData': flagData,
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
+            'upload': upload,
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2597,8 +2604,17 @@ def saveProject(request):
                 asset_id = ProjectAsset.objects.get(Asset=asset).id
                 pd.Asset_id = asset_id
                 pd.save()
+
             except ValueError as e:
                 logger.exception(e)
+            # try:
+            #     pd_id = pd.id
+            #     pd_id.Sowdocument = request.session['sow']
+            #     pd_id.Estimationdocument = request.session['estimation']
+            #     pd_id.save()
+            #     # FileSystemStorage.delete()
+            # except ValueError as e:
+            #     logger.exception(e)
 
         except ValueError as e:
             logger.exception(e)
