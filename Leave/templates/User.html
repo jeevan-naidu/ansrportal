@@ -1685,6 +1685,8 @@ $("#type_select").change(function(e){
     value = $(this).val()
    if (value == 'Credit')
        {
+       $('.col-md-12 .row').removeClass("Lv-Type-Selected")
+       $('#earned_leave .col-md-12 .row').addClass("Lv-Type-Selected");
         year=new Date().getFullYear()
         $('#month_select').prop('disabled', 'disabled');
         creditview('Earned Leave',year);
