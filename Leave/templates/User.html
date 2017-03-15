@@ -710,7 +710,6 @@
 <script>
 
 value = '';
-year = '';
 $('.remark').click(function(e){
             var class_name = this.id.split('_');
            $("#remark__"+class_name[1]).show();
@@ -725,6 +724,7 @@ function refreshBackground() {
 $(document).ready(function() {
 var curr_year = new Date().getFullYear()
 $("#year_select option[value="+curr_year+"]").attr("selected","selected");
+year = $("#year_select option:selected").val();
 
 
     gridLoad('earned_leave',year);
@@ -1262,7 +1262,7 @@ function removeSelection(){
 
 
 }
-$('#year_select').on('change', function(){
+$('#year_select').on('change', function(e){
     year = this.value;
     if (value == 'Credit'){
      creditview('Earned Leave',year);
@@ -1273,7 +1273,7 @@ $('#year_select').on('change', function(){
 
     });
 
-function gridLoad(name,year=null){
+function gridLoad(name,year){
   getLeaveName = {'sabbatical':'Sabbatical',
       'comp_off_avail':"Comp Off avail",
       'paternity_leave':'Paternity',
@@ -1318,7 +1318,7 @@ $('#earned_leave .col-md-12 .row').click(function(){
 removeSelection()
  $('#earned_leave .col-md-12 .row').addClass("Lv-Type-Selected");
  if (value == 'Credit'){
- creditview('Earned Leave');
+ creditview('Earned Leave',year);
  }
  else{
   gridLoad("earned_leave",year);
@@ -1685,22 +1685,19 @@ $("#type_select").change(function(e){
     value = $(this).val()
    if (value == 'Credit')
        {
+       var selectedyear = $("#year_select option:selected").val();
        $('.col-md-12 .row').removeClass("Lv-Type-Selected")
        $('#earned_leave .col-md-12 .row').addClass("Lv-Type-Selected");
-        year=new Date().getFullYear()
         $('#month_select').prop('disabled', 'disabled');
-        creditview('Earned Leave',year);
-        $("#year_select option[value="+year+"]").attr("selected","selected");
+        creditview('Earned Leave',selectedyear);
         e.stopImmediatePropagation();
        }
    else
     {
-        year=new Date().getFullYear()
         $('#month_select').prop('disabled', false);
-        $("#year_select option[value="+year+"]").attr("selected","selected");
     }
 })
-function creditview(name,year=null)
+function creditview(name,year)
 {
         var name = name
         $('.table-bordered').empty();

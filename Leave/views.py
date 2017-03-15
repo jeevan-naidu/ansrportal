@@ -52,10 +52,6 @@ def creditview(request):
     leave = request.GET.get('leave')
     now = datetime.datetime.now()
     year = request.GET.get('year')
-    if year:
-        year = year
-    else:
-        year = now.year
     leave_type = {'Earned Leave': 1, 'Sick Leave': 2, 'Casual Leave': 3, 'Loss Of Pay': 4,
                   'Bereavement Leave': 5, 'Maternity Leave': 6, 'Paternity Leave': 7, 'Comp Off Earned': 8,
                   'Comp Off avail': 9, 'Pay Off': 10, 'Work From Home': 11, 'Sabbatical': 12, 'Short Leave': 13, 'Domestic Travel': 14, 'International Travel': 15}
@@ -73,7 +69,11 @@ def creditview(request):
     data2 = "<tr class='balanceremove'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
     data3 = "<tr class='invisible'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
     if leave == 'Earned Leave':
-        carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(now.year-1)).\
+        if year == now.year:
+            year = 2016
+        else:
+            year = request.GET.get('year')
+        carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(year)).\
             values('balance', 'year', 'applied')
         for balance in carry_forward:
             count1 = count1 + 1
