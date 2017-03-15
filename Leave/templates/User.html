@@ -756,7 +756,7 @@ function shortleavegrid(openshortleave, approvedshortleave){
    $('#short_leave .col-md-12 .row').addClass("Lv-Type-Selected");
      var statusdropdown = document.getElementById("month_select");
 
-     $("#transaction_status *").attr("disabled", "disabled").off('click');
+     $("#transaction_status #month_select").attr("disabled", "disabled").off('click');
    shortLeaveGridLoad();
   });
 
@@ -1291,7 +1291,7 @@ function gridLoad(name,year=null){
   leavename = getLeaveName[name];
   $("#leave_name").text(leavename);
 
-    $('#transaction_status *').removeAttr("disabled");
+    $('#transaction_status #month_select').removeAttr("disabled");
   $('.table-bordered').empty();
   $.ajax(
         {
