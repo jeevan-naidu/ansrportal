@@ -32,7 +32,7 @@
                     <br/>               
                     <div class="tab-content mgbt-xs-20">
                       <div class="tab-pane active" id="tab1">
-                        <table class="table table-striped" id="data-tables">
+                        <table class="table table-striped reimburse-table" id="data-tables">
                           <thead>
                             <tr>
                                 {% for field in fields %}
@@ -64,7 +64,7 @@
                  </div>
                                  </td>
                                 {% else %}
-                              <td>{{ process| field_name:field }}</td>
+                              <td class="ws-mw">{{ process| field_name:field }}</td>
                              {% endif %}
 
 
@@ -82,7 +82,7 @@
 
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab2">
-                          <table class="table table-striped" id="data-tables">
+                          <table class="table table-striped reimburse-table" id="data-tables">
                           <thead>
                             <tr>
                                 {% for field in fields %}
@@ -112,7 +112,7 @@
                  </div>
                                  </td>
                                 {% else %}
-                              <td>{{ process| field_name:field }}</td>
+                              <td class="ws-mw">{{ process| field_name:field }}</td>
                              {% endif %}
 
 
