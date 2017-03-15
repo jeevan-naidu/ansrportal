@@ -44,6 +44,7 @@ class Month(Func):
     template = '%(function)s(MONTH from %(expressions)s)'
     output_field = models.IntegerField()
 
+# data3 for the purpose of structuring HTML
 
 def creditview(request):
     user_id = request.GET.get('user_id')
@@ -70,13 +71,14 @@ def creditview(request):
         data1 =data1+ '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'.\
             format(count, month_name[data["month"]],data["day"], data["comments"], )
     data2 = "<tr class='balanceremove'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
+    data3 = "<tr class='invisible'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
     if leave == 'Earned Leave':
         carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(now.year-1)).\
             values('balance', 'year', 'applied')
         for balance in carry_forward:
             count1 = count1 + 1
             data2 = data2 + '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'. \
-                format(count1, "Jan", balance["balance"], "Yearly Leave Carrry forward")
+                format(count1, "Jan", balance["balance"], "Yearly Leave Carrry forward")+data3
     else:
         data2 =''
 
