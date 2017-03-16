@@ -51,7 +51,7 @@ class StartProcess(APIView):
         modal = config.PROCESS[config.INITIAL]['model']
         transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
         queryset = user_queryset(request, config)
-        fields = get_process_transactions(modal, transaction_modal)
+        fields = get_process_transactions(modal, transaction_modal, config.DETAIL, "user")
         return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name})
 
 
@@ -277,7 +277,7 @@ class ApproveListView(APIView):
         modal = config.PROCESS[config.INITIAL]['model']
         transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
         queryset = manager_queryset(request, **kwargs)
-        fields = get_process_transactions(modal, transaction_modal)
+        fields = get_process_transactions(modal, transaction_modal, config.DETAIL, "approval")
         serializer = serializer()
         return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name})
 

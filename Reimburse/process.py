@@ -33,6 +33,6 @@ PROCESS = {
 
 INITIAL = 'reimburse_raise'
 
-DETAIL = ["bill_no", "bill_date", "vendor_name", "user", 'nature_of_expenses', 'amount']
+DETAIL = ["bill_no", "bill_date", "vendor_name", 'nature_of_expenses', 'amount', 'user', 'attachment']
 TITLE = 'Reimbursement for ANSR Source'
 DESCRIPTION = 'Reimbursement Process '
