@@ -81,7 +81,7 @@
                                     <option>Option 4</option>
                                     <option>Option 5</option>
                                 </select>
-                                <input type="number" min="0" max="10" value="0" step="1" onkeydown="return false"  class="form-control input-sm order-number" name="">
+                                <input type="number" min="1" max="10" step="1" onkeydown="return false"  class="form-control input-sm order-number" name="">
                               </div>
                             </div>
                           </div>
@@ -308,6 +308,7 @@ function orderTabs(theObj){
             }
         }
     }
+
     /*debugger*/
 
     // Re-arranging
@@ -374,6 +375,23 @@ function orderTabs(theObj){
 } // end of order tabs functions
 
 
+// 
+
+
+function checkOrder(){
+    var the_order_array = [];
+    var i=1;
+    $('.qms-allocators .form-group input.order-number').each(function(){
+        the_order_array[i] = $(this).val();
+        i++;
+    })
+    console.log(the_order_array);
+}
+
+
+
+
+
 
 $(document).ready(function(){
 
@@ -388,6 +406,13 @@ $(document).ready(function(){
         orderTabs(obj_tab_order);
         globalObj = obj_tab_order;
 })*/
+
+
+$('.fa-magic').click(function(){
+    checkOrder();
+})
+
+
 
 
    $(':input[name$=chapter]').on('change', function()  {
