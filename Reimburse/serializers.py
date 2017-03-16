@@ -8,7 +8,7 @@ class ReimburseSerializer(serializers.ModelSerializer):
     bill_no = serializers.CharField(max_length=100, default='',
                                     style={'base_template': 'rest_framework/custom_input.html'})
     bill_date = serializers.DateField(input_formats=None,
-                                      style={'base_template': 'rest_framework/custom_input.html'})
+                                      style={'base_template': 'rest_framework/custom_datepicker.html'})
     vendor_name = serializers.CharField(max_length=100, default='',
                                         style={'base_template': 'rest_framework/custom_input.html'})
     nature_of_expenses = serializers.CharField(max_length=1000,
@@ -16,7 +16,7 @@ class ReimburseSerializer(serializers.ModelSerializer):
                                    style={'base_template': 'rest_framework/custom_textarea.html', 'rows': 5})
     amount = serializers.IntegerField(style={'base_template': 'rest_framework/custom_input.html'})
     attachment = serializers.FileField(max_length=None, allow_empty_file=True,
-                                       style={'base_template': 'rest_framework/custom_input.html'})
+                                       style={'base_template': 'rest_framework/custom_attach.html'})
 
     class Meta:
         model = Reimburse

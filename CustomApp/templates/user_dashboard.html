@@ -9,11 +9,18 @@
 {% block pageTitle %}User View {{ app_name }}{% endblock %}
 
 {% block content  %}
+<style type="text/css">
 
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+   padding: 5px 8px;
+}
+
+</style>
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
-
-
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+    <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
 
      <div class="panel pb-15">
                   <div class="panel-heading vd_bg-grey clearfix">
@@ -280,16 +287,23 @@ $('form#process_create').submit(function(e){
 									type: 'post',
 									data: formData,
 									success: function (data) {
-
-											 swal("Done!", data.success_msg, "success");
-											$("#modal_body").html('');
-                                           window.location=window.location;
+									    console.log(data);
+									    if (data.record_added) {
+                                            swal("Done!", data.success_msg, "success");
+                                            $("#modal_body").html('');
+                                            window.location = window.location;
+                                        }
+                                        else{
+									        $("#modal_body").html(data);
+                                        }
 
 
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
-												$("#LeaveForm_errors").html("Oops! Something went wrong on the server. The details are below: "
-													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
+									    console.log(XMLHttpRequest);
+                                        console.log(textStatus);
+                                        console.log(errorThrown);
+												$("#process_create").html(XMLHttpRequest['responseText']);
 
 											},
 									cache: false,
@@ -352,7 +366,7 @@ function delete_process(){
 
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
-												$("#LeaveForm_errors").html("Oops! Something went wrong on the server. The details are below: "
+												$("#modal_body_update").html("Oops! Something went wrong on the server. The details are below: "
 													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
 
 											},
@@ -364,5 +378,8 @@ function delete_process(){
 							   });
 }
 
+
+$(".datepicker").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
 </script>
+
 {% endblock %}

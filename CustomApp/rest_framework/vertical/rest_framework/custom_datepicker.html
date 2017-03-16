@@ -1,0 +1,14 @@
+
+<div class="form-group col-sm-6 {% if field.errors %}has-error{% endif %}">
+ {% if field.label %}
+    <label class="col-sm-4 control-label text-right">
+      {{ field.label }}
+    </label>
+  {% endif %}
+<div class="col-sm-7 controls">
+  <input name="{{ field.name }}" {% if style.input_type != "file" %}class="form-control input-sm datepicker"{% endif %}
+         type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %}
+         {% if field.value %}value="{{ field.value }}"{% endif %} {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>
+{% if field.errors %}{{ field.error }}{% endif %}
+</div>
+ </div>

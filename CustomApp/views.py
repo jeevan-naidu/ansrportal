@@ -7,9 +7,8 @@ from rest_framework import status
 from rest_framework import generics
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.parsers import FileUploadParser, MultiPartParser, FormParser
-
 
 from models import get_app_detail,\
     manager_queryset,\
@@ -39,8 +38,8 @@ class ProcessListView(generics.ListAPIView, LoginRequiredMixin):
 
 
 class StartProcess(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'templates/user_dashboard.html'
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+
 
     def get(self, request, **kwargs):
         config = get_app_detail(request, **kwargs)
@@ -52,28 +51,26 @@ class StartProcess(APIView):
         transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
         queryset = user_queryset(request, config)
         fields = get_process_transactions(modal, transaction_modal, config.DETAIL, "user")
-        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name})
-
+        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name}, template_name = 'templates/user_dashboard.html')
 
     def post(self, request, **kwargs):
         config = get_app_detail(request, **kwargs)
+        app_name = get_app_name(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
         serializer = process_serializer(data=request.data)
         if serializer.is_valid():
             try:
                 serializer.save_as(request)
-                record_added = True
             except:
-                return Response(status.HTTP_400_BAD_REQUEST)
+                return Response({'serializer': serializer},status.HTTP_400_BAD_REQUEST)
 
-            return Response({'serializer': serializer, 'record_added': record_added}, status.HTTP_201_CREATED)
-        return Response(status.HTTP_400_BAD_REQUEST)
+            return Response({'record_added': True}, status.HTTP_201_CREATED)
+        return render(request, 'form_errors.html', {'serializer': serializer, 'record_added': False, 'app_name': app_name})
 
 class GetProcess(APIView):
     """
     Get Process details
     """
-    # serializer_class = FileUploaderSerializer
     parser_classes = (FileUploadParser,MultiPartParser, FormParser)
     renderer_classes = (TemplateHTMLRenderer,)
     template_name = 'templates/update_form.html'
@@ -105,6 +102,8 @@ class UpdateProcess(APIView):
     """
     Retrieve, update or delete a process instance
     """
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+
     def get_object(self, pk, model):
         try:
             return model.objects.get(pk=pk)
@@ -120,12 +119,14 @@ class UpdateProcess(APIView):
 
     def put(self, request, pk, **kwargs):
         process = self.get_process(request, **kwargs)
+        app_name = get_app_name(request, **kwargs)
         process_object = self.get_object(pk, process[1])
         serializer = process[0](process_object, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(status.HTTP_201_CREATED)
-        return Response({'serializer':serializer})
+            return Response({'record_added': True}, status.HTTP_201_CREATED)
+        return render(request, 'update_form.html',
+                          {'serializer': serializer, 'app_name': app_name, 'pk':pk})
 
     def delete(self, request, pk, **kwargs):
         process = self.get_process(request, **kwargs)

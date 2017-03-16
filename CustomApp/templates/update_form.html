@@ -1,27 +1,22 @@
-{% block pageTitle %}MANAGE Process{% endblock %}
+{% block pageTitle %}{% endblock %}
 
 {% block content  %}
+    <style type="text/css">
+
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+   padding: 5px 8px;
+}
+
+</style>
+    <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+    <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
 {% load rest_framework %}
 
-
+{% load process_tags %}
 <form method="POST" id="process_update" enctype="multipart/form-data" >
     {% csrf_token %}
     {% render_form serializer template_pack='rest_framework/vertical' %}
-
-    {{ errors }}
-{#    <ul>#}
-{#    {% for profile in serializer %}#}
-{#    <li>#}
-{#<input type="text" value="{{ profile.name }}"></li>#}
-{#    {% endfor %}#}
-{#</ul>#}
-
-    {% for field in  serializer %}
-{#        {{ field }}#}
-{#  {% if not field.read_only %}#}
-{#    {% render_field field style=style %}#}
-{#  {% endif %}#}
-{% endfor %}
 
     <input type="submit" class="btn btn-default" value="Update">
 </form>
@@ -49,15 +44,21 @@
 									url: "/{{ app_name }}/update/{{ pk }}/",
 									type: 'put',
 									data: formData,
-									success: function () {
-									    window.onbeforeunload = null;
+									success: function (data) {
+									    if (data.record_added) {
+                                            window.onbeforeunload = null;
 											 swal("Done!", "Updated", "success");
                                            window.location=window.location;
+                                        }
+                                        else{
+									        $("#process_update").html(data);
+                                        }
+
+
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
-									    alert({{errors  }});
-												$("#process_update").html("Oops! Something went wrong on the server. The details are below: "+ {{ errors }}+
-													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
+{#									    alert({{errors  }});#}
+												$("#process_update").html();
 
 											},
 									cache: false,
@@ -69,5 +70,5 @@
 						 return false;
 					 });
 
-
+$(".datepicker").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
 </script>

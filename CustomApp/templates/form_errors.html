@@ -1,0 +1,59 @@
+{% block content  %}
+{% load rest_framework %}
+{% load process_tags %}
+<form method="POST" id="process_create" enctype="multipart/form-data" >
+    {% csrf_token %}
+    {% render_form serializer template_pack='rest_framework/vertical' %}
+    <input type="submit" class="btn btn-default" value="Raise">
+</form>
+<script>
+$('form#process_create').submit(function(e){
+    var formData = new FormData($(this)[0]);
+						 form_id = $(this)[0].id;
+						 form_element = $(this);
+
+						 swal({   title: "Are you sure?",
+							text: "Do you want to submit your {{ app_name }} process ?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+
+								 $.ajax({
+									url: "/{{ app_name }}/create/",
+									type: 'post',
+									data: formData,
+									success: function (data) {
+									    if (data.record_added) {
+                                            swal("Done!", data.success_msg, "success");
+                                            $("#modal_body").html('');
+                                            window.location = window.location;
+                                        }
+                                        else{
+									        $("#modal_body").html(data);
+                                        }
+
+
+									},
+									error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+
+											},
+									cache: false,
+									contentType: false,
+									processData: false
+								 });
+								}
+							   });
+						 return false;
+    e.preventDefault();
+});
+        </script>
+
+{% endblock %}
