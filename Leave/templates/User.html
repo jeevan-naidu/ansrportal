@@ -1767,6 +1767,19 @@ $('#year_select').on('change',function(){
 }
 .MyLeavesContainer h4{margin-bottom: 0px;}
 .select2-container .select2-selection--single{height: 30px;}
+/*tr.cancelled, tr.cancelled a[role=button]{color: red !important}*/
+/*tr.cancelled td{background: #ccc !important}*/
+tr.cancelled td:last-child:after{
+    content: "Cancelled";
+    color: crimson;
+    font-weight: bold;
+}
+tr.approved td:last-child:after{
+    content: "Approved";
+    color: #5cb85c;
+    font-weight: bold;
+}
+.leave-cancel-button{font-weight: bold;color: #f0ad4e;text-decoration: underline;}
 
 
 </style>

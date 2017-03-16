@@ -139,7 +139,7 @@ def LeaveTransaction(request):
         leave['status']
         )
         if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and int(loggedInUser) == int(user_id):
-            data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
+            data1 = data1 + '<a  role="button" class="leave-cancel-button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
         elif request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() and leave['status'] in ['open', 'approved']:
             statusflag = lambda: 1 if leave['status'] == 'open' else 0
