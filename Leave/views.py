@@ -122,10 +122,11 @@ def LeaveTransaction(request):
                                                                                                                   'days_count',
                                                                                                                   'status')
     count = 0
+    print Leave_transact
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:
         count=count+1
-        data1 =data1+ '<tr class="success"><td>{0}<br><a \
+        data1 =data1+ '<tr class="success {7}" ><td>{0}<br><a \
          onclick ="showDetails({1})" role="button" data-toggle="modal" title="View Details">Details</a>\
          </td><td>{2}<br>{3}</td><td>{4}, <br>{5}</td><td>{6}<br>\
          <div id="modal-leave-cancel" >'.format(
@@ -136,6 +137,7 @@ def LeaveTransaction(request):
         leave['to_date'],
         leaveSessionDictionary[leave['to_session']],
         leave['days_count'],
+        leave['status']
         )
         if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and int(loggedInUser) == int(user_id):
             data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
