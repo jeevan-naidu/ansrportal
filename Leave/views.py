@@ -122,7 +122,6 @@ def LeaveTransaction(request):
                                                                                                                   'days_count',
                                                                                                                   'status')
     count = 0
-    print Leave_transact
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:
         count=count+1
