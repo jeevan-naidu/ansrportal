@@ -147,9 +147,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'CustomApp',
     'Reimburse',
-    'emoticons',
+    # 'emoticons',
     'ExitApp',
-    'Invoice'
+    'Invoice',
 
 
 ]
