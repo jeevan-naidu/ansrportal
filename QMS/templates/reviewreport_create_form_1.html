@@ -81,7 +81,7 @@
                                     <option>Option 4</option>
                                     <option>Option 5</option>
                                 </select>
-                                <input type="text" class="form-control input-sm order-number" name="">
+                                <input type="number" min="0" max="10" value="0" step="1" onkeydown="return false"  class="form-control input-sm order-number" name="">
                               </div>
                             </div>
                           </div>
@@ -576,7 +576,7 @@ $(':input[name$=project]').on('change', function() {
     }
     .table .menu-action{padding-top:7px !important;}
     .select-name{float: left;}
-    .order-number{width: 50px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;}
+    .order-number{width: 60px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;padding: 6px 6px 7px 17px !important}
 </style>
 
 
