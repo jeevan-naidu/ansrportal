@@ -378,6 +378,20 @@ function orderTabs(theObj){
 // 
 
 
+function checkIfArrayIsUnique(myArray) {
+  return myArray.length === new Set(myArray).size;
+}
+
+function isInArray(needle, haystack) {
+ var length = haystack.length;
+ for (var i = 0; i < length; i++) {
+ if (haystack[i] == needle)
+  return true;
+ }
+ return false;
+}
+
+
 function checkOrder(){
     var the_order_array = [];
     var i=1;
@@ -385,7 +399,13 @@ function checkOrder(){
         the_order_array[i] = $(this).val();
         i++;
     })
-    console.log(the_order_array);
+    if (checkIfArrayIsUnique(the_order_array) == false) {
+        console.log('there is a duplicate');
+    }
+    if (isInArray(1,the_order_array) == false) {
+        console.log('please start with 1');
+    }
+
 }
 
 
