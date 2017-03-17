@@ -35,7 +35,7 @@
                               {% if forloop.counter == 1 %}
                                   {% for detail in object_detail %}
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label" style="text-align: right;padding-right:0px"><b>{{ detail.0.title }} :</b></label>
+                                    <label class="col-sm-3 control-label" style="text-align: left;padding-right:0px"><b>{{ detail.0.title }} :</b></label>
                               <div class="col-sm-7 controls">
                                   {% if detail.0 == "user" %}
                                       <div class="control-value">{{ detail.1.first_name }} {{ detail.1.last_name  }} </div>
