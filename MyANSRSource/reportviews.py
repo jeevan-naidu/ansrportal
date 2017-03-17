@@ -267,7 +267,7 @@ def SingleProjectReport(request):
             taskData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
-                'task__name',  'teamMember','teamMember__first_name', 'teamMember__last_name'
+                'task__name',  'teamMember', 'teamMember__first_name', 'teamMember__last_name'
             ).annotate(monday=Sum('mondayQ'),
                        tuesday=Sum('tuesdayQ'),
                        wednesday=Sum('wednesdayQ'),
