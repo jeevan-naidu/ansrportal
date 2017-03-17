@@ -406,20 +406,25 @@ function checkIfConsecutive(myArray){
 function checkOrder(){
     var the_order_array = [];
     var i=1;
+    var orderStatus;
     $('.qms-allocators .form-group input.order-number').each(function(){
         var entry = $(this).val()
         the_order_array.push(entry);
         i++;
     })
     if (checkIfArrayIsUnique(the_order_array) == false) {
-        console.log('there is a duplicate');
+        alert('there is a duplicate');
+        orderStatus = false;
     }
     if (isInArray(1,the_order_array) == false) {
-        console.log('please start with 1');
+        alert('please start with 1');
+        orderStatus = false;
     }
     if (checkIfConsecutive(the_order_array) == false) {
-        console.log('please enter consecutive numbers');
+        alert('please enter consecutive numbers');
+        orderStatus = false;
     }
+    return orderStatus;
 
 }
 
@@ -430,22 +435,9 @@ function checkOrder(){
 
 $(document).ready(function(){
 
-
-/*$('.fa-magic').click(function(){
-        $('.qms-allocators,.submit,.qms-add-field').show();
-        $('#select-field').html('The end');
-        $('#qms-add-field').prop('disabled', true);
-        obj_tab_order['tab_name'] = array_flip(obj_tab_order['tab_name'])
-        populateForm(obj_tab_order);
-        assignMandatory(obj_tab_order);
-        orderTabs(obj_tab_order);
-        globalObj = obj_tab_order;
-})*/
-
-
-$('.fa-magic').click(function(){
-    checkOrder();
-})
+$('#filter_form').submit(function() {
+    return checkOrder();
+});
 
 
 
