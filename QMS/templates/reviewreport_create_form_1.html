@@ -81,7 +81,7 @@
                                     <option>Option 4</option>
                                     <option>Option 5</option>
                                 </select>
-                                <input type="text" class="form-control input-sm order-number" name="">
+                                <input type="number" min="1" max="10" step="1" onkeydown="return false"  class="form-control input-sm order-number" name="">
                               </div>
                             </div>
                           </div>
@@ -308,6 +308,7 @@ function orderTabs(theObj){
             }
         }
     }
+
     /*debugger*/
 
     // Re-arranging
@@ -374,20 +375,71 @@ function orderTabs(theObj){
 } // end of order tabs functions
 
 
+// 
+
+
+function checkIfArrayIsUnique(myArray) {
+  return myArray.length === new Set(myArray).size;
+}
+
+function isInArray(needle, haystack) {
+ var length = haystack.length;
+ for (var i = 0; i < length; i++) {
+ if (haystack[i] == needle)
+  return true;
+ }
+ return false;
+}
+
+function checkIfConsecutive(myArray){
+    var arrayLength = myArray.length - 1;
+    var arrayDIff;
+    for(var i = 0; i < arrayLength; i++){
+        arrayDIff = parseInt(myArray[i+1]) - parseInt(myArray[i]);
+        if(arrayDIff != 1){
+            return false
+        }
+    }
+}
+
+
+function checkOrder(){
+    var the_order_array = [];
+    var i=1;
+    var orderStatus;
+    $('.qms-allocators .form-group input.order-number').each(function(){
+        var entry = $(this).val()
+        the_order_array.push(entry);
+        i++;
+    })
+    if (checkIfArrayIsUnique(the_order_array) == false) {
+        alert('there is a duplicate');
+        orderStatus = false;
+    }
+    if (isInArray(1,the_order_array) == false) {
+        alert('please start with 1');
+        orderStatus = false;
+    }
+    if (checkIfConsecutive(the_order_array) == false) {
+        alert('please enter consecutive numbers');
+        orderStatus = false;
+    }
+    return orderStatus;
+
+}
+
+
+
+
+
 
 $(document).ready(function(){
 
+$('#filter_form').submit(function() {
+    return checkOrder();
+});
 
-/*$('.fa-magic').click(function(){
-        $('.qms-allocators,.submit,.qms-add-field').show();
-        $('#select-field').html('The end');
-        $('#qms-add-field').prop('disabled', true);
-        obj_tab_order['tab_name'] = array_flip(obj_tab_order['tab_name'])
-        populateForm(obj_tab_order);
-        assignMandatory(obj_tab_order);
-        orderTabs(obj_tab_order);
-        globalObj = obj_tab_order;
-})*/
+
 
 
    $(':input[name$=chapter]').on('change', function()  {
@@ -576,7 +628,7 @@ $(':input[name$=project]').on('change', function() {
     }
     .table .menu-action{padding-top:7px !important;}
     .select-name{float: left;}
-    .order-number{width: 50px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;}
+    .order-number{width: 60px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;padding: 6px 6px 7px 17px !important}
 </style>
 
 
