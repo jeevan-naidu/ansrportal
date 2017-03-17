@@ -12,7 +12,7 @@ from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from datetime import timedelta, datetime, date
-from django.db.models import Sum, Avg, Min, Max
+from django.db.models import Sum, Avg, Min, Max, F
 from employee.models import Employee
 from wsgiref.util import FileWrapper
 from dateutil import relativedelta as rdelta
@@ -35,7 +35,7 @@ days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
 def SingleTeamMemberReport(request):
-    
+
     report, newReport, minProd, maxProd, avgProd = {}, {}, {}, {}, {}
     projectH, nonProjectH = [], []
     member, startDate, endDate , for_project = '', '', '', ''
@@ -73,11 +73,11 @@ def SingleTeamMemberReport(request):
                 endDate__gte=weekEnd,
             ).values('plannedEffort')
             plannedHours = sum([eachRec['plannedEffort'] for eachRec in tm])
-            
+
             # if project field exists, query for that project only else query for all
             if request.POST.get('project', ""):
                 for_project = reportData.cleaned_data['project']
-                report = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'], 
+                report = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'],
                     teamMember=reportData.cleaned_data['member'],
                     #project__id__in=helper.get_my_project_list(request.user),
                     wkstart__gte=weekStart,
@@ -113,7 +113,7 @@ def SingleTeamMemberReport(request):
                                                   endWeekData, report)
             else:
                 newReport = report
-            
+
             # if project field exists, query for that project only else query for all
             if request.POST.get('project', ""):
                 ts = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'],
@@ -202,7 +202,7 @@ def SingleTeamMemberReport(request):
                 'endDate': reportData.cleaned_data['endDate'],
                 'member': reportData.cleaned_data['member'],
                 'project':reportData.cleaned_data['project'],
-                
+
             })
             for eachRec in newReport:
                 if eachRec['project__name'] != ' - ':
@@ -275,7 +275,9 @@ def SingleProjectReport(request):
                        friday=Sum('fridayQ'),
                        saturday=Sum('saturdayQ'),
                        sunday=Sum('sundayQ'),
-                       total_hours=Sum('totalH')
+                       total_hours=Sum(F('mondayH') + F('tuesdayH')
+                       +F('wednesdayH') + F('thursdayH')
+                       +F('fridayH') + F('saturdayH')+F('sundayH'))
                        ).order_by('task__name', 'teamMember_id')
             orderbyList = ['task__name']
             ts = TimeSheetEntry.objects.filter(
@@ -744,9 +746,9 @@ def ProjectPerfomanceReport(request):
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
                 for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
                     buName = eachData['name']
-            
+
             # for super user get all the projects irrespective of what project he is related to.
-            # changed: date: 4-Feb-206 -By Amol 
+            # changed: date: 4-Feb-206 -By Amol
             if request.user.is_superuser:
                 eProjects = Project.objects.filter(
                     startDate__lte=endDate, endDate__gte=startDate,
