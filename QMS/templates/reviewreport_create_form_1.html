@@ -391,12 +391,24 @@ function isInArray(needle, haystack) {
  return false;
 }
 
+function checkIfConsecutive(myArray){
+    var arrayLength = myArray.length - 1;
+    var arrayDIff;
+    for(var i = 0; i < arrayLength; i++){
+        arrayDIff = parseInt(myArray[i+1]) - parseInt(myArray[i]);
+        if(arrayDIff != 1){
+            return false
+        }
+    }
+}
+
 
 function checkOrder(){
     var the_order_array = [];
     var i=1;
     $('.qms-allocators .form-group input.order-number').each(function(){
-        the_order_array[i] = $(this).val();
+        var entry = $(this).val()
+        the_order_array.push(entry);
         i++;
     })
     if (checkIfArrayIsUnique(the_order_array) == false) {
@@ -404,6 +416,9 @@ function checkOrder(){
     }
     if (isInArray(1,the_order_array) == false) {
         console.log('please start with 1');
+    }
+    if (checkIfConsecutive(the_order_array) == false) {
+        console.log('please enter consecutive numbers');
     }
 
 }
