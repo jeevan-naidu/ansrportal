@@ -28,6 +28,8 @@ from GrievanceAdmin.views import paginator_handler
 from calendar import monthrange
 import calendar
 from CompanyMaster.models import Holiday
+from django.db.models import Func
+from django.db.models import Sum
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -37,16 +39,69 @@ leaveSessionDictionary = dict(SESSION_STATUS)
 leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home', 'ooo_dom', 'ooo_int']
 
 
+class Month(Func):
+    function = 'EXTRACT'
+    template = '%(function)s(MONTH from %(expressions)s)'
+    output_field = models.IntegerField()
+
+# data3 for the purpose of structuring HTML
+
+def creditview(request):
+    user_id = request.GET.get('user_id')
+    loggedInUser = request.user.id
+    leave = request.GET.get('leave')
+    now = datetime.datetime.now()
+    year = request.GET.get('year')
+    leave_type = {'Earned Leave': 1, 'Sick Leave': 2, 'Casual Leave': 3, 'Loss Of Pay': 4,
+                  'Bereavement Leave': 5, 'Maternity Leave': 6, 'Paternity Leave': 7, 'Comp Off Earned': 8,
+                  'Comp Off avail': 9, 'Pay Off': 10, 'Work From Home': 11, 'Sabbatical': 12, 'Short Leave': 13, 'Domestic Travel': 14, 'International Travel': 15}
+    month_name = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'June', 7: 'july', 8: 'Aug', 9: 'Sept',
+                  10: 'Oct', 11: 'Nov', 12: 'Dec'}
+    credit_data = CreditEntry.objects.filter(user_id=user_id, leave_type_id=leave_type[leave], year=year).\
+            annotate(mon=Month('month')).values('comments', 'month').annotate(day=Sum('days'));
+    count = 0
+    count1 = 0
+    data1 = "<tr class=""><th>Sr.No</th><th>Month</th><th>Days</th><th>Comment</th></tr>"
+    for data in credit_data:
+        count = count + 1
+        data1 =data1+ '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'.\
+            format(count, month_name[data["month"]],data["day"], data["comments"], )
+    data2 = "<tr class='balanceremove'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
+    data3 = "<tr class='invisible'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
+    if leave == 'Earned Leave':
+        if year == now.year:
+            year = 2016
+        else:
+            year = request.GET.get('year')
+        carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(year)).\
+            values('balance', 'year', 'applied')
+        for balance in carry_forward:
+            count1 = count1 + 1
+            data2 = data2 + '<tr class="success"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>'. \
+                format(count1, "Jan", balance["balance"], "Yearly Leave Carrry forward")+data3
+    else:
+        data2 =''
+
+    json_data = json.dumps({'credit': data1, 'balance': data2})
+    return HttpResponse(json_data, content_type="application/json")
+
+
 def LeaveTransaction(request):
+    now = datetime.datetime.now()
     statusType = request.GET.get('type')
     user_id = request.GET.get('user_id')
+    year = request.GET.get('year')
+    if year:
+        year = year
+    else:
+        year = now.year
     loggedInUser = request.user.id
     statusDict = {'Approved': 'approved',
                   'Rejected': 'rejected',
                   'Cancelled': 'cancelled',
                   'Open': 'open'}
     if statusType == 'All':
-        Leave_transact = LeaveApplications.objects.filter(user=user_id,
+        Leave_transact = LeaveApplications.objects.filter(user=user_id, from_date__year=year,
                                                           leave_type__leave_type=request.GET.get('leave')).values('id',
                                                                                                                   'leave_type__leave_type',
                                                                                                                   'from_date',
@@ -57,7 +112,7 @@ def LeaveTransaction(request):
                                                                                                                   'status')
     else:
         Leave_transact = LeaveApplications.objects.filter(status=statusDict[statusType],
-                                                          user=user_id,
+                                                          user=user_id, from_date__year=year,
                                                           leave_type__leave_type=request.GET.get('leave')).values('id',
                                                                                                                   'leave_type__leave_type',
                                                                                                                   'from_date',
@@ -66,12 +121,11 @@ def LeaveTransaction(request):
                                                                                                                    'to_session',
                                                                                                                   'days_count',
                                                                                                                   'status')
-
     count = 0
     data1 = "<tr class=""><th>Sr.No</th><th>From</th><th>To</th><th>Days</th></tr>"
     for leave in Leave_transact:
         count=count+1
-        data1 =data1+ '<tr class="success"><td>{0}<br><a \
+        data1 =data1+ '<tr class="success {7}" ><td>{0}<br><a \
          onclick ="showDetails({1})" role="button" data-toggle="modal" title="View Details">Details</a>\
          </td><td>{2}<br>{3}</td><td>{4}, <br>{5}</td><td>{6}<br>\
          <div id="modal-leave-cancel" >'.format(
@@ -82,9 +136,10 @@ def LeaveTransaction(request):
         leave['to_date'],
         leaveSessionDictionary[leave['to_session']],
         leave['days_count'],
+        leave['status']
         )
         if leave['status'] == 'open' and leave['leave_type__leave_type'] != 'comp_off_avail' and int(loggedInUser) == int(user_id):
-            data1 = data1 + '<a  role="button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
+            data1 = data1 + '<a  role="button" class="leave-cancel-button" onclick="CancelLeave({0},{1})" >Cancel</a></div>\
             </td></tr>'.format(leave['id'],leave['days_count'],)
         elif request.user.groups.filter(name= settings.LEAVE_ADMIN_GROUP).exists() and leave['status'] in ['open', 'approved']:
             statusflag = lambda: 1 if leave['status'] == 'open' else 0
