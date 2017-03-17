@@ -17,7 +17,9 @@
   .tab-content{padding-bottom: 0px;}
   .panel.widget{margin-bottom: 0px;}
   .vd_content-section .row{margin-bottom: 0px;}
-  .modal-body{border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;}
+  #modal-container-Detail .table{margin-bottom: 0px;}
+  #modal-container-Detail .modal-body{padding-bottom: 15px !important;}
+  #modal-container-process .modal-body{border-bottom-left-radius: 5px;border-bottom-right-radius: 5px}
 </style>
 
      <div class="panel pb-15">
@@ -181,6 +183,10 @@
                         <div class="modal-body min-height-400" style="padding-bottom: 0px;" id="modal_body">
                           <img src="/static/images/ajax-loader.gif">
                         </div>
+                    <div class="modal-footer background-login hidden">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
 
                 </div>
 
@@ -204,6 +210,10 @@
                         <div class="modal-body min-height-400" style="padding-bottom: 0px;" id="modal_body_detail">
                           <img src="/static/images/ajax-loader.gif">
                         </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
 
                 </div>
 
