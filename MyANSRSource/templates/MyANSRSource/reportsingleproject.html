@@ -1,7 +1,7 @@
 {% extends 'reportMaster.inc' %}
 {% load bootstrap3 %}
 {% load fontawesome %}
-{% load humanize %}
+{% load humanize %} {% load permissions2 %}
 {% block pageTitle %}Individual Project Performance{% endblock %}
 {%block childcontent %}
 
@@ -232,62 +232,26 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th colspan=2></th> 
-                <th class="text-center" colspan=4>Productivity</th> 
+                <th colspan=1></th>
+                <th class="text-left" colspan=1>Productivity</th>
                 <th></th> 
             </tr>
             </thead>
             <thead>
             <tr>
-                <th>Task Name</th> 
-                <th class="text-right">Norm</th> 
-                <th class="text-right">Min</th> 
-                <th class="text-right">Max</th> 
-                <th class="text-right">Avg</th> 
-                <th class="text-right">Median</th> 
-                <th>Top Performer</th> 
+                <th>Task Name</th>
+                <th>Total Hours</th>
+                <th>Team Member</th>
             </tr>
             </thead>
             {% if taskData %}
                 {% for eachData in taskData %}
                     <tr>
-                        <td>{{ eachData.task__name }}</td> 
-                        <td class="text-right">
-                            {% for eachTask in topPerformer %}
-                                {% if eachTask.taskName == eachData.task__name %}
-                                    {{ eachTask.norm }}
-                                {% endif %}
-                            {% endfor %}     
-                        </td> 
-                        <td class="text-right">
-                            {% for eachVal in minTaskData %}
-                                {% if eachVal.task__name == eachData.task__name %}
-                                    {{ eachVal.min }}
-                                {% endif %}
-                            {% endfor %}
-                        </td> 
-                        <td class="text-right">
-                            {% for eachVal in maxTaskData %}
-                                {% if eachVal.task__name == eachData.task__name %}
-                                    {{ eachVal.max }}
-                                {% endif %}
-                            {% endfor %}
-                        </td> 
-                        <td class="text-right">
-                            {% for eachVal in avgTaskData %}
-                                {% if eachVal.task__name == eachData.task__name %}
-                                    {{ eachVal.avg }}
-                                {% endif %}
-                            {% endfor %}
-                        </td> 
-                        <td class="text-right"></td> 
-                        <td>
-                            {% for eachTask in topPerformer %}
-                                {% if eachTask.taskName == eachData.task__name %}
-                                    {{ eachTask.top }}
-                                {% endif %}
-                            {% endfor %}     
-                        </td> 
+                        <td>{{ eachData.task__name }}</td> <td>{{ eachData.total_hours }}</td>
+                        <td>{{ eachData.teamMember__first_name }}  {{ eachData.teamMember__last_name }}</td>
+
+
+
                     </tr>
                 {% endfor %}
             {% else %}

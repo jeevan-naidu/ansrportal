@@ -267,15 +267,16 @@ def SingleProjectReport(request):
             taskData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
-                'task__name'
+                'task__name',  'teamMember','teamMember__first_name', 'teamMember__last_name'
             ).annotate(monday=Sum('mondayQ'),
                        tuesday=Sum('tuesdayQ'),
                        wednesday=Sum('wednesdayQ'),
                        thursday=Sum('thursdayQ'),
                        friday=Sum('fridayQ'),
                        saturday=Sum('saturdayQ'),
-                       sunday=Sum('sundayQ')
-                       ).order_by('task__name')
+                       sunday=Sum('sundayQ'),
+                       total_hours=Sum('totalH')
+                       ).order_by('task__name', 'teamMember_id')
             orderbyList = ['task__name']
             ts = TimeSheetEntry.objects.filter(
                 project=cProject).values('task__name')
@@ -324,10 +325,12 @@ def SingleProjectReport(request):
                         eId[0]['employee_assigned_id']
                     )
                 topPerformer.append(d)
+            exclude_list = ['task__name', 'teamMember__first_name', 'teamMember__last_name']
+
             for eachData in taskData:
                 units = []
                 for k, v in eachData.iteritems():
-                    if k != 'task__name':
+                    if k not in exclude_list:
                         units.append(v)
                 eachData['min'] = min(units)
                 eachData['max'] = max(units)
@@ -454,7 +457,8 @@ def SingleProjectReport(request):
                         for eachTopData in topPerformer:
                             if eachData['task__name'] == eachTopData['taskName']:
                                 eachData['norm'] = eachTopData['norm']
-                                eachData['top'] = eachTopData['top']
+                        eachData['top'] = eachData['teamMember__first_name'] + ' ' + eachData['teamMember__last_name']
+
                 report = [basicData, newCR, msData, tsData, taskData, topPerformer]
                 sheetName = ['Basic Information',
                              'Change Requests',
@@ -471,8 +475,8 @@ def SingleProjectReport(request):
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
                      'Actual Effort'],
-                    ['Task Name', 'Min.', 'Max.', 'Median', 'Avg.',
-                     'Norm', 'Top Performer']
+                    ['Task Name', 'Total Hours', 'Team Member']
+
                 ]
                 grdTotal = [plannedTotal, actualTotal]
                 if cProject.closed:
@@ -1409,12 +1413,12 @@ def generateProjectContent(request, header, report, worksheet,
 
             if 'task__name' in eachRec:
                 worksheet.write(row, 0, eachRec['task__name'], content)
-                worksheet.write(row, 1, eachRec['min'], content)
-                worksheet.write(row, 2, eachRec['max'], content)
-                worksheet.write(row, 3, '  ', content)
-                worksheet.write(row, 4, eachRec['avg'], content)
-                worksheet.write(row, 5, eachRec['norm'], content)
-                worksheet.write(row, 6, eachRec['top'], content)
+                worksheet.write(row, 1, eachRec['total_hours'], content)
+                # worksheet.write(row, 2, eachRec['max'], content)
+                # worksheet.write(row, 3, '  ', content)
+                # worksheet.write(row, 4, eachRec['avg'], content)
+                # worksheet.write(row, 5, eachRec['norm'], content)
+                worksheet.write(row, 2, eachRec['top'], content)
                 row += 1
 
         row, msg = 1, ''
