@@ -1,12 +1,13 @@
 from django import template
 register = template.Library()
-
+from employee.models import Employee
 
 @register.filter('field_name')
 def field_name(process, field):
     if field == "user":
         attr = getattr(process, field)
-        attr = attr.first_name + " " + attr.last_name
+        emp_id = Employee.objects.get(user_id=attr.id)
+        attr = attr.first_name + " " + attr.last_name + " (" + str(emp_id.employee_assigned_id) + ")"
     elif field == "attachment":
         attr = getattr(process, field)
         if attr:
