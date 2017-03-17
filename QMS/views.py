@@ -74,7 +74,7 @@ class ChooseTabs(FormView):
                                                               qms_process_model=form.cleaned_data['qms_process_model'],
                                                               created_by=self.request.user)
         except Exception as e:
-            print (str(e))
+            print "ChooseTabs", (str(e))
             logger.error(" {0} ".format(str(e)))
 
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
@@ -127,6 +127,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
             else:
                 review_obj = ReviewGroup.objects.get(id=active_tab)
             try:
+                print "im in try"
                 chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
                 # print chapter_component_obj.id
                 result = QASheetHeader.objects.get(project=project, chapter_component=chapter_component_obj,
@@ -134,12 +135,12 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
                                                    review_group=review_obj)
                 # print result
             except Exception as e:
-                print str(e)
+                print "qa_sheet_header_obj" , str(e)
                 logger.error(" {0} ".format(str(e)))
                 # print "if"
                 # print result
         else:
-            # print "else"
+            print "else"
             result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
 
     except ObjectDoesNotExist as e:
@@ -156,11 +157,12 @@ def get_review_group(project=None, chapter=None, is_author=False):
                              values_list('review_group_id', flat=True).order_by('order_number'))
             # print obj
     except Exception as e:
-        print str(e)
+        print "get_review_group" , str(e)
     return obj
 
 
 def get_template_process_review(request):
+    print request.GET
     project = request.GET.get('project_id')
     template = request.GET.get('template_id')
     qms_process_model = request.GET.get('qms_process_model')
@@ -238,10 +240,13 @@ class AssessmentView(TemplateView):
 
     def post(self, request):
         form = BaseAssessmentTemplateForm(request.POST)
-        # print request.POST
+        # for sa in request.POST :
+        print request.POST
         # reports = template_id = None
-        active_tab = request.session['active_tab'] = request.POST.get('active_tab')
-        # print active_tab
+        active_tab = request.POST.get('active_tab')
+        request.session['active_tab'] = request.POST.get('active_tab')
+        print "after ass " , active_tab
+        # print request.POST
         if form.is_valid():
 
             project = form.cleaned_data['project']
@@ -309,7 +314,7 @@ class AssessmentView(TemplateView):
         if reports and len(reports) != 0:
             # print"im in"
             for eachData in reports:
-                print "ed", eachData
+                # print "ed", eachData
                 # count = 0
                 for k, v in eachData.iteritems():
                     qms_data[k] = v
@@ -360,20 +365,20 @@ class AssessmentView(TemplateView):
                     if k == 'remarks':
                         qms_data['remarks'] = v
                     # qms_data['clear_screen_shot'] = False
-                print qms_data
+                # print "" qms_data
                 qms_data_list.append(qms_data.copy())
 
             qms_data.clear()
-        print "qms_data_list" , qms_data_list
+        # print "qms_data_list" , qms_data_list
         qms_formset = formset_factory(
             qms_form, max_num=1, can_delete=True
         )
-        # if len(qms_data_list):
-        #     qms_formset = qms_formset(initial=qms_data_list)
-        # else:
-        #     qms_formset = formset_factory(
-        #         qms_form, extra =1 , max_num=1, can_delete=True
-        #     )
+        if len(qms_data_list):
+            qms_formset = qms_formset(initial=qms_data_list)
+        else:
+            qms_formset = formset_factory(
+                qms_form, extra =1 , max_num=1, can_delete=True
+            )
         # qms_formset = formset_factory(
         #     qms_form, max_num=1, can_delete=True
         # )
@@ -434,6 +439,9 @@ class ReviewReportManipulationView(AssessmentView):
         forbidden_file_type = False
 
         q_form = qms_formset(request.POST, request.FILES)
+        # print request.POST
+        # print q_form.is_valid()
+        # print q_form.errors
         if q_form.is_valid():
 
             for form_elements in q_form:
@@ -495,10 +503,10 @@ class ReviewReportManipulationView(AssessmentView):
                     # 2
 
                     # print request.session['template_id'], obj['severity_type'] , active_tab
-                    review_group = ReviewGroup.objects.get(id=active_tab)
-                    defect_obj = DefectSeverityLevel.objects.filter(template_id=request.session['template_id'],
+                    # review_group = ReviewGroup.objects.get(id=active_tab)
+                    defect_obj = DefectSeverityLevel.objects.filter(
                                                                     severity_type=obj['severity_type'],
-                                                                    review_master=review_group.review_master)[0]
+                                                                    )[0]
 
                     report.defect_severity_level = defect_obj
                     # report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
@@ -539,19 +547,48 @@ class ReviewReportManipulationView(AssessmentView):
 
 
 def fetch_severity(request):
-
+    # print request.GET
     template_id = request.GET.get('template_id')
+    project_id = request.GET.get('project_id')
+    # obj = ProjectTemplateProcessModel.objects.get(template_id=template_id, project_id=project_id)
+    # if obj.qms_process_model.product_type == 1 :
+    #     media_team = True
     severity = request.GET.get('severity_type')
     request.session['active_tab'] = request.GET.get('active_tab')
     review_group = ReviewGroup.objects.get(id=request.GET.get('active_tab'))
+    severity_classification = request.GET.get('severity_classification')
+    if request.GET.get('triggered_by') == 'severity_type':
+        # print"im in buddy"
+        try:
+            s = DefectSeverityLevel.objects.filter(severity_type=severity).values_list("defect_classification__name",
+                                                                                       "defect_classification__id")
+            classification_dict = dict((str(x), int(y)) for x, y in s)
+            classification_dict["fghg"] =5
+            context_data = {'classification_dict': classification_dict, "triggered_by": request.GET.get('triggered_by')}
+
+        except:
+            context_data = {'configuration_missing': True, "triggered_by": request.GET.get('triggered_by')}
+        return HttpResponse(
+            json.dumps(context_data),
+            content_type="application/json"
+        )
+    if severity_classification != "None":
+        is_media = True
+    else:
+        is_media = False
     try:
-        obj = DefectSeverityLevel.objects.filter(template=template_id, severity_type=severity,
-                                                 review_master=review_group.review_master)[0]
+        if is_media:
+            obj = DefectSeverityLevel.objects.filter(severity_type=severity,
+                                                     defect_classification=severity_classification)[0]
+
+        else:
+            obj = DefectSeverityLevel.objects.filter(severity_type=severity)[0]
         # logger.error("query {0} ".format(obj.query))
-        context_data = {'severity_level': str(obj.severity_level), 'defect_classification': str(obj.defect_classification)}
+        context_data = {'severity_level': str(obj.severity_level), 'defect_classification':
+            {str(obj.defect_classification): obj.defect_classification.id}, "is_media": is_media}
     except IndexError as e:
         logger.error("query {0} ".format(str(e)))
-        context_data = {'configuration_missing': True}
+        context_data = {'configuration_missing': True, "is_media": is_media}
 
     return HttpResponse(
             json.dumps(context_data),
@@ -576,7 +613,7 @@ def fetch_author(request):
                                               chapter_component=chapter_component).values_list('author', flat=True)[0]
     except Exception as e:
         author = None
-        print str(e)
+        print "fetch_author", str(e)
     # obj = User.objects.get(pk=user)
     team_members = {}
     team = fetch_members(project_id)

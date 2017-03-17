@@ -145,7 +145,7 @@ class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
             try:
                 qs = User.objects.filter(pk__in=user)
             except Exception, e:
-                print str(e)
+                print "AutoCompleteAssignUserProjectSpecific" , str(e)
                 # # for i in user:
                 # #     print i.member_id
                 #

@@ -144,9 +144,9 @@
                                     <th>Review Item Number</th>
                                     <th>Description</th>
                                     <th>Type</th>
-                                    <th>Severity</th>
                                     <th>Classification</th>
-
+                                    <th>Severity</th>
+                                     <th>Instruction to  fix</th>
                                      <th>Screen Shot</th>
                                     <th>Fixed?</th>
                                     <th>Fixed By</th>
@@ -177,12 +177,13 @@
                                             <div></div>
 
                                         </td>
+                                         <td class="" id="defect_classification-{{forloop.counter}}-td">
+                                            {{form_obj.defect_classification}}
+                                        </td>
                                         <td class="" id="severity_level-{{forloop.counter}}-td">
                                             {{form_obj.severity_level}}
                                         </td>
-                                        <td class="" id="defect_classification-{{forloop.counter}}-td">
-                                            {{form_obj.defect_classification}}
-                                        </td>
+
                                         <td class="" id="instruction-{{forloop.counter}}-td">
                                             {{form_obj.instruction}}
                                         </td>
@@ -251,17 +252,18 @@
                                                                         {{form_obj.severity_type.value|get_severity_type:form_obj.severity_type.value}}</label>
                                                                 </div>
                                                             </div>
+                                                              <div class="form-group">
+                                                                <label class="control-label col-sm-3" for="email">Defect Classification :</label>
+                                                                <div class="col-sm-9"><label class="control-label">{{form_obj.defect_classification.value|get_severity_classification:form_obj.defect_classification.value}}</label>
+                                                                </div>
+                                                            </div>
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Severity :</label>
                                                                 <div class="col-sm-9">
                                                                     <label class="control-label">{{form_obj.severity_level.value|get_severity_level:form_obj.severity_level.value}}</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">Defect Classification :</label>
-                                                                <div class="col-sm-9"><label class="control-label">{{form_obj.defect_classification.value|get_severity_classification:form_obj.defect_classification.value}}</label>
-                                                                </div>
-                                                            </div>
+
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Screen Shot:</label>
                                                                 <div class="col-sm-9">
@@ -467,6 +469,36 @@
 <script type="text/javascript">
 
         $(function() {
+
+        $('#review_report_form').submit(function() {
+           if( $("#questions").val() <=0) {sweetAlert("Oops...", "Question count cannot be zero!", "error"); return false; }
+            $(".defect_classification").prop("disabled", false);
+        });
+
+        $('#filter_form').submit(function(e) {
+
+            if ($("li.active").attr('id') !=undefined ){
+                $("#active_tab,#active_tab1").val($("li.active").attr('id'));
+            }
+        });
+
+        $('.review').click(function(){
+           is_set = 0
+            $('.active').removeClass('active');
+            $(this).addClass('active');
+            $('.filter_form').each(function(i, obj) {
+                console.log(obj.name+'--'+obj.value);
+                if (obj.value != '') is_set++;
+
+            });
+           if (is_set!=0 && is_set==$('.filter_form').length)  {
+              $('#active_tab , #active_tab1').removeAttr('value');
+              $('#active_tab , #active_tab1').val(this.id);
+              $('#filter_form').submit();
+           }
+        });
+
+
             if( $('#is_author').val() === 'True') {
                 $('[name$=review_item], [name$=defect]').prop('readonly',true);
                 $('[id^=severity_type]').addClass('disabled-defect');
@@ -517,16 +549,7 @@
 
 
 
-        $('.review').click(function(){
-           is_set = 0
-           $('#active_tab , #active_tab1').val(this.id);
-           $('.filter_form').each(function(i, obj) {
-                console.log(obj.name+'--'+obj.value);
-                if (obj.value != '') is_set++;
 
-           });
-           if (is_set!=0 && is_set==$('.filter_form').length)   $('#filter_form').submit();
-        });
 
         $('.edit_button').click(function(){ console.log("edit clicked");
             var edit_record = $(this).siblings(".edit_record").html();
@@ -541,61 +564,115 @@
 
 
 
-function fetchSeverityClassification(obj,is_media=false ) {
+function fetchSeverityClassification(obj,is_media=false,triggered_by) {
 
         var obj_id = obj.id.split('-');
-        if (is_media ) {
-            severity_type = $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_type').val()
-            severity_level =  $(obj).val()
-        }
-        else {
-        console.log(" not media");
-            severity_type =  $(obj).val()
-            severity_level = $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').val()
-        }
-        if( $(obj).data('product_type') != 1) return false;
+        if(!is_media)
+            classification ="None";
+        else
+            classification = $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').val();
+
+        severity_type = $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_type').val()
+
         $.ajax({
                 url: '/qms/fetch_severity/',
                 type: 'GET',
                 dataType :'json',
-                data: {"template_id": $('#template_id').val() ,
+                data: {"template_id": $('#template_id').val() , "project_id":$('#project_id').val(),
                 "severity_type" : severity_type ,
-                "active_tab" :$('#active_tab').val() ,
-                "severity_level":severity_level },
+                "active_tab" :$("li.active").attr('id') ,
+                "severity_classification":classification,
+                "triggered_by":triggered_by,
+                },
                 success: function (data) {
-                console.log("sucess");
                     var output = [];
 
-                for (var key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        if (key == 'configuration_missing') {
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            if (key == 'configuration_missing') {
+                                <!--prev_class = $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').attr('data-prev_value') ;-->
+                                <!--prev_type = $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_type').attr('data-prev_value') ;-->
+                                prev_value = $('#'+obj_id[0]+'-'+obj_id[1]+'-'+triggered_by).attr('data-prev_value') ;
+                                console.log("prev_value"+prev_value+"triggered_by"+obj_id[0]+'-'+obj_id[1]+'-'+triggered_by);
+                                <!--if(is_media == 'false') {-->
+                                $('#'+obj_id[0]+'-'+obj_id[1]+'-'+triggered_by).val(prev_value).prop("selected",true);
+                                <!--}-->
+                                <!--else {-->
+                                    <!--$('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').val( prev_class ).prop("selected",true);-->
+                                    <!--$('#'+obj_id[0]+'-'+obj_id[1]+'-severity_type').val( prev_type).prop("selected",true);-->
+                                <!--}-->
+
                             sweetAlert("Oops...", "Configuration is missing for Defect Severity Level!", "error");
-                            return false;
+
+                                return false;
+
+                            }
+
+                            if(key == 'severity_level'){
+
+                                $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
+                                    value: data[key],
+                                    text: data[key],
+                                    selected :'selected',
+                                }));
+                                $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('readonly',true);
+                            }
+
+                            if(key == 'defect_classification'){
+                                if(data['is_media'] == "false"){
+                                    $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').empty();
+                                    for (var sub_key in data['defect_classification']) {
+                                        if (data['defect_classification'].hasOwnProperty(sub_key)) {
+                                        console.log("inner loop");
+                                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                                                value: data['defect_classification'][sub_key],
+                                                text: sub_key,
+                                                selected :'selected',
+                                            }));
+                                        }
+
+                                    }
+                                }
+                            }
+
+
+                             if(key == 'classification_dict'){
+
+                                    $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').empty();
+
+                                     for (sub_key in data['classification_dict'])
+                                     {     console.log("sub_key"+sub_key);
+                                          if(data['classification_dict'].hasOwnProperty(sub_key)){
+                                               $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                                                        value: data['classification_dict'][sub_key],
+                                                        text: sub_key,
+                                               }));
+                                          }
+                                     }
+                                     $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                                                        value: "",
+                                                        text: "-----",
+                                                        selected :'selected',
+                                     }));
+                                    <!--for (var sub_key in data['classification_dict']) {-->
+                                    <!--console.log(sub_key);-->
+                                        <!--if (data['defect_classification'].hasOwnProperty(sub_key)) {-->
+                                            <!--$('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {-->
+                                                <!--value: data['defect_classification'][sub_key],-->
+                                                <!--text: sub_key,-->
+                                                <!--selected :'selected',-->
+                                            <!--}));-->
+                                        <!--}-->
+
+                                    <!--}-->
+                             }
+
+
+
+
 
                         }
-
-                        if(key == 'severity_level'){
-
-                            $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').append($('<option>', {
-                                value: data[key],
-                                text: data[key],
-                                selected :'selected',
-                            }));
-                            $('#'+obj_id[0]+'-'+obj_id[1]+'-severity_level').prop('readonly',true);
-                        }
-
-                        if(key == 'defect_classification'){
-
-                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
-                                value: data[key],
-                                text: data[key],
-                                selected :'selected',
-                            }));
-                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').prop('readonly',true);
-                        }
-
                     }
-                }
 
 
 
@@ -604,45 +681,49 @@ function fetchSeverityClassification(obj,is_media=false ) {
         });
 }
 
+$(".defect").on('focus', function() {
+  $(this).attr('data-prev_value', this.value);
+});
+
+$(".defect_classification").on('focus', function() {
+  $(this).attr('data-prev_value', this.value);
+
+});
+
+function fire_event(obj,dependent_element){
+
+
+    var obj_id = obj.id.split('-');
+    $('#'+obj_id[0]+'-'+obj_id[1]+'-dependent_element').attr('data-prev_value', $('#'+obj_id[0]+'-'+obj_id[1]+'-dependent_element').val());
+
+     <!-- media scenario -->
+    if( $(obj).data('product_type') == '1') {
+        if(  $('#'+obj_id[0]+'-'+obj_id[1]+'-dependent_element').val() !='' &&  $(obj).val() != '' ) {
+            return fetchSeverityClassification(obj,true,obj_id[2])
+        }
+
+    }
+
+    <!-- non media scenario -->
+    else{
+        if( $(obj).val() != '' && obj_id[2] == 'severity_type' ) {
+            return fetchSeverityClassification(obj,false,obj_id[2])
+        }
+    }
+
+}
 
 $('.defect').change(function(e){
-        if( $(this).data('product_type') == 1) return false;
-        else return fetchSeverityClassification(this)
+    this.blur();
+    return fire_event(this,"defect_classification")
 });
 
 
 
-$('.severity_level').change(function(e){
-        if( $(this).data('product_type') == 0) return false;
-        else return fetchSeverityClassification(this , True)
-
+$('.defect_classification').change(function(e){
+    this.blur();
+    return fire_event(this,"severity_type")
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

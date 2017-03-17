@@ -112,12 +112,6 @@ class ReviewGroup(models.Model):
 
         super(ReviewGroup, self).save(*args, **kwargs)
 
-    def update(self, *args, **kwargs):
-
-       print "im in update"
-       super(ReviewGroup, self).save(*args, **kwargs)
-
-
 
 class DefectSeverityLevel(TimeStampAbstractModel):
     severity_type = models.ForeignKey(DefectTypeMaster)
@@ -126,6 +120,9 @@ class DefectSeverityLevel(TimeStampAbstractModel):
     product_type = models.CharField(max_length=50, blank=True, null=True, choices=team_choices, verbose_name="Product"
                                     , default=team_choices[0][0])
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
+
+    class Meta:
+        unique_together = (("severity_type", "severity_level", "defect_classification"),)
 
     def __unicode__(self):
         """ return unicode strings """

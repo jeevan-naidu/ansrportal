@@ -132,7 +132,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
         # # self.field_order['process_model', 'template', 'review_group', 'project', 'chapter', 'author']
 
 
-def review_report_base(template_id, project_obj, chapter_component_obj):
+def review_report_base(template_id, project_obj, chapter_component_obj=None):
     class ReviewReportForm(forms.Form):
         review_item = forms.CharField()
         qms_id = forms.IntegerField(label="id",
@@ -179,14 +179,15 @@ def review_report_base(template_id, project_obj, chapter_component_obj):
                                                           values_list('qms_process_model',
                                                                       flat=True)).values_list('product_type',
                                                                                               flat=True)[0]
-            try:
-                qa_obj = QASheetHeader.objects.filter(project=project_obj, chapter_component=chapter_component_obj)[0]
-                if qa_obj.review_group_status and qa_obj.author_feedback_status:
-                    for field in self.fields:
-                        self.fields[field].widget.attrs['disabled'] = True
-            except Exception as e:
-                print str(e)
-                pass
+            if chapter_component_obj:
+                try:
+                    qa_obj = QASheetHeader.objects.filter(project=project_obj, chapter_component=chapter_component_obj)[0]
+                    if qa_obj.review_group_status and qa_obj.author_feedback_status:
+                        for field in self.fields:
+                            self.fields[field].widget.attrs['disabled'] = True
+                except Exception as e:
+                    print "chapter_component_obj", str(e)
+                    pass
 
                     # self.fields[field].widget.attrs['readonly'] = True
             # print self.fields
@@ -217,16 +218,22 @@ def review_report_base(template_id, project_obj, chapter_component_obj):
             # self.fields['severity_level'].queryset = SeverityLevelMaster.objects.all()
             # self.fields['severity_level'].queryset = SeverityLevelMaster.objects.filter\
             #     (id=defect_type_master_obj.severity_level)
-            # self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.all()
+            self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.all()
             # self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.filter\
             #     (id=defect_type_master_obj.defect_classification)
             # print DefectClassificationMaster.objects.filter(id__in=defect_type_master_obj)
 
             self.fields['severity_level'].widget.attrs['disabled'] = True
+            self.fields['defect_classification'].widget.attrs['data-product_type'] = int(product_type)
             self.fields['severity_type'].widget.attrs['data-product_type'] = int(product_type)
-            if not product_type:
-                self.fields['instruction'].widget.attrs['hidden'] = True
+            self.fields['defect_classification'].widget.attrs['class'] = "defect_classification"
+
+            if int(product_type) != 1:
+                self.fields['instruction'].widget.attrs['disabled'] = True
                 self.fields['defect_classification'].widget.attrs['disabled'] = True
+
+            else:
+                print "pt", product_type, type(product_type)
             # self.fields['author'].widget.attrs['class'] = 'author_dropdown'
 
             # print defect_type_master_obj
