@@ -174,23 +174,22 @@ def get_app_name(request, **kwargs):
     return app_title
 
 
-def get_process_transactions(modal, transaction_modal, fields_to_show, view_type):
+def get_process_transactions(fields_to_show, view_type):
     """
     this methods uses for getting all the Fields for grid view
     :return: Fields
     """
-    abstract_fields = ['creation_date', 'last_updated', 'is_active', transaction_modal]
-    fields = [f.name for f in modal._meta.get_fields()]
-    fields = filter(lambda x: x not in abstract_fields, fields)
-    fields.sort(reverse=True)
     if view_type == "user":
         if "user" in fields_to_show:
             fields_to_show.remove("user")
-        fields = [field for field in fields if field in fields_to_show]
-    else:
-        fields = [field for field in fields if field in fields_to_show]
-    return fields
+    return fields_to_show
 
+
+def get_process_detail(fields_to_show, view_type):
+    if view_type == "user":
+        if "user" in fields_to_show:
+            fields_to_show.remove("user")
+    return fields_to_show
 
 
 

@@ -17,7 +17,8 @@ from models import get_app_detail,\
     is_final,\
     get_app_name,\
     get_process_transactions,\
-    user_queryset
+    user_queryset,\
+    get_process_detail
 
 
 def process(request):
@@ -46,12 +47,10 @@ class StartProcess(APIView):
         serializer = config.PROCESS[config.INITIAL]['serializer']
         app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
-        transition = config.PROCESS[config.INITIAL]['transitions']
-        modal = config.PROCESS[config.INITIAL]['model']
-        transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
         queryset = user_queryset(request, config)
-        fields = get_process_transactions(modal, transaction_modal, config.DETAIL, "user")
-        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name}, template_name = 'templates/user_dashboard.html')
+        fields = get_process_transactions(config.LIST_VIEW, "user")
+        return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name},
+                        template_name = 'templates/user_dashboard.html')
 
     def post(self, request, **kwargs):
         config = get_app_detail(request, **kwargs)
@@ -116,6 +115,14 @@ class UpdateProcess(APIView):
         modal = config.PROCESS[config.INITIAL]['model']
         return serializer, modal
 
+    def get(self, request, pk, **kwargs):
+        action = request.GET.get("action")
+        config = get_app_detail(request, **kwargs)
+        process = self.get_process(request, **kwargs)
+        process_object = self.get_object(pk, process[1])
+        fields = get_process_detail(config.DETAIL_VIEW, action)
+        return render(request, 'process_detail.html',
+                      {'queryset': process_object, 'fields': fields,})
 
     def put(self, request, pk, **kwargs):
         process = self.get_process(request, **kwargs)
@@ -164,7 +171,7 @@ class ProcessApproval(APIView):
     def get_object_detail(self, request, pk, **kwargs):
         try:
             config = get_app_detail(request, **kwargs)
-            display_fields = config.DETAIL
+            display_fields = config.LIST_VIEW
             modal = config.PROCESS[config.INITIAL]['model']
             process = get_object_or_404(modal, pk=pk)
             fields = [f.name for f in modal._meta.get_fields()]
@@ -244,7 +251,7 @@ class ProcessApproval(APIView):
             serialized_data.save_as(role[1], request, pk)
             record_added = True
         modal = config.PROCESS[config.INITIAL]['model']
-        display_fields = config.DETAIL
+        display_fields = config.LIST_VIEW
         fields = [f.name for f in modal._meta.get_fields()]
         fields = filter(lambda x: x in display_fields, fields)
         fields.sort(reverse=True)
@@ -275,10 +282,8 @@ class ApproveListView(APIView):
         config = get_app_detail(request, **kwargs)
         transition = config.PROCESS[config.INITIAL]['transitions']
         serializer = config.PROCESS[transition[0]]['serializer']
-        modal = config.PROCESS[config.INITIAL]['model']
-        transaction_modal = config.PROCESS[transition[0]]['model'].__name__.lower()
         queryset = manager_queryset(request, **kwargs)
-        fields = get_process_transactions(modal, transaction_modal, config.DETAIL, "approval")
+        fields = get_process_transactions(config.LIST_VIEW, "approval")
         serializer = serializer()
         return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name})
 

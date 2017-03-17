@@ -53,7 +53,12 @@
                         {% for process in queryset.0 %}
                              <tr>
                          {% for field in fields %}
-                             {% if field == "id" %}
+                             {% if forloop.counter == 1 and  field != "id"%}
+                             <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Approve"
+                                class="pull-right ">
+                                                    {{ process| field_name:field }}
+                                                  </a></td>
+                             {% elif field == "id" %}
                                   {% elif field == 'attachment' %}
                                  <td class="ws-mw">
                                  <div class="" >
@@ -101,7 +106,12 @@
                         {% for process in queryset.1 %}
                              <tr>
                          {% for field in fields %}
-                             {% if field == "id" %}
+                             {% if forloop.counter == 1 and  field != "id"%}
+                                        <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Approve"
+                                class="pull-right ">
+                                                    {{ process| field_name:field }}
+                                                  </a></td>
+                             {% elif field == "id" %}
                                   {% elif field == 'attachment' %}
                                  <td class="ws-mw">
                                  <div class="" >
@@ -146,7 +156,7 @@
 							</button>
 
                             <h4 class="modal-title" id="myModalLabel">
-								APPROVAL PROCESS
+								DETAIL
 							</h4>
                         </div>
                         <div class="modal-body min-height-400" id="modal_body">
@@ -161,6 +171,34 @@
 
             </div>
 
+
+
+   <div class="modal fade" id="modal-container-Detail" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								DETAIL
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body_detail">
+                          <img src="/static/images/ajax-loader.gif">
+                        </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
+
+                </div>
+
+            </div>
+
+
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
@@ -170,7 +208,30 @@
 
 $('document').ready(function(){
   $('#data-tables').dataTable();
-})
+});
+
+$("#modal-container-Detail").on('shown.bs.modal', function(e) {
+      button = e.relatedTarget;
+      button_details = button.id.split("-");
+
+          $.ajax({
+         type: "GET",
+          url: '/'+ button_details[0] + '/update/' + button_details[1] + "/" ,
+            data: {"action":button_details[2]},
+          success : function (data) {
+              $("#modal_body_detail").html(data);
+          },
+          error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#modal_body_detail").html("<p style='color:red'>Oops! Something went wrong on the server. " +
+                "The details are below: " + "<br>Status : "+ textStatus + "<br>Exception : "
+                + errorThrown +
+                "<br><br> Please take a screenshot of this message and send it to " +
+                "<a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+          }
+      });
+
+
+  });
 
 </script>
 {% endblock %}
