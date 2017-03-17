@@ -106,7 +106,7 @@ SECRET_KEY = 'pi3q*!l_+$+vd&3&v_zb*yt6mmi=h*25o#6!q5!aca=j_)&3yd'
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portal.ansrsource.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'portal.ansrsource.com', 'stage.ansrsource.com']
 
 # When CRSF failurers happen we just ask them to relogin using our own template
 CSRF_FAILURE_VIEW = 'MyANSRSource.views.csrf_failure'
@@ -145,6 +145,7 @@ INSTALLED_APPS = [
     'Library',
     'formtools',
     'emoticons',
+    'ExitApp',
 
 ]
 
@@ -159,6 +160,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
+    'ExitApp.middleware.exitappmiddleware.ExitappPermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p
 TEMPLATES = [
@@ -184,7 +186,9 @@ TEMPLATES = [
 RESTRICTED_URLS = (
     (r'/grievances_admin/(.*)$',),
 )
+RESTRICTED_EXIT_URL = ((r'/exit-acceptance/(.*)$',),)
 GRIEVANCE_ADMIN_GROUP_NAME = 'myansrsourceGrievanceAdmin'
+EXITAPP_GROUP_NAME = 'IT-support'
 GRIEVANCE_ADMIN_MAX_UPLOAD_SIZE = 1000000
 # Session Configuration - enable this only after we get caching working right
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
@@ -202,15 +206,14 @@ ROOT_URLCONF = 'timetracker.urls'
 WSGI_APPLICATION = 'timetracker.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "myansrsource",
         "USER": "root",
-        "PASSWORD": "mysqlroot",
+        "PASSWORD": "root",
         "HOST": "localhost",
         "PORT": "3306",
         },
@@ -224,8 +227,7 @@ BOOTSTRAP3 = {
 # Font awesome related settings
 FONTAWESOME_CSS_URL = '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.7/topics/i18n/
+
 
 LANGUAGE_CODE = 'en-us'
 
@@ -330,7 +332,7 @@ FEED_DELIMITER = ","
 EXTERNAL_PROJECT_NOTIFIERS = ['sanjay.kunnath@ansrsource.com']
 
 # New Joinee Notifiers
-NEW_JOINEE_NOTIFIERS = ['hrhelpdesk@ansrsource.com']
+NEW_JOINEE_NOTIFIERS = ['shalini.bhagat@ansrsource.com']
 
 # Grappelli Customizations
 GRAPPELLI_ADMIN_TITLE = 'myansrsource administration'
@@ -348,15 +350,16 @@ BACKUPDIR = '/www/MyANSRSource/ansr-timesheet/backup'
 MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-GRIEVANCES_ADMIN_EMAIL = "HR.Helpdesk@ansrsource.com"
+GRIEVANCES_ADMIN_EMAIL = "shalini.bhagat@ansrsource.com"
 BOOKING_ROOM_ADMIN = "BookingRoomAdmin"
-LEAVE_ADMIN_EMAIL = ['HR4U@ansrsource.com']
+LEAVE_ADMIN_EMAIL = ['shalini.bhagat@ansrsource.com']
 
 MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
+
 LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
 
 HIRE_RECRUITER = 'HireRecruiter'
