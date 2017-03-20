@@ -371,11 +371,16 @@ function orderTabs(theObj){
 
 
     // Flipping again so that submit function doesn't add keys that were values before
-    theObj['tab_order'] = array_flip(theObj['tab_order'])    
+    theObj['tab_order'] = array_flip(theObj['tab_order'])
+
+
+    $('.qms-allocators .form-group select').each(function(){
+        theNum = $(this).attr('name');
+        theNum = theNum.replace(/[^0-9]/g, '');
+        $(this).parent().find('input.order-number').attr('name', 'order_'+theNum);
+    }) 
 } // end of order tabs functions
 
-
-// 
 
 
 function checkIfArrayIsUnique(myArray) {
