@@ -22,7 +22,6 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
 .mr-15{margin-right: 15px;}
 .pos-rel{position: relative;}
 .overflow-hide{overflow: hidden;}
-.the-right-button{margin-left: 10px}
 
 /* General Classes */
 
@@ -33,6 +32,15 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
   user-select: none;
 }
 
+.myansr-table{
+    border: 1px solid #f9f9f9;
+}
+.myansr-table thead{background: #464A4C;color: #fff}
+.myansr-table thead th{padding: 8px 15px !important;}
+.myansr-table td{vertical-align: middle !important;padding: 8px 15px !important;}
+.table-striped.myansr-table>tbody>tr:nth-of-type(even) {
+    background-color: #fff;
+}
 
 /* Overrides */
 
@@ -359,4 +367,15 @@ span.book-count{font-weight: bold}
 
 #timesheet-approve-table_filter{display: none;}
 
-.reimburse-table .ws-mw{max-width: 200px;word-wrap: break-word;}
+
+/* Exit App */
+
+.mw-ra{min-width: 85px;}
+.mxw-250{max-width: 250px !important}
+.mxw-150{max-width: 150px !important}
+
+#exit-form input{max-width: 300px;}
+
+#acceptanceform textarea{max-height: 30px;}
+
+#dept_clearance_form .amountbox{max-width: 100px;}
