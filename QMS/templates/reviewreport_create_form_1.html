@@ -463,12 +463,12 @@ $('#filter_form').submit(function() {
                 dataType :'json',
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
                 success: function (data) {
-                if (data['config_missing'] == 'True') {
+                if (data['config_missing'] == 'true') {
                     sweetAlert("Oops...", "Configuration is missing!", "error");
                     return false;
 
                 }
-                console.log(data);
+                console.log(JSON.stringify(data));
                     populateForm(data);
                     orderTabs(data);
                     assignMandatory(data);

@@ -95,7 +95,7 @@
                             <td></td>
                             <td>{{total_count}}</td>
                             <td>{{total_score}}</td>
-                            <td>{{total_defect_density}}</td>
+                            <td>{{total_defect_density}} %</td>
                         </tr>
 
 
@@ -578,7 +578,7 @@ function fetchSeverityClassification(obj,is_media=false,triggered_by) {
                 url: '/qms/fetch_severity/',
                 type: 'GET',
                 dataType :'json',
-                data: {"template_id": $('#template_id').val() , "project_id":$('#project_id').val(),
+                data: {"template_id": $('#template_id').val() , "project_id":$('#id_project').val(),
                 "severity_type" : severity_type ,
                 "active_tab" :$("li.active").attr('id') ,
                 "severity_classification":classification,
@@ -632,6 +632,21 @@ function fetchSeverityClassification(obj,is_media=false,triggered_by) {
                                         }
 
                                     }
+                                }
+                                else {
+
+                                for (var sub_key in data['defect_classification']) {
+                                        if (data['defect_classification'].hasOwnProperty(sub_key)) {
+                                        console.log("inner loop");
+                                            $('#'+obj_id[0]+'-'+obj_id[1]+'-defect_classification').append($('<option>', {
+                                                value: data['defect_classification'][sub_key],
+                                                text: sub_key,
+                                                selected :'selected',
+                                            }));
+                                        }
+
+                                    }
+
                                 }
                             }
 

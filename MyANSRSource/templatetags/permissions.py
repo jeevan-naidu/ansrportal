@@ -1,5 +1,5 @@
 from django import template
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group ,User
 from django.conf import settings
 import employee
 import ExitApp
@@ -91,3 +91,9 @@ def get_item(dictionary, key):
     if s is None:
         s = 0
     return s
+
+
+@register.simple_tag
+def get_full_name(member_id):
+    obj = User.objects.get(pk=member_id)
+    return ''.joint(obj.first_name, obj.last_name)

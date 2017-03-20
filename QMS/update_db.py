@@ -2,8 +2,8 @@ import xlrd
 import MySQLdb
 import datetime
 #
-book = xlrd.open_workbook("template_1.xlsx")
-sheets = ["copy_edit", "er", "eut"]
+book = xlrd.open_workbook("ansrS_QA_Tmplt_Alt Text QA sheet_1.0_template_1.xlsx")
+sheets = ["copy_edit", "er", "eut", "QA", "CF"]
 database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
 #
 cursor = database.cursor()
@@ -29,9 +29,15 @@ for cur_sheet in sheets:
     elif cur_sheet == "er":
         group_id = 2
         review_master_id = 1
-    else:
+    elif cur_sheet == "eut":
         group_id = 3
         review_master_id = 3
+    elif cur_sheet == "QA":
+        group_id = 4
+        review_master_id = 4
+    elif cur_sheet == "CF":
+        group_id = 5
+        review_master_id = 5
 
     sheet = book.sheet_by_name(cur_sheet)
 
@@ -54,7 +60,7 @@ for cur_sheet in sheets:
                 "INSERT INTO QMS_dsltemplatereviewgroup(template_id,"
                 "review_master_id,is_active, defect_severity_level_id,"
                 "created_by_id,updated_by_id,created_on,updated_on)VALUES "
-                "(%s,%s,%s,%s,%s,%s,%s,%s)", (13, review_master_id, 1, fk, 471, 471, now, now))
+                "(%s,%s,%s,%s,%s,%s,%s,%s)", (34, review_master_id, 1, fk, 471, 471, now, now))
             database.commit()
         except Exception as e:
             print str(e)

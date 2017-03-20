@@ -264,10 +264,11 @@ def SingleProjectReport(request):
                 project=cProject
             ).values('description', 'financial', 'milestoneDate',
                      'amount', 'closed').order_by('milestoneDate')
+            from django.db.models import F
             taskData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
-                'task__name',  'teamMember', 'teamMember__first_name', 'teamMember__last_name'
+                'task__name',  'teamMember','teamMember__first_name', 'teamMember__last_name'
             ).annotate(monday=Sum('mondayQ'),
                        tuesday=Sum('tuesdayQ'),
                        wednesday=Sum('wednesdayQ'),
@@ -275,9 +276,10 @@ def SingleProjectReport(request):
                        friday=Sum('fridayQ'),
                        saturday=Sum('saturdayQ'),
                        sunday=Sum('sundayQ'),
-                       total_hours=Sum('totalH')
+                       total_hours=Sum(F('mondayH') + F('tuesdayH')+F('wednesdayH') + F('thursdayH')+F('fridayH') + F('saturdayH')+F('sundayH'))
                        ).order_by('task__name', 'teamMember_id')
             orderbyList = ['task__name']
+            print taskData.query
             ts = TimeSheetEntry.objects.filter(
                 project=cProject).values('task__name')
             avgTaskData = getAvgProd(request, ts, orderbyList)
@@ -445,18 +447,18 @@ def SingleProjectReport(request):
                         eachTsData['status'] = cProject.closed
                 if len(taskData):
                     for eachData in taskData:
-                        for eachMinData in minTaskData:
-                            if eachData['task__name'] == eachMinData['task__name']:
-                                eachData['min'] = eachMinData['min']
-                        for eachMaxData in maxTaskData:
-                            if eachData['task__name'] == eachMaxData['task__name']:
-                                eachData['max'] = eachMaxData['max']
-                        for eachAvgData in avgTaskData:
-                            if eachData['task__name'] == eachAvgData['task__name']:
-                                eachData['avg'] = eachAvgData['avg']
-                        for eachTopData in topPerformer:
-                            if eachData['task__name'] == eachTopData['taskName']:
-                                eachData['norm'] = eachTopData['norm']
+                        # for eachMinData in minTaskData:
+                        #     if eachData['task__name'] == eachMinData['task__name']:
+                        #         eachData['min'] = eachMinData['min']
+                        # for eachMaxData in maxTaskData:
+                        #     if eachData['task__name'] == eachMaxData['task__name']:
+                        #         eachData['max'] = eachMaxData['max']
+                        # for eachAvgData in avgTaskData:
+                        #     if eachData['task__name'] == eachAvgData['task__name']:
+                        #         eachData['avg'] = eachAvgData['avg']
+                        # for eachTopData in topPerformer:
+                        #     if eachData['task__name'] == eachTopData['taskName']:
+                        #         eachData['norm'] = eachTopData['norm']
                         eachData['top'] = eachData['teamMember__first_name'] + ' ' + eachData['teamMember__last_name']
 
                 report = [basicData, newCR, msData, tsData, taskData, topPerformer]
@@ -475,8 +477,8 @@ def SingleProjectReport(request):
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
                      'Actual Effort'],
-                    ['Task Name', 'Total Hours', 'Team Member']
-
+                    ['Task Name', 'Total Hours',
+                     'Norm', 'Team Member']
                 ]
                 grdTotal = [plannedTotal, actualTotal]
                 if cProject.closed:
@@ -1413,7 +1415,7 @@ def generateProjectContent(request, header, report, worksheet,
 
             if 'task__name' in eachRec:
                 worksheet.write(row, 0, eachRec['task__name'], content)
-                worksheet.write(row, 1, eachRec['total_hours'], content)
+                worksheet.write(row, 1, eachRec['min'], content)
                 # worksheet.write(row, 2, eachRec['max'], content)
                 # worksheet.write(row, 3, '  ', content)
                 # worksheet.write(row, 4, eachRec['avg'], content)

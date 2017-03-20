@@ -140,10 +140,7 @@ function project_iterate(qms_obj){
 $('#qms_project_table tbody').html('');
   for (var qms_key in qms_obj){
     if (qms_obj.hasOwnProperty(qms_key)){
-
-
       var inner_obj = qms_obj[qms_key];
-
   for (var inner_key in inner_obj){
     if (inner_obj.hasOwnProperty(inner_key)){
       $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
@@ -152,9 +149,9 @@ $('#qms_project_table tbody').html('');
       $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key]['defect_density']);
       $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key]['name']);
       $('#qms_project_table tbody tr:last-child .questions').html(inner_obj[inner_key]['questions']);
-      $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key]['s1']);
-      $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key]['s2']);
-      $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key]['s3']);
+      $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key]['S1']);
+      $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key]['S2']);
+      $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key]['S3']);
     qms_count++;
 
     }

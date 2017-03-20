@@ -44,7 +44,7 @@ class ChooseTabs(FormView):
     def form_valid(self, form):
         user_tab = {}
         order_number = {}
-        # print self.request.POST
+        print self.request.POST
         users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
         order = {k: v for k, v in self.request.POST.items() if k.startswith('order_')}
         # print users
@@ -150,19 +150,22 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
 
 
 def get_review_group(project=None, chapter=None, is_author=False):
+    print "get_review_group"
     obj = ReviewGroup.objects.all()
+    print is_author , project,chapter
+
     try:
         if not is_author and project and chapter:
             obj = obj.filter(pk__in=QASheetHeader.objects.filter(project=project, chapter=chapter).
                              values_list('review_group_id', flat=True).order_by('order_number'))
-            # print obj
+            print obj
     except Exception as e:
         print "get_review_group" , str(e)
     return obj
 
 
 def get_template_process_review(request):
-    print request.GET
+    # print request.GET
     project = request.GET.get('project_id')
     template = request.GET.get('template_id')
     qms_process_model = request.GET.get('qms_process_model')
@@ -182,7 +185,7 @@ def get_template_process_review(request):
             config_missing = True
         members_obj = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
-        # print "count" ,qa_obj.count()
+        print "qa_obj" ,qa_obj
         for members in members_obj:
             if int(members.member_id) != int(author):
                 team_members[int(members.member_id)] = str(members.member.username)
@@ -207,7 +210,7 @@ def get_template_process_review(request):
         tabs, team_members, tab_name = ''
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order, 'config_missing': config_missing}
-    # print context_data
+    print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
@@ -241,11 +244,11 @@ class AssessmentView(TemplateView):
     def post(self, request):
         form = BaseAssessmentTemplateForm(request.POST)
         # for sa in request.POST :
-        print request.POST
+        # print request.POST
         # reports = template_id = None
         active_tab = request.POST.get('active_tab')
         request.session['active_tab'] = request.POST.get('active_tab')
-        print "after ass " , active_tab
+        # print "after ass " , active_tab
         # print request.POST
         if form.is_valid():
 
@@ -255,6 +258,7 @@ class AssessmentView(TemplateView):
             component = form.cleaned_data['component']
 
             if request.user is author:
+                print"is author"
                 get_review_group(project, chapter, is_author=False)
             try:
 
@@ -386,7 +390,7 @@ class AssessmentView(TemplateView):
         tmp_weight = {}
         defect_density = {}
         # print severity_count
-        s = SeverityLevelMaster.objects.filter(is_active=True).exclude(name__icontains='S4')
+        s = SeverityLevelMaster.objects.filter(is_active=True).exclude(name__icontains='S0')
         for k, v in severity_count.iteritems():
             severity_level_obj = s.get(id=int(k))
             tmp_weight[k] = float(severity_level_obj.penalty_count) * v
@@ -404,13 +408,13 @@ class AssessmentView(TemplateView):
             total_score = 0
         total_defect_density = sum(defect_density.itervalues())
         severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id').\
-            exclude(name__icontains='S4')
+            exclude(name__icontains='S0')
 
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
                                                          # 'product_type': product_type,
                                                          'template_id': template_id,
-                                                         'review_group': get_review_group(project),
+                                                         'review_group': get_review_group(project, chapter),
                                                          'questions': obj.count,
                                                          'severity_count': severity_count, 'project': project.id,
                                                          'score': score, 'total_score': total_score,
@@ -550,46 +554,62 @@ def fetch_severity(request):
     # print request.GET
     template_id = request.GET.get('template_id')
     project_id = request.GET.get('project_id')
-    # obj = ProjectTemplateProcessModel.objects.get(template_id=template_id, project_id=project_id)
-    # if obj.qms_process_model.product_type == 1 :
-    #     media_team = True
     severity = request.GET.get('severity_type')
     request.session['active_tab'] = request.GET.get('active_tab')
     review_group = ReviewGroup.objects.get(id=request.GET.get('active_tab'))
     severity_classification = request.GET.get('severity_classification')
-    if request.GET.get('triggered_by') == 'severity_type':
-        # print"im in buddy"
-        try:
-            s = DefectSeverityLevel.objects.filter(severity_type=severity).values_list("defect_classification__name",
-                                                                                       "defect_classification__id")
-            classification_dict = dict((str(x), int(y)) for x, y in s)
-            classification_dict["fghg"] =5
-            context_data = {'classification_dict': classification_dict, "triggered_by": request.GET.get('triggered_by')}
-
-        except:
-            context_data = {'configuration_missing': True, "triggered_by": request.GET.get('triggered_by')}
-        return HttpResponse(
-            json.dumps(context_data),
-            content_type="application/json"
-        )
-    if severity_classification != "None":
-        is_media = True
+    print request.GET
+    obj = ProjectTemplateProcessModel.objects.get(template_id=template_id, project_id=project_id)
+    if obj.qms_process_model.product_type == 1 :
+        media_team = True
     else:
-        is_media = False
-    try:
-        if is_media:
-            obj = DefectSeverityLevel.objects.filter(severity_type=severity,
-                                                     defect_classification=severity_classification)[0]
-
-        else:
+        media_team = False
+    if not media_team:
+        try:
+            print "severity", severity
             obj = DefectSeverityLevel.objects.filter(severity_type=severity)[0]
-        # logger.error("query {0} ".format(obj.query))
-        context_data = {'severity_level': str(obj.severity_level), 'defect_classification':
-            {str(obj.defect_classification): obj.defect_classification.id}, "is_media": is_media}
-    except IndexError as e:
-        logger.error("query {0} ".format(str(e)))
-        context_data = {'configuration_missing': True, "is_media": is_media}
+            print "obj" , obj
+            # logger.error("query {0} ".format(obj.query))
+            context_data = {'severity_level': str(obj.severity_level), 'defect_classification':
+                { str(obj.defect_classification): obj.defect_classification.id}}
+        except IndexError as e:
+            logger.error("query {0} ".format(str(e)))
+            context_data = {'configuration_missing': True}
 
+    else:
+        if request.GET.get('triggered_by') == 'severity_type':
+            # print"im in buddy"
+            try:
+                s = DefectSeverityLevel.objects.filter(severity_type=severity).values_list("defect_classification__name",
+                                                                                           "defect_classification__id")
+                classification_dict = dict((str(x), int(y)) for x, y in s)
+                classification_dict["fghg"] =5
+                context_data = {'classification_dict': classification_dict, "triggered_by": request.GET.get('triggered_by')}
+
+            except:
+                context_data = {'configuration_missing': True, "triggered_by": request.GET.get('triggered_by')}
+            return HttpResponse(
+                json.dumps(context_data),
+                content_type="application/json"
+            )
+        if severity_classification != "None":
+            is_media = True
+        else:
+            is_media = False
+        try:
+            if is_media:
+                obj = DefectSeverityLevel.objects.filter(severity_type=severity,
+                                                         defect_classification=severity_classification)[0]
+
+            else:
+                obj = DefectSeverityLevel.objects.filter(severity_type=severity)[0]
+            # logger.error("query {0} ".format(obj.query))
+            context_data = {'severity_level': str(obj.severity_level), 'defect_classification':
+                {str(obj.defect_classification): obj.defect_classification.id}, "is_media": is_media}
+        except IndexError as e:
+            logger.error("query {0} ".format(str(e)))
+            context_data = {'configuration_missing': True, "is_media": is_media}
+    print json.dumps(context_data)
     return HttpResponse(
             json.dumps(context_data),
             content_type="application/json"
@@ -652,7 +672,7 @@ class DashboardView(ListView):
         context['projects'] = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
                                                                          filter(user=self.request.user).
                                                                          values('project')).\
-            values('id', 'project','project_id', 'project__projectId', 'project__name', 'template_id').\
+            values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id').\
             annotate(chapter_count=Count('project__book__chapter'))
         return context
 
@@ -683,13 +703,14 @@ def chapter_summary(request):
     qms_data = {}
     qms_data_list = []
     tmp_dict = {}
-    severity_level = SeverityLevelMaster.objects.all().exclude(name__icontains='S4')
+    severity_level = SeverityLevelMaster.objects.all().exclude(name__icontains='S0')
     if review_report_obj:
         for eachData in review_report_obj:
             for k, v in eachData.iteritems():
                 if k is 'QA_sheet_header__chapter_id':
                     obj = Chapter.objects.get(id=v)
                     qms_data[obj.id] = {}
+                    qms_data[obj.id]['severity_level'] = {}
                     qms_data[obj.id]['name'] = obj.name
                     tmp_obj = QASheetHeader.objects.filter(project_id=project_id, chapter_id=obj.id)
                     question_count = sum(tmp_obj.filter().values_list('count', flat=True))
@@ -702,20 +723,23 @@ def chapter_summary(request):
                             annotate(s_count=Count('defect_severity_level__severity_level'))
 
                         if not s_count:
-                            qms_data[obj.id][s.name] = 0
+                            qms_data[obj.id]['severity_level'][s.name] = 0
                             tmp_dict[s.name] = 0
                         else:
                             for c in s_count:
                                 try:
-                                    qms_data[obj.id][s.name] = c['s_count']
+                                    qms_data[obj.id]['severity_level'][s.name] = c['s_count']
                                     tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count
                                 except Exception as e:
                                     logger.error(" qms {0} ".format(str(e)))
+                        # print tmp_dict
                         tmp_dd = float(sum(tmp_dict.values()) * 100)
                         qms_data[obj.id]['defect_density'] = str(round(tmp_dd, 2))
                         qms_data[obj.id]['questions'] = question_count
+                        # qms_data[obj.id]['severity_level'] = tmp_dict
             qms_data_list.append(qms_data.copy())
             qms_data.clear()
+    print (qms_data_list)
     return HttpResponse(
         json.dumps(qms_data_list),
         content_type="application/json"
