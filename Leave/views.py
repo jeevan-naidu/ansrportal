@@ -69,10 +69,12 @@ def creditview(request):
     data2 = "<tr class='balanceremove'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
     data3 = "<tr class='invisible'><th>Sr.No</th><th>Month</th><th>Prev-Year-Balance</th><th>Comment</th></tr>"
     if leave == 'Earned Leave':
+        year = int(year)
         if year == now.year:
             year = 2016
         else:
             year = request.GET.get('year')
+        print year
         carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(year)).\
             values('balance', 'year', 'applied')
         for balance in carry_forward:
