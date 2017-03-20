@@ -392,6 +392,7 @@ function isInArray(needle, haystack) {
 }
 
 function checkIfConsecutive(myArray){
+    myArray = myArray.sort();
     var arrayLength = myArray.length - 1;
     var arrayDIff;
     for(var i = 0; i < arrayLength; i++){
