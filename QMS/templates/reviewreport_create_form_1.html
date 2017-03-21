@@ -434,10 +434,23 @@ function checkOrder(){
 
 }
 
-function disableOrder(){
-    for (var key in theObj['user_tab']){
-        if(theObj['user_tab'].hasOwnProperty(key)){
+function disableOrder(theObj){
 
+    $('input.order-number').attr('disabled', '');
+
+    for (var disableKey in theObj['can_edit']){
+        if(theObj['can_edit'].hasOwnProperty(disableKey)){
+            console.log(theObj['can_edit'][disableKey]);
+            console.log(disableKey);
+
+            if (theObj['can_edit'][disableKey] == true) {
+                var newKey = "order_" + disableKey;
+                $('input[name=' + newKey + ']').removeAttr('disabled');
+            }
+
+
+
+       
         }
     }    
 }
