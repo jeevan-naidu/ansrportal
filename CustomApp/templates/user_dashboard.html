@@ -34,17 +34,17 @@
 
     <div class="panel-body">
 
-     <a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Approve" class="btn btn-sm btn-success pull-right" style="margin-bottom: 10px; ">{{ app_name }} Raise</a>
+     <div class="row"><a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Approve" class="btn btn-sm btn-success pull-right" style="margin-bottom: 10px; ">{{ app_name }} Raise</a></div>
 
                     <ul class="nav nav-tabs">
                       <li class="active"><a href="#tab1" data-toggle="tab">Active</a></li>
                       <li><a href="#tab2" data-toggle="tab">Approved</a></li>
-                      <li><a href="#tab3" data-toggle="tab">Rollback</a></li>
+                      <li><a href="#tab3" data-toggle="tab">Cancelled</a></li>
                     </ul>
                     <br/>
                     <div class="tab-content mgbt-xs-20">
                       <div class="tab-pane active" id="tab1">
-                        <table class="table table-striped reimburse-table" id="data-tables">
+                        <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
                                 {% for field in fields %}
@@ -102,7 +102,7 @@
 
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab2">
-                          <table class="table table-striped reimburse-table" id="data-tables">
+                          <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
                                 {% for field in fields %}

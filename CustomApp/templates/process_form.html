@@ -32,7 +32,7 @@
                     <br/>               
                     <div class="tab-content mgbt-xs-20">
                       <div class="tab-pane active" id="tab1">
-                        <table class="table table-striped reimburse-table" id="data-tables">
+                        <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
                                 {% for field in fields %}
@@ -76,7 +76,7 @@
                         {% endfor %}
                              <th><a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process" data-toggle="modal" title="Approve"
                                 class="pull-right btn btn-sm btn-success">
-                                                    action
+                                                    Action
                                                   </a></th>
 
                         </tr>
@@ -87,7 +87,7 @@
 
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab2">
-                          <table class="table table-striped reimburse-table" id="data-tables">
+                          <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
                                 {% for field in fields %}
