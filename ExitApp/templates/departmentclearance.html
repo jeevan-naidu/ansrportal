@@ -1,0 +1,219 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load permissions %}
+{% load static from staticfiles %}
+{% block siteTitle %}Candidate Clearance Report{% endblock %}
+{% block pageTitle %}Resignation Clearance :  {% for c in candidate_detail%} {{c}} {% endfor%} {% endblock %}
+{% block content  %}
+     <link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+
+            <div class="row" id="form-basic">
+              <div class="col-md-12">
+
+                  <!-- <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Enter Your Details </h3>
+                  </div> -->
+<style>
+    .autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+.myansr-table td{background: #fff}
+ul{list-style: none;padding-left: 0px;}
+.submit-holder{padding: 0px 15px;margin-top: -20px;}
+.submit-holder > div{background: #d4d4d4;padding: 10px 15px}
+    </style>
+           <div class="panel-body">
+               {% if messages %}
+                     {% for message in messages %}
+                        {% if message.tags == 'error' %}
+               <div class="alert alert-info">
+                <strong>info!</strong> {{message}}.
+               </div>
+               {% else %}
+                    {% if message.tags == 'info' %}
+                        <script>
+                        function getParameterByName(name, url)
+                                {
+                                    if (!url) {
+                                      url = window.location.href;
+                                    }
+                                    name = name.replace(/[\[\]]/g, "\\$&");
+                                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                                        results = regex.exec(url);
+                                    if (!results) return null;
+                                    if (!results[2]) return '';
+                                    return decodeURIComponent(results[2].replace(/\+/g, " "));
+                                }
+
+                                swal({
+                                      title: "Exit Interview Summary",
+                                      text: "Note about Exit Interview:",
+                                      type: "input",
+                                      showCancelButton: true,
+                                      closeOnConfirm: false,
+                                      inputPlaceholder: "Exit Interview note"
+                                  }, function (inputValue) {
+                                    if (inputValue === false)
+                                     {
+                                     var exit_flag = '';
+                                     id = getParameterByName('id');
+                                     value = id;
+                                     $.ajax({
+                                                url : "/exitapp/update-auth/",
+                                                type : "GET",
+                                                data : { 'id':value, 'exit_flag':exit_flag, 'message':inputValue},
+                                                success : function(json) {
+                                                swal("Completed!", "Employee has been removed from auth table.", "success");
+                                                    console.log("success");
+                                                }
+                                                });
+                                     }
+                                    else if (inputValue === "")
+                                    {
+                                          swal.showInputError("Exit Summary Can't be Empty!");
+                                          return false
+                                    }
+                                    else if(inputValue != false)
+                                     {
+                                     id = getParameterByName('id');
+                                       value = id;
+                                       var exit_flag = 1;
+                                          $.ajax({
+                                                url : "/exitapp/update-auth/",
+                                                type : "GET",
+                                                data : { 'id':value, 'exit_flag':exit_flag, 'message':inputValue},
+                                                success : function(json) {
+                                                swal("Completed!", "Employee has been removed from auth table.", "success");
+                                                    console.log("success");
+                                                }
+                                                });
+                                     }
+                                    else
+                                    {
+                                        return false
+                                    }
+                                    });
+                        </script>
+                    {% endif %}
+                    {% if message.tags == 'success' %}
+                     {% if forloop.counter == 1 %}
+                    <div class="alert alert-success">
+                    <strong>Success!</strong> {{message}}.
+                  </div>
+               {% endif %}
+               {% endif %}
+               {% endif %}
+               {% endfor %}
+               {% endif %}
+                    <form id="dept_clearance_form" class="form-horizontal" name="dept_clearance" role="form" method="post"  data-toggle="validator">
+                        {% csrf_token %}
+<table class="table table-condensed table-bordered myansr-table">
+                      <thead>
+                        <tr>
+                          <th>Sr.No</th>
+                          <th>Department</th>
+                          <th class="mxw-150">Amount</th>
+                          <th>Feedback</th>
+                          <th class="text-center">Accept</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for c in candidate_detail%}
+                      <tr>
+                          <td>1</td>
+                          <td class="center">Library</td>
+                          <td class="center"><input {% if request.user|has_group:'LibraryAdmin' == False %} disabled  title="unauthorized user" {%endif%}  type="number" {% for data in  dataresignee%} {% if data.department == "LIB" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="lib_amount" id = "libamount" class="amountbox form-control input-sm"/></td>
+                          <td><input  {% if request.user|has_group:'LibraryAdmin' == False %} disabled title="unauthorized user" {%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "LIB" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%}name="library_feedback" class="form-control input-sm"></td>
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
+                              <input {% if request.user|has_group:'LibraryAdmin' == False %} disabled title="unauthorized user" {%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "LIB" and data.dept_status == True %} checked {%endif %}{%endfor%} value=2 name="library_approval" id="checkbox-1">
+                              <label class="text-left" for="checkbox-1"></label>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>2</td>
+                          <td class="center">IT Admin</td>
+                          <td class="center"><input {% if request.user|has_group:'BookingRoomAdmin' == False %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "IT" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%}  name="admin_amount" id = "adminamount" class ="amountbox form-control input-sm"/></td>
+                          <td><input {% if request.user|has_group:'BookingRoomAdmin' == False %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "IT" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%}name="admin_feedback" class="form-control input-sm"></td>
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
+                              <input {% if request.user|has_group:'BookingRoomAdmin' == False %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "IT" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="admin_approval" id="checkbox-2">
+                              <label class="text-left" for="checkbox-2"></label>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>3</td>
+                          <td class="center">Finance</td>
+                          <td class="center"><input {% if request.user|has_group:'Finance' == False %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "FIN" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="finance_amount" id = "financeamount" class ="amountbox form-control input-sm"/></td>
+                          <td><input type="text" {% if request.user|has_group:'Finance' == False %} disabled title="unauthorized user" {%endif%}  {% for data in  dataresignee%} {% if data.department == "FIN" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="finance_feedback" class="form-control input-sm"></td>
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
+                              <input {% if request.user|has_group:'Finance' == False %} disabled title="unauthorized user"{%endif%}  type="checkbox" {% for data in  dataresignee%} {% if data.department == "FIN" and data.dept_status == True %} checked {%endif %}{%endfor%} value=2 name="finance_approval" id="checkbox-3">
+                              <label class="text-left" for="checkbox-3"></label>
+                            </div>
+                          </td>
+                        </tr>
+
+                      <td>4</td>
+                          <td class="center">Facility</td>
+                          <td class="center"><input {% if request.user|has_group:'IT-support' == False %} disabled title="unauthorized user"{%endif%}  type="number" {% for data in  dataresignee%} {% if data.department == "FAC" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="facility_amount" id = "facilityamount" class ="amountbox form-control input-sm"/></td>
+                          <td><input {% if request.user|has_group:'IT-support' == False %} disabled {%endif%}  type="text" {% for data in  dataresignee%} {% if data.department == "FAC" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="facility_feedback" class="form-control input-sm"></td>
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
+                              <input {% if request.user|has_group:'IT-support' == False %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "FAC" and data.dept_status == True %} checked {%endif %}{%endfor%} value=2 name="facility_approval" id="checkbox-5">
+                              <label class="text-left" for="checkbox-5"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <tr>
+                      <td>5</td>
+                          <td class="center">Manager</td>
+                          <td class="center"><input {% if c.User_id|DirectReportee:user == 0%} disabled {%endif%} type="number" id = "manager_amount" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="manager_amount" class ="amountbox form-control input-sm"/></td>
+                          <td><input {% if c.User_id|DirectReportee:user == 0 %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="manager_feedback" class="form-control input-sm"></td>
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
+                              <input {% if c.User_id|DirectReportee:user == 0 %} disabled title="unauthorized user"{%endif%} type="checkbox" {% for data in  dataresignee%} {% if data.department == "MGR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="manager_approval" id="checkbox-6">
+                              <label class="text-left" for="checkbox-6"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <tr>
+                        <td>6</td>
+                          <td class="center">HR</td>
+                          <td class="center"><input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="number" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_due}}" {%endif %}{%endfor%} name="hr_amount" id = "hramount" class ="amountbox form-control input-sm"/></td>
+                          <td><input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="text" {% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} value="{{data.dept_feedback}}" {%endif %}{%endfor%} name="hr_feedback" class="form-control input-sm"></td>
+                          <td class="menu-action text-center">
+                            <div class="vd_checkbox checkbox-success">
+                              <input {% if c.User_id|DirectReportee:user == 1 %} disabled title="unauthorized user"{%endif%} type="checkbox"{% for data in  dataresignee%} {% if data.department == "HR" and data.dept_status == True %} checked {%endif %}{%endfor%}  value=2 name="hr_approval" id="checkbox-4">
+                              <label class="text-left" for="checkbox-4"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      <tr>
+                      {% endfor%}
+                      </tbody>
+                    </table>
+                    <div class="row submit-holder">
+                      <div class="col-sm-12">
+                        <input type ="submit" value="Submit" class="exitbutton btn btn-sm btn-success pull-right">
+                      </div>
+                    </div>
+</form>
+            </div>
+                </div>
+              </div>
+
+        <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+        <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+{% endblock %}

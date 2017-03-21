@@ -147,6 +147,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'CustomApp',
     'Reimburse',
+    'ExitApp',
 
 ]
 
