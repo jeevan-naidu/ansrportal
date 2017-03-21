@@ -14,6 +14,7 @@
 .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
    padding: 5px 8px;
 }
+.reimburse-action-button{width: 30px;border-radius: 25px;}
 
 </style>
 
@@ -90,10 +91,9 @@
 {% endwith %}
                         {% endfor %}
                             <th>
-                             <a id="{{ app_name }}-{{ process| field_name:"id" }}" onclick="delete_process()" data-toggle="modal" title="Delete" class="pull-right btn btn-sm btn-success the-right-button">Delete</a>
-                             <a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process_update" data-toggle="modal" title="Update" class="pull-right btn btn-sm btn-success">Update</a>
+                             <a id="{{ app_name }}-{{ process| field_name:"id" }}" onclick="delete_process()" data-toggle="modal" title="Delete" class="reimburse-action-button pull-right btn btn-sm btn-success ansr_red the-right-button text-center"><i class="fa fa-times append-icon"></i></a>
+                             <a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process_update" data-toggle="modal" title="Update" class="reimburse-action-button pull-right btn btn-sm btn-primary text-center"><i class="fa fa-pencil-square-o"></i></a>
                             </th>
-
                         </tr>
 
                         {% endfor %}
