@@ -217,7 +217,7 @@ def get_template_process_review(request):
     except ObjectDoesNotExist:
         tabs, team_members, tab_name = ''
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
-                    'tab_order': tab_order, 'config_missing': config_missing," can_edit": can_edit}
+                    'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit}
     # print context_data
     return HttpResponse(
         json.dumps(context_data),
