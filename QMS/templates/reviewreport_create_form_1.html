@@ -434,7 +434,13 @@ function checkOrder(){
 
 }
 
+function disableOrder(){
+    for (var key in theObj['user_tab']){
+        if(theObj['user_tab'].hasOwnProperty(key)){
 
+        }
+    }    
+}
 
 
 
@@ -474,10 +480,12 @@ $('#filter_form').submit(function() {
                     return false;
 
                 }
-                console.log(JSON.stringify(data));
+                console.log(data);
+                // console.log(JSON.stringify(data));
                     populateForm(data);
                     orderTabs(data);
                     assignMandatory(data);
+                    disableOrder(data);
 
                     // globalObj to capture the order of tabs
 
