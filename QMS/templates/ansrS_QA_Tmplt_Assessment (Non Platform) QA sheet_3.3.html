@@ -356,11 +356,15 @@
                              <input type="submit" id="form-submit" value="submit"
                                     class="btn btn-info btn-sm pull-right"/>
                              {% if request.session.author_logged_in == False or result == True %}
-                                <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
-                                <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
-                                    value="Add Item"  />
+                                {% if not reviewer_feedback_status %}
+                                    <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
+                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                        value="Add Item"  />
+                                {% endif %}
                              {% else %}
-                             <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
+                                 {% if not author_feedback_status %}
+                                    <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
+                                 {% endif %}
                              {% endif %}
 
                          </div>
@@ -848,16 +852,22 @@ $(document).ready(function(){
         });
 
         $('#submit_review').on('click', function()  {
+         if( $('#review_modal').length ) {
+            submitted_by = "reviewer"
+         }
+         else if($('#author_modal').length) {
+            submitted_by = "author"
+         }
         $.ajax({
             url: '/qms/review_completed',
             type: 'GET',
             dataType :'json',
             data: {"project_id": $('#id_project').val() ,"chapter_id":$('#id_chapter').val(),
-            "review_feedback":$('#review_feedback').val(), "review_group":$('.active review').prop('id')},
+            "review_feedback":$('#review_feedback').val(), "review_group":$('li.active').prop('id') ,"submitted_by":submitted_by},
             success: function (data) {
             if (data == 1)  swal("voila!", "Review is completed!", "success")
             else sweetAlert("Oops...", "Something went wrong!", "error");
-
+            location.reload();
             },
         });
     });

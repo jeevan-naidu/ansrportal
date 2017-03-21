@@ -132,7 +132,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
         # # self.field_order['process_model', 'template', 'review_group', 'project', 'chapter', 'author']
 
 
-def review_report_base(template_id, project_obj, chapter_component_obj=None):
+def review_report_base(template_id, project_obj, chapter_component_obj=None, request_obj=None, tab=None):
     class ReviewReportForm(forms.Form):
         review_item = forms.CharField()
         qms_id = forms.IntegerField(label="id",
@@ -181,7 +181,15 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None):
                                                                                               flat=True)[0]
             if chapter_component_obj:
                 try:
-                    qa_obj = QASheetHeader.objects.filter(project=project_obj, chapter_component=chapter_component_obj)[0]
+                    qa_obj = QASheetHeader.objects.filter(project=project_obj, chapter_component=chapter_component_obj,
+                                                          review_group_id=tab)[0]
+
+                    # condition to prevent reviewer from editing
+                    if qa_obj.review_group_status and not qa_obj.author_feedback_status and \
+                                    qa_obj.reviewed_by == request_obj.user:
+                        for field in self.fields:
+                            self.fields[field].widget.attrs['disabled'] = True
+                    # print qa_obj.review_group_status , qa_obj.author_feedback_status
                     if qa_obj.review_group_status and qa_obj.author_feedback_status:
                         for field in self.fields:
                             self.fields[field].widget.attrs['disabled'] = True

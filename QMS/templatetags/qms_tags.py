@@ -73,7 +73,7 @@ def get_severity_count(project, name, template_id):
     try:
         severity_level_obj = SeverityLevelMaster.objects.get(name__icontains=name)
         review_report_obj = ReviewReport.objects.filter(QA_sheet_header__in=QASheetHeader.objects.filter(
-            project=project).values_list('id',flat=True), defect_severity_level__severity_level=severity_level_obj).\
+            project=project).values_list('id', flat=True), defect_severity_level__severity_level=severity_level_obj).\
             values('id', 'defect_severity_level__severity_level__name').\
             annotate(s_count=Count('defect_severity_level'))
         # dsl = DSLTemplateReviewGroup.objects.filter(template_id=template_id,
@@ -88,14 +88,14 @@ def get_severity_count(project, name, template_id):
                 if key is 's_count':
                     s += value
     except Exception as e:
-        print str(e)
+        # print str(e)
         logger.error("qms format{0}", str(e))
     return s
 
 
 @register.simple_tag
 def get_defect_density(s1, s2, s3, q_count):
-    print s1, s2, s3, q_count
+    # print s1, s2, s3, q_count
     if q_count == 0:
         return 0
     else:

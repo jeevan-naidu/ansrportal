@@ -776,7 +776,7 @@
                                                             class="fa fa-angle-down"></i></span></span>
                                                 </a>
                                                 <div class="child-menu" data-action="click-target" style="display: block;">
-                                                    <ul>
+                                                    <ul>{% if request.user|has_group:"myansrsourcePM" or request.user.is_superuser%}
                                                         <li>
                                                             <a href="/qms/dashboard">
                                                                 <span class="menu-text">Dashboard</span>
@@ -784,7 +784,6 @@
                                                         </li>
 
 
-                                                    {% if request.user|has_group:"myansrsourcePM" or request.user.is_superuser%}
 
                                                         <li>
                                                             <a href="/qms/choose_tabs">

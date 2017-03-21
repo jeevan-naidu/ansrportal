@@ -44,7 +44,7 @@ class ChooseTabs(FormView):
     def form_valid(self, form):
         user_tab = {}
         order_number = {}
-        print self.request.POST
+        # print self.request.POST
         users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
         order = {k: v for k, v in self.request.POST.items() if k.startswith('order_')}
         # print users
@@ -74,7 +74,7 @@ class ChooseTabs(FormView):
                                                               qms_process_model=form.cleaned_data['qms_process_model'],
                                                               created_by=self.request.user)
         except Exception as e:
-            print "ChooseTabs", (str(e))
+            # print "ChooseTabs", (str(e))
             logger.error(" {0} ".format(str(e)))
 
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
@@ -127,7 +127,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
             else:
                 review_obj = ReviewGroup.objects.get(id=active_tab)
             try:
-                print "im in try"
+                # print "im in try"
                 chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
                 # print chapter_component_obj.id
                 result = QASheetHeader.objects.get(project=project, chapter_component=chapter_component_obj,
@@ -135,12 +135,12 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
                                                    review_group=review_obj)
                 # print result
             except Exception as e:
-                print "qa_sheet_header_obj" , str(e)
+                # print "qa_sheet_header_obj" , str(e)
                 logger.error(" {0} ".format(str(e)))
                 # print "if"
                 # print result
         else:
-            print "else"
+            # print "else"
             result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
 
     except ObjectDoesNotExist as e:
@@ -150,17 +150,18 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
 
 
 def get_review_group(project=None, chapter=None, is_author=False):
-    print "get_review_group"
+    # print "get_review_group"
     obj = ReviewGroup.objects.all()
-    print is_author , project,chapter
+    # print is_author , project,chapter
 
     try:
         if not is_author and project and chapter:
             obj = obj.filter(pk__in=QASheetHeader.objects.filter(project=project, chapter=chapter).
                              values_list('review_group_id', flat=True).order_by('order_number'))
-            print obj
+            # print obj
     except Exception as e:
-        print "get_review_group" , str(e)
+        pass
+        # print "get_review_group" , str(e)
     return obj
 
 
@@ -217,14 +218,14 @@ def get_template_process_review(request):
         tabs, team_members, tab_name = ''
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order, 'config_missing': config_missing," can_edit": can_edit}
-    print context_data
+    # print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
     )
 
 
-def forbidden_access(self, form, project, message_code):
+def forbidden_access(self, form, project, message_code, chapter=None):
     msg_dict = {'not_assigned': "Sorry You are not assigned to  this chapter",
                 "config_missing": "Sorry configuration is missing please contact your manager",
                 "wait": "Sorry You cant access this chapter till review is completed",
@@ -233,7 +234,7 @@ def forbidden_access(self, form, project, message_code):
 
     messages.error(self.request, msg_dict[message_code])
     return render(self.request, self.template_name, {'form': form,
-                                                     'review_group': get_review_group(project), })
+                                                     'review_group': get_review_group(project, chapter), })
 
 
 class AssessmentView(TemplateView):
@@ -265,7 +266,7 @@ class AssessmentView(TemplateView):
             component = form.cleaned_data['component']
 
             if request.user is author:
-                print"is author"
+                # print"is author"
                 get_review_group(project, chapter, is_author=False)
             try:
 
@@ -277,6 +278,8 @@ class AssessmentView(TemplateView):
                 request.session['author'] = author
                 request.session['component'] = component
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
+                # print "status", obj.author_feedback_status
+
                 is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
                 # print is_pm, request.user, author
                 if obj is None:
@@ -284,19 +287,19 @@ class AssessmentView(TemplateView):
                         msg = "config_missing_manager"
                     else:
                         msg = "config_missing"
-                    return forbidden_access(self, form, project, msg)
+                    return forbidden_access(self, form, project, msg, chapter)
                 else:
                     qms_team_members = [obj.reviewed_by, author]
                     if request.user == author:
                         request.session['author_logged_in'] = True
                         if not obj.review_group_status and not obj.author_feedback_status:
-                            return forbidden_access(self, form, project, "wait")
+                            return forbidden_access(self, form, project, "wait",chapter)
                     else:
                         # print request.user , author
                         request.session['author_logged_in'] = False
 
                     if not is_pm and request.user not in qms_team_members:
-                        return forbidden_access(self, form, project, "not_assigned")
+                        return forbidden_access(self, form, project, "not_assigned",chapter)
 
                 project_template_process_model_obj = ProjectTemplateProcessModel.objects.get(project=project)
                 template_id = request.session['template_id'] = project_template_process_model_obj.template.id
@@ -317,7 +320,8 @@ class AssessmentView(TemplateView):
         else:
             form = BaseAssessmentTemplateForm()
         qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
-                                                                                         component=component))
+                                                                                         component=component) ,
+                                      request_obj=self.request, tab=obj.review_group_id)
 
         qms_data = {}
         qms_data_list = []
@@ -419,7 +423,8 @@ class AssessmentView(TemplateView):
 
         return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                                                          'reports': reports, 'review_formset': qms_formset,
-                                                         # 'product_type': product_type,
+                                                         "author_feedback_status": obj.author_feedback_status,
+                                                         "reviewer_feedback_status": obj.review_group_status,
                                                          'template_id': template_id,
                                                          'review_group': get_review_group(project, chapter),
                                                          'questions': obj.count,
@@ -441,7 +446,8 @@ class ReviewReportManipulationView(AssessmentView):
         qms_data_list = []
         request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
         # print request.POST.get('active_tab1')
-        qms_form = review_report_base(request.session['template_id'], request.session['project'])
+        qms_form = review_report_base(request.session['template_id'], request.session['project'],
+                                      request_obj=self.request ,tab =active_tab )
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
         )
@@ -565,7 +571,7 @@ def fetch_severity(request):
     request.session['active_tab'] = request.GET.get('active_tab')
     review_group = ReviewGroup.objects.get(id=request.GET.get('active_tab'))
     severity_classification = request.GET.get('severity_classification')
-    print request.GET
+    # print request.GET
     obj = ProjectTemplateProcessModel.objects.get(template_id=template_id, project_id=project_id)
     if obj.qms_process_model.product_type == 1 :
         media_team = True
@@ -573,9 +579,9 @@ def fetch_severity(request):
         media_team = False
     if not media_team:
         try:
-            print "severity", severity
+            # print "severity", severity
             obj = DefectSeverityLevel.objects.filter(severity_type=severity)[0]
-            print "obj" , obj
+            # print "obj" , obj
             # logger.error("query {0} ".format(obj.query))
             context_data = {'severity_level': str(obj.severity_level), 'defect_classification':
                 { str(obj.defect_classification): obj.defect_classification.id}}
@@ -616,7 +622,7 @@ def fetch_severity(request):
         except IndexError as e:
             logger.error("query {0} ".format(str(e)))
             context_data = {'configuration_missing': True, "is_media": is_media}
-    print json.dumps(context_data)
+    # print json.dumps(context_data)
     return HttpResponse(
             json.dumps(context_data),
             content_type="application/json"
@@ -640,7 +646,7 @@ def fetch_author(request):
                                               chapter_component=chapter_component).values_list('author', flat=True)[0]
     except Exception as e:
         author = None
-        print "fetch_author", str(e)
+        # print "fetch_author", str(e)
     # obj = User.objects.get(pk=user)
     team_members = {}
     team = fetch_members(project_id)
@@ -681,20 +687,30 @@ class DashboardView(ListView):
                                                                          values('project')).\
             values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id').\
             annotate(chapter_count=Count('project__book__chapter'))
+        print (context['projects'])
         return context
 
 
 def review_completed(request):
-    project_id = request.GET.get('id_project')
-    chapter_id = request.GET.get('id_chapter')
+    project_id = request.GET.get('project_id')
+    chapter_id = request.GET.get('chapter_id')
     review_feedback = request.GET.get('review_feedback')
     review_group = request.GET.get('review_group')
+    submitted_by = request.GET.get('submitted_by')
     status = 0
     try:
-        QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
-                                     review_group_id=review_group).update(review_group_status=True,)
+        # print project_id,chapter_id,review_group,review_feedback
+        if submitted_by == "author":
+            QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
+                                         review_group_id=review_group).update(author_feedback_status=True,
+                                                                              author_feedback=review_feedback)
+        else:
+            QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
+                                         review_group_id=review_group).update(review_group_status=True,
+                                                                              review_group_feedback=review_feedback)
         status = 1
     except Exception as e:
+        print str(e)
         logger.error("check permission for author failed {0} ".format(str(e)))
 
     return HttpResponse(
@@ -724,11 +740,13 @@ def chapter_summary(request):
                     # print question_count
                     qa_obj = tmp_obj[0]
                     qms_data[obj.id]['author'] = qa_obj.author.username
-                    for s in severity_level:
-                        s_count = review_report_obj.filter(defect_severity_level__severity_level=s).\
-                            values('defect_severity_level__severity_level__name', 'QA_sheet_header__count').\
-                            annotate(s_count=Count('defect_severity_level__severity_level'))
 
+                    for s in severity_level:
+                        # print "s",s
+                        s_count = review_report_obj.filter(defect_severity_level__severity_level=s).\
+                            values('defect_severity_level__severity_level__name',
+                                   'defect_severity_level__severity_level').\
+                            annotate(s_count=Count('defect_severity_level__severity_level'))
                         if not s_count:
                             qms_data[obj.id]['severity_level'][s.name] = 0
                             tmp_dict[s.name] = 0
@@ -738,6 +756,7 @@ def chapter_summary(request):
                                     qms_data[obj.id]['severity_level'][s.name] = c['s_count']
                                     tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count
                                 except Exception as e:
+                                    print str(e)
                                     logger.error(" qms {0} ".format(str(e)))
                         # print tmp_dict
                         tmp_dd = float(sum(tmp_dict.values()) * 100)

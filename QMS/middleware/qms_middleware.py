@@ -2,6 +2,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 import datetime
 import logging
+from django.http import HttpResponseRedirect
 from GrievanceAdmin.middleware.grievanceadminmiddleware import get_client_ip
 
 logger = logging.getLogger('MyANSRSource')
@@ -16,12 +17,16 @@ def log_qms(request):
                                             timezone.make_aware(datetime.datetime.now(),
                                                                 timezone.get_default_timezone())))
 
+import re
+
+def findWholeWord(w):
+    return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
+
 
 class QMSPermissionCheckMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
-        pass
-        if 'qms' in request.path and not request.user.is_authenticated() \
-                or ('qms/choose_tab' in request.path and not request.user.groups.filter(
-                    name='myansrsourcePM').exists()):
+        restricted_urls = ['/qms/choose_tabs/', '/qms/dashboard/']
+        if request.path in restricted_urls and not request.user.groups.filter(
+                    name='myansrsourcePM').exists():
             log_qms(request)
             raise PermissionDenied("Sorry You Don't Have Permission To Access This Feature")  # raise 403 error

@@ -136,6 +136,7 @@
 var qms_table_block = $('#qms_project_table tbody tr').html();
 
 function project_iterate(qms_obj){
+        console.log(JSON.stringify(qms_obj));
       qms_count = 1;
 $('#qms_project_table tbody').html('');
   for (var qms_key in qms_obj){
