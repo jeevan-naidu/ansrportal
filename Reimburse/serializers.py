@@ -6,7 +6,7 @@ from Leave.views import AllowedFileTypes
 class ReimburseSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     bill_no = serializers.CharField(max_length=100, default='',
-                                    style={'base_template': 'rest_framework/custom_input.html'})
+                                    style={'base_template': 'rest_framework/custom_input2.html'})
     bill_date = serializers.DateField(input_formats=None,
                                       style={'base_template': 'rest_framework/custom_datepicker.html'})
     vendor_name = serializers.CharField(max_length=100, default='',

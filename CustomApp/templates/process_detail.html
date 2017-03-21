@@ -8,16 +8,16 @@
 <table class=" table table-hover view_details" >
     {% for field in fields %}
         {% if field == "attachment" %}
-            <td >{{ field|transaction_name_split }} </td>
+            <td style="width: 200px;" >{{ field|transaction_name_split }} :</td>
          <td>
          <a target="_blank" href="{{ queryset| field_name:field }}">
-                       Attachment
+                       <b>Attachment</b>
                    </a>
          </td>
         {% else %}
      <tr >
-         <td >{{ field|transaction_name_split }} </td>
-         <td>{{ queryset| field_name:field }}</td>
+         <td style="width: 200px;" >{{ field|transaction_name_split }} :</td>
+         <td><b>{{ queryset| field_name:field }}</b></td>
      </tr>
         {% endif %}
 

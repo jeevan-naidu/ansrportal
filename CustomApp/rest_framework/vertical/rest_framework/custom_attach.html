@@ -11,5 +11,9 @@
          type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %}
           {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>
 {% if field.errors %}{{ field.error }}{% endif %}
+Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.
+<br>
+Maximum allowed file size: 1MB 
 </div>
+
  </div>
