@@ -25,7 +25,7 @@
      <div class="panel pb-15">
                   <div class="panel-heading vd_bg-grey clearfix">
                     <h2 class="panel-title pull-left" style="font-size: 15px;line-height: 30px">Basic List Group</h2>
-                    <select class="form-control input-sm pull-right" style="width: auto">
+                    <select class="form-control input-sm pull-right hidden" style="width: auto">
                       <option>2017</option>
                       <option>2016</option>
                       <option>2015</option>
@@ -34,11 +34,11 @@
 
     <div class="panel-body">
 
-     <a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Approve" class="btn btn-sm btn-success" style="margin-bottom: 10px; ">{{ app_name }} Raise</a>
+     <a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Approve" class="btn btn-sm btn-success pull-right" style="margin-bottom: 10px; ">{{ app_name }} Raise</a>
 
                     <ul class="nav nav-tabs">
                       <li class="active"><a href="#tab1" data-toggle="tab">Active</a></li>
-                      <li><a href="#tab2" data-toggle="tab">Inactive</a></li>
+                      <li><a href="#tab2" data-toggle="tab">Approved</a></li>
                       <li><a href="#tab3" data-toggle="tab">Rollback</a></li>
                     </ul>
                     <br/>
@@ -89,15 +89,10 @@
 
 {% endwith %}
                         {% endfor %}
-                             <th><a id="{{ app_name }}-{{ process| field_name:"id" }}" onclick="delete_process()" data-toggle="modal" title="Approve"
-                                class="pull-right btn btn-sm btn-success the-right-button">
-                                                    Delete
-                                                  </a>
-                                 <a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process_update" data-toggle="modal" title="Approve"
-                                class="pull-right btn btn-sm btn-success">
-                                                    Update
-                                                  </a>
-                             </th>
+                            <th>
+                             <a id="{{ app_name }}-{{ process| field_name:"id" }}" onclick="delete_process()" data-toggle="modal" title="Delete" class="pull-right btn btn-sm btn-success the-right-button">Delete</a>
+                             <a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process_update" data-toggle="modal" title="Update" class="pull-right btn btn-sm btn-success">Update</a>
+                            </th>
 
                         </tr>
 
