@@ -1651,11 +1651,11 @@ def Dashboard(request):
 
     financialM = pm.filter(
         financial=True).values(
-        'description',
+        'milestone_name',
         'milestoneDate')
     nonfinancialM = pm.filter(
         financial=False).values(
-        'description',
+        'milestone_name',
         'milestoneDate')
 
     for eachRec in financialM:
@@ -2028,7 +2028,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 'id',
                 'financial',
                 'milestoneDate',
-                'description',
+                'milestone_name',
                 'amount',
                 'closed'
             )
@@ -2062,8 +2062,8 @@ def saveData(self, pm, eachData, projectObj):
         pass
     else:
         pm.project = projectObj
-        pm.description = eachData['description']
-        pm.financial = eachData['financial']
+        pm.milestone_name = eachData['milestone_name']
+        # pm.financial = eachData['financial']
         pm.milestoneDate = eachData['milestoneDate']
         pm.amount = eachData['amount']
         pm.closed = eachData['closed']
@@ -2642,8 +2642,10 @@ def ViewProject(request):
             cleanedMilestoneData = []
         else:
             cleanedMilestoneData = ProjectMilestone.objects.filter(
-                project=projectObj).values('milestoneDate', 'description',
-                                           'amount', 'financial')
+                project=projectObj).values('milestoneDate', 'milestone_name',
+                                           'amount',
+                                           # 'financial'
+                                           )
 
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(

@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager, TimeSheetEntry, BTGReport
+    projectType, ProjectManager, TimeSheetEntry, BTGReport, Milestone
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
 from employee.models import Remainder
@@ -501,12 +501,18 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 class CloseProjectMilestoneForm(forms.ModelForm):
 
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput() )
+    milestone_name = forms.ModelChoiceField(
+        queryset=Milestone.objects.all(),
+        label="Select Milestone Name",
+        widget=autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
+            'data-placeholder': 'Type Milestone Type...', 'data-html': 'true'}),
+        required=False, )
 
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'description',
-            'amount', 'closed', 'financial'
+            'milestone_name','milestoneDate','description',
+            'amount', 'closed'
         )
         widgets = {
             'project': forms.HiddenInput(),
@@ -518,10 +524,11 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = \
             "date-picker d-item form-control"
+        self.fields['milestone_name'].widget.attrs['class'] = "d-item input-item form-control"
         self.fields['description'].widget.attrs['class'] = \
             "d-item input-item form-control"
-        self.fields['financial'].widget.attrs['class'] = \
-            "d-item input-item form-control"
+        # self.fields['financial'].widget.attrs['class'] = \
+        #     "d-item input-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"

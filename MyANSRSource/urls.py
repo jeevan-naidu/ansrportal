@@ -1,11 +1,14 @@
 from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
-from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser
+from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser,AutocompleteMilestonetype
 from Reports import views as milestonreporteviews
 from .views import ApproveTimesheetView
 from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
+    url(r'^AutocompleteMilestonetype/$',
+        AutocompleteMilestonetype.as_view(),
+        name='AutocompleteMilestonetype'),
     url(
         r'^AutocompleteProjects/$',
         AutocompleteProjects.as_view(),

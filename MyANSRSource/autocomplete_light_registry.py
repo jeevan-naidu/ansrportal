@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from MyANSRSource.models import Book, Project
 from dal import autocomplete
+from MyANSRSource.models import Milestone
 
 
 class AutocompleteUser(autocomplete.Select2QuerySetView):
@@ -36,3 +37,11 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
         )
         return choices
 
+class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
+    # def get_result_label(self, item):
+    #     return '<img src="flags/%s.png"> %s' % (item, item)
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Milestone.objects.filter(name__icontains=q)
+        return choices
