@@ -73,7 +73,7 @@ def get_severity_count(project, name, template_id):
     try:
         severity_level_obj = SeverityLevelMaster.objects.get(name__icontains=name)
         review_report_obj = ReviewReport.objects.filter(QA_sheet_header__in=QASheetHeader.objects.filter(
-            project=project).values_list('id',flat=True),defect_severity_level__severity_level=severity_level_obj).\
+            project=project).values_list('id',flat=True), defect_severity_level__severity_level=severity_level_obj).\
             values('id', 'defect_severity_level__severity_level__name').\
             annotate(s_count=Count('defect_severity_level'))
         # dsl = DSLTemplateReviewGroup.objects.filter(template_id=template_id,

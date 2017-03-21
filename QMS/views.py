@@ -176,6 +176,7 @@ def get_template_process_review(request):
     team_members = {}
     user_tab = {}
     tab_order = {}
+    can_edit = {}
     config_missing = False
     try:
 
@@ -185,7 +186,7 @@ def get_template_process_review(request):
             config_missing = True
         members_obj = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
-        print "qa_obj" ,qa_obj
+        # print "qa_obj" ,qa_obj
         for members in members_obj:
             if int(members.member_id) != int(author):
                 team_members[int(members.member_id)] = str(members.member.username)
@@ -197,6 +198,12 @@ def get_template_process_review(request):
             if qa_obj.count() > 0:
                 try:
                     tab_user = qa_obj.get(review_group=ele.review_group)
+                    review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project=project,
+                                                                    QA_sheet_header__review_group=ele.review_group)
+                    if review_report_obj:
+                        can_edit[str(ele.review_group.id)] = False
+                    else:
+                        can_edit[str(ele.review_group.id)] = True
                 except ObjectDoesNotExist:
                     tab_user = None
                 if tab_user is not None:
@@ -209,7 +216,7 @@ def get_template_process_review(request):
     except ObjectDoesNotExist:
         tabs, team_members, tab_name = ''
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
-                    'tab_order': tab_order, 'config_missing': config_missing}
+                    'tab_order': tab_order, 'config_missing': config_missing," can_edit": can_edit}
     print context_data
     return HttpResponse(
         json.dumps(context_data),
