@@ -436,21 +436,15 @@ function checkOrder(){
 
 function disableOrder(theObj){
 
-    $('input.order-number').attr('disabled', '');
-
     for (var disableKey in theObj['can_edit']){
         if(theObj['can_edit'].hasOwnProperty(disableKey)){
-            console.log(theObj['can_edit'][disableKey]);
-            console.log(disableKey);
-
-            if (theObj['can_edit'][disableKey] == true) {
-                var newKey = "order_" + disableKey;
-                $('input[name=' + newKey + ']').removeAttr('disabled');
+            if (theObj['can_edit'][disableKey] == false) {
+                var order = "order_" + disableKey;
+                var drop_down = "user_" + disableKey;
+                $('input[name=' + order + '] ,[name=' + drop_down + '] ').prop('disabled',"True");
+                 $('input[name=' + order + '],[name=' + drop_down + ']').attr('title', "This step is completed/on progress can't be edited");
             }
 
-
-
-       
         }
     }    
 }
