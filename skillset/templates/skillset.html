@@ -1,6 +1,7 @@
 {% extends 'master.html' %}
 {% load bootstrap3 %}
 {% load fontawesome %}
+{% load permissions %}
 {% load static from staticfiles %}
 {% block siteTitle %}Daily Interview Report{% endblock %}
 {% block pageTitle %}Skill Set{% endblock %}
@@ -34,53 +35,100 @@
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Team Members </h3>
                   </div>
 
-                  <div class="panel-body">
-                  <div class="row">
+                            {% if request.user|has_group:'myansrsourceHR' == True %}
+                              <div class="panel-body">
+                              <div class="row">
 
 
-                    <div class="col-sm-2 pull-right">
+                                <div class="col-sm-2 pull-right">
 
-                      <select name="" class="input-sm" id="department">
-                          <option value="-----------" id="dept">Department</option>
-                        {% for department in department %}
-                            <option value="{{department}}">{{department}}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-
-                    <div class="col-sm-2 pull-right">
-                      <select name="" class="input-sm" id="designation">
-                           <option value="-----------" id="desg">Designation</option>
-                        {% for designation in designation_all %}
-
-                            <option value="{{designation}}">{{designation}}</option>
-                        {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-sm-2 pull-right">
-                      <select name="" class="input-sm" id="skills">
-                           <option value="-----------" id="skill">Skills</option>
-                        {% for skills in skills_all %}
-
-                            <option value="{{skills}}">{{skills}}</option>
-                        {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                      <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
-                            {% csrf_token %}
-                            {% bootstrap_messages %}
-
-                                    {% for field in form %}
-                                        {{ field }}
+                                  <select name="" class="input-sm" id="department">
+                                      <option value="-----------" id="dept">Department</option>
+                                    {% for department in department %}
+                                        <option value="{{department}}">{{department}}</option>
                                     {% endfor %}
-                      </form>
-                    </div>
+                                  </select>
+                                </div>
 
-                  </div>
+                                <div class="col-sm-2 pull-right">
+                                  <select name="" class="input-sm" id="designation">
+                                       <option value="-----------" id="desg">Designation</option>
+                                    {% for designation in designation_all %}
+
+                                        <option value="{{designation}}">{{designation}}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 pull-right">
+                                  <select name="" class="input-sm" id="skills">
+                                       <option value="-----------" id="skill">Skills</option>
+                                    {% for skills in skills_all %}
+
+                                        <option value="{{skills}}">{{skills}}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                  <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
+                                        {% csrf_token %}
+                                        {% bootstrap_messages %}
+                                                {% for field in form %}
+                                                    {{ field }}
+                                                {% endfor %}
+                                  </form>
+                                </div>
+
+                              </div>
+                                  {% endif %}
+
+                                  {% if request.user|has_group:'myansrsourcePM' == True %}
+                              <div class="panel-body">
+                              <div class="row">
+
+
+                                <div class="col-sm-2 pull-right">
+
+                                  <select name="" class="input-sm" id="department">
+                                      <option value="-----------" id="dept">Department</option>
+                                    {% for department in department %}
+                                        <option value="{{department}}">{{department}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+
+                                <div class="col-sm-2 pull-right">
+                                  <select name="" class="input-sm" id="designation">
+                                       <option value="-----------" id="desg">Designation</option>
+                                    {% for designation in designation_all %}
+
+                                        <option value="{{designation}}">{{designation}}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 pull-right">
+                                  <select name="" class="input-sm" id="skills">
+                                       <option value="-----------" id="skill">Skills</option>
+                                    {% for skills in skills_all %}
+
+                                        <option value="{{skills}}">{{skills}}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                  <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
+                                        {% csrf_token %}
+                                        {% bootstrap_messages %}
+                                                {% for field in form %}
+                                                    {{ field }}
+                                                {% endfor %}
+                                  </form>
+                                </div>
+
+                              </div>
+                                  {% endif %}
 
 <hr>
-
+                    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
                     <table class="table table-striped" id="data-tables">
                       <thead style="color: #fff;background: #444">
                         <tr>
@@ -89,6 +137,7 @@
                           <th>Department</th>
                           <th>Designation</th>
                           <th>Skills</th>
+                            <th>Level</th>
                           <th>Joining date</th>
                         </tr>
                       </thead>
@@ -100,8 +149,8 @@
                           <td>{{element.name}}</td>
                           <td>{{element.department}}</td>
                           <td>{{element.designation}}</td>
-                          <td>{% for skill in element.skills %}
-                              {{ skill }} </br>{% endfor %}</td>
+                          <td>{% for skill in element.skills %}{{ skill.skills_name }} </br>{% endfor %}</td>
+                            <td>{% for skill in element.skills %}{{ skill.skills_type }} </br>{% endfor %}</td>
                           <td>{{element.doj}}</td>
                         </tr>
                       {% endfor %}
@@ -127,14 +176,16 @@
 
 <script type="text/javascript">
 
-    $("#department").on('change', function() {
+    $("#department, #designation").on('change', function() {
     $("#dept").hide();
-    value = this.value
+    dept = $('#department option:selected').val();
+    desg = $('#designation option:selected').val();
+
 
     $.ajax({
     type: "GET",
-    url : '/skillset/dept',
-    data : {'value':value},
+    url : '/skillset/filter1',
+    data : {'dept':dept,'desg':desg},
     success : function(data){
     var content = $(data).find("#data-tables").html();
     $("#data-tables").html(content)
@@ -172,20 +223,6 @@
     });
     });
 
-    $("#designation").on('change', function() {
-    $("#desg").hide();
-    value = this.value
-
-    $.ajax({
-    type: "GET",
-    url : '/skillset/designation',
-    data : {'value':value},
-    success : function(data){
-    var content = $(data).find("#data-tables").html();
-    $("#data-tables").html(content)
-    }
-    });
-    });
 
     $(document).ready(function() {
 
@@ -207,9 +244,6 @@
         a.click();
       });
     });
-
-
-
 
 </script>
 

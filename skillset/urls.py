@@ -5,12 +5,13 @@ from skillset.autocomplete_light_registry import AutocompleteUserSearch
 
 urlpatterns = [
 
-    url(r'^$', views.SkillSet),
-    url(r'^dept/$',views.dept),
-    url(r'^designation/$', views.designation),
-    url(r'^user/$', views.user),
-    url(r'^skills/$', views.skills),
+    url(r'^$', login_required(views.SkillSet)),
+    url(r'^dept/$', login_required(views.dept)),
+    url(r'^designation/$', login_required(views.designation)),
+    url(r'^user/$', login_required(views.user)),
+    url(r'^skills/$', login_required(views.skills)),
+    url(r'^filter1/$', login_required(views.filter1)),
     url(r'^AutocompleteUserSearch/$', login_required(AutocompleteUserSearch.as_view()),
         name=u'AutocompleteUserSearch'),
-    url(r'^lists/$', views.lists),
+    url(r'^filters/$', login_required(views.filters)),
 	]
