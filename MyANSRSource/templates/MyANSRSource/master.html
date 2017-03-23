@@ -667,6 +667,29 @@
                                                     </ul>
                                                 </div>
                                             </li>
+                                        <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Invoice</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul class="clearfix">
+                                                        <li>
+                                                            <a href="/Reimburse/approve_list/">
+                                                                <span class="menu-text">Reimburse Action</span>
+                                                            </a>
+                                                        </li>
+
+                                                        <!-- <li>
+                                                                <a href="/Reimburse/update/1/">
+                                                                    <span class="menu-text">Reimburse Action</span>
+                                                                </a>
+                                                            </li> -->
+
+
+                                                    </ul>
+                                                </div>
+                                            </li>
 
                                          {% if request.user|has_group:'HireRecruiter' %}
                                         <li>
