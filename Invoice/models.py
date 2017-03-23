@@ -23,7 +23,7 @@ class Invoice(AbstractProcess):
 
 
 class Transaction(AbstractEntity):
-    reimburse = ForeignKey(Invoice)
-    approved_by = ForeignKey(User)
+    invoice = ForeignKey(Invoice)
+    approved_by = ForeignKey(User, related_name='%(class)s_approved_by')
     status = CharField(choices=PROCESS_STATUS, max_length=20)
     reason = TextField(null=True, blank=True)

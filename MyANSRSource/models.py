@@ -6,6 +6,8 @@ from django.utils import timezone
 import CompanyMaster
 from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 from CompanyMaster.models import UpdateDate
+from datetime import date
+import Invoice
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -353,7 +355,7 @@ class Milestone(UpdateDate):
 
 
     def __unicode__(self):
-        return self.name + " | " + self.milestone_type.milestone_type
+        return self.name
 
     class Meta:
         verbose_name_plural = "Project Milestones"
@@ -366,7 +368,7 @@ class ProjectMilestone(models.Model):
                                      default=timezone.now)
     description = models.CharField(default=None, blank=False, max_length=1000,
                                    null=True, verbose_name="Description")
-    milestone_name = models.ForeignKey(Milestone, default=1, verbose_name="Milestone Name")
+    # name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name")
     amount = models.DecimalField(default=0.0,
                                  max_digits=12,
                                  decimal_places=2,
@@ -392,6 +394,19 @@ class ProjectMilestone(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+
+    def save(self, request):
+        if self.closed and self.financial:
+            Invoice.models.Invoice.objects.get_or_create(
+                project=self.project,
+                milestone_date=self.milestoneDate,
+                milestone_name=self.description,
+                description=self.description,
+                closed_on_date=date.today(),
+                amount=self.amount,
+                user=request.user
+            )
+        super(ProjectMilestone,self).save()
 
 
 class ProjectTeamMember(models.Model):

@@ -1651,11 +1651,11 @@ def Dashboard(request):
 
     financialM = pm.filter(
         financial=True).values(
-        'milestone_name',
+        'description',
         'milestoneDate')
     nonfinancialM = pm.filter(
         financial=False).values(
-        'milestone_name',
+        'description',
         'milestoneDate')
 
     for eachRec in financialM:
@@ -2028,13 +2028,14 @@ class TrackMilestoneWizard(SessionWizardView):
                 'id',
                 'financial',
                 'milestoneDate',
-                'milestone_name',
+                'description',
                 'amount',
                 'closed'
             )
         return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
+        # import ipdb;ipdb.set_trace()
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
 
@@ -2062,12 +2063,12 @@ def saveData(self, pm, eachData, projectObj):
         pass
     else:
         pm.project = projectObj
-        pm.milestone_name = eachData['milestone_name']
-        # pm.financial = eachData['financial']
+        pm.description = eachData['description']
+        pm.financial = eachData['financial']
         pm.milestoneDate = eachData['milestoneDate']
         pm.amount = eachData['amount']
         pm.closed = eachData['closed']
-        pm.save()
+        pm.save(self.request)
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
 
@@ -2642,10 +2643,8 @@ def ViewProject(request):
             cleanedMilestoneData = []
         else:
             cleanedMilestoneData = ProjectMilestone.objects.filter(
-                project=projectObj).values('milestoneDate', 'milestone_name',
-                                           'amount',
-                                           # 'financial'
-                                           )
+                project=projectObj).values('milestoneDate', 'description',
+                                           'amount', 'financial')
 
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(

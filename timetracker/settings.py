@@ -148,6 +148,7 @@ INSTALLED_APPS = [
     'CustomApp',
     'Reimburse',
     'ExitApp',
+    'Invoice'
 
 ]
 

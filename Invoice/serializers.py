@@ -1,10 +1,10 @@
 
 from rest_framework import serializers
-from models import Reimburse, Transaction
+from models import Invoice, Transaction
 from Leave.views import AllowedFileTypes
 
 
-class ReimburseSerializer(serializers.ModelSerializer):
+class InvoiceSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     bill_no = serializers.CharField(max_length=100, default='',
                                     style={'base_template': 'rest_framework/custom_input2.html'})
@@ -20,7 +20,7 @@ class ReimburseSerializer(serializers.ModelSerializer):
                                        style={'base_template': 'rest_framework/custom_attach.html'})
 
     class Meta:
-        model = Reimburse
+        model = Invoice
         fields = ('id', 'bill_no', 'bill_date', 'vendor_name', 'nature_of_expenses', 'amount', 'attachment')
 
     def save_as(self, request):
@@ -32,7 +32,7 @@ class ReimburseSerializer(serializers.ModelSerializer):
         attachment = request.FILES.get('attachment', "")
         func = lambda attachment : attachment if attachment.name.split(".")[-1]  in AllowedFileTypes else None
         file = func(attachment)
-        Reimburse(bill_no=bill_no,
+        Invoice(bill_no=bill_no,
                   bill_date=bill_date,
                   vendor_name=vendor_name,
                   attachment=file,
@@ -61,7 +61,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def transactions(pk, role):
-        transaction = Transaction.objects.filter(reimburse_id=pk,
+        transaction = Transaction.objects.filter(invoice_id=pk,
                                                  role=role).order_by('-id')
         if transaction:
             return TransactionSerializer(transaction[0])

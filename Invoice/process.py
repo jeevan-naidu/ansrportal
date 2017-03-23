@@ -1,16 +1,16 @@
-from Reimburse.models import Reimburse, Transaction
-from Reimburse.serializers import ReimburseSerializer, TransactionSerializer
+from Invoice.models import Invoice, Transaction
+from Invoice.serializers import InvoiceSerializer, TransactionSerializer
 from helpers import manager, hr
 
 
 PROCESS = {
     'invoice_raise': {
-        'name': 'Raising For Reimbursement',
-        'model': Reimburse,
+        'name': 'Raising For Invoice',
+        'model': Invoice,
         'role': 'submitter',
         'method': manager,
-        'serializer': ReimburseSerializer,
-        'transitions': ['manager_approval', None]
+        'serializer': InvoiceSerializer,
+        'transitions': ['finance_approval', None]
     },
     'finance_approval': {
         'name': 'Finance Approval',
@@ -18,15 +18,14 @@ PROCESS = {
         'role': 'Finance',
         'method': hr,
         'serializer': TransactionSerializer,
-        'transitions': [None, 'manager_approval']
+        'transitions': [None, 'invoice_raise']
     },
 
 }
 
 INITIAL = 'invoice_raise'
 
-LIST_VIEW = ["bill_no", "bill_date", "user", "vendor_name",'process_status', 'amount', 'attachment']
-DETAIL_VIEW = ["bill_no", "bill_date", "user", "vendor_name", 'nature_of_expenses', 'amount', 'process_status',
-               'request_status', 'attachment']
-TITLE = 'Reimbursement for ANSR Source'
-DESCRIPTION = 'Reimbursement Process '
+LIST_VIEW = ["milestone_date", "milestone_name", "user", "description",'closed_on_date', 'amount', "project"]
+DETAIL_VIEW = ["milestone_date", "milestone_name", "user", "description",'closed_on_date', 'amount', "project"]
+TITLE = 'Invoice for ANSR Source'
+DESCRIPTION = 'Invoice Process '
