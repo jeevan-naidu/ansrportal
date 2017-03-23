@@ -165,10 +165,13 @@ class AutoCompleteChapterSpecificComponent(autocomplete.Select2QuerySetView):
         project = self.forwarded.get('project', None)
         chapter = self.forwarded.get('chapter', None)
         try:
-            obj = QASheetHeader.objects.filter(project=project, chapter=chapter)[0]
-            component = ComponentMaster.objects.filter(pk=obj.chapter_component.component.id)
-
-        except:
+            obj = QASheetHeader.objects.filter(project=project, chapter=chapter).values_list("chapter_component_id",
+                                                                                             flat=True).distinct()
+            # print obj
+            component = ChapterComponent.objects.filter(id__in=obj).values("component")
+            component = ComponentMaster.objects.filter(id__in=component)
+        except Exception as e:
+            # print str(e)
             component = None
 
         return component

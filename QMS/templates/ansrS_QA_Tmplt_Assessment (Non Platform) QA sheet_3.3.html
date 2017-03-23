@@ -189,8 +189,8 @@
                                         </td>
                                          <td class="" id="screen_shot-{{forloop.counter}}-td">
                                             {{form_obj.screen_shot}}
-                                       {% comment %} {% if form_obj.screen_shot_url.value %}
-                                             <label>clear screen shot </label><span>{{form_obj.clear_screen_shot}}</span> {% endif %}{% endcomment %}
+                                        {% if form_obj.screen_shot_url.value %}
+                                             <label>clear screen shot </label><span>{{form_obj.clear_screen_shot}}</span> {% endif %}
 
 
                                         </td>
@@ -351,20 +351,58 @@
 
 
                          </table>
-                         {%if review_formset %}{% is_project_manager project request.user as result %}
+                         {%if review_formset %} {% is_project_manager project request.user as result %}
                          <div class="panel-footer clearfix">
-                             <input type="submit" id="form-submit" value="submit"
+                              {% if result %}<input type="submit" id="form-submit" value="submit"
                                     class="btn btn-info btn-sm pull-right"/>
-                             {% if request.session.author_logged_in == False or result == True %}
-                                {% if not reviewer_feedback_status %}
+
+                                 {% if not reviewer_feedback_status and  author_feedback_status %}
+                                  <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
+                                        <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                            value="Add Item"  />
+                                 {% endif %}
+
+                                  {% if not reviewer_feedback_status and not author_feedback_status %}
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
                                     <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
                                         value="Add Item"  />
-                                {% endif %}
-                             {% else %}
-                                 {% if not author_feedback_status %}
+                                  {% endif %}
+
+                                 {% if reviewer_feedback_status and not author_feedback_status %}
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
+                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                        value="Add Item"  />
                                  {% endif %}
+
+                             {% endif %}
+                              {% if request.session.author_logged_in %}
+                                {% if reviewer_feedback_status and not author_feedback_status %}
+                                                          <input type="submit" id="form-submit" value="submit"
+                                    class="btn btn-info btn-sm pull-right"/>
+                                    <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
+                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                        value="Add Item"  />
+                                {% endif %}
+
+                             {% endif %}
+
+                             {% if request.session.reviewer_logged_in %}
+
+                                 {% if not reviewer_feedback_status and  author_feedback_status %}
+                                  <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
+
+                                 {% endif %}
+
+                                  {% if not reviewer_feedback_status and not author_feedback_status %}
+                                                          <input type="submit" id="form-submit" value="submit"
+                                    class="btn btn-info btn-sm pull-right"/>
+                                    <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
+                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                        value="Add Item"  />
+                                  {% endif %}
+
+
+
                              {% endif %}
 
                          </div>
@@ -842,7 +880,7 @@ $(document).ready(function(){
         if ( $("[id$='review_item']").is('[disabled=disabled]') ) {
 
             $("[id$='DELETE']").prop('disabled','disabled');
-            $('#form-submit,#add_button,#review_modal').remove();
+            <!--$('#form-submit,#add_button,#review_modal').remove();-->
         }
         $( "#review_completed" ).click(function() {
             $('#review_feedback').prop('required', true);

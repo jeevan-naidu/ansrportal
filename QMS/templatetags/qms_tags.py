@@ -119,4 +119,9 @@ def get_question_count(project):
 
 @register.simple_tag
 def is_project_manager(project, user):
+    print project , user
+    try:
+        ProjectManager.objects.filter(project=project, user=user).exists()
+    except Exception as e:
+        print str(e)
     return ProjectManager.objects.filter(project=project, user=user).exists()

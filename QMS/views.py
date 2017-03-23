@@ -119,7 +119,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
 
     try:
         # print chapter, "chapter"
-        # print active_tab, "-<active_tab->", project.id, chapter, author
+        # print active_tab, "-<active_tab->", project, chapter, author
         result = None
         if active_tab and component is not None:
             if active_tab == 'lambda':
@@ -172,6 +172,7 @@ def get_template_process_review(request):
     qms_process_model = request.GET.get('qms_process_model')
     chapter = request.GET.get('chapter')
     author = request.GET.get('author')
+    component = request.GET.get('component')
     tabs = {}
     tab_name = {}
     team_members = {}
@@ -187,6 +188,7 @@ def get_template_process_review(request):
             config_missing = True
         members_obj = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
+        qa_obj = qa_obj.filter(chapter_component=ChapterComponent.objects.get(chapter=chapter,component=component))
         # print "qa_obj" ,qa_obj
         for members in members_obj:
             if int(members.member_id) != int(author):
@@ -215,7 +217,8 @@ def get_template_process_review(request):
                     tab_order[str(ele.review_group)] = None
 
     except ObjectDoesNotExist:
-        tabs, team_members, tab_name = ''
+        tabs = team_members = tab_name = ''
+        config_missing = True
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit}
     # print context_data
@@ -230,6 +233,7 @@ def forbidden_access(self, form, project, message_code, chapter=None):
                 "config_missing": "Sorry configuration is missing please contact your manager",
                 "wait": "Sorry You cant access this chapter till review is completed",
                 "config_missing_manager": "Hey you didn't configure for this review please do it",
+                "previous_tab_wait": " You cannot access this chapter till previous review is completed"
                 }
 
     messages.error(self.request, msg_dict[message_code])
@@ -279,9 +283,26 @@ class AssessmentView(TemplateView):
                 request.session['component'] = component
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
-
                 is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
-                # print is_pm, request.user, author
+
+                #  previous tab completion check
+                if obj.order_number != 1:
+                    order_number = int(obj.order_number)-1
+                    prev_tab_obj = QASheetHeader.objects.filter(project=project,
+                                                                chapter_component=ChapterComponent.objects.get
+                                                                (chapter=chapter, component=component),
+                                                                order_number=order_number)[0]
+                    if not is_pm:
+                        if prev_tab_obj.review_group_status and prev_tab_obj.author_feedback_status:
+                            pass
+                        else:
+                            return forbidden_access(self, form, project, "previous_tab_wait", chapter)
+
+                if request.user == obj.reviewed_by:
+                    request.session['reviewer_logged_in'] = True
+                else:
+                    request.session['reviewer_logged_in'] = False
+
                 if obj is None:
                     if is_pm:
                         msg = "config_missing_manager"
@@ -289,17 +310,19 @@ class AssessmentView(TemplateView):
                         msg = "config_missing"
                     return forbidden_access(self, form, project, msg, chapter)
                 else:
+                    print "in else"
+                    can_access = 0
                     qms_team_members = [obj.reviewed_by, author]
                     if request.user == author:
                         request.session['author_logged_in'] = True
                         if not obj.review_group_status and not obj.author_feedback_status:
-                            return forbidden_access(self, form, project, "wait",chapter)
+                            return forbidden_access(self, form, project, "wait", chapter)
                     else:
                         # print request.user , author
                         request.session['author_logged_in'] = False
 
                     if not is_pm and request.user not in qms_team_members:
-                        return forbidden_access(self, form, project, "not_assigned",chapter)
+                        return forbidden_access(self, form, project, "not_assigned", chapter)
 
                 project_template_process_model_obj = ProjectTemplateProcessModel.objects.get(project=project)
                 template_id = request.session['template_id'] = project_template_process_model_obj.template.id
@@ -335,9 +358,10 @@ class AssessmentView(TemplateView):
                     qms_data[k] = v
                     if k == 'id':
                         r_obj = ReviewReport.objects.get(id=int(v))
+                        # print "idddd",v
                         if r_obj.screen_shot:
                             qms_data['screen_shot_url'] = r_obj.screen_shot.url
-                            # print r_obj.screen_shot.path
+                            # print "url",  r_obj.screen_shot.path
                         else:
                             qms_data['screen_shot_url'] = None
                         qms_data['qms_id'] = v
@@ -388,6 +412,7 @@ class AssessmentView(TemplateView):
         qms_formset = formset_factory(
             qms_form, max_num=1, can_delete=True
         )
+        # print qms_data_list
         if len(qms_data_list):
             qms_formset = qms_formset(initial=qms_data_list)
         else:
@@ -703,6 +728,7 @@ def review_completed(request):
         if submitted_by == "author":
             QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
                                          review_group_id=review_group).update(author_feedback_status=True,
+                                                                              review_group_status=False,
                                                                               author_feedback=review_feedback)
         else:
             QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,

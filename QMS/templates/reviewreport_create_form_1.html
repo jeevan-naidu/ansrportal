@@ -480,7 +480,8 @@ $('#filter_form').submit(function() {
                 url: '/qms/get_template_process_review/',
                 type: 'GET',
                 dataType :'json',
-                data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),"chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val() },
+                data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),
+                "chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val(),"component" :$(':input[name$=component]').val() },
                 success: function (data) {
                 if (data['config_missing'] == 'true') {
                     sweetAlert("Oops...", "Configuration is missing!", "error");

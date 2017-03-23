@@ -185,6 +185,10 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                                                           review_group_id=tab)[0]
 
                     # condition to prevent reviewer from editing
+                    if qa_obj.reviewed_by == request_obj.user:
+                        self.fields['remarks'].widget.attrs['disabled'] = True
+                        self.fields['is_fixed'].widget.attrs['disabled'] = True
+
                     if qa_obj.review_group_status and not qa_obj.author_feedback_status and \
                                     qa_obj.reviewed_by == request_obj.user:
                         for field in self.fields:
@@ -193,6 +197,10 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                     if qa_obj.review_group_status and qa_obj.author_feedback_status:
                         for field in self.fields:
                             self.fields[field].widget.attrs['disabled'] = True
+                    if not qa_obj.review_group_status and qa_obj.author_feedback_status:
+                        for field in self.fields:
+                            self.fields[field].widget.attrs['disabled'] = True
+
                 except Exception as e:
                     print "chapter_component_obj", str(e)
                     pass
