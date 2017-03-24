@@ -141,7 +141,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
         defect = forms.CharField(required=False, )
         screen_shot_url = forms.CharField(required=False, )
 
-        # clear_screen_shot = forms.BooleanField(label='clear screen shot', required=False, initial=False)
+        clear_screen_shot = forms.BooleanField(label='clear screen shot', required=False, initial=False)
 
         severity_type = forms.ModelChoiceField(widget=forms.Select(),
                                                queryset=DefectTypeMaster.objects.all(), )
@@ -158,7 +158,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
         is_fixed = forms.ChoiceField(required=False, choices=fixed_status, )
         fixed_by = forms.CharField(required=False,)
         remarks = forms.CharField(required=False,)
-        screen_shot = forms.FileField(required=False,)
+        screen_shot = forms.FileField(required=False,label="clear")
         instruction = forms.CharField(required=False,)
 
         class Meta:
@@ -202,7 +202,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                             self.fields[field].widget.attrs['disabled'] = True
 
                 except Exception as e:
-                    print "chapter_component_obj", str(e)
+                    # print "chapter_component_obj", str(e)
                     pass
 
                     # self.fields[field].widget.attrs['readonly'] = True
@@ -249,7 +249,8 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                 self.fields['defect_classification'].widget.attrs['disabled'] = True
 
             else:
-                print "pt", product_type, type(product_type)
+                pass
+                # print "pt", product_type, type(product_type)
             # self.fields['author'].widget.attrs['class'] = 'author_dropdown'
 
             # print defect_type_master_obj

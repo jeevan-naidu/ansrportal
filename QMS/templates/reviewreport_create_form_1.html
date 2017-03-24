@@ -137,30 +137,6 @@
 
 <script type="text/javascript">
 
-/*var obj_tab_order_1 = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"Editor Review 1":true},
-                "tab_name":{"1":"Editor Review 1","2":"Editor Review 2","3":"Editor Review 3"},
-                "tab_order":{"Editor Review 1":"2","Editor Review 3":"3","Editor Review 2":"0"},
-                "team_members":{"130":"Bhaviya","354":"AkshayFernandes"},
-                "user_tab":{}
-            }
-
-var obj_tab_order = {"tabs":{"Editor Review 2":false,"Editor Review 3":true,"Editor Review 1":true},
-                    "tab_name":{"1":"Editor Review 1","2":"Editor Review 2","3":"Editor Review 3"},
-                    "tab_order":{"Editor Review 2":"0","Editor Review 3":"3","Editor Review 1":"4"},
-                    "team_members":{"352":"KanakaPrakash","354":"AkshayFernandes"},
-                    "user_tab":{"Editor Review 2":354,"Editor Review 3":352,"Editor Review 1":354}
-                }    */
-
-<!--var new_obj = {"team_members": {"785": "pupul.ranjan", "562": "sujay.suresh",-->
-                <!--"534": "vivek.pradhan", "471": "sanjay.kunnath", "571": "shalini.bhagat",-->
-<!--"541": "Janaki.BS"}, "config_missing": false,-->
- <!--"tabs": {"CE(CE2)": false,-->
- <!--"CE(CE1)": true, "ER(ER1)": true, "EUT(EUT1)": true, "ER(ER3)": false,-->
-  <!--"ER(ER2)": false, "EUT(EUT2)": false},-->
-  <!--"tab_name": {"CE(CE2)": 21,-->
- <!--"CE(CE1)": 20, "ER(ER1)": 17, "EUT(EUT1)": 22, "ER(ER3)": 19,-->
-  <!--"ER(ER2)": 18, "EUT(EUT2)": 23}, "tab_order": {},-->
-   <!--"user_tab": {}}-->
 
 // Get the html for .form-group
 var domObj = $('.qms-allocators').html();
@@ -361,7 +337,7 @@ function orderTabs(theObj){
             <!--console.log(order_key, theObj['tab_order'][order_key]);-->
             if(order_key > 0){
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').val(order_key);
-                $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').attr('name', 'order_'+order_key);
+                $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.delete').attr('name', 'delete_'+order_key);
             }
         }
     }
@@ -374,11 +350,12 @@ function orderTabs(theObj){
     theObj['tab_order'] = array_flip(theObj['tab_order'])
 
 
-    $('.qms-allocators .form-group select').each(function(){
+    $('.qms-allocators .form-group select checkbox').each(function(){
         theNum = $(this).attr('name');
         theNum = theNum.replace(/[^0-9]/g, '');
         $(this).parent().find('input.order-number').attr('name', 'order_'+theNum);
-    }) 
+
+    })
 } // end of order tabs functions
 
 
@@ -441,6 +418,9 @@ function disableOrder(theObj){
             if (theObj['can_edit'][disableKey] == false) {
                 var order = "order_" + disableKey;
                 var drop_down = "user_" + disableKey;
+                var delete_checkbox = "delete_" + disableKey;
+
+                $('input[name=' + order + '] ,[name=' + drop_down + '] ').prop('disabled',"True");
                 $('input[name=' + order + '] ,[name=' + drop_down + '] ').prop('disabled',"True");
                  $('input[name=' + order + '],[name=' + drop_down + ']').attr('title', "This step is completed/on progress can't be edited");
             }
@@ -558,7 +538,10 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             console.log('user_'+theID +'---'+'order_'+theID)
             $('.qms-allocators .form-group:last-child').find('select').attr('name', 'user_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
-            $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
+            $('.qms-allocators .form-group:last-child').find('input.order-number').prop('disabled',false);
+            $('.qms-allocators .form-group:last-child').find('input.delete').prop('disabled',false);
+            $('.qms-allocators .form-group:last-child').find('select').prop('disabled',false);
+            $('.qms-allocators .form-group:last-child').find('input.delete').val('');
 
         }else if (optCount == 1) {
             theField = $('#select-field').val();
@@ -569,7 +552,9 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             console.log('user_'+theID +'---'+'order_'+theID)
             $('.qms-allocators .form-group:last-child').find('select').attr('name','user_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
-            $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
+            $('.qms-allocators .form-group:last-child').find('input.order-number').prop('disabled',false);
+            $('.qms-allocators .form-group:last-child').find('select').prop('disabled',false);
+            $('.qms-allocators .form-group:last-child').find('input.delete').prop('disabled',false);
             $('#select-field').html('The end');
             $('#qms-add-field').prop('disabled', true);
 
@@ -651,6 +636,8 @@ $(':input[name$=project]').on('change', function() {
     .table .menu-action{padding-top:7px !important;}
     .select-name{float: left;}
     .order-number{width: 60px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;padding: 6px 6px 7px 17px !important}
+
+
 </style>
 
 

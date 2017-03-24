@@ -16,7 +16,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 import logging
 logger = logging.getLogger('MyANSRSource')
 import os.path
-
+import collections
 
 try:
     dict.iteritems
@@ -149,20 +149,21 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
     return result
 
 
-def get_review_group(project=None, chapter=None, is_author=False):
+def get_review_group(project=None, chapter=None, is_author=False, component=False):
     # print "get_review_group"
     obj = ReviewGroup.objects.all()
-    # print is_author , project,chapter
+    print is_author , project,chapter,component
 
     try:
         if not is_author and project and chapter:
-            obj = obj.filter(pk__in=QASheetHeader.objects.filter(project=project, chapter=chapter).
-                             values_list('review_group_id', flat=True).order_by('order_number'))
-            # print obj
+            s = QASheetHeader.objects.filter(project=project, chapter_component=
+                 ChapterComponent.objects.get(chapter=chapter, component=component)).\
+                values_list( "review_group__name", flat=True).order_by('order_number')
     except Exception as e:
+        print str(e)
         pass
         # print "get_review_group" , str(e)
-    return obj
+    return s
 
 
 def get_template_process_review(request):
@@ -233,12 +234,124 @@ def forbidden_access(self, form, project, message_code, chapter=None):
                 "config_missing": "Sorry configuration is missing please contact your manager",
                 "wait": "Sorry You cant access this chapter till review is completed",
                 "config_missing_manager": "Hey you didn't configure for this review please do it",
-                "previous_tab_wait": " You cannot access this chapter till previous review is completed"
+                "previous_tab_wait": " You cannot access this chapter till previous review is completed",
+                "previous_tab_wait_pm": " Please wait  till previous review is completed",
                 }
+    if message_code == "previous_tab_wait_pm":
+        result = False
+    else:
+        result = True
 
     messages.error(self.request, msg_dict[message_code])
+    print "forbidden_access", result
     return render(self.request, self.template_name, {'form': form,
-                                                     'review_group': get_review_group(project, chapter), })
+                                                     'review_group': get_review_group(project, chapter, component = self.request.session['component']),
+                                                     "need_button": result})
+
+
+def get_work_book(qms_form, reports, obj):
+    qms_data = {}
+    qms_data_list = []
+    severity_count = {}
+    if reports and len(reports) != 0:
+        # print"im in"
+        for eachData in reports:
+            # print "ed", eachData
+            # count = 0
+            for k, v in eachData.iteritems():
+                qms_data[k] = v
+                if k == 'id':
+                    r_obj = ReviewReport.objects.get(id=int(v))
+                    # print "idddd",v
+                    if r_obj.screen_shot:
+                        qms_data['screen_shot_url'] = r_obj.screen_shot.url
+                        # print "url",  r_obj.screen_shot.path
+                    else:
+                        qms_data['screen_shot_url'] = None
+                    qms_data['qms_id'] = v
+                if k == 'review_item':
+                    qms_data['review_item'] = v
+
+                if k == 'defect':
+                    qms_data['defect'] = v
+
+                if k == 'instruction':
+                    qms_data['instruction'] = v
+
+                if k == 'defect_severity_level__severity_type':
+                    qms_data['severity_type'] = v
+
+                if k == 'defect_severity_level__severity_level':
+                    qms_data['severity_level'] = v
+                    if v in severity_count:
+                        v = int(v)
+                        severity_count[v] += 1
+                    else:
+                        severity_count[v] = 1
+                        # print severity_count, v
+
+                if k == 'defect_severity_level__defect_classification':
+                    qms_data['defect_classification'] = v
+
+                if k == 'is_fixed':
+                    qms_data['is_fixed'] = v
+
+                if k == 'screen_shot':
+                    # url = ReviewReport.objects.get(id=obj.id)
+                    qms_data['screen_shot'] = v
+                    # if v:
+                    #     qms_data['screen_shot_url'] = v
+
+                if k == 'fixed_by__username':
+                    qms_data['fixed_by'] = v
+
+                if k == 'remarks':
+                    qms_data['remarks'] = v
+                    # qms_data['clear_screen_shot'] = False
+            # print "" qms_data
+            qms_data_list.append(qms_data.copy())
+
+        qms_data.clear()
+    # print "qms_data_list" , qms_data_list
+    qms_formset = formset_factory(
+        qms_form, max_num=1, can_delete=True
+    )
+    # print qms_data_list
+    if len(qms_data_list):
+        qms_formset = qms_formset(initial=qms_data_list)
+    else:
+        qms_formset = formset_factory(
+            qms_form, extra=1, max_num=1, can_delete=True
+        )
+    # qms_formset = formset_factory(
+    #     qms_form, max_num=1, can_delete=True
+    # )
+    score = {}
+    tmp_weight = {}
+    defect_density = {}
+    # print severity_count
+    s = SeverityLevelMaster.objects.filter(is_active=True).exclude(name__icontains='S0')
+    for k, v in severity_count.iteritems():
+        severity_level_obj = s.get(id=int(k))
+        tmp_weight[k] = float(severity_level_obj.penalty_count) * v
+        score[k] = 100 - (tmp_weight[k])
+        if obj.count > 0:
+            defect_density[k] = round(((tmp_weight[k] / obj.count) * 100), 2)
+        else:
+            defect_density[k] = 0
+
+    total_count = sum(severity_count.itervalues())
+    weight = sum(tmp_weight.itervalues())
+    if weight != 0:
+        total_score = 100 - sum(tmp_weight.itervalues())
+    else:
+        total_score = 0
+    total_defect_density = sum(defect_density.itervalues())
+    severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id'). \
+        exclude(name__icontains='S0')
+    result = collections.namedtuple('result', ['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+    resultant_obj = result(severity_count, score, total_score, total_count, defect_density, total_defect_density, qms_formset)
+    return resultant_obj
 
 
 class AssessmentView(TemplateView):
@@ -254,6 +367,7 @@ class AssessmentView(TemplateView):
         return context
 
     def post(self, request):
+        # print "im in post"
         form = BaseAssessmentTemplateForm(request.POST)
         # for sa in request.POST :
         # print request.POST
@@ -271,7 +385,7 @@ class AssessmentView(TemplateView):
 
             if request.user is author:
                 # print"is author"
-                get_review_group(project, chapter, is_author=False)
+                get_review_group(project, chapter, is_author=False,component=component)
             try:
 
                 # print "im in try"
@@ -281,17 +395,27 @@ class AssessmentView(TemplateView):
                 request.session['chapter'] = chapter
                 request.session['author'] = author
                 request.session['component'] = component
+                ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
+                request.session['template_id'] = ptpm_obj.template_id
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
                 is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
-
+                # print obj.order_number
                 #  previous tab completion check
                 if obj.order_number != 1:
                     order_number = int(obj.order_number)-1
+                    # print "order_number", order_number
                     prev_tab_obj = QASheetHeader.objects.filter(project=project,
                                                                 chapter_component=ChapterComponent.objects.get
                                                                 (chapter=chapter, component=component),
                                                                 order_number=order_number)[0]
+                    if is_pm:
+                        # print prev_tab_obj.review_group_status , prev_tab_obj.author_feedback_status
+                        if prev_tab_obj.review_group_status is True and \
+                                        prev_tab_obj.author_feedback_status is True:
+                            pass
+                        else:
+                            return forbidden_access(self, form, project, "previous_tab_wait_pm", chapter)
                     if not is_pm:
                         if prev_tab_obj.review_group_status and prev_tab_obj.author_feedback_status:
                             pass
@@ -310,7 +434,7 @@ class AssessmentView(TemplateView):
                         msg = "config_missing"
                     return forbidden_access(self, form, project, msg, chapter)
                 else:
-                    print "in else"
+                    # print "in else"
                     can_access = 0
                     qms_team_members = [obj.reviewed_by, author]
                     if request.user == author:
@@ -343,121 +467,28 @@ class AssessmentView(TemplateView):
         else:
             form = BaseAssessmentTemplateForm()
         qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
-                                                                                         component=component) ,
+                                                                                         component=component),
                                       request_obj=self.request, tab=obj.review_group_id)
 
-        qms_data = {}
-        qms_data_list = []
-        severity_count = {}
-        if reports and len(reports) != 0:
-            # print"im in"
-            for eachData in reports:
-                # print "ed", eachData
-                # count = 0
-                for k, v in eachData.iteritems():
-                    qms_data[k] = v
-                    if k == 'id':
-                        r_obj = ReviewReport.objects.get(id=int(v))
-                        # print "idddd",v
-                        if r_obj.screen_shot:
-                            qms_data['screen_shot_url'] = r_obj.screen_shot.url
-                            # print "url",  r_obj.screen_shot.path
-                        else:
-                            qms_data['screen_shot_url'] = None
-                        qms_data['qms_id'] = v
-                    if k == 'review_item':
-                        qms_data['review_item'] = v
-
-                    if k == 'defect':
-                        qms_data['defect'] = v
-
-                    if k == 'instruction':
-                        qms_data['instruction'] = v
-
-                    if k == 'defect_severity_level__severity_type':
-                        qms_data['severity_type'] = v
-
-                    if k == 'defect_severity_level__severity_level':
-                        qms_data['severity_level'] = v
-                        if v in severity_count:
-                            v = int(v)
-                            severity_count[v] += 1
-                        else:
-                            severity_count[v] = 1
-                            # print severity_count, v
-
-                    if k == 'defect_severity_level__defect_classification':
-                        qms_data['defect_classification'] = v
-
-                    if k == 'is_fixed':
-                        qms_data['is_fixed'] = v
-
-                    if k == 'screen_shot':
-                        # url = ReviewReport.objects.get(id=obj.id)
-                        qms_data['screen_shot'] = v
-                        # if v:
-                        #     qms_data['screen_shot_url'] = v
-
-                    if k == 'fixed_by__username':
-                        qms_data['fixed_by'] = v
-
-                    if k == 'remarks':
-                        qms_data['remarks'] = v
-                    # qms_data['clear_screen_shot'] = False
-                # print "" qms_data
-                qms_data_list.append(qms_data.copy())
-
-            qms_data.clear()
-        # print "qms_data_list" , qms_data_list
-        qms_formset = formset_factory(
-            qms_form, max_num=1, can_delete=True
-        )
-        # print qms_data_list
-        if len(qms_data_list):
-            qms_formset = qms_formset(initial=qms_data_list)
-        else:
-            qms_formset = formset_factory(
-                qms_form, extra =1 , max_num=1, can_delete=True
-            )
-        # qms_formset = formset_factory(
-        #     qms_form, max_num=1, can_delete=True
-        # )
-        score = {}
-        tmp_weight = {}
-        defect_density = {}
-        # print severity_count
-        s = SeverityLevelMaster.objects.filter(is_active=True).exclude(name__icontains='S0')
-        for k, v in severity_count.iteritems():
-            severity_level_obj = s.get(id=int(k))
-            tmp_weight[k] = float(severity_level_obj.penalty_count) * v
-            score[k] = 100 - (tmp_weight[k])
-            if obj.count > 0:
-                defect_density[k] = round(((tmp_weight[k] / obj.count) * 100), 2)
-            else:
-                defect_density[k] = 0
-
-        total_count = sum(severity_count.itervalues())
-        weight = sum(tmp_weight.itervalues())
-        if weight != 0:
-            total_score = 100 - sum(tmp_weight.itervalues())
-        else:
-            total_score = 0
-        total_defect_density = sum(defect_density.itervalues())
         severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id').\
             exclude(name__icontains='S0')
 
-        return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
-                                                         'reports': reports, 'review_formset': qms_formset,
-                                                         "author_feedback_status": obj.author_feedback_status,
-                                                         "reviewer_feedback_status": obj.review_group_status,
-                                                         'template_id': template_id,
-                                                         'review_group': get_review_group(project, chapter),
-                                                         'questions': obj.count,
-                                                         'severity_count': severity_count, 'project': project.id,
-                                                         'score': score, 'total_score': total_score,
-                                                         'total_count': total_count, 'defect_density': defect_density,
-                                                         'total_defect_density': total_defect_density,
-                                                         'severity_level': severity_level_obj})
+        result = get_work_book(qms_form, reports, obj)
+        request.session['filter_form'] = form
+        return render_common(obj, qms_form, request)
+        # print "m gdhgfgh ", get_review_group(project, chapter, component=component)
+        # return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
+        #                                                  'reports': reports, 'review_formset': result[6],
+        #                                                  "author_feedback_status": obj.author_feedback_status,
+        #                                                  "reviewer_feedback_status": obj.review_group_status,
+        #                                                  'template_id': template_id,
+        #                                                  'review_group': get_review_group(project, chapter, component=component),
+        #                                                  'questions': obj.count,
+        #                                                  'severity_count': result[0], 'project': project.id,
+        #                                                  'score': result[1], 'total_score': result[2],
+        #                                                  'total_count': result[3], 'defect_density': result[4],
+        #                                                  'total_defect_density': result[5],
+        #                                                  'severity_level': severity_level_obj, "need_button": True})
 
 
 class ReviewReportManipulationView(AssessmentView):
@@ -471,8 +502,10 @@ class ReviewReportManipulationView(AssessmentView):
         qms_data_list = []
         request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
         # print request.POST.get('active_tab1')
+
+
         qms_form = review_report_base(request.session['template_id'], request.session['project'],
-                                      request_obj=self.request ,tab =active_tab )
+                                      request_obj=self.request, tab=active_tab)
         qms_formset = formset_factory(
             qms_form,  max_num=1, can_delete=True
         )
@@ -512,22 +545,25 @@ class ReviewReportManipulationView(AssessmentView):
                     report.defect = obj['defect']
                     #  below is backend check preventing author from changing severity type
                     # obj['severity_type'] = report.defect_severity_level.severity_type
-                if obj['screen_shot']:
-                    # extension = os.path.splitext(obj['screen_shot'])[1]
-                    # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in AllowedFileTypes:
-                    if obj['screen_shot'].name.split(".")[-1] not in AllowedFileTypes:
+                if obj['clear_screen_shot']:
+                    report.screen_shot = None
+                else:
 
-                        messages.error(request, "You can't upload this file type")
+                    if obj['screen_shot']:
+                        # extension = os.path.splitext(obj['screen_shot'])[1]
+                        # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in AllowedFileTypes:
+                        if obj['screen_shot'].name.split(".")[-1] not in AllowedFileTypes:
 
-                        forbidden_file_type = True
+                            messages.error(request, "You can't upload this file type")
 
-                    else:
+                            forbidden_file_type = True
+
                         report.screen_shot = obj['screen_shot']
                 # if obj['clear_screen_shot']:
                 #     report.screen_shot = None
                 report.is_fixed = obj['is_fixed']
                 report.remarks = obj['remarks']
-                if len(obj['remarks']) > 0:
+                if len(obj['remarks']) > 0 or obj['is_fixed']:
                     report.fixed_by = request.user
                 # print request.session['template_id']
                 #
@@ -578,14 +614,35 @@ class ReviewReportManipulationView(AssessmentView):
         else:
             messages.error(request, "Configuration is Missing")
 
-        return HttpResponseRedirect(reverse('qms'))
+        # return HttpResponseRedirect(reverse('qms'))
         obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'],
-                                  active_tab)
+                                  request.session['component'], active_tab)
+        return render_common(obj, qms_form, self.request)
 
-        return render(self.request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html", {
-            'form': BaseAssessmentTemplateForm(),
-            'review_formset': qms_formset(request.POST), 'reports': get_review(obj), 'review_group': get_review_group()
-        })
+
+def render_common(obj, qms_form, request):
+    reports = get_review(obj)
+    result = get_work_book(qms_form, reports, obj)
+    severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id'). \
+        exclude(name__icontains='S0')
+    messages.success(request, "successfully saved")
+    s =get_review_group(request.session['project'], request.session['chapter'], component=request.session['component'])
+
+
+    print s
+    return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
+                  {'form': request.session['filter_form'], 'defect_master': DefectTypeMaster.objects.all(),
+                   'reports': reports, 'review_formset': result[6], "author_feedback_status":
+                       obj.author_feedback_status, "reviewer_feedback_status": obj.review_group_status,
+                                                     'template_id': request.session['template_id'],
+                                                     'review_group': s,
+                                                     'questions': obj.count,
+                                                     'severity_count': result[0],
+                                                     'project': request.session['project'],
+                                                     'score': result[1], 'total_score': result[2],
+                                                     'total_count': result[3], 'defect_density': result[4],
+                                                     'total_defect_density': result[5],
+                                                     'severity_level': severity_level_obj, "need_button": True})
 
 
 def fetch_severity(request):
@@ -598,7 +655,7 @@ def fetch_severity(request):
     severity_classification = request.GET.get('severity_classification')
     # print request.GET
     obj = ProjectTemplateProcessModel.objects.get(template_id=template_id, project_id=project_id)
-    if obj.qms_process_model.product_type == 1 :
+    if obj.qms_process_model.product_type == 1:
         media_team = True
     else:
         media_team = False
@@ -685,21 +742,6 @@ def fetch_author(request):
     )
 
 
-# def check_permission(request):
-#     project_id = request.GET.get('project_id')
-#     active_tab = request.GET.get('active_tab')
-#
-#     try:
-#         result = QASheetHeader.objects.filter(project_id=project_id, review_group_id=active_tab).\
-#             values_list('review_group_status', flat=True)[0]
-#     except Exception as e:
-#         result = False
-#         logger.error(" check permission for author failed {0} ".format(str(e)))
-#     return HttpResponse(
-#         json.dumps(bool(result)),
-#         content_type="application/json"
-#     )
-
 class DashboardView(ListView):
     model = ReviewReport
     template_name = 'qms_dashboard.html'
@@ -712,17 +754,16 @@ class DashboardView(ListView):
                                                                          values('project')).\
             values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id').\
             annotate(chapter_count=Count('project__book__chapter'))
-        print (context['projects'])
+        # print (context['projects'])
         return context
 
 
 def review_completed(request):
-    project_id = request.GET.get('project_id')
-    chapter_id = request.GET.get('chapter_id')
+    project_id = request.session['project']
+    chapter_id = request.session['chapter']
     review_feedback = request.GET.get('review_feedback')
     review_group = request.GET.get('review_group')
     submitted_by = request.GET.get('submitted_by')
-    status = 0
     try:
         # print project_id,chapter_id,review_group,review_feedback
         if submitted_by == "author":
@@ -734,15 +775,18 @@ def review_completed(request):
             QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
                                          review_group_id=review_group).update(review_group_status=True,
                                                                               review_group_feedback=review_feedback)
-        status = 1
     except Exception as e:
-        print str(e)
+        messages.error(request, "Unable to save")
         logger.error("check permission for author failed {0} ".format(str(e)))
+    obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'],
+                                  request.session['component'], review_group)
 
-    return HttpResponse(
-        json.dumps(status),
-        content_type="application/json"
-    )
+    qms_form = review_report_base(request.session['template_id'], request.session['project'],
+                                  ChapterComponent.objects.get(chapter=request.session['chapter'],
+                                  component=request.session['component']),
+                                  request_obj=request, tab=obj.review_group_id)
+
+    return render_common(obj, qms_form, request)
 
 
 def chapter_summary(request):
@@ -791,7 +835,7 @@ def chapter_summary(request):
                         # qms_data[obj.id]['severity_level'] = tmp_dict
             qms_data_list.append(qms_data.copy())
             qms_data.clear()
-    print (qms_data_list)
+    # print (qms_data_list)
     return HttpResponse(
         json.dumps(qms_data_list),
         content_type="application/json"

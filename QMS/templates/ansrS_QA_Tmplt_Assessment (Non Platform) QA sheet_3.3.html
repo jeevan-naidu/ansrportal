@@ -190,7 +190,24 @@
                                          <td class="" id="screen_shot-{{forloop.counter}}-td">
                                             {{form_obj.screen_shot}}
                                         {% if form_obj.screen_shot_url.value %}
-                                             <label>clear screen shot </label><span>{{form_obj.clear_screen_shot}}</span> {% endif %}
+                                             <label>clear </label>  {{form_obj.clear_screen_shot }} <span>{% if form_obj.screen_shot_url.value %}
+                                                                    <label class="control-label">
+                        <a target="_blank" href="{{form_obj.screen_shot_url.value}}">
+                        {% if form_obj.screen_shot_url.value|GetFileTypeFromName == 'xls' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'xlsx' %}
+                            <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="25px" width="25px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'pdf' %}
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="20px" width="25px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'doc' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'docx'  %}
+                            <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="25px" width="25px">
+                        {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpeg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'png' %}
+                            <img alt="A jpeg file" src="{{form_obj.screen_shot_url.value }}" height="25px" width="25px">
+                            {% elif  form_obj.screen_shot_url.value|GetFileTypeFromName == 'zip'  or  form_obj.screen_shot_url.value|GetFileTypeFromName == '7z' %}
+                            <img alt="A zip file" src="/static/images/file_type_icons/zip_icon.png" height="25px" width="25px">
+                            {% elif  form_obj.screen_shot_url.value|GetFileTypeFromName == 'gz' %}
+                            <img alt="A gz file" src="/static/images/file_type_icons/gz_icon.png" height="25px" width="25px">
+
+                        {% endif %} {% endif %}
+                                         </span> {% endif %}
 
 
                                         </td>
@@ -353,22 +370,27 @@
                          </table>
                          {%if review_formset %} {% is_project_manager project request.user as result %}
                          <div class="panel-footer clearfix">
-                              {% if result %}<input type="submit" id="form-submit" value="submit"
-                                    class="btn btn-info btn-sm pull-right"/>
+                              {% if result  and  need_button %}
 
                                  {% if not reviewer_feedback_status and  author_feedback_status %}
+                             <!--<input type="submit" id="form-submit" value="submit"-->
+                                    <!--class="btn btn-info btn-sm pull-right"/>-->
                                   <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
-                                        <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
-                                            value="Add Item"  />
+                                        <!--<input type="button" class="btn btn-info btn-sm pull-right" id="add_button"-->
+                                            <!--value="Add Item"  />-->
                                  {% endif %}
 
                                   {% if not reviewer_feedback_status and not author_feedback_status %}
+                             <input type="submit" id="form-submit" value="submit"
+                                    class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
                                     <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
                                         value="Add Item"  />
                                   {% endif %}
 
                                  {% if reviewer_feedback_status and not author_feedback_status %}
+                             <input type="submit" id="form-submit" value="submit"
+                                    class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
                                     <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
                                         value="Add Item"  />
@@ -468,11 +490,14 @@
                           <h4 class="modal-title" id="myModalLabel">Review Completed</h4>
                         </div>
                         <div class="modal-body">
-                            <form class="form-horizontal">
+                            <form class="form-horizontal" id="feedback_form" action="/qms/review_completed/" method ="GET">
                             <div class="form-group">
                               <label class="col-sm-4 control-label">Comment : </label>
                               <div class="col-sm-7 controls">
                               <textarea class="input-border-btm" id ="review_feedback"></textarea>
+                                  <input type="hidden" name="submitted_by" id="submitted_by" value="">
+                                  <input type="hidden" name="review_group" id="review_group" value="">
+
                               </div>
 
                             </div>
@@ -536,6 +561,7 @@
            if (is_set!=0 && is_set==$('.filter_form').length)  {
               $('#active_tab , #active_tab1').removeAttr('value');
               $('#active_tab , #active_tab1').val(this.id);
+              $('#filter_form').attr('action', '/qms/');
               $('#filter_form').submit();
            }
         });
@@ -853,7 +879,17 @@ td[id*='review_item'] input{width: 40px;}
 
 <script type="text/javascript">
 // UI Scripts
+  function formToDiv() {
+            var attrs = { };
 
+            $.each($("form")[0].attributes, function(idx, attr) {
+                attrs[attr.nodeName] = attr.nodeValue;
+            });
+
+            $("form").replaceWith(function () {
+                return $("<div>", attrs).append($(this).contents());
+            });
+        }
 
 $(document).ready(function(){
 
@@ -877,9 +913,9 @@ $(document).ready(function(){
 
 
     $(document).ready(function(){
-        if ( $("[id$='review_item']").is('[disabled=disabled]') ) {
+        if ( $("[id$='review_item']").is(':disabled') ) {
 
-            $("[id$='DELETE']").prop('disabled','disabled');
+            $("[id$='DELETE'], [id$='clear_screen_shot']").prop('disabled','disabled');
             <!--$('#form-submit,#add_button,#review_modal').remove();-->
         }
         $( "#review_completed" ).click(function() {
@@ -896,18 +932,11 @@ $(document).ready(function(){
          else if($('#author_modal').length) {
             submitted_by = "author"
          }
-        $.ajax({
-            url: '/qms/review_completed',
-            type: 'GET',
-            dataType :'json',
-            data: {"project_id": $('#id_project').val() ,"chapter_id":$('#id_chapter').val(),
-            "review_feedback":$('#review_feedback').val(), "review_group":$('li.active').prop('id') ,"submitted_by":submitted_by},
-            success: function (data) {
-            if (data == 1)  swal("voila!", "Review is completed!", "success")
-            else sweetAlert("Oops...", "Something went wrong!", "error");
-            location.reload();
-            },
-        });
+         $('#review_group').val( $('li.active').prop('id') );
+         $('#submitted_by').val(submitted_by);
+         console.log("im b4 form submit");
+         $('#feedback_form').submit();
+
     });
 
         $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
