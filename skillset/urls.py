@@ -7,7 +7,6 @@ urlpatterns = [
 
     url(r'^$', login_required(views.SkillSet)),
     url(r'^dept/$', login_required(views.dept)),
-    url(r'^designation/$', login_required(views.designation)),
     url(r'^user/$', login_required(views.user)),
     url(r'^skills/$', login_required(views.skills)),
     url(r'^filter1/$', login_required(views.filter1)),

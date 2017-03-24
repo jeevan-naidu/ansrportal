@@ -12,21 +12,22 @@ from models import Skill_Lists, User_Skills
 import xlwt
 from django.http import JsonResponse
 import json
+import json as simplejson
 from Leave.forms import UserListViewForm
+
 
 def SkillSet(request):
     if request.method == 'GET':
         form = UserListViewForm()
         user = request.user
-        if request.user.groups.filter(
-                    name__in=['myansrsourceHR']).exists():
+        if request.user.groups.filter(name__in=['myansrsourceHR']).exists():
             employee = Employee.objects.get(user_id=user.id)
             designation_all = Designation.objects.all()
             department = Department.objects.all()
             skills_all = Skill_Lists.objects.all()
             reportee_list = Employee.objects.all()
             lists = []
-            user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
+            user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
             for reportee in reportee_list:
                 assert isinstance(reportee, object)
                 try:
@@ -53,36 +54,41 @@ def SkillSet(request):
                 user_details['skills'] = skills
                 if reportee.user.is_active == True:
                     lists.append(user_details)
-                    user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
-        elif request.user.groups.filter(
-                    name__in=['myansrsourcePM']).exists():
+                    user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
+            jlist = []
+            for sub in lists:
+                sub['name'] = str(sub['name'])
+                sub['designation'] = str(sub['designation'])
+                sub['department'] = str(sub['department'])
+                sub['id'] = str(sub['id'])
+                sub['doj'] = str(sub['doj'])
+                sub['skills'] = str(sub['skills'])
+                sub['skills'] = sub['skills'].replace("[", "").replace("]", "").replace("<", "").replace(">",
+                                                                                                         "").replace(
+                    "User_Skills", "")
+                jlist.append(sub)
+            json_list = json.dumps(jlist)
+
+        elif request.user.groups.filter(name__in=['myansrsourcePM']).exists():
+            # import ipdb; ipdb.set_trace()
             employee = Employee.objects.get(user_id=user.id)
             designation_all = Designation.objects.all()
             department = Department.objects.all()
             skills_all = Skill_Lists.objects.all()
-            dept = EmployeeCompanyInformation.objects.filter(employee_id=employee.employee_assigned_id).values(
-                'department')
-            for val in dept:
-                dept = val['department']
-            dept = Department.objects.filter(id=dept).values('name')
-            if not dept:
-                dept = ''
-            for val in dept:
-                dept = val['name']
-            if not dept:
-                dept = ''
-            dept_name = Department.objects.filter(name=dept)
-            dept_id = Department.objects.filter(id=dept_name).values('id')
-            reportee_list = EmployeeCompanyInformation.objects.filter(department=dept_id).values('employee')
+            mgrid = Employee.objects.get(user_id=request.user.id)
+            reportee = Employee.objects.filter(manager_id=mgrid)
             lists = []
-            user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
-            for val in reportee_list:
-                employee_id = val['employee']
+            user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj":"" , "skills": ""}
+            for val in reportee:
+                employee_id = val.employee_assigned_id
                 employee = Employee.objects.get(employee_assigned_id=employee_id)
                 try:
+                    # import ipdb;
+                    # ipdb.set_trace()
                     skills = User_Skills.objects.filter(emp_mid=employee.employee_assigned_id)
+
                 except User_Skills.DoesNotExist:
-                    skills = ''
+                    skills = None
                 dept = EmployeeCompanyInformation.objects.filter(employee_id=employee.employee_assigned_id).values(
                     'department')
                 for val in dept:
@@ -101,17 +107,29 @@ def SkillSet(request):
                 user_details['id'] = id[:-1]
                 user_details['doj'] = employee.joined
                 user_details['skills'] = skills
+
                 if employee.user.is_active == True:
                     lists.append(user_details)
-                    user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
+                    user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "",  "skills": ""}
+            jlistasa = []
+            for sub in lists:
+                sub['name'] = str(sub['name'])
+                sub['designation'] = str(sub['designation'])
+                sub['department'] = str(sub['department'])
+                sub['id'] = str(sub['id'])
+                sub['doj'] = str(sub['doj'])
+                sub['skills'] = str(sub['skills'])
+                sub['skills'] = sub['skills'].replace("[","").replace("]","").replace("<","").replace(">","").replace("User_Skills","")
+                jlistasa.append(sub)
+            json_list = json.dumps(jlistasa)
 
         else:
             employee = Employee.objects.get(user_id=user.id)
             designation_all = Designation.objects.all()
-            department  = Department.objects.all()
+            department = Department.objects.all()
             skills_all = Skill_Lists.objects.all()
             lists = []
-            user_details = {'name': '', 'deisgnation': '','department':'', 'id':'', 'doj':'', 'skills':''}
+            user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
             try:
                 skills = User_Skills.objects.filter(emp_mid=employee.employee_assigned_id)
             except User_Skills.DoesNotExist:
@@ -136,34 +154,39 @@ def SkillSet(request):
             user_details['skills'] = skills
             if employee.user.is_active == True:
                 lists.append(user_details)
-                user_details = {'name': '', 'deisgnation': '','department':department, 'id': '', 'doj': '', 'skills': ''}
-            return render(request, 'skillset.html',{'lists':lists,'designation_all':designation_all,'department':department})
+                user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
 
-        return render(request, 'skillset.html',
-                      {'lists': lists, 'form':form, 'skills_all':skills_all,'designation_all': designation_all, 'department': department})
+            return render(request, 'skillset.html',
+                          {'lists': lists, 'designation_all': designation_all, 'department': department})
+
+        return render(request, 'skillset.html', {'lists': lists, 'json_list': json_list, 'form': form, 'skills_all': skills_all,
+                                                 'designation_all': designation_all, 'department': department})
 
 def dept(request):
     if request.method == 'GET':
         lists_dept = filters(request)
+        return render(request, 'skillset.html', {'lists': lists_dept['lists'], 'department': lists_dept['department'],
+                                                 'designation_all': lists_dept['designation_all']})
 
-        return render(request, 'skillset.html',{'lists': lists_dept['lists'],'department':lists_dept['department'],'designation_all':lists_dept['designation_all']})
-#
 def designation(request):
     if request.method == 'GET':
         designation_all = Designation.objects.all()
         department = Department.objects.all()
         desg = request.GET.get('desg')
-
         reportee_list = Designation.objects.filter(name=desg).values('employee')
-
+        for val in reportee_list:
+            employee = val['employee']
         lists = []
-        user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
+        if not employee:
+            data = ({'lists': lists, 'designation_all': designation_all, 'department': department})
+            return data
+        user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
         for val in reportee_list:
             employee_id = val['employee']
             try:
                 employee = Employee.objects.get(employee_assigned_id=employee_id)
             except Employee.DoesNotExist:
-                return render(request, 'skillset.html',{})
+                return render(request, 'skillset.html', {})
             try:
                 skills = User_Skills.objects.filter(emp_mid=employee.employee_assigned_id)
             except User_Skills.DoesNotExist:
@@ -189,17 +212,18 @@ def designation(request):
             if employee.user.is_active == True:
                 lists.append(user_details)
                 user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
-                data = ({'lists': lists, 'designation_all': designation_all, 'department': department})
+            data = ({'lists': lists, 'designation_all': designation_all, 'department': department})
         return data
+
 
 def skills(request):
     if request.method == 'GET':
         designation_all = Designation.objects.all()
         department = Department.objects.all()
         skill = request.GET.get('value')
-        skill_list = Skill_Lists.objects.get(skill_name = skill)
+        skill_list = Skill_Lists.objects.get(skill_name=skill)
         try:
-            employee = User_Skills.objects.filter(skills_name = skill_list).values('emp_mid')
+            employee = User_Skills.objects.filter(skills_name=skill_list).values('emp_mid')
         except User_Skills.DoesNotExist:
             return render(request, 'skillset.html', {})
         lists = []
@@ -211,7 +235,7 @@ def skills(request):
                 employee = Employee.objects.get(employee_assigned_id=employee_id)
             except Employee.DoesNotExist:
 
-                return render(request, 'skillset.html',{})
+                return render(request, 'skillset.html', {})
             try:
                 skills = User_Skills.objects.filter(emp_mid=employee.employee_assigned_id)
             except User_Skills.DoesNotExist:
@@ -238,7 +262,8 @@ def skills(request):
                 lists.append(user_details)
                 user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
 
-        return render(request, 'skillset.html',{'lists': lists,'department':department,'designation_all':designation})
+        return render(request, 'skillset.html',
+                      {'lists': lists, 'department': department, 'designation_all': designation})
 
 def filter1(request):
     if request.method == 'GET':
@@ -299,10 +324,10 @@ def filter1(request):
                                             'skills': ''}
 
             except Employee.DoesNotExist:
-                return render(request, 'skillset.html',{})
+                return render(request, 'skillset.html', {})
 
-
-        return render(request, 'skillset.html',{'lists': lists,'department':department,'designation_all':designation})
+        return render(request, 'skillset.html',
+                      {'lists': lists, 'department': department, 'designation_all': designation})
 
 def user(request):
     if request.method == 'GET':
@@ -310,7 +335,7 @@ def user(request):
         department = Department.objects.all()
         employee_id = request.GET.get('value')
 
-        employee = Employee.objects.get(employee_assigned_id = employee_id)
+        employee = Employee.objects.get(employee_assigned_id=employee_id)
 
         lists = []
         user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
@@ -318,8 +343,7 @@ def user(request):
             skills = User_Skills.objects.filter(emp_mid=employee.employee_assigned_id)
         except User_Skills.DoesNotExist:
             skills = ''
-        dept = EmployeeCompanyInformation.objects.filter(employee_id=employee.employee_assigned_id).values(
-            'department')
+        dept = EmployeeCompanyInformation.objects.filter(employee_id=employee.employee_assigned_id).values('department')
         for val in dept:
             dept = val['department']
         dept = Department.objects.filter(id=dept).values('name')
@@ -340,7 +364,7 @@ def user(request):
         lists.append(user_details)
         user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
 
-    return render(request, 'skillset.html',{'lists': lists,'department':department,'designation_all':designation})
+    return render(request, 'skillset.html', {'lists': lists, 'department': department, 'designation_all': designation})
 
 def filters(request):
     designation_all = Designation.objects.all()
@@ -378,7 +402,7 @@ def filters(request):
         if employee.user.is_active == True:
             lists.append(user_details)
             user_details = {'name': '', 'deisgnation': '', 'department': '', 'id': '', 'doj': '', 'skills': ''}
-        data = ({'lists':lists,'designation_all':designation_all,'department':department})
+        data = ({'lists': lists, 'designation_all': designation_all, 'department': department})
     return data
 
 def managerCheck(user):
@@ -386,4 +410,3 @@ def managerCheck(user):
     manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
     if manager:
         return User.objects.get(id=manager[0]['user_id'])
-

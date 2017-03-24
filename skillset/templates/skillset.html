@@ -20,8 +20,6 @@
 <script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
 <script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
 
-
-
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
 <style type="text/css">
@@ -35,7 +33,7 @@
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Team Members </h3>
                   </div>
 
-                            {% if request.user|has_group:'myansrsourceHR' == True %}
+                            {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
                               <div class="panel-body">
                               <div class="row">
 
@@ -79,56 +77,13 @@
                                 </div>
 
                               </div>
-                                  {% endif %}
 
-                                  {% if request.user|has_group:'myansrsourcePM' == True %}
-                              <div class="panel-body">
-                              <div class="row">
-
-
-                                <div class="col-sm-2 pull-right">
-
-                                  <select name="" class="input-sm" id="department">
-                                      <option value="-----------" id="dept">Department</option>
-                                    {% for department in department %}
-                                        <option value="{{department}}">{{department}}</option>
-                                    {% endfor %}
-                                  </select>
-                                </div>
-
-                                <div class="col-sm-2 pull-right">
-                                  <select name="" class="input-sm" id="designation">
-                                       <option value="-----------" id="desg">Designation</option>
-                                    {% for designation in designation_all %}
-
-                                        <option value="{{designation}}">{{designation}}</option>
-                                    {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-sm-2 pull-right">
-                                  <select name="" class="input-sm" id="skills">
-                                       <option value="-----------" id="skill">Skills</option>
-                                    {% for skills in skills_all %}
-
-                                        <option value="{{skills}}">{{skills}}</option>
-                                    {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-sm-3">
-                                  <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
-                                        {% csrf_token %}
-                                        {% bootstrap_messages %}
-                                                {% for field in form %}
-                                                    {{ field }}
-                                                {% endfor %}
-                                  </form>
-                                </div>
-
-                              </div>
                                   {% endif %}
 
 <hr>
+                    {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
                     <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
+                    {% endif %}
                     <table class="table table-striped" id="data-tables">
                       <thead style="color: #fff;background: #444">
                         <tr>
@@ -137,20 +92,20 @@
                           <th>Department</th>
                           <th>Designation</th>
                           <th>Skills</th>
-                            <th>Level</th>
+                          <th>Level</th>
                           <th>Joining date</th>
                         </tr>
                       </thead>
-
                       <tbody>
                       {% for element in lists %}
+
                         <tr>
                           <td class="hidden">{{element.id}}</td>
                           <td>{{element.name}}</td>
                           <td>{{element.department}}</td>
                           <td>{{element.designation}}</td>
-                          <td>{% for skill in element.skills %}{{ skill.skills_name }} </br>{% endfor %}</td>
-                            <td>{% for skill in element.skills %}{{ skill.skills_type }} </br>{% endfor %}</td>
+                          <td>{% for skill in element.skills %}{{ skills.skills_name }} {% endfor %}</td>
+                          <td>{% for skill in element.skills %}{{ skill.skills_type }} {% endfor %}</td>
                           <td>{{element.doj}}</td>
                         </tr>
                       {% endfor %}
@@ -160,7 +115,7 @@
 
                     <hr>
 
-                    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
+
 
                   </div>
                 </div>
@@ -176,12 +131,13 @@
 
 <script type="text/javascript">
 
+
     $("#department, #designation").on('change', function() {
     $("#dept").hide();
     dept = $('#department option:selected').val();
     desg = $('#designation option:selected').val();
-
-
+    temp = ""
+    $("#skills").val(temp);
     $.ajax({
     type: "GET",
     url : '/skillset/filter1',
@@ -194,9 +150,11 @@
     });
 
     $("#skills").on('change', function() {
+    $("#select2-id_user-container").text("");
     $("#skill").hide();
     value = this.value
-
+    temp = ""
+    $("#department,#designation").val(temp);
     $.ajax({
     type: "GET",
     url : '/skillset/skills',
@@ -217,7 +175,6 @@
     data : {'value':value},
     success : function(data){
     var content = $(data).find("#data-tables").html();
-    console.log(content)
     $("#data-tables").html(content)
     }
     });
@@ -225,25 +182,22 @@
 
 
     $(document).ready(function() {
-
       "use strict";
-      
       $('#data-tables').dataTable();
-
       $("#export").click(function(e) {
         e.preventDefault();
-
         //getting data from our table
         var data_type = 'data:application/vnd.ms-excel';
         var table = document.getElementById('data-tables');
         var table_html = table.outerHTML.replace(/ /g, '%20');
-
         var a = document.createElement('a');
         a.href = data_type + ', ' + table_html;
         a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
         a.click();
       });
     });
+
+
 
 </script>
 
