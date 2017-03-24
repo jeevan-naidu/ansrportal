@@ -23,6 +23,22 @@
 
 {% endblock %}
 <script>
+    $('document').ready(function(){
+        {% if serializer.attachment %}
+            attach = $(".attachment");
+            $("<span><a target='_blank' href='{{serializer.attachment.value }}'>Attachment </a></span>").insertAfter(attach[1]);
+        {% endif %}
+{#        console.log({{serializer.attachment.value}});#}
+});
+$(".attachment").change(function(){
+   var filename = $(this).val();
+   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png)$/i;
+   if(!re.exec(filename)){
+       alert("File extension not supported");
+       $(this).val('');
+   }
+
+});
  $("form#process_update").submit(function(){
 						 var formData = new FormData($(this)[0]);
 

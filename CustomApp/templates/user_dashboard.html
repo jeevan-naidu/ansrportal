@@ -255,8 +255,10 @@
 
                         </div>
                     <div class="modal-footer background-login">
-                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
-                        </div>
+                          <!-- <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button> -->
+                          <input type="submit" class="btn vd_btn vd_bg-green" value="U">
+                          </div>
+                    </div><!
                     </div><!-- ./modal-footer -->
 
                 </div>
@@ -297,7 +299,16 @@
 
 $('document').ready(function(){
   $('#data-tables').dataTable();
-})
+});
+$("#attachment").change(function(){
+   var filename = $(this).val();
+   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png)$/i;
+   if(!re.exec(filename)){
+       alert("File extension not supported");
+       $("#attachment").val('');
+   }
+
+});
 
 $('form#process_create').submit(function(e){
     var formData = new FormData($(this)[0]);
@@ -322,8 +333,8 @@ $('form#process_create').submit(function(e){
 									type: 'post',
 									data: formData,
 									success: function (data) {
-									    console.log(data);
 									    if (data.record_added) {
+									        window.onbeforeunload = null;
                                             swal("Done!", data.success_msg, "success");
                                             $("#modal_body").html('');
                                             window.location = window.location;
