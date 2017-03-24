@@ -11,7 +11,7 @@
   <input class="attachment" name="{{ field.name }}"{% if field.value %}value="{{ field.value }}"{% endif %} {% if style.input_type != "file" %}class="form-control input-sm"{% endif %}
          type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %}
           {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>
-{% if field.errors %}{{ field.error }}{% endif %}
+{% if field.errors %}{{ field.error.0 }}{% endif %}
 Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.
 <br>
 Maximum allowed file size: 1MB 

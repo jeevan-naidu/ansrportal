@@ -57,14 +57,22 @@ class StartProcess(APIView):
         app_name = get_app_name(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
         serializer = process_serializer(data=request.data)
-        if serializer.is_valid():
+        attachment = request.FILES.get('attachment', "")
+        if serializer.is_valid() and attachment:
             try:
                 serializer.save_as(request)
+                return Response({'record_added': True}, status.HTTP_201_CREATED)
             except:
                 return Response({'serializer': serializer},status.HTTP_400_BAD_REQUEST)
+        elif not attachment:
+            attachment = "Attachment Required"
 
-            return Response({'record_added': True}, status.HTTP_201_CREATED)
-        return render(request, 'form_errors.html', {'serializer': serializer, 'record_added': False, 'app_name': app_name})
+        return render(request,
+                      'form_errors.html',
+                      {'serializer': serializer,
+                       'record_added': False,
+                       'app_name': app_name,
+                       'attachment': attachment})
 
 class GetProcess(APIView):
     """
@@ -125,6 +133,7 @@ class UpdateProcess(APIView):
                       {'queryset': process_object, 'fields': fields,})
 
     def put(self, request, pk, **kwargs):
+        # import ipdb; ipdb.set_trace()
         process = self.get_process(request, **kwargs)
         app_name = get_app_name(request, **kwargs)
         process_object = self.get_object(pk, process[1])
@@ -132,6 +141,7 @@ class UpdateProcess(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({'record_added': True}, status.HTTP_201_CREATED)
+
         return render(request, 'update_form.html',
                           {'serializer': serializer, 'app_name': app_name, 'pk':pk})
 

@@ -4,9 +4,20 @@
 <form method="POST" id="process_create" enctype="multipart/form-data" >
     {% csrf_token %}
     {% render_form serializer template_pack='rest_framework/vertical' %}
+    {{ attachment }}
     <br style="clear:both">
+<input type="submit" class="btn vd_btn vd_bg-green" value="Raise">
 </form>
 <script>
+$(".attachment").change(function(){
+   var filename = $(this).val();
+   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png|\.JPG|\.JPGEG|\.JPG|\.PNG|\.XLSX|\.xlsx|\.xls|\.XLS|\.DOCX|\.docx|\.doc|\.DOC|\.eml|\.EML)$/i;
+   if(!re.exec(filename)){
+       alert("File extension not supported");
+       $(this).val('');
+   }
+
+});
 $('form#process_create').submit(function(e){
     var formData = new FormData($(this)[0]);
 						 form_id = $(this)[0].id;
@@ -54,6 +65,7 @@ $('form#process_create').submit(function(e){
 						 return false;
     e.preventDefault();
 });
+$(".datepicker").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
         </script>
 
 {% endblock %}

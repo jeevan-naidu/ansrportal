@@ -33,7 +33,8 @@ from django.db.models import Sum
 
 logger = logging.getLogger('MyANSRSource')
 
-AllowedFileTypes = ['jpg', 'csv', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml']
+AllowedFileTypes = ['jpg', 'csv', 'png', 'pdf', 'xlsx', 'xls', 'docx', 'doc', 'jpeg', 'eml',
+                    'JPG', 'CSV', 'PNG', 'PDF', 'XLSX', 'XLS', 'DOCX', 'DOC', 'JPEG', 'EML']
 leaveTypeDictionary = dict(LEAVE_TYPES_CHOICES)
 leaveSessionDictionary = dict(SESSION_STATUS)
 leaveWithoutBalance = ['loss_of_pay', 'comp_off_earned', 'pay_off', 'work_from_home', 'ooo_dom', 'ooo_int']

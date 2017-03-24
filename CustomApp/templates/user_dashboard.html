@@ -223,11 +223,12 @@
                         <div class="modal-body min-height-400" id="modal_body">
     {% csrf_token %}
     {% render_form serializer template_pack='rest_framework/vertical' %}
-<br style="clear:both">
+<br style="clear:both"><input type="submit" class="btn vd_btn vd_bg-green" value="Raise">
+
                         </div>
                     <div class="modal-footer background-login">
                           <!-- <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button> -->
-                          <input type="submit" class="btn vd_btn vd_bg-green" value="Raise">
+
                           </div>
                     </div><!-- ./modal-footer -->
 
@@ -256,7 +257,7 @@
                         </div>
                     <div class="modal-footer background-login">
                           <!-- <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button> -->
-                          <input type="submit" class="btn vd_btn vd_bg-green" value="U">
+{#                          <input type="submit" class="btn vd_btn vd_bg-green" value="U">#}
                           </div>
                     </div><!
                     </div><!-- ./modal-footer -->
@@ -300,12 +301,12 @@
 $('document').ready(function(){
   $('#data-tables').dataTable();
 });
-$("#attachment").change(function(){
+$(".attachment").change(function(){
    var filename = $(this).val();
    var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png)$/i;
    if(!re.exec(filename)){
        alert("File extension not supported");
-       $("#attachment").val('');
+       $(".attachment")[0].val('');
    }
 
 });

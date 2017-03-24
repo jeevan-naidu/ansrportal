@@ -15,7 +15,7 @@ class ReimburseSerializer(serializers.ModelSerializer):
                                    default='',
                                    style={'base_template': 'rest_framework/custom_textarea.html', 'rows': 5})
     amount = serializers.IntegerField(style={'base_template': 'rest_framework/custom_input.html'})
-    attachment = serializers.FileField(max_length=None, allow_empty_file=True,
+    attachment = serializers.FileField(max_length=None, allow_empty_file=True, required=False,
                                        style={'base_template': 'rest_framework/custom_attach.html'})
 
     class Meta:
@@ -23,14 +23,19 @@ class ReimburseSerializer(serializers.ModelSerializer):
         fields = ('id', 'bill_no', 'bill_date', 'vendor_name', 'nature_of_expenses', 'amount', 'attachment')
 
     def save_as(self, request):
+        # import ipdb; ipdb.set_trace()
+        status = {"errors": "" ,"success":"" }
         bill_no = self.validated_data['bill_no']
         bill_date = self.validated_data['bill_date']
         vendor_name = self.validated_data['vendor_name']
         nature_of_expenses = self.validated_data['nature_of_expenses']
         amount = self.validated_data['amount']
         attachment = request.FILES.get('attachment', "")
-        func = lambda attachment : attachment if attachment.name.split(".")[-1]  in AllowedFileTypes else None
+        func = lambda attachment : attachment if attachment and attachment.name.split(".")[-1]  in AllowedFileTypes else None
         file = func(attachment)
+        # if status["errors"]:
+        #     self.fields["attachment"].error_messages['required'] = "Attachment Required"
+        # else:
         Reimburse(bill_no=bill_no,
                   bill_date=bill_date,
                   vendor_name=vendor_name,
@@ -41,8 +46,10 @@ class ReimburseSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class TransactionSerializer(serializers.ModelSerializer):
-    reason = serializers.CharField(max_length=1000,
+    reason = serializers.CharField(max_length=1000, required=False,
                                    style={'base_template': 'textarea.html', 'rows': 4}
                                    )
     class Meta:
@@ -52,7 +59,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     def save_as(self, role, request, pk):
         Transaction(
             status=self.validated_data['status'],
-            reason=self.validated_data['reason'],
+            reason=(lambda:self.validated_data['reason'] if 'reason' in self.validated_data else " ")(),
             approved_by=request.user,
             reimburse_id=pk,
             role=role
