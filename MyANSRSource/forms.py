@@ -462,6 +462,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             # Set some placeholder
             'data-placeholder': 'Type Employee Name ...',
+            'required': 'true'
             # Only trigger autocompletion after 3 characters have been typed
             # 'data-minimum-input-length': 3,
         }, ),
@@ -487,6 +488,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['id'].widget.attrs['class'] = "set-zero"
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
+        self.fields['datapoint'].widget.attrs['required'] = "true"
         self.fields['datapoint'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs[
             'class'] = "form-control min-100 pro-start-date"
@@ -494,6 +496,8 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
             'class'] = "form-control  min-100 pro-end-date"
         self.fields['rate'].widget.attrs[
             'class'] = "form-control w-100 pro-planned-effort-percent"
+        self.fields['rate'].widget.attrs[
+            'required'] = "true"
         self.fields['plannedEffort'].widget.attrs[
             'class'] = "form-control w-100 pro-planned-effort"
 
