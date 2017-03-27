@@ -68,7 +68,7 @@
 
 
                     <div class="row">
-                        <div class="col-sm-12 qms-allocators" style="display: none;">
+                        <div class="col-sm-10 qms-allocators" style="display: none;">
 
                           <div class="form-group">
                             <div class="col-md-12">
@@ -82,7 +82,7 @@
                                     <option>Option 5</option>
                                 </select>
                                 <input type="number" min="1" max="10" step="1" onkeydown="return false"  class="form-control input-sm order-number" name="">
-                                  <input id="" type="button" class="btn btn-primary btn-sm tab_complete" onclick= "hello(this);" style="margin-left: 10px;" name=""value="Review Completed"/>
+                                  <input id="" type="button" class="btn btn-primary btn-sm tab_complete" onclick= "mark_as_complete(ele=this);" style="margin-left: 10px;" name=""value="Review Completed"/>
 
 
                               </div>
@@ -91,6 +91,9 @@
 
 
 
+                        </div>
+                        <div class="col-sm-2 qms-allocators2" style="float:left;display:none;">
+                        <input id="lead_tab_complete" type="button" class="btn btn-primary btn-sm lead_tab_complete" onclick= "mark_as_complete();" style="margin-left: 10px;" name=""value="project Completed"/>
                         </div>
                     </div>
 
@@ -231,6 +234,9 @@ function populateForm (theObj){
                 $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
             }else{
                 $('.qms-allocators .form-group:last-child input.tab_complete').remove();
+            }
+            if(theObj['show_lead_complete']==true){
+               $('.qms-allocators2').show();
             }
             $('.qms-allocators .form-group:last-child .field-name span:first-child').html(theObj['tab_name'][key]);
 
@@ -440,11 +446,22 @@ function disableOrder(theObj){
 
 
 
-function hello(ele) {
-
+function mark_as_complete(element=null) {
+        is_lead = false;
+        if (element == null){
+            text = "You are going to mark this project as completed!"
+            data = {"is_lead":true};
+            is_lead = true;
+            success_msg = "Project is marked as completed!"
+        }
+        else{
+            text = "You are going to mark this review group as completed!";
+            data = {"tab_id": element.id ,"is_lead":is_lead };
+            success_msg = "Review is marked as completed!"
+        }
         swal({
           title: "Are you sure?",
-          text: "You are going to mark this review group as completed!",
+          text: text,
           type: "warning",
           showCancelButton: true,
           confirmButtonColor: "#DD6B55",
@@ -456,14 +473,19 @@ function hello(ele) {
         function(isConfirm){
             if (isConfirm) {
                 $.ajax({
-                    url: '/qms/tab_review_completed/',
+                    url: '/qms/mark_as_completed/',
                     type: 'GET',
                     dataType :'json',
-                    data: {"tab_id": ele.id  },
+                    data: data,
                     success: function (data) {
                         if (data == true) {
-                            sweetAlert("Heya...", "Review is marked as completed!", "success");
-                            $(ele).remove();
+                            sweetAlert("Heya...", success_msg, "success");
+                            if(!is_lead){
+                                $(element).hide();
+                            }
+                            else{
+                                $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"True");
+                            }
 
                         }
                         else {
@@ -517,7 +539,7 @@ $('#filter_form').submit(function() {
                     return false;
 
                 }
-                console.log(data);
+                $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"False");
                 // console.log(JSON.stringify(data));
                     populateForm(data);
                     orderTabs(data);

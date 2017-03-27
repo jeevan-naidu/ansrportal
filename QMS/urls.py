@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^fetch_author/$', login_required(fetch_author), name=u'fetch_author'),
     url(r'^chapter_summary/$', login_required(chapter_summary), name=u'chapter_summary'),
     url(r'^review_completed/$', login_required(review_completed), name=u'review_completed'),
-    url(r'^tab_review_completed/$', login_required(tab_review_completed), name=u'tab_review_completed'),
+    url(r'^mark_as_completed/$', login_required(mark_as_completed), name=u'tab_review_completed'),
     url(r'^get_template_process_review/$', login_required(get_template_process_review),
         name=u'get_template_process_review'),
     url(r'^AutocompleteProjects/$', login_required(AutocompleteProjects.as_view()), name='AutocompleteProjects', ),

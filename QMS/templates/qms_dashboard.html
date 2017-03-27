@@ -39,9 +39,11 @@
                           <th>ID</th>
                           <th>Name</th>
                             <th>Lead</th>
-                            <th>No.of chapters</th>
-                          <th>Defect &nbsp; [ S1, S2, S3 ]</th>
-                            <th>No. of questions</th>
+                            <th>Chapters</th>
+                          <th>S1</th>
+                            <th>S2</th>
+                             <th>S3</th>
+                            <th>Questions</th>
                           <th>Defect Density</th>
                         </tr>
                       </thead>
@@ -52,11 +54,9 @@
                           <td>{{obj.project__name}}</td>
                             <td>{{request.user}}</td>
                              <td>{{obj.chapter_count}}</td>
-                          <td>
-                            <span class="defect-span defect-s1">{% get_severity_count obj.project "s1" obj.template_id  as s1%} {{s1}} </span>
-                            <span class="defect-span defect-s2">{% get_severity_count obj.project "s2" obj.template_id  as s2%}{{s2}}</span>
-                            <span class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</span>
-                          </td>
+                            <td class="defect-span defect-s1">{% get_severity_count obj.project "s1" obj.template_id  as s1%} {{s1}} </td>
+                            <td class="defect-span defect-s2">{% get_severity_count obj.project "s2" obj.template_id  as s2%}{{s2}}</td>
+                            <td class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</td>
                           {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
                           <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
                         </tr>
@@ -87,7 +87,9 @@
                           <th>S.No</th>
                           <th>Chapter</th>
                           <th>Author</th>
-                          <th>Defect &nbsp; [ S1, S2, S3 ]</th>
+                          <th>S1</th>
+                            <th>S2</th>
+                             <th>S3</th>
                           <th>No. of Questions</th>
                           <th>Defect Density</th>
                         </tr>
@@ -97,11 +99,9 @@
                           <td class="sorting_1 serial_no">INT-2017-002</td>
                           <td class="chapter">Ansr Portal Dev 2017 Q1</td>
                           <td class="author">sanjay.kunnath</td>
-                          <td class="">
-                            <span class="defect-span defect-s1 s1">3</span>
-                            <span class="defect-span defect-s2 s2">24</span>
-                            <span class="defect-span defect-s3 s3">7</span>
-                          </td>
+                            <td class="defect-span defect-s1 s1">3</td>
+                            <td class="defect-span defect-s2 s2">24</td>
+                            <td class="defect-span defect-s3 s3">7</td>
                           <td class="center questions">0</td>
                           <td class="center defect_density">Lorem Ipsum</td>
                         </tr>
@@ -150,9 +150,10 @@ $('#qms_project_table tbody').html('');
       $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key]['defect_density']);
       $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key]['name']);
       $('#qms_project_table tbody tr:last-child .questions').html(inner_obj[inner_key]['questions']);
-      $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key]['S1']);
-      $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key]['S2']);
-      $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key]['S3']);
+      <!--inner_obj[inner_key]['severity_level']-->
+      $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key]['severity_level']['S1']);
+      $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key]['severity_level']['S2']);
+      $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key]['severity_level']['S3']);
     qms_count++;
 
     }

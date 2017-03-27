@@ -170,24 +170,38 @@ def get_review_group(project=None, chapter=None, is_author=False, component=Fals
     return obj
 
 
-def tab_review_completed(request):
+def mark_as_completed(request):
     result = False
-    print request.session['c_project'], request.session['c_chapter'],request.session['c_component'],request.GET.get('tab_id')
-    try:
-        QASheetHeader.objects.filter(project=request.session['c_project'],
-                                     chapter_component=ChapterComponent.objects.
-                                     get(chapter=request.session['c_chapter'], component=request.session['c_component']),
-                                     review_group=request.GET.get('tab_id')).update(review_group_status=True,
-                                                                                    author_feedback_status=True)
-        result = True
-    except Exception as e:
-        print str(e)
-        logger.error(" {0} ".format(str(e)))
+    if request.GET.get('is_lead') is True:
+        try:
+            QASheetHeader.objects.filter(project=request.session['c_project']).update(review_group_status=True,
+                                                                                      author_feedback_status=True)
+            ProjectTemplateProcessModel.objects.filter(project=request.session['c_project']).\
+                update(lead_review_status=True)
+            result = True
+        except Exception as e:
+            print str(e)
+            logger.error(" {0} ".format(str(e)))
+
+    else:# print request.session['c_project'], request.session['c_chapter'],request.session['c_component'],request.GET.get('tab_id')
+        try:
+            QASheetHeader.objects.filter(project=request.session['c_project'],
+                                         chapter_component=ChapterComponent.objects.
+                                         get(chapter=request.session['c_chapter'],
+                                             component=request.session['c_component']),
+                                         review_group=request.GET.get('tab_id')).update(review_group_status=True,
+                                                                                        author_feedback_status=True)
+            result = True
+        except Exception as e:
+            print str(e)
+            logger.error(" {0} ".format(str(e)))
 
     return HttpResponse(
         json.dumps(result),
         content_type="application/json"
     )
+
+
 def get_template_process_review(request):
     # print request.GET
     request.session['c_project'] = project = request.GET.get('project_id')
@@ -204,6 +218,7 @@ def get_template_process_review(request):
     can_edit = {}
     exclude_list =[]
     config_missing = False
+    show_lead_complete = False
     try:
 
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
@@ -214,6 +229,7 @@ def get_template_process_review(request):
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
         qa_obj = qa_obj.filter(chapter_component=ChapterComponent.objects.get(chapter=chapter,component=component))
         # print "qa_obj" ,qa_obj
+        qa_obj_count = qa_obj.count()
         for members in members_obj:
             if int(members.member_id) != int(author):
                 team_members[int(members.member_id)] = str(members.member.username)
@@ -222,7 +238,7 @@ def get_template_process_review(request):
             # print ele.review_group
             tabs[str(ele.review_group)] = bool(ele.is_mandatory)
             tab_name[str(ele.review_group)] = int(ele.review_group.id)
-            if qa_obj.count() > 0:
+            if qa_obj_count > 0:
                 try:
                     tab_user = qa_obj.get(review_group=ele.review_group)
                     review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project=project,
@@ -245,16 +261,23 @@ def get_template_process_review(request):
         config_missing = True
     exclude_list = [k for k, v in can_edit.iteritems() if v is False]
     current_tab = False
-    try:
-        current_tab = qa_obj.filter(review_group__in=exclude_list).exclude(Q(review_group_status=True) &
-                                                                           Q(author_feedback_status=True)).\
-            values_list("review_group_id")[0]
-        current_tab = int(current_tab)[0]
-    except Exception as e:
-        print str(e)
+
+    if qa_obj_count > 0 and qa_obj_count == len(exclude_list):
+        show_lead_complete = True
+
+    if exclude_list:
+        try:
+            current_tab = qa_obj.filter(review_group__in=exclude_list).exclude(Q(review_group_status=True) &
+                                                                               Q(author_feedback_status=True)).\
+                values_list("review_group_id")[0]
+            current_tab = int(current_tab[0])
+        except Exception as e:
+            logger.error(" {0} ".format(str(e)))
+            print str(e)
+
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit,
-                    "current_tab": current_tab}
+                    "current_tab": current_tab, "show_lead_complete": show_lead_complete}
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
