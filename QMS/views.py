@@ -2,7 +2,7 @@ from django.views.generic import View , TemplateView ,ListView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -152,34 +152,57 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
 def get_review_group(project=None, chapter=None, is_author=False, component=False):
     # print "get_review_group"
     obj = ReviewGroup.objects.all()
-    print is_author , project,chapter,component
+    # print is_author , project,chapter,component
 
     try:
         if not is_author and project and chapter:
-            s = QASheetHeader.objects.filter(project=project, chapter_component=
+            obj = QASheetHeader.objects.filter\
+                (project=project, chapter_component=
                  ChapterComponent.objects.get(chapter=chapter, component=component)).\
-                values_list( "review_group__name", flat=True).order_by('order_number')
+                values('review_group_id', 'review_group__name', 'review_group__alias').order_by('order_number')
+
+            # for s in obj:
+                # print s.review_group_id,s.review_group__name,s.review_group__alias
     except Exception as e:
         print str(e)
         pass
         # print "get_review_group" , str(e)
-    return s
+    return obj
 
 
+def tab_review_completed(request):
+    result = False
+    print request.session['c_project'], request.session['c_chapter'],request.session['c_component'],request.GET.get('tab_id')
+    try:
+        QASheetHeader.objects.filter(project=request.session['c_project'],
+                                     chapter_component=ChapterComponent.objects.
+                                     get(chapter=request.session['c_chapter'], component=request.session['c_component']),
+                                     review_group=request.GET.get('tab_id')).update(review_group_status=True,
+                                                                                    author_feedback_status=True)
+        result = True
+    except Exception as e:
+        print str(e)
+        logger.error(" {0} ".format(str(e)))
+
+    return HttpResponse(
+        json.dumps(result),
+        content_type="application/json"
+    )
 def get_template_process_review(request):
     # print request.GET
-    project = request.GET.get('project_id')
+    request.session['c_project'] = project = request.GET.get('project_id')
     template = request.GET.get('template_id')
     qms_process_model = request.GET.get('qms_process_model')
-    chapter = request.GET.get('chapter')
+    request.session['c_chapter'] = chapter = request.GET.get('chapter')
     author = request.GET.get('author')
-    component = request.GET.get('component')
+    request.session['c_component'] = component = request.GET.get('component')
     tabs = {}
     tab_name = {}
     team_members = {}
     user_tab = {}
     tab_order = {}
     can_edit = {}
+    exclude_list =[]
     config_missing = False
     try:
 
@@ -220,9 +243,18 @@ def get_template_process_review(request):
     except ObjectDoesNotExist:
         tabs = team_members = tab_name = ''
         config_missing = True
+    exclude_list = [k for k, v in can_edit.iteritems() if v is False]
+    current_tab = False
+    try:
+        current_tab = qa_obj.filter(review_group__in=exclude_list).exclude(Q(review_group_status=True) &
+                                                                           Q(author_feedback_status=True)).\
+            values_list("review_group_id")[0]
+        current_tab = int(current_tab)[0]
+    except Exception as e:
+        print str(e)
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
-                    'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit}
-    # print context_data
+                    'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit,
+                    "current_tab": current_tab}
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
@@ -243,7 +275,7 @@ def forbidden_access(self, form, project, message_code, chapter=None):
         result = True
 
     messages.error(self.request, msg_dict[message_code])
-    print "forbidden_access", result
+    # print "forbidden_access", result
     return render(self.request, self.template_name, {'form': form,
                                                      'review_group': get_review_group(project, chapter, component = self.request.session['component']),
                                                      "need_button": result})
@@ -625,11 +657,11 @@ def render_common(obj, qms_form, request):
     result = get_work_book(qms_form, reports, obj)
     severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id'). \
         exclude(name__icontains='S0')
-    messages.success(request, "successfully saved")
+    # messages.success(request, "successfully saved")
     s =get_review_group(request.session['project'], request.session['chapter'], component=request.session['component'])
 
 
-    print s
+    # print s
     return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
                   {'form': request.session['filter_form'], 'defect_master': DefectTypeMaster.objects.all(),
                    'reports': reports, 'review_formset': result[6], "author_feedback_status":

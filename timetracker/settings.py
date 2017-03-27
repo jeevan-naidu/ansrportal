@@ -149,6 +149,7 @@ INSTALLED_APPS = [
     # "pinax.notifications",
     'simple_history',
      'ExitApp',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -161,12 +162,14 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
      # 'admin_reorder.middleware.ModelAdminReorder',
     'simple_history.middleware.HistoryRequestMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
     'QMS.middleware.qms_middleware.QMSPermissionCheckMiddleware',
     'ExitApp.middleware.exitappmiddleware.ExitappPermissionCheckMiddleware',
 ]
+INTERNAL_IPS='127.0.0.1'
 # Overriding Default T_C_P with new T_C_p
 TEMPLATES = [
     {
