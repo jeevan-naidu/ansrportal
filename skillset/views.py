@@ -111,17 +111,17 @@ def SkillSet(request):
                 if employee.user.is_active == True:
                     lists.append(user_details)
                     user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "",  "skills": ""}
-            jlistasa = []
-            for sub in lists:
-                sub['name'] = str(sub['name'])
-                sub['designation'] = str(sub['designation'])
-                sub['department'] = str(sub['department'])
-                sub['id'] = str(sub['id'])
-                sub['doj'] = str(sub['doj'])
-                sub['skills'] = str(sub['skills'])
-                sub['skills'] = sub['skills'].replace("[","").replace("]","").replace("<","").replace(">","").replace("User_Skills","")
-                jlistasa.append(sub)
-            json_list = json.dumps(jlistasa)
+            # jlistasa = []
+            # for sub in lists:
+            #     sub['name'] = str(sub['name'])
+            #     sub['designation'] = str(sub['designation'])
+            #     sub['department'] = str(sub['department'])
+            #     sub['id'] = str(sub['id'])
+            #     sub['doj'] = str(sub['doj'])
+            #     sub['skills'] = str(sub['skills'])
+            #     sub['skills'] = sub['skills'].replace("[","").replace("]","").replace("<","").replace(">","").replace("User_Skills","")
+            #     jlistasa.append(sub)
+            # json_list = json.dumps(jlistasa)
 
         else:
             employee = Employee.objects.get(user_id=user.id)
@@ -159,7 +159,7 @@ def SkillSet(request):
             return render(request, 'skillset.html',
                           {'lists': lists, 'designation_all': designation_all, 'department': department})
 
-        return render(request, 'skillset.html', {'lists': lists, 'json_list': json_list, 'form': form, 'skills_all': skills_all,
+        return render(request, 'skillset.html', {'lists': lists, 'form': form, 'skills_all': skills_all,
                                                  'designation_all': designation_all, 'department': department})
 
 def dept(request):

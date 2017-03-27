@@ -104,9 +104,9 @@
                           <td>{{element.name}}</td>
                           <td>{{element.department}}</td>
                           <td>{{element.designation}}</td>
-                          <td>{% for skill in element.skills %}{{ skills.skills_name }} {% endfor %}</td>
-                          <td>{% for skill in element.skills %}{{ skill.skills_type }} {% endfor %}</td>
-                          <td>{{element.doj}}</td>
+                          <td>{% for skill in element.skills %}{{ skill.skills_name }}</br>{% endfor %}</td>
+                            <td>{% for skill in element.skills %}{{ skill.skills_type }}</br>{% endfor %}</td>
+                            <td>{{element.doj}}</td>
                         </tr>
                       {% endfor %}
                       </tbody>
