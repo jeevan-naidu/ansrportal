@@ -23,7 +23,6 @@ class ReimburseSerializer(serializers.ModelSerializer):
         fields = ('id', 'bill_no', 'bill_date', 'vendor_name', 'nature_of_expenses', 'amount', 'attachment')
 
     def save_as(self, request):
-        # import ipdb; ipdb.set_trace()
         status = {"errors": "" ,"success":"" }
         bill_no = self.validated_data['bill_no']
         bill_date = self.validated_data['bill_date']
@@ -33,9 +32,6 @@ class ReimburseSerializer(serializers.ModelSerializer):
         attachment = request.FILES.get('attachment', "")
         func = lambda attachment : attachment if attachment and attachment.name.split(".")[-1]  in AllowedFileTypes else None
         file = func(attachment)
-        # if status["errors"]:
-        #     self.fields["attachment"].error_messages['required'] = "Attachment Required"
-        # else:
         Reimburse(bill_no=bill_no,
                   bill_date=bill_date,
                   vendor_name=vendor_name,

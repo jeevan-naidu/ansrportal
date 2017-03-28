@@ -212,7 +212,7 @@ class ProcessApproval(APIView):
                 if roles_selected == current_role:
                     if is_final(config, roles_selected):
                         process_role = config.PROCESS[transitions[0]]['role']
-                    else:
+                    elif transitions[0]:
                         next_role = config.PROCESS[transitions[0]]['role']
                         process_role = next_role
 
@@ -256,7 +256,6 @@ class ProcessApproval(APIView):
             process_request = model.objects.get(pk=pk)
             action = serialized_data.validated_data['status']
             role = get_role(config, action, process_request.role)
-            # final = is_final(config, process_request.role)
             update_process(process_request, role[0], role[2])
             serialized_data.save_as(role[1], request, pk)
             record_added = True
