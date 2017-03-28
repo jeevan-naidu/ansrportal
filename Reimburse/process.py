@@ -1,6 +1,6 @@
 from Reimburse.models import Reimburse, Transaction
 from Reimburse.serializers import ReimburseSerializer, TransactionSerializer
-from helpers import manager, hr, admin
+from helpers import manager, finance, admin
 
 
 PROCESS = {
@@ -21,7 +21,7 @@ PROCESS = {
         'transitions': ['admin_approval', 'reimburse_raise']
     },
 'admin_approval': {
-        'name': 'Manager Approval',
+        'name': 'Admin Approval',
         'model': Transaction,
         'role': 'Admin',
         'method': admin,
@@ -32,7 +32,7 @@ PROCESS = {
         'name': 'Finance Approval',
         'model': Transaction,
         'role': 'Finance',
-        'method': hr,
+        'method': finance,
         'serializer': TransactionSerializer,
         'transitions': [None, 'manager_approval']
     },

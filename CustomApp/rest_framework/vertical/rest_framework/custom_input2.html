@@ -7,6 +7,6 @@
   {% endif %}
 <div class="col-sm-7 controls">
   <input minlength="3" maxlength="20" name="{{ field.name }}" {% if style.input_type != "file" %}class="form-control input-sm"{% endif %} type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if field.value %}value="{{ field.value }}"{% endif %} {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>
-{% if field.errors %}{{ field.errors }}eee{% endif %}
+{% if field.errors %}{{ field.errors.0 }}{% endif %}
 </div>
  </div>

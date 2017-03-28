@@ -17,7 +17,7 @@ def manager(request, roles):
                                                   )
     return reimburse_active, reimburse_inactive
 
-def hr(request, roles):
+def finance(request, roles):
     if request.user.groups.filter(name="Finance"):
         reimburse_active = Reimburse.objects.filter(is_active=True,
                                                     role=roles).exclude(process_status='Completed',

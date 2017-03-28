@@ -14,11 +14,11 @@
 {% load rest_framework %}
 
 {% load process_tags %}
-<form method="POST" id="process_update" enctype="multipart/form-data" >
+<form method="POST" id="process_update" enctype="multipart/form-data" data-dirty="true" >
     {% csrf_token %}
     {% render_form serializer template_pack='rest_framework/vertical' %}
 
-    <input type="submit" class="btn btn-default" value="Update">
+    <input type="submit" class="btn vd_btn vd_bg-green" value="Update">
 </form>
 
 {% endblock %}
@@ -32,7 +32,7 @@
 });
 $(".attachment").change(function(){
    var filename = $(this).val();
-   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png)$/i;
+   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png|\.JPG|\.JPGEG|\.JPG|\.PNG|\.XLSX|\.xlsx|\.xls|\.XLS|\.DOCX|\.docx|\.doc|\.DOC|\.eml|\.EML)$/i;
    if(!re.exec(filename)){
        alert("File extension not supported");
        $(this).val('');
@@ -67,14 +67,16 @@ $(".attachment").change(function(){
                                            window.location=window.location;
                                         }
                                         else{
-									        $("#process_update").html(data);
+									       $("#modal_body_update").html();
+
+									        $("#modal_body_update").html(data);
                                         }
 
 
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
 {#									    alert({{errors  }});#}
-												$("#process_update").html();
+												$("#modal_body_update").html();
 
 											},
 									cache: false,
