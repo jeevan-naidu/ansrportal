@@ -2,14 +2,14 @@ from django import forms
 from .models import *
 from django.contrib.auth.models import User
 from MyANSRSource.models import Project, Chapter, ProjectManager
-
+import datetime
 
 from dal import autocomplete
 
 
 class BaseAssessmentTemplateForm(forms.Form):
     project = forms.ModelChoiceField(
-                queryset=Project.objects.all(),
+                queryset=Project.objects.filter(endDate__gte=datetime.date.today()),
                 widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
                  'data-placeholder': 'Project ',
         }, ),
@@ -32,7 +32,8 @@ class BaseAssessmentTemplateForm(forms.Form):
 
     author = forms.ModelChoiceField(
             queryset=User.objects.all(),
-            widget=autocomplete.ModelSelect2(url='AutoCompleteUserProjectSpecific', forward=('project', 'chapter'),attrs={
+            widget=autocomplete.ModelSelect2(url='AutoCompleteUserProjectSpecific', forward=('project', 'chapter',
+                                                                                             'component'), attrs={
              'data-placeholder': 'Author ',
     }, ),
             required=True, )
@@ -181,9 +182,10 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                                                                                               flat=True)[0]
             if chapter_component_obj:
                 try:
+                    # print chapter_component_obj.id
                     qa_obj = QASheetHeader.objects.filter(project=project_obj, chapter_component=chapter_component_obj,
                                                           review_group_id=tab)[0]
-
+                    # print qa_obj.author_feedback_status,qa_obj.review_group_status
                     # condition to prevent reviewer from editing
                     if qa_obj.reviewed_by == request_obj.user:
                         self.fields['remarks'].widget.attrs['disabled'] = True

@@ -77,7 +77,7 @@
                       <div class="modal-content">
                         <div class="modal-header vd_bg-blue vd_white">
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                          <h4 class="modal-title" id="myModalLabel">Chapter Level</h4>
                         </div>
                         <div class="modal-body">
 
@@ -86,6 +86,7 @@
                         <tr>
                           <th>S.No</th>
                           <th>Chapter</th>
+                            <th>Component</th>
                           <th>Author</th>
                           <th>S1</th>
                             <th>S2</th>
@@ -98,6 +99,7 @@
                         <tr class="gradeX even" role="row">
                           <td class="sorting_1 serial_no">INT-2017-002</td>
                           <td class="chapter">Ansr Portal Dev 2017 Q1</td>
+                            <td class="component">Ansr Portal Dev 2017 Q1</td>
                           <td class="author">sanjay.kunnath</td>
                             <td class="defect-span defect-s1 s1">3</td>
                             <td class="defect-span defect-s2 s2">24</td>
@@ -137,27 +139,35 @@ var qms_table_block = $('#qms_project_table tbody tr').html();
 
 function project_iterate(qms_obj){
         console.log(JSON.stringify(qms_obj));
+        <!--Object.keys(qms_obj).length === 0; jQuery.isEmptyObject({}); -->
       qms_count = 1;
 $('#qms_project_table tbody').html('');
   for (var qms_key in qms_obj){
-    if (qms_obj.hasOwnProperty(qms_key)){
-      var inner_obj = qms_obj[qms_key];
-  for (var inner_key in inner_obj){
-    if (inner_obj.hasOwnProperty(inner_key)){
-      $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
-      $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
-      $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key]['author']);
-      $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key]['defect_density']);
-      $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key]['name']);
-      $('#qms_project_table tbody tr:last-child .questions').html(inner_obj[inner_key]['questions']);
-      <!--inner_obj[inner_key]['severity_level']-->
-      $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key]['severity_level']['S1']);
-      $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key]['severity_level']['S2']);
-      $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key]['severity_level']['S3']);
-    qms_count++;
+      if (qms_obj.hasOwnProperty(qms_key)){
+          var inner_obj = qms_obj[qms_key];
+          console.log("inner_obj"+JSON.stringify(inner_obj));
+          for (var inner_key in inner_obj){
+              if (inner_obj.hasOwnProperty(inner_key)){
+                  for (var sub_inner_key in inner_obj[inner_key]){
+                      if (inner_key.hasOwnProperty(sub_inner_key)){
+                          $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
+                          $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
+                          $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key][sub_inner_key]['author']);
+                          $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key][sub_inner_key]['defect_density']+"%");
+                          $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key][sub_inner_key]['chapter_name']);
+                          $('#qms_project_table tbody tr:last-child .component').html(inner_obj[inner_key][sub_inner_key]['component_name']);
 
-    }
-  }
+                          $('#qms_project_table tbody tr:last-child .questions').html(inner_obj[inner_key][sub_inner_key]['questions']);
+                          <!--inner_obj[inner_key]['severity_level']-->
+                          $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S1']);
+                          $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S2']);
+                          $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S3']);
+                          qms_count++;
+                      }
+                  }
+
+              }
+          }
 
     }
   }

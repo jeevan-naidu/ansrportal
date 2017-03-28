@@ -2,7 +2,7 @@ from django.views.generic import View , TemplateView ,ListView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -226,8 +226,10 @@ def get_template_process_review(request):
         if not obj:
             config_missing = True
         members_obj = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
+        for s in members_obj:
+            print "mem", s
         qa_obj = qa_sheet_header_obj(project, chapter, author=author)
-        qa_obj = qa_obj.filter(chapter_component=ChapterComponent.objects.get(chapter=chapter,component=component))
+        qa_obj = qa_obj.filter(chapter_component=ChapterComponent.objects.get(chapter=chapter, component=component))
         # print "qa_obj" ,qa_obj
         qa_obj_count = qa_obj.count()
         for members in members_obj:
@@ -255,15 +257,14 @@ def get_template_process_review(request):
                 else:
                     user_tab[str(ele.review_group)] = None
                     tab_order[str(ele.review_group)] = None
+        if qa_obj_count > 0 and qa_obj_count == len(exclude_list):
+            show_lead_complete = True
 
     except ObjectDoesNotExist:
         tabs = team_members = tab_name = ''
         config_missing = True
     exclude_list = [k for k, v in can_edit.iteritems() if v is False]
     current_tab = False
-
-    if qa_obj_count > 0 and qa_obj_count == len(exclude_list):
-        show_lead_complete = True
 
     if exclude_list:
         try:
@@ -278,6 +279,7 @@ def get_template_process_review(request):
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit,
                     "current_tab": current_tab, "show_lead_complete": show_lead_complete}
+    print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
@@ -385,7 +387,7 @@ def get_work_book(qms_form, reports, obj):
     tmp_weight = {}
     defect_density = {}
     # print severity_count
-    s = SeverityLevelMaster.objects.filter(is_active=True).exclude(name__icontains='S0')
+    s = SeverityLevelMaster.objects.filter(is_active=True)
     for k, v in severity_count.iteritems():
         severity_level_obj = s.get(id=int(k))
         tmp_weight[k] = float(severity_level_obj.penalty_count) * v
@@ -404,6 +406,7 @@ def get_work_book(qms_form, reports, obj):
     total_defect_density = sum(defect_density.itervalues())
     severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id'). \
         exclude(name__icontains='S0')
+    # below to pack multiple variables in named tuple
     result = collections.namedtuple('result', ['a', 'b', 'c', 'd', 'e', 'f', 'g'])
     resultant_obj = result(severity_count, score, total_score, total_count, defect_density, total_defect_density, qms_formset)
     return resultant_obj
@@ -440,7 +443,7 @@ class AssessmentView(TemplateView):
 
             if request.user is author:
                 # print"is author"
-                get_review_group(project, chapter, is_author=False,component=component)
+                get_review_group(project, chapter, is_author=False, component=component)
             try:
 
                 # print "im in try"
@@ -844,53 +847,87 @@ def review_completed(request):
     return render_common(obj, qms_form, request)
 
 
+# https://en.wikipedia.org/wiki/Autovivification
+def tree():
+    return collections.defaultdict(tree)
+
+
 def chapter_summary(request):
     project_id = request.GET.get('project_id')
+    # print project_id
     review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project_id=project_id).\
-        values('QA_sheet_header__chapter_id').distinct()
-    qms_data = {}
+        values('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id').distinct().annotate(cc_count=Count('QA_sheet_header__chapter_id' ,'QA_sheet_header__chapter_component_id'))
+    # print review_report_obj.query
+    # below let us to assign without explicitly declaring index
+    qms_data = tree()
     qms_data_list = []
     tmp_dict = {}
     severity_level = SeverityLevelMaster.objects.all().exclude(name__icontains='S0')
     if review_report_obj:
         for eachData in review_report_obj:
             for k, v in eachData.iteritems():
-                if k is 'QA_sheet_header__chapter_id':
-                    obj = Chapter.objects.get(id=v)
-                    qms_data[obj.id] = {}
-                    qms_data[obj.id]['severity_level'] = {}
-                    qms_data[obj.id]['name'] = obj.name
-                    tmp_obj = QASheetHeader.objects.filter(project_id=project_id, chapter_id=obj.id)
-                    question_count = sum(tmp_obj.filter().values_list('count', flat=True))
-                    # print question_count
-                    qa_obj = tmp_obj[0]
-                    qms_data[obj.id]['author'] = qa_obj.author.username
+                if k is 'QA_sheet_header__chapter_component_id':
+                    try:
+                        # print "try"
+                        # component_obj = Component.objects.get(id=v)
+                        chapter_component_obj = ChapterComponent.objects.get(pk=v)
+                        # print "chapter_component_obj", chapter_component_obj.chapter.id ,
+                        # chapter_component_obj.component.id
+                        # if chapter_component_obj.chapter.id not in qms_data:
+                        #     qms_data[chapter_component_obj.chapter.id] = {}
+                        # if chapter_component_obj.component.id not in qms_data[chapter_component_obj.chapter.id]:
+                        #     qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id] = {}
 
-                    for s in severity_level:
-                        # print "s",s
-                        s_count = review_report_obj.filter(defect_severity_level__severity_level=s).\
-                            values('defect_severity_level__severity_level__name',
-                                   'defect_severity_level__severity_level').\
-                            annotate(s_count=Count('defect_severity_level__severity_level'))
-                        if not s_count:
-                            qms_data[obj.id]['severity_level'][s.name] = 0
-                            tmp_dict[s.name] = 0
-                        else:
-                            for c in s_count:
-                                try:
-                                    qms_data[obj.id]['severity_level'][s.name] = c['s_count']
-                                    tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count
-                                except Exception as e:
-                                    print str(e)
-                                    logger.error(" qms {0} ".format(str(e)))
-                        # print tmp_dict
-                        tmp_dd = float(sum(tmp_dict.values()) * 100)
-                        qms_data[obj.id]['defect_density'] = str(round(tmp_dd, 2))
-                        qms_data[obj.id]['questions'] = question_count
+                        qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['severity_level'] = {}
+                        # print qms_data
+                        qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['chapter_name'] = chapter_component_obj.chapter.name
+                        qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['component_name'] = chapter_component_obj.component.name
+
+                        tmp_obj = QASheetHeader.objects.filter(project_id=project_id,
+                                                               chapter_component=chapter_component_obj)
+                        # for s in tmp_obj:
+                        #     print "count", s.count
+                        # question_count = sum(tmp_obj.filter().values_list('count', flat=True))
+                        question_count = tmp_obj.aggregate(Sum('count'))
+                        print "question_count", question_count
+                        question_count = question_count['count__sum']
+                        qa_obj = tmp_obj[0]
+                        qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['author'] = qa_obj.author.username
+                        for s in severity_level:
+                            # print "s",s
+                            s_count = review_report_obj.filter(defect_severity_level__severity_level=s,
+                                                               QA_sheet_header__chapter_component=chapter_component_obj). \
+                                values('defect_severity_level__severity_level__name',
+                                       'defect_severity_level__severity_level'). \
+                                annotate(s_count=Count('defect_severity_level__severity_level')).exclude(
+                                is_active=False)
+                            if not s_count:
+                                qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id][
+                                    'severity_level'][s.name] = 0
+                                tmp_dict[s.name] = 0
+                            else:
+                                for c in s_count:
+                                    try:
+                                        qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id][
+                                            'severity_level'][s.name] = c['s_count']
+                                        tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count
+                                    except Exception as e:
+                                        print str(e)
+                                        logger.error(" qms {0} ".format(str(e)))
+                            # print tmp_dict
+                            tmp_dd = float(sum(tmp_dict.values()) * 100)
+                            qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id][
+                                'defect_density'] = str(round(tmp_dd, 2))
+                            qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id][
+                                'questions'] = question_count
+                    except Exception as e:
+                        # print "in except"
+                        print str(e)
+
                         # qms_data[obj.id]['severity_level'] = tmp_dict
             qms_data_list.append(qms_data.copy())
             qms_data.clear()
-    # print (qms_data_list)
+    # print json.dumps(qms_data_list)
     return HttpResponse(
         json.dumps(qms_data_list),
         content_type="application/json"

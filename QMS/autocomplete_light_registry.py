@@ -3,6 +3,7 @@ from django.db.models import Q
 from MyANSRSource.models import ProjectTeamMember, ProjectManager
 from .models import *
 from dal import autocomplete
+import datetime
 
 
 class AutocompleteUser(autocomplete.Select2QuerySetView):
@@ -19,11 +20,8 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
 class AutocompleteProjectsManager(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = Project.objects.filter(
-            id__in=ProjectManager.objects.filter(
-                user=self.request.user
-            ).values('project')
-        )
+        choices = Project.objects.filter(id__in=ProjectManager.objects.filter(user=self.request.user).values('project')
+                                         , endDate__gte=datetime.date.today())
         choices = choices.filter(name__icontains=q)
         return choices
 
@@ -36,7 +34,7 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
             id__in=ProjectTeamMember.objects.filter(
                 Q(member=self.request.user) |
                 Q(project__projectManager=self.request.user)
-            ).values('project')
+            ).values('project'), endDate__gte=datetime.date.today()
         ).order_by('name')
         choices = choices.filter(name__icontains=q)
         return choices
@@ -113,11 +111,14 @@ class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
         project = self.forwarded.get('project', None)
         # print project
         chapter = self.forwarded.get('chapter', None)
-        # print chapter
+        component = self.forwarded.get('component', None)
+
+        # print project ,chapter ,component
         try:
             user = QASheetHeader.objects.filter \
-                (project=project, chapter=chapter).values_list('author', flat=True)[0]
-
+                (project=project, chapter_component=ChapterComponent.objects.
+                 get(chapter=chapter, component=component)).values_list('author', flat=True)[0]
+            # print user
             qs = qs.filter(pk=user)
 
         except:
