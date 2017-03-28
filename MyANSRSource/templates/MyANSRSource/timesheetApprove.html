@@ -3,7 +3,6 @@
 {% block siteTitle %}Timesheet{% endblock %}
 
 {% load permissions %}
-<!-- {% load emoticons_tags %} -->
 {% block pageTitle %}
 Approve Timesheet
 
@@ -222,9 +221,7 @@ Approve Timesheet
 </table>
             <input type="submit" name="submit" class="btn btn-sm vd_btn vd_bg-green pull-right" value="Submit">
         {% else %}
-            <!--{% emoticons %}-->
         <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week </span>
-            <!--{% endemoticons %}-->
         {% endif %}
         <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
         <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
