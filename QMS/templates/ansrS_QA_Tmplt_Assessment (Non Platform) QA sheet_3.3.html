@@ -190,13 +190,14 @@
                                          <td class="" id="screen_shot-{{forloop.counter}}-td">
                                             {{form_obj.screen_shot}}
                                         {% if form_obj.screen_shot_url.value %}
-                                             <label>clear </label>  {{form_obj.clear_screen_shot }} <span class="screen_shot">{% if form_obj.screen_shot_url.value %}
-                                                                    <label class="control-label">
+                                             <label>clear </label>  {{form_obj.clear_screen_shot }}
+                                             <span class="screen_shot">{% if form_obj.screen_shot_url.value %}
+
                         <a target="_blank" href="{{form_obj.screen_shot_url.value}}">
                         {% if form_obj.screen_shot_url.value|GetFileTypeFromName == 'xls' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'xlsx' %}
                             <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="25px" width="25px">
                         {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'pdf' %}
-                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="20px" width="25px">
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="250px" width="25px">
                         {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'doc' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'docx'  %}
                             <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="25px" width="25px">
                         {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpeg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'png' %}
@@ -582,6 +583,7 @@
                 $clone.find('text , input , textarea').val('');
                 var increment_id = 0;
                 $tr.after($clone);
+                $clone.find("span.screen_shot").children().remove();
                  $clone.find("td,input, select, textarea").each(function(index) {
                  <!--console.log("index "+index);-->
                  if (index==0) { console.log("sr"+ $(this).text());

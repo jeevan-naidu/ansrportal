@@ -279,7 +279,7 @@ def SingleProjectReport(request):
                        total_hours=Sum(F('mondayH') + F('tuesdayH')+F('wednesdayH') + F('thursdayH')+F('fridayH') + F('saturdayH')+F('sundayH'))
                        ).order_by('task__name', 'teamMember_id')
             orderbyList = ['task__name']
-            print taskData.query
+            # print taskData.query
             ts = TimeSheetEntry.objects.filter(
                 project=cProject).values('task__name')
             avgTaskData = getAvgProd(request, ts, orderbyList)

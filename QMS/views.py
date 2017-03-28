@@ -856,7 +856,8 @@ def chapter_summary(request):
     project_id = request.GET.get('project_id')
     # print project_id
     review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project_id=project_id).\
-        values('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id').distinct().annotate(cc_count=Count('QA_sheet_header__chapter_id' ,'QA_sheet_header__chapter_component_id'))
+        values('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id').distinct().\
+        annotate(cc_count=Count('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id'))
     # print review_report_obj.query
     # below let us to assign without explicitly declaring index
     qms_data = tree()
@@ -889,7 +890,7 @@ def chapter_summary(request):
                         #     print "count", s.count
                         # question_count = sum(tmp_obj.filter().values_list('count', flat=True))
                         question_count = tmp_obj.aggregate(Sum('count'))
-                        print "question_count", question_count
+                        # print "question_count", question_count
                         question_count = question_count['count__sum']
                         qa_obj = tmp_obj[0]
                         qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['author'] = qa_obj.author.username
