@@ -133,7 +133,6 @@ class UpdateProcess(APIView):
                       {'queryset': process_object, 'fields': fields,})
 
     def put(self, request, pk, **kwargs):
-        # import ipdb; ipdb.set_trace()
         process = self.get_process(request, **kwargs)
         app_name = get_app_name(request, **kwargs)
         process_object = self.get_object(pk, process[1])
