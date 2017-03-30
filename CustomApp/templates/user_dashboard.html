@@ -102,7 +102,7 @@
 
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab2">
-                          <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <table class="table table-striped reimburse-table myansr-table" id="data-tables_1">
                           <thead>
                             <tr>
                                 {% for field in fields %}
@@ -151,7 +151,7 @@
                         </table>
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab3">
-                          <table class="table table-striped reimburse-table" id="data-tables">
+                          <table class="table table-striped reimburse-table" id="data-tables_2">
                           <thead>
                             <tr>
                                 {% for field in fields %}
@@ -300,6 +300,8 @@
 
 $('document').ready(function(){
   $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
+  $('#data-tables_2').dataTable();
 });
 $(".attachment").change(function(){
    var filename = $(this).val();

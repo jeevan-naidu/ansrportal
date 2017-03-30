@@ -87,7 +87,7 @@
 
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab2">
-                          <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <table class="table table-striped reimburse-table myansr-table" id="data-tables_1">
                           <thead>
                             <tr>
                                 {% for field in fields %}
@@ -208,6 +208,7 @@
 
 $('document').ready(function(){
   $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
 });
 
 $("#modal-container-Detail").on('shown.bs.modal', function(e) {
