@@ -54,7 +54,7 @@
                              <tr>
                          {% for field in fields %}
                              {% if forloop.counter == 1 and  field != "id"%}
-                             <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Approve"
+                             <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Details"
                                 class="pull-right ">
                                                     {{ process| field_name:field }}
                                                   </a></td>
@@ -107,7 +107,7 @@
                              <tr>
                          {% for field in fields %}
                              {% if forloop.counter == 1 and  field != "id"%}
-                                        <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Approve"
+                                        <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Details"
                                 class="pull-right ">
                                                     {{ process| field_name:field }}
                                                   </a></td>
