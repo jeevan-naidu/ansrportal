@@ -45,6 +45,7 @@
                              <th>S3</th>
                             <th>Questions</th>
                           <th>Defect Density</th>
+                            <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -59,6 +60,7 @@
                             <td class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</td>
                           {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
                           <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
+                            <td>{{ obj.lead_review_status|yesno:"Closed, On Progress" }}</td>
                         </tr>
                      {% endfor %}
                    </tbody>

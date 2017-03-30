@@ -116,7 +116,7 @@ def get_review(obj):
 
 
 def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=None):
-
+    # qa_sheet_header_obj(project, chapter, author=author)
     try:
         # print chapter, "chapter"
         # print active_tab, "-<active_tab->", project, chapter, author
@@ -140,7 +140,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
                 # print "if"
                 # print result
         else:
-            # print "else"
+            print "else"
             result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
 
     except ObjectDoesNotExist as e:
@@ -172,7 +172,8 @@ def get_review_group(project=None, chapter=None, is_author=False, component=Fals
 
 def mark_as_completed(request):
     result = False
-    if request.GET.get('is_lead') is True:
+    if request.GET.get('is_lead') == 'true':
+        print "in if true"
         try:
             QASheetHeader.objects.filter(project=request.session['c_project']).update(review_group_status=True,
                                                                                       author_feedback_status=True)
@@ -184,6 +185,7 @@ def mark_as_completed(request):
             logger.error(" {0} ".format(str(e)))
 
     else:# print request.session['c_project'], request.session['c_chapter'],request.session['c_component'],request.GET.get('tab_id')
+        print "in else"
         try:
             QASheetHeader.objects.filter(project=request.session['c_project'],
                                          chapter_component=ChapterComponent.objects.
@@ -220,16 +222,21 @@ def get_template_process_review(request):
     config_missing = False
     show_lead_complete = False
     try:
-
+        # print template,qms_process_model
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
             order_by('id')
+        # print obj.query
         if not obj:
             config_missing = True
         members_obj = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
-        for s in members_obj:
-            print "mem", s
-        qa_obj = qa_sheet_header_obj(project, chapter, author=author)
-        qa_obj = qa_obj.filter(chapter_component=ChapterComponent.objects.get(chapter=chapter, component=component))
+        # print members_obj.query
+        # for s in members_obj:
+        # print "mem", s
+        try:
+            qa_obj = qa_sheet_header_obj(project, chapter, author=author)
+            qa_obj = qa_obj.filter(chapter_component=ChapterComponent.objects.get(chapter=chapter, component=component))
+        except:
+            qa_obj_count = 0
         # print "qa_obj" ,qa_obj
         qa_obj_count = qa_obj.count()
         for members in members_obj:
@@ -248,7 +255,10 @@ def get_template_process_review(request):
                     if review_report_obj:
                         can_edit[str(ele.review_group.id)] = False
                     else:
-                        can_edit[str(ele.review_group.id)] = True
+                        if tab_user.review_group_status and tab_user.author_feedback_status:
+                            can_edit[str(ele.review_group.id)] = False
+                        else:
+                            can_edit[str(ele.review_group.id)] = True
                 except ObjectDoesNotExist:
                     tab_user = None
                 if tab_user is not None:
@@ -268,10 +278,20 @@ def get_template_process_review(request):
 
     if exclude_list:
         try:
-            current_tab = qa_obj.filter(review_group__in=exclude_list).exclude(Q(review_group_status=True) &
+            tmp_obj = qa_obj.filter(review_group__in=exclude_list).exclude(Q(review_group_status=True) &
                                                                                Q(author_feedback_status=True)).\
-                values_list("review_group_id")[0]
-            current_tab = int(current_tab[0])
+                values_list("review_group_id", flat=True).first()
+            print "if current_tab", current_tab
+            if tmp_obj:
+                current_tab = int(tmp_obj)
+            else:
+                print "else"
+                tmp_obj = qa_obj.filter(Q(review_group_status=True) & Q(author_feedback_status=True)).\
+                    order_by('-order_number').values_list("order_number", flat=True).first()
+                print tmp_obj
+                print "else tmp_obj tab", tmp_obj
+                current_tab = qa_obj.filter(order_number=int(tmp_obj) + 1).values_list("review_group_id", flat=True).first()
+                current_tab = int(current_tab)
         except Exception as e:
             logger.error(" {0} ".format(str(e)))
             print str(e)
@@ -810,7 +830,7 @@ class DashboardView(ListView):
         context['projects'] = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
                                                                          filter(user=self.request.user).
                                                                          values('project')).\
-            values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id').\
+            values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id', 'lead_review_status').\
             annotate(chapter_count=Count('project__book__chapter'))
         # print (context['projects'])
         return context

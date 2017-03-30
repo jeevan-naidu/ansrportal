@@ -373,31 +373,31 @@
                          <div class="panel-footer clearfix">
                               {% if result  and  need_button %}
 
-                                 {% if not reviewer_feedback_status and  author_feedback_status %}
-                             <!--<input type="submit" id="form-submit" value="submit"-->
-                                    <!--class="btn btn-info btn-sm pull-right"/>-->
-                                  <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
-                                        <!--<input type="button" class="btn btn-info btn-sm pull-right" id="add_button"-->
-                                            <!--value="Add Item"  />-->
-                                 {% endif %}
+                                     {% if not reviewer_feedback_status and  author_feedback_status %}
+                                 <!--<input type="submit" id="form-submit" value="submit"-->
+                                        <!--class="btn btn-info btn-sm pull-right"/>-->
+                                      <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
+                                            <!--<input type="button" class="btn btn-info btn-sm pull-right" id="add_button"-->
+                                                <!--value="Add Item"  />-->
+                                     {% endif %}
 
-                                  {% if not reviewer_feedback_status and not author_feedback_status %}
-                             <input type="submit" id="form-submit" value="submit"
-                                    class="btn btn-info btn-sm pull-right"/>
-                                    <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
-                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
-                                        value="Add Item"  />
-                                  {% endif %}
+                                      {% if not reviewer_feedback_status and not author_feedback_status %}
+                                 <input type="submit" id="form-submit" value="submit"
+                                        class="btn btn-info btn-sm pull-right"/>
+                                        <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
+                                        <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                            value="Add Item"  />
+                                      {% endif %}
 
-                                 {% if reviewer_feedback_status and not author_feedback_status %}
-                             <input type="submit" id="form-submit" value="submit"
-                                    class="btn btn-info btn-sm pull-right"/>
-                                    <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
-                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
-                                        value="Add Item"  />
-                                 {% endif %}
+                                     {% if reviewer_feedback_status and not author_feedback_status %}
+                                 <input type="submit" id="form-submit" value="submit"
+                                        class="btn btn-info btn-sm pull-right"/>
+                                        <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
+                                        <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                            value="Add Item"  />
+                                     {% endif %}
 
-                             {% endif %}
+                             {% else %}
                               {% if request.session.author_logged_in %}
                                 {% if reviewer_feedback_status and not author_feedback_status %}
                                                           <input type="submit" id="form-submit" value="submit"
@@ -427,7 +427,7 @@
 
 
                              {% endif %}
-
+  {% endif %}
                          </div>
                          {% endif %}
 </form>

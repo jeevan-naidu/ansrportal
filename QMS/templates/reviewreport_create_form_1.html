@@ -41,7 +41,7 @@
                     {% csrf_token %}
 
                     <div class="row">
-                        <div class="col-sm-12 qms-selectors">
+                        <div class="col-sm-10 qms-selectors">
 
                                 <span>{{ form.project.errors }}</span>{{ form.project}}
                                 <span>{{ form.qms_process_model.errors }}</span>{{ form.qms_process_model}}
@@ -61,6 +61,9 @@
 
 
 
+                        </div>
+                        <div class="col-sm-2 qms-allocators2" style="float:left;display:none;">
+                        <input id="lead_tab_complete" type="button" class="btn btn-primary btn-sm lead_tab_complete" onclick= "mark_as_complete();" style="margin-left: 10px;" name=""value="project Completed"/>
                         </div>
 
                     </div><!-- ./qms-selectors row -->
@@ -92,9 +95,7 @@
 
 
                         </div>
-                        <div class="col-sm-2 qms-allocators2" style="float:left;display:none;">
-                        <input id="lead_tab_complete" type="button" class="btn btn-primary btn-sm lead_tab_complete" onclick= "mark_as_complete();" style="margin-left: 10px;" name=""value="project Completed"/>
-                        </div>
+
                     </div>
 
                     <hr>
@@ -233,6 +234,7 @@ function populateForm (theObj){
             if(parseInt(theObj['current_tab'])!=NaN  && parseInt(theObj['current_tab']) == parseInt(key)) {
                 $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
             }else{
+                $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
                 $('.qms-allocators .form-group:last-child input.tab_complete').hide();
             }
             if(theObj['show_lead_complete']==true){
@@ -425,18 +427,25 @@ function checkOrder(){
 }
 
 function disableOrder(theObj){
-
+console.log("theObj"+JSON.stringify(theObj));
+    disable_count = 0;
+    loop_counter = 0 ;
     for (var disableKey in theObj['can_edit']){
         if(theObj['can_edit'].hasOwnProperty(disableKey)){
+            loop_counter++;
             if (theObj['can_edit'][disableKey] == false) {
                 var order = "order_" + disableKey;
                 var drop_down = "user_" + disableKey;
                 $('input[name=' + order + '] ,[name=' + drop_down + '] ').prop('disabled',"True");
                  $('input[name=' + order + '],[name=' + drop_down + ']').attr('title', "This step is completed/on progress can't be edited");
+                 disable_count ++;
             }
 
         }
-    }    
+    }
+      if(loop_counter == disable_count && disable_count !=0) {
+        $('#qms-submit').prop("disabled",true);
+      }
 }
 
 
@@ -475,13 +484,50 @@ function mark_as_complete(element=null) {
                     data: data,
                     success: function (data) {
                         if (data == true) {
+                            var num_items = $('.order-number').length;
+                            var disabled_count = 0;
                             sweetAlert("Heya...", success_msg, "success");
                             if(!is_lead){
                                 $(element).hide();
+                                $("#user_"+element.id).prop('disabled',true);
+                                $("#order_"+element.id).prop('disabled',true);
+                                count = 0;
+
+                                $(".order-number").each(function(index) {
+                                console.log(this.id+"-"+element.id);
+                                id = this.id.split('_')
+                                 if (id[1] == element.id) {
+                                    console.log("if");
+                                    count++;
+                                    if (index === num_items - 1) {
+                                        console.log("last");
+                                         $('.qms-allocators2').show();
+                                    }
+                                    return true;
+                                 }
+                                 if (count ==1 ) {
+                                    console.log("im in");
+                                    id = this.id.split('_')
+                                    $('#'+id[1]).show();
+                                    $(".order-number").each(function() {
+                                        if($(this).is(':disabled')) {
+                                            disabled_count++;
+                                        }
+                                    });
+                                    console.log("disabled_count"+disabled_count+"num_items"+num_items);
+                                    if(disabled_count!=0 && disabled_count == num_items ){
+                                        $('.qms-allocators2').show();
+                                    }
+                                    return false;
+
+                                 }
+                                });
+
                             }
                             else{
-                                <!--$("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"True");-->
-                                $("[name^=user_],[name^=order_]").prop('disabled',"True");
+                                $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"True");
+                                $('.qms-allocators2').hide();
+
                             }
 
                         }
@@ -531,18 +577,19 @@ $('#filter_form').submit(function() {
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),
                 "chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val(),"component" :$(':input[name$=component]').val() },
                 success: function (data) {
-                if (data['config_missing'] == 'true') {
+                if (data['config_missing'] == true) {
                     sweetAlert("Oops...", "Configuration is missing!", "error");
                     return false;
 
                 }
                 <!--$("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"False");-->
                 // console.log(JSON.stringify(data));
+
                     populateForm(data);
                     orderTabs(data);
                     assignMandatory(data);
                     disableOrder(data);
-
+                    if (!$('.order-number:first').is(':disabled')){ console.log("im in 1 "); $('#1').show();}
                     // globalObj to capture the order of tabs
 
                     globalObj = data;

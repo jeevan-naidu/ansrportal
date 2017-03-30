@@ -149,7 +149,7 @@ INSTALLED_APPS = [
     # "pinax.notifications",
     'simple_history',
      'ExitApp',
-    'debug_toolbar',
+    # 'debug_toolbar',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -162,7 +162,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
      # 'admin_reorder.middleware.ModelAdminReorder',
     'simple_history.middleware.HistoryRequestMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
