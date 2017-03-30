@@ -19,7 +19,8 @@
                       <div id="wizard-1" class="form-wizard">
                         <ul>
                             {% for name in process_detail %}
-                          <li>
+                                <li>
+
                               <a href="#tab_name{{ forloop.counter }}"  data-toggle="tab">
                             <div class="menu-icon"> {{ forloop.counter }} </div>
                             {{ name | transaction_name_split }} </a>
@@ -35,10 +36,17 @@
                               {% if forloop.counter == 1 %}
                                   {% for detail in object_detail %}
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label" style="text-align: right;padding-right:0px"><b>{{ detail.0.title }} :</b></label>
+                                    <label class="col-sm-5 control-label" style="text-align: right;padding-right:0px"><b>{{ detail.0 | transaction_name_split  }} :</b></label>
                               <div class="col-sm-7 controls">
                                   {% if detail.0 == "user" %}
                                       <div class="control-value">{{ detail.1.first_name }} {{ detail.1.last_name  }} </div>
+                                  {% elif detail.0 == "attachment" %}
+                                      <div class="control-value">
+                                      <a target="_blank" href="/media/{{ detail.1 }} ">
+                       Attachment
+                   </a>
+
+                                      </div>
                                   {% else %}
                                       <div class="control-value">{{ detail.1 }} </div>
                                   {% endif %}
@@ -58,7 +66,6 @@
                                       SUBMIT</button></div>
                                 </form>
                           {% elif name.0 != 'submitter' %}
-                              {{ name.0 }}
                               <fieldset disabled="disabled">
                           {% render_form name.1 template_pack='rest_framework/vertical' %}
                                </fieldset>
