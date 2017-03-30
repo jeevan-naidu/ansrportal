@@ -45,7 +45,7 @@ class ReimburseSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    reason = serializers.CharField(max_length=1000, required=False,
+    reason = serializers.CharField(max_length=1000,
                                    style={'base_template': 'textarea.html', 'rows': 4}
                                    )
     class Meta:
