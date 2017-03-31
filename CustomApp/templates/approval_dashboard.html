@@ -136,9 +136,9 @@ $(document).ready(function() {
 							},
 							function(isConfirm){
 								if (isConfirm) {
-
+    
 								 $.ajax({
-									url: "/{{ app_name }}/approve/{{ pk }}/",
+									url: "/process/{{ app_name }}/approve/{{ pk }}/",
 									type: 'post',
 									data: formData,
 									success: function (data) {

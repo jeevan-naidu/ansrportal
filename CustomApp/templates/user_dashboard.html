@@ -331,7 +331,7 @@ $('form#process_create').submit(function(e){
 								if (isConfirm) {
 
 								 $.ajax({
-									url: "/{{ app_name }}/create/",
+									url: "/process/{{ app_name }}/create/",
 									type: 'post',
 									data: formData,
 									success: function (data) {
@@ -369,7 +369,7 @@ $("#modal-container-process_update").on('shown.bs.modal', function(e) {
 
           $.ajax({
          type: "GET",
-          url: '/'+ button_details[0] + '/get_process/' + button_details[1] + "/",
+          url: '/process/'+ button_details[0] + '/get_process/' + button_details[1] + "/",
 
 
           success : function (data) {
@@ -393,7 +393,7 @@ $("#modal-container-Detail").on('shown.bs.modal', function(e) {
 
           $.ajax({
          type: "GET",
-          url: '/'+ button_details[0] + '/update/' + button_details[1] + "/",
+          url: '/process/'+ button_details[0] + '/update/' + button_details[1] + "/",
           data: {"action": button_details[2]},
           success : function (data) {
               $("#modal_body_detail").html(data);
@@ -428,7 +428,7 @@ function delete_process(){
 								if (isConfirm) {
 
 								 $.ajax({
-									url: '/'+ button_details[0] + '/update/' + button_details[1] + "/",
+									url: '/process/'+ button_details[0] + '/update/' + button_details[1] + "/",
 									type: 'DELETE',
 									success: function () {
 

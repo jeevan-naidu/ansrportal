@@ -14,19 +14,6 @@ class InvoiceSerializer(serializers.ModelSerializer):
         model = Invoice
         fields = ('id', 'milestone_date', 'amount')
 
-    # def save_as(self, request):
-    #     bill_no = self.validated_data['id']
-    #     bill_date = self.validated_data['bill_date']
-    #     vendor_name = self.validated_data['vendor_name']
-    #
-    #     Invoice(bill_no=bill_no,
-    #               bill_date=bill_date,
-    #               vendor_name=vendor_name,
-    #               attachment=file,
-    #               nature_of_expenses=nature_of_expenses,
-    #               amount=amount,
-    #               user=request.user).save()
-
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -42,7 +29,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             status=self.validated_data['status'],
             reason=self.validated_data['reason'],
             approved_by=request.user,
-            reimburse_id=pk,
+            invoice_id=pk,
             role=role
         ).save()
 

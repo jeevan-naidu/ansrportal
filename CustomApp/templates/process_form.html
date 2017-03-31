@@ -75,7 +75,8 @@
 
 
                         {% endfor %}
-                             <th><a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process" data-toggle="modal" title="Action"
+                             <th><a id="{{ app_name }}-{{ process| field_name:"id" }}"
+                                 href="#modal-container-process" data-toggle="modal" title="Action"
                                 class="pull-right btn btn-sm btn-success">
                                                     Action
                                                   </a></th>
@@ -220,7 +221,7 @@ $("#modal-container-Detail").on('shown.bs.modal', function(e) {
 
           $.ajax({
          type: "GET",
-          url: '/'+ button_details[0] + '/update/' + button_details[1] + "/" ,
+          url: '/process/'+ button_details[0] + '/update/' + button_details[1] + "/" ,
             data: {"action":button_details[2]},
           success : function (data) {
               $("#modal_body_detail").html(data);
