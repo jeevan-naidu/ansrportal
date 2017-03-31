@@ -2035,7 +2035,6 @@ class TrackMilestoneWizard(SessionWizardView):
         return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        # import ipdb;ipdb.set_trace()
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
 
