@@ -638,7 +638,7 @@
                                                     </ul>
                                                 </div>
                                             </li>
-
+                                    {% if request.user|has_group:"TestGroup1" %}
                                         <li>
                                                 <a href="javascript:" data-action="click-trigger" class="open">
                                                     <span class="menu-text">Reimburse</span>
@@ -662,6 +662,8 @@
                                                     </ul>
                                                 </div>
                                             </li>
+                                            {% endif %}
+                                            {% if request.user|has_group:"TestGroup2" %}
                                         <li>
                                                 <a href="javascript:" data-action="click-trigger" class="open">
                                                     <span class="menu-text">Invoice</span>
@@ -690,7 +692,7 @@
                                                     </ul>
                                                 </div>
                                             </li>
-
+                                        {% endif %}
                                          {% if request.user|has_group:'HireRecruiter' %}
                                         <li>
                                                 <a href="javascript:" data-action="click-trigger" class="open">
@@ -766,6 +768,7 @@
                                                     </ul>
                                                 </div>
                                             </li>
+                                             {% if request.user|has_group:"TestGroup3" %}
                                             <li>
 
                                                 <a href="javascript:" data-action="click-trigger" class="open">
@@ -804,6 +807,7 @@
                                         </ul>
                                                 </div>
                                             </li>
+                                             {% endif %}
                                         </ul>
                                     </div>
                                 </li>

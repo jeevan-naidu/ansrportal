@@ -7,7 +7,7 @@ from Leave.views import AllowedFileTypes
 class InvoiceSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     milestone_date = serializers.DateField(input_formats=None,
-                                      style={'base_template': 'rest_framework/custom_datepicker.html'})
+                                           style={'base_template': 'rest_framework/custom_datepicker.html'})
     amount = serializers.IntegerField(style={'base_template': 'rest_framework/custom_input.html'})
 
     class Meta:
@@ -15,11 +15,11 @@ class InvoiceSerializer(serializers.ModelSerializer):
         fields = ('id', 'milestone_date', 'amount')
 
 
-
 class TransactionSerializer(serializers.ModelSerializer):
     reason = serializers.CharField(max_length=1000,
                                    style={'base_template': 'textarea.html', 'rows': 4}
                                    )
+
     class Meta:
         model = Transaction
         fields = ('status','reason')
