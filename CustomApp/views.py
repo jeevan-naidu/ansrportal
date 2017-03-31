@@ -138,6 +138,9 @@ class UpdateProcess(APIView):
         process_object = self.get_object(pk, process[1])
         serializer = process[0](process_object, data=request.data)
         if serializer.is_valid():
+            process_object.process_status = 'In Progress'
+            process_object.request_status = 'Updated'
+            process_object.role = "submitter"
             serializer.save()
             return Response({'record_added': True}, status.HTTP_201_CREATED)
 
@@ -151,7 +154,6 @@ class UpdateProcess(APIView):
         process_object.request_status = "Withdrawn"
         process_object.is_active = False
         process_object.save()
-
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
