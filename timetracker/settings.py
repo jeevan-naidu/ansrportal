@@ -144,7 +144,11 @@ INSTALLED_APPS = [
     'Hire',
     'Library',
     'formtools',
-    'emoticons',
+    'rest_framework',
+    'CustomApp',
+    'Reimburse',
+    'ExitApp',
+    'Invoice'
 
 ]
 
