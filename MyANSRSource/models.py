@@ -469,9 +469,8 @@ class Milestone(UpdateDate):
     is_final_milestone = models.BooleanField(verbose_name="Is Final Milestone", default=False)
     check_schedule_deviation = models.BooleanField(verbose_name="Check Schedule Deviation", default=False)
 
-
     def __unicode__(self):
-        return self.name
+        return self.name + " | " + self.milestone_type.milestone_type
 
     class Meta:
         verbose_name_plural = "Project Milestones"
@@ -484,7 +483,7 @@ class ProjectMilestone(models.Model):
                                      default=timezone.now)
     description = models.CharField(default=None, blank=False, max_length=1000,
                                    null=True, verbose_name="Description")
-    # name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name")
+    name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name")
     amount = models.DecimalField(default=0.0,
                                  max_digits=12,
                                  decimal_places=2,
@@ -522,7 +521,7 @@ class ProjectMilestone(models.Model):
                 amount=self.amount,
                 user=request.user
             )
-        super(ProjectMilestone,self).save()
+        super(ProjectMilestone, self).save()
 
 
 class ProjectTeamMember(models.Model):

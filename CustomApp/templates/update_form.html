@@ -11,6 +11,7 @@
     <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
     <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
 <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+<script src='/static/js/customapp.js' type="text/javascript"></script>
 {% load rest_framework %}
 
 {% load process_tags %}
@@ -30,15 +31,7 @@
         {% endif %}
 {#        console.log({{serializer.attachment.value}});#}
 });
-$(".attachment").change(function(){
-   var filename = $(this).val();
-   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png|\.JPG|\.JPGEG|\.JPG|\.PNG|\.XLSX|\.xlsx|\.xls|\.XLS|\.DOCX|\.docx|\.doc|\.DOC|\.eml|\.EML)$/i;
-   if(!re.exec(filename)){
-       alert("File extension not supported");
-       $(this).val('');
-   }
 
-});
  $("form#process_update").submit(function(){
 						 var formData = new FormData($(this)[0]);
 

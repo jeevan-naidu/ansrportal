@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
-    MilestoneType
+    Milestone
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, SubPractice
 from employee.models import Remainder
@@ -572,19 +572,19 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 
 class CloseProjectMilestoneForm(forms.ModelForm):
 
-    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput() )
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
     MilestoneName = forms.ModelChoiceField(
-        queryset=MilestoneType.objects.all(),
+        queryset=Milestone.objects.all(),
         label="Select Milestone Name",
         widget=autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
-            'data-placeholder': 'Type Milestone Type...'} ),
+            'data-placeholder': 'Type Milestone Type...'}),
         required=True, )
-    MilestoneType = forms.CharField( label=('Milestone Type'), )
+    # MilestoneType = forms.CharField(label='Milestone Type',)
 
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'MilestoneName', 'MilestoneType',
+            'milestoneDate', 'MilestoneName',
             'amount', 'closed'
         )
         widgets = {
@@ -605,7 +605,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
-        self.fields['MilestoneType'].widget.attrs['id'] = "MilestoneType"
+        # self.fields['MilestoneType'].widget.attrs['id'] = "MilestoneType"
 
 
 
