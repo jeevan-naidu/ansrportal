@@ -488,7 +488,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['id'].widget.attrs['class'] = "set-zero"
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
-        self.fields['datapoint'].widget.attrs['required'] = "true"
+        # self.fields['datapoint'].widget.attrs['required'] = "true"
         self.fields['datapoint'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs[
             'class'] = "form-control min-100 pro-start-date"
