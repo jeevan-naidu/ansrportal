@@ -35,7 +35,7 @@
 
     <div class="panel-body">
 
-     <div class="row" style="margin-bottom: -20px"><a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Approve" class="btn btn-sm btn-success pull-right" style="margin-bottom: 10px; margin-right: 25px">{{ app_name }} Raise</a></div>
+     <div class="row" style="margin-bottom: -20px"><a id="{{ app_name }}" href="#modal-container-process_raise" data-toggle="modal" title="Raise Request" class="btn btn-sm btn-success pull-right" style="margin-bottom: 10px; margin-right: 25px">{{ app_name }} Raise</a></div>
 
                     <ul class="nav nav-tabs">
                       <li class="active"><a href="#tab1" data-toggle="tab">Active</a></li>
@@ -48,16 +48,11 @@
                         <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
+                                <th><b>S. No</b></th>
                                 {% for field in fields %}
-
-
                                         {% if field != 'id' %}
-
                                    <th><b>{{ field|transaction_name_split }}</b></th>
                                     {% endif %}
-
-
-
                                 {% endfor %}
                                 <th><b>Action</b></th>
                             </tr>
@@ -65,14 +60,14 @@
                           <tbody>
                         {% for process in queryset.active %}
                              <tr>
+                                 <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-user"
+                                            href="#modal-container-Detail" data-toggle="modal" title="Details"
+                                            class="pull-right ">
+                                                    {{ forloop.counter }}
+                                                  </a></td>
                          {% for field in fields %}
                              {% with fields_val=process|field_name:field  %}
-                                 {% if forloop.counter == 1 and  field != "id"%}
-                                        <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-user" href="#modal-container-Detail" data-toggle="modal" title="Approve"
-                                class="pull-right ">
-                                                    {{ process| field_name:field }}
-                                                  </a></td>
-                             {% elif field == "id" %}
+                             {% if field == "id" %}
                                  {% elif field == 'attachment' and  fields_val %}
                                  <td class="ws-mw">
                                  <div class="" >
@@ -102,9 +97,10 @@
 
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab2">
-                          <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <table class="table table-striped reimburse-table myansr-table" id="data-tables_1">
                           <thead>
                             <tr>
+                                <th><b>S. No</b></th>
                                 {% for field in fields %}
 
                                   {% if field != 'id' %}
@@ -120,13 +116,14 @@
                           <tbody>
                         {% for process in queryset.inactive %}
                              <tr>
-                         {% for field in fields %}
-                             {% if forloop.counter == 1 and  field != "id"%}
-                                        <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-user" href="#modal-container-Detail" data-toggle="modal" title="Approve"
-                                class="pull-right ">
-                                                    {{ process| field_name:field }}
+                                 <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-user"
+                                            href="#modal-container-Detail" data-toggle="modal" title="Details"
+                                            class="pull-right ">
+                                                    {{ forloop.counter  }}
                                                   </a></td>
-                             {% elif field == "id" %}
+                         {% for field in fields %}
+
+                             {% if field == "id" %}
                                  {% elif field == 'attachment' %}
                                  <td class="ws-mw">
                                  <div class="" >
@@ -151,9 +148,10 @@
                         </table>
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab3">
-                          <table class="table table-striped reimburse-table" id="data-tables">
+                          <table class="table table-striped reimburse-table" id="data-tables_2">
                           <thead>
                             <tr>
+                                <th><b>S. No</b></th>
                                 {% for field in fields %}
                                     {% if field != 'id' %}
 
@@ -166,13 +164,14 @@
                           <tbody>
                         {% for process in queryset.rollback %}
                              <tr>
-                         {% for field in fields %}
-                             {% if forloop.counter == 1 and  field != "id"%}
-                                        <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-user" href="#modal-container-Detail" data-toggle="modal" title="Approve"
+                                  <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-user"
+                                            href="#modal-container-Detail" data-toggle="modal" title="Details"
                                 class="pull-right ">
-                                                    {{ process| field_name:field }}
+                                                    {{ forloop.counter }}
                                                   </a></td>
-                             {% elif field == "id" %}
+                         {% for field in fields %}
+
+                             {% if field == "id" %}
                                  {% elif field == 'attachment' %}
                                  <td class="ws-mw">
                                  <div class="" >
@@ -300,6 +299,8 @@
 
 $('document').ready(function(){
   $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
+  $('#data-tables_2').dataTable();
 });
 $(".attachment").change(function(){
    var filename = $(this).val();
@@ -330,7 +331,7 @@ $('form#process_create').submit(function(e){
 								if (isConfirm) {
 
 								 $.ajax({
-									url: "/{{ app_name }}/create/",
+									url: "/process/{{ app_name }}/create/",
 									type: 'post',
 									data: formData,
 									success: function (data) {
@@ -368,7 +369,7 @@ $("#modal-container-process_update").on('shown.bs.modal', function(e) {
 
           $.ajax({
          type: "GET",
-          url: '/'+ button_details[0] + '/get_process/' + button_details[1] + "/",
+          url: '/process/'+ button_details[0] + '/get_process/' + button_details[1] + "/",
 
 
           success : function (data) {
@@ -392,7 +393,7 @@ $("#modal-container-Detail").on('shown.bs.modal', function(e) {
 
           $.ajax({
          type: "GET",
-          url: '/'+ button_details[0] + '/update/' + button_details[1] + "/",
+          url: '/process/'+ button_details[0] + '/update/' + button_details[1] + "/",
           data: {"action": button_details[2]},
           success : function (data) {
               $("#modal_body_detail").html(data);
@@ -427,7 +428,7 @@ function delete_process(){
 								if (isConfirm) {
 
 								 $.ajax({
-									url: '/'+ button_details[0] + '/update/' + button_details[1] + "/",
+									url: '/process/'+ button_details[0] + '/update/' + button_details[1] + "/",
 									type: 'DELETE',
 									success: function () {
 

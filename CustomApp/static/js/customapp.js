@@ -7,7 +7,7 @@
       button_details = button.id.split("-")
       $.ajax({
          type: "GET",
-          url: '/'+ button_details[0] + '/approve/' + button_details[1] + "/",
+          url: '/process/'+ button_details[0] + '/approve/' + button_details[1] + "/",
 
           success : function (data) {
               $("#modal_body").html(data)

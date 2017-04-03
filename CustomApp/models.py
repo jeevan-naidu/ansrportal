@@ -182,6 +182,9 @@ def get_process_transactions(fields_to_show, view_type):
     if view_type == "user":
         if "user" in fields_to_show:
             fields_to_show.remove("user")
+    else:
+        if "user" not in fields_to_show:
+            fields_to_show.append("user")
     return fields_to_show
 
 

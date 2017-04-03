@@ -37,7 +37,7 @@ $('form#process_create').submit(function(e){
 								if (isConfirm) {
 
 								 $.ajax({
-									url: "/{{ app_name }}/create/",
+									url: "/process/{{ app_name }}/create/",
 									type: 'post',
 									data: formData,
 									success: function (data) {

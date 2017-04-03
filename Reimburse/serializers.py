@@ -1,13 +1,16 @@
 from rest_framework import serializers
 from models import Reimburse, Transaction
 from Leave.views import AllowedFileTypes
+from bootstrap3_datetime.widgets import DateTimePicker
 
+dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 
 class ReimburseSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     bill_no = serializers.CharField(max_length=100, default='',
                                     style={'base_template': 'rest_framework/custom_input2.html'})
     bill_date = serializers.DateField(input_formats=None,
+                                      # widget=DateTimePicker(options=dateTimeOption),
                                       style={'base_template': 'rest_framework/custom_datepicker.html'})
     vendor_name = serializers.CharField(max_length=100, default='',
                                         style={'base_template': 'rest_framework/custom_input.html'})
@@ -45,7 +48,7 @@ class ReimburseSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    reason = serializers.CharField(max_length=1000, required=False,
+    reason = serializers.CharField(max_length=1000,
                                    style={'base_template': 'textarea.html', 'rows': 4}
                                    )
     class Meta:

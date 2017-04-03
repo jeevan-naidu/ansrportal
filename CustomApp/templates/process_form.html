@@ -35,6 +35,7 @@
                         <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
+                                <th><b>S. No</b></th>
                                 {% for field in fields %}
 
 
@@ -52,13 +53,13 @@
                           <tbody>
                         {% for process in queryset.0 %}
                              <tr>
-                         {% for field in fields %}
-                             {% if forloop.counter == 1 and  field != "id"%}
-                             <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Approve"
+                                 <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Details"
                                 class="pull-right ">
-                                                    {{ process| field_name:field }}
+                                                    {{ forloop.counter }}
                                                   </a></td>
-                             {% elif field == "id" %}
+                         {% for field in fields %}
+
+                             {% if field == "id" %}
                                   {% elif field == 'attachment' %}
                                  <td class="ws-mw">
                                  <div class="" >
@@ -74,7 +75,8 @@
 
 
                         {% endfor %}
-                             <th><a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process" data-toggle="modal" title="Action"
+                             <th><a id="{{ app_name }}-{{ process| field_name:"id" }}"
+                                 href="#modal-container-process" data-toggle="modal" title="Action"
                                 class="pull-right btn btn-sm btn-success">
                                                     Action
                                                   </a></th>
@@ -87,9 +89,10 @@
 
                       </div><!-- ./tab -->
                       <div class="tab-pane" id="tab2">
-                          <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <table class="table table-striped reimburse-table myansr-table" id="data-tables_1">
                           <thead>
                             <tr>
+                                <th><b>S. No</b></th>
                                 {% for field in fields %}
 
                                    {% if field != 'id' %}
@@ -105,13 +108,14 @@
                           <tbody>
                         {% for process in queryset.1 %}
                              <tr>
-                         {% for field in fields %}
-                             {% if forloop.counter == 1 and  field != "id"%}
-                                        <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Approve"
+                                 <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Details"
                                 class="pull-right ">
-                                                    {{ process| field_name:field }}
+                                                    {{ forloop.counter }}
                                                   </a></td>
-                             {% elif field == "id" %}
+                         {% for field in fields %}
+
+
+                             {% if field == "id" %}
                                   {% elif field == 'attachment' %}
                                  <td class="ws-mw">
                                  <div class="" >
@@ -208,6 +212,7 @@
 
 $('document').ready(function(){
   $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
 });
 
 $("#modal-container-Detail").on('shown.bs.modal', function(e) {
@@ -216,7 +221,7 @@ $("#modal-container-Detail").on('shown.bs.modal', function(e) {
 
           $.ajax({
          type: "GET",
-          url: '/'+ button_details[0] + '/update/' + button_details[1] + "/" ,
+          url: '/process/'+ button_details[0] + '/update/' + button_details[1] + "/" ,
             data: {"action":button_details[2]},
           success : function (data) {
               $("#modal_body_detail").html(data);

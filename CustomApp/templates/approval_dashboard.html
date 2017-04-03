@@ -19,7 +19,8 @@
                       <div id="wizard-1" class="form-wizard">
                         <ul>
                             {% for name in process_detail %}
-                          <li>
+                                <li>
+
                               <a href="#tab_name{{ forloop.counter }}"  data-toggle="tab">
                             <div class="menu-icon"> {{ forloop.counter }} </div>
                             {{ name | transaction_name_split }} </a>
@@ -35,10 +36,17 @@
                               {% if forloop.counter == 1 %}
                                   {% for detail in object_detail %}
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label" style="text-align: right;padding-right:0px"><b>{{ detail.0.title }} :</b></label>
+                                    <label class="col-sm-5 control-label" style="text-align: right;padding-right:0px"><b>{{ detail.0 | transaction_name_split  }} :</b></label>
                               <div class="col-sm-7 controls">
                                   {% if detail.0 == "user" %}
                                       <div class="control-value">{{ detail.1.first_name }} {{ detail.1.last_name  }} </div>
+                                  {% elif detail.0 == "attachment" %}
+                                      <div class="control-value">
+                                      <a target="_blank" href="/media/{{ detail.1 }} ">
+                       Attachment
+                   </a>
+
+                                      </div>
                                   {% else %}
                                       <div class="control-value">{{ detail.1 }} </div>
                                   {% endif %}
@@ -54,11 +62,14 @@
                               <form method="POST" id="activity_form" enctype="multipart/form-data" >
                                 {% csrf_token %}
                               {% render_form name.1 template_pack='rest_framework/vertical' %}
+
+                                  <div id="reason_required" style="color:#ff0000"></div>
+
                                   <div class="form-group"><button type="submit" class="btn btn-success btn-sm pull-right" value="SUBMIT">
                                       SUBMIT</button></div>
+
                                 </form>
                           {% elif name.0 != 'submitter' %}
-                              {{ name.0 }}
                               <fieldset disabled="disabled">
                           {% render_form name.1 template_pack='rest_framework/vertical' %}
                                </fieldset>
@@ -125,9 +136,9 @@ $(document).ready(function() {
 							},
 							function(isConfirm){
 								if (isConfirm) {
-
+    
 								 $.ajax({
-									url: "/{{ app_name }}/approve/{{ pk }}/",
+									url: "/process/{{ app_name }}/approve/{{ pk }}/",
 									type: 'post',
 									data: formData,
 									success: function (data) {
@@ -140,9 +151,7 @@ $(document).ready(function() {
 										HideAjaxLoader($('#ajax_loader_apply_leave'));
 									},
 									error: function(XMLHttpRequest, textStatus, errorThrown) {
-												$("#LeaveForm_errors").html("Oops! Something went wrong on the server. The details are below: "
-													+ "<br>Status : "+ textStatus + "<br>Exception : " + errorThrown + "<br><br> Please take a screenshot of this message and send it to <a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a>.");
-												HideAjaxLoader(ajax_loader_element);
+												$("#reason_required").text("Please provide reason.");
 											},
 									cache: false,
 									contentType: false,

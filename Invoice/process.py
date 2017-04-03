@@ -25,7 +25,9 @@ PROCESS = {
 
 INITIAL = 'invoice_raise'
 
-LIST_VIEW = ["milestone_date", "milestone_name", "user", "description",'closed_on_date', 'amount', "project"]
-DETAIL_VIEW = ["milestone_date", "milestone_name", "user", "description",'closed_on_date', 'amount', "project"]
+LIST_VIEW = ["milestone_date", "milestone_name", "user", 'process_status', "description",'closed_on_date',
+             'amount', "project"]
+DETAIL_VIEW = ["milestone_date", "milestone_name", "user", 'process_status', 'request_status',
+               "description",'closed_on_date', 'amount', "project"]
 TITLE = 'Invoice for ANSR Source'
 DESCRIPTION = 'Invoice Process '

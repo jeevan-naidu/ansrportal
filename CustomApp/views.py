@@ -133,12 +133,14 @@ class UpdateProcess(APIView):
                       {'queryset': process_object, 'fields': fields,})
 
     def put(self, request, pk, **kwargs):
-        # import ipdb; ipdb.set_trace()
         process = self.get_process(request, **kwargs)
         app_name = get_app_name(request, **kwargs)
         process_object = self.get_object(pk, process[1])
         serializer = process[0](process_object, data=request.data)
         if serializer.is_valid():
+            process_object.process_status = 'In Progress'
+            process_object.request_status = 'Updated'
+            process_object.role = "submitter"
             serializer.save()
             return Response({'record_added': True}, status.HTTP_201_CREATED)
 
@@ -152,7 +154,6 @@ class UpdateProcess(APIView):
         process_object.request_status = "Withdrawn"
         process_object.is_active = False
         process_object.save()
-
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -251,14 +252,14 @@ class ProcessApproval(APIView):
         serializer = config.PROCESS[transition[0]]['serializer']
         model = config.PROCESS[config.INITIAL]['model']
         serialized_data = serializer(data=request.POST)
-        record_added = False
         if serialized_data.is_valid():
             process_request = model.objects.get(pk=pk)
             action = serialized_data.validated_data['status']
             role = get_role(config, action, process_request.role)
             update_process(process_request, role[0], role[2])
             serialized_data.save_as(role[1], request, pk)
-            record_added = True
+        else:
+            return Response(status.HTTP_400_BAD_REQUEST)
         modal = config.PROCESS[config.INITIAL]['model']
         display_fields = config.LIST_VIEW
         fields = [f.name for f in modal._meta.get_fields()]
@@ -273,8 +274,7 @@ class ProcessApproval(APIView):
                          'object_detail': object_detail,
                          'process_status_detail': process_status_detail[0],
                          'current_role': process_status_detail[1],
-                         'app_name': app_name,
-                         'record_added':record_added})
+                         'app_name': app_name})
 
     def delete(self, request, pk, **kwargs):
         activity = self.get_object(request, pk, **kwargs)

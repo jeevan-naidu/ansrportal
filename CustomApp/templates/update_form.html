@@ -57,7 +57,7 @@ $(".attachment").change(function(){
 								if (isConfirm) {
 
 								 $.ajax({
-									url: "/{{ app_name }}/update/{{ pk }}/",
+									url: "/process/{{ app_name }}/update/{{ pk }}/",
 									type: 'put',
 									data: formData,
 									success: function (data) {
