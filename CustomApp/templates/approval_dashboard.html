@@ -1,0 +1,171 @@
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% load process_tags %}
+
+{% load rest_framework %}
+{% block content  %}
+
+
+<style type="text/css">
+  #wizard-1 .form-group{margin-bottom: 5px;}
+</style>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel widget">
+                  <div class="panel-body form-horizontal">
+
+                      <div id="wizard-1" class="form-wizard">
+                        <ul>
+                            {% for name in process_detail %}
+                                <li>
+
+                              <a href="#tab_name{{ forloop.counter }}"  data-toggle="tab">
+                            <div class="menu-icon"> {{ forloop.counter }} </div>
+                            {{ name | transaction_name_split }} </a>
+                          </li>
+                          {% endfor %}
+                        </ul>
+
+                        <div class="tab-content">
+                        {% for name in process_status_detail %}
+                          <div class="tab-pane" id="tab_name{{ forloop.counter }}">
+                            <div class="row">
+                              <div class="col-sm-10">
+                              {% if forloop.counter == 1 %}
+                                  {% for detail in object_detail %}
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label" style="text-align: right;padding-right:0px"><b>{{ detail.0 | transaction_name_split  }} :</b></label>
+                              <div class="col-sm-7 controls">
+                                  {% if detail.0 == "user" %}
+                                      <div class="control-value">{{ detail.1.first_name }} {{ detail.1.last_name  }} </div>
+                                  {% elif detail.0 == "attachment" %}
+                                      <div class="control-value">
+                                      <a target="_blank" href="/media/{{ detail.1 }} ">
+                       Attachment
+                   </a>
+
+                                      </div>
+                                  {% else %}
+                                      <div class="control-value">{{ detail.1 }} </div>
+                                  {% endif %}
+
+                              </div>
+                            </div>
+                                      {% endfor %}
+                              {% endif %}
+                              </div>
+
+                            </div>
+                          {% if name.0 == current_role %}
+                              <form method="POST" id="activity_form" enctype="multipart/form-data" >
+                                {% csrf_token %}
+                              {% render_form name.1 template_pack='rest_framework/vertical' %}
+
+                                  <div id="reason_required" style="color:#ff0000"></div>
+
+                                  <div class="form-group"><button type="submit" class="btn btn-success btn-sm pull-right" value="SUBMIT">
+                                      SUBMIT</button></div>
+
+                                </form>
+                          {% elif name.0 != 'submitter' %}
+                              <fieldset disabled="disabled">
+                          {% render_form name.1 template_pack='rest_framework/vertical' %}
+                               </fieldset>
+                          {% endif %}
+
+                            </div>
+{% endfor %}
+
+
+
+                          <div class="form-actions-condensed wizard hidden"> <a class="btn vd_btn prev" href="javascript:void(0);"><span class="menu-icon"><i class="fa fa-fw fa-chevron-circle-left"></i></span> Previous</a> <a class="btn vd_btn next" href="javascript:void(0);">Next <span class="menu-icon"><i class="fa fa-fw fa-chevron-circle-right"></i></span></a> <a class="btn vd_btn vd_bg-green finish" href="javascript:void(0);"><span class="menu-icon"><i class="fa fa-fw fa-check"></i></span> Finish</a> </div>
+                        </div>
+                      </div>
+
+                  </div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+
+<script src='{% static 'js/customapp.js' %}' type="text/javascript"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  "use strict";
+
+  $('#wizard-1').bootstrapWizard({
+    'tabClass': 'nav nav-pills nav-justified',
+    'nextSelector': '.wizard .next',
+    'previousSelector': '.wizard .prev',
+    'onTabShow' : function(){
+      $('#wizard-1 .finish').hide();
+      $('#wizard-1 .next').show();
+      if ($('#wizard-1 .nav li:last-child').hasClass('active')){
+        $('#wizard-1 .next').hide();
+        $('#wizard-1 .finish').show();
+      }
+    },
+    'onNext': function(){
+      scrollTo('#wizard-1',-100);
+    },
+    'onPrevious': function(){
+      scrollTo('#wizard-1',-100);
+    }
+  });
+
+
+
+  $("form#activity_form").submit(function(){
+						 var formData = new FormData($(this)[0]);
+
+
+						 swal({   title: "Are you sure?",
+							text: "Do you want to submit?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+    
+								 $.ajax({
+									url: "/process/{{ app_name }}/approve/{{ pk }}/",
+									type: 'post',
+									data: formData,
+									success: function (data) {
+
+
+											 swal("Done!", data.success_msg, "success");
+											$("#modal_body").html('');
+                                           window.location=window.location;
+
+										HideAjaxLoader($('#ajax_loader_apply_leave'));
+									},
+									error: function(XMLHttpRequest, textStatus, errorThrown) {
+												$("#reason_required").text("Please provide reason.");
+											},
+									cache: false,
+									contentType: false,
+									processData: false
+								 });
+								}
+							   });
+						 return false;
+					 });
+
+});
+</script>
+<!-- Specific Page Scripts END -->
+
+
+
+{% endblock %}

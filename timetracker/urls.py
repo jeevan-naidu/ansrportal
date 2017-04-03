@@ -27,6 +27,7 @@ urlpatterns = [
                        url(r'^bookings/', include('BookMyRoom.urls')),
                        url(r'^leave/', include('Leave.urls')),
                        url(r'^hire/', include('Hire.urls')),
-                       url(r'^library/', include('Library.urls')),
                        url(r'^exitapp/', include('ExitApp.urls')),
+                       url(r'^library/', include('Library.urls')),
+                       url(r'^process/', include('CustomApp.urls')),
                        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -10,6 +10,8 @@ import datetime, os
 from django.core.validators import URLValidator
 from CompanyMaster.models import Practice, SubPractice
 from django.core.files.storage import FileSystemStorage
+from datetime import date
+import Invoice
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -508,6 +510,19 @@ class ProjectMilestone(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+
+    def save(self, request):
+        if self.closed and self.financial:
+            Invoice.models.Invoice.objects.get_or_create(
+                project=self.project,
+                milestone_date=self.milestoneDate,
+                milestone_name=self.description,
+                description=self.description,
+                closed_on_date=date.today(),
+                amount=self.amount,
+                user=request.user
+            )
+        super(ProjectMilestone,self).save()
 
 
 class ProjectTeamMember(models.Model):

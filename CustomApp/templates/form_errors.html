@@ -1,0 +1,71 @@
+{% block content  %}
+{% load rest_framework %}
+{% load process_tags %}
+<form method="POST" id="process_create" enctype="multipart/form-data" >
+    {% csrf_token %}
+    {% render_form serializer template_pack='rest_framework/vertical' %}
+    {{ attachment }}
+    <br style="clear:both">
+<input type="submit" class="btn vd_btn vd_bg-green" value="Raise">
+</form>
+<script>
+$(".attachment").change(function(){
+   var filename = $(this).val();
+   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png|\.JPG|\.JPGEG|\.JPG|\.PNG|\.XLSX|\.xlsx|\.xls|\.XLS|\.DOCX|\.docx|\.doc|\.DOC|\.eml|\.EML)$/i;
+   if(!re.exec(filename)){
+       alert("File extension not supported");
+       $(this).val('');
+   }
+
+});
+$('form#process_create').submit(function(e){
+    var formData = new FormData($(this)[0]);
+						 form_id = $(this)[0].id;
+						 form_element = $(this);
+
+						 swal({   title: "Are you sure?",
+							text: "Do you want to submit your {{ app_name }} process ?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+
+								 $.ajax({
+									url: "/process/{{ app_name }}/create/",
+									type: 'post',
+									data: formData,
+									success: function (data) {
+									    if (data.record_added) {
+                                            swal("Done!", data.success_msg, "success");
+                                            $("#modal_body").html('');
+                                            window.location = window.location;
+                                        }
+                                        else{
+									        $("#modal_body").html(data);
+                                        }
+
+
+									},
+									error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+
+											},
+									cache: false,
+									contentType: false,
+									processData: false
+								 });
+								}
+							   });
+						 return false;
+    e.preventDefault();
+});
+$(".datepicker").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+        </script>
+
+{% endblock %}

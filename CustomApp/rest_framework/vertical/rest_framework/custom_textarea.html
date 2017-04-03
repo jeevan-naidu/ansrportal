@@ -1,0 +1,17 @@
+<div class="form-group col-sm-6 {% if field.errors %}has-error{% endif %}">
+ {% if field.label %}
+    <label class="col-sm-4 control-label text-right">
+      {{ field.label }}
+    </label>
+  {% endif %}
+<div class="col-sm-7 controls">
+  <textarea name="{{ field.name }}" class="form-control input-sm" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if style.rows %}rows="{{ style.rows }}"{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
+</div>
+  {% if field.errors %}
+    {% for error in field.errors.0 %}<span class="help-block">{{ error }}</span>{% endfor %}
+  {% endif %}
+
+  {% if field.help_text %}
+    <span class="help-block">{{ field.help_text|safe }}</span>
+  {% endif %}
+</div>

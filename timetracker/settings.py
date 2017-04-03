@@ -144,8 +144,11 @@ INSTALLED_APPS = [
     'Hire',
     'Library',
     'formtools',
-    'emoticons',
+    'rest_framework',
+    'CustomApp',
+    'Reimburse',
     'ExitApp',
+    'Invoice'
 
 ]
 
@@ -169,6 +172,7 @@ TEMPLATES = [
         'DIRS': [os.path.join(BASE_DIR, 'MyANSRSource/templates/MyANSRSource/'),
                  os.path.join(BASE_DIR, 'employee/template/'),
                  os.path.join(BASE_DIR, 'employee/emp_photo/'),
+                 os.path.join(BASE_DIR, 'CustomApp/'),
                  ],
         'APP_DIRS': True,
         'OPTIONS': {

@@ -1155,11 +1155,10 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         atDataList.append(atData.copy())
         atData.clear()
     if user_id:
-        total_list.append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
-                           'wednesday_total': str(round(wednesday_total, 2)),
-                           'thursday_total': str(round(thursday_total, 2)),
-                           'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
-                           'sunday_total': str(round(sunday_total, 2))})
+        total_list .append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
+                            'wednesday_total': str(round(wednesday_total, 2)), 'thursday_total': str(round(thursday_total, 2)),
+                            'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
+                            'sunday_total': str(round(sunday_total, 2))})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
 
@@ -2093,7 +2092,7 @@ def saveData(self, pm, eachData, projectObj):
         pm.milestoneDate = eachData['milestoneDate']
         pm.amount = eachData['amount']
         pm.closed = eachData['closed']
-        pm.save()
+        pm.save(self.request)
 
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)

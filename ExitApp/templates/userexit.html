@@ -174,7 +174,6 @@ ul{list-style: none;padding-left: 0px;}
 
       $('body').on('click', function(key) {
 
-
         if ($('#id_last_date').val() != '' ) {
             var today = new Date();
             var dd = today.getDate();
@@ -183,12 +182,11 @@ ul{list-style: none;padding-left: 0px;}
 
             if(dd<10) {
                 dd='0'+dd
-            }
+            } 
 
             if(mm<10) {
                 mm='0'+mm
             }
-
             today = mm+'/'+dd+'/'+yyyy;
 
             var from_date = document.getElementById("id_start_date").value;

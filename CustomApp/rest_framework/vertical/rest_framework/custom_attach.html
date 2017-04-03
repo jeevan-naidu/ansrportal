@@ -1,0 +1,20 @@
+
+<div class="form-group col-sm-6 {% if field.errors %}has-error{% endif %}">
+ {% if field.label %}
+    <label class="col-sm-4 control-label text-right">
+      {{ field.label }}
+    </label>
+  {% endif %}
+<div class="col-sm-7 controls">
+
+  <input class="attachment" name="{{ field.name }}"{% if field.value %}value="{{ field.value }}"{% endif %} {% if style.input_type != "file" %}class="form-control input-sm"{% endif %}
+  <input class="attachment" name="{{ field.name }}"{% if field.value %}value="{{ field.value }}"{% endif %} {% if style.input_type != "file" %}class="form-control input-sm"{% endif %}
+         type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %}
+          {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>
+{% if field.errors %}{{ field.error.0 }}{% endif %}
+Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.
+<br>
+Maximum allowed file size: 1MB 
+</div>
+
+ </div>
