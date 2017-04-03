@@ -77,7 +77,8 @@ class ProjectAdmin(admin.ModelAdmin):
         'endDate',
         'plannedEffort',
         'contingencyEffort',
-        'totalValue')
+        'totalValue',
+    )
     fieldsets = [
         ('Basic Information', {
             'fields': [

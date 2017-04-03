@@ -1,0 +1,70 @@
+{% extends 'projectMaster.inc' %}
+
+{% block createProjectActive %}class="active"{% endblock %}
+{% block DPactiveClass %}active{% endblock %}
+{% block childform %}{% block masterform %}
+
+
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+            {% for field in form %} 
+                {% if field.errors %}
+                <ul><li>{{ field.label }}: {{ field.errors|striptags }}</li></ul>
+                {% endif %}
+		{% endfor %}								
+	</div>
+{% endif %}
+
+                    <div class="panel pb-15">
+                        <!-- first widget (vertical tabs) -->
+
+                        <div class="panel-body">
+            <div class="col-sm-10 center-block">
+                <div class="table-responsive">
+                    <table class="table">
+                    {% if request.session.signed == True %}
+                            <tr>
+
+                                <td class="col-lg-6">
+                                    {{form.Sowdocument.label}}
+                                       {{ field.label }}
+                                        {% if form.Sowdocument.field.required %}
+                                            <span class="required">*</span>
+                                        {% endif %}
+                                </td>
+                                <td class="col-lg-6">
+						            {{ form.Sowdocument}}
+
+				                </td>
+                            </tr>
+                    {%endif%}
+                        <tr>
+                                <td class="col-lg-6">
+                                     {{form.Estimationdocument.label}}
+                                       {{ field.label }}
+                                        {% if form.Estimationdocument.field.required %}
+                                            <span class="required">*</span>
+                                        {% endif %}
+                                </td>
+                                <td class="col-lg-6">
+						            {{ form.Estimationdocument}}
+
+				                </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+<script>
+    var app = app || {};
+
+    (function() {
+
+    }());
+
+   ;
+
+</script>
+{% endblock %}{% endblock %}
+

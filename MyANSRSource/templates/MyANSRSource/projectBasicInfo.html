@@ -2,7 +2,7 @@
 
 {% block createProjectActive %}class="active"{% endblock %}
 {% block BIactiveClass %}active{% endblock %}
-{% block childform %}{% block masterform %}
+<!--{% block childform %}{% block masterform %}-->
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
         <ul>
@@ -14,14 +14,9 @@
         </ul>        
 	</div>
 {% endif %}
-
-                    <div class="panel pb-15">
+                        <div class="panel pb-15">
                         <!-- first widget (vertical tabs) -->
-
                         <div class="panel-body">
-
-
-
             <div class="col-sm-6 center-block">
                 <div class="table-responsive">
                     <table class="table">
@@ -38,14 +33,11 @@
                                         <span class="col-lg-9">{{ field }}
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
                                         </span>
-
                                         <span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
-
                                     {% else %}  {{ form.field.errors }}
                                         <span class="col-lg-9">{{ field }}
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
                                         </span>
-
                                         <span class="col-lg-3"></span>
 
                                     {% endif %}
@@ -63,13 +55,48 @@
     (function() {
 
     }());
-
     $(document).ready(function(){
+    $('[id="id_Basic Information-PracticeHead"]').attr("id", "id_BasicInformation-PracticeHead");
+    $('[id="id_Basic Information-name"]').attr("id", "id_BasicInformation-name");
+    $('[id="id_Basic Information-PracticeHead"]').attr("value", "");
+    $("#id_BasicInformation-PracticeHead, #soplink").prop("readonly", true);
+
        $("button#browserPrevious").click(function(e){
             window.history.go(-1);
             return false;
         });
-    });
+
+         $('.practicevalue').on('change',function() {
+            var practicename = this.value
+           $.ajax(
+                   {
+                       type : "GET",
+                       url : '/myansrsource/practicehead/',
+                       data :{'practicename': practicename} ,
+                       success : function(data)
+                       {
+                       document.getElementById('id_BasicInformation-PracticeHead').value=data
+
+                       }
+                   }
+           );
+ })
+
+ $('.sopname').on('change', function() {
+              var sop = this.value
+                    $.ajax(
+                   {
+                       type : "GET",
+                       url : '/myansrsource/soplink/',
+                       data :{'sop': sop} ,
+                       success : function(data)
+                       {
+                       document.getElementById('soplink').value=data
+                       }
+                   }
+           );
+ })
+  });
 
 </script>
 

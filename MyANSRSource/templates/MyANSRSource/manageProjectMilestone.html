@@ -80,6 +80,25 @@
         </div>
         <input type="hidden" value="{{ totalValue }}" class="project-total-value-hidden" />
 	{% endif %}
+<script>
+$('#MilestoneType').prop('readonly',true)
+ $('.MilestoneName').on('change', function(){
+        var MilestoneID = this.value
+           $.ajax(
+                   {
+                       type : "GET",
+                       url : '/myansrsource/milestonename/',
+                       data :{'milestone_type_id': MilestoneID} ,
+                       success : function(data)
+                       {
+                       document.getElementById('MilestoneType').value=data
+
+                       }
+                   }
+           );
+
+})
+</script>
     <script>
         $(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2]', function() {
         var element = $(this).get(0);
@@ -89,10 +108,5 @@
 {#        }#}
 
 
-    });
-
-
-
-
-        </script>
+    }); </script>
 {% endblock %}{% endblock %}

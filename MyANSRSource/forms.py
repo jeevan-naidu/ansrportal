@@ -4,10 +4,12 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
-    projectType, ProjectManager, TimeSheetEntry, BTGReport
+    projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
+    MilestoneType
 from bootstrap3_datetime.widgets import DateTimePicker
-from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer
+from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, SubPractice
 from employee.models import Remainder
+from django.utils.safestring import mark_safe
 import datetime
 import calendar
 import helper
@@ -25,6 +27,12 @@ PROJECT_CLOSE_FLAG = (('','................'),
                       ('Closing sample project', 'Closing sample project'),
                       ('Closing master project', 'Closing master project'),
                       ('Closing rework project', 'Closing rework project'),)
+
+PROJECTFINTYPE = (
+    ('', '-------'),
+    ('FP', 'Fixed Price'),
+    ('T&M', 'T&M')
+)
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
 startDate = TimeSheetEntry.objects.all().values('wkstart').distinct()
 year = list(set([eachDate['wkstart'].year for eachDate in startDate]))
@@ -333,8 +341,26 @@ def TimesheetFormset(currentUser,enddate):
     return TimeSheetEntryForm
 
 
+# Form Class to create milestones for project
+class changeProjectLeaderForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ('projectManager',)
+        widgets = {
+            'projectManager': autocomplete.ModelSelect2Multiple()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
+        self.fields['projectManager'].widget.attrs['class'] = "form-control"
+
+
 # Form Class to create project
-class ProjectBasicInfoForm(forms.ModelForm):
+class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
+
+    projectFinType = forms.ChoiceField(choices=PROJECTFINTYPE, required=True,
+                                       label=('Project Fin Type'), )
     book = forms.ModelChoiceField(
         queryset=Book.objects.all(),
         label="Book/Title",
@@ -345,37 +371,46 @@ class ProjectBasicInfoForm(forms.ModelForm):
             # 'data-minimum-input-length': 3,
         }, ),
         required=True, )
-    # projectManager = forms.ModelChoiceField(
-    #     # queryset=User.objects.all(),
-    #     label="Project Leader",
-    #     widget=autocomplete.ModelSelect2Multiple(
-    #         # url='AutocompleteUser'
-    #     ),
-    #     required=True, )
+
+    DeliveryManager = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Delivery Manager",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type Delievery Manager Name ...',
+        }
+            # url='AutocompleteUser'
+        ),
+        required=True, )
 
     class Meta:
         model = Project
         fields = (
             'projectType',
-            'bu',
+            'projectFinType',
             'customer',
+            'startDate',
+            'endDate',
             'name',
+            'bu',
             'customerContact',
             'book',
             'projectManager',
             'signed',
             'currentProject',
-        )
+
+            )
         widgets = {
+            'endDate': DateTimePicker(options=dateTimeOption),
+            'startDate': DateTimePicker(options=dateTimeOption),
             'currentProject': forms.RadioSelect(
                 choices=[(True, 'New Development'), (False, 'Revision')]
             ),
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
             ),
-            'projectManager': autocomplete.ModelSelect2Multiple()
-        }
+            'projectManager': autocomplete.ModelSelect2Multiple(attrs={'data-placeholder': 'Type Delievery CO-ordinater...'} ),
 
+        }
 
     def __init__(self, *args, **kwargs):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
@@ -387,8 +422,10 @@ class ProjectBasicInfoForm(forms.ModelForm):
             BusinessUnit.objects.all().order_by('name')
         self.fields['customer'].queryset = \
             Customer.objects.filter(active=True).order_by('name')
-        self.fields['projectManager'].widget.attrs['class'] = \
+        self.fields['projectFinType'].widget.attrs['class'] = \
             "form-control"
+        self.fields['projectManager'].widget.attrs['class'] = \
+            "form-control coordinatorcount"
         self.fields['bu'].widget.attrs['class'] = \
             "form-control"
         self.fields['customer'].widget.attrs['class'] = \
@@ -404,6 +441,36 @@ class ProjectBasicInfoForm(forms.ModelForm):
         self.fields['customerContact'].widget.attrs['class'] = \
             "form-control"
         self.fields['signed'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['startDate'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "form-control"
+
+
+
+#Upload Form  fro project screen
+class UploadForm(forms.ModelForm):
+    Sowdocument = forms.FileField(label='Sow Attachment', help_text=mark_safe(
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+    Sowdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                         'data-iconName': 'glyphicon glyphicon-paperclip'}
+    Estimationdocument = forms.FileField(label='Estimation Attachment', required=True, help_text=mark_safe(
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+    Estimationdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                'data-iconName': 'glyphicon glyphicon-paperclip'}
+
+    class Meta:
+        model = ProjectDetail
+        fields = ('Sowdocument',
+                    'Estimationdocument',
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(UploadForm, self).__init__(*args, **kwargs)
+        self.fields['Sowdocument'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['Estimationdocument'].widget.attrs['class'] = \
             "form-control"
 
 
@@ -428,6 +495,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
     id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
     reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG)
     remark = forms.CharField(max_length=100, required=False)
+
     class Meta:
         model = ProjectChangeInfo
         fields = (
@@ -505,12 +573,19 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 class CloseProjectMilestoneForm(forms.ModelForm):
 
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput() )
+    MilestoneName = forms.ModelChoiceField(
+        queryset=MilestoneType.objects.all(),
+        label="Select Milestone Name",
+        widget=autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
+            'data-placeholder': 'Type Milestone Type...'} ),
+        required=True, )
+    MilestoneType = forms.CharField( label=('Milestone Type'), )
 
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'description',
-            'amount', 'closed', 'financial'
+            'milestoneDate', 'MilestoneName', 'MilestoneType',
+            'amount', 'closed'
         )
         widgets = {
             'project': forms.HiddenInput(),
@@ -522,27 +597,93 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = \
             "date-picker d-item form-control"
-        self.fields['description'].widget.attrs['class'] = \
-            "d-item input-item form-control"
-        self.fields['financial'].widget.attrs['class'] = \
-            "d-item input-item form-control"
+        self.fields['MilestoneName'].widget.attrs['class'] = "date-picker d-item form-control MilestoneName"
+        # self.fields['description'].widget.attrs['class'] = \
+        #     "d-item input-item form-control"
+        # self.fields['financial'].widget.attrs['class'] = \
+        #     "d-item input-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['MilestoneType'].widget.attrs['id'] = "MilestoneType"
+
 
 
 # Project Flag Form
 class ProjectFlagForm(forms.ModelForm):
+    projectCost = forms.CharField(required=True, label=('Project cost'), )
+    PracticeHead = forms.CharField(required=True, label=('Practice head'), )
+    SopLink = forms.CharField( label=('Sop Link'), )
+    practicename = forms.ModelChoiceField(
+        queryset=Practice.objects.all(),
+        label="Select Practice",
+        widget=autocomplete.ModelSelect2(url='AutocompletePracticeName', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type Practice Name ...',
+            'class': 'practicevalue',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+
+    projectasset = forms.ModelChoiceField(
+        queryset=ProjectAsset.objects.all(),
+        label="Select project Asset",
+        widget=autocomplete.ModelSelect2(url='AutocompleteProjectAsset', attrs={
+            'data-placeholder': 'Type Asset Name ...',
+            'class': 'projectasset',
+        }, ),
+        required=True, )
+
+    subpractice = forms.ModelChoiceField(
+        queryset=SubPractice.objects.all(),
+        label="Select sub Practice",
+        widget=autocomplete.ModelSelect2(url='AutocompletesubPracticeName', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type sub Practice Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+
+    sopname = forms.ModelChoiceField(
+        queryset=qualitysop.objects.all(),
+        label="Select QualitySOP",
+        widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type  QualitySOP Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+
+    ProjectScope = forms.ModelChoiceField(
+        queryset=ProjectScope.objects.all(),
+        label="Select Project Scope",
+        widget=autocomplete.ModelSelect2(url='Autocompleteprojectscope', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type  Project Scope Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
 
     class Meta:
         model = Project
         fields = (
-            'startDate',
-            'endDate',
             'plannedEffort',
             'totalValue',
             'po',
-            'salesForceNumber'
+            'salesForceNumber',
+            'projectCost',
+            'practicename',
+            'subpractice',
+            'PracticeHead',
+            'sopname',
+            'SopLink',
+            'projectasset',
+            'ProjectScope',
+
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
@@ -564,26 +705,10 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['totalValue'].widget.attrs['class'] = \
             "total-value-input form-control"
         self.fields['plannedEffort'].widget.attrs['min'] = 8
-        self.fields['startDate'].widget.attrs['class'] = \
-            "start-date-input form-control"
-        self.fields['endDate'].widget.attrs['class'] = \
-            "end-date-input form-control"
-
-
-# Form Class to create milestones for project
-class changeProjectLeaderForm(forms.ModelForm):
-
-    class Meta:
-        model = Project
-        fields = ('projectManager',)
-        widgets = {
-            'projectManager': autocomplete.ModelSelect2Multiple()
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
-        self.fields['projectManager'].widget.attrs['class'] = "form-control"
-
+        self.fields['projectasset'].widget.attrs['class']= "total-value-input form-control"
+        self.fields['PracticeHead'].widget.attrs['id']="id_BasicInformation-PracticeHead"
+        self.fields['SopLink'].widget.attrs['id'] = "soplink"
+        self.fields['sopname'].widget.attrs['class']="sopname"
 
 
 class MyRemainderForm(forms.ModelForm):
@@ -655,9 +780,6 @@ class TeamMemberPerfomanceReportForm(forms.ModelForm):
         fields = (
             'member',
         )
-
-
-
 
     def __init__(self, *args, **kwargs):
         super(TeamMemberPerfomanceReportForm, self).__init__(*args, **kwargs)
