@@ -8,19 +8,45 @@ from tasks import ExitEmailSendTask, PostAcceptedMailMGR, PostAcceptedMailHR, \
     HRClearanceMail, FacilityClearanceMail, AdayBeforeEmail
 from django.utils import timezone
 from employee.models import Employee
+from CompanyMaster.models import Holiday
 from django.contrib import messages
 from django.contrib.auth.models import User
 from datetime import timedelta
 from datetime import date
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-
+import datetime
 
 # Create your views here.
 
 
 def __unicode__(self):
     return unicode(self.user)
+
+
+'''function that will return Holiday or weekend on specific date'''
+
+
+def get_holiday_weekend_list(date):
+    weeklist = []
+    now = datetime.datetime.now()
+    weeklist = date.split('-')
+    list_of_holiday = Holiday.objects.all().values('date').filter(date__year=now.year)
+    for val in list_of_holiday:
+        if str(val['date']) in date:
+            Holiday_flag = True
+        else:
+            Holiday_flag = False
+    date = datetime.datetime(int(weeklist[0]), int(weeklist[1]), int(weeklist[2]))
+    if date.weekday() >= 5:
+        weekend = True
+    else:
+        weekend = False
+    if Holiday_flag == True or weekend == True:
+        is_holiday = True
+    else:
+        is_holiday = False
+    return is_holiday
 
 
 def revert_resignation(request):
@@ -67,6 +93,9 @@ def update_manager_concent(request):
     manageremail = User.objects.get(id=manager.user_id)
     user_email = User.objects.get(id=id)
     final_date = request.GET['final_date']
+    check_final_date = get_holiday_weekend_list(str(final_date))
+    if check_final_date:
+        return HttpResponse('failure')
     mgr_backup = request.GET['mgr_backup']
     mgr_feedback = request.GET['mgr_feedback']
     manager_concent = request.GET['manager_concent']
@@ -91,6 +120,9 @@ def update_hr_concent(request):
     mgr_id = Employee.objects.get(user_id=id)
     user_email = User.objects.get(id=id)
     final_date = request.GET['final_date']
+    check_final_date = get_holiday_weekend_list(str(final_date))
+    if check_final_date:
+        return HttpResponse('failure')
     hr_feedback = request.GET['hr_feedback']
     hr_concent = request.GET['hr_concent']
     hr_rehire = request.GET['hr_rehire']
@@ -144,6 +176,11 @@ class ExitFormAdd(View):
                 reason_dropdown = form.cleaned_data['reason_dropdown']
                 comment = form.cleaned_data['comment']
                 time = timezone.now()
+                check_last_date = get_holiday_weekend_list(str(last_date))
+                check_from_date = get_holiday_weekend_list(str(start_date))
+                if check_from_date or check_last_date:
+                    messages.error(request, 'You have Holidays or weekends on these dates')
+                    return render(request, "userexit.html", context)
                 if start_date > last_date:
                     messages.error(request, 'Your Last Date Should be Greater than resignation Date')
                     return render(request, "userexit.html", context)
