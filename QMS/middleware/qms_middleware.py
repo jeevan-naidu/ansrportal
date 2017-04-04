@@ -2,6 +2,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 import datetime
 import logging
+import re
 from django.http import HttpResponseRedirect
 from GrievanceAdmin.middleware.grievanceadminmiddleware import get_client_ip
 
@@ -16,11 +17,6 @@ def log_qms(request):
                                             get_client_ip(request), request.path,
                                             timezone.make_aware(datetime.datetime.now(),
                                                                 timezone.get_default_timezone())))
-
-import re
-
-def findWholeWord(w):
-    return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
 
 
 class QMSPermissionCheckMiddleware(object):

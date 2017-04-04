@@ -172,12 +172,14 @@ def get_review_group(project=None, chapter=None, is_author=False, component=Fals
 
 def mark_as_completed(request):
     result = False
+    can_show_button = False
+
     if request.GET.get('is_lead') == 'true':
-        print "in if true"
+        # print "in if true"
         try:
-            QASheetHeader.objects.filter(project=request.session['c_project']).update(review_group_status=True,
-                                                                                      author_feedback_status=True)
-            ProjectTemplateProcessModel.objects.filter(project=request.session['c_project']).\
+            QASheetHeader.objects.filter(project=request.GET.get('project_id')).update(review_group_status=True,
+                                                                                       author_feedback_status=True)
+            ProjectTemplateProcessModel.objects.filter(project=request.GET.get('project_id')).\
                 update(lead_review_status=True)
             result = True
         except Exception as e:
@@ -185,7 +187,7 @@ def mark_as_completed(request):
             logger.error(" {0} ".format(str(e)))
 
     else:# print request.session['c_project'], request.session['c_chapter'],request.session['c_component'],request.GET.get('tab_id')
-        print "in else"
+        # print "in else"
         try:
             QASheetHeader.objects.filter(project=request.session['c_project'],
                                          chapter_component=ChapterComponent.objects.
@@ -194,12 +196,20 @@ def mark_as_completed(request):
                                          review_group=request.GET.get('tab_id')).update(review_group_status=True,
                                                                                         author_feedback_status=True)
             result = True
+            can_show_button = QASheetHeader.objects.filter((Q(review_group_status=False) |
+                                                            Q(author_feedback_status=False)),
+                                                           project=request.session['c_project']).exists()
+            # print can_show_button
+            if not can_show_button:
+                obj = ProjectTemplateProcessModel.objects.get(project=request.session['c_project'])
+                if obj.lead_review_status is False:
+                    can_show_button = True
         except Exception as e:
             print str(e)
             logger.error(" {0} ".format(str(e)))
-
+    data = {"result": result, "can_show_button": can_show_button}
     return HttpResponse(
-        json.dumps(result),
+        json.dumps(data),
         content_type="application/json"
     )
 
@@ -832,7 +842,7 @@ class DashboardView(ListView):
                                                                          values('project')).\
             values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id', 'lead_review_status').\
             annotate(chapter_count=Count('project__book__chapter'))
-        # print (context['projects'])
+        print context['projects'].query
         return context
 
 
@@ -842,6 +852,7 @@ def review_completed(request):
     review_feedback = request.GET.get('review_feedback')
     review_group = request.GET.get('review_group')
     submitted_by = request.GET.get('submitted_by')
+    print "submitted_by" , submitted_by
     try:
         # print project_id,chapter_id,review_group,review_feedback
         if submitted_by == "author":
@@ -850,6 +861,11 @@ def review_completed(request):
                                                                               review_group_status=False,
                                                                               author_feedback=review_feedback)
         else:
+            existing_remark = QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
+                                                           review_group_id=review_group).values_list("review_group_feedback", flat=True)[0]
+            print "existing_remark",  len(str(existing_remark))
+            if len(str(existing_remark)) > 0:
+                review_feedback = "first review feedback :"+str(existing_remark)+"\n" + "final review feedback : " + str(request.GET.get('review_feedback'))
             QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
                                          review_group_id=review_group).update(review_group_status=True,
                                                                               review_group_feedback=review_feedback)

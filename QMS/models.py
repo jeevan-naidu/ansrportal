@@ -54,6 +54,9 @@ class ProjectTemplateProcessModel(TimeStampAbstractModel):
     )
     qms_process_model = models.ForeignKey(QMSProcessModel)
 
+    class Meta:
+        ordering = ['lead_review_status']
+
     def __unicode__(self):
         """ return unicode strings """
         return '%s' % (str(self.project) + " - " + str(self.template))

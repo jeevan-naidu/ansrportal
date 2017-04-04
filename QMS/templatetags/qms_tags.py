@@ -3,9 +3,9 @@ from django.contrib.auth.models import Group
 from django.conf import settings
 import employee
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count
+from django.db.models import Count, Q, Sum
 from QMS.models import *
-from MyANSRSource.models import ProjectManager
+from MyANSRSource.models import *
 import logging
 logger = logging.getLogger('MyANSRSource')
 register = template.Library()
@@ -35,7 +35,7 @@ def get_severity_level(id, pk):
         print "pk" , pk
         s = SeverityLevelMaster.objects.get(id=pk)
     except ObjectDoesNotExist as e:
-        print str(e)
+        print  "get_severity_level" , str(e)
         s = None
     return s
 
@@ -88,7 +88,7 @@ def get_severity_count(project, name, template_id):
                 if key is 's_count':
                     s += value
     except Exception as e:
-        # print str(e)
+        print "get_severity_count " , str(e)
         logger.error("qms format{0}", str(e))
     return s
 
@@ -119,9 +119,31 @@ def get_question_count(project):
 
 @register.simple_tag
 def is_project_manager(project, user):
-    print project , user
+    print "is_project_manager" , project , user
     try:
         ProjectManager.objects.filter(project=project, user=user).exists()
     except Exception as e:
         print str(e)
     return ProjectManager.objects.filter(project=project, user=user).exists()
+
+
+@register.simple_tag
+def get_project_status(project):
+    can_show_button = QASheetHeader.objects.filter((Q(review_group_status=False) | Q(author_feedback_status=False)),
+                                                   project=project).exists()
+    print "can_show_button", can_show_button
+    if not can_show_button:
+        obj = ProjectTemplateProcessModel.objects.get(project=project)
+        print "st",obj.lead_review_status
+        if obj.lead_review_status is False:
+            can_show_button = True
+    chapter_count = Chapter.objects.filter(book__project=project).count()
+    print "cc" , chapter_count
+    qa_chapter_count = QASheetHeader.objects.filter(project=project).values('chapter').distinct().count()
+    print "qc", qa_chapter_count
+    if chapter_count != qa_chapter_count:
+        difference = chapter_count - qa_chapter_count
+    else:
+        difference = 0
+    return can_show_button, difference
+

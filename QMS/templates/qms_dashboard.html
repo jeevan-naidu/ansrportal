@@ -46,10 +46,11 @@
                             <th>Questions</th>
                           <th>Defect Density</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                      {% for obj in projects %}
+                      {% for obj in projects|dictsortreversed:"lead_review_status" %}
                         <tr class="odd gradeX">
                           <td><a href="#" data-toggle="modal" data-target="#myModal" class="project" data-value="{{obj.project_id}}" >{{obj.project__projectId}}</a></td>
                           <td>{{obj.project__name}}</td>
@@ -60,7 +61,20 @@
                             <td class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</td>
                           {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
                           <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
-                            <td>{{ obj.lead_review_status|yesno:"Closed, On Progress" }}</td>
+                            <td>{% if obj.lead_review_status %}
+                                    <span class="label label-default">completed</span>
+                                {% else %}
+                                    <span class="label label-success">Active</span>
+                                {%endif %}
+                            </td>
+                            <td>{% get_project_status obj.project  as result %}
+                                    {% if result.0 %}
+                                        <input id="lead_tab_complete" type="button" data-project="{{obj.project}}" data-diffvalue="{{result.1}}" class="btn btn-xs   {% if result.1 != 0 %} btn-danger {% else %} btn-sm {% endif %} lead_tab_complete" onclick= "mark_as_complete(this);"  name=""value="Completed"/>
+                                {% else %}
+                                <input  type="button"  class="btn btn-xs   btn-white " disabled value="Completed" >
+
+                                {% endif %}
+                            </td>
                         </tr>
                      {% endfor %}
                    </tbody>
@@ -132,6 +146,8 @@
 
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/qms.js"></script>
+
 
 <script type="text/javascript">
 
