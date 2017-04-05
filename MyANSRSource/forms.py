@@ -451,10 +451,11 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
 
 #Upload Form  fro project screen
 class UploadForm(forms.ModelForm):
-    Sowdocument = forms.FileField(label='Sow Attachment', help_text=mark_safe(
+    Sowdocument = forms.FileField(label='Sow Attachment', required=False,help_text=mark_safe(
         "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
     Sowdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
                                          'data-iconName': 'glyphicon glyphicon-paperclip'}
+
     Estimationdocument = forms.FileField(label='Estimation Attachment', required=True, help_text=mark_safe(
         "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
     Estimationdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
@@ -605,7 +606,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
 
 # Project Flag Form
 class ProjectFlagForm(forms.ModelForm):
-    projectCost = forms.CharField(required=True, label=('Project cost'), )
+    # projectCost = forms.CharField(required=True, label=('Project cost'), )
     PracticeHead = forms.CharField(required=True, label=('Practice head'), )
     SopLink = forms.CharField( label=('Sop Link'), )
     practicename = forms.ModelChoiceField(
@@ -666,7 +667,6 @@ class ProjectFlagForm(forms.ModelForm):
             'totalValue',
             'po',
             'salesForceNumber',
-            'projectCost',
             'practicename',
             'subpractice',
             'PracticeHead',
