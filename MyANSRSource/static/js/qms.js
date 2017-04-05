@@ -466,7 +466,9 @@ $('#filter_form').submit(function() {
                       // found it
                     }
                     else{
-                        $('#1').show();
+                        if(data['tab_order'].length() != 0) {
+                            $('#1').show();
+                         }
                     }
                 },
 
