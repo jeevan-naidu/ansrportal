@@ -85,8 +85,6 @@ class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
         choices = Milestone.objects.filter(name__icontains=q)
         return choices
 class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
-    # def get_result_label(self, item):
-    #     return '<img src="flags/%s.png"> %s' % (item, item)
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')

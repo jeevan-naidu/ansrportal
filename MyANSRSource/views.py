@@ -1676,11 +1676,11 @@ def Dashboard(request):
 
     financialM = pm.filter(
         financial=True).values(
-        'description',
+        'name',
         'milestoneDate')
     nonfinancialM = pm.filter(
         financial=False).values(
-        'description',
+        'name',
         'milestoneDate')
 
     for eachRec in financialM:
@@ -2016,19 +2016,23 @@ class TrackMilestoneWizard(SessionWizardView):
                         'My Projects'
                     )['My Projects-project']
                     projectObj = Project.objects.get(pk=selectedProjectId)
-                    print projectObj
                     projectTotal = projectObj.totalValue
                     totalRate = 0
                     for eachForm in form:
                         if eachForm.is_valid():
                             totalRate += eachForm.cleaned_data['amount']
-                            if eachForm.cleaned_data['amount'] > 0:
+                            milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
+                                milestone_type.\
+                                milestone_type
+                            if eachForm.cleaned_data['amount'] > 0 and milestone_type not in \
+                                    ['Financial', 'Delivery cum Financial']:
                                 amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount, ErrorList())
                                 errors.append(u'Please select milestone as \
                                               financial')
-                            elif eachForm.cleaned_data['amount'] == 0:
+                            elif eachForm.cleaned_data['amount'] == 0 and milestone_type in \
+                                    ['Financial', 'Delivery cum Financial']:
                                 amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount, ErrorList())
@@ -2051,7 +2055,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 project__id=selectedProjectId,
             ).values(
                 'id',
-                'financial',
+                'name',
                 'milestoneDate',
                 'description',
                 'amount',
@@ -2087,8 +2091,8 @@ def saveData(self, pm, eachData, projectObj):
         pass
     else:
         pm.project = projectObj
-        pm.description = eachData['description']
-        pm.financial = eachData['financial']
+        pm.name = eachData['name']
+        # pm.financial = eachData['financial']
         pm.milestoneDate = eachData['milestoneDate']
         pm.amount = eachData['amount']
         pm.closed = eachData['closed']
@@ -2187,8 +2191,10 @@ class CreateProjectWizard(SessionWizardView):
                     a=0
         if step == 'Uploads':
             if form.is_valid():
-                self.request.session['sow'] = (form.cleaned_data['Sowdocument'])
-                self.request.session['estimation'] = (form.cleaned_data['Estimationdocument'])
+                self.request.session['sow'] = self.request.FILES.get('Uploads-Sowdocument', "")
+                self.request.session['estimation'] = self.request.FILES.get('Uploads-Estimationdocument', "")
+                #self.request.session['sow'] = (form.cleaned_data['Sowdocument'])
+                #self.request.session['estimation'] = (form.cleaned_data['Estimationdocument'])
 
             else:
                 logger.error(
@@ -2223,7 +2229,8 @@ class CreateProjectWizard(SessionWizardView):
                                 for eachForm in form:
                                     if eachForm.is_valid():
                                         totalRate += eachForm.cleaned_data['amount']
-                                        if eachForm.cleaned_data['financial'] is False:
+                                        if eachForm.cleaned_data['name'].milestone_type.milestone_type in\
+                                                ['Financial',]:
                                             if eachForm.cleaned_data['amount'] > 0:
                                                 amount = eachForm.cleaned_data[
                                                     'amount']
@@ -2505,6 +2512,7 @@ def saveProject(request):
     # you send them back to the summary page?
 
     if request.method == 'POST':
+
         try:
             #: code to check not more than 3 PM per project
             pm = []
@@ -2606,18 +2614,12 @@ def saveProject(request):
                 scope_id = ProjectScope.objects.get(scope=scope).id
                 pd.Scope_id = scope_id
                 asset = request.POST.get('projectasset')
+                pd.Sowdocument = request.session['sow']
+                pd.Estimationdocument = request.session['estimation']
                 asset_id = ProjectAsset.objects.get(Asset=asset).id
                 pd.Asset_id = asset_id
                 pd.save()
 
-            except ValueError as e:
-                logger.exception(e)
-            try:
-                pd_id = pd.id
-                pd_id.Sowdocument = request.session['sow']
-                pd_id.Estimationdocument = request.session['estimation']
-                pd_id.save()
-                FileSystemStorage.delete()
             except ValueError as e:
                 logger.exception(e)
 
@@ -2722,7 +2724,7 @@ def ViewProject(request):
         else:
             cleanedMilestoneData = ProjectMilestone.objects.filter(
                 project=projectObj).values('milestoneDate', 'description',
-                                           'amount', 'financial')
+                                           'amount', 'name')
 
         changeTracker = ProjectChangeInfo.objects.filter(
             project=projectObj).values(

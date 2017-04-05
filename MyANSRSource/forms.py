@@ -573,23 +573,22 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 class CloseProjectMilestoneForm(forms.ModelForm):
 
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
-    MilestoneName = forms.ModelChoiceField(
+    name = forms.ModelChoiceField(
         queryset=Milestone.objects.all(),
         label="Select Milestone Name",
-        widget=autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
-            'data-placeholder': 'Type Milestone Type...'}),
         required=True, )
-    # MilestoneType = forms.CharField(label='Milestone Type',)
 
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'MilestoneName',
+            'milestoneDate', 'name',
             'amount', 'closed'
         )
         widgets = {
             'project': forms.HiddenInput(),
             'milestoneDate': DateTimePicker(options=dateTimeOption),
+            # 'MilestoneName': autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
+            # 'data-placeholder': 'Type Milestone Type...'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -597,15 +596,10 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = \
             "date-picker d-item form-control"
-        self.fields['MilestoneName'].widget.attrs['class'] = "date-picker d-item form-control MilestoneName"
-        # self.fields['description'].widget.attrs['class'] = \
-        #     "d-item input-item form-control"
-        # self.fields['financial'].widget.attrs['class'] = \
-        #     "d-item input-item form-control"
+        self.fields['name'].widget.attrs['class'] = "d-item input-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
-        # self.fields['MilestoneType'].widget.attrs['id'] = "MilestoneType"
 
 
 
@@ -618,11 +612,8 @@ class ProjectFlagForm(forms.ModelForm):
         queryset=Practice.objects.all(),
         label="Select Practice",
         widget=autocomplete.ModelSelect2(url='AutocompletePracticeName', attrs={
-            # Set some placeholder
             'data-placeholder': 'Type Practice Name ...',
             'class': 'practicevalue',
-            # Only trigger autocompletion after 3 characters have been typed
-            # 'data-minimum-input-length': 3,
         }, ),
         required=True, )
 
