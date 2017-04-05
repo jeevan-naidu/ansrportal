@@ -466,9 +466,10 @@ $('#filter_form').submit(function() {
                       // found it
                     }
                     else{
-                        if(data['tab_order'].length() != 0) {
+                        tab_order_obj = Object.values(data['tab_order']);
+                        if (tab_order_obj != undefined || tab_order_obj.length != 0) {
                             $('#1').show();
-                         }
+                        }
                     }
                 },
 
