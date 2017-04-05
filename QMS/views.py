@@ -180,7 +180,7 @@ def mark_as_completed(request):
             QASheetHeader.objects.filter(project=request.GET.get('project_id')).update(review_group_status=True,
                                                                                        author_feedback_status=True)
             ProjectTemplateProcessModel.objects.filter(project=request.GET.get('project_id')).\
-                update(lead_review_status=True)
+                update(lead_review_status=True, lead_review_feedback=request.GET.get('feedback'))
             result = True
         except Exception as e:
             print str(e)
@@ -488,6 +488,7 @@ class AssessmentView(TemplateView):
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
                 is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
+                print "is_pm ",is_pm
                 # print obj.order_number
                 #  previous tab completion check
                 if obj.order_number != 1:
@@ -525,14 +526,16 @@ class AssessmentView(TemplateView):
                     # print "in else"
                     can_access = 0
                     qms_team_members = [obj.reviewed_by, author]
-                    if request.user == author:
-                        request.session['author_logged_in'] = True
-                        if not obj.review_group_status and not obj.author_feedback_status:
-                            return forbidden_access(self, form, project, "wait", chapter)
+                    if not is_pm:
+                        if request.user == author:
+                            request.session['author_logged_in'] = True
+                            if not obj.review_group_status and not obj.author_feedback_status:
+                                return forbidden_access(self, form, project, "wait", chapter)
+                        else:
+                            # print request.user , author
+                            request.session['author_logged_in'] = False
                     else:
-                        # print request.user , author
                         request.session['author_logged_in'] = False
-
                     if not is_pm and request.user not in qms_team_members:
                         return forbidden_access(self, form, project, "not_assigned", chapter)
 

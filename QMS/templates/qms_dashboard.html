@@ -49,8 +49,8 @@
                             <th>Action</th>
                         </tr>
                       </thead>
-                      <tbody>
-                      {% for obj in projects|dictsortreversed:"lead_review_status" %}
+                      <tbody> {% with  projects|dictsort:"lead_review_status" as s %} <br/>
+                      {% for obj in s %}
                         <tr class="odd gradeX">
                           <td><a href="#" data-toggle="modal" data-target="#myModal" class="project" data-value="{{obj.project_id}}" >{{obj.project__projectId}}</a></td>
                           <td>{{obj.project__name}}</td>
@@ -74,9 +74,40 @@
                                 <input  type="button"  class="btn btn-xs   btn-white " disabled value="Completed" >
 
                                 {% endif %}
+                                 <div class="modal fade" id="reviewComplete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Project Closure Comments</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" id="feedback_form" action="/qms/review_completed/" method ="GET">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Comment : </label>
+                              <div class="col-sm-7 controls">
+                              <textarea class="input-border-btm" name="review_feedback_{{obj.project}}" id ="review_feedback_{{obj.project}}"></textarea>
+                              </div>
+
+                            </div>
+
+                          </form>
+
+                        </div>
+                        <!--<div class="modal-footer background-login">-->
+                          <!--<button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel </button>-->
+                          <!--<button type="button" class="btn vd_btn vd_bg-green" id="submit_review_{{obj.project}}    ">Save</button>-->
+                        <!--</div>-->
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                                <i class="fa fa-comments-o fa-fw " style ="margin-left:25px;" data-toggle="modal" id="review_modal" data-target="#reviewComplete"></i>
+
                             </td>
                         </tr>
-                     {% endfor %}
+                     {% endfor %}{% endwith %}
                    </tbody>
 			    </table>
 			   </div><!-- ./panel-body -->
@@ -86,6 +117,7 @@
 
 
 <!-- Modal Area -->
+
 
                   <!-- Modal -->
                   <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -193,7 +225,14 @@ $('#qms_project_table tbody').html('');
 }
 
 $(document).ready(function() {
-    $('#data-tables').dataTable();
+    <!--$('#data-tables').dataTable();-->
+    $('#data-tables').dataTable( {
+    "order": [],
+    "columnDefs": [ {
+      "targets"  : 'no-sort',
+      "orderable": false,
+    }]
+});
     $('.project').on('click', function()  {
         $.ajax({
             url: '/qms/chapter_summary',

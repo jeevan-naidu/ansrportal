@@ -311,7 +311,9 @@ function mark_as_complete(element=null) {
             if ($(element).data("diffvalue") !=1) {s = " chapters are "} else {s= " chapter is "}
             text = $(element).data("diffvalue") + " " +s + " not created yet, do you still want to mark it as completed ?"
             title = "You are going to mark this project as completed!"
-            data = {"is_lead":true ,"project_id":$(element).data('project') };
+            project_id = $(element).data('project')
+            lead_review = $('#review_feedback_'+project_id).val()
+            data = {"is_lead":true ,"project_id":$(element).data('project'),"feedback":lead_review };
             is_lead = true;
             success_msg = "Project is marked as completed!"
         }
@@ -334,6 +336,7 @@ function mark_as_complete(element=null) {
         },
         function(isConfirm){
             if (isConfirm) {
+            $('#reviewComplete').show();
                 $.ajax({
                     url: '/qms/mark_as_completed/',
                     type: 'GET',
@@ -450,8 +453,9 @@ $('#filter_form').submit(function() {
 
                 }
                 <!--$("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"False");-->
-                console.log(Object.keys(data['can_edit']));
-                console.log(Object.values(data['can_edit']));
+//                console.log("can edit keys"+Object.keys(data['can_edit']));
+//                console.log("can edit values"+Object.values(data['can_edit']));
+//                console.log("tab_order values"+Object.values(data['tab_order']));
 
                     populateForm(data);
                     orderTabs(data);
@@ -461,15 +465,17 @@ $('#filter_form').submit(function() {
                     // globalObj to capture the order of tabs
 
                     globalObj = data;
-                    if ($.inArray(false, Object.values(data['can_edit'])) != -1)
+                    can_edit = Object.values(data['can_edit'])
+                    if (can_edit.length != 0 && $.inArray(false, can_edit) != -1)
                     {
                       // found it
                     }
                     else{
                         tab_order_obj = Object.values(data['tab_order']);
-                        if (tab_order_obj != undefined || tab_order_obj.length != 0) {
+//                        console.log("len"+tab_order_obj.length);
+                        if ( tab_order_obj.length != 0) {
                             $('#1').show();
-                        }
+                        } else $('#1').hide();
                     }
                 },
 

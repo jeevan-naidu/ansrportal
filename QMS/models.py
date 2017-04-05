@@ -52,6 +52,10 @@ class ProjectTemplateProcessModel(TimeStampAbstractModel):
         null=False,
         verbose_name=" Is Lead Review Completed "
     )
+    lead_review_feedback = models.TextField(
+        blank=True, null=True,
+        verbose_name=" Lead Review Feedback "
+    )
     qms_process_model = models.ForeignKey(QMSProcessModel)
 
     class Meta:
