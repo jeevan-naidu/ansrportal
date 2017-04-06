@@ -201,6 +201,9 @@ def LeaveDetails(request):
 # Create your views here.
 class Dashboard(View):
     def get(self, request):
+        # from ipdb import set_trace
+        set_trace()
+
         genderFlag = True
         genderMale = False
         LeaveAdmin = False
@@ -1637,6 +1640,8 @@ def daterange(start_date, end_date):
 
 
 def weekdetail(week, month):
+    # import ipdb;
+    # ipdb.set_trace()
     currentmontdetail = monthrange(date.today().year, month)
     daysinpreviousmonth = currentmontdetail[0]
     startdate = date(year=date.today().year,

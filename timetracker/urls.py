@@ -30,4 +30,5 @@ urlpatterns = [
                        url(r'^exitapp/', include('ExitApp.urls')),
                        url(r'^library/', include('Library.urls')),
                        url(r'^process/', include('CustomApp.urls')),
+                       url(r'^skillset/', include('skillset.urls')),
                        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
