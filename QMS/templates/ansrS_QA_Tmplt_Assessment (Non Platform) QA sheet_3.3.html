@@ -129,14 +129,47 @@
                                 value="{{request.session.author_logged_in}}"/>
                          <input type="hidden" name="active_tab1" id="active_tab1" {% if request.session.active_tab %}
                                 value={{request.session.active_tab}} {% else %} value="lambda" {% endif %}/>
+                                            <div class="modal fade" id="feedback_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Project Closure Comments</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div >
+                                <label class="col-sm-4 control-label">Reviewer Feedback : </label>
+                            <span style="word-wrap:break-word">{{reviewer_feedback|default_if_none:"--"}}</span>
 
-                         <div class="no_questions">
-                             <label>Enter the number of questions : </label>
+                            </div>
+                            <div >
+                                <label class="col-sm-3 control-label">Author Feedback : </label>
+
+                                  <span style="word-wrap:break-word">{{author_feedback|default_if_none:"--"}}</span>
+
+                            </div>
+
+                        </div>
+                        <!--<div class="modal-footer background-login">-->
+                          <!--<button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel </button>-->
+                          <!--<button type="button" class="btn vd_btn vd_bg-green" id="submit_review_{{obj.project}}    ">Save</button>-->
+                        <!--</div>-->
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                       {% if review_formset %}  <div class="no_questions">
+                             <label>Questions : </label>
                              <input type="text" name="questions" {%if questions %} value="{{questions}}" {% else %}
                                     value=0 {% endif %} id="questions" style="width:50px;height:25px">
-                         </div>
+                             <i class="fa fa-comments-o fa-fw "  data-toggle="modal" id="feedback_li" data-target="#feedback_modal"></i>
+                         </div> {% endif %}
 
+                            <!--<div class="feedback">-->
+                            <!---->
 
+                         <!--</div>-->
                          <table class="table  table-striped qa-table" id="review_report_table">
                             <thead>
                                 <tr>
@@ -507,8 +540,8 @@
 
                         </div>
                         <div class="modal-footer background-login">
-                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel review </button>
-                          <button type="button" class="btn vd_btn vd_bg-green" id="submit_review">Submit</button>
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel</button>
+                          <button type="button" class="btn vd_btn vd_bg-green" id="submit_review">Save</button>
                         </div>
                       </div>
                       <!-- /.modal-content -->

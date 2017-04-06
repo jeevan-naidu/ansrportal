@@ -308,7 +308,8 @@ console.log("theObj"+JSON.stringify(theObj));
 function mark_as_complete(element=null) {
         is_lead = false;
         if ($("#lead_tab_complete").attr('data-diffvalue') ){
-            if ($(element).data("diffvalue") !=1) {s = " chapters are "} else {s= " chapter is "}
+            if($(element).data("diffvalue") == 0 ) text = "You are going to mark this project as completed!";
+            if ($(element).data("diffvalue") !=1 && $(element).data("diffvalue") != 0) {s = " chapters are "} else {s= " chapter is "}
             text = $(element).data("diffvalue") + " " +s + " not created yet, do you still want to mark it as completed ?"
             title = "You are going to mark this project as completed!"
             project_id = $(element).data('project')
