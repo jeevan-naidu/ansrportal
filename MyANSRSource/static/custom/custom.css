@@ -28,6 +28,9 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
 .ansr_red{background-color: #e8614d;border-color: #e8614d}
 .ansr_red:hover, .ansr_red:focus {background-color: #d04531;border-color: #d04531}
 
+.noresize{resize: none;}
+
+
 /* General Classes */
 
 .disable-select {
@@ -47,6 +50,7 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
     background-color: #fff;
 }
 
+
 /* myansr mod */
 
 .myansr-table{
@@ -58,8 +62,6 @@ label.ansr-brown:hover, .menu-icon.ansr-brown:hover{color: #fff !important; back
 .table-striped.myansr-table>tbody>tr:nth-of-type(even) {
     background-color: #fff;
 }
-
-
 
 
 /* Overrides */
@@ -411,4 +413,17 @@ span.book-count{font-weight: bold}
 
 #acceptanceform textarea{max-height: 30px;}
 
+
+#timesheet-approve-table_filter{display: none;}
+
+
+/* Exit App */
+
+.mw-ra{min-width: 85px;}
+.mxw-250{max-width: 250px !important}
+.mxw-150{max-width: 150px !important}
+
+#exit-form input{max-width: 300px;}
+
+#acceptanceform textarea{max-height: 30px;}
 #dept_clearance_form .amountbox{max-width: 100px;}

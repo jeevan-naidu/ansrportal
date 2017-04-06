@@ -149,6 +149,8 @@ INSTALLED_APPS = [
     'Reimburse',
     'ExitApp',
     'Invoice'
+    'skillset',
+
 
 ]
 
