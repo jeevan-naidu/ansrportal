@@ -139,13 +139,19 @@
                         <div class="modal-body">
                             <div >
                                 <label class="col-sm-4 control-label">Reviewer Feedback : </label>
-                            <span style="word-wrap:break-word">{{reviewer_feedback|default_if_none:"--"}}</span>
+                            <span style="word-wrap:break-word">{{reviewer_feedback|default_if_none:""}}</span>
 
                             </div>
                             <div >
                                 <label class="col-sm-3 control-label">Author Feedback : </label>
 
-                                  <span style="word-wrap:break-word">{{author_feedback|default_if_none:"--"}}</span>
+                                  <span style="word-wrap:break-word">{{author_feedback|default_if_none:""}}</span>
+
+                            </div>
+                            <div >
+                                <label class="col-sm-3 control-label">Lead Feedback : </label>
+
+                                  <span style="word-wrap:break-word">{{lead_review_feedback|default_if_none:""}}</span>
 
                             </div>
 
@@ -161,8 +167,9 @@
                   </div>
                        {% if review_formset %}  <div class="no_questions">
                              <label>Questions : </label>
-                             <input type="text" name="questions" {%if questions %} value="{{questions}}" {% else %}
-                                    value=0 {% endif %} id="questions" style="width:50px;height:25px">
+                           {% if request.session.is_pm or request.session.author_logged_in == False %}
+                                <input type="text" name="questions" {%if questions %} value="{{questions}}" {% else %}
+                                       value=0 {% endif %} id="questions" style="width:50px;height:25px">{% else %} <span>{{questions}}</span>{% endif %}
                              <i class="fa fa-comments-o fa-fw "  data-toggle="modal" id="feedback_li" data-target="#feedback_modal"></i>
                          </div> {% endif %}
 

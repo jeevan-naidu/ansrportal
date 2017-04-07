@@ -488,7 +488,8 @@ class AssessmentView(TemplateView):
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
                 is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
-                print "is_pm ",is_pm
+                print "is_pm ", is_pm
+                request.session['is_pm'] = is_pm
                 # print obj.order_number
                 #  previous tab completion check
                 if obj.order_number != 1:
@@ -513,6 +514,8 @@ class AssessmentView(TemplateView):
 
                 if request.user == obj.reviewed_by:
                     request.session['reviewer_logged_in'] = True
+                    if obj.review_group_status is True and obj.author_feedback_staus is False:
+                        messages.info(self.request, " Please wait till author submit their feedback")
                 else:
                     request.session['reviewer_logged_in'] = False
 
@@ -719,13 +722,14 @@ def render_common(obj, qms_form, request):
     # messages.success(request, "successfully saved")
     s = get_review_group(request.session['project'], request.session['chapter'], component=request.session['component'])
 
-
+    ptpm_obj = ProjectTemplateProcessModel.objects.get(project=obj.project)
     # print s
     return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
                   {'form': request.session['filter_form'], 'defect_master': DefectTypeMaster.objects.all(),
                    'reports': reports, 'review_formset': result[6], "author_feedback_status":
                        obj.author_feedback_status, "reviewer_feedback_status": obj.review_group_status,
                    "reviewer_feedback": obj.review_group_feedback, "author_feedback": obj.author_feedback,
+                   "lead_review_feedback": ptpm_obj.lead_review_feedback,
                                                      'template_id': request.session['template_id'],
                                                      'review_group': s,
                                                      'questions': obj.count,
@@ -846,7 +850,7 @@ class DashboardView(ListView):
                                                                          values('project')).\
             values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id', 'lead_review_status').\
             annotate(chapter_count=Count('project__book__chapter'))
-        print context['projects'].query
+        # print context['projects'].query
         return context
 
 

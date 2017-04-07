@@ -202,7 +202,8 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                     if not qa_obj.review_group_status and qa_obj.author_feedback_status:
                         for field in self.fields:
                             self.fields[field].widget.attrs['disabled'] = True
-
+                    if request_obj == qa_obj.author:
+                        self.fields["is_fixed"].widget.attrs['required'] = True
                 except Exception as e:
                     # print "chapter_component_obj", str(e)
                     pass

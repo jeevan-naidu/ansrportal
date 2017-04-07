@@ -33,7 +33,7 @@ class NameMasterAbstractModel(models.Model):
 
 
 class TemplateMaster(NameMasterAbstractModel, TimeStampAbstractModel):
-
+    actual_name = models.CharField(max_length=100, unique=True)
     pass
 
 
