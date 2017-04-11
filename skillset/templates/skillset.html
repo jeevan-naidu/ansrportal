@@ -138,29 +138,27 @@
     temp = ""
     $("#designation").val(temp);
     $("#skills").val(temp);
-    $('#data-table-body').empty();
     dept = $('#department option:selected').val();
-    var skills_name = [];
-    var skills_type = [];
-    z = 0;
-    for(i=0;i<arr_len ;i++){
-        json_dept = json_lists[i].department
-        if(json_dept == dept){
-            z++;
-            document.getElementById("count").innerHTML = z;
-            var len_of_skills = json_lists[i].skills.length;
-            for(j=0;j<len_of_skills;j++){
-                skills_name.push(json_lists[i].skills[j].skills_name)
-                skills_type.push(json_lists[i].skills[j].skills_type)
+        var input, filter, table, tr, td, i;
+
+         input = dept;
+         filter = input.toUpperCase();
+         table = document.getElementById("data-table-body");
+         tr = table.getElementsByTagName("tr");
+         z = 0;
+         //  Loop through all table rows, and hide those who don't match the search query
+         for (i = 0; i < tr.length; i++) {
+            json_dept = json_lists[i].department
+            if(json_dept == input){
+                z++;
+                document.getElementById("count").innerHTML = z;
+               $(tr[i]).show();
             }
-            $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>"+skills_name.join().split(",").join("<br />")+ "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
-            skills_name = []
-            skills_type = []
-        }
-        else{
-        document.getElementById("count").innerHTML = z;
-        }
-    }
+            else{
+               document.getElementById("count").innerHTML = z;
+               $(tr[i]).hide();
+            }
+           }
     });
 
     $("#designation").on('change', function() {
@@ -169,29 +167,27 @@
     temp = ""
     $("#department").val(temp);
     $("#skills").val(temp);
-    $('#data-table-body').empty();
-    var skills_name = [];
-    var skills_type = [];
     desg = $('#designation option:selected').val();
-    z = 0;
-    for(i=0;i<arr_len ;i++){
-        json_desg = json_lists[i].designation
-        if(json_desg == desg){
-            z++;
-            document.getElementById("count").innerHTML = z;
-            var len_of_skills = json_lists[i].skills.length;
-            for(j=0;j<len_of_skills;j++){
-                skills_name.push(json_lists[i].skills[j].skills_name)
-                skills_type.push(json_lists[i].skills[j].skills_type)
+    var input, filter, table, tr, td, i;
+
+         input = desg;
+         filter = input.toUpperCase();
+         table = document.getElementById("data-table-body");
+         tr = table.getElementsByTagName("tr");
+         z = 0;
+         //  Loop through all table rows, and hide those who don't match the search query
+         for (i = 0; i < tr.length; i++) {
+            json_desg = json_lists[i].designation
+            if(json_desg == input){
+                z++;
+                document.getElementById("count").innerHTML = z;
+               $(tr[i]).show();
             }
-        $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>"+skills_name.join().split(",").join("<br />")+ "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
-        skills_name = []
-        skills_type = []
-        }
-        else{
-        document.getElementById("count").innerHTML = z;
-        }
-    }
+            else{
+               document.getElementById("count").innerHTML = z;
+               $(tr[i]).hide();
+            }
+           }
     });
 
     $("#skills").on('change', function() {
