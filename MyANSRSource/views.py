@@ -860,10 +860,10 @@ def date_range_picker(request):
     return ts_final_list, mondays_list, ts_week_info_dict
 
 
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False):
-    if approve_time_sheet:
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=False):
+    if approve_time_sheet and dm_projects:
         ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                               teamMember=request_object.user, hold=True)
+                                               teamMember=request_object.user, hold=True, project__in=dm_projects)
 
     else:
         ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
@@ -1019,7 +1019,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
             Q(
                 wkstart=weekstartDate,
                 wkend=ansrEndDate,
-                teamMember=user,
+                teamMember=user, project__in=request.session['dm_projects'],
                 activity__isnull=True
             )
         ).values('id', 'project', 'project__name', 'task__name', 'mondayH',
@@ -1106,7 +1106,6 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 tsData['tsId'] = v
 
             if k == 'project__internal':
-                # print type(v)
                 tsData['is_internal'] = int(v)
 
             if k == 'project__projectType__code':
@@ -1467,9 +1466,11 @@ class ApproveTimesheetView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
-        manager = Employee.objects.get(user_id=self.request.user)
-        team_members = Employee.objects.filter((Q(manager_id=manager) |
-                                                Q(employee_assigned_id=manager)), user__is_active=True)
+        dm_projects = ProjectDetail.objects.filter(deliveryManager=self.request.user).values_list('project', flat=True)
+        self.request.session['dm_projects'] = dm_projects
+        team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
+                                                                                         member__is_active=True)
+                                               .values_list('member', flat=True))
         if team_members:
             dates = switchWeeks(self.request)
             ts_data_list = {}
@@ -1477,12 +1478,9 @@ class ApproveTimesheetView(TemplateView):
             start_date = dates['start']
             end_date = dates['end']
             status, week_collection, unapproved_count = status_member(team_members)
-            # print status
-            # print start_date, end_date
-            # print start_date, end_date
             for members in team_members:
                 non_billable_total = 0.0
-                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True)
+                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True, dm_projects)
                 if ts_obj:
                     ts_data_list[members] = {}
                     for s in ts_obj:
@@ -1549,6 +1547,7 @@ class ApproveTimesheetView(TemplateView):
             for user_id in approve_list:
                 try:
                     TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                  project__in=request.session['dm_projects'],
                                                   teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
                                                                                 approved=True)
 
@@ -1561,8 +1560,9 @@ class ApproveTimesheetView(TemplateView):
             for user_id in reject_list:
                 try:
                     TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                  teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
-                                                                                hold=False)
+                                                  teamMember_id=user_id, project__in=request.session['dm_projects']
+                                                  ).update(managerFeedback=feedback_dict[user_id], hold=False)
+
                     user_obj = User.objects.get(id=user_id)
                     TimeSheetRejectionNotification.delay(request.user,
                                                          str(user_obj.email), start_date,
