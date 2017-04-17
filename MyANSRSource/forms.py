@@ -42,6 +42,7 @@ MONTHS = tuple(zip(
 ))
 YEARS = tuple(zip(year, year))
 
+
 class ActivityForm(forms.Form):
     activity = forms.ModelChoiceField(
         queryset=Activity.objects.filter(active=True).order_by('name'),
@@ -103,6 +104,7 @@ class ActivityForm(forms.Form):
                                   required=False)
     hold = forms.BooleanField(label="hold",
                               required=False)
+    managerFeedback = forms.CharField(label="Feedback", required=False)
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
@@ -124,6 +126,17 @@ class ActivityForm(forms.Form):
         days input-field Sun-t 24hrcheck"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
+        hold_value = self.fields['hold'].initial or self.initial.get('hold') or \
+                     self.fields['hold'].widget.value_from_datadict(self.data, self.files, self.add_prefix('hold'))
+        if hold_value:
+            self.fields['activity_monday'].widget.attrs['readonly'] = True
+            self.fields['activity_tuesday'].widget.attrs['readonly'] = True
+            self.fields['activity_wednesday'].widget.attrs['readonly'] = True
+            self.fields['activity_thursday'].widget.attrs['readonly'] = True
+            self.fields['activity_friday'].widget.attrs['readonly'] = True
+            self.fields['activity_saturday'].widget.attrs['readonly'] = True
+            self.fields['activity_sunday'].widget.attrs['readonly'] = True
+            self.fields['activity_total'].widget.attrs['readonly'] = True
         self.fields['activity_monday'].widget.attrs['value'] = 0
         self.fields['activity_tuesday'].widget.attrs['value'] = 0
         self.fields['activity_wednesday'].widget.attrs['value'] = 0
@@ -232,6 +245,7 @@ def TimesheetFormset(currentUser,enddate):
                                       required=False)
         hold = forms.BooleanField(label="hold",
                                   required=False)
+        managerFeedback = forms.CharField(label="Feedback", required=False)
 
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)

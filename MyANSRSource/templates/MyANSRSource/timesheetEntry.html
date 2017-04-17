@@ -45,12 +45,12 @@
 				<span class="glyphicon glyphicon-plus"></span>
 				Add Project effort Item
 			</a>
-		</span>
+		</span> {% comment %}
 		<span class="pull-right" style="margin-right: 5px">
 			<a value="submit" class="btn btn-primary btn-xs disabled" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
 				Feedback
 			</a>
-		</span>
+		</span>{% endcomment %}
 
 	</legend>
 
@@ -155,7 +155,9 @@
 <th>Sat</th>
 <th>Sun</th>
 <th>Total</th>
+<th> Feedback</th>
 <th>Delete</th>
+
 </tr>
 
 
@@ -264,32 +266,37 @@
 							<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 							{% with apIdT="#myModal-"|add:data.id_for_label %}
-								{% for data in form.visible_fields %}
-									{% if 'hold' in data.label %}
-										{% if data.value %}
-											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-										{% else %}
-											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-										{% endif %}
-									{% endif %}
-								{% endfor %}
+                                <button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 							{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
 						{% with apId="myModal-"|add:data.id_for_label %}
-						<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-									<div class="modal-content">
-										<div class="modal-header">
-											<b>Your Feedback</b>
-										</div>
-										<div class="modal-body">
-											{{ data.value }}
-										</div>
-									</div>
-								</div>
-							</div>
+
+
+                   <div class="modal fade" id="{{ apId }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{apId}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white" >
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel_{{apId}}" >Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-sm-4">{{data.value }}</div>
+                        </div>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
 						{% endwith %}
 					</td>
 				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
@@ -306,7 +313,8 @@
 					{% endif %}
                 		{% endif %}
             		{% endspaceless %}
-			{% endfor %}
+			{% endfor %} {{data.label}}
+
 		</tr>
 		{% if forloop.last %}
 		</tbody>
@@ -401,36 +409,37 @@
 					{% endif %}
 				{% elif 'Feedback' in data.label %}
 			       		<td>
-						{% if  data.value == None or data.value == '' or prevWeekBlock == True %}
+						{% if  data.value == None or data.value == '' %}
 						<button type="button" class="btn btn-default" disabled='disabled'>
 						{% else %}
 						{% with apIdT="#actModal-"|add:data.id_for_label %}
-							{% for data in form.visible_fields %}
-								{% if 'hold' in data.label %}
-									{% if data.value %}
-										<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-									{% else %}
-										<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-									{% endif %}
-								{% endif %}
-							{% endfor %}
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 						{% endwith %}
 						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
 						{% with apId="actModal-"|add:data.id_for_label %}
-							<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="actModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-									<div class="modal-content">
-										<div class="modal-header">
-											<b>Your Feedback</b>
-										</div>
-										<div class="modal-body">
-											{{ feedback }}
-										</div>
-									</div>
-								</div>
-							</div>
+						  <div class="modal fade" id="{{ apId }}" tabindex="-1" role="dialog" aria-labelledby="activity_myModalLabel_{{apId}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white" >
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="activity_myModalLabel_{{apId}}" >Feedback</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-sm-4">{{data.value }}</div>
+                        </div>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 						{% endwith %}
 					</td>
 				{% endif %}
@@ -506,7 +515,7 @@
 <!-- Modal Area -->
 
 
-
+{% comment %}
                   <div class="modal fade" id="timesheet-feedback-modal" tabindex="-1" role="dialog" aria-labelledby="timesheet-feedback" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
@@ -527,7 +536,7 @@
                   </div>
                   <!-- /.modal -->
 
-
+{% endcomment %}
 
 
 	<script>
