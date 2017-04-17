@@ -3,7 +3,7 @@
 {% load fontawesome %}
 {% load permissions %}
 {% load static from staticfiles %}
-{% block siteTitle %}Daily Interview Report{% endblock %}
+{% block siteTitle %}Skillset{% endblock %}
 {% block pageTitle %}Skill Set{% endblock %}
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -99,7 +99,7 @@
                       </thead>
                       <tbody id="data-table-body">
                       {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
-                      <h3> Total count:<b id="count"></b></h3>
+                      <h4> Total count:<b id="count"></b></h4>
                       {% endif %}
                       {% for element in lists %}
                         <tr>
@@ -128,15 +128,15 @@
 
 
 <script type="text/javascript">
-
+    {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
     var json_lists = {{ json_list|safe }}
     var arr_len = json_lists.length;
     document.getElementById("count").innerHTML = arr_len;
-
+    {% endif %}
     $("#department").on('change', function() {
     $("#dept").hide();
     $("#select2-id_user-container").text("");
-    temp = ""
+    temp = $("#dept").val()
     $("#designation").val(temp);
     $("#skills").val(temp);
     dept = $('#department option:selected').val();
@@ -165,7 +165,7 @@
     $("#designation").on('change', function() {
     $("#desg").hide();
     $("#select2-id_user-container").text("");
-    temp = ""
+    temp = $("#dept").val()
     $("#department").val(temp);
     $("#skills").val(temp);
     desg = $('#designation option:selected').val();
@@ -194,7 +194,7 @@
     $("#skills").on('change', function() {
     $("#skill").hide();
     $("#select2-id_user-container").text("");
-    temp = ""
+    temp = $("#dept").val()
     $("#department").val(temp);
     $("#designation").val(temp);
     $('#data-table-body').empty();
@@ -224,8 +224,9 @@
     });
 
     $('#id_user').on('change',function(){
-    value = this.value
 
+    value = this.value
+    document.getElementById("count").innerHTML = 1;
     $.ajax({
     type: "GET",
     url : '/skillset/user',
