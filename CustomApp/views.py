@@ -57,13 +57,15 @@ class StartProcess(APIView):
         app_name = get_app_name(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
         serializer = process_serializer(data=request.data)
+        attachment_required = config.ATTACHMENT
         attachment = request.FILES.get('attachment', "")
-        if serializer.is_valid() and attachment:
+        attachment_flag = (lambda: True if not attachment_required else attachment)()
+        if serializer.is_valid() and attachment_flag:
             try:
                 serializer.save_as(request)
                 return Response({'record_added': True}, status.HTTP_201_CREATED)
             except:
-                return Response({'serializer': serializer},status.HTTP_400_BAD_REQUEST)
+                return Response({'serializer': serializer}, status.HTTP_400_BAD_REQUEST)
         elif not attachment:
             attachment = "Attachment Required"
 
