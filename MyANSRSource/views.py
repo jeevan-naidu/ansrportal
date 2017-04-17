@@ -2597,7 +2597,6 @@ def saveProject(request):
                 pd = ProjectDetail()
                 pd.project_id = pr.id
                 pd.projectFinType = request.POST.get('projectFinType')
-                pd.ProjectCost = request.POST.get('projectCost')
                 sub_practice = request.POST.get('subpractice')
                 sub_practice_id = SubPractice.objects.get(name=sub_practice).id
                 pd.SubPractice_id = sub_practice_id
