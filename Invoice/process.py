@@ -31,3 +31,4 @@ DETAIL_VIEW = ["milestone_date", "milestone_name", "user", 'process_status', 're
                "description",'closed_on_date', 'amount', "project"]
 TITLE = 'Invoice for ANSR Source'
 DESCRIPTION = 'Invoice Process '
+ATTACHMENT = False

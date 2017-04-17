@@ -150,8 +150,7 @@ INSTALLED_APPS = [
     'ExitApp',
     'Invoice',
     'skillset',
-
-
+    'LaptopAvail',
 ]
 
 MIDDLEWARE_CLASSES = [
