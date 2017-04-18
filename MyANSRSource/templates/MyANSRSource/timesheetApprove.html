@@ -377,7 +377,7 @@ var time_iterate = function(e){
   $('.activity-time-row').html('');
 
   // Append employee name to modal header
-
+if(!jQuery.isEmptyObject(time_obj.tsData) ){
   $('.timesheet-member-name').html(time_obj.tsData[0]['teamMember__first_name'] +'  ' + time_obj.tsData[0]['teamMember__last_name'] + ' ('+ time_obj.tsData[0]['teamMember__employee__employee_assigned_id'] +')');
 
   // tsdata iteration
@@ -409,7 +409,9 @@ var time_iterate = function(e){
     }
   } // ./ ts data iteration
 
-
+} else {
+    $('.timesheet-member-name').html(time_obj.atData[0]['teamMember__first_name'] +'  ' + time_obj.atData[0]['teamMember__last_name'] + ' ('+ time_obj.atData[0]['teamMember__employee__employee_assigned_id'] +')');
+}
 
   // atdata iteration
 
