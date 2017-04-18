@@ -501,14 +501,17 @@
 
 	</div>
 
-<div style="margin-bottom:15px;" class="clearfix">
-        {% if hold_button %}
+<div style="margin-bottom:15px;" class="clearfix" id="save_submit">
+       {% comment %} {% if hold_button %} im in
             <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space" disabled="disabled">Submit</a>
             <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right" disabled="disabled">Save</button>
         {% else %}
             <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space">Submit</a>
             <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right">Save</button>
-        {% endif %}
+        {% endif %} {% endcomment %}
+
+	 <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right">Save</button>
         </div>
 
 
@@ -626,7 +629,13 @@
 
         $(document).ready(function(){
         	$('body').addClass("nav-left-hide remove-navbar nav-left-medium");
-        })
+        	total_count = $('select').length;
+        	var disabled_count = 0;
+        	$('select').each(function () {
+        		if( $(this).parent().hasClass('ansr-disabled') ) { disabled_count+=1;}
+			});
+			if (total_count == disabled_count ) { $('#save_submit').hide();}
+        });
 
         $(document).ready(function(){
 /*        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
