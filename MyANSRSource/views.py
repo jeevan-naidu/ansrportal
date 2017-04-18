@@ -1487,11 +1487,14 @@ class ApproveTimesheetView(TemplateView):
         self.request.session['dm_projects'] = dm_projects
         if dm_projects:
             team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
-                                                                                             member__is_active=True)
-                                                   .values_list('member', flat=True)).exclude(user=self.request.user)
+                                                                                             member__is_active=True).
+                                                   values_list('member', flat=True)).exclude(user=self.request.user)
+
         else:
-            team_members = []
-        if team_members:
+            team_members = Employee.objects.filter((Q(manager_id=manager) |
+                                                Q(employee_assigned_id=manager)),
+                                                       user__is_active=True)
+        if team_members or manager_team_members:
             dates = switchWeeks(self.request)
             ts_data_list = {}
             self.request.session['include_activity'] = {}
