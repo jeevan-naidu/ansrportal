@@ -860,19 +860,23 @@ def date_range_picker(request):
     return ts_final_list, mondays_list, ts_week_info_dict
 
 
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=False,include_activity =False):
-    if approve_time_sheet and dm_projects:
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=False, include_activity =False):
+    if approve_time_sheet:
         if include_activity:
+            # print "if" ,dm_projects
             ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
                                                    teamMember=request_object.user, hold=True)
 
             ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
+            # print ts_obj.query
         else:
+
             ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
                                                    teamMember=request_object.user, hold=True,
                                                    project__in=dm_projects).exclude(project__isnull=True)
 
     else:
+        print "outer"
         ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
                                                teamMember=request_object.user)
     return ts_obj
@@ -1037,6 +1041,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                  'totalH', 'managerFeedback', 'project__internal',
                  'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
                  )
+        print "ts" , cwTimesheetData , request.session['dm_projects']
         if not request.session['include_activity'][int(user_id)]:
             cwActivityData = {}
     else:
@@ -1054,7 +1059,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                  'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
                  'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name'
                  )
-    print cwActivityData
+    # print cwActivityData
     # Changing data TS data
     tsData = {}
     tsDataList = []
@@ -1480,10 +1485,15 @@ class ApproveTimesheetView(TemplateView):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
         dm_projects = ProjectDetail.objects.filter(deliveryManager=self.request.user).values_list('project', flat=True)
+        # print dm_projects
         manager = Employee.objects.get(user_id=self.request.user)
+
+        # to fetch non project activities for their respective team
         manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
                                                 Q(employee_assigned_id=manager)),
                                                        user__is_active=True).values_list('user_id', flat=True)
+        # print manager_team_members
+
         self.request.session['dm_projects'] = dm_projects
         if dm_projects:
             team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
@@ -1494,7 +1504,8 @@ class ApproveTimesheetView(TemplateView):
             team_members = Employee.objects.filter((Q(manager_id=manager) |
                                                 Q(employee_assigned_id=manager)),
                                                        user__is_active=True)
-        if team_members or manager_team_members:
+        # print team_members
+        if team_members:
             dates = switchWeeks(self.request)
             ts_data_list = {}
             self.request.session['include_activity'] = {}
@@ -1510,6 +1521,7 @@ class ApproveTimesheetView(TemplateView):
                 else:
                     include_activity = True
                     self.request.session['include_activity'][int(members.user_id)] = True
+
                 ts_obj = time_sheet_for_the_week(start_date, end_date, members, True, dm_projects, include_activity)
 
                 if ts_obj:
@@ -1538,6 +1550,7 @@ class ApproveTimesheetView(TemplateView):
                 context['weekendDate'] = dates['end']
                 context['status_dict'] = status
                 context['disabled'] = dates['disabled']
+            print self.request.session['include_activity']
             context['week_collection'] = week_collection[::-1]
             ts_data_list_approved_false = {}
             ts_data_list_approved_true = {}
