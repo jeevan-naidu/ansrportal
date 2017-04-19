@@ -860,7 +860,8 @@ def date_range_picker(request):
     return ts_final_list, mondays_list, ts_week_info_dict
 
 
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=False, include_activity =False):
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
+                            include_activity=False):
     if approve_time_sheet:
         if include_activity:
             # print "if" ,dm_projects
