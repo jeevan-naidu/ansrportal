@@ -952,10 +952,12 @@ class ChangeProjectWizard(SessionWizardView):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                projectManager=self.request.user,
-                closed=False
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.fields['project'].queryset = project
+
         if step == 'Change Basic Information':
             signed = Project.objects.filter(
                 id=self.storage.get_step_data(
@@ -1989,9 +1991,11 @@ class ManageTeamLeaderWizard(SessionWizardView):
         form = super(ManageTeamLeaderWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            projects = Project.objects.filter(projectManager=self.request.user,
-                                              closed=False)
-            form.fields['project'].queryset = projects
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.fields['project'].queryset = project
         return form
 
     def get_form_initial(self, step):
@@ -2061,10 +2065,11 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                closed=False,
-                projectManager=self.request.user
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.fields['project'].queryset = project
         if step == 'Manage Milestones':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -2410,10 +2415,11 @@ class ManageTeamWizard(SessionWizardView):
         context = super(ManageTeamWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                projectManager=self.request.user,
-                closed=False
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.fields['project'].queryset = project
         if self.steps.current == 'Manage Team':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -2658,8 +2664,7 @@ def saveProject(request):
                 pd.project_id = pr.id
                 pd.projectFinType = request.POST.get('projectFinType')
                 sub_practice = request.POST.get('subpractice')
-                sub_practice_id = SubPractice.objects.get(name=sub_practice).id
-                pd.SubPractice_id = sub_practice_id
+                pd.SubPractice_id = SubPractice.objects.get(name=sub_practice).id if sub_practice != 'None' else None
                 practice_name = request.POST.get('practicename')
                 practice_id = Practice.objects.get(name=practice_name).id
                 pd.PracticeName_id = practice_id

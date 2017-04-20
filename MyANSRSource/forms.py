@@ -395,6 +395,17 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             # url='AutocompleteUser'
         ),
         required=True, )
+    pmDelegate = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="PM Delegate",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type PM Delegate Name ...',
+        }
+                                         # url='AutocompleteUser'
+                                         ),
+        required=False, )
+
+
 
     class Meta:
         model = Project
@@ -409,6 +420,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             'customerContact',
             'book',
             'projectManager',
+            'pmDelegate',
             'signed',
             'currentProject',
 
@@ -422,7 +434,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             'signed': forms.RadioSelect(
                 choices=[(True, 'Yes'), (False, 'No')]
             ),
-            'projectManager': autocomplete.ModelSelect2Multiple(attrs={'data-placeholder': 'Type Delievery CO-ordinater...'} ),
+            'projectManager': autocomplete.ModelSelect2Multiple(attrs={'data-placeholder': 'Type Additional manager...'} ),
 
         }
 
@@ -466,12 +478,12 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
 #Upload Form  fro project screen
 class UploadForm(forms.ModelForm):
     Sowdocument = forms.FileField(label='Sow Attachment', required=False,help_text=mark_safe(
-        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, eml, jpeg.<br>Maximum allowed file size: 1MB"))
     Sowdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
                                          'data-iconName': 'glyphicon glyphicon-paperclip'}
 
-    Estimationdocument = forms.FileField(label='Estimation Attachment', required=True, help_text=mark_safe(
-        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg.<br>Maximum allowed file size: 1MB"))
+    Estimationdocument = forms.FileField(label='Estimation Attachment', required=False, help_text=mark_safe(
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, eml, jpeg.<br>Maximum allowed file size: 1MB"))
     Estimationdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
                                 'data-iconName': 'glyphicon glyphicon-paperclip'}
 
@@ -617,12 +629,11 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['closed'].widget.attrs['class'] = "form-control"
 
 
-
 # Project Flag Form
 class ProjectFlagForm(forms.ModelForm):
     # projectCost = forms.CharField(required=True, label=('Project cost'), )
     PracticeHead = forms.CharField(required=True, label=('Practice head'), )
-    SopLink = forms.CharField( label=('Sop Link'), )
+    SopLink = forms.CharField(label=('Sop Link'), required=False)
     practicename = forms.ModelChoiceField(
         queryset=Practice.objects.all(),
         label="Select Practice",
@@ -650,7 +661,7 @@ class ProjectFlagForm(forms.ModelForm):
             # Only trigger autocompletion after 3 characters have been typed
             # 'data-minimum-input-length': 3,
         }, ),
-        required=True, )
+        required=False, )
 
     sopname = forms.ModelChoiceField(
         queryset=qualitysop.objects.all(),
@@ -713,6 +724,7 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['projectasset'].widget.attrs['class']= "total-value-input form-control"
         self.fields['PracticeHead'].widget.attrs['id']="id_BasicInformation-PracticeHead"
         self.fields['SopLink'].widget.attrs['id'] = "soplink"
+        self.fields['SopLink'].widget = forms.HiddenInput()
         self.fields['sopname'].widget.attrs['class']="sopname"
 
 

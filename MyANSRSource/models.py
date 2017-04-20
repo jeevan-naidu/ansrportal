@@ -295,7 +295,9 @@ class Project(models.Model):
                                             validators=[MinValueValidator(0)])
     projectManager = models.ManyToManyField(User,
                                             through='ProjectManager',
-                                            verbose_name="Delievery CO-ordinator")
+                                            verbose_name="Additional Manager")
+    pmDelegate = models.ForeignKey(User, verbose_name="PM Delegate",related_name='pmDelegate', default=None,
+                                   null=True, blank=True)
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book/Title",
@@ -348,7 +350,7 @@ class ProjectDetail(models.Model):
     Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', null=True, blank=True)
 
     def __unicode__(self):
-        return self.id
+        return self.project.projectId + u' : ' + self.project.name
 
     class Meta:
         verbose_name = "Project Additional Detail Table"
@@ -359,16 +361,6 @@ class ProjectManager(models.Model):
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
 
-# on Hold Since need clearifications
-# class ProjectType(models.Model):
-#     Project_type = models.CharField(verbose_name="ProjectType", max_length="100")
-#     Is_Active = models.BooleanField(verbose_name="Active")
-#
-#     def __unicode__(self):
-#         return self.Project_type
-#
-#     class Meta:
-#         verbose_name = 'ProjectType Table'
 
 
 class TimeSheetEntry(models.Model):
