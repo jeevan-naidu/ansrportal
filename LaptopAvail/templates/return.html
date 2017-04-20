@@ -1,13 +1,12 @@
 
 {% extends 'master.html' %}
-{% block siteTitle %}Manage {{ app_name }}{% endblock %}
+{% block siteTitle %}Laptop Return{% endblock %}
 {% load permissions %}
 {% load sales_permissions %}
 {% load static from staticfiles %}
 {% load process_tags %}
 {% load rest_framework %}
 
-{% block pageTitle %}User View {{ app_name }}{% endblock %}
 
 {% block content  %}
 <style type="text/css">
@@ -49,6 +48,7 @@
                       <thead style="color: #fff;background: #444">
                         <tr>
                           <th>SL.No</th>
+                          <th>Username</th>
                           <th>From Date</th>
                           <th>To Date</th>
                           <th>Process Status</th>
@@ -60,15 +60,18 @@
                       <tbody>
 
                       {% for element in laptop_lists %}
-                        <tr>
+                      {% if element.user == request.user %}
+                      <tr id="data">
                           <td>{{forloop.counter}}</td>
+                          <td>{{element.username}}</td>
                           <td>{{element.from_date}}</td>
                           <td>{{element.to_date}}</td>
                           <td>{{element.process_status}}</td>
                           <td>{{element.laptop}}</td>
                           <td>{{element.reason}}</td>
-                          <td><input type="button" id='return'  {% if element.process_status == "Return in progess"%} disabled {% endif %} class="btn btn-sm vd_bg-green vd_white pull-right return" idval = "{{element.id}}" value="Return"></td>
+                          <td><input type="button" id='return'  {% if element.process_status == "Return in progess" or element.process_status == "Completed" %} disabled {% endif %} class="btn btn-sm vd_bg-green vd_white pull-right return" idval = "{{element.id}}" value="Return"></td>
                         </tr>
+                      {% endif %}
                       {% endfor %}
                       </tbody>
 
@@ -81,6 +84,7 @@
                       <thead style="color: #fff;background: #444">
                         <tr>
                           <th>SL.No</th>
+                          <th>Username</th>
                           <th>From Date</th>
                           <th>To Date</th>
                           <th>Process Status</th>
@@ -94,12 +98,13 @@
                       {% for element in laptop_lists %}
                         <tr>
                           <td>{{forloop.counter}}</td>
+                          <td>{{element.username}}</td>
                           <td>{{element.from_date}}</td>
                           <td>{{element.to_date}}</td>
                           <td>{{element.process_status}}</td>
                           <td>{{element.laptop}}</td>
                           <td>{{element.reason}}</td>
-                          <td><input type="button" id='approve' class="btn btn-sm vd_bg-green vd_white pull-right approve" idval = "{{element.id}}" value="Approve"></td>
+                          <td><input type="button" id='approve' {% if element.process_status == "Completed" %} disabled {% endif %} class="btn btn-sm vd_bg-green vd_white pull-right approve" idval = "{{element.id}}" value="Approve"></td>
                         </tr>
                       {% endfor %}
                       </tbody>
