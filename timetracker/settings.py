@@ -151,6 +151,7 @@ INSTALLED_APPS = [
     'Invoice',
     'skillset',
     'LaptopAvail',
+    'QMS',
 ]
 
 MIDDLEWARE_CLASSES = [
