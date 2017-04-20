@@ -4,19 +4,31 @@ from simple_history.admin import SimpleHistoryAdmin
 # Register your models here.
 
 
-admin.site.register(TemplateMaster)
-admin.site.register(TemplateProcessReview)
-admin.site.register(DefectTypeMaster)
-admin.site.register(SeverityLevelMaster)
-admin.site.register(DefectClassificationMaster)
-admin.site.register(ReviewMaster)
-admin.site.register(ReviewGroup)
-admin.site.register(WorkPacketMaster)
-admin.site.register(DefectSeverityLevel)
-admin.site.register(QASheetHeader, SimpleHistoryAdmin)
-admin.site.register(ReviewReport, SimpleHistoryAdmin)
-admin.site.register(QMSProcessModel)
-admin.site.register(ProjectTemplateProcessModel)
-admin.site.register(ComponentMaster)
-admin.site.register(ChapterComponent)
-admin.site.register(DSLTemplateReviewGroup)
+class CommonAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ['created_by', 'updated_by']
+        return super(CommonAdmin, self).get_form(request, obj, **kwargs)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        else:
+            obj.updated_by = request.user
+        obj.save()
+
+admin.site.register(TemplateMaster, CommonAdmin)
+admin.site.register(TemplateProcessReview, CommonAdmin)
+admin.site.register(DefectTypeMaster, CommonAdmin)
+admin.site.register(SeverityLevelMaster, CommonAdmin)
+admin.site.register(DefectClassificationMaster, CommonAdmin)
+admin.site.register(ReviewMaster) #
+admin.site.register(ReviewGroup) #
+admin.site.register(WorkPacketMaster, CommonAdmin)
+admin.site.register(DefectSeverityLevel, CommonAdmin)
+admin.site.register(QASheetHeader, CommonAdmin)#
+admin.site.register(ReviewReport, CommonAdmin)#
+admin.site.register(QMSProcessModel, CommonAdmin)
+admin.site.register(ProjectTemplateProcessModel, CommonAdmin)
+admin.site.register(ComponentMaster, CommonAdmin)
+admin.site.register(ChapterComponent, CommonAdmin)
+admin.site.register(DSLTemplateReviewGroup, CommonAdmin)

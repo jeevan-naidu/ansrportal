@@ -237,7 +237,7 @@
                         {% if form_obj.screen_shot_url.value|GetFileTypeFromName == 'xls' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'xlsx' %}
                             <img alt="An XLS file" src="/static/images/file_type_icons/xls_icon.png" height="25px" width="25px">
                         {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'pdf' %}
-                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="250px" width="25px">
+                            <img alt="A pdf file" src="/static/images/file_type_icons/pdf_icon.png" height="25px" width="25px">
                         {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'doc' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'docx'  %}
                             <img alt="A doc file" src="/static/images/file_type_icons/doc_icon.png" height="25px" width="25px">
                         {% elif form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'jpeg' or form_obj.screen_shot_url.value|GetFileTypeFromName == 'png' %}
@@ -253,14 +253,15 @@
 
                                         </td>
                                         <td class="" id="is_fixed-{{forloop.counter}}-td">
-                                            {{form_obj.is_fixed}}
+                                           {% if request.session.reviewer_logged_in %}{{form_obj.is_fixed.value|default_if_none:""}}{% else %}
+                                            {{form_obj.is_fixed}}{% endif %}
 
                                         </td>
-                                        <td class="" id="fixed_by-{{forloop.counter}}-td">
-                                            {% if form_obj.fixed_by.value %}{{form_obj.fixed_by.value}} {% endif %}
+                                        <td class="" id="fixed_by-{{forloop.counter}}-td" >
+                                            {% if form_obj.fixed_by.value %}{{form_obj.fixed_by.value|default_if_none:""}} {% endif %}
                                         </td>
                                         <td id="remarks-{{forloop.counter}}-td">
-                                            {{form_obj.remarks}}
+                                           {% if request.session.reviewer_logged_in %} {{form_obj.remarks.value|default_if_none:""}}{% else %}{{form_obj.remarks}} {% endif %}
                                         </td>
                                         <td>
                                             <div class="edit-buttons">
@@ -285,12 +286,12 @@
 
                                                         <div class="modal-body">
 
-                                                            <div class="form-group">
-                                                                <label class="control-label col-sm-3" for="email">S.No :</label>
+                                                           {% comment %}  <div class="form-group">
+                                                               <label class="control-label col-sm-3" for="email">S.No :</label>
                                                                 <div class="col-sm-9">
                                                                     <label class="control-label">{{forloop.counter}}</label>
                                                                 </div>
-                                                            </div>
+                                                            </div>{% endcomment %}
                                                             <div class="form-group">
                                                                 <label class="control-label col-sm-3" for="email">Review Item Number :</label>
                                                                 <div class="col-sm-9">
@@ -983,7 +984,6 @@ $(document).ready(function(){
 
         $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
     })
-
 
 })// ./ doc.ready
 

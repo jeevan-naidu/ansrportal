@@ -72,14 +72,16 @@ class ChooseTabs(FormView):
             ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
                                                               project=form.cleaned_data['project'],
                                                               qms_process_model=form.cleaned_data['qms_process_model'],
-                                                              created_by=self.request.user)
+                                                              defaults={
+                                                                  'created_by': self.request.user},)
         except Exception as e:
             # print "ChooseTabs", (str(e))
             logger.error(" {0} ".format(str(e)))
 
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
                                                                            component=form.cleaned_data['component'],
-                                                                           created_by=self.request.user, )
+                                                                           defaults={
+                                                                               'created_by': self.request.user}, )
         # print form.cleaned_data['chapter'] , form.cleaned_data['component']
         # print"res", cm_obj
         # print "obj", chapter_component
@@ -122,25 +124,22 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
         # print active_tab, "-<active_tab->", project, chapter, author
         result = None
         if active_tab and component is not None:
+            chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
             if active_tab == 'lambda':
-                review_obj = ReviewGroup.objects.order_by('id').first()
+                review_obj = QASheetHeader.objects.filter(project=project, chapter_component=chapter_component_obj,
+                                                          author=author).values_list('review_group').\
+                    order_by('order_number').first()
+                review_obj = review_obj[0]
             else:
                 review_obj = ReviewGroup.objects.get(id=active_tab)
             try:
-                # print "im in try"
-                chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
-                # print chapter_component_obj.id
                 result = QASheetHeader.objects.get(project=project, chapter_component=chapter_component_obj,
                                                    author=author,
                                                    review_group=review_obj)
-                # print result
             except Exception as e:
-                # print "qa_sheet_header_obj" , str(e)
                 logger.error(" {0} ".format(str(e)))
-                # print "if"
-                # print result
+
         else:
-            print "else"
             result = QASheetHeader.objects.filter(project=project, chapter=chapter, author=author)
 
     except ObjectDoesNotExist as e:
@@ -235,7 +234,7 @@ def get_template_process_review(request):
         # print template,qms_process_model
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
             order_by('id')
-        # print obj.query
+        # print "obj",obj,obj.query
         if not obj:
             config_missing = True
         members_obj = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
@@ -488,7 +487,6 @@ class AssessmentView(TemplateView):
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
                 is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
-                print "is_pm ", is_pm
                 request.session['is_pm'] = is_pm
                 # print obj.order_number
                 #  previous tab completion check
@@ -514,7 +512,9 @@ class AssessmentView(TemplateView):
 
                 if request.user == obj.reviewed_by:
                     request.session['reviewer_logged_in'] = True
-                    if obj.review_group_status is True and obj.author_feedback_staus is False:
+                    # for s in obj:
+                    #     print s
+                    if obj.review_group_status is True and obj.author_feedback_status is False:
                         messages.info(self.request, " Please wait till author submit their feedback")
                 else:
                     request.session['reviewer_logged_in'] = False
@@ -860,7 +860,7 @@ def review_completed(request):
     review_feedback = request.GET.get('review_feedback')
     review_group = request.GET.get('review_group')
     submitted_by = request.GET.get('submitted_by')
-    print "submitted_by" , submitted_by
+    # print "submitted_by" , submitted_by
     try:
         # print project_id,chapter_id,review_group,review_feedback
         if submitted_by == "author":
@@ -872,7 +872,7 @@ def review_completed(request):
             existing_remark = QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
                                                            review_group_id=review_group).values(
                 "review_group_feedback", "author_feedback_status", "review_group_status")[0]
-            print "existing_remark",  existing_remark
+            # print "existing_remark",  existing_remark
             if len(str(existing_remark['review_group_feedback'])) > 0 and existing_remark['author_feedback_status'] == 1 and \
                             existing_remark['review_group_status'] == 0:
                 review_feedback = "first review feedback :"+str(existing_remark)+"\n" + "final review feedback : " + str(request.GET.get('review_feedback'))

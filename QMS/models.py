@@ -11,7 +11,7 @@ team_choices = ((0, 'assessment'), ('1', 'learning'))
 
 class TimeStampAbstractModel(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
+    created_by = models.ForeignKey(User, related_name='%(class)s_created_by', blank=True, null=True)
     updated_on = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
 
