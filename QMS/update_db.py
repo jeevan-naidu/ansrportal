@@ -118,9 +118,10 @@ for t in s:
                     fk = cursor.lastrowid
                     database.commit()
                 except Exception as e:
-                    print "dsl", str(e)
-                    continue
-
+                    cursor.execute("SELECT id FROM QMS_defectseveritylevel WHERE defect_classification_id =%s AND severity_level_id=%s AND severity_type_id=%s ",
+                                   (str(classification_master[sheet.row(r)[2].value]), str(severity_level_master[sheet.row(r)[1].value]),str(defect_type_master[sheet.row(r)[0].value])))
+                    fk = cursor.fetchall()
+                    fk = fk[0][0]
                 try:
                     # print data ,  review_master_id,fk
                     cursor.execute(
