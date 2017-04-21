@@ -851,9 +851,104 @@
                                                 </div>
                                             </li>
 
+ <li>
+                                    <a href="javascript:void(0);" data-action="click-trigger">
+                                        <span class="menu-icon"><i class="fa fa-th-list"></i></span>
+                                        <span class="menu-text">QMS</span>
+                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i
+                                                class="fa fa-angle-down"></i></span></span>
+                                    </a>
+                                    <div class="child-menu" data-action="click-target">
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Manage QMS</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i
+                                                            class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul>{% if request.user|has_group:"myansrsourcePM" or request.user.is_superuser%}
+                                                        <li>
+                                                            <a href="/qms/dashboard">
+                                                                <span class="menu-text">Dashboard</span>
+                                                            </a>
+                                                        </li>
 
+
+
+                                                        <li>
+                                                            <a href="/qms/choose_tabs">
+                                                                <span class="menu-text">Choose Tabs</span>
+                                                            </a>
+                                                        </li>
+
+
+                                                    {% endif %}
+
+                                                        <li>
+                                                            <a href="/qms">
+                                                                <span class="menu-text">WorkBook</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+
+
+                                                </div>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </li>
                                                   </div>
 
+                                </li>
+                                 <li>
+                                    <a href="javascript:void(0);" data-action="click-trigger">
+                                        <span class="menu-icon"><i class="fa fa-th-list"></i></span>
+                                        <span class="menu-text">QMS</span>
+                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i
+                                                class="fa fa-angle-down"></i></span></span>
+                                    </a>
+                                    <div class="child-menu" data-action="click-target">
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Manage QMS</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i
+                                                            class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul>{% if request.user|has_group:"myansrsourcePM" or request.user.is_superuser%}
+                                                        <li>
+                                                            <a href="/qms/dashboard">
+                                                                <span class="menu-text">Dashboard</span>
+                                                            </a>
+                                                        </li>
+
+
+
+                                                        <li>
+                                                            <a href="/qms/choose_tabs">
+                                                                <span class="menu-text">Choose Tabs</span>
+                                                            </a>
+                                                        </li>
+
+
+                                                    {% endif %}
+
+                                                        <li>
+                                                            <a href="/qms">
+                                                                <span class="menu-text">WorkBook</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+
+
+                                                </div>
+                                            </li>
+
+                                        </ul>
+                                    </div>
                                 </li>
                             </ul>
 
