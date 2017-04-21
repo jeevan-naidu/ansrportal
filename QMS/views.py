@@ -543,33 +543,32 @@ class AssessmentView(TemplateView):
                         return forbidden_access(self, form, project, "not_assigned", chapter)
 
                 project_template_process_model_obj = ProjectTemplateProcessModel.objects.get(project=project)
-                template_id = request.session['template_id'] = project_template_process_model_obj.template.id
+                template_id = request.session['template_id'] = project_template_process_model_obj.template_id
                 request.session['QA_sheet_header_id'] = obj.id
-                defect_master = DefectTypeMaster.objects.all()
-                try:
-                    reports = get_review(obj)
-                    # print reports
-                    # request.session['reports'] = list(reports)
+                qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
+                                                                                                 component=component),
+                                              request_obj=self.request, tab=obj.review_group_id)
 
-                except reports.ObjectDoesNotExist as e:
-                    logger.error(" {0} ".format(str(e)))
-                    reports = None
-                    request.session['template_id'] = template_id = None
+                request.session['filter_form'] = form
+                return render_common(obj, qms_form, request)
 
-            except ObjectDoesNotExist:
-                messages.error(self.request, "Sorry No Records Found")
+            except:
+                return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
+                              {'form': BaseAssessmentTemplateForm(request.POST), })
+
         else:
-            form = BaseAssessmentTemplateForm()
-        qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
-                                                                                         component=component),
-                                      request_obj=self.request, tab=obj.review_group_id)
-
-        severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id').\
-            exclude(name__icontains='S0')
-
-        result = get_work_book(qms_form, reports, obj)
-        request.session['filter_form'] = form
-        return render_common(obj, qms_form, request)
+            return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
+                          {'form': BaseAssessmentTemplateForm(request.POST), })
+        # qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
+        #                                                                                  component=component),
+        #                               request_obj=self.request, tab=obj.review_group_id)
+        #
+        # severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id').\
+        #     exclude(name__icontains='S0')
+        #
+        # result = get_work_book(qms_form, reports, obj)
+        # request.session['filter_form'] = form
+        # return render_common(obj, qms_form, request)
         # print "m gdhgfgh ", get_review_group(project, chapter, component=component)
         # return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
         #                                                  'reports': reports, 'review_formset': result[6],
