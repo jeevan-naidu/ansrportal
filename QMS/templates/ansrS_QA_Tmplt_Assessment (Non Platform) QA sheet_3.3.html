@@ -25,7 +25,7 @@
                 </h3>
                 {% for dict in formset.errors %}
     {% for error in dict.values %}
-        {{ error }}
+        {{ error.as_text }}
     {% endfor %}
 {% endfor %}
                     {% if messages %}

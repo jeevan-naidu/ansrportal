@@ -135,7 +135,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
 
 def review_report_base(template_id, project_obj, chapter_component_obj=None, request_obj=None, tab=None):
     class ReviewReportForm(forms.Form):
-        review_item = forms.CharField(required=True,)
+        review_item = forms.CharField(required=True)
         qms_id = forms.IntegerField(label="id",
                                   required=False,
                                   widget=forms.HiddenInput())
