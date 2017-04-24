@@ -119,28 +119,23 @@ def get_question_count(project):
 
 @register.simple_tag
 def is_project_manager(project, user):
-    print "is_project_manager" , project , user
     try:
-        ProjectManager.objects.filter(project=project, user=user).exists()
+        s = ProjectManager.objects.filter(project=project, user=user).exists()
     except Exception as e:
-        print str(e)
-    return ProjectManager.objects.filter(project=project, user=user).exists()
+        s = False
+    return s
 
 
 @register.simple_tag
 def get_project_status(project):
     can_show_button = QASheetHeader.objects.filter((Q(review_group_status=False) | Q(author_feedback_status=False)),
                                                    project=project).exists()
-    print "can_show_button", can_show_button
     if not can_show_button:
         obj = ProjectTemplateProcessModel.objects.get(project=project)
-        print "st",obj.lead_review_status
         if obj.lead_review_status is False:
             can_show_button = True
     chapter_count = Chapter.objects.filter(book__project=project).count()
-    print "cc" , chapter_count
     qa_chapter_count = QASheetHeader.objects.filter(project=project).values('chapter').distinct().count()
-    print "qc", qa_chapter_count
     if chapter_count != qa_chapter_count:
         difference = chapter_count - qa_chapter_count
     else:
