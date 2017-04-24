@@ -7,21 +7,17 @@
 {% block pageTitle %}Skill Set{% endblock %}
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 </head>
 {% block content  %}
 
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script>
 <link href="/static/css/site.min.css" rel="stylesheet">
-<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
-<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
-<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
-<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
-<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
-<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
 <style type="text/css">
-  #data-tables_filter{display: none;}
+    #data-tables_filter{ display:none; }
 </style>
 
             <div class="row">
@@ -57,6 +53,7 @@
                                     </select>
                                 </div>
                                 <div class="col-sm-2 pull-right">
+
                                   <select name="" class="input-sm" id="skills">
                                        <option value="-----------" id="skill">Skills</option>
                                     {% for skills in skills_all %}
@@ -65,29 +62,30 @@
                                     {% endfor %}
                                     </select>
                                 </div>
-                                <div class="col-sm-3">
-                                  <form id="loginForm"  action="" method="GET" enctype="multipart/form-data" class="noPrint">
-                                        {% csrf_token %}
-                                        {% bootstrap_messages %}
-                                                {% for field in form %}
-                                                    {{ field }}
-                                                {% endfor %}
-                                  </form>
+
+                                  <div class="col-sm-2 pull-left">
+
+                                    <input type="text" id="searchbox" placeholder="Search User">
                                 </div>
 
                               </div>
-
+                              </div>
                                   {% endif %}
 
 <hr>
-                    {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
-                    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
-                    {% endif %}
+
 
                     <table class="table table-striped" id="data-tables">
-                      <thead style="color: #fff;background: #444">
+                          {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
+                    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
+                    {% endif %}
+                        {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
+                        <p> Total count:<b id="count"></b></p>
+                    {% endif %}
+                      <thead id ="data-table-head" style="color: #fff;background: #444">
+
                         <tr>
-                          <th class="hidden">ID</th>
+                          <!--<th class="hidden">ID</th>-->
                           <th>Name</th>
                           <th>Department</th>
                           <th>Designation</th>
@@ -98,12 +96,9 @@
                         </tr>
                       </thead>
                       <tbody id="data-table-body">
-                      {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
-                      <h4> Total count:<b id="count"></b></h4>
-                      {% endif %}
                       {% for element in lists %}
                         <tr>
-                          <td class="hidden">{{element.id}}</td>
+                          <!--<td class="hidden">{{element.id}}</td>-->
                           <td>{{element.name}}</td>
                           <td>{{element.department}}</td>
                           <td>{{element.designation}}</td>
@@ -118,7 +113,7 @@
 
                     <hr>
 
-                  </div>
+
                 </div>
                 <!-- Panel Widget -->
               </div>
@@ -128,74 +123,103 @@
 
 
 <script type="text/javascript">
+
+
+    $(document).ready(function() {
+    $("#data-tables_filter").hide();
+    var dataTable = $('#data-tables').DataTable( {
+        "info":     false,
+        "paging":   false,
+        columnDefs: [ {
+            targets: [ 0 ],
+            orderData: [ 0, 1 ]
+        }, {
+            targets: [ 1 ],
+            orderData: [ 1, 0 ]
+        }, {
+            targets: [ 4 ],
+            orderData: [ 4, 0 ]
+        } ],
+    } );
+
+    $("#searchbox").keyup(function() {
+        dataTable.search(this.value).draw();
+    });
+    } );
+
     {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
     var json_lists = {{ json_list|safe }}
     var arr_len = json_lists.length;
     document.getElementById("count").innerHTML = arr_len;
     {% endif %}
+
     $("#department").on('change', function() {
     $("#dept").hide();
-    $("#select2-id_user-container").text("Type  Your Team Member Name ...");
     temp = $("#dept").val()
     $("#designation").val(temp);
     $("#skills").val(temp);
+    $("#searchbox").val('');
+    $('#data-table-body').empty();
     dept = $('#department option:selected').val();
-        var input, filter, table, tr, td, i;
-
-         input = dept;
-         filter = input.toUpperCase();
-         table = document.getElementById("data-table-body");
-         tr = table.getElementsByTagName("tr");
-         z = 0;
-         //  Loop through all table rows, and hide those who don't match the search query
-         for (i = 0; i < tr.length; i++) {
-            json_dept = json_lists[i].department
-            if(json_dept == input){
-                z++;
-                document.getElementById("count").innerHTML = z;
-               $(tr[i]).show();
+    var skills_name = [];
+    var skills_type = [];
+    z = 0;
+    for(i=0;i<arr_len ;i++){
+        json_dept = json_lists[i].department
+        if(json_dept == dept){
+            z++;
+            document.getElementById("count").innerHTML = z;
+            var len_of_skills = json_lists[i].skills.length;
+            for(j=0;j<len_of_skills;j++){
+                skills_name.push(json_lists[i].skills[j].skills_name)
+                skills_type.push(json_lists[i].skills[j].skills_type)
             }
-            else{
-               document.getElementById("count").innerHTML = z;
-               $(tr[i]).hide();
-            }
-           }
+            $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>"+skills_name.join().split(",").join("<br />")+ "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
+            skills_name = []
+            skills_type = []
+        }
+        else{
+        document.getElementById("count").innerHTML = z;
+        }
+    }
     });
 
     $("#designation").on('change', function() {
     $("#desg").hide();
-    $("#select2-id_user-container").text("Type  Your Team Member Name ...");
     temp = $("#dept").val()
     $("#department").val(temp);
     $("#skills").val(temp);
+    $("#searchbox").val('');
+    z=0;
+    $('#data-table-body').empty();
+    var skills_name = [];
+    var skills_type = [];
     desg = $('#designation option:selected').val();
-    var input, filter, table, tr, td, i;
-
-         input = desg;
-         filter = input.toUpperCase();
-         table = document.getElementById("data-table-body");
-         tr = table.getElementsByTagName("tr");
-         z = 0;
-         //  Loop through all table rows, and hide those who don't match the search query
-         for (i = 0; i < tr.length; i++) {
-            json_desg = json_lists[i].designation
-            if(json_desg == input){
-                z++;
-                document.getElementById("count").innerHTML = z;
-               $(tr[i]).show();
+    for(i=0;i<arr_len ;i++){
+        json_desg = json_lists[i].designation
+        if(json_desg == desg){
+            z++;
+            document.getElementById("count").innerHTML = z;
+            var len_of_skills = json_lists[i].skills.length;
+            for(j=0;j<len_of_skills;j++){
+                skills_name.push(json_lists[i].skills[j].skills_name)
+                skills_type.push(json_lists[i].skills[j].skills_type)
             }
-            else{
-               document.getElementById("count").innerHTML = z;
-               $(tr[i]).hide();
-            }
-           }
+        $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>"+skills_name.join().split(",").join("<br />")+ "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
+        skills_name = []
+        skills_type = []
+        }
+        else{
+        document.getElementById("count").innerHTML = z;
+        }
+    }
     });
 
     $("#skills").on('change', function() {
     $("#skill").hide();
-    $("#select2-id_user-container").text("Type  Your Team Member Name ...");
     temp = $("#dept").val()
     $("#department").val(temp);
+    $("#searchbox").val('');
     $("#designation").val(temp);
     $('#data-table-body').empty();
     var skills_name = [];
@@ -213,7 +237,9 @@
             if(skills_name.length != 0){
                 z++;
                 document.getElementById("count").innerHTML = z;
-                $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>"+skills_name.join().split(",").join("<br />")+ "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
+
+                $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>" + skills_name.join().split(",").join("<br />") + "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
+
             }
             else{
             document.getElementById("count").innerHTML = z;
@@ -223,33 +249,28 @@
         }
     });
 
-    $('#id_user').on('change',function(){
-
-    value = this.value
-    document.getElementById("count").innerHTML = 1;
-    $.ajax({
-    type: "GET",
-    url : '/skillset/user',
-    data : {'value':value},
-    success : function(data){
-    var content = $(data).find("#data-tables").html();
-    $("#data-tables").html(content)
-    }
-    });
+    $("#searchbox").on('keyup', function() {
+        temp = $("#dept").val()
+        $("#department").val(temp);
+        $("#designation").val(temp);
     });
 
-    $(document).ready(function() {
-      $("#export").click(function(e) {
+    jQuery(document).ready(function() {
+
+    $('#export').on('click', function(e){
         e.preventDefault();
-        var data_type = 'data:application/vnd.ms-excel';
-        var table = document.getElementById('data-tables');
-        var table_html = table.outerHTML.replace(/ /g, '%20');
-        var a = document.createElement('a');
-        a.href = data_type + ', ' + table_html;
-        a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-        a.click();
-      });
+        ResultsToTable();
     });
+
+    function ResultsToTable(){
+        $("#data-tables").table2excel({
+            exclude: ".noExl",
+            name: "Results"
+        });
+    }
+});
+
+
 
 </script>
 
