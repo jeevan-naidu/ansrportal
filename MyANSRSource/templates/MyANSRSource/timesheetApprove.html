@@ -409,7 +409,7 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
-        if (time_obj.tsData[time_key]['remarks'] !="None"){
+        if (time_obj.tsData[time_key]['remarks'] !="None" || time_obj.tsData[time_key]['remarks'] !=" "){
             $('.project-time-row:last-child td.remarks').attr("title",time_obj.tsData[time_key]['remarks']);}
         else
             {  $('.project-time-row:last-child td.remarks').html("");}
@@ -441,7 +441,8 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
         $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
         $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
-         if (time_obj.atData[time_key]['remarks'] !="None")
+        console.log("rem"+time_obj.atData[time_key]['remarks']);
+         if (time_obj.atData[time_key]['remarks'] !="None" || time_obj.atData[time_key]['remarks'] != "" )
             $('.activity-time-row:last-child td.activity_remarks').attr("title",time_obj.atData[time_key]['remarks']);
          else
            $('.activity-time-row:last-child td.activity_remarks').html("");
