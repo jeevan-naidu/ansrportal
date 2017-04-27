@@ -872,15 +872,14 @@ def time_sheet_for_the_week(week_start_date, week_end_date, request_object, appr
 
     ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
                                            teamMember=request_object.user)
-    # print "idm", include_activity , dm_projects
+
     if approve_time_sheet:
 
         ts_obj = ts_obj.filter(hold=True)
 
         if include_activity:
-            # print "in ia"
             if dm_projects and dm_projects is not None:
-                ts_obj = ts_obj.filter(Q(project__isnull=True) & Q(project__in=dm_projects))
+                ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
             else:
                 ts_obj = ts_obj.filter(Q(project__isnull=True))
 
@@ -1557,6 +1556,7 @@ class ApproveTimesheetView(TemplateView):
                 members = Employee.objects.get(user=user_id)
                 ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
                                                  self.request.session['dm_projects'], include_activity)
+                print ts_obj ,members
                 if ts_obj:
                     ts_data_list[members] = {}
                     for s in ts_obj:
