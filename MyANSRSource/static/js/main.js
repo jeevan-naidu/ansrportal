@@ -871,6 +871,36 @@ app.getSum = function($elements, $outputElement) {
             // Increment the id and name value
             $formFields.each(function(index) {
                 $element = $(this);
+
+//              following patch is added for remark
+                tmp = this.id.split('-');
+                if(tmp[3] =='remarks') {
+                    var form_type = tmp[1].split('_');
+                    if(form_type[1]== "at") {
+                        target ="#actModal-";
+                        label = "activity_myModalLabel_actModal-";
+                        name = "at-";
+
+                    }else{
+                        target ="#myModal-";
+                        label = "myModalLabel_myModal-";
+                        name= "form-";
+
+                    }
+                    $child = $(this).find('textarea');
+                    var r_id = tmp[1]+'-'+newRowId+'-remarks';
+                    console.log(tmp[1])
+
+                    $(this).attr("aria-labelledby" ,label+r_id);
+                    $child.val("");
+                    $child.attr({ name:name+newRowId+'-remarks', id:r_id});
+                    cur_button = newRow.find('button');
+                    $(cur_button).attr({ name:"bt_"+r_id, id:"bt_"+r_id});
+                    $(cur_button).attr('data-target',target+r_id);
+                }
+//                remark patch ends here
+
+
                 curId = $element.attr('id');
                 curName = $element.attr('name');
 
