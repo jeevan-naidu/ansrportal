@@ -457,6 +457,7 @@ class AssessmentView(TemplateView):
     def post(self, request):
         # print "im in post"
         form = BaseAssessmentTemplateForm(request.POST)
+        BaseAssessmentTemplateForm(initial={'project': 123})
         # for sa in request.POST :
         # print request.POST
         # reports = template_id = None
@@ -470,7 +471,7 @@ class AssessmentView(TemplateView):
             chapter = form.cleaned_data['chapter']
             author = form.cleaned_data['author']
             component = form.cleaned_data['component']
-
+            BaseAssessmentTemplateForm(initial={'project': project, 'chapter': chapter, 'author': author, 'component': component })
             if request.user is author:
                 # print"is author"
                 get_review_group(project, chapter, is_author=False, component=component)
@@ -483,6 +484,8 @@ class AssessmentView(TemplateView):
                 request.session['chapter'] = chapter
                 request.session['author'] = author
                 request.session['component'] = component
+                request.session['chapter_component'] = ChapterComponent.objects.get(chapter=chapter, component=component)
+
                 ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
                 request.session['template_id'] = ptpm_obj.template_id
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
@@ -495,8 +498,7 @@ class AssessmentView(TemplateView):
                     order_number = int(obj.order_number)-1
                     # print "order_number", order_number
                     prev_tab_obj = QASheetHeader.objects.filter(project=project,
-                                                                chapter_component=ChapterComponent.objects.get
-                                                                (chapter=chapter, component=component),
+                                                                chapter_component=request.session['chapter_component'],
                                                                 order_number=order_number)[0]
                     if is_pm:
                         # print prev_tab_obj.review_group_status , prev_tab_obj.author_feedback_status
@@ -550,7 +552,6 @@ class AssessmentView(TemplateView):
                                                                                                  component=component),
                                               request_obj=self.request, tab=obj.review_group_id)
 
-                request.session['filter_form'] = form
                 return render_common(obj, qms_form, request)
 
             except:
@@ -560,29 +561,6 @@ class AssessmentView(TemplateView):
         else:
             return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
                           {'form': BaseAssessmentTemplateForm(request.POST), })
-        # qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
-        #                                                                                  component=component),
-        #                               request_obj=self.request, tab=obj.review_group_id)
-        #
-        # severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id').\
-        #     exclude(name__icontains='S0')
-        #
-        # result = get_work_book(qms_form, reports, obj)
-        # request.session['filter_form'] = form
-        # return render_common(obj, qms_form, request)
-        # print "m gdhgfgh ", get_review_group(project, chapter, component=component)
-        # return render(self.request, self.template_name, {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
-        #                                                  'reports': reports, 'review_formset': result[6],
-        #                                                  "author_feedback_status": obj.author_feedback_status,
-        #                                                  "reviewer_feedback_status": obj.review_group_status,
-        #                                                  'template_id': template_id,
-        #                                                  'review_group': get_review_group(project, chapter, component=component),
-        #                                                  'questions': obj.count,
-        #                                                  'severity_count': result[0], 'project': project.id,
-        #                                                  'score': result[1], 'total_score': result[2],
-        #                                                  'total_count': result[3], 'defect_density': result[4],
-        #                                                  'total_defect_density': result[5],
-        #                                                  'severity_level': severity_level_obj, "need_button": True})
 
 
 class ReviewReportManipulationView(AssessmentView):
@@ -719,13 +697,19 @@ def render_common(obj, qms_form, request):
     result = get_work_book(qms_form, reports, obj)
     severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id'). \
         exclude(name__icontains='S0')
+    try:
+        form = BaseAssessmentTemplateForm(
+            initial={'project': request.session['project'], 'chapter': request.session['chapter'],
+                     'author': request.session['author'], 'component': request.session['component']})
+    except:
+        form = BaseAssessmentTemplateForm()
     # messages.success(request, "successfully saved")
     s = get_review_group(request.session['project'], request.session['chapter'], component=request.session['component'])
 
     ptpm_obj = ProjectTemplateProcessModel.objects.get(project=obj.project)
     # print s
     return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
-                  {'form': request.session['filter_form'], 'defect_master': DefectTypeMaster.objects.all(),
+                  {'form': form, 'defect_master': DefectTypeMaster.objects.all(),
                    'reports': reports, 'review_formset': result[6], "author_feedback_status":
                        obj.author_feedback_status, "reviewer_feedback_status": obj.review_group_status,
                    "reviewer_feedback": obj.review_group_feedback, "author_feedback": obj.author_feedback,
@@ -864,19 +848,20 @@ def review_completed(request):
     try:
         # print project_id,chapter_id,review_group,review_feedback
         if submitted_by == "author":
-            QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
+            QASheetHeader.objects.filter(project_id=project_id, chapter_component=request.session['chapter_component'],
                                          review_group_id=review_group).update(author_feedback_status=True,
                                                                               review_group_status=False,
                                                                               author_feedback=review_feedback)
         else:
-            existing_remark = QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
+            existing_remark = QASheetHeader.objects.filter(project_id=project_id,
+                                                           chapter_component=request.session['chapter_component'],
                                                            review_group_id=review_group).values(
                 "review_group_feedback", "author_feedback_status", "review_group_status")[0]
             # print "existing_remark",  existing_remark
             if len(str(existing_remark['review_group_feedback'])) > 0 and existing_remark['author_feedback_status'] == 1 and \
                             existing_remark['review_group_status'] == 0:
                 review_feedback = "first review feedback :"+str(existing_remark)+"\n" + "final review feedback : " + str(request.GET.get('review_feedback'))
-            QASheetHeader.objects.filter(project_id=project_id, chapter_id=chapter_id,
+            QASheetHeader.objects.filter(project_id=project_id, chapter_component=request.session['chapter_component'],
                                          review_group_id=review_group).update(review_group_status=True,
                                                                               review_group_feedback=review_feedback)
             messages.success(request, "Saved Successfully")
