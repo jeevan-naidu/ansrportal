@@ -104,7 +104,8 @@ class ActivityForm(forms.Form):
                                   required=False)
     hold = forms.BooleanField(label="hold",
                               required=False)
-    managerFeedback = forms.CharField(label="Feedback", required=False)
+    # managerFeedback = forms.CharField(label="Feedback", required=False)
+    remarks = forms.CharField(label="Remarks", required=False, widget=forms.Textarea(attrs={'cols': 100, 'rows': 5}))
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
@@ -126,6 +127,9 @@ class ActivityForm(forms.Form):
         days input-field Sun-t 24hrcheck"
         self.fields['activity_total'].widget.attrs['class'] = "form-control \
         total input-field r-total"
+        self.fields['remarks'].widget.attrs[
+            'class'
+        ] = 'remarks set-empty'
         hold_value = self.fields['hold'].initial or self.initial.get('hold') or \
                      self.fields['hold'].widget.value_from_datadict(self.data, self.files, self.add_prefix('hold'))
         if hold_value:
@@ -246,6 +250,7 @@ def TimesheetFormset(currentUser,enddate):
         hold = forms.BooleanField(label="hold",
                                   required=False)
         managerFeedback = forms.CharField(label="Feedback", required=False)
+        remarks = forms.CharField(label="Remarks", required=False, widget=forms.Textarea(attrs={'cols': 100, 'rows': 5}))
 
         def __init__(self, *args, **kwargs):
             super(TimeSheetEntryForm, self).__init__(*args, **kwargs)
@@ -341,6 +346,9 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['totalH'].widget.attrs[
                 'class'
             ] = "form-control t-hours-hidden d-item set-zero"
+            self.fields['remarks'].widget.attrs[
+                'class'
+            ] = 'remarks set-empty'
             self.fields['mondayH'].widget.attrs['value'] = 0
             self.fields['tuesdayH'].widget.attrs['value'] = 0
             self.fields['wednesdayH'].widget.attrs['value'] = 0
@@ -352,6 +360,7 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['tsId'].widget.attrs['value'] = 0
             # self.fields['is_internal'].widget.attrs['value'] = 0
             self.fields['projectType'].widget.attrs['value'] = 'Q'
+
     return TimeSheetEntryForm
 
 

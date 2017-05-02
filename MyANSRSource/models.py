@@ -430,6 +430,8 @@ class TimeSheetEntry(models.Model):
     managerFeedback = models.CharField(default=None, null=True, blank=True,
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
+    remarks = models.CharField(default=None, null=True, blank=True, max_length=255,  verbose_name="Employee Remarks")
+
     teamMember = models.ForeignKey(User, editable=False)
     exception = models.CharField(default="No Exception", max_length=75)
     billable = models.BooleanField(default=False, verbose_name="Billable")

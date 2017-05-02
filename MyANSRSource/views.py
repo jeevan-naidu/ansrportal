@@ -204,9 +204,8 @@ def Timesheet(request):
     # Week Calculation.
     leaveDayWork = False
     # Getting the form values and storing it to DB.
-
-
     if request.method == 'POST':
+
         # Getting the forms with submitted values
         hold_button = False
 
@@ -372,6 +371,7 @@ def Timesheet(request):
                     else:
                         del (activity.cleaned_data['DELETE'])
                         for k, v in activity.cleaned_data.iteritems():
+                            print k,v
                             if k == 'activity_monday':
                                 mondayTotal += float(v)
                             elif k == 'activity_tuesday':
@@ -391,6 +391,7 @@ def Timesheet(request):
                                 weekTotal += float(v)
                             activityDict[k] = v
                         activitiesList.append(activityDict.copy())
+                        print activitiesList
                         activityDict.clear()
             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
@@ -430,6 +431,7 @@ def Timesheet(request):
                             nonbillableTS.exception = \
                                 'NonBillable activity more than 40 Hours'
                         for k, v in eachActivity.iteritems():
+                            print k,v
                             if k == 'activity_monday':
                                 nonbillableTS.mondayH = v
                             elif k == 'activity_tuesday':
@@ -450,6 +452,8 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
+                            elif k == 'remarks':
+                                nonbillableTS.remarks = v
                         nonbillableTS.save()
                         global dbSave
                         dbSave = True
@@ -512,6 +516,7 @@ def Timesheet(request):
                             nonbillableTS.approved = False
                             nonbillableTS.hold = False
                         for k, v in eachActivity.iteritems():
+                            print k,v
                             if k == 'activity_monday':
                                 nonbillableTS.mondayH = v
                             elif k == 'activity_tuesday':
@@ -532,6 +537,8 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
+                            elif k == 'remarks':
+                                nonbillableTS.remarks = v
                         nonbillableTS.save()
                         global dbSave
                         dbSave = True
@@ -859,25 +866,28 @@ def date_range_picker(request):
     return ts_final_list, mondays_list, ts_week_info_dict
 
 
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=False, include_activity =False):
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
+                            include_activity=False):
+
+    ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
+                                           teamMember=request_object.user)
+
     if approve_time_sheet:
+
+        ts_obj = ts_obj.filter(hold=True)
+
         if include_activity:
-            # print "if" ,dm_projects
-            ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                                   teamMember=request_object.user, hold=True)
+            if dm_projects and dm_projects is not None:
+                ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
+            else:
+                ts_obj = ts_obj.filter(Q(project__isnull=True))
 
-            ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
-            # print ts_obj.query
         else:
+            if dm_projects and dm_projects is not None:
+                ts_obj = ts_obj.filter(project__in=dm_projects)
 
-            ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                                   teamMember=request_object.user, hold=True,
-                                                   project__in=dm_projects).exclude(project__isnull=True)
-
-    else:
-        print "outer"
-        ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                               teamMember=request_object.user)
+            else:
+                ts_obj = []
     return ts_obj
 
 
@@ -1025,7 +1035,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     ).values('id', 'activity', 'activity__name', 'mondayH', 'tuesdayH', 'wednesdayH',
              'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
              'managerFeedback', 'approved', 'hold', 'teamMember__first_name', 'teamMember__last_name',
-             'teamMember__employee__employee_assigned_id',
+             'teamMember__employee__employee_assigned_id', 'remarks'
              )
     if user_id:
         cwTimesheetData = TimeSheetEntry.objects.filter(
@@ -1041,8 +1051,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                  'saturdayH', 'sundayH', 'approved',
                  'totalH', 'managerFeedback', 'project__internal',
                  'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
+                 'remarks'
                  )
-        print "ts" , cwTimesheetData , request.session['dm_projects']
         if not request.session['include_activity'][int(user_id)]:
             cwActivityData = {}
     else:
@@ -1058,7 +1068,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                  'thursdayH', 'fridayH', 'hold',
                  'saturdayH', 'sundayH', 'approved',
                  'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
-                 'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name'
+                 'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
+                 'remarks'
                  )
     # print cwActivityData
     # Changing data TS data
@@ -1202,8 +1213,10 @@ def status_member(team_members, ignore_previous_year=False):
         for members in team_members:
             status[for_week]['status'][members.user.id] = {}
             try:
+
                 result = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=s[0], wkend=s[1],
                                                        approved=True).exists()
+                print members.user, result
             except:
                 result = False
             status[for_week]['status'][members.user.id] = result
@@ -1462,21 +1475,54 @@ def pull_members_week(employee, start_date, end_date):
 
 def send_reminder_mail(request):
     email_list = []
-    user_id = request.GET.get('user_id')
     start_date = datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date()
     end_date = datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
-    user = User.objects.get(id=user_id)
-    team_members = Employee.objects.filter(manager_id=user.employee.employee_assigned_id,
-                                           user__is_active=True)
-    for members in team_members:
-        result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                               teamMember=members.user, hold=True).exists()
-        if not result:
-            user_obj = User.objects.get(id=int(members.user.id))
-            email_list.append(user_obj.email)
-    TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
-    json_obj = {'status': True}
+    manager_team_members, team_members = dem_members(request)
+    try:
+        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        own_team = {members.user: members.user.email for members in team_members}
+        updated_dict = team_dict.copy()
+        updated_dict.update(own_team)
+        for user, email in updated_dict.iteritems():
+            result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                   teamMember=user, hold=True).exists()
+            if not result and email not in email_list:
+                email_list.append(email)
+        TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
+        json_obj = {'status': True}
+    except Exception as e:
+        logger.error(
+            u'send_reminder_mail function error {0}'.format(
+                str(e))
+        )
+        json_obj = {'status': False}
     return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
+
+
+def dem_members(request):
+    # delivery manager's project list
+    dm_projects = ProjectDetail.objects.filter(deliveryManager=request.user).values_list('project', flat=True)
+    manager = Employee.objects.get(user_id=request.user)
+    # to fetch non project activities for their respective team
+    manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
+                                                    Q(employee_assigned_id=manager)),
+                                                   user__is_active=True).values_list('user_id', 'user__email')
+    if 'dm_projects' not in request.session:
+        if dm_projects:
+            request.session['dm_projects'] = dm_projects
+        else:
+            request.session['dm_projects'] = None
+    if dm_projects:
+        team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
+                                                                                         member__is_active=True).
+                                               values_list('member', flat=True)).exclude(user=request.user)
+
+    else:
+        # their own team
+        team_members = Employee.objects.filter((Q(manager_id=manager) | Q(employee_assigned_id=manager)),
+                                               user__is_active=True).exclude(user=request.user)
+
+    return manager_team_members, team_members
 
 
 class ApproveTimesheetView(TemplateView):
@@ -1485,46 +1531,33 @@ class ApproveTimesheetView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
-        dm_projects = ProjectDetail.objects.filter(deliveryManager=self.request.user).values_list('project', flat=True)
-        # print dm_projects
-        manager = Employee.objects.get(user_id=self.request.user)
+        manager_team_members, team_members = dem_members(self.request)
+        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        own_team = {members.user_id: members.user.email for members in team_members}
+        updated_dict = team_dict.copy()
+        updated_dict.update(own_team)
 
-        # to fetch non project activities for their respective team
-        manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
-                                                Q(employee_assigned_id=manager)),
-                                                       user__is_active=True).values_list('user_id', flat=True)
-        # print manager_team_members
-
-        self.request.session['dm_projects'] = dm_projects
-        if dm_projects:
-            team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
-                                                                                             member__is_active=True).
-                                                   values_list('member', flat=True)).exclude(user=self.request.user)
-
-        else:
-            team_members = Employee.objects.filter((Q(manager_id=manager) |
-                                                Q(employee_assigned_id=manager)),
-                                                       user__is_active=True)
-        # print team_members
-        if team_members:
+        user_id_collection = [k[0] for k in manager_team_members]
+        if updated_dict:
             dates = switchWeeks(self.request)
             ts_data_list = {}
             self.request.session['include_activity'] = {}
             start_date = dates['start']
             end_date = dates['end']
-            status, week_collection, unapproved_count = status_member(team_members)
-            for members in team_members:
+            status, week_collection, unapproved_count = status_member(Employee.objects.filter(
+                user_id__in=updated_dict.keys()))
+            for user_id, name in updated_dict.iteritems():
                 non_billable_total = 0.0
-
-                if members.user_id not in manager_team_members:
+                if user_id not in user_id_collection:
                     include_activity = False
-                    self.request.session['include_activity'][int(members.user_id)] = False
+                    self.request.session['include_activity'][int(user_id)] = False
                 else:
                     include_activity = True
-                    self.request.session['include_activity'][int(members.user_id)] = True
-
-                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True, dm_projects, include_activity)
-
+                    self.request.session['include_activity'][int(user_id)] = True
+                members = Employee.objects.get(user=user_id)
+                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
+                                                 self.request.session['dm_projects'], include_activity)
+                print ts_obj ,members
                 if ts_obj:
                     ts_data_list[members] = {}
                     for s in ts_obj:
@@ -1532,7 +1565,7 @@ class ApproveTimesheetView(TemplateView):
                         while a == 0:
                             ts_data_list[members]['approved_status'] = s.approved
                             a += 1
-                    if members.user_id not in manager_team_members:
+                    if members.user_id not in user_id_collection:
                         non_billable_total = 0
                     else:
                         non_billable_obj = non_billable_hours(ts_obj)
@@ -1551,7 +1584,6 @@ class ApproveTimesheetView(TemplateView):
                 context['weekendDate'] = dates['end']
                 context['status_dict'] = status
                 context['disabled'] = dates['disabled']
-            print self.request.session['include_activity']
             context['week_collection'] = week_collection[::-1]
             ts_data_list_approved_false = {}
             ts_data_list_approved_true = {}
@@ -1559,17 +1591,11 @@ class ApproveTimesheetView(TemplateView):
             for k, v in ts_data_list.iteritems():
 
                 if v['approved_status']:
-                    # print  k,v
                     ts_data_list_approved_true[k] = v
-                    # print ts_data_list_reordered
                 else:
-                    # print "else",  k, v
                     ts_data_list_approved_false[k] = v
             context['ts_data_list_approved_false'] = ts_data_list_approved_false
             context['ts_data_list_approved_true'] = ts_data_list_approved_true
-            # print "false",ts_data_list_approved_false
-            # print "true",ts_data_list_approved_true
-            # print ts_data_list_approved_true
         else:
             context['exception_message'] = "you don't have any team members"
         return context

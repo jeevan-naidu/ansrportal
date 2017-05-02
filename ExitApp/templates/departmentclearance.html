@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 {% load bootstrap3 %}
 {% load fontawesome %}
-{% load permissions %}
+{% load exit %}
 {% load static from staticfiles %}
 {% block siteTitle %}Candidate Clearance Report{% endblock %}
 {% block pageTitle %}Resignation Clearance :  {% for c in candidate_detail%} {{c}} {% endfor%} {% endblock %}
