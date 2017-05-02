@@ -39,6 +39,12 @@
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
                                         </span>
                                         <span class="col-lg-3"></span>
+                                    {% elif field.label == 'Select Practice' %}
+                                    <span class="col-lg-9">{{ field }}
+                                        {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
+                                        </span>
+                                    <span class="col-lg-3"></span><label class="col-lg-6" id="practice" style="width:100%">
+                                    </label>
                                     {% else %}  {{ form.field.errors }}
                                         <span class="col-lg-9">{{ field }}
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
@@ -80,12 +86,14 @@
                        data :{'practicename': practicename} ,
                        success : function(data)
                        {
-                       document.getElementById('id_BasicInformation-PracticeHead').value=data
+                       <!--document.getElementById('id_BasicInformation-PracticeHead').value=data-->
+                       document.getElementById('practice').innerHTML= 'Practice Head: ' + data
 
                        }
                    }
            );
- })
+ });
+
 
  $('.sopname').on('change', function() {
               var sop = this.value

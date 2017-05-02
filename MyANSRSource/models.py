@@ -296,8 +296,6 @@ class Project(models.Model):
     projectManager = models.ManyToManyField(User,
                                             through='ProjectManager',
                                             verbose_name="Additional Manager")
-    pmDelegate = models.ForeignKey(User, verbose_name="PM Delegate",related_name='pmDelegate', default=None,
-                                   null=True, blank=True)
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book/Title",
@@ -314,7 +312,7 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Closed"
     )
-
+    active = models.BooleanField(verbose_name="Is Active", default=False)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -341,13 +339,20 @@ class ProjectDetail(models.Model):
                                       blank=True, null=True)
     # ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
     SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
-    deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager', blank=True, null=True)
+    deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager')
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
                                           verbose_name="Upload project Estimation Document")
     SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', null=True, blank=True)
     Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', null=True, blank=True)
     Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', null=True, blank=True)
+    outsource_contract_value = models.DecimalField(default=0.0,
+                                                   max_digits=12,
+                                                   decimal_places=2,
+                                                   verbose_name="Outsource Contract Value",
+                                                   validators=[MinValueValidator(0.0)])
+    pmDelegate = models.ForeignKey(User, verbose_name="PM Delegate", related_name='pmDelegate', default=None,
+                                   null=True, blank=True)
 
     def __unicode__(self):
         return self.project.projectId + u' : ' + self.project.name
@@ -583,6 +588,7 @@ class ProjectChangeInfo(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+    approved = models.BooleanField(verbose_name="Approved", default=False)
 
     def __unicode__(self):
         return self.crId

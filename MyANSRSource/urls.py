@@ -2,11 +2,10 @@ from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
 from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser, \
     AutocompleteProjectAsset, AutocompletePracticeName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
-    Autocompleteprojectscope,AutocompleteMilestonetype
-from Reports import views as milestonreporteviews
-from .views import ApproveTimesheetView, getheadid, soplink, milestonename
+    Autocompleteprojectscope, AutocompleteMilestonetype
+from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval
 from django.contrib.auth.decorators import login_required, permission_required
-
+from django.views.decorators.cache import cache_page
 urlpatterns = [
     url(r'^AutocompleteMilestonetype/$',
         AutocompleteMilestonetype.as_view(),
@@ -142,7 +141,9 @@ urlpatterns = [
     url(r'^project/trackmilestone$',
         views.WrappedTrackMilestoneView,
         name=u'trackmilestone'),
-
+    url(r'^project/newcreatedprojectapproval/$',
+        login_required(NewCreatedProjectApproval.as_view()),
+        name='new_created_project_approval'),
     url(r'^logout/$', views.Logout, name=u'logout'),
     url(r'^$', views.index, name=u'index'),
 ]
