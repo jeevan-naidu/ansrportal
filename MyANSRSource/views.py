@@ -1,5 +1,5 @@
 import logging
-
+from django.views.decorators.cache import cache_page
 logger = logging.getLogger('MyANSRSource')
 import json
 from collections import OrderedDict
@@ -110,9 +110,8 @@ days = ['monday', 'tuesday', 'wednesday', 'thursday',
 
 def getheadid(request):
     practicename = request.GET['practicename']
-    head = Practice.objects.get(id=practicename)
-    head_name = User.objects.get(id=head.head_id)
-    return HttpResponse(head_name.first_name)
+    practice = Practice.objects.select_related('head').get(id=practicename)
+    return HttpResponse(practice.head.first_name + " " + practice.head.last_name)
 
 
 def soplink(request):
@@ -962,10 +961,12 @@ class ChangeProjectWizard(SessionWizardView):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                projectManager=self.request.user,
-                closed=False
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail, active=True)
+            form.fields['project'].queryset = project
+
         if step == 'Change Basic Information':
             signed = Project.objects.filter(
                 id=self.storage.get_step_data(
@@ -1682,7 +1683,7 @@ def getHours(request, wstart, wend, mem, project, label):
     )
     return sum([eachRec[eachDay] for eachDay in days for eachRec in ts])
 
-
+# @cache_page(60 * 15)
 @login_required
 def Dashboard(request):
     todays_date = datetime.now().date()
@@ -2015,9 +2016,11 @@ class ManageTeamLeaderWizard(SessionWizardView):
         form = super(ManageTeamLeaderWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            projects = Project.objects.filter(projectManager=self.request.user,
-                                              closed=False)
-            form.fields['project'].queryset = projects
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.fields['project'].queryset = project
         return form
 
     def get_form_initial(self, step):
@@ -2087,10 +2090,11 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                closed=False,
-                projectManager=self.request.user
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail, active=True)
+            form.fields['project'].queryset = project
         if step == 'Manage Milestones':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -2273,14 +2277,11 @@ class CreateProjectWizard(SessionWizardView):
                         ] = 'True'
                 else:
                     logger.error("Basic Information step has signed as none")
-                if form.is_valid():
-                    a=0
         if step == 'Uploads':
             if form.is_valid():
                 self.request.session['sow'] = self.request.FILES.get('Uploads-Sowdocument', "")
                 self.request.session['estimation'] = self.request.FILES.get('Uploads-Estimationdocument', "")
-                #self.request.session['sow'] = (form.cleaned_data['Sowdocument'])
-                #self.request.session['estimation'] = (form.cleaned_data['Estimationdocument'])
+
 
             else:
                 logger.error(
@@ -2436,10 +2437,11 @@ class ManageTeamWizard(SessionWizardView):
         context = super(ManageTeamWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                projectManager=self.request.user,
-                closed=False
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail, active=True)
+            form.fields['project'].queryset = project
         if self.steps.current == 'Manage Team':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -2684,8 +2686,7 @@ def saveProject(request):
                 pd.project_id = pr.id
                 pd.projectFinType = request.POST.get('projectFinType')
                 sub_practice = request.POST.get('subpractice')
-                sub_practice_id = SubPractice.objects.get(name=sub_practice).id
-                pd.SubPractice_id = sub_practice_id
+                pd.SubPractice_id = SubPractice.objects.get(name=sub_practice).id if sub_practice != 'None' else None
                 practice_name = request.POST.get('practicename')
                 practice_id = Practice.objects.get(name=practice_name).id
                 pd.PracticeName_id = practice_id
@@ -2939,3 +2940,30 @@ def is_internal(request):
     except:
         internal = 0
     return HttpResponse(json.dumps({'is_internal': int(internal)}), content_type="application/json")
+
+
+class NewCreatedProjectApproval(View):
+    template_name = "newCreatedProjectApproval.html"
+
+    def get_queryset(self, request):
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+        queryset = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False)
+        return queryset
+
+    def get(self, request):
+        queryset = self.get_queryset(request)
+        return render(request, self.template_name, {'queryset':queryset})
+
+    def post(self, request):
+        try:
+            approve = request.POST.getlist('approve[]')
+            reject = request.POST.getlist('reject[]')
+            approve = approve if approve else []
+            reject = reject if reject else []
+            Project.objects.filter(id__in=approve).update(active=True)
+            Project.objects.filter(id__in=reject).update(closed=True)
+            return HttpResponse()
+        except Exception as E:
+            return HttpResponse(E)
+
+

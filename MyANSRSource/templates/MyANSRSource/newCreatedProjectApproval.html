@@ -1,0 +1,159 @@
+
+{% extends 'master.html' %}
+{% block siteTitle %}Manage {{ app_name }}{% endblock %}
+
+{% load static from staticfiles %}
+{% load process_tags %}
+{% load rest_framework %}
+
+{% block pageTitle %}New Project Approval{% endblock %}
+
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+
+     <div class="panel pb-15">
+    <div class="panel-body">
+
+                    <br/>
+                    <div class="tab-content mgbt-xs-20">
+
+                        <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <thead>
+                            <tr>
+                                <th><b>Project Id</b></th>
+                                <th><b>Project Type</b></th>
+
+
+                                   <th><b>Project Name</b></th>
+
+                                <th><b>Customer</b></th>
+                                <th><b>Planned Effort</b></th>
+                                <th><b>Total Value</b></th>
+                                <th><b>Action</b></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                        {% for process in queryset %}
+                             <tr>
+                                <td class="ws-mw">{{process.projectId}}</td>
+                                 <td class="ws-mw">{{process.name}}</td>
+                                 <td class="ws-mw">{{process.projectType}}</td>
+                                 <td class="ws-mw">{{process.customer}}</td>
+                                 <td class="ws-mw">{{process.plannedEffort}}</td>
+                                 <td class="ws-mw">{{process.totalValue}}</td>
+                                 <td class="ws-mw">
+                                     <div class="checkbox checkbox-success radio-mod btn-xs">
+                                <input id="approve_{{process.id}}" type="checkbox" name="approve" class="approve" value="approved">
+                                <label for="approve_{{process.id}}" class="ansr-orange-mod">
+                                Approve
+                                </label>
+                            </div>
+                            <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                <input id="reject_{{process.id}}" type="checkbox" name="reject"
+                                       class="reject" value="rejected_1">
+                                <label for="reject_{{process.id}}">
+                                Reject
+                                </label>
+                            </div>
+                                 </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </table>
+{%if  queryset  %}
+                    <div class="Lv-ApprLvSubmit">
+                        <div class="margin-0-auto text-right">
+                            <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange submit">Submit</button>
+
+                        </div>
+
+                    </div>{% endif %}
+
+                    </div>
+
+
+
+
+</div>
+     </div>
+
+
+
+
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+<script type="text/javascript">
+
+$('document').ready(function(){
+  $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
+});
+
+</script>
+<script>
+$("input:checkbox").click(function(){
+    var checkbox_id = this.id;
+    var checkbox_detail = checkbox_id.split("_");
+    var flag = {"approve":"reject", "reject":"approve"};
+    var next_flag = flag[checkbox_detail[0]] + "_" + checkbox_detail[1];
+    if($(this).attr("checked")){
+
+        $(this).attr("checked", false);
+        $("#" + next_flag + "").attr("checked", false);
+    }
+    else{
+
+    $(this).attr("checked", true);
+        $("#" + next_flag + "").attr("checked", false);
+    }
+});
+$(".submit").on("click", function(){
+                            var idSelect = function(){ return this.id;};
+                            var checkedBoxId = $(":checkbox:checked").map(idSelect).get();
+                            var approve_list = [];
+                            var reject_list = [];
+                            for(var i=0; i<checkedBoxId.length; i++){
+                             var checkbox_detail = checkedBoxId[i].split("_")
+                             if(checkbox_detail[0] == "approve"){
+                                approve_list.push(checkbox_detail[1]);
+                             }else{
+                             reject_list.push(checkbox_detail[1])
+                             }
+                            }
+                            swal({   title: "Are you sure?",
+							text: "Do you want to submit your approval?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+                                            $.ajax({
+                                                url:"{% url 'new_created_project_approval' %}",
+                                                data:{"approve": approve_list, "reject": reject_list},
+                                                type:"post",
+                                                success: function(data){
+                                                    window.location=window.location;
+                                                },
+
+                                            });
+                                            }
+							   });
+						 return false;
+					 });
+
+</script>
+{% endblock %}
