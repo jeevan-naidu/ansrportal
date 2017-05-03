@@ -122,7 +122,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
     # qa_sheet_header_obj(project, chapter, author=author)
     try:
         # print chapter, "chapter"
-        print active_tab, "-<active_tab->", project, chapter, author
+        # print active_tab, "-<active_tab->", project, chapter, author
         result = None
         if active_tab and component is not None:
             chapter_component_obj = ChapterComponent.objects.get(chapter=chapter, component=component)
@@ -336,7 +336,6 @@ def forbidden_access(self, form, project, message_code, chapter=None):
                                                      "need_button": result})
 
 
-
 def get_work_book(qms_form, reports, obj):
     qms_data = {}
     qms_data_list = []
@@ -420,15 +419,19 @@ def get_work_book(qms_form, reports, obj):
     score = {}
     tmp_weight = {}
     defect_density = {}
+    sev_count = []
     # print severity_count
     s = SeverityLevelMaster.objects.filter(is_active=True)
     for k, v in severity_count.iteritems():
+        # print "k,v", k,v
         severity_level_obj = s.get(id=int(k))
-        print severity_level_obj
-        if severity_level_obj.name.lower() == "s0" :
+        # print severity_level_obj
+        if severity_level_obj.name.lower() == "s0":
             score[k] = 0
             defect_density[k] = 0
+            tmp_weight[k] = 0
         else:
+            sev_count.append(v)
             tmp_weight[k] = float(severity_level_obj.penalty_count) * v
             score[k] = 100 - (tmp_weight[k])
             if obj.count > 0:
@@ -436,7 +439,9 @@ def get_work_book(qms_form, reports, obj):
             else:
                 defect_density[k] = 0
     # print list(severity_count.itervalues())
-    total_count = sum(severity_count.itervalues())
+    # for k,v in tmp_weight.iteritems():
+    #     print k,v
+    total_count = sum(sev_count)
     weight = sum(tmp_weight.itervalues())
     if weight != 0:
         total_score = 100 - sum(tmp_weight.itervalues())
@@ -467,7 +472,6 @@ class AssessmentView(TemplateView):
     def post(self, request):
         # print "im in post"
         form = BaseAssessmentTemplateForm(request.POST)
-        BaseAssessmentTemplateForm(initial={'project': 123})
         # for sa in request.POST :
         # print request.POST
         # reports = template_id = None
@@ -490,8 +494,7 @@ class AssessmentView(TemplateView):
 
                 # print "im in try"
                 # print project.id, chapter, author, active_tab
-                # for k,v in form.cleaned_data.iteritems():
-                #     request.session[ k ] = v
+
                 request.session['project'] = project
                 request.session['chapter'] = chapter
                 request.session['author'] = author
@@ -587,6 +590,7 @@ class ReviewReportManipulationView(AssessmentView):
         request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
         # print request.POST.get('active_tab1')
 
+
         qms_form = review_report_base(request.session['template_id'], request.session['project'],
                                       request_obj=self.request, tab=active_tab)
         qms_formset = formset_factory(
@@ -597,7 +601,6 @@ class ReviewReportManipulationView(AssessmentView):
         forbidden_file_type = False
 
         q_form = qms_formset(request.POST, request.FILES)
-        q_form = q_form.save(commit=False)
         # print request.POST
         # print q_form.is_valid()
         # print q_form.errors
@@ -616,6 +619,8 @@ class ReviewReportManipulationView(AssessmentView):
                     qms_data.clear()
                     # print qms_data_list
             for obj in qms_data_list:
+                if obj['severity_type'] == "" or obj['review_item'] == "":
+                    continue
                 # print obj
                 if obj['qms_id'] > 0:
                     report = ReviewReport.objects.get(id=obj['qms_id'])
@@ -687,10 +692,12 @@ class ReviewReportManipulationView(AssessmentView):
                     fail += 1
 
         else:
-            print q_form.errors
-            messages.error(request, q_form.errors)
+            logger.error(" {0} ".format(str(q_form.errors)))
+            messages.error(request, "Sorry please try again")
             return HttpResponseRedirect(reverse('qms'))
-            return render_common(obj, qms_form, self.request)
+            # messages.error(request, q_form.errors)
+            # return HttpResponseRedirect(reverse('qms'))
+            # return render_common(obj, qms_form, self.request)
             # context = {'form': BaseAssessmentTemplateForm(), 'review_formset': qms_formset}
         if fail == 0:
             if forbidden_file_type:
@@ -732,10 +739,6 @@ def render_common(obj, qms_form, request):
                    'project': request.session['project'], 'score': result[1], 'total_score': result[2],
                    'total_count': result[3], 'defect_density': result[4], 'total_defect_density': result[5],
                    'severity_level': severity_level_obj, "need_button": True})
-
-
-
-
 
 
 def fetch_severity(request):
