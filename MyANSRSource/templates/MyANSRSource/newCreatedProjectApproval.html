@@ -127,17 +127,4 @@ $('document').ready(function(){
 
 </script>
 <script type="text/javascript" src="/static/js/approved.js"></script>
-<script>
-    $(".detail").click(function(){
-        var project_id = this.id
-        $.ajax({
-            url:"{% url 'projectdetail' %}",
-            data: {"id": project_id},
-            type: "get",
-            success: function(data){
-            $("#modal_body").html(data);
-            },
-        });
-    });
-</script>
 {% endblock %}
