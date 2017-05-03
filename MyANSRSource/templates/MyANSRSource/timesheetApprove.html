@@ -418,7 +418,7 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
         if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !==""){
-            $('.project-time-row:last-child td.href a').attr("title",time_obj.tsData[time_key]['remarks']);}
+            $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
         else
             {  $('.project-time-row:last-child td.remarks').hide();}
     }
