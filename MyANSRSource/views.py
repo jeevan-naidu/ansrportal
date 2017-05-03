@@ -964,7 +964,7 @@ class ChangeProjectWizard(SessionWizardView):
             project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
                                                                                     project__closed=False).values(
                 'project_id')
-            project = Project.objects.filter(id__in=project_detail)
+            project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
 
         if step == 'Change Basic Information':
@@ -2093,7 +2093,7 @@ class TrackMilestoneWizard(SessionWizardView):
             project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
                                                                                     project__closed=False).values(
                 'project_id')
-            project = Project.objects.filter(id__in=project_detail)
+            project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
         if step == 'Manage Milestones':
             for eachForm in form:
@@ -2440,7 +2440,7 @@ class ManageTeamWizard(SessionWizardView):
             project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
                                                                                     project__closed=False).values(
                 'project_id')
-            project = Project.objects.filter(id__in=project_detail)
+            project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
         if self.steps.current == 'Manage Team':
             for eachForm in form:
