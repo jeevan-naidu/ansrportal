@@ -1,9 +1,9 @@
+from __future__ import unicode_literals
 import logging
 logger = logging.getLogger('MyANSRSource')
 import json
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
-
 from django.forms.utils import ErrorList
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout
@@ -1034,11 +1034,12 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     friday_total = 0.0
     saturday_total = 0.0
     sunday_total = 0.0
+    from decimal import Decimal
     for eachData in cwTimesheetData:
         for k, v in eachData.iteritems():
             # print k,v
             if user_id:
-                if k != 'project__internal':
+                if isinstance(v, Decimal):
                     v = str(v)
             if user_id:
 
