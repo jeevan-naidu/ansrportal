@@ -1476,11 +1476,11 @@ def send_reminder_mail(request):
     end_date = datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
     manager_team_members, team_members = dem_members(request)
     try:
-        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        # team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
         own_team = {members.user: members.user.email for members in team_members}
-        updated_dict = team_dict.copy()
-        updated_dict.update(own_team)
-        for user, email in updated_dict.iteritems():
+        # updated_dict = team_dict.copy()
+        # updated_dict.update(own_team)
+        for user, email in own_team.iteritems():
             result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                    teamMember=user, hold=True).exists()
             if not result and email not in email_list:
