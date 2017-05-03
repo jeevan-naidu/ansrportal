@@ -2967,3 +2967,9 @@ class NewCreatedProjectApproval(View):
             return HttpResponse(E)
 
 
+def project_detail(request):
+    project_id = request.GET.get('id')
+    project = Project.objects.get(id=project_id)
+    project_detail = project.projectdetail_set.select_related('project').get()
+    return render(request, 'project_detail.html', {'project_detail': project_detail})
+

@@ -144,6 +144,9 @@ urlpatterns = [
     url(r'^project/newcreatedprojectapproval/$',
         login_required(NewCreatedProjectApproval.as_view()),
         name='new_created_project_approval'),
+    url(r'^project/projectdetail/$',
+        login_required(views.project_detail),
+        name='projectdetail'),
     url(r'^logout/$', views.Logout, name=u'logout'),
     url(r'^$', views.index, name=u'index'),
 ]

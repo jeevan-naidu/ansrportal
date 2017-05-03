@@ -1,0 +1,42 @@
+{% load static from staticfiles %}
+
+<div class="LeaveDetails" >
+
+<table class=" table table-hover view_details" >
+
+     <tr >
+         <td style="width: 200px;" ><b> Project Delivery Manager:</b></td>
+         <td>{{ project_detail.deliveryManager }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> PM Delegate:</b></td>
+         <td>{{ project_detail.pmDelegate }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Business Unit:</b></td>
+         <td>{{ project_detail.project.bu }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Customer:</b></td>
+         <td>{{ project_detail.project.customer }}</td>
+    </tr>
+         <td style="width: 200px;" > <b>Start Date:</b></td>
+         <td>{{ project_detail.project.startDate }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> End Date:</b></td>
+         <td>{{ project_detail.project.endDate }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Book:</b></td>
+         <td>{{ project_detail.project.book }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Total Value:</b></td>
+         <td>{{ project_detail.project.totalValue }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Planned Effort:</b></td>
+         <td>{{ project_detail.project.plannedEffort }}</td>
+    </tr>
+         <td style="width: 200px;" > <b>Outsource Contract Value:</b></td>
+         <td>{{ project_detail.outsource_contract_value }}</td>
+
+     </tr>
+
+
+ </table>
+</div>
