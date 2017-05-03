@@ -871,6 +871,8 @@ app.getSum = function($elements, $outputElement) {
             // Increment the id and name value
             $formFields.each(function(index) {
                 $element = $(this);
+                // following added to removed disabled attribute for hours input field while cloning
+                if($element.hasClass('b-hours')) $element.removeAttr("disabled")
 
 //              following patch is added for remark
                 tmp = this.id.split('-');

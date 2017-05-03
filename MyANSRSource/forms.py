@@ -300,16 +300,16 @@ def TimesheetFormset(currentUser,enddate):
             self.fields['task'].widget.attrs['required'] = True
             self.fields['project'].widget.attrs[
                 'class'] = "form-control d-item \
-                billable-select-project set-empty"
+                billable-select-project  required_fields set-empty"
             self.fields['tsId'].widget.attrs['class'] = "set-zero"
             self.fields['location'].widget.attrs['class'] = \
-                "form-control  d-item set-zero"
+                "form-control required_fields  d-item set-zero"
             self.fields['chapter'].widget.attrs[
                 'class'] = "form-control d-item b-chapter \
-                remove-sel-options set-zero"
+                remove-sel-options  required_fields set-zero"
             self.fields['task'].widget.attrs[
                 'class'
-            ] = "form-control d-item b-task remove-sel-options set-zero"
+            ] = "form-control d-item b-task  required_fields remove-sel-options set-zero"
 
             self.fields['mondayH'].widget.attrs[
                 'class'

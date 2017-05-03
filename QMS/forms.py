@@ -200,9 +200,9 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                     if qa_obj.review_group_status and qa_obj.author_feedback_status:
                         for field in self.fields:
                             self.fields[field].widget.attrs['disabled'] = True
-                    if not qa_obj.review_group_status and qa_obj.author_feedback_status:
-                        for field in self.fields:
-                            self.fields[field].widget.attrs['disabled'] = True
+                    # if not qa_obj.review_group_status and qa_obj.author_feedback_status:
+                    #     for field in self.fields:
+                    #         self.fields[field].widget.attrs['disabled'] = True
                     if request_obj == qa_obj.author:
                         self.fields["is_fixed"].widget.attrs['required'] = True
                 except Exception as e:
@@ -270,6 +270,44 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
             #     (id=defect_type_master_obj.severity_level)
             #     self.fields['defect_classification'].queryset = DefectClassificationMaster.objects.filter\
             #         (id__in=severity_type_obj.defect_classification)
+
+        def clean(self):
+            for s in self.cleaned_data:
+                print s
+            # if self.cleaned_data['review_item'] == "" :
+            #     self.cleaned_data['review_item'] = "N/A"
+            # if self.cleaned_data['severity_type'] == "" :
+            #     self.cleaned_data['severity_type'] = 6
+            return self.cleaned_data
+
+        def is_valid(self):
+
+            # run the parent validation first
+            valid = super(ReviewReportForm, self).is_valid()
+            # for k, v in ReviewReportForm.cleaned_data.items():
+            #     print k,v
+            # # we're done now if not valid
+            # if not valid:
+            #     return valid
+
+            # so far so good, get this user based on the username or email
+            # try:
+            #     user = User.objects.get(
+            #         Q(username=self.cleaned_data['review_item']) | Q(email=self.cleaned_data['username'])
+            #     )
+            #
+            # # no user with this username or email address
+            # except User.DoesNotExist:
+            #     self._errors['no_user'] = 'User does not exist'
+            #     return False
+            #
+            # # verify the passwords match
+            # if not check_password(self.cleaned_data['password'], user.password):
+            #     self._errors['invalid_password'] = 'Password is invalid'
+            #     return False
+
+            # all good
+            return True
 
     return ReviewReportForm
 

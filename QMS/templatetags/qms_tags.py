@@ -71,6 +71,8 @@ def get_fixed_status(id, val):
 def get_severity_count(project, name, template_id):
     s = 0
     try:
+        if name.lower() == "s0":
+            return s
         severity_level_obj = SeverityLevelMaster.objects.get(name__icontains=name)
         review_report_obj = ReviewReport.objects.filter(QA_sheet_header__in=QASheetHeader.objects.filter(
             project=project).values_list('id', flat=True), defect_severity_level__severity_level=severity_level_obj).\

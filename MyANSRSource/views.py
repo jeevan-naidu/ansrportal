@@ -1226,6 +1226,7 @@ def status_member(team_members, ignore_previous_year=False):
         status_dict[k] = {}
         status_dict[k]['wkstart'] = {}
         status_dict[k]['wkend'] = {}
+        print "status", k,v
         if all(value == True for value in v['status'].values()):
             status_dict[k]['status'] = "approved"
         elif all(value == False for value in v['status'].values()):
@@ -1637,6 +1638,7 @@ class ApproveTimesheetView(TemplateView):
         if reject_list:
             for user_id in reject_list:
                 try:
+                    print request.session["include_activity"][int(user_id)] , request.session['dm_projects']
                     if not request.session["include_activity"][int(user_id)]:
 
                         TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
@@ -1650,9 +1652,9 @@ class ApproveTimesheetView(TemplateView):
 
                     user_obj = User.objects.get(id=user_id)
                     projects = Project.objects.filter(pk__in=request.session['dm_projects'])
-                    TimeSheetRejectionNotification.delay(request.user,
-                                                         str(user_obj.email), start_date,
-                                                         end_date, [str(s) for s in projects], feedback_dict[user_id])
+                    # TimeSheetRejectionNotification.delay(request.user,
+                    #                                      str(user_obj.email), start_date,
+                    #                                      end_date, [str(s) for s in projects], feedback_dict[user_id])
                 except Exception as e:
                     fail += 1
                     logger.error(
