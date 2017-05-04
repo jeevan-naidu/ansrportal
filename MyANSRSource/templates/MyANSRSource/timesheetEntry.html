@@ -603,17 +603,19 @@
 			  var billable_disabled_count = 0;
 
 			  $('.non-billable-select-project').each(function(i, obj) {
-                  if ($(obj).parent().hasClass('ansr-disabled') ) {
-				      non_billable_disabled_count++;
+			  console.log("non bil"+$(obj).parent().hasClass('ansr-disabled')+obj.id);
+			      if ($(obj).parent().hasClass('ansr-disabled') ) {
+					non_billable_disabled_count++;
 				  }
 			  });
 
 			  $('.billable-select-project').each(function(i, obj) {
+			  console.log("bil"+$(obj).parent().hasClass('ansr-disabled') + obj.id);
 				if ($(obj).parent().hasClass('ansr-disabled')) {
 					billable_disabled_count++;
 				}
 			  });
-
+			  console.log("non_billable "+non_billable+"   billable   "+billable+"   non_billable_disabled_count   " +non_billable_disabled_count+"   billable_disabled_count   "+billable_disabled_count);
 			  if(non_billable_disabled_count == non_billable ){
               	   $("#timesheet-non-billable-add-btn").attr("disabled", true);
               }

@@ -110,7 +110,7 @@ class ActivityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields['activity_total'].widget.attrs['readonly'] = 'True'
-        self.fields['activity'].widget.attrs['class'] = "form-control"
+        self.fields['activity'].widget.attrs['class'] = "form-control non-billable-select-project"
         self.fields['activity_monday'].widget.attrs['class'] = "form-control \
         days input-field Mon-t 24hrcheck"
         self.fields['activity_tuesday'].widget.attrs['class'] = "form-control \
