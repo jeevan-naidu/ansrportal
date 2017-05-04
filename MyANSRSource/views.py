@@ -2,6 +2,7 @@ import logging
 from django.views.decorators.cache import cache_page
 logger = logging.getLogger('MyANSRSource')
 import json
+from decimal import Decimal
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
 
@@ -371,7 +372,6 @@ def Timesheet(request):
                     else:
                         del (activity.cleaned_data['DELETE'])
                         for k, v in activity.cleaned_data.iteritems():
-                            print k,v
                             if k == 'activity_monday':
                                 mondayTotal += float(v)
                             elif k == 'activity_tuesday':
@@ -391,7 +391,6 @@ def Timesheet(request):
                                 weekTotal += float(v)
                             activityDict[k] = v
                         activitiesList.append(activityDict.copy())
-                        print activitiesList
                         activityDict.clear()
             if (mondayTotal > 24) | (tuesdayTotal > 24) | \
                     (wednesdayTotal > 24) | (thursdayTotal > 24) | \
@@ -431,7 +430,6 @@ def Timesheet(request):
                             nonbillableTS.exception = \
                                 'NonBillable activity more than 40 Hours'
                         for k, v in eachActivity.iteritems():
-                            print k,v
                             if k == 'activity_monday':
                                 nonbillableTS.mondayH = v
                             elif k == 'activity_tuesday':
@@ -516,7 +514,6 @@ def Timesheet(request):
                             nonbillableTS.approved = False
                             nonbillableTS.hold = False
                         for k, v in eachActivity.iteritems():
-                            print k,v
                             if k == 'activity_monday':
                                 nonbillableTS.mondayH = v
                             elif k == 'activity_tuesday':
@@ -1088,7 +1085,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         for k, v in eachData.iteritems():
             # print k,v
             if user_id:
-                if k != 'project__internal':
+                if isinstance(v, Decimal):
                     v = str(v)
             if user_id:
 
@@ -1479,11 +1476,11 @@ def send_reminder_mail(request):
     end_date = datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
     manager_team_members, team_members = dem_members(request)
     try:
-        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        # team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
         own_team = {members.user: members.user.email for members in team_members}
-        updated_dict = team_dict.copy()
-        updated_dict.update(own_team)
-        for user, email in updated_dict.iteritems():
+        # updated_dict = team_dict.copy()
+        # updated_dict.update(own_team)
+        for user, email in own_team.iteritems():
             result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                    teamMember=user, hold=True).exists()
             if not result and email not in email_list:

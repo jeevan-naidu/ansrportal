@@ -277,7 +277,11 @@ Approve Timesheet
                           <td class="fridayH">0</td>
                           <td class="saturdayH">0</td>
                           <td class="sundayH">0</td>
-                            <td class="remarks">Mouse hover to read remarks</td>
+                           <td class="menu-action remarks">
+                                <a  class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown " >
+                                    <i class="fa fa-comments-o"></i>
+                                </a>
+                            </td>
                         </tr>
 
 
@@ -311,7 +315,11 @@ Approve Timesheet
                           <td class="activity_friday">0</td>
                           <td class="activity_saturday">0</td>
                           <td class="activity_sunday">0</td>
-                             <td class="activity_remarks">Mouse hover to read remarks</td>
+                            <td class="menu-action activity_remarks">
+                                <a class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown " >
+                                    <i class="fa fa-comments-o"></i>
+                                </a>
+                            </td>
                         </tr>
                       </tbody>
                     </table>
@@ -410,9 +418,9 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
         if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !==""){
-            $('.project-time-row:last-child td.remarks').attr("title",time_obj.tsData[time_key]['remarks']);}
+            $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
         else
-            {  $('.project-time-row:last-child td.remarks').html("");}
+            {  $('.project-time-row:last-child td.remarks').hide();}
     }
   } // ./ ts data iteration
 
@@ -442,9 +450,9 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
         $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
          if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== "" )
-            $('.activity-time-row:last-child td.activity_remarks').attr("title",time_obj.atData[time_key]['remarks']);
+            $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
          else
-           $('.activity-time-row:last-child td.activity_remarks').html("");
+           $('.activity-time-row:last-child td.activity_remarks').hide();
 
     }else{
         $('.activity-time-row').append(activity_time_row);
@@ -456,8 +464,8 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.activity-time-row:last-child td.activity_friday').html('nil');
         $('.activity-time-row:last-child td.activity_saturday').html('nil');
         $('.activity-time-row:last-child td.activity_sunday').html('nil');
-        $('.activity-time-row:last-child td.activity_remarks').attr("title", '');
-        $('.activity-time-row:last-child td.activity_remarks').html('nil');
+        $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
+        $('.activity-time-row:last-child td.activity_remarks a').html('nil');
     }
 
   } // ./ at data iteration

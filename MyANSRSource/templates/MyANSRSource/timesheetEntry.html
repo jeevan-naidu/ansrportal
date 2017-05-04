@@ -598,14 +598,17 @@
         };
 
         $(function() {
+			$( "#saveTS" ).click(function(e) {
+			  // debugger;
+			  is_empty = 0;
+			  $(".required_fields").each(function() {
+				  if ($(this).val() === ""){
+					  is_empty++;
+				  }
+			  });
 
-            $( "#saveTS" ).click(function(e) {
-              // debugger;
-              var a = document.getElementById("#id_form-0-project");
-              if (a != null){
-                  $( "#saveTS" ).hide();
-              }
-            });
+			  if(is_empty == 0) $( "#saveTS" ).hide();
+			});
 
         });
 
