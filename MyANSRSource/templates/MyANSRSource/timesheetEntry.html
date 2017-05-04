@@ -539,16 +539,15 @@
     $(window).load(function(){
       // var x = document.getElementById("#id_form-0-tsId").type()
       // debugger;
-      var x = document.getElementsByClassName('ansr-disabled');
+      <!--var x = document.getElementsByClassName('ansr-disabled');-->
 
+      <!--if(x.length > 0){-->
+        <!--// document.getElementById("#timesheet-billable-add-btn").style.display = 'none';-->
+        <!--// document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';-->
+        <!--$("#timesheet-billable-add-btn").attr("disabled", true);-->
+        <!--$("#timesheet-non-billable-add-btn").attr("disabled", true);-->
 
-      if(x.length > 0){
-        // document.getElementById("#timesheet-billable-add-btn").style.display = 'none';
-        // document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';
-        $("#timesheet-billable-add-btn").attr("disabled", true);
-        $("#timesheet-non-billable-add-btn").attr("disabled", true);;
-
-      }
+      <!--}-->
     });
     function check_project() {
         if($('#id_form-0-project').children('option').length == 1) {
@@ -598,6 +597,31 @@
         };
 
         $(function() {
+        	  var non_billable = $('.non-billable-select-project').length;
+			  var billable = $('.billable-select-project').length;
+			  var non_billable_disabled_count = 0;
+			  var billable_disabled_count = 0;
+
+			  $('.non-billable-select-project').each(function(i, obj) {
+                  if ($(obj).parent().hasClass('ansr-disabled') ) {
+				      non_billable_disabled_count++;
+				  }
+			  });
+
+			  $('.billable-select-project').each(function(i, obj) {
+				if ($(obj).parent().hasClass('ansr-disabled')) {
+					billable_disabled_count++;
+				}
+			  });
+
+			  if(non_billable_disabled_count == non_billable ){
+              	   $("#timesheet-non-billable-add-btn").attr("disabled", true);
+              }
+              if( billable_disabled_count == non_billable ) {
+        		   $("#timesheet-billable-add-btn").attr("disabled", true);
+        	  }
+
+
 			$( "#saveTS" ).click(function(e) {
 			  // debugger;
 			  is_empty = 0;
