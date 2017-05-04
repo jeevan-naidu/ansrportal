@@ -872,7 +872,7 @@ app.getSum = function($elements, $outputElement) {
             $formFields.each(function(index) {
                 $element = $(this);
                 // following added to removed disabled attribute for hours input field while cloning
-                if($element.hasClass('b-hours')) $element.removeAttr("disabled")
+                if($element.hasClass('b-hours')) $element.removeAttr("disabled readonly")
 
 //              following patch is added for remark
                 tmp = this.id.split('-');
