@@ -1640,14 +1640,16 @@ class ApproveTimesheetView(TemplateView):
                         TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                       teamMember_id=user_id, project__in=request.session['dm_projects']
                                                       ).update(managerFeedback=feedback_dict[user_id], hold=False)
+                        projects = Project.objects.filter(pk__in=request.session['dm_projects'])
                     else:
                         TimeSheetEntry.objects.filter(Q(project__in=request.session['dm_projects']) |
                                                       Q(project__isnull=True), wkstart=start_date, wkend=end_date,
                                                       teamMember_id=user_id,
                                                       ).update(managerFeedback=feedback_dict[user_id], hold=False)
-
+                        projects = Project.objects.filter(Q(project__in=request.session['dm_projects']) |
+                                                      Q(project__isnull=True))
                     user_obj = User.objects.get(id=user_id)
-                    projects = Project.objects.filter(pk__in=request.session['dm_projects'])
+
                     TimeSheetRejectionNotification.delay(request.user,
                                                          str(user_obj.email), start_date,
                                                          end_date, [str(s) for s in projects], feedback_dict[user_id])
