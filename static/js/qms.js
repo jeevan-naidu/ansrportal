@@ -1,4 +1,4 @@
-
+/* following for choose tabs and dashboard page */
 // Get the html for .form-group
 var domObj = $('.qms-allocators').html();
 
@@ -307,9 +307,14 @@ console.log("theObj"+JSON.stringify(theObj));
 
 function mark_as_complete(element=null) {
         is_lead = false;
-        if (element == null){
-            text = "You are going to mark this project as completed!"
-            data = {"is_lead":true};
+        if ($("#lead_tab_complete").attr('data-diffvalue') ){
+            if($(element).data("diffvalue") == 0 ) text = "You are going to mark this project as completed!";
+            if ($(element).data("diffvalue") !=1 && $(element).data("diffvalue") != 0) {s = " chapters are "} else {s= " chapter is "}
+            text = $(element).data("diffvalue") + " " +s + " not created yet, do you still want to mark it as completed ?"
+            title = "You are going to mark this project as completed!"
+            project_id = $(element).data('project')
+            lead_review = $('#review_feedback_'+project_id).val()
+            data = {"is_lead":true ,"project_id":$(element).data('project'),"feedback":lead_review };
             is_lead = true;
             success_msg = "Project is marked as completed!"
         }
@@ -317,9 +322,10 @@ function mark_as_complete(element=null) {
             text = "You are going to mark this review group as completed!";
             data = {"tab_id": element.id ,"is_lead":is_lead };
             success_msg = "Review is marked as completed!"
+            title = "Are you sure?"
         }
         swal({
-          title: "Are you sure?",
+          title: title,
           text: text,
           type: "warning",
           showCancelButton: true,
@@ -331,6 +337,7 @@ function mark_as_complete(element=null) {
         },
         function(isConfirm){
             if (isConfirm) {
+            $('#reviewComplete').show();
                 $.ajax({
                     url: '/qms/mark_as_completed/',
                     type: 'GET',
@@ -338,57 +345,65 @@ function mark_as_complete(element=null) {
                     data: data,
                     success: function (data) {
                     console.log(JSON.stringify(data));
-                        if (data['result'] == true) {
-                            var num_items = $('.order-number').length;
-                            var disabled_count = 0;
-                            sweetAlert("Heya...", success_msg, "success");
-                            if(!is_lead){
-                                $(element).hide();
-                                $("#user_"+element.id).prop('disabled',true);
-                                $("#order_"+element.id).prop('disabled',true);
-                                count = 0;
+                        if(!is_lead ) {
+                            if (data['result'] == true) {
+                                var num_items = $('.order-number').length;
+                                var disabled_count = 0;
+                                sweetAlert("Heya...", success_msg, "success");
+                                if(!is_lead){
+                                    $(element).hide();
+                                    $("#user_"+element.id).prop('disabled',true);
+                                    $("#order_"+element.id).prop('disabled',true);
+                                    count = 0;
 
-                                $(".order-number").each(function(index) {
-                                console.log(this.id+"-"+element.id);
-                                id = this.id.split('_')
-                                 if (id[1] == element.id) {
-                                    console.log("if");
-                                    count++;
-                                    if (index === num_items - 1 && data['can_show_button']) {
-                                        console.log("last");
-                                         $('.qms-allocators2').show();
-                                    }
-                                    return true;
-                                 }
-                                 if (count ==1 ) {
-                                    console.log("im in");
+                                    $(".order-number").each(function(index) {
+                                    console.log(this.id+"-"+element.id);
                                     id = this.id.split('_')
-                                    $('#'+id[1]).show();
-                                    $(".order-number").each(function() {
-                                        if($(this).is(':disabled')) {
-                                            disabled_count++;
+                                     if (id[1] == element.id) {
+                                        console.log("if");
+                                        count++;
+                                        if (index === num_items - 1 && data['can_show_button']) {
+                                            console.log("last");
+    //                                         $('.qms-allocators2').show();
                                         }
+                                        return true;
+                                     }
+                                     if (count ==1 ) {
+                                        console.log("im in");
+                                        id = this.id.split('_')
+                                        $('#'+id[1]).show();
+                                        $(".order-number").each(function() {
+                                            if($(this).is(':disabled')) {
+                                                disabled_count++;
+                                            }
+                                        });
+                                        console.log("disabled_count"+disabled_count+"num_items"+num_items);
+                                        if(disabled_count!=0 && disabled_count == num_items && data['can_show_button']){
+    //                                        $('.qms-allocators2').show();
+                                        }
+                                        return false;
+
+                                     }
                                     });
-                                    console.log("disabled_count"+disabled_count+"num_items"+num_items);
-                                    if(disabled_count!=0 && disabled_count == num_items && data['can_show_button']){
-                                        $('.qms-allocators2').show();
-                                    }
-                                    return false;
 
-                                 }
-                                });
+                                }
+                                else{
+                                    $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"True");
+                                    $('.qms-allocators2').hide();
 
-                            }
-                            else{
-                                $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"True");
-                                $('.qms-allocators2').hide();
+                                }
 
                             }
+                            else {
+                                swal("Oops", "Please contact admin unable to complete the request)", "error");
+                            }
+                        } else {
+                            if (data['result'] == true) {
+                                sweetAlert("Heya...", success_msg, "success");
+                                $(element).removeClass("btn-danger").addClass("btn-white").prop("disabled",true);
+                            }
 
-                        }
-                        else {
-                            swal("Oops", "Please contact admin unable to complete the request)", "error");
-                        }
+                            }
                     },
 
                 });
@@ -439,8 +454,9 @@ $('#filter_form').submit(function() {
 
                 }
                 <!--$("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"False");-->
-                console.log(Object.keys(data['can_edit']));
-                console.log(Object.values(data['can_edit']));
+//                console.log("can edit keys"+Object.keys(data['can_edit']));
+//                console.log("can edit values"+Object.values(data['can_edit']));
+//                console.log("tab_order values"+Object.values(data['tab_order']));
 
                     populateForm(data);
                     orderTabs(data);
@@ -450,12 +466,17 @@ $('#filter_form').submit(function() {
                     // globalObj to capture the order of tabs
 
                     globalObj = data;
-                    if ($.inArray(false, Object.values(data['can_edit'])) != -1)
+                    can_edit = Object.values(data['can_edit'])
+                    if (can_edit.length != 0 && $.inArray(false, can_edit) != -1)
                     {
                       // found it
                     }
                     else{
-                        $('#1').show();
+                        tab_order_obj = Object.values(data['tab_order']);
+//                        console.log("len"+tab_order_obj.length);
+                        if ( tab_order_obj.length != 0) {
+                            $('#1').show();
+                        } else $('#1').hide();
                     }
                 },
 
@@ -566,4 +587,8 @@ $(':input[name$=project]').on('change', function() {
 });
 
 
+
+
+
+/* functions ends for choose tabs and dashboard page */
 
