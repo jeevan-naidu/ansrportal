@@ -650,7 +650,7 @@ class ProjectFlagForm(forms.ModelForm):
             'data-placeholder': 'Type Practice Name ...',
             'class': 'practicevalue',
         }, ),
-        required=True, )
+        required=False, )
 
     projectasset = forms.ModelChoiceField(
         queryset=ProjectAsset.objects.all(),
@@ -659,16 +659,8 @@ class ProjectFlagForm(forms.ModelForm):
             'data-placeholder': 'Type Asset Name ...',
             'class': 'projectasset',
         }, ),
-        required=True, )
-
-    subpractice = forms.ModelChoiceField(
-        queryset=SubPractice.objects.all(),
-        label="Select Sub Practice",
-        widget=autocomplete.ModelSelect2(url='AutocompletesubPracticeName', attrs={
-            'data-placeholder': 'Type sub Practice Name ...',
-            'class': 'subpracticevalue',
-        }, ),
         required=False, )
+
 
     sopname = forms.ModelChoiceField(
         queryset=qualitysop.objects.all(),
@@ -676,7 +668,7 @@ class ProjectFlagForm(forms.ModelForm):
         widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
             'data-placeholder': 'Type  QualitySOP Name ...',
         }, ),
-        required=True, )
+        required=False, )
 
     ProjectScope = forms.ModelChoiceField(
         queryset=ProjectScope.objects.all(),
@@ -684,7 +676,7 @@ class ProjectFlagForm(forms.ModelForm):
         widget=autocomplete.ModelSelect2(url='Autocompleteprojectscope', attrs={
             'data-placeholder': 'Type  Project Scope Name ...',
         }, ),
-        required=True, )
+        required=False, )
 
     outsource_contract_value = forms.DecimalField(initial=0.0, required=False)
 
@@ -696,7 +688,6 @@ class ProjectFlagForm(forms.ModelForm):
             'po',
             'salesForceNumber',
             'practicename',
-            'subpractice',
             'sopname',
             'SopLink',
             'projectasset',
