@@ -1,10 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib.auth.models import User
-from employee.models import Employee
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
+
 
 SKILL_LEVEL=(
     ('L1', 'Level 1'), ('L2', 'Level 2'), ('L3', 'Level 3')

@@ -16,7 +16,9 @@ from CustomApp.constants import PROCESS_STATUS
 class Laptops(models.Model):
     laptop_id = CharField(max_length=50)
     brand = CharField(max_length=20)
+    service_tag = CharField(max_length=50)
     avaliable = BooleanField(default=True)
+    location = CharField(max_length=50)
 
     def __unicode__(self):
         avalibility = (lambda avaliable : "Avaliable" if avaliable else "UnAvaliable")(self.avaliable)
