@@ -305,10 +305,13 @@ def get_template_process_review(request):
         except Exception as e:
             logger.error(" {0} ".format(str(e)))
             print str(e)
+    project_obj = Project.objects.get(id=int(project))
+    chapter = Chapter.objects.filter(book=project_obj.book).exclude(id=chapter).values_list('id', 'name')
+    chapter = dict((str(x), str(y)) for x, y in chapter)
 
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit,
-                    "current_tab": current_tab, "show_lead_complete": show_lead_complete}
+                    "current_tab": current_tab, "show_lead_complete": show_lead_complete, "chapters": chapter}
     # print context_data
     return HttpResponse(
         json.dumps(context_data),

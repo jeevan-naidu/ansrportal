@@ -1,7 +1,6 @@
 /* following for choose tabs and dashboard page */
 // Get the html for .form-group
 var domObj = $('.qms-allocators').html();
-
 var globalObj;
 
 // Clear the existing html in .form-group
@@ -298,6 +297,8 @@ console.log("theObj"+JSON.stringify(theObj));
         }
     }
       if(loop_counter == disable_count && disable_count !=0) {
+        globally_locked = true;
+        console.log("im here");
         $('#qms-submit').prop("disabled",true);
       }
 }
@@ -387,7 +388,8 @@ function mark_as_complete(element=null) {
                                     });
 
                                 }
-                                else{
+                                else{globally_locked = true;
+        console.log("im here");
                                     $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"True");
                                     $('.qms-allocators2').hide();
 
@@ -453,7 +455,7 @@ $('#filter_form').submit(function() {
                     return false;
 
                 }
-                <!--$("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"False");-->
+                $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"False");
 //                console.log("can edit keys"+Object.keys(data['can_edit']));
 //                console.log("can edit values"+Object.values(data['can_edit']));
 //                console.log("tab_order values"+Object.values(data['tab_order']));
@@ -556,8 +558,10 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             $('.qms-allocators .form-group:last-child').find('select').prop('disabled',false);
             $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
             $('#select-field').html('The end');
+            globally_locked = true;
+        console.log("im here");
             $('#qms-add-field').prop('disabled', true);
-            $('#qms-submit').prop('disabled', false);
+//            $('#qms-submit').prop('disabled', false);
 
         }
     })
