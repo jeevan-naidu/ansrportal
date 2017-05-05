@@ -40,7 +40,7 @@
                     {% endfor %}
                 </tr>
                 {% for field in form %}
-                    <tr>
+                    <tr >
                         <td class="col-lg-6">
                                 {% if field.label != 'BasicInfoId' %}
                                     {% if field.label != 'Remark' %}
@@ -54,7 +54,7 @@
                         <td class="col-lg-7">
                             {% if field.label == 'Revised Effort' %}
 
-                                <span class="col-lg-10">{{ field }}</span>
+                                <span class="col-lg-10 ">{{ field }}</span>
 
                                 <span class="col-lg-2"><b><span class="label label-default form-control">PH(s)</span></b></span>
                             {% else %}

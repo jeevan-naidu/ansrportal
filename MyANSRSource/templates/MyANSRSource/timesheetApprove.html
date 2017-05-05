@@ -261,6 +261,7 @@ Approve Timesheet
                           <th>Fri</th>
                           <th>Sat</th>
                           <th>Sun</th>
+                            <th>Remarks</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -276,6 +277,11 @@ Approve Timesheet
                           <td class="fridayH">0</td>
                           <td class="saturdayH">0</td>
                           <td class="sundayH">0</td>
+                           <td class="menu-action remarks">
+                                <a  class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown " >
+                                    <i class="fa fa-comments-o"></i>
+                                </a>
+                            </td>
                         </tr>
 
 
@@ -294,6 +300,7 @@ Approve Timesheet
                           <th><span class="invisible">Fri</span></th>
                           <th><span class="invisible">Sat</span></th>
                           <th><span class="invisible">Sun</span></th>
+                            <th><span class="invisible">Remarks</span></th>
                         </tr>
                       </thead>
 
@@ -308,6 +315,11 @@ Approve Timesheet
                           <td class="activity_friday">0</td>
                           <td class="activity_saturday">0</td>
                           <td class="activity_sunday">0</td>
+                            <td class="menu-action activity_remarks">
+                                <a class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown " >
+                                    <i class="fa fa-comments-o"></i>
+                                </a>
+                            </td>
                         </tr>
                       </tbody>
                     </table>
@@ -405,7 +417,11 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
-
+        console.log("rem"+time_obj.tsData[time_key]['remarks'])
+        if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !=="" && time_obj.tsData[time_key]['remarks'] !=null){
+            $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
+        else
+            {  $('.project-time-row:last-child td.remarks').hide();}
     }
   } // ./ ts data iteration
 
@@ -434,6 +450,10 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
         $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
         $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
+         if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== ""  && time_obj.atData[time_key]['remarks'] !=null)
+            $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
+         else
+           $('.activity-time-row:last-child td.activity_remarks').hide();
 
     }else{
         $('.activity-time-row').append(activity_time_row);
@@ -445,6 +465,8 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.activity-time-row:last-child td.activity_friday').html('nil');
         $('.activity-time-row:last-child td.activity_saturday').html('nil');
         $('.activity-time-row:last-child td.activity_sunday').html('nil');
+        $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
+        $('.activity-time-row:last-child td.activity_remarks a').html('nil');
     }
 
   } // ./ at data iteration
@@ -496,7 +518,14 @@ var employeeTime = function(){
 $(document).ready(function() {
                 "use strict";
 
-            $('#timesheet-approve-table').dataTable();
+            <!--$('#timesheet-approve-table').dataTable();-->
+             $('#timesheet-approve-table').dataTable( {
+    "order": [],
+    "columnDefs": [ {
+      "targets"  : 'no-sort',
+      "orderable": false,
+    }]
+});
             $("[data-toggle='tooltip']").tooltip();
 
             /* Toggle checkbox */
@@ -558,7 +587,10 @@ $(document).ready(function() {
                           dataType :'json',
                           data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
                           success: function (data) {
-                              swal("Ok", "Reminder Mail is sent Successfully!", "success")
+                                if (data['status'] == true )
+                                    swal("Ok", "Reminder Mail is sent Successfully!", "success");
+                                else
+                                sweetAlert("Oops...", "Something went wrong!", "error");
                           },
 
                         });

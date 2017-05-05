@@ -421,6 +421,13 @@
                                                     </a>
                                                 </li>
                                                 {% endif %}
+                                               {% if user|create_project or user|manage_project %}
+                                                <li>
+                                                    <a href="{% url 'new_created_project_approval' %}">
+                                                        <span class="menu-text">Approve Project</span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
 
                                                 <li>
                                                     <a href="/myansrsource/project/modify">
@@ -813,6 +820,11 @@
                                                 <li>
                                                     <a href="/skillset/">
                                                         <span class="menu-text">Skillset</span>
+                                                    </a>
+                                                </li>
+                                            <li>
+                                                    <a href="/timein/">
+                                                        <span class="menu-text">Time in Office</span>
                                                     </a>
                                                 </li>
 
