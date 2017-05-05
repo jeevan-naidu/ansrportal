@@ -65,6 +65,7 @@ def SkillSet(request):
             skills_all = []
             mgrid = Employee.objects.get(user_id=request.user.id)
             reportee_business_unit = BusinessUnit.objects.filter(new_bu_head=mgrid.user_id)
+            print reportee_business_unit
             if not reportee_business_unit:
                 reportee = Employee.objects.filter(manager_id=mgrid, user__is_active=True)
                 lists = []
@@ -107,7 +108,14 @@ def SkillSet(request):
                                         "skills": ""}
 
             else:
-                reportee = Employee.objects.filter(business_unit=reportee_business_unit, user__is_active=True)
+                mgrid = Employee.objects.get(user_id=request.user.id)
+                bu_reportee = Employee.objects.filter(business_unit=reportee_business_unit, user__is_active=True)
+                try:
+                    mg_reportee = Employee.objects.filter(manager_id=mgrid, user__is_active=True)
+                    reportee = bu_reportee | mg_reportee
+                except Employee.DoesNotExist:
+                    print mgrid
+                    reportee = bu_reportee
                 lists = []
                 user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj":"" , "skills": ""}
                 for employee in reportee:
