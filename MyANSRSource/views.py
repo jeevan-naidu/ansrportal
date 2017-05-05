@@ -1680,7 +1680,7 @@ class ApproveTimesheetView(TemplateView):
                             p = []
 
                     fail = 0
-                    if not p:
+                    if p:
                         # print "p", p
                         TimeSheetRejectionNotification.delay(request.user,
                                                              str(user_obj.email), start_date,
