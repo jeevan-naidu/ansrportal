@@ -87,7 +87,8 @@ def weeklyavg(user, week, month):
         avg = 0
     else:
         avg = sum(total_avg)/len(total_avg)
-    return avg
+
+    return round(avg, 2)
 
 def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days)):
@@ -106,7 +107,7 @@ def timecheck(user, date):
         minutes = (sec // 60) - (hours * 60)
         att_day = ('{0}.{1}'.format(hours,minutes))
         att_day = float(att_day)
-    return att_day
+    return round(att_day, 2)
 
 def weekwisedata(request):
     context = {}

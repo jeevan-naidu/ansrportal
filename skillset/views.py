@@ -111,6 +111,8 @@ def SkillSet(request):
                 lists = []
                 user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj":"" , "skills": ""}
                 for employee in reportee:
+                    designation_all.append(employee.designation.name)
+                    designation_all = sorted(set(designation_all))
                     try:
                         skillset = User_Skills.objects.filter(emp_mid=employee.employee_assigned_id).values('skills_name','skills_type')
                         skills_list = []
