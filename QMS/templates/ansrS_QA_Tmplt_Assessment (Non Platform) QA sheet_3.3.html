@@ -22,10 +22,10 @@
             <div class="panel-heading vd_bg-grey">
 
                 <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet
-                </h3>
+                </h3><h6>
                 {% for dict in formset.errors %}
     {% for error in dict.values %}
-        {{ error }}
+        {{ error.as_text }}
     {% endfor %}
 {% endfor %}
                     {% if messages %}
@@ -38,10 +38,10 @@
                 {% endif %}
             {% endfor %}
         {% endif %}
-
+            </h6>
             </div>
             <div class="panel-body table-responsive">
-            <form class="form-horizontal " id="filter_form" role="form" method="post" >
+            <form class="form-horizontal " id="filter_form" role="form" method="post" action="{% url 'qms' %}">
               {% csrf_token %}
 
                 <div class="row">
@@ -93,7 +93,7 @@
                         <tr>
                             <td>Quality Score</td>
                             <td></td>
-                            <td>{{total_count}}</td>
+                            <td>{{total_count}} ( excluding S0 )</td>
                             <td>{{total_score}}</td>
                             <td>{{total_defect_density}} %</td>
                         </tr>
@@ -200,6 +200,7 @@
 
                              <tbody> {%if review_formset %}
                                 {{review_formset.management_form}}
+
                                     {% for form_obj in review_formset%}
                                     <tr class="gradeX" id="tr_{{forloop.counter}}" class="tr_clone">
                                         <td id="sr-{{forloop.counter}}-td">
@@ -211,7 +212,10 @@
 
                                         <td class="" id="defect-{{forloop.counter}}-td">
                                             {{form_obj.defect}}
+
                                         </td>
+
+
                                         <td id="severity_type-{{forloop.counter}}-td">
                                             {{form_obj.severity_type}}
                                             <div></div>
@@ -270,7 +274,7 @@
 
                                             </div>
                                         </td>
-                                        <td class="menu-action" style="min-width:90px;">
+                                        <td class="menu-action ignore" style="min-width:90px;" >
                                             <div class="view_details" style="display:none">
                                                 <div class="modal-dialog modal-lg">
 
@@ -397,7 +401,7 @@
                                                 </div>
                                             </div>
                                             <a data-original-title="view" data-placement="top"
-                                               class="btn menu-icon vd_green view_button" data-toggle="modal"
+                                               class="btn menu-icon vd_green view_button " data-toggle="modal"
                                                data-target="#viewModal">
                                                 <i class="fa fa-eye"></i>
                                             </a>
@@ -410,28 +414,86 @@
 
 
                          </table>
+
+                  <div class="modal fade" id="add_rows" tabindex="-1" role="dialog"  >
+                    <div class="modal-dialog1">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="addrows">Add Rows</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <div class="col-sm-7 controls">
+                                  <input type="text" name="rows" id="rows" value="">
+
+                              </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_rows">Cancel</button>
+                          <button type="button" class="btn vd_btn vd_bg-green" id="add_new_rows">add</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                          <div class="modal fade" id="div_copy_description" tabindex="-1" role="dialog" >
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="h_copy_description">Add Description</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <div class="col-sm-7 controls">
+
+                                    <textarea  name="txt_copy_description" id="txt_copy_description" rows="3" cols="10"></textarea>
+                              </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_description">Cancel</button>
+                          <button type="button" class="btn vd_btn vd_bg-green" id="add_description">add</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
                          {%if review_formset %} {% is_project_manager project request.user as result %}
                          <div class="panel-footer clearfix">
                               {% if result  and  need_button %}
 
                                      {% if not reviewer_feedback_status and  author_feedback_status %}
-                                 <!--<input type="submit" id="form-submit" value="submit"-->
-                                        <!--class="btn btn-info btn-sm pull-right"/>-->
+                                 <input type="submit" id="form-submit" value="save"
+                                        class="btn btn-info btn-sm pull-right"/>
                                       <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
                                             <!--<input type="button" class="btn btn-info btn-sm pull-right" id="add_button"-->
                                                 <!--value="Add Item"  />-->
                                      {% endif %}
 
                                       {% if not reviewer_feedback_status and not author_feedback_status %}
-                                 <input type="submit" id="form-submit" value="submit"
+                                 <input type="submit" id="form-submit" value="save"
                                         class="btn btn-info btn-sm pull-right"/>
                                         <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
                                         <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
                                             value="Add Item"  />
+                             <input type="button" class="btn btn-info btn-sm pull-right" id="add_buttons"
+                                            value="Add Items"  data-toggle="modal"
+                                               data-target="#add_rows" />
                                       {% endif %}
 
                                      {% if reviewer_feedback_status and not author_feedback_status %}
-                                 <input type="submit" id="form-submit" value="submit"
+                                 <input type="submit" id="form-submit" value="save"
                                         class="btn btn-info btn-sm pull-right"/>
                                         <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
                                         <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
@@ -441,7 +503,7 @@
                              {% else %}
                               {% if request.session.author_logged_in %}
                                 {% if reviewer_feedback_status and not author_feedback_status %}
-                                                          <input type="submit" id="form-submit" value="submit"
+                                                          <input type="submit" id="form-submit" value="save"
                                     class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
                                     <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
@@ -453,16 +515,16 @@
                              {% if request.session.reviewer_logged_in %}
 
                                  {% if not reviewer_feedback_status and  author_feedback_status %}
+                               <input type="submit" id="form-submit" value="save"
+                                    class="btn btn-info btn-sm pull-right"/>
                                   <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
 
                                  {% endif %}
 
                                   {% if not reviewer_feedback_status and not author_feedback_status %}
-                                                          <input type="submit" id="form-submit" value="submit"
+                                                          <input type="submit" id="form-submit" value="save"
                                     class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
-                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
-                                        value="Add Item"  />
                                   {% endif %}
 
 
@@ -578,6 +640,22 @@
 <script type="text/javascript">
 
         $(function() {
+        $(".modal").on('shown.bs.modal', function () {
+    $(this).find("textarea:visible:first").focus();
+});
+        $("[id$=defect]").on('focus', function() {
+           $('#txt_copy_description').val($(this).val());
+           $('#txt_copy_description').focus();
+           $('#txt_copy_description').data('defect',this.id);
+           $('#div_copy_description').modal('show');
+        });
+
+        $("#add_description").on('click', function() {
+           var defect_id = $('#txt_copy_description').data('defect');
+           $('#'+defect_id).val($('#txt_copy_description').val())
+           $('#div_copy_description').modal('hide');
+        });
+
 
         $('#review_report_form').submit(function() {
            if( $("#questions").val() <=0) {sweetAlert("Oops...", "Question count cannot be zero!", "error"); return false; }
@@ -618,12 +696,26 @@
             $("#viewModal").html(view_details);
             $('.modal-body').addClass('clearfix');
             });
+            $('#add_new_rows').on('click', function() {
+
+                $('#add_rows').modal('hide');
+                var row = $('#rows').val();
+                if(row % 1===0){
+                    for (i=0;i<row;i++) {
+                        $("#add_button").trigger('click');
+                    }
+                }
+                else sweetAlert("Oops...", "Please enter whole number!", "error");
+
+            });
             $("#add_button").on('click', function() {
                 var $tr    = $('#review_report_table tr:last')
                 var $clone = $tr.clone( true, true );
                 $clone.find('text , input , textarea').val('');
+                $clone.find('td[id^="fixed_by"]').html('');
                 var increment_id = 0;
                 $tr.after($clone);
+                $clone.find("td.ignore").children().removeAttr('data-target');
                 $clone.find("span.screen_shot").children().remove();
                  $clone.find("td,input, select, textarea").each(function(index) {
                  <!--console.log("index "+index);-->
@@ -902,7 +994,7 @@ $('.defect_classification').change(function(e){
 #review_report_table.table>thead>tr>th, #review_report_table.table>tbody>tr>th, #review_report_table.table>tfoot>tr>th, #review_report_table.table>thead>tr>td, #review_report_table.table>tbody>tr>td, #review_report_table.table>tfoot>tr>td{padding: 4px 15px }
 #review_report_table{margin-bottom: 0px;}
 #review_report_table.table .menu-action .menu-icon{margin-top: -3px;}
-
+.modal-dialog1{width:300px;margin:30px auto}
 /* Disabling defect type */
 
 td.disabled-defect{position: relative;}

@@ -12,13 +12,13 @@ class Book(models.Model):
     An Book class - to describe book in the system.
     """
     title = models.CharField(max_length=200)
-    ISBN = models.CharField(max_length=200)
+    ISBN = models.CharField(max_length=200, default=1111111111111)
     genre = models.CharField(max_length=200)
     publisher = models.ForeignKey('Publisher')
     author = models.ForeignKey('Author')
     lend_period = models.ForeignKey('LendPeriods')
     page_amount = models.IntegerField()
-    status = models.CharField(max_length=20, choices=BOOK_STATUS, verbose_name='book_status')
+    status = models.CharField(max_length=20, choices=BOOK_STATUS, verbose_name='book_status', default='Available')
 
     def __unicode__(self):
         return 'Book: ' + self.title

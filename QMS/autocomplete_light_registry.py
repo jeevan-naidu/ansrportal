@@ -12,7 +12,6 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
         choices = User.objects.filter(
             Q(is_superuser=False) & Q(is_active=True)
         )
-
         choices = choices.filter(email__icontains=q)
         return choices
 

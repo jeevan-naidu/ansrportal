@@ -135,7 +135,7 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
 
 def review_report_base(template_id, project_obj, chapter_component_obj=None, request_obj=None, tab=None):
     class ReviewReportForm(forms.Form):
-        review_item = forms.CharField(required=True,)
+        review_item = forms.CharField(required=False)
         qms_id = forms.IntegerField(label="id",
                                   required=False,
                                   widget=forms.HiddenInput())
@@ -144,7 +144,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
 
         clear_screen_shot = forms.BooleanField(label='clear screen shot', required=False, initial=False)
 
-        severity_type = forms.ModelChoiceField(widget=forms.Select(), required=True,
+        severity_type = forms.ModelChoiceField(widget=forms.Select(), required=False,
                                                queryset=DefectTypeMaster.objects.all(), )
         # defect_severity_level = forms.CharField()
         # defect_classification = forms.CharField()
@@ -200,9 +200,9 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                     if qa_obj.review_group_status and qa_obj.author_feedback_status:
                         for field in self.fields:
                             self.fields[field].widget.attrs['disabled'] = True
-                    if not qa_obj.review_group_status and qa_obj.author_feedback_status:
-                        for field in self.fields:
-                            self.fields[field].widget.attrs['disabled'] = True
+                    # if not qa_obj.review_group_status and qa_obj.author_feedback_status:
+                    #     for field in self.fields:
+                    #         self.fields[field].widget.attrs['disabled'] = True
                     if request_obj == qa_obj.author:
                         self.fields["is_fixed"].widget.attrs['required'] = True
                 except Exception as e:
