@@ -112,14 +112,11 @@
 <script>
 
         $('#data-tables').dataTable({
-          searching: false,
+          searching: true,
           scrollCollapse: true,
             destroy: true,
         });
 
-        $(window).resize(function(){
-          window.barChart.redraw();
-        });
 
     // Go to summary function
 
