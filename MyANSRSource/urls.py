@@ -1,10 +1,11 @@
 from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
-from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser,AutocompleteMilestonetype
-from Reports import views as milestonreporteviews
-from .views import ApproveTimesheetView
+from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser, \
+    AutocompleteProjectAsset, AutocompletePracticeName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
+    Autocompleteprojectscope, AutocompleteMilestonetype
+from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval
 from django.contrib.auth.decorators import login_required, permission_required
-
+from django.views.decorators.cache import cache_page
 urlpatterns = [
     url(r'^AutocompleteMilestonetype/$',
         AutocompleteMilestonetype.as_view(),
@@ -15,11 +16,45 @@ urlpatterns = [
         name='AutocompleteProjects',
     ),
     url(
+        r'^Autocompleteprojectscope/$',
+        Autocompleteprojectscope.as_view(),
+        name='Autocompleteprojectscope',
+    ),
+    url(r'^practicehead/$',
+        login_required(getheadid),
+        name='HeadId'),
+    url(r'^milestonename/$',
+        login_required(milestonename),
+        name='milestonename',
+        ),
+    url(r'^soplink/$',
+        login_required(soplink),
+        name='SopLink'),
+    url(
+        r'^AutocompleteQualitySOP/$',
+        AutocompleteQualitySOP.as_view(),
+        name='AutocompleteQualitySOP'
+    ),
+    url(
+        r'^AutocompletesubPracticeName/$',
+        AutocompletesubPracticeName.as_view(),
+        name='AutocompletesubPracticeName',
+    ),
+    url(
+        r'^AutocompleteProjectAsset/$',
+        AutocompleteProjectAsset.as_view(),
+        name='AutocompleteProjectAsset'
+    ),
+    url(
+        r'^AutocompletePracticeName/$',
+        AutocompletePracticeName.as_view(),
+        name='AutocompletePracticeName'
+    ),
+    url(
         r'^AutocompleteUser/$',
         AutocompleteUser.as_view(),
         name='AutocompleteUser',
     ),
-
     url(
         r'^AutocompleteBook/$',
         AutocompleteBook.as_view(),
@@ -106,7 +141,12 @@ urlpatterns = [
     url(r'^project/trackmilestone$',
         views.WrappedTrackMilestoneView,
         name=u'trackmilestone'),
-
+    url(r'^project/newcreatedprojectapproval/$',
+        login_required(NewCreatedProjectApproval.as_view()),
+        name='new_created_project_approval'),
+    url(r'^project/projectdetail/$',
+        login_required(views.project_detail),
+        name='projectdetail'),
     url(r'^logout/$', views.Logout, name=u'logout'),
     url(r'^$', views.index, name=u'index'),
 ]

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project
+from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope, Milestone
+from CompanyMaster.models import Practice, SubPractice
 from dal import autocomplete
 from MyANSRSource.models import Milestone
 
@@ -37,9 +38,53 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
         )
         return choices
 
+class AutocompleteProjectAsset(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = ProjectAsset.objects.filter(Asset__icontains=q)
+        return choices
+
+
+class AutocompletePracticeName(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Practice.objects.filter(name__icontains=q)
+        return choices
+
+
+class AutocompletesubPracticeName(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = SubPractice.objects.filter(name__icontains=q)
+        return choices
+
+
+class AutocompleteQualitySOP(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        try:
+            choices = qualitysop.objects.filter(name__icontains=q)
+        except Exception as e:
+            print e
+        return choices
+
+
+class Autocompleteprojectscope(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = ProjectScope.objects.filter(scope__icontains=q)
+        return choices
+
+
 class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
-    # def get_result_label(self, item):
-    #     return '<img src="flags/%s.png"> %s' % (item, item)
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Milestone.objects.filter(name__icontains=q)
+        return choices
+class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')

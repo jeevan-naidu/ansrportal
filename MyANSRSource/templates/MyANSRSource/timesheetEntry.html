@@ -45,12 +45,12 @@
 				<span class="glyphicon glyphicon-plus"></span>
 				Add Project effort Item
 			</a>
-		</span>
+		</span> {% comment %}
 		<span class="pull-right" style="margin-right: 5px">
 			<a value="submit" class="btn btn-primary btn-xs disabled" id="timesheet-feedback-button" data-toggle="modal" data-target="#timesheet-feedback-modal">
 				Feedback
 			</a>
-		</span>
+		</span>{% endcomment %}
 
 	</legend>
 
@@ -155,7 +155,9 @@
 <th>Sat</th>
 <th>Sun</th>
 <th>Total</th>
+<th> Remarks</th>
 <th>Delete</th>
+
 </tr>
 
 
@@ -258,41 +260,43 @@
 							{% endfor %}
 						</a>
 					</td>
-				{% elif data.label == 'Feedback' %}
+				{% elif data.label == 'Remarks' %}
 			       		<td>
-						{% if  data.value == None or data.value == '' %}
-							<button type="button" class="btn btn-default" disabled='disabled'>
-						{% else %}
+
 							{% with apIdT="#myModal-"|add:data.id_for_label %}
-								{% for data in form.visible_fields %}
-									{% if 'hold' in data.label %}
-										{% if data.value %}
-											<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-										{% else %}
-											<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-										{% endif %}
-									{% endif %}
-								{% endfor %}
+                                <button type="button" id="bt_{{ data.id_for_label }}" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 							{% endwith %}
-						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
 						{% with apId="myModal-"|add:data.id_for_label %}
-						<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-									<div class="modal-content">
-										<div class="modal-header">
-											<b>Your Feedback</b>
-										</div>
-										<div class="modal-body">
-											{{ data.value }}
-										</div>
-									</div>
-								</div>
-							</div>
+
+
+                   <div class="modal fade" id="{{ apId }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{apId}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white" >
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel_{{apId}}" >Your Remarks</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+							  <div class="col-sm-4">{{data}}</div>
+                        </div>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
 						{% endwith %}
 					</td>
-				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
+				{% elif 'Questions' not in data.label and 'Hours' not in data.label and 'id' not in data.label and 'Remarks' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
 					{% if 'Project' in data.label or 'Location' in data.label or 'Chapter' in data.label or 'Task' in data.label  or 'Delete' in data.label %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label or 'approved' in data.label %}
@@ -306,7 +310,8 @@
 					{% endif %}
                 		{% endif %}
             		{% endspaceless %}
-			{% endfor %}
+			{% endfor %} {{data.label}}
+
 		</tr>
 		{% if forloop.last %}
 		</tbody>
@@ -387,7 +392,7 @@
 				{% endif %}
 			{% endfor %}
 			{% for data in form %}
-		    		{% if 'id' not in data.label and 'Feedback' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
+		    		{% if 'id' not in data.label and 'Remarks' not in data.label and 'approved' not in data.label and 'hold' not in data.label %}
 					{% if 'Activity' in data.label or 'Mon' in data.label or 'Tue' in data.label or 'Wed' in data.label  or 'Thu' in data.label or 'Fri' in data.label or 'Sat' in data.label or 'Sun' in data.label or 'Total' in data.label or 'Delete' in data.label  %}
 					{% for holdData in form.visible_fields %}
 						{% if 'hold' in holdData.label %}
@@ -399,38 +404,35 @@
 						{% endif %}
 					{% endfor %}
 					{% endif %}
-				{% elif 'Feedback' in data.label %}
+				{% elif 'Remarks' in data.label %}
 			       		<td>
-						{% if  data.value == None or data.value == '' or prevWeekBlock == True %}
-						<button type="button" class="btn btn-default" disabled='disabled'>
-						{% else %}
 						{% with apIdT="#actModal-"|add:data.id_for_label %}
-							{% for data in form.visible_fields %}
-								{% if 'hold' in data.label %}
-									{% if data.value %}
-										<button type="button" class="btn btn-default disabled" data-toggle="modal" data-target={{ apIdT }}>
-									{% else %}
-										<button type="button" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
-									{% endif %}
-								{% endif %}
-							{% endfor %}
+                            <button type="button" id ="bt_{{data.id_for_label }}" class="btn btn-default" data-toggle="modal" data-target={{ apIdT }}>
 						{% endwith %}
-						{% endif %}
 							<span class="glyphicon glyphicon-comment"></span>
 						</button>
 						{% with apId="actModal-"|add:data.id_for_label %}
-							<div class="modal fade" id={{ apId }} tabindex="-1" role="dialog" aria-labelledby="actModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-									<div class="modal-content">
-										<div class="modal-header">
-											<b>Your Feedback</b>
-										</div>
-										<div class="modal-body">
-											{{ feedback }}
-										</div>
-									</div>
-								</div>
-							</div>
+						  <div class="modal fade" id="{{ apId }}" tabindex="-1" role="dialog" aria-labelledby="activity_myModalLabel_{{apId}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white" >
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="activity_myModalLabel_{{apId}}" >Your Remarks</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-sm-4">{{data}}</div>
+                        </div>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 						{% endwith %}
 					</td>
 				{% endif %}
@@ -492,21 +494,24 @@
 
 	</div>
 
-<div style="margin-bottom:15px;" class="clearfix">
-        {% if hold_button %}
+<div style="margin-bottom:15px;" class="clearfix" id="save_submit">
+       {% comment %} {% if hold_button %} im in
             <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space" disabled="disabled">Submit</a>
             <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right" disabled="disabled">Save</button>
         {% else %}
             <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space">Submit</a>
             <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right">Save</button>
-        {% endif %}
+        {% endif %} {% endcomment %}
+
+	 <a id="submitTS" value="submit" name="submit" class="btn btn-success pull-right pull-right-space">Submit</a>
+            <button type="submit" value="save" name="save" id="saveTS" class="btn btn-success pull-right">Save</button>
         </div>
 
 
 <!-- Modal Area -->
 
 
-
+{% comment %}
                   <div class="modal fade" id="timesheet-feedback-modal" tabindex="-1" role="dialog" aria-labelledby="timesheet-feedback" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
@@ -527,23 +532,22 @@
                   </div>
                   <!-- /.modal -->
 
-
+{% endcomment %}
 
 
 	<script>
     $(window).load(function(){
       // var x = document.getElementById("#id_form-0-tsId").type()
       // debugger;
-      var x = document.getElementsByClassName('ansr-disabled');
+      <!--var x = document.getElementsByClassName('ansr-disabled');-->
 
+      <!--if(x.length > 0){-->
+        <!--// document.getElementById("#timesheet-billable-add-btn").style.display = 'none';-->
+        <!--// document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';-->
+        <!--$("#timesheet-billable-add-btn").attr("disabled", true);-->
+        <!--$("#timesheet-non-billable-add-btn").attr("disabled", true);-->
 
-      if(x.length > 0){
-        // document.getElementById("#timesheet-billable-add-btn").style.display = 'none';
-        // document.getElementById("#timesheet-non-billable-add-btn").style.display = 'none';
-        $("#timesheet-billable-add-btn").attr("disabled", true);
-        $("#timesheet-non-billable-add-btn").attr("disabled", true);;
-
-      }
+      <!--}-->
     });
     function check_project() {
         if($('#id_form-0-project').children('option').length == 1) {
@@ -593,14 +597,44 @@
         };
 
         $(function() {
+        	  var non_billable = $('.non-billable-select-project').length;
+			  var billable = $('.billable-select-project').length;
+			  var non_billable_disabled_count = 0;
+			  var billable_disabled_count = 0;
 
-            $( "#saveTS" ).click(function(e) {
-              // debugger;
-              var a = document.getElementById("#id_form-0-project");
-              if (a != null){
-                  $( "#saveTS" ).hide();
+			  $('.non-billable-select-project').each(function(i, obj) {
+			  console.log("non bil"+$(obj).parent().hasClass('ansr-disabled')+obj.id);
+			      if ($(obj).parent().hasClass('ansr-disabled') ) {
+					non_billable_disabled_count++;
+				  }
+			  });
+
+			  $('.billable-select-project').each(function(i, obj) {
+			  console.log("bil"+$(obj).parent().hasClass('ansr-disabled') + obj.id);
+				if ($(obj).parent().hasClass('ansr-disabled')) {
+					billable_disabled_count++;
+				}
+			  });
+			  console.log("non_billable "+non_billable+"   billable   "+billable+"   non_billable_disabled_count   " +non_billable_disabled_count+"   billable_disabled_count   "+billable_disabled_count);
+			  if(non_billable_disabled_count == non_billable ){
+              	   $("#timesheet-non-billable-add-btn").attr("disabled", true);
               }
-            });
+              if( billable_disabled_count == billable ) {
+        		   $("#timesheet-billable-add-btn").attr("disabled", true);
+        	  }
+
+
+			$( "#saveTS" ).click(function(e) {
+			  // debugger;
+			  is_empty = 0;
+			  $(".required_fields").each(function() {
+				  if ($(this).val() === ""){
+					  is_empty++;
+				  }
+			  });
+
+			  if(is_empty == 0) $( "#saveTS" ).hide();
+			});
 
         });
 
@@ -617,7 +651,13 @@
 
         $(document).ready(function(){
         	$('body').addClass("nav-left-hide remove-navbar nav-left-medium");
-        })
+        	total_count = $('select').length;
+        	var disabled_count = 0;
+        	$('select').each(function () {
+        		if( $(this).parent().hasClass('ansr-disabled') ) { disabled_count+=1;}
+			});
+			if (total_count == disabled_count ) { $('#save_submit').hide();}
+        });
 
         $(document).ready(function(){
 /*        	$('#timesheet-feedback-modal').on('hidden.bs.modal', function () {
@@ -628,9 +668,9 @@
 			   }
 			})*/
 
-			if ($('.feedback-span').text().length > 0) {
-				$('#timesheet-feedback-button').removeClass('disabled');
-			}
+			<!--if ($('.feedback-span').text().length > 0) {-->
+				<!--$('#timesheet-feedback-button').removeClass('disabled');-->
+			<!--}-->
         })
 
 
@@ -650,7 +690,7 @@
 .popover.fade.bottom{background-color: rgba(255, 255, 255, 0);border:0px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0);}
 .popover.fade.bottom .arrow{display: none;}
 .popover-content{height:0px;width:0px;padding:0px}
-
+.remarks {margin: 50px; width: 450px; height: 150px;}
 
 </style>
 
