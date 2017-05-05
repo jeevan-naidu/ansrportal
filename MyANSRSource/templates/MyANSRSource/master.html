@@ -817,11 +817,20 @@
                                             {% endif %}
                                         </ul>
                                                     {% endif %}
+
                                                 <li>
                                                     <a href="/skillset/">
                                                         <span class="menu-text">Skillset</span>
                                                     </a>
                                                 </li>
+                                            {% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
+
+                                            <li>
+                                                    <a href="/timein/">
+                                                        <span class="menu-text">Time in Office</span>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
 
                                         <li>
                                                 <a href="javascript:" data-action="click-trigger" class="open">

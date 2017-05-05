@@ -958,7 +958,7 @@ class ChangeProjectWizard(SessionWizardView):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
                                                                                     project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail, active=True)
@@ -1498,7 +1498,7 @@ def send_reminder_mail(request):
 
 def dem_members(request):
     # delivery manager's project list
-    dm_projects = ProjectDetail.objects.filter(deliveryManager=request.user).values_list('project', flat=True)
+    dm_projects = ProjectDetail.objects.filter(Q(deliveryManager=request.user) | Q(pmDelegate=request.user)).values_list('project', flat=True)
     manager = Employee.objects.get(user_id=request.user)
     # to fetch non project activities for their respective team
     manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
@@ -2050,7 +2050,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
         form = super(ManageTeamLeaderWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
                                                                                     project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail)
@@ -2124,7 +2124,7 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
                                                                                     project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail, active=True)
@@ -2471,7 +2471,7 @@ class ManageTeamWizard(SessionWizardView):
         context = super(ManageTeamWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'My Projects':
-            project_detail = ProjectDetail.objects.select_related('project').filter(deliveryManager=self.request.user,
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
                                                                                     project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail, active=True)
@@ -2718,25 +2718,24 @@ def saveProject(request):
             try:
                 pd = ProjectDetail()
                 pd.project_id = pr.id
+                pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate'))
                 pd.projectFinType = request.POST.get('projectFinType')
-                sub_practice = request.POST.get('subpractice')
-                pd.SubPractice_id = SubPractice.objects.get(name=sub_practice).id if sub_practice != 'None' else None
                 practice_name = request.POST.get('practicename')
-                practice_id = Practice.objects.get(name=practice_name).id
+                practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
                 pd.PracticeName_id = practice_id
                 del_mgr = request.POST.get('DeliveryManager')
                 del_mgr_id = User.objects.get(username=del_mgr).id
                 pd.deliveryManager_id = del_mgr_id
                 sop = request.POST.get('sopname')
-                sop_id = qualitysop.objects.get(name=sop).id
+                sop_id = qualitysop.objects.get(name=sop).id if sop != 'None' else None
                 pd.SOP_id = sop_id
                 scope = request.POST.get('ProjectScope')
-                scope_id = ProjectScope.objects.get(scope=scope).id
+                scope_id = ProjectScope.objects.get(scope=scope).id if scope != 'None' else None
                 pd.Scope_id = scope_id
                 asset = request.POST.get('projectasset')
                 pd.Sowdocument = request.session['sow']
                 pd.Estimationdocument = request.session['estimation']
-                asset_id = ProjectAsset.objects.get(Asset=asset).id
+                asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
                 pd.Asset_id = asset_id
                 pd.save()
 
@@ -3004,6 +3003,6 @@ class NewCreatedProjectApproval(View):
 def project_detail(request):
     project_id = request.GET.get('id')
     project = Project.objects.get(id=project_id)
-    project_detail = project.projectdetail_set.select_related('project').get()
-    return render(request, 'project_detail.html', {'project_detail': project_detail})
+    project_details = project.projectdetail_set.select_related('project').get()
+    return render(request, 'project_detail.html', {'project_detail': project_details})
 

@@ -153,6 +153,7 @@ INSTALLED_APPS = [
     'LaptopAvail',
     'QMS',
     'simple_history',
+    'TimeInOffice',
 ]
 
 MIDDLEWARE_CLASSES = [
