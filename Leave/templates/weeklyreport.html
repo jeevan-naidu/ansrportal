@@ -14,7 +14,7 @@
 
                       <div class="btn-group mr-15">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}
-                          <i class="fa fa-caret-down prepend-icon"></i> 
+                          <i class="fa fa-caret-down prepend-icon"></i>
                         </button>
                         <ul class="dropdown-menu" role="menu">
 
@@ -42,7 +42,7 @@
 
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" id = "week-button" data-toggle="dropdown">
                           <span class="week-number">{{ week_in_english }} : </span><span class="week-range">{{ startdate }} - {{ enddate}}</span>
-                          <i class="fa fa-caret-down prepend-icon"></i> 
+                          <i class="fa fa-caret-down prepend-icon"></i>
                         </button>
 
                         <a onclick="monthchange({{ next_week.0 }}, {{ next_week.1 }}, '{{ team }}')" id="lr-next" class="btn btn-default btn-sm">
@@ -129,19 +129,19 @@
                     </table>
 
                   </div><!-- ./panel-body -->
-                
+
                     <div id="lr-legend">
                       <p class="pd-25 inline-block" style="padding-bottom: 10px !important">Available :
-                        <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span> 
+                        <span class="font-semibold legend-available"><span class="lr-invisible">0</span></span>
                       </p>
                       <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Half Day :
-                        <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span> 
+                        <span class="font-semibold legend-halfday"><span class="lr-invisible">0</span></span>
                       </p>
                       <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Leave :
-                        <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span> 
-                      </p>          
+                        <span class="font-semibold legend-absent"><span class="lr-invisible">0</span></span>
+                      </p>
                       <p class="pd-25 inline-block" style="padding-bottom:10px !important; padding-left: 0px !important;">Holidays :
-                        <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span> 
+                        <span class="font-semibold legend-holiday"><span class="lr-invisible">0</span></span>
                       </p>
                       <button id="get-summary" class="btn btn-primary pull-right">Summary</button>
                     </div>
@@ -212,6 +212,6 @@ $(document).ready(function() {
     $('#get-summary').click(function(){
       $('html, body').animate({scrollTop: 9999}, 'slow');
     })
-    
+
 });
     </script>
