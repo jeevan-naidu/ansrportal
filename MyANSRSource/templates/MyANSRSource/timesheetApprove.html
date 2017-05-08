@@ -417,7 +417,6 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
-        console.log("rem"+time_obj.tsData[time_key]['remarks'])
         if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !=="" && time_obj.tsData[time_key]['remarks'] !=null){
             $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
         else
