@@ -54,24 +54,20 @@ $(document).ready(function() {
     "use strict";
 
     $('#data-tables').dataTable({
-        searching: false,
+        searching: true,
         scrollCollapse: true,
         destroy: true,
 
     });
 
      $('#data-tables1').dataTable({
-        searching: false,
+        searching: true,
         scrollCollapse: true,
         destroy: true,
 
     });
 
 
-    $(window).resize(function () {
-        window.barChart.redraw();
-
-    });
 
 
     // Go to summary function
