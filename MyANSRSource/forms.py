@@ -249,7 +249,7 @@ def TimesheetFormset(currentUser,enddate):
                                       required=False)
         hold = forms.BooleanField(label="hold",
                                   required=False)
-        managerFeedback = forms.CharField(label="Feedback", required=False)
+        # managerFeedback = forms.CharField(label="Feedback", required=False)
         remarks = forms.CharField(label="Remarks", required=False, widget=forms.Textarea(attrs={'cols': 100, 'rows': 5}))
 
         def __init__(self, *args, **kwargs):
