@@ -825,43 +825,6 @@ def leaveappliedinweek(user, wkstart, wkend):
     return weekleave
 
 
-def date_range_picker(request):
-    mondays_list = [x for x in get_mondays_list_till_date()]
-    weeks_timesheetEntry_list = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart__in=mondays_list). \
-        values('wkstart', 'wkend', 'hold', 'approved').distinct()
-
-    mondays_list = [str(x.strftime("%b") + "-" + str(x.day)) for x in mondays_list]
-
-    weeks_list = [x for x in weeks_list_till_date(False)]
-
-    ts_week_info_dict = {}
-    for dict_obj in weeks_timesheetEntry_list:
-        for_week = str(str(dict_obj['wkstart'].day) + "-" + dict_obj['wkstart'].strftime("%b")) + " - " + \
-                   str(str(dict_obj['wkend'].day) + "-" + dict_obj['wkend'].strftime("%b"))
-        dict_obj['for_week'] = for_week
-        dict_obj['filled'] = True
-        wkstart = str(dict_obj['wkstart']).split('-')[::-1]
-        dict_obj['wkstart'] = "".join([x for x in wkstart])
-        wkend = str(dict_obj['wkend']).split('-')[::-1]
-        dict_obj['wkend'] = "".join([x for x in wkend])
-
-        ts_week_info_dict[for_week] = dict_obj
-
-    ts_final_list = []
-
-    for tup in weeks_list:
-        for_week = str(tup[0].day) + "-" + str(tup[0].strftime("%b")) + " - " + str(tup[1].day) + \
-                   "-" + str(tup[1].strftime("%b"))
-        if for_week in ts_week_info_dict:
-            ts_final_list.append(ts_week_info_dict[for_week])
-        else:
-            wkstart = str(tup[0]).split('-')[::-1]
-            wkend = str(tup[1]).split('-')[::-1]
-            ts_final_list.append({'for_week': for_week, 'wkstart': "".join([x for x in wkstart]),
-                                  'wkend': "".join([x for x in wkend]), 'filled': False})
-    return ts_final_list, mondays_list, ts_week_info_dict
-
-
 def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
                             include_activity=False):
 
@@ -1257,6 +1220,10 @@ def date_range_picker(request, employee=None):
         dict_obj['for_week'] = for_week
         dict_obj['filled'] = True
         wkstart = str(dict_obj['wkstart']).split('-')[::-1]
+        not_submitted = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart=dict_obj['wkstart'],
+                                                      hold=False).exists()
+        if not_submitted:
+            dict_obj['hold'] = False
         dict_obj['wkstart'] = "".join([x for x in wkstart])
         wkend = str(dict_obj['wkend']).split('-')[::-1]
         dict_obj['wkend'] = "".join([x for x in wkend])
@@ -1629,7 +1596,7 @@ class ApproveTimesheetView(TemplateView):
                                 managerFeedback=feedback_dict[user_id], approved=True)
                     else:
                         emp = Employee.objects.get(manager=request.user)
-                        if Employee.objects.get(manager=emp.employee_assigned_id).exist():
+                        if Employee.objects.get(manager=emp.employee_assigned_id).exists():
                             TimeSheetEntry.objects.filter(project__isnull=True, wkstart=start_date,
                                                           wkend=end_date, teamMember_id=user_id).update(
                                 managerFeedback=feedback_dict[user_id], approved=True)
@@ -1674,7 +1641,7 @@ class ApproveTimesheetView(TemplateView):
                         user_obj = User.objects.get(id=user_id)
                     else:
                         emp = Employee.objects.get(manager=request.user)
-                        if Employee.objects.get(manager=emp.employee_assigned_id).exist():
+                        if Employee.objects.get(manager=emp.employee_assigned_id).exists():
                             TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project__isnull=True,
                                                           teamMember_id=user_id).update(
                                 managerFeedback=feedback_dict[user_id],
@@ -1692,7 +1659,7 @@ class ApproveTimesheetView(TemplateView):
                         fail += 1
                 except Exception as e:
                     fail += 1
-                    print str(e)
+                    # print str(e)
                     logger.error(
                         u'Unable to make changes(reject) for time sheet approval  {0}{1}{2} and the error is  {3}'
                         u' '.format(start_date, end_date, user_id, str(e)))
