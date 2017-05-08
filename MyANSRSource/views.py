@@ -2837,7 +2837,10 @@ def ViewProject(request):
             if len(closedOn):
                 data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
-    data = Project.objects.filter(projectManager=request.user).values(
+
+    data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
+                                                                   | Q(pmDelegate=request.user))
+    data = Project.objects.filter(Q(projectManager=request.user) | Q(id__in=data2)).values(
         'name', 'id', 'closed', 'projectId'
     )
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
