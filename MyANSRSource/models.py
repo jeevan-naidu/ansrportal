@@ -338,7 +338,7 @@ class ProjectDetail(models.Model):
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
                                       blank=True, null=True)
     # ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
-    SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
+    # SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
     deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager')
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,

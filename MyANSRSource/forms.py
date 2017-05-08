@@ -716,6 +716,10 @@ class ProjectFlagForm(forms.ModelForm):
         self.fields['totalValue'].widget.attrs['class'] = \
             "total-value-input form-control"
         self.fields['plannedEffort'].widget.attrs['min'] = 8
+        self.fields['startDate'].widget.attrs['class'] = \
+            "start-date-input form-control"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "end-date-input form-control"
         self.fields['projectasset'].widget.attrs['class']= "total-value-input form-control"
         self.fields['SopLink'].widget.attrs['id'] = "soplink"
         self.fields['SopLink'].widget = forms.HiddenInput()
