@@ -5,7 +5,7 @@ from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,Autoco
     Autocompleteprojectscope, AutocompleteMilestonetype
 from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.decorators.cache import cache_page
+
 urlpatterns = [
     url(r'^AutocompleteMilestonetype/$',
         AutocompleteMilestonetype.as_view(),

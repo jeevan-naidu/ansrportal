@@ -1,5 +1,4 @@
 import logging
-from django.views.decorators.cache import cache_page
 logger = logging.getLogger('MyANSRSource')
 import json
 from decimal import Decimal
@@ -1721,7 +1720,7 @@ def getHours(request, wstart, wend, mem, project, label):
     )
     return sum([eachRec[eachDay] for eachDay in days for eachRec in ts])
 
-# @cache_page(60 * 15)
+
 @login_required
 def Dashboard(request):
     todays_date = datetime.now().date()
