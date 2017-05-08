@@ -599,18 +599,6 @@ def Timesheet(request):
                             holdSet.add(tsObj.project.projectId)
                     elif 'save' in request.POST:
                         saveSet.add(tsObj.project.projectId)
-            for eachTS in atContent:
-                if eachtsList['atId']:
-                    tsObj = TimeSheetEntry.objects.get(pk=eachTS['atId'])
-                    if eachTS['approved']:
-                        approvedSet.add(tsObj.project.activity.name)
-                    elif eachTS['hold']:
-                        if tsObj.approved:
-                            autoApprovedSet.add(tsObj.activity.name)
-                        else:
-                            holdSet.add(tsObj.project.activity.name)
-                    elif 'save' in request.POST:
-                        saveSet.add(tsObj.project.activity.name)
 
             if len(approvedSet) > 0:
                 messages.success(
@@ -729,16 +717,6 @@ def get_time_sheet(request, is_approve=False):
                 sentBackSet.add(tsObj.project.projectId)
     else:
         tsFormList = defaulLocation
-
-    if len(atFormList):
-        for eachTS in atFormList:
-            tsObj = TimeSheetEntry.objects.get(pk=eachTS['atId'])
-            if eachTS['approved']:
-                approvedSet.add(tsObj.activity.name)
-            elif eachTS['hold']:
-                holdSet.add(tsObj.activity.name)
-            else:
-                sentBackSet.add(tsObj.activity.name)
 
     hold_button = False
     if len(approvedSet) > 0:
