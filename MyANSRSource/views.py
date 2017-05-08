@@ -1261,7 +1261,7 @@ def date_range_picker(request, employee=None):
         dict_obj['filled'] = True
         wkstart = str(dict_obj['wkstart']).split('-')[::-1]
         not_submitted = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart=dict_obj['wkstart'],
-                                                      hold=False).exist()
+                                                      hold=False).exists()
         if not_submitted:
             dict_obj['hold'] = False
         dict_obj['wkstart'] = "".join([x for x in wkstart])
@@ -1638,7 +1638,7 @@ class ApproveTimesheetView(TemplateView):
                                 managerFeedback=feedback_dict[user_id], approved=True)
                     else:
                         emp = Employee.objects.get(manager=request.user)
-                        if Employee.objects.get(manager=emp.employee_assigned_id).exist():
+                        if Employee.objects.get(manager=emp.employee_assigned_id).exists():
                             TimeSheetEntry.objects.filter(project__isnull=True, wkstart=start_date,
                                                           wkend=end_date, teamMember_id=user_id).update(
                                 managerFeedback=feedback_dict[user_id], approved=True)
@@ -1683,7 +1683,7 @@ class ApproveTimesheetView(TemplateView):
                         user_obj = User.objects.get(id=user_id)
                     else:
                         emp = Employee.objects.get(manager=request.user)
-                        if Employee.objects.get(manager=emp.employee_assigned_id).exist():
+                        if Employee.objects.get(manager=emp.employee_assigned_id).exists():
                             TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project__isnull=True,
                                                           teamMember_id=user_id).update(
                                 managerFeedback=feedback_dict[user_id],
