@@ -1252,19 +1252,27 @@ def date_range_picker(request, employee=None):
     # print weeks_list
 
     ts_week_info_dict = {}
+
     for dict_obj in weeks_timesheetEntry_list:
         for_week = str(str(dict_obj['wkstart'].day) + "-" + dict_obj['wkstart'].strftime("%b")) + " - " + \
                    str(str(dict_obj['wkend'].day) + "-" + dict_obj['wkend'].strftime("%b"))
+
         dict_obj['for_week'] = for_week
         dict_obj['filled'] = True
         wkstart = str(dict_obj['wkstart']).split('-')[::-1]
+        not_submitted = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart=dict_obj['wkstart'],
+                                                      hold=False).exist()
+        if not_submitted:
+            dict_obj['hold'] = False
         dict_obj['wkstart'] = "".join([x for x in wkstart])
+        # if dict_obj['wkstart'] == "06032017":
+        #     print dict_obj['hold'] , dict_obj['approved']
         wkend = str(dict_obj['wkend']).split('-')[::-1]
         dict_obj['wkend'] = "".join([x for x in wkend])
 
         ts_week_info_dict[for_week] = dict_obj
     ts_final_list = []
-
+    # print ts_week_info_dict
     for tup in weeks_list:
         for_week = str(tup[0].day) + "-" + str(tup[0].strftime("%b")) + " - " + str(tup[1].day) + \
                    "-" + str(tup[1].strftime("%b"))
@@ -1693,7 +1701,7 @@ class ApproveTimesheetView(TemplateView):
                         fail += 1
                 except Exception as e:
                     fail += 1
-                    print str(e)
+                    # print str(e)
                     logger.error(
                         u'Unable to make changes(reject) for time sheet approval  {0}{1}{2} and the error is  {3}'
                         u' '.format(start_date, end_date, user_id, str(e)))
