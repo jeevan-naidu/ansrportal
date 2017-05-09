@@ -694,6 +694,8 @@ class ProjectFlagForm(forms.ModelForm):
             'SopLink',
             'projectasset',
             'ProjectScope',
+            'startDate',
+            'endDate',
 
         )
         widgets = {
