@@ -996,22 +996,27 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
              'managerFeedback', 'approved', 'hold', 'teamMember__first_name', 'teamMember__last_name',
              'teamMember__employee__employee_assigned_id', 'remarks'
              )
+
     if user_id:
-        cwTimesheetData = TimeSheetEntry.objects.filter(
-            Q(
-                wkstart=weekstartDate,
-                wkend=ansrEndDate,
-                teamMember=user, project__in=request.session['dm_projects'],
-                activity__isnull=True
-            )
-        ).values('id', 'project', 'project__name', 'task__name', 'mondayH',
-                 'tuesdayH', 'wednesdayH',
-                 'thursdayH', 'fridayH', 'hold',
-                 'saturdayH', 'sundayH', 'approved',
-                 'totalH', 'managerFeedback', 'project__internal',
-                 'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
-                 'remarks'
-                 )
+        if request.session['dm_projects'] and request.session['dm_projects'] is not None:
+            cwTimesheetData = TimeSheetEntry.objects.filter(
+                Q(
+                    wkstart=weekstartDate,
+                    wkend=ansrEndDate,
+                    teamMember=user, project__in=request.session['dm_projects'],
+                    activity__isnull=True
+                )
+            ).values('id', 'project', 'project__name', 'task__name', 'mondayH',
+                     'tuesdayH', 'wednesdayH',
+                     'thursdayH', 'fridayH', 'hold',
+                     'saturdayH', 'sundayH', 'approved',
+                     'totalH', 'managerFeedback', 'project__internal',
+                     'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
+                     'remarks'
+                     )
+        else:
+            cwTimesheetData = []
+
         if not request.session['include_activity'][int(user_id)]:
             cwActivityData = {}
     else:
