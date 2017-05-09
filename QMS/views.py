@@ -243,9 +243,17 @@ def get_template_process_review(request):
         # for s in members_obj:
         # print "mem", s
         try:
+            chapter_component = ChapterComponent.objects.get(chapter=chapter, component=component)
+            existing_chapters = QASheetHeader.objects.select_related('component').filter(project=project,
+                                                                                         chapter_component=
+                                                                                         chapter_component).\
+                values_list('chapter_id', flat=True)
+
+            print existing_chapters
             qa_obj = qa_sheet_header_obj(project, chapter, author=author)
-            qa_obj = qa_obj.filter(chapter_component=ChapterComponent.objects.get(chapter=chapter, component=component))
-        except:
+            qa_obj = qa_obj.filter(chapter_component=chapter_component)
+        except Exception as e:
+            print str(e)
             qa_obj_count = 0
         # print "qa_obj" ,qa_obj
         qa_obj_count = qa_obj.count()
@@ -306,7 +314,7 @@ def get_template_process_review(request):
             logger.error(" {0} ".format(str(e)))
             print str(e)
     project_obj = Project.objects.get(id=int(project))
-    chapter = Chapter.objects.filter(book=project_obj.book).exclude(id=chapter).values_list('id', 'name')
+    chapter = Chapter.objects.filter(book=project_obj.book).exclude(id__in=chapter).values_list('id', 'name')
     chapter = dict((str(x), str(y)) for x, y in chapter)
 
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
