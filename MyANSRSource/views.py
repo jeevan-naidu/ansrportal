@@ -1644,7 +1644,7 @@ class ApproveTimesheetView(TemplateView):
                                                           ).update(managerFeedback=feedback_dict[user_id], hold=False)
 
                             p.extend(a)
-                        user_obj = User.objects.get(id=user_id)
+
                     else:
                         # get manager obj
                         emp = Employee.objects.get(user=request.user)
@@ -1658,6 +1658,7 @@ class ApproveTimesheetView(TemplateView):
                             p = []
 
                     fail = 0
+                    user_obj = User.objects.get(id=user_id)
                     if p:
                         TimeSheetRejectionNotification.delay(request.user,
                                                              str(user_obj.email), start_date,
