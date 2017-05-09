@@ -1660,7 +1660,7 @@ class ApproveTimesheetView(TemplateView):
                     fail = 0
                     user_obj = User.objects.get(id=user_id)
                     if p:
-                        projects = ",".join(projects)
+                        projects = ",".join(p)
                         TimeSheetRejectionNotification.delay(request.user,
                                                              str(user_obj.email), start_date,
                                                              end_date, projects, feedback_dict[user_id])
