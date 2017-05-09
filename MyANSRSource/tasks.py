@@ -33,7 +33,7 @@ class TimeSheetRejectionNotification(Task):
     def run(self, user,  email_list, from_date, to_date, projects, feedback):
         msg_html = render_to_string('email/time_sheet_rejection.html',
                                     {
-                                     'start_date': from_date, "projects": ",".join(projects),
+                                     'start_date': from_date, "projects": projects,
                                      'end_date': to_date, 'feedback': feedback,
                                     })
         mail_obj = EmailMessage('Time sheet Weekly Rejection Reminder',
