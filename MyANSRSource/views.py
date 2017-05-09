@@ -1694,11 +1694,11 @@ def Dashboard(request):
     currentTime = datetime.now()
     current_hour = currentTime.hour
     if current_hour < 12:
-        greeting = "Good Morning "+request.user.get_full_name()
+        greeting = "Good Morning, "+request.user.get_full_name()
     elif 12 <= current_hour < 16:
-        greeting = "Good Afternoon " + request.user.get_full_name()
+        greeting = "Good Afternoon, " + request.user.get_full_name()
     else:
-        greeting = "Good Night " + request.user.get_full_name()
+        greeting = "Good Evening, " + request.user.get_full_name()
 
     birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day,
                                              date_of_birthO__month=todays_date.month, user_id__is_active=True)
