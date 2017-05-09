@@ -1,0 +1,419 @@
+{% extends 'master.html' %}
+{% load static from staticfiles %}
+{% load qms_tags %}
+
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script>
+
+
+
+
+
+            <div class="row">
+              <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-sm-12 qms-selectors">
+
+
+                        </div>
+
+                    </div><!-- ./qms-selectors row -->
+
+
+
+
+
+                <div class="panel widget">
+<!--                   <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-dot-circle-o"></i> </span> Data Tables Example </h3>
+                  </div> -->
+                  <div class="panel-body table-responsive">
+                    <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                            <th>Lead</th>
+                            <th>Chapters</th>
+                          <th>S1</th>
+                            <th>S2</th>
+                             <th>S3</th>
+                            <th>Questions</th>
+                          <th>Defect Density</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody> {% with  projects|dictsort:"lead_review_status" as s %} <br/>
+                      {% for obj in s %}
+                        <tr class="odd gradeX">
+                          <td><a href="#" data-toggle="modal" data-target="#myModal" class="project" data-value="{{obj.project_id}}" >{{obj.project__projectId}}</a></td>
+                          <td>{{obj.project__name}}</td>
+                            <td>{{request.user}}</td>
+                             <td>{{obj.chapter_count}}</td>
+                            <td class="defect-span defect-s1">{% get_severity_count obj.project "s1" obj.template_id  as s1%} {{s1}} </td>
+                            <td class="defect-span defect-s2">{% get_severity_count obj.project "s2" obj.template_id  as s2%}{{s2}}</td>
+                            <td class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</td>
+                          {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
+                          <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
+                            <td>{% if obj.lead_review_status %}
+                                    <span class="label label-default">completed</span>
+                                {% else %}
+                                    <span class="label label-success">Active</span>
+                                {%endif %}
+                            </td>
+                            <td>{% get_project_status obj.project  as result %}
+                                    {% if result.0 %}
+                                        <input id="lead_tab_complete" type="button" data-project="{{obj.project}}" data-diffvalue="{{result.1}}" class="btn btn-xs   {% if result.1 != 0 %} btn-danger {% else %} btn-sm {% endif %} lead_tab_complete" onclick= "mark_as_complete(this);"  name=""value="Completed"/>
+                                {% else %}
+                                <input  type="button"  class="btn btn-xs   btn-white " disabled value="Completed" >
+
+                                {% endif %}
+                                 <div class="modal fade" id="reviewComplete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Project Closure Comments</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" id="feedback_form" action="/qms/review_completed/" method ="GET">
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Comment : </label>
+                              <div class="col-sm-7 controls">
+                              <textarea class="input-border-btm" name="review_feedback_{{obj.project}}" id ="review_feedback_{{obj.project}}"></textarea>
+                              </div>
+
+                            </div>
+
+                          </form>
+
+                        </div>
+                        <!--<div class="modal-footer background-login">-->
+                          <!--<button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_review">Cancel </button>-->
+                          <!--<button type="button" class="btn vd_btn vd_bg-green" id="submit_review_{{obj.project}}    ">Save</button>-->
+                        <!--</div>-->
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                                <i class="fa fa-comments-o fa-fw " style ="margin-left:25px;" data-toggle="modal" id="review_modal" data-target="#reviewComplete"></i>
+
+                            </td>
+                        </tr>
+                     {% endfor %}{% endwith %}
+                   </tbody>
+			    </table>
+			   </div><!-- ./panel-body -->
+			  </div><!-- ./panel-widget -->
+			 </div><!-- ./col -->
+			</div><!-- ./row -->
+
+
+<!-- Modal Area -->
+
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-xl">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Chapter Level</h4>
+                        </div>
+                        <div class="modal-body">
+
+                    <table class="table table-striped leave-report-table qms-dashboard-table" id="qms_project_table">
+                      <thead>
+                        <tr>
+                          <th>S.No</th>
+                          <th>Chapter</th>
+                            <th>Component</th>
+                          <th>Author</th>
+                          <th>S1</th>
+                            <th>S2</th>
+                             <th>S3</th>
+                          <th>No. of Questions</th>
+                          <th>Defect Density</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="gradeX even" role="row">
+                          <td class="sorting_1 serial_no">INT-2017-002</td>
+                          <td class="chapter">Ansr Portal Dev 2017 Q1</td>
+                            <td class="component">Ansr Portal Dev 2017 Q1</td>
+                          <td class="author">sanjay.kunnath</td>
+                            <td class="defect-span defect-s1 s1">3</td>
+                            <td class="defect-span defect-s2 s2">24</td>
+                            <td class="defect-span defect-s3 s3">7</td>
+                          <td class="center questions">0</td>
+                          <td class="center defect_density">Lorem Ipsum</td>
+                        </tr>
+
+
+
+
+           </tbody>
+          </table>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-green" data-dismiss="modal" id="chapter_level">Export to Excel</button>
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/qms.js"></script>
+
+
+<script type="text/javascript">
+
+
+
+var qms_table_block = $('#qms_project_table tbody tr').html();
+
+function project_iterate(qms_obj){
+        console.log(JSON.stringify(qms_obj));
+        <!--Object.keys(qms_obj).length === 0; jQuery.isEmptyObject({}); -->
+      qms_count = 1;
+$('#qms_project_table tbody').html('');
+  for (var qms_key in qms_obj){
+      if (qms_obj.hasOwnProperty(qms_key)){
+          var inner_obj = qms_obj[qms_key];
+          console.log("inner_obj"+JSON.stringify(inner_obj));
+          for (var inner_key in inner_obj){
+              if (inner_obj.hasOwnProperty(inner_key)){
+                  for (var sub_inner_key in inner_obj[inner_key]){
+                      if (inner_key.hasOwnProperty(sub_inner_key)){
+                          $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
+                          $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
+                          $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key][sub_inner_key]['author']);
+                          $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key][sub_inner_key]['defect_density']+"%");
+                          $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key][sub_inner_key]['chapter_name']);
+                          $('#qms_project_table tbody tr:last-child .component').html(inner_obj[inner_key][sub_inner_key]['component_name']);
+
+                          $('#qms_project_table tbody tr:last-child .questions').html(inner_obj[inner_key][sub_inner_key]['questions']);
+                          <!--inner_obj[inner_key]['severity_level']-->
+                          $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S1']);
+                          $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S2']);
+                          $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S3']);
+                          qms_count++;
+                      }
+                  }
+
+              }
+          }
+
+    }
+  }
+
+}
+
+$(document).ready(function() {
+    <!--$('#data-tables').dataTable();-->
+    $('#data-tables').dataTable( {
+    "order": [],
+    "columnDefs": [ {
+      "targets"  : 'no-sort',
+      "orderable": false,
+    }]
+});
+    $('.project').on('click', function()  {
+        $.ajax({
+            url: '/qms/chapter_summary',
+            type: 'GET',
+            dataType :'json',
+            data: {"project_id": this.getAttribute('data-value')},
+            success: function (data) {
+                project_iterate(data);
+            },
+        });
+    });
+});
+
+    jQuery(document).ready(function() {
+
+    $('#chapter_level').on('click', function(e){
+        e.preventDefault();
+        ResultsToTable();
+    });
+
+    function ResultsToTable(){
+        $("#qms_project_table").table2excel({
+            exclude: ".noExl",
+            name: "Results"
+        });
+    }
+});
+
+//table2excel.js
+;(function ( $, window, document, undefined ) {
+    var pluginName = "table2excel",
+
+    defaults = {
+        exclude: ".noExl",
+                name: "Table2Excel"
+    };
+
+    // The actual plugin constructor
+    function Plugin ( element, options ) {
+            this.element = element;
+            // jQuery has an extend method which merges the contents of two or
+            // more objects, storing the result in the first object. The first object
+            // is generally empty as we don't want to alter the default options for
+            // future instances of the plugin
+            //
+            this.settings = $.extend( {}, defaults, options );
+            this._defaults = defaults;
+            this._name = pluginName;
+            this.init();
+    }
+
+    Plugin.prototype = {
+        init: function () {
+            var e = this;
+
+            e.template = {
+                head: "<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>",
+                sheet: {
+                    head: "<x:ExcelWorksheet><x:Name>",
+                    tail: "</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>"
+                },
+                mid: "</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>",
+                table: {
+                    head: "<table>",
+                    tail: "</table>"
+                },
+                foot: "</body></html>"
+            };
+
+            e.tableRows = [];
+
+            // get contents of table except for exclude
+            $(e.element).each( function(i,o) {
+                var tempRows = "";
+                $(o).find("tr").not(e.settings.exclude).each(function (i,o) {
+                    tempRows += "<tr>" + $(o).html() + "</tr>";
+                });
+                e.tableRows.push(tempRows);
+            });
+
+            e.tableToExcel(e.tableRows, e.settings.name);
+        },
+
+        tableToExcel: function (table, name) {
+            var e = this, fullTemplate="", i, link, a;
+
+            e.uri = "data:application/vnd.ms-excel;base64,";
+            e.base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)));
+            };
+            e.format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) {
+                    return c[p];
+                });
+            };
+            e.ctx = {
+                worksheet: name || "Worksheet",
+                table: table
+            };
+
+            fullTemplate= e.template.head;
+
+            if ( $.isArray(table) ) {
+                for (i in table) {
+                    //fullTemplate += e.template.sheet.head + "{worksheet" + i + "}" + e.template.sheet.tail;
+                    fullTemplate += e.template.sheet.head + "Table" + i + "" + e.template.sheet.tail;
+                }
+            }
+
+            fullTemplate += e.template.mid;
+
+            if ( $.isArray(table) ) {
+                for (i in table) {
+                    fullTemplate += e.template.table.head + "{table" + i + "}" + e.template.table.tail;
+                }
+            }
+
+            fullTemplate += e.template.foot;
+
+            for (i in table) {
+                e.ctx["table" + i] = table[i];
+            }
+            delete e.ctx.table;
+
+            if (typeof msie !== "undefined" && msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+            {
+                if (typeof Blob !== "undefined") {
+                    //use blobs if we can
+                    fullTemplate = [fullTemplate];
+                    //convert to array
+                    var blob1 = new Blob(fullTemplate, { type: "text/html" });
+                    window.navigator.msSaveBlob(blob1, getFileName(e.settings) );
+                } else {
+                    //otherwise use the iframe and save
+                    //requires a blank iframe on page called txtArea1
+                    txtArea1.document.open("text/html", "replace");
+                    txtArea1.document.write(fullTemplate);
+                    txtArea1.document.close();
+                    txtArea1.focus();
+                    sa = txtArea1.document.execCommand("SaveAs", true, getFileName(e.settings) );
+                }
+
+            } else {
+                link = e.uri + e.base64(e.format(fullTemplate, e.ctx));
+                a = document.createElement("a");
+                a.download = getFileName(e.settings);
+                a.href = link;
+
+                document.body.appendChild(a);
+
+                a.click();
+
+                document.body.removeChild(a);
+            }
+
+            return true;
+        }
+    };
+
+    function getFileName(settings) {
+        return ( settings.filename ? settings.filename : "table2excel") + ".xlsx";
+    }
+
+    $.fn[ pluginName ] = function ( options ) {
+        var e = this;
+            e.each(function() {
+                if ( !$.data( e, "plugin_" + pluginName ) ) {
+                    $.data( e, "plugin_" + pluginName, new Plugin( this, options ) );
+                }
+            });
+
+        // chain jQuery functions
+        return e;
+    };
+
+})( jQuery, window, document );
+</script>
+
+
+
+
+
+{% endblock %}
