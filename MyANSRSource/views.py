@@ -1691,6 +1691,15 @@ def getHours(request, wstart, wend, mem, project, label):
 @login_required
 def Dashboard(request):
     todays_date = datetime.now().date()
+    currentTime = datetime.now()
+    current_hour = currentTime.hour
+    if current_hour < 12:
+        greeting = "Good Morning "+request.user.get_full_name()
+    elif 12 <= current_hour < 16:
+        greeting = "Good Afternoon " + request.user.get_full_name()
+    else:
+        greeting = "Good Night " + request.user.get_full_name()
+
     birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day,
                                              date_of_birthO__month=todays_date.month, user_id__is_active=True)
     if request.method == 'POST':
@@ -1923,6 +1932,7 @@ def Dashboard(request):
                                             Q(employee_assigned_id=request.user.employee)), user__is_active=True)
     request.session['unapprovedts'] = status_member(myReportee, True)[2]
     data = {
+        'greeting' : greeting,
         'username': request.user.username,
         'firstname': request.user.first_name,
         'cp': cp,

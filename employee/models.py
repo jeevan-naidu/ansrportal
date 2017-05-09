@@ -317,6 +317,9 @@ class Employee(models.Model):
             self.user.first_name,
             self.user.last_name)
 
+    def get_full_name(self):
+        return self.first_name+''+self.last_name
+
 
 def DefaultPermission(sender, instance, **kwargs):
     try:
