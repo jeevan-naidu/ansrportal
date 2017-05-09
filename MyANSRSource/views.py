@@ -1600,8 +1600,9 @@ class ApproveTimesheetView(TemplateView):
                                                           wkend=end_date, teamMember_id=user_id).update(
                                 managerFeedback=feedback_dict[user_id], approved=True)
                     else:
-                        emp = Employee.objects.get(manager=request.user)
-                        if Employee.objects.get(manager=emp.employee_assigned_id).exists():
+                        # get manager obj
+                        emp = Employee.objects.get(user=request.user)
+                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
                             TimeSheetEntry.objects.filter(project__isnull=True, wkstart=start_date,
                                                           wkend=end_date, teamMember_id=user_id).update(
                                 managerFeedback=feedback_dict[user_id], approved=True)
@@ -1645,8 +1646,9 @@ class ApproveTimesheetView(TemplateView):
                             p.extend(a)
                         user_obj = User.objects.get(id=user_id)
                     else:
-                        emp = Employee.objects.get(manager=request.user)
-                        if Employee.objects.get(manager=emp.employee_assigned_id).exists():
+                        # get manager obj
+                        emp = Employee.objects.get(user=request.user)
+                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
                             TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project__isnull=True,
                                                           teamMember_id=user_id).update(
                                 managerFeedback=feedback_dict[user_id],
