@@ -34,6 +34,7 @@
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-dot-circle-o"></i> </span> Data Tables Example </h3>
                   </div> -->
                   <div class="panel-body table-responsive">
+                      <button type="button"  style="float: right; margin-bottom: 10px;" class="btn vd_btn vd_bg-green" data-dismiss="modal" id="project_level">Export to Excel</button>
                     <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
                       <thead>
                         <tr>
@@ -46,8 +47,8 @@
                              <th>S3</th>
                             <th>Questions</th>
                           <th>Defect Density</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th >Status</th>
+                            <th class="noExl">Action</th>
                         </tr>
                       </thead>
                       <tbody> {% with  projects|dictsort:"lead_review_status" as s %} <br/>
@@ -62,13 +63,13 @@
                             <td class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</td>
                           {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
                           <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
-                            <td>{% if obj.lead_review_status %}
+                            <td >{% if obj.lead_review_status %}
                                     <span class="label label-default">completed</span>
                                 {% else %}
                                     <span class="label label-success">Active</span>
                                 {%endif %}
                             </td>
-                            <td>{% get_project_status obj.project  as result %}
+                            <td class="noExl">{% get_project_status obj.project  as result %}
                                     {% if result.0 %}
                                         <input id="lead_tab_complete" type="button" data-project="{{obj.project}}" data-diffvalue="{{result.1}}" class="btn btn-xs   {% if result.1 != 0 %} btn-danger {% else %} btn-sm {% endif %} lead_tab_complete" onclick= "mark_as_complete(this);"  name=""value="Completed"/>
                                 {% else %}
@@ -189,14 +190,14 @@
 var qms_table_block = $('#qms_project_table tbody tr').html();
 
 function project_iterate(qms_obj){
-        console.log(JSON.stringify(qms_obj));
+        <!--console.log(JSON.stringify(qms_obj));-->
         <!--Object.keys(qms_obj).length === 0; jQuery.isEmptyObject({}); -->
       qms_count = 1;
 $('#qms_project_table tbody').html('');
   for (var qms_key in qms_obj){
       if (qms_obj.hasOwnProperty(qms_key)){
           var inner_obj = qms_obj[qms_key];
-          console.log("inner_obj"+JSON.stringify(inner_obj));
+          <!--console.log("inner_obj"+JSON.stringify(inner_obj));-->
           for (var inner_key in inner_obj){
               if (inner_obj.hasOwnProperty(inner_key)){
                   for (var sub_inner_key in inner_obj[inner_key]){
@@ -257,9 +258,27 @@ $(document).ready(function() {
     function ResultsToTable(){
         $("#qms_project_table").table2excel({
             exclude: ".noExl",
-            name: "Results"
+            name: "Results",
+            filename :"Chapter level"
         });
     }
+
+
+     $('#project_level').on('click', function(e){
+        e.preventDefault();
+        ResultsToTable2();
+    });
+
+    function ResultsToTable2(){
+        $(".qms-dashboard-table").table2excel({
+            exclude: ".noExl",
+            name: "Results",
+            filename: "Project Level"
+        });
+    }
+
+
+
 });
 
 //table2excel.js
@@ -308,9 +327,11 @@ $(document).ready(function() {
             // get contents of table except for exclude
             $(e.element).each( function(i,o) {
                 var tempRows = "";
-                $(o).find("tr").not(e.settings.exclude).each(function (i,o) {
-                    tempRows += "<tr>" + $(o).html() + "</tr>";
-                });
+               $(o).find("tr").not(e.settings.exclude).each(function (i, o) {
+                var cloneRow = $(o).clone();
+                $(cloneRow).find(e.settings.exclude).remove();
+                 var html = $(cloneRow).html();
+                 tempRows += "<tr>" + html + "</tr>"; });
                 e.tableRows.push(tempRows);
             });
 

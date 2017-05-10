@@ -66,9 +66,9 @@ function load_chapters(chapters){
     $( "#search" ).empty();
     for (var key in chapters) {
         if(chapters.hasOwnProperty(key)){
-            console.log("key"+key+"value"+chapters[key]);
+//            console.log("key"+key+"value"+chapters[key]);
 
-            $( "#search" ).append("<option name=" + key + " >" + chapters[key] + "</option>");
+            $( "#search" ).append("<option value=" + key + " >" + chapters[key] + "</option>");
         }
     }
 }
@@ -92,13 +92,24 @@ function populateForm (theObj){
             $('.qms-allocators .form-group:last-child select').attr({name:"user_"+key ,id:"user_"+key});
             $('.qms-allocators .form-group:last-child input.order-number').attr({name:"order_"+key ,id:"order_"+key});
             $('.qms-allocators .form-group:last-child input.order-number').attr('required',  true);
+//            if (theObj['current_tab'] === false ) {
+//                console.log("c"+theObj['current_tab'] +typeof(theObj['current_tab']))
+//                $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
+//                if(key ==1)
+//                $('.tab-order-1').next().show()
+//            }
+//            else{
+                $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
+                if(theObj['current_tab']!== false){
+                    if(parseInt(theObj['current_tab'])!=NaN  && parseInt(theObj['current_tab']) == parseInt(key) ) {
+//                    console.log("if");
+                        $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
+                        $('#'+key).show();
 
-            if(parseInt(theObj['current_tab'])!=NaN  && parseInt(theObj['current_tab']) == parseInt(key)) {
-                $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
-            }else{
-                $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+key ,id:key});
-                $('.qms-allocators .form-group:last-child input.tab_complete').hide();
-            }
+                        }
+
+                }
+
             if(theObj['show_lead_complete']==true){
                $('.qms-allocators2').show();
             }
@@ -159,6 +170,10 @@ function orderTabs(theObj){
             if(order_key > 0){
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').val(order_key);
                 $('.field-name span:contains(' + theObj['tab_order'][order_key] + ')').parent().parent().find('input.order-number').addClass('tab-order-'+order_key);
+                if(theObj['current_tab'] === false &&  order_key == '1')  {
+//                console.log("false"+order_key);
+                    $('.tab-order-'+order_key).next().show()
+                }
             }
         }
     }
@@ -362,6 +377,9 @@ function mark_as_complete(element=null) {
                                 sweetAlert("Heya...", success_msg, "success");
                                 if(!is_lead){
                                     $(element).hide();
+                                    var new_id = parseInt(element.id)+1;
+//                                    console.log("new_id"+new_id);
+                                    $('#'+new_id).show();
                                     $("#user_"+element.id).prop('disabled',true);
                                     $("#order_"+element.id).prop('disabled',true);
                                     count = 0;
@@ -370,10 +388,10 @@ function mark_as_complete(element=null) {
 //                                    console.log(this.id+"-"+element.id);
                                     id = this.id.split('_')
                                      if (id[1] == element.id) {
-                                        console.log("if");
+//                                        console.log("if");
                                         count++;
                                         if (index === num_items - 1 && data['can_show_button']) {
-                                            console.log("last");
+//                                            console.log("last");
     //                                         $('.qms-allocators2').show();
                                         }
                                         return true;
@@ -399,7 +417,7 @@ function mark_as_complete(element=null) {
                                 }
                                 else{globally_locked = true;
 //        console.log("im here");
-                                    $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"True");
+                                    $("[name^=user_],[name^=order_]").prop('disabled',"True");
                                     $('.qms-allocators2').hide();
 
                                 }
@@ -464,7 +482,7 @@ $('#filter_form').submit(function() {
                     return false;
 
                 }
-                $("[name^=user_],[name^=order_],[id^=qms-submit]").prop('disabled',"False");
+                $("[name^=user_],[name^=order_]").prop('disabled',"False");
 //                console.log("can edit keys"+Object.keys(data['can_edit']));
 //                console.log("can edit values"+Object.values(data['can_edit']));
 //                console.log("tab_order values"+Object.values(data['tab_order']));
@@ -485,9 +503,9 @@ $('#filter_form').submit(function() {
                     else{
                         tab_order_obj = Object.values(data['tab_order']);
 //                        console.log("len"+tab_order_obj.length);
-                        if ( tab_order_obj.length != 0) {
-                            $('#1').show();
-                        } else $('#1').hide();
+//                        if ( tab_order_obj.length != 0) {
+//                            $('#1').show();
+//                        } else $('#1').hide();
                     }
                 },
 
@@ -547,7 +565,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             $('#select-field option:selected').remove();
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
-            console.log('user_'+theID +'---'+'order_'+theID)
+//            console.log('user_'+theID +'---'+'order_'+theID)
             $('.qms-allocators .form-group:last-child').find('select').attr('name', 'user_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').prop('disabled',false);
@@ -560,7 +578,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             $('#select-field option:selected').remove();
             theClone = $('.qms-allocators .form-group:first-child').clone().appendTo('.qms-allocators');
             $('.qms-allocators .form-group:last-child').find('.field-name span:first-child').html(theField);
-            console.log('user_'+theID +'---'+'order_'+theID)
+//            console.log('user_'+theID +'---'+'order_'+theID)
             $('.qms-allocators .form-group:last-child').find('select').attr('name','user_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').attr('name', 'order_'+theID);
             $('.qms-allocators .form-group:last-child').find('input.order-number').prop('disabled',false);
@@ -568,7 +586,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
             $('#select-field').html('The end');
             globally_locked = true;
-        console.log("im here");
+//        console.log("im here");
             $('#qms-add-field').prop('disabled', true);
 //            $('#qms-submit').prop('disabled', false);
 

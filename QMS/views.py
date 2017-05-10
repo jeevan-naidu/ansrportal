@@ -45,7 +45,7 @@ class ChooseTabs(FormView):
     def form_valid(self, form):
         user_tab = {}
         order_number = {}
-        # print self.request.POST
+        chapter_list =  self.request.POST.getlist("to[]")
         users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
         order = {k: v for k, v in self.request.POST.items() if k.startswith('order_')}
         # print users
@@ -102,6 +102,34 @@ class ChooseTabs(FormView):
             # print obj, created
             if not created:
                 obj.updated_by = self.request.user
+                obj.save()
+        qa_obj = QASheetHeader.objects.filter(project=form.cleaned_data['project'], chapter_component=cm_obj).\
+            values('review_group_id', 'author', 'reviewed_by_id', 'order_number')
+        if chapter_list:
+            for obj in qa_obj:
+                for chapter in chapter_list:
+                    cm_sub_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter_id=chapter,
+                                                                                           component=form.cleaned_data[
+                                                                                            'component'],
+                                                                                           defaults={
+                                                                                             'created_by':
+                                                                                             self.request.user}, )
+
+                    qa_sub_obj, created = QASheetHeader.objects.update_or_create(project=form.cleaned_data['project'],
+                                                                                 chapter_id=chapter,
+                                                                                 chapter_component=cm_sub_obj,
+                                                                                 review_group_id=obj['review_group_id'],
+                                                                                 defaults={
+                                                                                  'author_id': obj['author'],
+                                                                                  'reviewed_by_id':
+                                                                                  obj['reviewed_by_id'],
+                                                                                  'created_by': self.request.user,
+                                                                                  'order_number': obj['order_number']},
+                                                                                 )
+                    if not created:
+                        qa_sub_obj.updated_by = self.request.user
+                        qa_sub_obj.save()
+
         messages.info(self.request, "Successfully Saved")
         return super(ChooseTabs, self).form_valid(form)
 
@@ -242,18 +270,20 @@ def get_template_process_review(request):
         # print members_obj.query
         # for s in members_obj:
         # print "mem", s
+        qa = QASheetHeader.objects.filter(project=project).values_list('chapter_component', flat=True)
+        existing_chapters = ChapterComponent.objects.filter(id__in=qa, component=component).values_list("chapter",
+                                                                                                        flat=True)
+        cm_obj, created = ChapterComponent.objects.get_or_create(chapter_id=chapter, component_id=component, defaults={
+                                                                                             'created_by':
+                                                                                              request.user}, )
+        # Chapter.objects.
         try:
-            chapter_component = ChapterComponent.objects.get(chapter=chapter, component=component)
-            existing_chapters = QASheetHeader.objects.select_related('component').filter(project=project,
-                                                                                         chapter_component=
-                                                                                         chapter_component).\
-                values_list('chapter_id', flat=True)
-
-            print existing_chapters
-            qa_obj = qa_sheet_header_obj(project, chapter, author=author)
-            qa_obj = qa_obj.filter(chapter_component=chapter_component)
+            # qa_obj = qa_sheet_header_obj(project, chapter, author=author)
+            qa_obj = QASheetHeader.objects.filter(project=project, chapter_component=cm_obj)
+            print "qa_obj" ,qa_obj
+            # qa_obj.filter(chapter_component=cm_obj)
         except Exception as e:
-            print str(e)
+            print "ryex",str(e)
             qa_obj_count = 0
         # print "qa_obj" ,qa_obj
         qa_obj_count = qa_obj.count()
@@ -268,11 +298,13 @@ def get_template_process_review(request):
             if qa_obj_count > 0:
                 try:
                     tab_user = qa_obj.get(review_group=ele.review_group)
-                    review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project=project,
+                    review_report_obj = ReviewReport.objects.filter(QA_sheet_header__in=qa_obj,
                                                                     QA_sheet_header__review_group=ele.review_group)
+                    # print "review_report_obj", review_report_obj
                     if review_report_obj:
                         can_edit[str(ele.review_group.id)] = False
                     else:
+                        print "else"
                         if tab_user.review_group_status and tab_user.author_feedback_status:
                             can_edit[str(ele.review_group.id)] = False
                         else:
@@ -288,7 +320,8 @@ def get_template_process_review(request):
         if qa_obj_count > 0 and qa_obj_count == len(exclude_list):
             show_lead_complete = True
 
-    except ObjectDoesNotExist:
+    except Exception as e:
+        print "outer", str(e)
         tabs = team_members = tab_name = ''
         config_missing = True
     exclude_list = [k for k, v in can_edit.iteritems() if v is False]
@@ -314,7 +347,7 @@ def get_template_process_review(request):
             logger.error(" {0} ".format(str(e)))
             print str(e)
     project_obj = Project.objects.get(id=int(project))
-    chapter = Chapter.objects.filter(book=project_obj.book).exclude(id__in=chapter).values_list('id', 'name')
+    chapter = Chapter.objects.filter(book=project_obj.book).exclude(id__in=existing_chapters).values_list('id', 'name')
     chapter = dict((str(x), str(y)) for x, y in chapter)
 
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
