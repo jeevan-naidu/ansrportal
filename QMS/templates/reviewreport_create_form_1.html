@@ -126,37 +126,18 @@
                         </div>
 
                     </div>
- <div id="copy" style="display:none">
-
-            <div class="row">
+                                    <div class="modal fade" id="copy_configurations" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Copy Configuration</h4>
+                        </div>
+                        <div class="modal-body">
+                                <div class="row">
                 <div class="col-sm-5">
                     <select name="from[]" id="search" class="form-control" size="8" multiple="multiple">
-                        <option value="1" data-position="1">Item 1</option>
-                        <option value="2" data-position="2">Item 5</option>
-                        <option value="2" data-position="3">Item 2</option>
-                        <option value="2" data-position="4">Item 4</option>
-                        <option value="3" data-position="5">Item 3</option>
-                        <option value="1" data-position="1">Item 1</option>
-                        <option value="2" data-position="2">Item 5</option>
-                        <option value="2" data-position="3">Item 2</option>
-                        <option value="2" data-position="4">Item 4</option>
-                        <option value="3" data-position="5">Item 3</option><option value="1" data-position="1">Item 1</option>
-                        <option value="2" data-position="2">Item 5</option>
-                        <option value="2" data-position="3">Item 2</option>
-                        <option value="2" data-position="4">Item 4</option>
-                        <option value="3" data-position="5">Item 3</option><option value="1" data-position="1">Item 1</option>
-                        <option value="2" data-position="2">Item 5</option>
-                        <option value="2" data-position="3">Item 2</option>
-                        <option value="2" data-position="4">Item 4</option>
-                        <option value="3" data-position="5">Item 3</option><option value="1" data-position="1">Item 1</option>
-                        <option value="2" data-position="2">Item 5</option>
-                        <option value="2" data-position="3">Item 2</option>
-                        <option value="2" data-position="4">Item 4</option>
-                        <option value="3" data-position="5">Item 3</option><option value="1" data-position="1">Item 1</option>
-                        <option value="2" data-position="2">Item 5</option>
-                        <option value="2" data-position="3">Item 2</option>
-                        <option value="2" data-position="4">Item 4</option>
-                        <option value="3" data-position="5">Item 3</option>
+
                     </select>
                 </div>
 
@@ -172,8 +153,20 @@
                 </div>
             </div>
 
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_config">Cancel </button>
+                          <button type="button" class="btn vd_btn vd_bg-green" data-dismiss="modal" id="copy_config">OK</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
 
-    </div>
+
+
+
 
                     <div class="row submit" style="display:none">
                         <div class="col-sm-12">
@@ -208,18 +201,38 @@
 var globally_locked = false;
 $(document).ready(function() {
 
-        $('#filter_form :checkbox').change(function() {
-    // this will contain a reference to the checkbox
-    if (this.checked) {
-         $('#copy').show('slow');
-         $('#qms-submit').prop("disabled",false);
-    } else {
-         $('#copy').hide('slow');
-         if(globally_locked)  $('#qms-submit').prop("disabled",true);
-         $('#search_to').empty().siblings('.form-control').val('');
+    $('#cancel_config').click(function() {
+        $('#search_to').empty().siblings('.form-control').val('');
+        $('#filter_form :checkbox').prop("checked",false);
 
-    }
-})
+    });
+
+    $('#copy_config').click(function() {
+          if($('#search_to > option').length == 0)
+              $('#filter_form :checkbox').prop("checked",false);
+
+    });
+
+    $('#filter_form :checkbox').change(function() {
+        // this will contain a reference to the checkbox
+        if (this.checked) {
+             $('#copy_configurations').modal('show');
+             $('#qms-submit').prop("disabled",false);
+        } else {
+             $('#copy').modal('hide');
+             if(globally_locked)  $('#qms-submit').prop("disabled",true);
+             $('#search_to').empty().siblings('.form-control').val('');
+
+        }
+    });
+
+    $('#filter_form :checkbox').hover(function() {
+        // this will contain a reference to the checkbox
+        if (this.checked) {
+             $('#copy_configurations').modal('show');
+        }
+    });
+
 
     $('#search').multiselect({
         search: {

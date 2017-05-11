@@ -376,7 +376,8 @@ def forbidden_access(self, form, project, message_code, chapter=None):
     messages.error(self.request, msg_dict[message_code])
     # print "forbidden_access", result
     return render(self.request, self.template_name, {'form': form,
-                                                     'review_group': get_review_group(project, chapter, component = self.request.session['component']),
+                                                     'review_group': get_review_group(project, chapter,
+                                                                                      component=self.request.session['component']),
                                                      "need_button": result})
 
 

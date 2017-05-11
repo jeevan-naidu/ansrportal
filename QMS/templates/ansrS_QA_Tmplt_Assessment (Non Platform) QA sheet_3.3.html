@@ -191,7 +191,7 @@
                                     <th>Fixed?</th>
                                     <th>Fixed By</th>
                                     <th>Remarks</th>
-                                    <th>Delete</th>
+                                {% if request.session.reviewer_logged_in  or request.session.is_pm %}     <th>Delete</th> {% endif %}
                                     <th>View</th>
 
                                 </tr>
@@ -269,8 +269,9 @@
                                         </td>
                                         <td>
                                             <div class="edit-buttons">
-
+                                              {% if request.session.reviewer_logged_in  or request.session.is_pm %}
                                                 {{form_obj.DELETE}}
+                                                {% endif %}
 
                                             </div>
                                         </td>
@@ -643,13 +644,19 @@
         $(".modal").on('shown.bs.modal', function () {
     $(this).find("textarea:visible:first").focus();
 });
-        $("[id$=defect]").on('focus', function() {
+        $("[id$=defect]").on('focus change', function() {
            $('#txt_copy_description').val($(this).val());
            $('#txt_copy_description').focus();
            $('#txt_copy_description').data('defect',this.id);
            $('#div_copy_description').modal('show');
         });
-
+          $("[id$=defect]").on('hover', function() {
+           $('#txt_copy_description').val($(this).val());
+           $(this).attr("title")
+           $('#txt_copy_description').focus();
+           $('#txt_copy_description').data('defect',this.id);
+           $('#div_copy_description').modal('show');
+        });
         $("#add_description").on('click', function() {
            var defect_id = $('#txt_copy_description').data('defect');
            $('#'+defect_id).val($('#txt_copy_description').val())
@@ -754,9 +761,10 @@
 
 
 
-        $('.edit_button').click(function(){ console.log("edit clicked");
+        $('.edit_button').click(function(){
+        <!--console.log("edit clicked");-->
             var edit_record = $(this).siblings(".edit_record").html();
-            console.log(edit_record);
+            <!--console.log(edit_record);-->
             $(".edit_body").html(edit_record);
         });
 /*        $('#review_report_table').dataTable({
@@ -942,12 +950,32 @@ $('.defect_classification').change(function(e){
     this.blur();
     return fire_event(this,"severity_type")
 });
+<!--$(':input[name$=component]').on('change', function() {-->
+<!--$(':input[name=author]').trigger('click');-->
+<!--console.log($(':input[name=author]').length)-->
+     <!--if($(':input[name=author]').length == 1)-->
+        <!--$(':input[name=author]').trigger('change').val($(":input[name=author] option:first").val());-->
+
+<!--});-->
 
 
+<!--$(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2]', function() {-->
+    <!--// do select2 configuration on $(this)-->
 
 
 
  });// End of document ready
+
+<!--$(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2]', function() {-->
+    <!--// do select2 configuration on $(this)-->
+    <!--$(':input[name$=component]').on('change', function() {-->
+    <!--$(':input[name=author]').trigger('change');-->
+     <!--if($(':input[name=author]').length == 1){-->
+     <!--console.log($(':input[name=author]').length + "val"+ $(":input[name=author] option:first").val())-->
+
+        <!--$(':input[name=author]').val($(":input[name=author] option:first").val()).trigger('change');}-->
+<!--});-->
+<!--})-->
 </script>
 
 
@@ -1069,7 +1097,6 @@ $(document).ready(function(){
          }
          $('#review_group').val( $('li.active').prop('id') );
          $('#submitted_by').val(submitted_by);
-         console.log("im b4 form submit");
          $('#feedback_form').submit();
 
     });

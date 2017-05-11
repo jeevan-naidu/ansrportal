@@ -179,7 +179,16 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                                                           (project=project_obj).
                                                           values_list('qms_process_model',
                                                                       flat=True)).values_list('product_type',
+
+
                                                                                               flat=True)[0]
+            title_fields = ['defect', 'instruction', 'remarks']
+            for field in title_fields:
+                field_value = self.fields[field].initial or self.initial.get(field) or \
+                             self.fields[field].widget.value_from_datadict(self.data, self.files, self.add_prefix(field))
+                if field_value:
+                    self.fields[field].widget.attrs['title'] = field_value
+
             if chapter_component_obj:
                 try:
                     # print chapter_component_obj.id
@@ -187,6 +196,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                                                           review_group_id=tab)[0]
                     # print qa_obj.author_feedback_status,qa_obj.review_group_status
                     # condition to prevent reviewer from editing
+                    print "pm", request_obj.session['is_pm']
 
                     if qa_obj.reviewed_by == request_obj.user:
                         self.fields['remarks'].widget.attrs['readonly'] = True
