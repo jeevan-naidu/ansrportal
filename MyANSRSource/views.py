@@ -2205,7 +2205,7 @@ def saveData(self, pm, eachData, projectObj):
     else:
         pm.project = projectObj
         pm.name = eachData['name']
-        # pm.financial = eachData['financial']
+        pm.description = eachData['description']
         pm.milestoneDate = eachData['milestoneDate']
         pm.amount = eachData['amount']
         pm.closed = eachData['closed']
