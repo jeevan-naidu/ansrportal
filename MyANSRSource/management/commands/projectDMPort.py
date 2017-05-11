@@ -3,10 +3,11 @@ import logging
 import os
 import csv
 from django.db import IntegrityError
-from MyANSRSource.models import ProjectDetail
+from django.contrib.auth.models import User
+from MyANSRSource.models import ProjectDetail, Project
 
 logger = logging.getLogger('MyANSRSource')
-FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data/"
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR, "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR, "error")
@@ -39,8 +40,15 @@ def feed_data(filereader):
 
 def insert_into_db(row):
     try:
-        project_detail, created = ProjectDetail.objects.get_or_create(project_id=row[0],
-                                                                      deliveryManager_id=row[1])
+        delivery_manager_users = row[1].split(",")
+        delivery_manager_user_name = delivery_manager_users[0] if delivery_manager_users else ""
+        user = User.objects.filter(username__contains=delivery_manager_user_name)
+        project = Project.objects.filter(projectId=row[0])
+        if user and project:
+            project_detail, created = ProjectDetail.objects.get_or_create(project=project[0],
+                                                                          deliveryManager=user[0])
+            if created:
+                print "project {0} having delivery manager {1}".format(project_detail.project, user[0])
 
     except IntegrityError:
         raise IntegrityError("Incositent data")

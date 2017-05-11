@@ -617,11 +617,11 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         queryset=Milestone.objects.all(),
         label="Select Milestone Name",
         required=True, )
-
+    description = forms.CharField(required=False,)
     class Meta:
         model = ProjectMilestone
         fields = (
-            'milestoneDate', 'name',
+            'milestoneDate', 'name', 'description',
             'amount', 'closed'
         )
         widgets = {
@@ -636,10 +636,12 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['milestoneDate'].widget.attrs['class'] = \
             "date-picker d-item form-control"
+        self.fields['description'].widget.attrs['class'] = "d-item input-item form-control"
         self.fields['name'].widget.attrs['class'] = "d-item input-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['amount'].widget.attrs['style'] = "width: inherit;"
 
 
 # Project Flag Form

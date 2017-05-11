@@ -3,10 +3,11 @@ import logging
 import os
 import csv
 from django.db import IntegrityError
-from MyANSRSource.models import Employee
+from employee.models import Employee
+from CompanyMaster.models import BusinessUnit
 
 logger = logging.getLogger('MyANSRSource')
-FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/Access-Control-Data/"
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR, "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR, "error")
@@ -38,9 +39,13 @@ def feed_data(filereader):
 
 def insert_into_db(row):
     try:
-        employee_detail, created = Employee.objects.get_or_create(user_id=row[0])
-        employee_detail.business_unit_id = row[1]
-        employee_detail.save()
+        employees = Employee.objects.filter(employee_assigned_id=row[0])
+        employee_detail = employees[0] if employees else ''
+        if row[1] and employee_detail:
+            bu = BusinessUnit.objects.filter(name__contains=row[1])
+            if bu:
+                employee_detail.business_unit = bu[0]
+                employee_detail.save()
 
     except IntegrityError:
         raise IntegrityError("InConsistent data")
