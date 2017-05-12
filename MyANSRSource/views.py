@@ -1481,14 +1481,15 @@ def dem_members(request):
         else:
             request.session['dm_projects'] = None
     if dm_projects:
+        # allowing DM to approve their ts entry for their own project by removing exclude condition
         team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
                                                                                          member__is_active=True).
-                                               values_list('member', flat=True)).exclude(user=request.user)
+                                               values_list('member', flat=True))  # .exclude(user=request.user)
 
     else:
         # their own team
         team_members = Employee.objects.filter((Q(manager_id=manager) | Q(employee_assigned_id=manager)),
-                                               user__is_active=True).exclude(user=request.user)
+                                               user__is_active=True)  # .exclude(user=request.user)
 
     return manager_team_members, team_members
 
@@ -1522,6 +1523,11 @@ class ApproveTimesheetView(TemplateView):
                 else:
                     include_activity = True
                     self.request.session['include_activity'][int(user_id)] = True
+
+                # exclude dm non project activities
+                if user_id == self.request.user.id and self.request.user.id in updated_dict:
+                    self.request.session['include_activity'][int(self.request.user.id)] = False
+
                 members = Employee.objects.get(user=user_id)
                 ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
                                                  self.request.session['dm_projects'], include_activity)
