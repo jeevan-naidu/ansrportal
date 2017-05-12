@@ -1524,7 +1524,7 @@ class ApproveTimesheetView(TemplateView):
                     include_activity = True
                     self.request.session['include_activity'][int(user_id)] = True
 
-                # exclude dm non project activities
+                # exclude dm non project activities from dashboard
                 if user_id == self.request.user.id and self.request.user.id in updated_dict:
                     self.request.session['include_activity'][int(self.request.user.id)] = False
 
