@@ -131,7 +131,9 @@ def is_project_manager(project, user):
 @register.simple_tag
 def get_project_status(project):
     can_show_button = QASheetHeader.objects.filter((Q(review_group_status=False) | Q(author_feedback_status=False)),
+
                                                    project=project).exists()
+    obj = None
     if not can_show_button:
         obj = ProjectTemplateProcessModel.objects.get(project=project)
         if obj.lead_review_status is False:
@@ -142,7 +144,7 @@ def get_project_status(project):
         difference = chapter_count - qa_chapter_count
     else:
         difference = 0
-    if obj and obj.lead_review_status is True:
+    if obj is not None and obj.lead_review_status is True:
         difference = 0
     return can_show_button, difference
 
