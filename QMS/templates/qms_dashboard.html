@@ -63,15 +63,21 @@
                             <td class="defect-span defect-s3">{% get_severity_count obj.project "s3" obj.template_id as s3 %}{{s3}}</td>
                           {% with obj.project|get_question_count as question %}<td class="center">{{question}}</td>
                           <td class="center">{% get_defect_density s1 s2 s3 question %} %</td> {% endwith %}
-                            <td >{% if obj.lead_review_status %}
-                                    <span class="label label-default">completed</span>
-                                {% else %}
-                                    <span class="label label-success">Active</span>
+                           {% get_project_status obj.project  as result %}
+                            <td > {% if result.1 != 0 %} <span class="label label-success">Active</span>
+                                    {% else %}
+                                <span class="label label-default">completed</span>
+
                                 {%endif %}
                             </td>
-                            <td class="noExl">{% get_project_status obj.project  as result %}
+                            <td class="noExl">
                                     {% if result.0 %}
-                                        <input id="lead_tab_complete" type="button" data-project="{{obj.project}}" data-diffvalue="{{result.1}}" class="btn btn-xs   {% if result.1 != 0 %} btn-danger {% else %} btn-sm {% endif %} lead_tab_complete" onclick= "mark_as_complete(this);"  name=""value="Completed"/>
+                                        <input id="lead_tab_complete" type="button" data-project="{{obj.project}}"
+                                               data-diffvalue="{{result.1}}" class="btn btn-xs
+                                                 {% if result.1 != 0 %} btn-danger  {% else %}
+                                                 btn-success {% endif %} lead_tab_complete"
+                                               onclick= "mark_as_complete(this);"
+                                               name=""value="Completed"/>
                                 {% else %}
                                 <input  type="button"  class="btn btn-xs   btn-white " disabled value="Completed" >
 

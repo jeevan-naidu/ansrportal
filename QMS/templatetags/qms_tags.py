@@ -142,5 +142,7 @@ def get_project_status(project):
         difference = chapter_count - qa_chapter_count
     else:
         difference = 0
+    if obj.lead_review_status is True:
+        difference = 0
     return can_show_button, difference
 
