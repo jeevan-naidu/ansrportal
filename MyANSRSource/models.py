@@ -333,7 +333,7 @@ class Project(models.Model):
 
 
 class ProjectDetail(models.Model):
-    project = models.ForeignKey(Project)
+    project = models.OneToOneField(Project)
     PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
                                       blank=True, null=True)
