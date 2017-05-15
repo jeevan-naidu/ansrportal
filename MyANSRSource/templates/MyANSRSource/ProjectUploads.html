@@ -62,6 +62,12 @@
     (function() {
 
     }());
+     $(document).ready(function(){
+       $("button#browserPrevious").click(function(e){
+            window.history.go(-1);
+            return false;
+        });
+    });
 
    ;
 
