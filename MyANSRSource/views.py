@@ -3004,6 +3004,6 @@ class NewCreatedProjectApproval(View):
 def project_detail(request):
     # import ipdb; ipdb.set_trace()
     project_id = request.GET.get('id')
-    project_details = ProjectDetail.objects.select_related('projectd').get(project_id=project_id)
+    project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
     return render(request, 'project_detail.html', {'project_detail': project_details})
 
