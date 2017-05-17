@@ -2435,7 +2435,6 @@ class CreateProjectWizard(SessionWizardView):
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
             revenueRec = 0
-        print flagData
         data = {
             'basicInfo': basicInfo,
             'pm': pm,
