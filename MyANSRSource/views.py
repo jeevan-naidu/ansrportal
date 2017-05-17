@@ -2410,6 +2410,7 @@ class CreateProjectWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         basicInfo = [form.cleaned_data for form in form_list][0]
+        # import ipdb; ipdb.set_trace()
         upload = [form.cleaned_data for form in form_list][2]
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
@@ -2423,11 +2424,18 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
-
+        if flagData['practicename']:
+            head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
+            head = User.objects.get(id=head_id);
+            head_name = head.first_name + " " + head.last_name
+            practicehead_name = head_name
+        else:
+            practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
             revenueRec = 0
+        print flagData
         data = {
             'basicInfo': basicInfo,
             'pm': pm,
@@ -2435,6 +2443,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
             'upload': upload,
+            'practicehead_name':practicehead_name,
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
