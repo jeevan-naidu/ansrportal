@@ -2410,6 +2410,7 @@ class CreateProjectWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         basicInfo = [form.cleaned_data for form in form_list][0]
+        # import ipdb; ipdb.set_trace()
         upload = [form.cleaned_data for form in form_list][2]
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
@@ -2423,7 +2424,13 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
-
+        if flagData['practicename']:
+            head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
+            head = User.objects.get(id=head_id);
+            head_name = head.first_name + " " + head.last_name
+            practicehead_name = head_name
+        else:
+            practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -2435,6 +2442,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
             'upload': upload,
+            'practicehead_name':practicehead_name,
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2712,7 +2720,7 @@ def saveProject(request):
             try:
                 pd = ProjectDetail()
                 pd.project_id = pr.id
-                pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate'))
+                pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                 pd.projectFinType = request.POST.get('projectFinType')
                 practice_name = request.POST.get('practicename')
                 practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
@@ -2734,6 +2742,10 @@ def saveProject(request):
                 pd.save()
 
             except ValueError as e:
+                pr.delete()
+                pm.delete()
+                pci.delete()
+                pr.customer.delete()
                 logger.exception(e)
 
         except ValueError as e:
@@ -2998,8 +3010,8 @@ class NewCreatedProjectApproval(View):
 
 
 def project_detail(request):
+    # import ipdb; ipdb.set_trace()
     project_id = request.GET.get('id')
-    project = Project.objects.get(id=project_id)
-    project_details = project.projectdetail_set.select_related('project').get()
+    project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
     return render(request, 'project_detail.html', {'project_detail': project_details})
 
