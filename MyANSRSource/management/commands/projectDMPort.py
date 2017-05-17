@@ -45,10 +45,14 @@ def insert_into_db(row):
         user = User.objects.filter(username__contains=delivery_manager_user_name)
         project = Project.objects.filter(projectId=row[0])
         if user and project:
-            project_detail, created = ProjectDetail.objects.get_or_create(project=project[0],
-                                                                          deliveryManager=user[0])
+            project_detail, created = ProjectDetail.objects.get_or_create(project=project[0])
+            project_detail.deliveryManager = user[0]
+            project_detail.save()
+
             if created:
-                print "project {0} having delivery manager {1}".format(project_detail.project, user[0])
+                print "project {0} created having delivery manager {1}".format(project_detail.project, user[0])
+            else:
+                print "project {0} changed delivery manager {1}".format(project_detail.project, user[0])
 
     except IntegrityError:
         raise IntegrityError("Incositent data")
