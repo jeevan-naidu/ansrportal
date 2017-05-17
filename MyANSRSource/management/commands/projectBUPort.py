@@ -3,8 +3,8 @@ import logging
 import os
 import csv
 from django.db import IntegrityError
-from django.contrib.auth.models import User
-from MyANSRSource.models import ProjectDetail, Project
+from CompanyMaster.models import BusinessUnit
+from MyANSRSource.models import Project
 
 logger = logging.getLogger('MyANSRSource')
 FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/"
@@ -12,7 +12,7 @@ FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR, "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR, "error")
 FEED_DELIMITER = ","
-FILE = "dm_port.csv"
+FILE = "project_BU.csv"
 class Command(BaseCommand):
     help = "upload delivery manager for existing project"
 
@@ -37,24 +37,17 @@ def feed_data(filereader):
             logger.error(u"Manager data is incorrect for row {0} error {1}".format(row, error))
 
 
-
 def insert_into_db(row):
     try:
-        delivery_manager_users = row[1].split(",")
-        delivery_manager_user_name = delivery_manager_users[0] if delivery_manager_users else ""
-        user = User.objects.filter(username__contains=delivery_manager_user_name)
-        project = Project.objects.filter(projectId=row[0])
-        if user and project:
-            project_detail, created = ProjectDetail.objects.get_or_create(project=project[0])
-            project_detail.deliveryManager = user[0]
-            project_detail.save()
+        bu_unit = row[1].upper()
+        bu = BusinessUnit.objects.filter(name=bu_unit)
+        project = Project.objects.get(projectId=row[0])
+        if bu:
+            project.bu = bu[0]
+            project.save()
+            print "project {0} now set to bu {1}".format(row[0], bu[0])
 
-            if created:
-                print "project {0} created having delivery manager {1}".format(project_detail.project, user[0])
-            else:
-                print "project {0} changed delivery manager {1}".format(project_detail.project, user[0])
-
-    except IntegrityError:
-        raise IntegrityError("Incositent data")
+    except Exception as E:
+        print "inconsistent data {0} for project {1} bussiness unit {2}".format(E, row[0], row[1])
 
 
