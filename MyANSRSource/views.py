@@ -2712,7 +2712,7 @@ def saveProject(request):
             try:
                 pd = ProjectDetail()
                 pd.project_id = pr.id
-                pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate'))
+                pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                 pd.projectFinType = request.POST.get('projectFinType')
                 practice_name = request.POST.get('practicename')
                 practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
