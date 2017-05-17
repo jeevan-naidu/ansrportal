@@ -3039,7 +3039,7 @@ def month_wise_active_employees(request):
                                                    'employee__location__name')
         from django.core import serializers
         result = serializers.serialize('json', result)
-        # print json.dumps(result)
+        print json.dumps(result)
         # result = json.dumps({str(k[::-1]): v[::-1] for k, v in result})
         print  result
     except Exception as e:
