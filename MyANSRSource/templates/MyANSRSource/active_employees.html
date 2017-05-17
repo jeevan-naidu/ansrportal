@@ -1,0 +1,279 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}Active Employees{% endblock %}
+
+{% load permissions %}
+{% block pageTitle %}
+Active Employees
+
+{% endblock %}
+
+
+
+
+
+
+{% block content %}
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
+
+<div class="panel pb-15">
+
+    <div class="panel-body">
+
+
+<table class="table table-striped myansr-table" id="active_employees">
+    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" style="margin-bottom:4px" value="Export">
+
+<select style="float:right; width:85px;margin-right:30px;" >
+    <option value=""></option>
+    {% for k,v in month_list %}
+  <option value={{k}}>{{v}}</option>
+
+
+    {% endfor %}
+</select>
+  <thead>
+    <tr>
+      <th>Employee Id</th>
+      <th>Name</th>
+      <th>Business Unit </th>
+      <th>Practice</th>
+      <th style="display:none">Manager</th>
+      <th style="display:none">Designation</th>
+        <th style="display:none" >Location</th>
+
+    </tr>
+  </thead>
+  <tbody>
+{% for emp in employees_list %}
+    <tr >
+      <td>{{emp.employee__employee_assigned_id}}</td>
+
+      <td>{{emp.employee__user__first_name}} {{emp.employee__user__last_name}}</td>
+      <td>{{emp.employee__business_unit__name}}  </td>
+      <td>{{emp.practice__name|default_if_none:""}}</td>
+        <td style="display:none" >{{emp.employee__manager__user__first_name}} {{emp.employee__manager__user__last_name}}</td>
+        <td style="display:none" >{{emp.employee__designation__name}}</td>
+        <td style="display:none" >{{emp.employee__location__name}}</td>
+
+</tr>
+{% endfor %}
+
+
+  </tbody>
+</table>
+
+
+
+</div>
+</div>
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+<script type="text/javascript">
+
+var dataTable ="";
+$(document).ready(function() {
+ $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+    dataTable =$('#active_employees').dataTable({
+          "searching": false,
+          "pageLength": 30,
+          "autoWidth": false,
+          "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]]
+    });
+
+
+    $('#export').on('click', function(e){
+
+        e.preventDefault();
+       if( $('#active_employees tr').length >2)
+        ResultsToTable();
+        else {
+             txt = $("table tbody tr td:nth-child(1)").text();
+             if( txt.includes("No matching records found") )
+                sweetAlert("Oops...", "There is no data to export!", "error");
+             else ResultsToTable();
+
+        }
+    });
+    function ResultsToTable(){
+         $('#active_employees').table2excel({
+            exclude: ".noExl",
+            name: "Results"
+        });
+    }
+//table2excel.js
+;(function ( $, window, document, undefined ) {
+    var pluginName = "table2excel",
+
+    defaults = {
+        exclude: ".noExl",
+                name: "Table2Excel"
+    };
+
+    // The actual plugin constructor
+    function Plugin ( element, options ) {
+            this.element = element;
+            // jQuery has an extend method which merges the contents of two or
+            // more objects, storing the result in the first object. The first object
+            // is generally empty as we don't want to alter the default options for
+            // future instances of the plugin
+            //
+            this.settings = $.extend( {}, defaults, options );
+            this._defaults = defaults;
+            this._name = pluginName;
+            this.init();
+    }
+
+    Plugin.prototype = {
+        init: function () {
+            var e = this;
+
+            e.template = {
+                head: "<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>",
+                sheet: {
+                    head: "<x:ExcelWorksheet><x:Name>",
+                    tail: "</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>"
+                },
+                mid: "</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>",
+                table: {
+                    head: "<table>",
+                    tail: "</table>"
+                },
+                foot: "</body></html>"
+            };
+
+            e.tableRows = [];
+
+            // get contents of table except for exclude
+               $(dataTable.fnGetNodes()).each(function(i,o){
+                    var tempRows = "";
+                    if (i==0) {
+                        temp_td =""
+                         $( "table thead tr th" ).each(function( index ) {
+                           temp_td += "<td><b>"+ $( this ).text() +"</b></td>";
+                        });
+                        tempRows += "<tr>"+temp_td+"</tr>";
+                         temp_td =""
+                     }
+                    tempRows += $(o).html();
+
+                    e.tableRows.push(tempRows);
+               });
+
+
+            e.tableToExcel(e.tableRows, e.settings.name);
+        },
+
+        tableToExcel: function (table, name) {
+            var e = this, fullTemplate="", i, link, a;
+
+            e.uri = "data:application/vnd.ms-excel;base64,";
+            e.base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)));
+            };
+            e.format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) {
+                    return c[p];
+                });
+            };
+            e.ctx = {
+                worksheet: name || "Worksheet",
+                table: table
+            };
+
+            fullTemplate= e.template.head;
+
+            if ( $.isArray(table) ) {
+                for (i in table) {
+                    //fullTemplate += e.template.sheet.head + "{worksheet" + i + "}" + e.template.sheet.tail;
+                    fullTemplate += e.template.sheet.head + "Table" + i + "" + e.template.sheet.tail;
+                }
+            }
+
+            fullTemplate += e.template.mid;
+
+            if ( $.isArray(table) ) {
+                for (i in table) {
+                    fullTemplate += e.template.table.head + "{table" + i + "}" + e.template.table.tail;
+                }
+            }
+
+            fullTemplate += e.template.foot;
+
+            for (i in table) {
+                e.ctx["table" + i] = table[i];
+            }
+            delete e.ctx.table;
+
+            if (typeof msie !== "undefined" && msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+            {
+                if (typeof Blob !== "undefined") {
+                    //use blobs if we can
+                    fullTemplate = [fullTemplate];
+                    //convert to array
+                    var blob1 = new Blob(fullTemplate, { type: "text/html" });
+                    window.navigator.msSaveBlob(blob1, getFileName(e.settings) );
+                } else {
+                    //otherwise use the iframe and save
+                    //requires a blank iframe on page called txtArea1
+                    txtArea1.document.open("text/html", "replace");
+                    txtArea1.document.write(fullTemplate);
+                    txtArea1.document.close();
+                    txtArea1.focus();
+                    sa = txtArea1.document.execCommand("SaveAs", true, getFileName(e.settings) );
+                }
+
+            } else {
+                link = e.uri + e.base64(e.format(fullTemplate, e.ctx));
+                a = document.createElement("a");
+                a.download = getFileName(e.settings);
+                a.href = link;
+
+                document.body.appendChild(a);
+
+                a.click();
+
+                document.body.removeChild(a);
+            }
+
+            return true;
+        }
+    };
+
+    function getFileName(settings) {
+        return ( settings.filename ? settings.filename : "table2excel") + ".xlsx";
+    }
+
+    $.fn[ pluginName ] = function ( options ) {
+        var e = this;
+            e.each(function() {
+                if ( !$.data( e, "plugin_" + pluginName ) ) {
+                    $.data( e, "plugin_" + pluginName, new Plugin( this, options ) );
+                }
+            });
+
+        // chain jQuery functions
+        return e;
+    };
+
+})( jQuery, window, document );
+  });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

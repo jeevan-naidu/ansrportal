@@ -1,6 +1,9 @@
 import logging
-logger = logging.getLogger('MyANSRSource')
+
 import json
+import CompanyMaster
+import employee
+import os
 from decimal import Decimal
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
@@ -12,14 +15,14 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse ,JsonResponse
 from formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
 from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee
+from employee.models import Employee, Remainder, EmployeeCompanyInformation, EmployeeCompanyInformationArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
@@ -36,16 +39,10 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
     changeProjectLeaderForm, BTGReportForm, UploadForm
 
-import CompanyMaster
-import employee
-import os
-from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
-from django.core.urlresolvers import reverse_lazy
-
 from ldap import LDAPError
-
+logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
 FORMS = [
@@ -3003,3 +3000,51 @@ def project_detail(request):
     project_details = project.projectdetail_set.select_related('project').get()
     return render(request, 'project_detail.html', {'project_detail': project_details})
 
+
+class ActiveEmployees(TemplateView):
+    template_name = "MyANSRSource/active_employees.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveEmployees, self).get_context_data(**kwargs)
+        context['employees_list'] = EmployeeCompanyInformation.objects.filter(
+            employee__user__is_active=True).values('practice__name',
+                                                   'employee__business_unit__name', 'employee__employee_assigned_id',
+                                                   'employee__user__first_name', 'employee__user__last_name',
+                                                   'employee__manager__user__first_name',
+                                                   'employee__manager__user__last_name', 'employee__designation__name',
+                                                   'employee__location__name')
+        context['month_list'] = \
+            [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
+             (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
+
+        return context
+
+
+def month_wise_active_employees(request):
+    now = datetime.now()
+    try:
+        # result = EmployeeCompanyInformationArchive.objects.filter(archive_date__month=05,
+        #                                                           archive_date__year=now.year,
+        #                                                           employee__user__is_active=True)[10].\
+        #     values('practice__name', 'employee__business_unit__name', 'employee__employee_assigned_id',
+        #            'employee__user__first_name', 'employee__user__last_name', 'employee__manager__user__first_name',
+        #            'employee__manager__user__last_name', 'employee__designation__name', 'employee__location__name')
+
+        result = EmployeeCompanyInformation.objects.filter(
+            employee__user__is_active=True).only('practice__name',
+                                                   'employee__business_unit__name', 'employee__employee_assigned_id',
+                                                   'employee__user__first_name', 'employee__user__last_name',
+                                                   'employee__manager__user__first_name',
+                                                   'employee__manager__user__last_name', 'employee__designation__name',
+                                                   'employee__location__name')
+        from django.core import serializers
+        result = serializers.serialize('json', result)
+        # print json.dumps(result)
+        # result = json.dumps({str(k[::-1]): v[::-1] for k, v in result})
+        print  result
+    except Exception as e:
+        print str(e)
+    # print  result
+    return JsonResponse(
+       result, safe=False
+    )

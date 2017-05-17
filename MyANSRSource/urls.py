@@ -3,7 +3,8 @@ from MyANSRSource import views, reportviews
 from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser, \
     AutocompleteProjectAsset, AutocompletePracticeName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
     Autocompleteprojectscope, AutocompleteMilestonetype
-from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval
+from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval, ActiveEmployees,\
+    month_wise_active_employees
 from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
@@ -149,4 +150,9 @@ urlpatterns = [
         name='projectdetail'),
     url(r'^logout/$', views.Logout, name=u'logout'),
     url(r'^$', views.index, name=u'index'),
+    url(r'^active_employees$', ActiveEmployees.as_view(),
+        name='active_employees$'),
+    url(r'^month_wise_active_employees', month_wise_active_employees)
+
+
 ]
