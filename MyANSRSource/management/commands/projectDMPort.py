@@ -12,7 +12,7 @@ FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR, "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR, "error")
 FEED_DELIMITER = ","
-FILE = "dm_port1.csv"
+FILE = "dm_port.csv"
 class Command(BaseCommand):
     help = "upload delivery manager for existing project"
 
