@@ -150,12 +150,10 @@ urlpatterns = [
         name='projectdetail'),
     url(r'^logout/$', views.Logout, name=u'logout'),
     url(r'^$', views.index, name=u'index'),
-    url(r'^active_employees$', ActiveEmployees.as_view(),
+    url(r'^active_employees$', login_required(ActiveEmployees.as_view()),
         name='active_employees$'),
-    url(r'^active_projects$', ActiveProjects.as_view(),
+    url(r'^active_projects$', login_required(ActiveProjects.as_view()),
         name='active_projects$'),
     url(r'^month_wise_active_employees', month_wise_active_employees),
-    # url(r'get_project_summary/(?P<project_id>\d+)/$', views.get_project_summary, name=u'get_project_summary')
-    # url(r'^get_project_summary/(?P<project_id>\d+)/',   views.get_project_summary , name=u'get_project_summary'),
-    url(r'^(?P<project_id>[0-9]+)/$', views.get_project_summary, name='get_project_summary'),
+    url(r'^get_project_summary/(?P<project_id>[0-9]+)/$',   views.get_project_summary, name=u'get_project_summary'),
 ]

@@ -23,9 +23,10 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee, Remainder, EmployeeCompanyInformation, EmployeeCompanyInformationArchive
+from employee.models import Employee, Remainder
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
+from django.core.exceptions import PermissionDenied
 from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
 from fb360.models import Respondent
 
@@ -2807,7 +2808,7 @@ def deleteProject(request):
     return HttpResponseRedirect('add')
 
 
-def project_summary(project_id) :
+def project_summary(project_id, show_header=True):
     projectObj = Project.objects.filter(id=project_id)
     basicInfo = projectObj.values(
         'projectType__description', 'bu__name', 'customer__name',
@@ -2853,6 +2854,7 @@ def project_summary(project_id) :
             for eachRec in changeTracker if eachRec['closedOn'] is not None]
         if len(closedOn):
             data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+    data['show_header']= show_header
     return data
 
 
@@ -3012,36 +3014,43 @@ class ActiveEmployees(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ActiveEmployees, self).get_context_data(**kwargs)
-        context['employees_list'] = Employee.objects.filter(
-            user__is_active=True).values(
-                                                   'business_unit__name', 'employee_assigned_id',
-                                                   'user__first_name', 'user__last_name',
-                                                   'manager__user__first_name',
-                                                   'manager__user__last_name', 'designation__name',
-                                                   'location__name')
-        context['month_list'] = \
-            [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
-             (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['employees_list'] = Employee.objects.filter(
+                user__is_active=True).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
+            context['month_list'] = \
+                [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
+                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
 
-        return context
+            return context
+        else:
+            raise PermissionDenied
 
 
+@login_required()
 def month_wise_active_employees(request):
-    try:
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        try:
 
-        result =Employee.objects.filter(
-            user__is_active=True).values(
-                                                   'business_unit__name', 'employee_assigned_id',
-                                                   'user__first_name', 'user__last_name',
-                                                   'manager__user__first_name',
-                                                   'manager__user__last_name', 'designation__name',
-                                                   'location__name')
+            result = Employee.objects.filter(user__is_active=True).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
 
-        result = json.dumps(list(result), cls=DjangoJSONEncoder)
+            result = json.dumps(list(result), cls=DjangoJSONEncoder)
 
-    except Exception as e:
-        print str(e)
+        except Exception as e:
+            print str(e)
     # print  result
+    else:
+        raise PermissionDenied
+
     return HttpResponse(result, content_type="application/json")
 
 
@@ -3050,17 +3059,20 @@ class ActiveProjects(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ActiveProjects, self).get_context_data(**kwargs)
-        context['projects_list'] = ProjectDetail.objects.filter(
-            project__closed=False).values(
-                                                   'PracticeName', 'project__name', 'project__id',
-          'project__customer__name',  'project__bu__name')
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['projects_list'] = ProjectDetail.objects.filter(
+                project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
+                                              'project__customer__name',  'project__bu__name' ,'project__endDate')
+            return context
+        else:
+            raise PermissionDenied
 
-        return context
 
-
-def get_project_summary(request, project_id=None):
-    if request.method == "GET":
-        print request.GET.get('project_id',1960)
-        # project_id = int(request.GET.get('project_id'))
-        data = project_summary(1960)
-        return HttpResponseRedirect(request, 'MyANSRSource/viewProjectSummary.html', data)
+@login_required()
+def get_project_summary(request, project_id):
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        if request.method == "GET":
+            data = project_summary(project_id, show_header=False)
+            return render(request, 'MyANSRSource/viewProjectSummary.html', data)
+    else:
+        raise PermissionDenied
