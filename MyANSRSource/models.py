@@ -367,7 +367,6 @@ class ProjectManager(models.Model):
     user = models.ForeignKey(User)
 
 
-
 class TimeSheetEntry(models.Model):
     project = models.ForeignKey(Project, blank=False,
                                 verbose_name="Project Name", null=True)

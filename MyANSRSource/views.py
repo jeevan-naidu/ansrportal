@@ -1,6 +1,9 @@
 import logging
-logger = logging.getLogger('MyANSRSource')
+
 import json
+import CompanyMaster
+import employee
+import os
 from decimal import Decimal
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
@@ -12,16 +15,18 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse ,JsonResponse
 from formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
+from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee
+from employee.models import Employee, Remainder
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
+from django.core.exceptions import PermissionDenied
 from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
 from fb360.models import Respondent
 
@@ -36,16 +41,10 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
     changeProjectLeaderForm, BTGReportForm, UploadForm
 
-import CompanyMaster
-import employee
-import os
-from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
-from django.core.urlresolvers import reverse_lazy
-
 from ldap import LDAPError
-
+logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
 FORMS = [
@@ -2821,56 +2820,62 @@ def deleteProject(request):
     return HttpResponseRedirect('add')
 
 
+def project_summary(project_id, show_header=True):
+    projectObj = Project.objects.filter(id=project_id)
+    basicInfo = projectObj.values(
+        'projectType__description', 'bu__name', 'customer__name',
+        'name', 'book__name', 'signed', 'internal', 'currentProject',
+        'projectId', 'customerContact'
+    )[0]
+    if basicInfo['customerContact']:
+        customerObj = basicInfo['customerContact']
+        basicInfo['customerContact__username'] = customerObj
+    flagData = projectObj.values(
+        'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
+        'totalValue', 'po', 'salesForceNumber'
+    )[0]
+    cleanedTeamData = ProjectTeamMember.objects.filter(
+        project=projectObj).values(
+        'member__username', 'startDate', 'endDate',
+        'plannedEffort', 'rate'
+    )
+    if basicInfo['internal']:
+        cleanedMilestoneData = []
+    else:
+        cleanedMilestoneData = ProjectMilestone.objects.filter(
+            project=projectObj).values('milestoneDate', 'description',
+                                       'amount', 'name')
+
+    changeTracker = ProjectChangeInfo.objects.filter(
+        project=projectObj).values(
+        'reason', 'endDate', 'revisedEffort', 'revisedTotal',
+        'closed', 'closedOn', 'signed', 'salesForceNumber',
+        'updatedOn'
+    ).order_by('updatedOn')
+    data = {
+        'basicInfo': basicInfo,
+        'flagData': flagData,
+        'teamMember': cleanedTeamData,
+        'milestone': cleanedMilestoneData,
+        'changes': changeTracker,
+    }
+    if len(changeTracker):
+        closedOn = [
+            eachRec
+            ['closedOn']
+            for eachRec in changeTracker if eachRec['closedOn'] is not None]
+        if len(closedOn):
+            data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+    data['show_header']= show_header
+    return data
+
+
 @login_required
 @permission_required('MyANSRSource.create_project')
 def ViewProject(request):
     if request.method == 'POST':
         projectId = int(request.POST.get('project'))
-        projectObj = Project.objects.filter(id=projectId)
-        basicInfo = projectObj.values(
-            'projectType__description', 'bu__name', 'customer__name',
-            'name', 'book__name', 'signed', 'internal', 'currentProject',
-            'projectId', 'customerContact'
-        )[0]
-        if basicInfo['customerContact']:
-            customerObj = basicInfo['customerContact']
-            basicInfo['customerContact__username'] = customerObj
-        flagData = projectObj.values(
-            'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
-            'totalValue', 'po', 'salesForceNumber'
-        )[0]
-        cleanedTeamData = ProjectTeamMember.objects.filter(
-            project=projectObj).values(
-            'member__username', 'startDate', 'endDate',
-            'plannedEffort', 'rate'
-        )
-        if basicInfo['internal']:
-            cleanedMilestoneData = []
-        else:
-            cleanedMilestoneData = ProjectMilestone.objects.filter(
-                project=projectObj).values('milestoneDate', 'description',
-                                           'amount', 'name')
-
-        changeTracker = ProjectChangeInfo.objects.filter(
-            project=projectObj).values(
-            'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-            'closed', 'closedOn', 'signed', 'salesForceNumber',
-            'updatedOn'
-        ).order_by('updatedOn')
-        data = {
-            'basicInfo': basicInfo,
-            'flagData': flagData,
-            'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData,
-            'changes': changeTracker,
-        }
-        if len(changeTracker):
-            closedOn = [
-                eachRec
-                ['closedOn']
-                for eachRec in changeTracker if eachRec['closedOn'] is not None]
-            if len(closedOn):
-                data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+        data = project_summary(projectId)
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
 
     data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
@@ -3015,3 +3020,71 @@ def project_detail(request):
     project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
     return render(request, 'project_detail.html', {'project_detail': project_details})
 
+
+class ActiveEmployees(TemplateView):
+    template_name = "MyANSRSource/active_employees.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveEmployees, self).get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['employees_list'] = Employee.objects.filter(
+                user__is_active=True).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
+            context['month_list'] = \
+                [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
+                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
+
+            return context
+        else:
+            raise PermissionDenied
+
+
+@login_required()
+def month_wise_active_employees(request):
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        try:
+
+            result = Employee.objects.filter(user__is_active=True).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
+
+            result = json.dumps(list(result), cls=DjangoJSONEncoder)
+
+        except Exception as e:
+            print str(e)
+    # print  result
+    else:
+        raise PermissionDenied
+
+    return HttpResponse(result, content_type="application/json")
+
+
+class ActiveProjects(TemplateView):
+    template_name = "MyANSRSource/active_projects.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveProjects, self).get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['projects_list'] = ProjectDetail.objects.filter(
+                project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
+                                              'project__customer__name',  'project__bu__name' ,'project__endDate')
+            return context
+        else:
+            raise PermissionDenied
+
+
+@login_required()
+def get_project_summary(request, project_id):
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        if request.method == "GET":
+            data = project_summary(project_id, show_header=False)
+            return render(request, 'MyANSRSource/viewProjectSummary.html', data)
+    else:
+        raise PermissionDenied

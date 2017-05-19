@@ -3,6 +3,13 @@
 {% load fontawesome %}
 {% block pageTitle %}View Project Summary{% endblock %}
 {% block PSactiveClass %}active{% endblock %}
+{% block steps %}
+    {% if show_header %}
+        {{ block.super }}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
 {% block viewProjectContent %}
 <legend><b>Summary</b>
     <span class="float-right"><h3><small><b>{{ basicInfo.projectId }} :  {{ basicInfo.name }}</b></small></h3></span>
@@ -225,8 +232,20 @@
 	</table>
 </div>
 </div>
+{% if show_header %}
 <a href="view-project" class="btn btn-info">
         <i class="fa fa-arrow-circle-left"></i>
 	<b>Choose another project</b>
-</a>
+</a> {% endif %}
+
+ {% if not show_header %}
+<script type="text/javascript">
+
+$(function() {
+       $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+
+});
+
+</script>
+{% endif %}
 {% endblock %}

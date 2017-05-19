@@ -488,3 +488,7 @@ class EmployeeCompanyInformation(UpdateDate, UpdateBy):
     class Meta:
         verbose_name = 'Employee Company Information'
         verbose_name_plural = 'Employees Company Information'
+
+
+class EmployeeCompanyInformationArchive(EmployeeCompanyInformation):
+    archive_date = models.DateField(verbose_name="Date", blank=True, null=True,)

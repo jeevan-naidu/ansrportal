@@ -1,0 +1,144 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}Active Employees{% endblock %}
+
+{% load permissions %}
+{% block pageTitle %}
+Active Employees
+
+{% endblock %}
+
+
+
+
+
+
+{% block content %}
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
+
+<div class="panel pb-15">
+
+    <div class="panel-body">
+
+
+<table class="table table-striped myansr-table" id="active_employees">
+    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" style="margin-bottom:4px" value="Export">
+
+<select id="month" style="float:right; width:120px;margin-right:30px;" >
+    <option value="">Select Month</option>
+    {% for k,v in month_list %}
+  <option value={{k}}>{{v}}</option>
+
+
+    {% endfor %}
+</select> <br/>
+    <br/>
+  <thead>
+    <tr>
+      <th>Employee Id</th>
+      <th>Name</th>
+      <th>Business Unit </th>
+      <th style="display:none">Practice</th>
+      <th style="display:none">Manager</th>
+      <th >Designation</th><th style="display:none" >Location</th>
+
+    </tr>
+  </thead>
+  <tbody>
+{% for emp in employees_list %}
+    <tr class="tr_active_employees">
+      <td class="emp_id">{{emp.employee_assigned_id}}</td>
+
+      <td class="user_name ">{{emp.user__first_name}} {{emp.user__last_name}}</td>
+      <td class="bu">{{emp.business_unit__name}}  </td>
+      <td class="practice" style="display:none">{{emp.practice__name|default_if_none:""}}</td>
+        <td class="manager" style="display:none" >{{emp.manager__user__first_name}} {{emp.manager__user__last_name}}</td>
+        <td class="designation"  >{{emp.designation__name}}</td>
+        <td class="location" style="display:none" >{{emp.location__name}}</td>
+
+</tr>
+{% endfor %}
+
+
+  </tbody>
+</table>
+
+
+
+</div>
+</div>
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/export_excel.js"></script>
+<script type="text/javascript">
+var active_employees = $('.tr_active_employees').html();
+var dataTable ="";
+$(document).ready(function() {
+ $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+
+    $('#month').on('change', function()  {
+
+
+        $.ajax({
+              url: '/myansrsource/month_wise_active_employees',
+              type: 'GET',
+              dataType :'json',
+              data: {"month":this.value},
+              beforeSend: function (data) {
+                $('input[type=search]').val('')
+              },
+              success: function (data) {
+                  $('.tr_active_employees').html('');
+                  for (var obj in data){
+                      if (data.hasOwnProperty(obj)){
+                            $('#active_employees tbody').append('<tr class="tr_active_employees" ></tr>')
+                            $('.tr_active_employees:last-child').append(active_employees);
+                            $('.tr_active_employees:last-child td.emp_id').html(data[obj]['employee_assigned_id']);
+                            $('.tr_active_employees:last-child td.user_name').html(data[obj]['user__first_name'] +" "+data[obj]['user__last_name']);
+                            $('.tr_active_employees:last-child td.practice').html("");
+                            $('.tr_active_employees:last-child td.designation').html(data[obj]['designation__name']);
+                            $('.tr_active_employees:last-child td.manager').html(data[obj]['manager__user__first_name'] + " "+data[obj]['manager__user__last_name']);
+                            $('.tr_active_employees:last-child td.location').html(data[obj]['location__name']);
+                            $('.tr_active_employees:last-child td.bu').html(data[obj]['business_unit__name']);
+
+                      }
+                  }
+
+              },
+        });
+
+    });
+
+
+    dataTable =$('#active_employees').dataTable({
+          "searching": true,
+          "pageLength": 30,
+          "autoWidth": false,
+          "bPaginate": false,
+           "bInfo" : false,
+          "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
+          "columnDefs": [
+            { "searchable": false, "targets": 4 }
+            ]
+    });
+
+
+  });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
