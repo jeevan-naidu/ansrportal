@@ -528,6 +528,21 @@
                                                                             <span class="menu-text">Milestone Report</span>
                                                                         </a>
                                                                     </li>
+                                                                {% if request.user|has_group:"myansrsourcebuhead" %}
+                                                                <li>
+                                                                        <a href="{% url 'active_employees'%}">
+                                                                            <span class="menu-text">Active Employees</span>
+                                                                        </a>
+                                                                    </li>
+                                                                <li>
+                                                                        <a href="{% url 'active_projects'%}">
+                                                                            <span class="menu-text">Active Projects</span>
+                                                                        </a>
+                                                                    </li>
+
+                                                                {%endif %}
+
+
                                                                  {% endif %}
                                                             </ul>
                                                         </div>
