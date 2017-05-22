@@ -894,6 +894,7 @@ def getHours(request, wstart, wend, mem, project, label):
 
 
 class ChangeProjectWizard(SessionWizardView):
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectChangeDocument'))
     def get_template_names(self):
         return [CTEMPLATES[self.steps.current]]
 
@@ -952,14 +953,25 @@ class ChangeProjectWizard(SessionWizardView):
                     'plannedEffort',
                     'totalValue',
                     'salesForceNumber',
-                    'po'
+                    'po',
+                    'startDate',
+                    'bu',
+                    'customerContact',
+                    'customer',
+                    'id',
                 )[0]
+                #Additional Project Detail initial value
+                fintype = ProjectDetail.objects.filter(project_id=currentProject['id']).values('projectFinType', 'PracticeName')[0]
+                currentProject['projectFinType'] = fintype['projectFinType']
+                currentProject['practice'] = fintype['PracticeName']
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject[
                     'plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
+        self.request.session['revisedsow'] = self.request.FILES.get('Change Basic Information-Sowdocument', "")
+        self.request.session['revisedestimation'] = self.request.FILES.get('Change Basic Information-estimationDocument', "")
         data = UpdateProjectInfo(
             self.request, [
                 form.cleaned_data for form in form_list])
@@ -2234,27 +2246,25 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
-        pru.plannedEffort = newInfo[1]['revisedEffort']
-        pru.totalValue = newInfo[1]['revisedTotal']
-        pru.closed = newInfo[1]['closed']
-        pru.signed = newInfo[1]['signed']
-        pru.po = newInfo[1]['po']
-        pru.endDate = newInfo[1]['endDate']
-        pru.salesForceNumber = newInfo[1]['salesForceNumber']
-        pru.save()
-
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
             pci.reason = newInfo[1]['remark']
         else:
             pci.reason = newInfo[1]['reason']
-
         pci.endDate = newInfo[1]['endDate']
         pci.salesForceNumber = newInfo[1]['salesForceNumber']
         pci.revisedEffort = newInfo[1]['revisedEffort']
         pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
+        pci.startDate = newInfo[1]['startDate']
+        pci.projectFinType = newInfo[1]['projectFinType']
+        pci.bu = newInfo[1]['bu']
+        pci.customer = newInfo[1]['customer']
+        pci.customerContact = newInfo[1]['customerContact']
+        pci.practice = newInfo[1]['practice']
+        pci.estimationDocument = request.session['revisedestimation']
+        pci.sowdocument = request.session['revisedsow']
         if pci.closed is True:
             pci.closedOn = datetime.now().replace(tzinfo=utc)
         pci.signed = newInfo[1]['signed']
@@ -3010,8 +3020,76 @@ class NewCreatedProjectApproval(View):
 
 
 def project_detail(request):
-    # import ipdb; ipdb.set_trace()
     project_id = request.GET.get('id')
     project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
     return render(request, 'project_detail.html', {'project_detail': project_details})
 
+
+'''project Change Bu approval screen'''
+
+
+class ProjectChangeApproval(View):
+    template_name = "projectchangeapproval.html"
+
+    def get_queryset(self, request):
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+        queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=False)
+        return queryset
+
+    def get(self, request):
+        queryset = self.get_queryset(request)
+        return render(request, self.template_name, {'queryset': queryset})
+
+    def post(self, request):
+        try:
+            approve = request.POST.getlist('approve[]')
+            reject = request.POST.getlist('reject[]')
+            approve = approve if approve else []
+            reject = reject if reject else []
+            try:
+                ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=True)
+                ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=False)
+                update_project_table = []
+                for val in approve:
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('bu', 'startDate',
+                                                                                             'endDate',
+                                                                                             'practice', 'po',
+                                                                                             'revisedEffort',
+                                                                                             'revisedTotal',
+                                                                                             'salesForceNumber',
+                                                                                             'projectFinType',
+                                                                                             'customer',
+                                                                                             'customerContact',
+                                                                                             'project', 'signed',
+                                                                                             'closed',
+                                                                                             )[0]
+                    try:
+                        Project.objects.filter(id=update_project_table['project']).update(plannedEffort=update_project_table['revisedEffort'],
+                                                                                          totalValue=update_project_table['revisedTotal'],
+                                                                                          closed=update_project_table['closed'],
+                                                                                          signed=update_project_table['signed'],
+                                                                                          po=update_project_table['po'],
+                                                                                          endDate=update_project_table['endDate'],
+                                                                                          startDate=update_project_table['startDate'],
+                                                                                          bu=update_project_table['bu'],
+                                                                                          salesForceNumber=update_project_table['salesForceNumber'],
+                                                                                          customer=update_project_table['customer'],
+                                                                                          customerContact=update_project_table['customerContact'],
+                                                                                          )
+                        ProjectDetail.objects.filter(project_id=update_project_table['project']).update(PracticeName=update_project_table['practice'],
+                                                                                                        projectFinType=update_project_table['projectFinType'])
+
+                    except Exception as error:
+                        return HttpResponse(error)
+
+            except Exception as error:
+                return HttpResponse(error)
+            return HttpResponse()
+        except Exception as E:
+            return HttpResponse(E)
+
+
+def project_change_detail(request):
+    cr_id = request.GET.get('id')
+    project_change_detail = ProjectChangeInfo.objects.get(crId=cr_id)
+    return render(request,'project_change_detail.html', {'project_change_detail':project_change_detail})
