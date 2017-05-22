@@ -36,6 +36,11 @@ PROJECTFINTYPE = (
     ('FP', 'Fixed Price'),
     ('T&M', 'T&M')
 )
+APRROVECHOICES = (
+    ('0', 'ACTIVE'),
+    ('1', 'APPROVED'),
+    ('2','REJECTED')
+)
 
 #upload path for sow and estimation
 
@@ -599,7 +604,7 @@ class ProjectChangeInfo(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
-    approved = models.BooleanField(verbose_name="Approved", default=False)
+    approved = models.CharField(verbose_name="Approved", choices=APRROVECHOICES, default=0, max_length=1)
 
     def __unicode__(self):
         return self.crId

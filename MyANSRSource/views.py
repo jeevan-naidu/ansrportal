@@ -2264,6 +2264,7 @@ def UpdateProjectInfo(request, newInfo):
         pci.practice = newInfo[1]['practice']
         pci.estimationDocument = request.session['revisedestimation']
         pci.sowdocument = request.session['revisedsow']
+        pci.approved = 0
         if pci.closed is True:
             pci.closedOn = datetime.now().replace(tzinfo=utc)
         pci.signed = newInfo[1]['signed']
@@ -3039,7 +3040,7 @@ class ProjectChangeApproval(View):
 
     def get_queryset(self, request):
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
-        queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=False)
+        queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
         return queryset
 
     def get(self, request):
@@ -3053,8 +3054,8 @@ class ProjectChangeApproval(View):
             approve = approve if approve else []
             reject = reject if reject else []
             try:
-                ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=True)
-                ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=False)
+                ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=1)
+                ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
                 update_project_table = []
                 for val in approve:
                     update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('bu', 'startDate',
