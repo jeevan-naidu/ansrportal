@@ -586,6 +586,16 @@ class ProjectChangeInfo(models.Model):
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
     # Record Entered / Updated Date
+    #New Model Field As per New Project Creation Screen
+    projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
+                                      blank=True, null=True)
+    customer = models.ForeignKey(CompanyMaster.models.Customer, verbose_name="Customer", default=None, blank=True, null=True)
+    startDate = models.DateField(verbose_name="Revised Project Start Date", blank=True, null=True)
+    bu = models.ForeignKey(CompanyMaster.models.BusinessUnit, verbose_name="Business Unit", default=None,blank=True, null=True)
+    customerContact = models.CharField(verbose_name="Customer Contact", max_length=50, null=True,blank=True)
+    practice = models.ForeignKey(Practice, verbose_name="Practice Name", default=None, blank=True, null=True)
+    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
+    estimationDocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Estimation Document")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
