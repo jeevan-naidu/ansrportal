@@ -2072,21 +2072,26 @@ class ManageTeamLeaderWizard(SessionWizardView):
             l = []
             for eachData in pm:
                 l.append(eachData['projectManager'])
-            projectMS = {'projectManager': l}
+            delivery_delegate_mgr = ProjectDetail.objects.filter(project=myProject.id).values('deliveryManager','pmDelegate')[0]
+            projectMS = {'projectManager': l, 'DeliveryManager': delivery_delegate_mgr['deliveryManager'], 'pmDelegate': delivery_delegate_mgr['pmDelegate']}
             return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][
-            1]['projectManager']
+        updatedData = [form.cleaned_data for form in form_list][1]
         myProject = self.get_cleaned_data_for_step('My Projects')['project']
         myProject = Project.objects.get(id=myProject.id)
         allData = ProjectManager.objects.filter(
             project=myProject).values('id', 'user')
-        updateDataId = [eachData.id for eachData in updatedData]
+        updateDataId = [eachData.id for eachData in updatedData['projectManager']]
+        try:
+            ProjectDetail.objects.filter(project=myProject.id).update(deliveryManager=updatedData['DeliveryManager'],
+                                                                      pmDelegate=updatedData['pmDelegate'])
+        except Exception as error:
+            print error
         for eachData in allData:
             if eachData['user'] not in updateDataId:
                 ProjectManager.objects.get(pk=eachData['id']).delete()
-        for eachData in updatedData:
+        for eachData in updatedData['projectManager']:
             pm = ProjectManager()
             oldData = ProjectManager.objects.filter(
                 project=myProject, user=eachData).values('id')

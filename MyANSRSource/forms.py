@@ -366,10 +366,27 @@ def TimesheetFormset(currentUser,enddate):
 
 # Form Class to create milestones for project
 class changeProjectLeaderForm(forms.ModelForm):
-
+    DeliveryManager = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Delivery Manager",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type Delievery Manager Name ...',
+        }
+                                         # url='AutocompleteUser'
+                                         ),
+        )
+    pmDelegate = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="PM Delegate",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type PM Delegate Name ...',
+        }
+                                         # url='AutocompleteUser'
+                                         ),
+        required=False, )
     class Meta:
         model = Project
-        fields = ('projectManager',)
+        fields = ('projectManager', 'DeliveryManager', 'pmDelegate')
         widgets = {
             'projectManager': autocomplete.ModelSelect2Multiple()
         }
@@ -377,6 +394,8 @@ class changeProjectLeaderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
+        self.fields['pmDelegate'].widget.attrs['class'] = "form-control"
+        self.fields['DeliveryManager'].widget.attrs['class'] = "form-control"
 
 
 # Form Class to create project
