@@ -48,7 +48,12 @@ class AutocompleteTemplates(autocomplete.Select2QuerySetView):
             obj = ProjectTemplateProcessModel.objects.get(project=project, qms_process_model=qms_process_model)
             choices = TemplateMaster.objects.filter(id=obj.template_id)
         except:
-            choices = TemplateMaster.objects.filter(name__icontains=q)
+            try:
+                choices = TemplateProcessReview.objects.filter(qms_process_model=qms_process_model).values_list('template_id',flat=True)
+
+                choices = TemplateMaster.objects.filter(id__in=choices)
+            except:
+                choices = TemplateMaster.objects.filter(name__icontains=q)
             # print choices
 
         return choices

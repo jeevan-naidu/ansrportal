@@ -2,7 +2,7 @@ import xlrd
 import MySQLdb
 import datetime
 #
-book = xlrd.open_workbook("QMS_QA Sheets.xlsx")
+book = xlrd.open_workbook("QMS_QA Sheets1.xlsx")
 database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
 database.set_character_set('utf8')
 #
@@ -48,8 +48,11 @@ for ele in s2:
         cursor.execute('SET CHARACTER SET utf8;')
         cursor.execute('SET character_set_connection=utf8;')
         cursor.execute('SET NAMES utf8;')
-        cursor.execute("INSERT INTO QMS_qmsprocessmodel(name,created_by_id,updated_by_id,created_on,updated_on,is_active,product_type)"
-                       " VALUES (%s,%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1, 0))
+        try:
+            cursor.execute("INSERT INTO QMS_qmsprocessmodel(name,created_by_id,updated_by_id,created_on,updated_on,is_active,product_type)"
+                           " VALUES (%s,%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1, 0))
+        except:
+            pass
         database.commit()
     except Exception as e:
         print str(e)
@@ -60,8 +63,11 @@ database.commit()
 #     except Exception as e:
 #         print str(e)
 for ele in s1:
-    cursor.execute("INSERT INTO QMS_templatemaster(name, actual_name, created_by_id,updated_by_id,created_on,updated_on,is_active)"
+    try:
+        cursor.execute("INSERT INTO QMS_templatemaster(name, actual_name, created_by_id,updated_by_id,created_on,updated_on,is_active)"
                    " VALUES (%s,%s, %s,%s,%s,%s,%s)", (ele, tmp[ele], 471, 471, now, now, 1))
+    except :
+        pass
     database.commit()
 # # for ele in s2:
 #     cursor.execute("INSERT INTO QMS_severitylevelmaster (name,created_by_id,updated_by_id,created_on,updated_on,is_active)"

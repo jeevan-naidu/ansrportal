@@ -45,7 +45,7 @@ for r in range(1, sheet.nrows):
     # # print "7", sheet.row(r)[7].value   # all non mandatory
     # print "\n"
     mandatory = str(sheet.row(r)[3].value.strip()).split(",")
-    mandatory = [s.strip() for s in mandatory]
+    mandatory = [s.strip() for s in mandatory if s is not None]
     # print mandatory
     for s in mandatory:
         # try:
@@ -70,7 +70,7 @@ for r in range(1, sheet.nrows):
 
     else:
         non_mandatory = str(sheet.row(r)[4].value.strip()).split(",")
-    non_mandatory = [s.strip() for s in non_mandatory]
+    non_mandatory = [s.strip() for s in non_mandatory if s is not None]
     # print non_mandatory
 
     for s in non_mandatory:
