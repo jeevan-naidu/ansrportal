@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
-
+import datetime
 from employee.models import Employee, PreviousEmployment, EmpAddress,\
     FamilyMember, Education, Designation, TeamMember, Attendance, EmployeeCompanyInformation
 from forms import EmployeeChoiceField, DesignationChoiceField
@@ -103,7 +103,7 @@ class UserInline(admin.StackedInline):
         ('Role and Job', {
             'fields': (('employee_assigned_id', 'designation'),
                        ('business_unit', 'location'),
-                       ('category', 'idcard'),)}),
+                       ('category', 'idcard', 'practice'),)}),
         ('Financial Information', {
             'fields': (('PAN', 'PF_number', 'uan'),
                        ('group_insurance_number', 'esi_number',),
@@ -120,6 +120,15 @@ class UserInline(admin.StackedInline):
             # exists.
             return 0
         return self.extra
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+            obj.created_on = datetime.now()
+        else:
+            obj.updated_by = request.user
+            obj.updated_on = datetime.now()
+        obj.save()
 
 
 class EmployeeAdmin(OriginalUserAdmin):

@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from CompanyMaster.models import PnL, Practice, SubPractice, Department, Designation, Company, UpdateDate, UpdateBy
 import CompanyMaster
+from MyANSRSource.models import TimeStampAbstractModel
 fs = FileSystemStorage(location='employee/emp_photo')
 
 GENDER_CHOICES = (
@@ -139,7 +140,7 @@ User model can be found here.
 https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 
 
-class Employee(models.Model):
+class Employee(TimeStampAbstractModel):
     # User model will have the usual fields.  We will have the remaining ones
     # here
     user = models.OneToOneField(User, verbose_name="User")
@@ -147,6 +148,7 @@ class Employee(models.Model):
                                 blank=True, null=True,
                                 related_name="Manager", default=None)
     status = models.BooleanField(default=True)
+    practice = models.ForeignKey(Practice, default=None, verbose_name="Practice", blank=True, null=True)
     '''
     ================================================
     Basic Employee Attributes
@@ -319,6 +321,20 @@ class Employee(models.Model):
 
     def get_full_name(self):
         return self.first_name+''+self.last_name
+
+
+class EmployeeArchive(TimeStampAbstractModel):
+    user = models.OneToOneField(User, verbose_name="User")
+    manager = models.ForeignKey('self', verbose_name="Manager",
+                                blank=True, null=True,
+                                related_name="Manager", default=None)
+    archive_date = models.DateField("Archive Date", auto_now_add=True)
+    business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
+    location = models.ForeignKey('CompanyMaster.OfficeLocation')
+    practice = models.ForeignKey(Practice, default=None, verbose_name="Practice", blank=True, null=True)
+
+    def __unicode__(self):
+        return self.user
 
 
 def DefaultPermission(sender, instance, **kwargs):
