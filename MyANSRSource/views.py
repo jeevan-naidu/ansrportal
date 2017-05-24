@@ -1,6 +1,9 @@
 import logging
-logger = logging.getLogger('MyANSRSource')
+
 import json
+import CompanyMaster
+import employee
+import os
 from decimal import Decimal
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
@@ -12,16 +15,18 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse ,JsonResponse
 from formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
+from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee
+from employee.models import Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
+from django.core.exceptions import PermissionDenied
 from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
 from fb360.models import Respondent
 
@@ -36,16 +41,10 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
     changeProjectLeaderForm, BTGReportForm, UploadForm
 
-import CompanyMaster
-import employee
-import os
-from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
-from django.core.urlresolvers import reverse_lazy
-
 from ldap import LDAPError
-
+logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
 FORMS = [
@@ -894,6 +893,7 @@ def getHours(request, wstart, wend, mem, project, label):
 
 
 class ChangeProjectWizard(SessionWizardView):
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectChangeDocument'))
     def get_template_names(self):
         return [CTEMPLATES[self.steps.current]]
 
@@ -952,14 +952,25 @@ class ChangeProjectWizard(SessionWizardView):
                     'plannedEffort',
                     'totalValue',
                     'salesForceNumber',
-                    'po'
+                    'po',
+                    'startDate',
+                    'bu',
+                    'customerContact',
+                    'customer',
+                    'id',
                 )[0]
+                #Additional Project Detail initial value
+                fintype = ProjectDetail.objects.filter(project_id=currentProject['id']).values('projectFinType', 'PracticeName')[0]
+                currentProject['projectFinType'] = fintype['projectFinType']
+                currentProject['practice'] = fintype['PracticeName']
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject[
                     'plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
+        self.request.session['revisedsow'] = self.request.FILES.get('Change Basic Information-Sowdocument', "")
+        self.request.session['revisedestimation'] = self.request.FILES.get('Change Basic Information-estimationDocument', "")
         data = UpdateProjectInfo(
             self.request, [
                 form.cleaned_data for form in form_list])
@@ -2061,21 +2072,26 @@ class ManageTeamLeaderWizard(SessionWizardView):
             l = []
             for eachData in pm:
                 l.append(eachData['projectManager'])
-            projectMS = {'projectManager': l}
+            delivery_delegate_mgr = ProjectDetail.objects.filter(project=myProject.id).values('deliveryManager','pmDelegate')[0]
+            projectMS = {'projectManager': l, 'DeliveryManager': delivery_delegate_mgr['deliveryManager'], 'pmDelegate': delivery_delegate_mgr['pmDelegate']}
             return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][
-            1]['projectManager']
+        updatedData = [form.cleaned_data for form in form_list][1]
         myProject = self.get_cleaned_data_for_step('My Projects')['project']
         myProject = Project.objects.get(id=myProject.id)
         allData = ProjectManager.objects.filter(
             project=myProject).values('id', 'user')
-        updateDataId = [eachData.id for eachData in updatedData]
+        updateDataId = [eachData.id for eachData in updatedData['projectManager']]
+        try:
+            ProjectDetail.objects.filter(project=myProject.id).update(deliveryManager=updatedData['DeliveryManager'],
+                                                                      pmDelegate=updatedData['pmDelegate'])
+        except Exception as error:
+            print error
         for eachData in allData:
             if eachData['user'] not in updateDataId:
                 ProjectManager.objects.get(pk=eachData['id']).delete()
-        for eachData in updatedData:
+        for eachData in updatedData['projectManager']:
             pm = ProjectManager()
             oldData = ProjectManager.objects.filter(
                 project=myProject, user=eachData).values('id')
@@ -2234,27 +2250,26 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
-        pru.plannedEffort = newInfo[1]['revisedEffort']
-        pru.totalValue = newInfo[1]['revisedTotal']
-        pru.closed = newInfo[1]['closed']
-        pru.signed = newInfo[1]['signed']
-        pru.po = newInfo[1]['po']
-        pru.endDate = newInfo[1]['endDate']
-        pru.salesForceNumber = newInfo[1]['salesForceNumber']
-        pru.save()
-
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
             pci.reason = newInfo[1]['remark']
         else:
             pci.reason = newInfo[1]['reason']
-
         pci.endDate = newInfo[1]['endDate']
         pci.salesForceNumber = newInfo[1]['salesForceNumber']
         pci.revisedEffort = newInfo[1]['revisedEffort']
         pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
+        pci.startDate = newInfo[1]['startDate']
+        pci.projectFinType = newInfo[1]['projectFinType']
+        pci.bu = newInfo[1]['bu']
+        pci.customer = newInfo[1]['customer']
+        pci.customerContact = newInfo[1]['customerContact']
+        pci.practice = newInfo[1]['practice']
+        pci.estimationDocument = request.session['revisedestimation']
+        pci.sowdocument = request.session['revisedsow']
+        pci.approved = 0
         if pci.closed is True:
             pci.closedOn = datetime.now().replace(tzinfo=utc)
         pci.signed = newInfo[1]['signed']
@@ -2821,56 +2836,62 @@ def deleteProject(request):
     return HttpResponseRedirect('add')
 
 
+def project_summary(project_id, show_header=True):
+    projectObj = Project.objects.filter(id=project_id)
+    basicInfo = projectObj.values(
+        'projectType__description', 'bu__name', 'customer__name',
+        'name', 'book__name', 'signed', 'internal', 'currentProject',
+        'projectId', 'customerContact'
+    )[0]
+    if basicInfo['customerContact']:
+        customerObj = basicInfo['customerContact']
+        basicInfo['customerContact__username'] = customerObj
+    flagData = projectObj.values(
+        'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
+        'totalValue', 'po', 'salesForceNumber'
+    )[0]
+    cleanedTeamData = ProjectTeamMember.objects.filter(
+        project=projectObj).values(
+        'member__username', 'startDate', 'endDate',
+        'plannedEffort', 'rate'
+    )
+    if basicInfo['internal']:
+        cleanedMilestoneData = []
+    else:
+        cleanedMilestoneData = ProjectMilestone.objects.filter(
+            project=projectObj).values('milestoneDate', 'description',
+                                       'amount', 'name')
+
+    changeTracker = ProjectChangeInfo.objects.filter(
+        project=projectObj).values(
+        'reason', 'endDate', 'revisedEffort', 'revisedTotal',
+        'closed', 'closedOn', 'signed', 'salesForceNumber',
+        'updatedOn'
+    ).order_by('updatedOn')
+    data = {
+        'basicInfo': basicInfo,
+        'flagData': flagData,
+        'teamMember': cleanedTeamData,
+        'milestone': cleanedMilestoneData,
+        'changes': changeTracker,
+    }
+    if len(changeTracker):
+        closedOn = [
+            eachRec
+            ['closedOn']
+            for eachRec in changeTracker if eachRec['closedOn'] is not None]
+        if len(closedOn):
+            data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+    data['show_header']= show_header
+    return data
+
+
 @login_required
 @permission_required('MyANSRSource.create_project')
 def ViewProject(request):
     if request.method == 'POST':
         projectId = int(request.POST.get('project'))
-        projectObj = Project.objects.filter(id=projectId)
-        basicInfo = projectObj.values(
-            'projectType__description', 'bu__name', 'customer__name',
-            'name', 'book__name', 'signed', 'internal', 'currentProject',
-            'projectId', 'customerContact'
-        )[0]
-        if basicInfo['customerContact']:
-            customerObj = basicInfo['customerContact']
-            basicInfo['customerContact__username'] = customerObj
-        flagData = projectObj.values(
-            'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
-            'totalValue', 'po', 'salesForceNumber'
-        )[0]
-        cleanedTeamData = ProjectTeamMember.objects.filter(
-            project=projectObj).values(
-            'member__username', 'startDate', 'endDate',
-            'plannedEffort', 'rate'
-        )
-        if basicInfo['internal']:
-            cleanedMilestoneData = []
-        else:
-            cleanedMilestoneData = ProjectMilestone.objects.filter(
-                project=projectObj).values('milestoneDate', 'description',
-                                           'amount', 'name')
-
-        changeTracker = ProjectChangeInfo.objects.filter(
-            project=projectObj).values(
-            'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-            'closed', 'closedOn', 'signed', 'salesForceNumber',
-            'updatedOn'
-        ).order_by('updatedOn')
-        data = {
-            'basicInfo': basicInfo,
-            'flagData': flagData,
-            'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData,
-            'changes': changeTracker,
-        }
-        if len(changeTracker):
-            closedOn = [
-                eachRec
-                ['closedOn']
-                for eachRec in changeTracker if eachRec['closedOn'] is not None]
-            if len(closedOn):
-                data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+        data = project_summary(projectId)
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
 
     data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
@@ -3010,8 +3031,147 @@ class NewCreatedProjectApproval(View):
 
 
 def project_detail(request):
-    # import ipdb; ipdb.set_trace()
     project_id = request.GET.get('id')
     project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
     return render(request, 'project_detail.html', {'project_detail': project_details})
 
+
+
+'''project Change Bu approval screen'''
+
+
+class ProjectChangeApproval(View):
+    template_name = "projectchangeapproval.html"
+
+    def get_queryset(self, request):
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+        queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
+        return queryset
+
+    def get(self, request):
+        queryset = self.get_queryset(request)
+        return render(request, self.template_name, {'queryset': queryset})
+
+    def post(self, request):
+        try:
+            approve = request.POST.getlist('approve[]')
+            reject = request.POST.getlist('reject[]')
+            approve = approve if approve else []
+            reject = reject if reject else []
+            try:
+                ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=1)
+                ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
+                update_project_table = []
+                for val in approve:
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('bu', 'startDate',
+                                                                                             'endDate',
+                                                                                             'practice', 'po',
+                                                                                             'revisedEffort',
+                                                                                             'revisedTotal',
+                                                                                             'salesForceNumber',
+                                                                                             'projectFinType',
+                                                                                             'customer',
+                                                                                             'customerContact',
+                                                                                             'project', 'signed',
+                                                                                             'closed',
+                                                                                             )[0]
+                    try:
+                        Project.objects.filter(id=update_project_table['project']).update(plannedEffort=update_project_table['revisedEffort'],
+                                                                                          totalValue=update_project_table['revisedTotal'],
+                                                                                          closed=update_project_table['closed'],
+                                                                                          signed=update_project_table['signed'],
+                                                                                          po=update_project_table['po'],
+                                                                                          endDate=update_project_table['endDate'],
+                                                                                          startDate=update_project_table['startDate'],
+                                                                                          bu=update_project_table['bu'],
+                                                                                          salesForceNumber=update_project_table['salesForceNumber'],
+                                                                                          customer=update_project_table['customer'],
+                                                                                          customerContact=update_project_table['customerContact'],
+                                                                                          )
+                        ProjectDetail.objects.filter(project_id=update_project_table['project']).update(PracticeName=update_project_table['practice'],
+                                                                                                        projectFinType=update_project_table['projectFinType'])
+
+                    except Exception as error:
+                        return HttpResponse(error)
+
+            except Exception as error:
+                return HttpResponse(error)
+            return HttpResponse()
+        except Exception as E:
+            return HttpResponse(E)
+
+
+def project_change_detail(request):
+    cr_id = request.GET.get('id')
+    project_change_detail = ProjectChangeInfo.objects.get(crId=cr_id)
+    return render(request,'project_change_detail.html', {'project_change_detail':project_change_detail})
+
+
+class ActiveEmployees(TemplateView):
+    template_name = "MyANSRSource/active_employees.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveEmployees, self).get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['employees_list'] = Employee.objects.filter(
+                user__is_active=True).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
+            context['month_list'] = \
+                [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
+                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
+
+            return context
+        else:
+            raise PermissionDenied
+
+
+@login_required()
+def month_wise_active_employees(request):
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        try:
+            now = datetime.datetime.now()
+            result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=request.GET.get('month'),
+                                                    archive_date__year=now.year).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
+
+            result = json.dumps(list(result), cls=DjangoJSONEncoder)
+
+        except Exception as e:
+            print str(e)
+    # print  result
+    else:
+        raise PermissionDenied
+
+    return HttpResponse(result, content_type="application/json")
+
+
+class ActiveProjects(TemplateView):
+    template_name = "MyANSRSource/active_projects.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveProjects, self).get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['projects_list'] = ProjectDetail.objects.filter(
+                project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
+                                              'project__customer__name',  'project__bu__name' ,'project__endDate')
+            return context
+        else:
+            raise PermissionDenied
+
+
+@login_required()
+def get_project_summary(request, project_id):
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        if request.method == "GET":
+            data = project_summary(project_id, show_header=False)
+            return render(request, 'MyANSRSource/viewProjectSummary.html', data)
+    else:
+        raise PermissionDenied

@@ -36,6 +36,11 @@ PROJECTFINTYPE = (
     ('FP', 'Fixed Price'),
     ('T&M', 'T&M')
 )
+APRROVECHOICES = (
+    ('0', 'ACTIVE'),
+    ('1', 'APPROVED'),
+    ('2','REJECTED')
+)
 
 #upload path for sow and estimation
 
@@ -61,6 +66,16 @@ def change_file_path(instance, filename):
         datetime.datetime.now().month) + "/" + str(datetime.datetime.now().day) + "/"
     os_path = os.path.join(path, filename)
     return os_path
+
+
+class TimeStampAbstractModel(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
+    updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
+
+    class Meta:
+        abstract = True
 
 
 class Book(models.Model):
@@ -367,7 +382,6 @@ class ProjectManager(models.Model):
     user = models.ForeignKey(User)
 
 
-
 class TimeSheetEntry(models.Model):
     project = models.ForeignKey(Project, blank=False,
                                 verbose_name="Project Name", null=True)
@@ -586,11 +600,21 @@ class ProjectChangeInfo(models.Model):
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
     # Record Entered / Updated Date
+    #New Model Field As per New Project Creation Screen
+    projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
+                                      blank=True, null=True)
+    customer = models.ForeignKey(CompanyMaster.models.Customer, verbose_name="Customer", default=None, blank=True, null=True)
+    startDate = models.DateField(verbose_name="Revised Project Start Date", blank=True, null=True)
+    bu = models.ForeignKey(CompanyMaster.models.BusinessUnit, verbose_name="Business Unit", default=None,blank=True, null=True)
+    customerContact = models.CharField(verbose_name="Customer Contact", max_length=50, null=True,blank=True)
+    practice = models.ForeignKey(Practice, verbose_name="Practice Name", default=None, blank=True, null=True)
+    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
+    estimationDocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Estimation Document")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
-    approved = models.BooleanField(verbose_name="Approved", default=False)
+    approved = models.CharField(verbose_name="Approved", choices=APRROVECHOICES, default=0, max_length=1)
 
     def __unicode__(self):
         return self.crId
