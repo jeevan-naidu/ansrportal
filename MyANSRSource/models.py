@@ -68,6 +68,16 @@ def change_file_path(instance, filename):
     return os_path
 
 
+class TimeStampAbstractModel(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
+    updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
                             verbose_name="Name")

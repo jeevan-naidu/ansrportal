@@ -50,15 +50,17 @@ class StartProcess(APIView):
         queryset = user_queryset(request, config)
         fields = get_process_transactions(config.LIST_VIEW, "user")
         return Response({'queryset': queryset, 'serializer': serializer, 'fields': fields, 'app_name': app_name},
-                        template_name = 'templates/user_dashboard.html')
+                        template_name='templates/user_dashboard.html')
 
     def post(self, request, **kwargs):
         config = get_app_detail(request, **kwargs)
         app_name = get_app_name(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
         serializer = process_serializer(data=request.data)
+        attachment_required = config.ATTACHMENT
         attachment = request.FILES.get('attachment', "")
-        if serializer.is_valid() and attachment:
+        attachment_flag = (lambda: True if not attachment_required else attachment)()
+        if serializer.is_valid() and attachment_flag:
             try:
                 serializer.save_as(request)
                 return Response({'record_added': True}, status.HTTP_201_CREATED)
@@ -149,11 +151,17 @@ class UpdateProcess(APIView):
 
     def delete(self, request, pk, **kwargs):
         process = self.get_process(request, **kwargs)
+        app_name = get_app_name(request, **kwargs)
         process_object = self.get_object(pk, process[1])
-        process_object.process_status = "Rolled Back"
+        process_object.process_status = "Rolled back"
         process_object.request_status = "Withdrawn"
         process_object.is_active = False
         process_object.save()
+        if app_name == 'LaptopAvail':
+            process_object.return_status = "approved"
+            process_object.laptop.avaliable = True
+            process_object.laptop.save()
+            process_object.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

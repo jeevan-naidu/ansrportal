@@ -23,7 +23,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee, Remainder
+from employee.models import Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
@@ -3160,8 +3160,9 @@ class ActiveEmployees(TemplateView):
 def month_wise_active_employees(request):
     if request.user.groups.filter(name='myansrsourcebuhead').exists():
         try:
-
-            result = Employee.objects.filter(user__is_active=True).values(
+            now = datetime.now()
+            result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=request.GET.get('month'),
+                                                    archive_date__year=now.year).values(
                                                        'business_unit__name', 'employee_assigned_id',
                                                        'user__first_name', 'user__last_name',
                                                        'manager__user__first_name',

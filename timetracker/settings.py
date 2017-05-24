@@ -151,6 +151,7 @@ INSTALLED_APPS = [
     'Invoice',
     'skillset',
     'TimeInOffice',
+    'LaptopAvail'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -232,7 +233,8 @@ BOOTSTRAP3 = {
 # Font awesome related settings
 FONTAWESOME_CSS_URL = '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
 
-
+# Internationalization
+# https://docs.djangoproject.com/en/1.7/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -364,7 +366,6 @@ MILESTONE_REPORTS_ADMIN_GROUP_NAME = "MilestoneReportsAdmin"
 SALESFORCE_ADMIN_GROUP_NAME = "SalesforceAdmin"
 
 LEAVE_ADMIN_GROUP = 'LeaveAdmin'
-
 LEAVE_SHORT_ATTENDANCE_ISACTIVE = True
 
 HIRE_RECRUITER = 'HireRecruiter'
@@ -377,9 +378,7 @@ BROKER_PORT = 5672
 BROKER_USER = 'root'
 BROKER_PASSWORD = 'Welcome#2677'
 BROKER_VHOST = "ansrvhost"
-# local setting
-# BROKER_PASSWORD = 'root'
-# BROKER_VHOST = "/ansr"
+
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 

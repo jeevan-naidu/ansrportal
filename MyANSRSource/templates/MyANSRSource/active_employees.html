@@ -94,9 +94,12 @@ $(document).ready(function() {
                 $('input[type=search]').val('')
               },
               success: function (data) {
-                  $('.tr_active_employees').html('');
-                  for (var obj in data){
-                      if (data.hasOwnProperty(obj)){
+                $('.tr_active_employees').html('');
+                if(jQuery.isEmptyObject(data)) {sweetAlert("Oops...", "There is no archive found for this month !", "error"); $('#export').prop("disabled",true);}
+                else{
+                    $('#export').prop("disabled",false);
+                    for (var obj in data){
+                        if (data.hasOwnProperty(obj)){
                             $('#active_employees tbody').append('<tr class="tr_active_employees" ></tr>')
                             $('.tr_active_employees:last-child').append(active_employees);
                             $('.tr_active_employees:last-child td.emp_id').html(data[obj]['employee_assigned_id']);
@@ -107,8 +110,9 @@ $(document).ready(function() {
                             $('.tr_active_employees:last-child td.location').html(data[obj]['location__name']);
                             $('.tr_active_employees:last-child td.bu').html(data[obj]['business_unit__name']);
 
-                      }
-                  }
+                        }
+                    }
+                }
 
               },
         });
