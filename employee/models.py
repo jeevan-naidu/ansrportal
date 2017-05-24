@@ -338,7 +338,6 @@ class EmployeeArchive(TimeStampAbstractModel):
     employee_assigned_id = models.CharField(
         "Employee ID",
         max_length=15,
-        primary_key=True,
         blank=True)
 
     manager = models.ForeignKey('self', verbose_name="Manager",
