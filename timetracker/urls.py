@@ -29,7 +29,9 @@ urlpatterns = [
                        url(r'^hire/', include('Hire.urls')),
                        url(r'^exitapp/', include('ExitApp.urls')),
                        url(r'^library/', include('Library.urls')),
+                       url(r'^laptop/', include('LaptopAvail.urls')),
                        url(r'^process/', include('CustomApp.urls')),
                        url(r'^skillset/', include('skillset.urls')),
                        url(r'^timein/', include('TimeInOffice.urls')),
+                       url(r'^qms/', include('QMS.urls')),
                        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
