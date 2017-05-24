@@ -45,7 +45,7 @@ class ChooseTabs(FormView):
     def form_valid(self, form):
         user_tab = {}
         order_number = {}
-        chapter_list =  self.request.POST.getlist("to[]")
+        chapter_list = self.request.POST.getlist("to[]")
         users = {k: v for k, v in self.request.POST.items() if k.startswith('user_')}
         order = {k: v for k, v in self.request.POST.items() if k.startswith('order_')}
         # print users
@@ -106,6 +106,7 @@ class ChooseTabs(FormView):
         qa_obj = QASheetHeader.objects.filter(project=form.cleaned_data['project'], chapter_component=cm_obj).\
             values('review_group_id', 'author', 'reviewed_by_id', 'order_number')
         if chapter_list:
+            chapter_list = set(chapter_list)
             for obj in qa_obj:
                 for chapter in chapter_list:
                     cm_sub_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter_id=chapter,
@@ -256,12 +257,13 @@ def get_template_process_review(request):
     user_tab = {}
     tab_order = {}
     can_edit = {}
-    exclude_list =[]
+    exclude_list = []
     config_missing = False
     show_lead_complete = False
+    is_completed = False
     try:
         # print template,qms_process_model
-        is_active = ProjectTemplateProcessModel.objects.filter(project=project,lead_review_status=True).exists()
+        is_completed = ProjectTemplateProcessModel.objects.filter(project=project, lead_review_status=True).exists()
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
             order_by('id')
         # print "obj",obj,obj.query
@@ -325,7 +327,7 @@ def get_template_process_review(request):
         print "outer", str(e)
         tabs = team_members = tab_name = ''
         config_missing = True
-    if not is_active:
+    if not is_completed:
         can_edit = {x: False for x in can_edit}
     exclude_list = [k for k, v in can_edit.iteritems() if v is False]
     current_tab = False
@@ -355,7 +357,8 @@ def get_template_process_review(request):
 
     context_data = {'tabs': tabs, 'tab_name': tab_name, 'team_members': team_members, 'user_tab': user_tab,
                     'tab_order': tab_order, 'config_missing': config_missing, "can_edit": can_edit,
-                    "current_tab": current_tab, "show_lead_complete": show_lead_complete, "chapters": chapter}
+                    "current_tab": current_tab, "show_lead_complete": show_lead_complete, "chapters": chapter,
+                    "is_completed": is_completed}
     # print context_data
     return HttpResponse(
         json.dumps(context_data),

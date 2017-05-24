@@ -477,16 +477,22 @@ $('#filter_form').submit(function() {
                 data: {"template_id": $(':input[name$=template]').val() , "project_id" :  $(':input[name$=project]').val() ,"qms_process_model" :$(':input[name$=qms_process_model]').val(),
                 "chapter" :$(':input[name$=chapter]').val(),"author" :$(':input[name$=author]').val(),"component" :$(':input[name$=component]').val() },
                 success: function (data) {
-                if (data['config_missing'] == true) {
-                    sweetAlert("Oops...", "Configuration is missing!", "error");
-                    return false;
+                    if (data['is_completed'] == true) {
+                        $('#copy_configurations,#div_submit').hide();
+                        sweetAlert("Oops...", "This is project is already marked as completed!", "success");
+                    }
+                    if (data['config_missing'] == true) {
+                        sweetAlert("Oops...", "Configuration is missing!", "error");
+                        return false;
 
-                }
-                $("[name^=user_],[name^=order_]").prop('disabled',"False");
+                    }
+                    $("[name^=user_],[name^=order_]").prop('disabled',"False");
 //                console.log("can edit keys"+Object.keys(data['can_edit']));
 //                console.log("can edit values"+Object.values(data['can_edit']));
 //                console.log("tab_order values"+Object.values(data['tab_order']));
-                    load_chapters(data['chapters']);
+                    if (data['is_completed'] == false) {
+                        load_chapters(data['chapters']);
+                    }
                     populateForm(data);
                     orderTabs(data);
                     assignMandatory(data);
