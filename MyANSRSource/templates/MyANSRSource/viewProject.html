@@ -7,6 +7,15 @@
 <form id="summary" method="POST" action="">
 	{% csrf_token %}
 	<div class="table-responsive col-lg-12">
+		<div class="pull-right width-40">
+<div id="library-search-categories">
+
+       <label for="id-one" class="search-label"><input type="radio" id="id-one" class="form-inline" name="open" checked="checked" value="open"><span>Open Project</span></label>
+       <label for="id-one" class="search-label"><input type="radio" id="id-two" class="form-inline" name="open" value="close"><span>Closed Project</span></label>
+
+</div>
+
+   </div>
 	<table class="table table-bordered">
 		<thead>
 			<th class="text-center">Choose</th>
@@ -49,6 +58,29 @@
     (function() {
 
     }());
+    $(document).ready(function() {
+    $('input[type=radio][name=open]').change(function() {
+        if (this.value == 'open') {
+        	active='True'
+        	}
+        	else if (this.value == 'close') {
+        	active='False'
+        	}
+        	$.ajax({
+                                                url:"{% url 'viewproject' %}",
+                                                data:{"approve": active},
+                                                type:"get",
+                                                success: function(data){
+                                                newd = $(data).find('tbody')
+                                                console.log(newd)
+                                                $('.table-bordered tbody').empty();
+                                                $('.table-bordered').append(newd)
+
+                                                },
+
+                                            });
+    });
+});
 </script>
 
 {% endblock %}
