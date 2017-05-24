@@ -342,7 +342,7 @@ class EmployeeArchive(TimeStampAbstractModel):
 
     manager = models.ForeignKey(Employee, verbose_name="Manager",
                                 blank=True, null=True,
-                                related_name="Manager", default=None)
+                                related_name="archive_Manager", default=None)
     designation = models.ForeignKey(Designation)
     archive_date = models.DateField("Archive Date", auto_now_add=True)
     business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
