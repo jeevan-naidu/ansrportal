@@ -95,9 +95,9 @@ $(document).ready(function() {
               },
               success: function (data) {
                 $('.tr_active_employees').html('');
-                if(jQuery.isEmptyObject(data)) sweetAlert("Oops...", "There is no archive found for this month !", "error");
+                if(jQuery.isEmptyObject(data)) {sweetAlert("Oops...", "There is no archive found for this month !", "error"); $('#export').prop("disabled",true);}
                 else{
-
+                    $('#export').prop("disabled",false);
                     for (var obj in data){
                         if (data.hasOwnProperty(obj)){
                             $('#active_employees tbody').append('<tr class="tr_active_employees" ></tr>')
