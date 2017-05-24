@@ -21,5 +21,6 @@ PROCESS_STATUS = (
 )
 WORKFLOW_APPS = [
     'Reimburse',
-    'Invoice'
+    'Invoice',
+    'LaptopAvail'
 ]

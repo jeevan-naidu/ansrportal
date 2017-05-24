@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import ProjectDetail, Project
 
 logger = logging.getLogger('MyANSRSource')
-FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/"
+FEED_DIR = "/home/vivekpradhan/Downloads/"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR, "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR, "error")
@@ -53,7 +53,11 @@ def insert_into_db(row):
                 print "project {0} created having delivery manager {1}".format(project_detail.project, user[0])
             else:
                 print "project {0} changed delivery manager {1}".format(project_detail.project, user[0])
-
+        else:
+            if user:
+                print "project not avaliable {0}".format(row)
+            else:
+                print "user not avalibale {0}".format(row)
     except IntegrityError:
         raise IntegrityError("Incositent data")
 

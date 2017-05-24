@@ -434,6 +434,11 @@
                                                         <span class="menu-text">Approve Project</span>
                                                     </a>
                                                 </li>
+                                                <li>
+                                                    <a href="{% url 'ProjectChangeApproval' %}">
+                                                        <span class="menu-text">Approve ChangeReq</span>
+                                                    </a>
+                                                </li>
                                                 {% endif %}
 
                                                 <li>
@@ -523,6 +528,21 @@
                                                                             <span class="menu-text">Milestone Report</span>
                                                                         </a>
                                                                     </li>
+                                                                {% if request.user|has_group:"myansrsourcebuhead" %}
+                                                                <li>
+                                                                        <a href="{% url 'active_employees'%}">
+                                                                            <span class="menu-text">Active Employees</span>
+                                                                        </a>
+                                                                    </li>
+                                                                <li>
+                                                                        <a href="{% url 'active_projects'%}">
+                                                                            <span class="menu-text">Active Projects</span>
+                                                                        </a>
+                                                                    </li>
+
+                                                                {%endif %}
+
+
                                                                  {% endif %}
                                                             </ul>
                                                         </div>
@@ -832,10 +852,40 @@
 
 
 
+                                        <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Laptop Apply</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul class="clearfix">
+                                                        <li>
+                                                            <a href="/process/LaptopAvail/create/">
+                                                                <span class="menu-text">Laptop Dashboard</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="/laptop/return">
+                                                                <span class="menu-text">Laptop Return</span>
+                                                            </a>
+                                                        </li>
 
-                                                  </div>
+                                                        <li>
+                                                            <a href="/process/LaptopAvail/approve_list/">
+                                                                <span class="menu-text">Laptop Action</span>
+                                                            </a>
+                                                        </li>
 
-                                </li>
+                                                        <!-- <li>
+                                                                <a href="/Reimburse/update/1/">
+                                                                    <span class="menu-text">Reimburse Action</span>
+                                                                </a>
+                                                            </li> -->
+
+
+                                                    </ul>
+                                                </div>
+                                            </li>
 
                             </ul>
 

@@ -3,7 +3,8 @@ from MyANSRSource import views, reportviews
 from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser, \
     AutocompleteProjectAsset, AutocompletePracticeName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
     Autocompleteprojectscope, AutocompleteMilestonetype
-from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval
+from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval, ActiveEmployees,\
+    month_wise_active_employees, get_project_summary , ActiveProjects, ProjectChangeApproval
 from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
@@ -144,9 +145,21 @@ urlpatterns = [
     url(r'^project/newcreatedprojectapproval/$',
         login_required(NewCreatedProjectApproval.as_view()),
         name='new_created_project_approval'),
+    url(r'^project/projectchangeapproval/$',
+        login_required(ProjectChangeApproval.as_view()),
+        name='ProjectChangeApproval'),
     url(r'^project/projectdetail/$',
         login_required(views.project_detail),
         name='projectdetail'),
+    url(r'^project/project_change_detail/$',
+        login_required(views.project_change_detail),
+        name='project_change_detail'),
     url(r'^logout/$', views.Logout, name=u'logout'),
     url(r'^$', views.index, name=u'index'),
+    url(r'^active_employees$', login_required(ActiveEmployees.as_view()),
+        name='active_employees'),
+    url(r'^active_projects$', login_required(ActiveProjects.as_view()),
+        name='active_projects'),
+    url(r'^month_wise_active_employees', month_wise_active_employees),
+    url(r'^get_project_summary/(?P<project_id>[0-9]+)/$',   views.get_project_summary, name=u'get_project_summary'),
 ]
