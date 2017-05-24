@@ -339,7 +339,7 @@ class EmployeeArchive(TimeStampAbstractModel):
         "Employee ID",
         max_length=15,
         primary_key=True,
-        blank=False)
+        blank=True)
 
     manager = models.ForeignKey('self', verbose_name="Manager",
                                 blank=True, null=True,
