@@ -102,8 +102,8 @@ $(document).ready(function() {
                         if (data.hasOwnProperty(obj)){
                             $('#active_employees tbody').append('<tr class="tr_active_employees" ></tr>')
                             $('.tr_active_employees:last-child').append(active_employees);
-                            $('.tr_active_employees:last-child td.emp_id').html(data[obj]['employee_assigned_id']);
-                            $('.tr_active_employees:last-child td.user_name').html(data[obj]['user__first_name'] +" "+data[obj]['user__last_name']);
+                            $('.tr_active_employees:last-child td.emp_id').html(data[obj]['employee__employee_assigned_id']);
+                            $('.tr_active_employees:last-child td.user_name').html(data[obj]['employee__user__first_name'] +" "+data[obj]['employee__user__last_name']);
                             $('.tr_active_employees:last-child td.practice').html("");
                             $('.tr_active_employees:last-child td.designation').html(data[obj]['designation__name']);
                             $('.tr_active_employees:last-child td.manager').html(data[obj]['manager__user__first_name'] + " "+data[obj]['manager__user__last_name']);
