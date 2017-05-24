@@ -58,6 +58,7 @@ def insert_into_db(row):
                 print "project not avaliable {0}".format(row)
             else:
                 print "user not avalibale {0}".format(row)
+
     except IntegrityError:
         raise IntegrityError("Incositent data")
 
