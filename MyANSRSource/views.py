@@ -3133,7 +3133,7 @@ class ActiveEmployees(TemplateView):
 def month_wise_active_employees(request):
     if request.user.groups.filter(name='myansrsourcebuhead').exists():
         try:
-            now = datetime.datetime.now()
+            now = datetime.now()
             result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=request.GET.get('month'),
                                                     archive_date__year=now.year).values(
                                                        'business_unit__name', 'employee_assigned_id',
