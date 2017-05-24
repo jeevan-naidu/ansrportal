@@ -261,6 +261,7 @@ def get_template_process_review(request):
     show_lead_complete = False
     try:
         # print template,qms_process_model
+        is_active = ProjectTemplateProcessModel.objects.filter(project=project,lead_review_status=True).exists()
         obj = TemplateProcessReview.objects.filter(template=template, qms_process_model=qms_process_model). \
             order_by('id')
         # print "obj",obj,obj.query
@@ -324,6 +325,8 @@ def get_template_process_review(request):
         print "outer", str(e)
         tabs = team_members = tab_name = ''
         config_missing = True
+    if not is_active:
+        can_edit = {x: False for x in can_edit}
     exclude_list = [k for k, v in can_edit.iteritems() if v is False]
     current_tab = False
 
