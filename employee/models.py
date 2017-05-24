@@ -334,7 +334,12 @@ class Employee(TimeStampAbstractModel):
 
 
 class EmployeeArchive(TimeStampAbstractModel):
-    employee = models.ForeignKey(Employee, verbose_name="employee")
+    user = models.ForeignKey(User, verbose_name="User")
+    employee_assigned_id = models.CharField(
+        "Employee ID",
+        max_length=15,
+        primary_key=True,
+        blank=False)
 
     manager = models.ForeignKey('self', verbose_name="Manager",
                                 blank=True, null=True,
@@ -346,7 +351,7 @@ class EmployeeArchive(TimeStampAbstractModel):
     practice = models.ForeignKey(Practice, default=None, verbose_name="Practice", blank=True, null=True)
 
     def __unicode__(self):
-        return unicode(self.employee)
+        return unicode(self.user)
 
 
 def DefaultPermission(sender, instance, **kwargs):

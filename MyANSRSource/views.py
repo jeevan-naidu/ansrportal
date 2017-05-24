@@ -3134,10 +3134,10 @@ def month_wise_active_employees(request):
     if request.user.groups.filter(name='myansrsourcebuhead').exists():
         try:
             now = datetime.now()
-            result = EmployeeArchive.objects.filter(employee__user__is_active=True, archive_date__month=request.GET.get('month'),
+            result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=request.GET.get('month'),
                                                     archive_date__year=now.year).values(
-                                                       'business_unit__name', 'employee__employee_assigned_id',
-                                                       'employee__user__first_name', 'employee__user__last_name',
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
                                                        'manager__user__first_name',
                                                        'manager__user__last_name', 'designation__name',
                                                        'location__name')
