@@ -3144,8 +3144,8 @@ class ActiveEmployees(TemplateView):
                 user__is_active=True).values(
                                                        'business_unit__name', 'employee_assigned_id',
                                                        'user__first_name', 'user__last_name',
-                                                       'manager__first_name',
-                                                       'manager__last_name', 'designation__name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
                                                        'location__name')
             context['month_list'] = \
                 [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
