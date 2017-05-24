@@ -106,7 +106,7 @@ $(document).ready(function() {
                             $('.tr_active_employees:last-child td.user_name').html(data[obj]['user__first_name'] +" "+data[obj]['user__last_name']);
                             $('.tr_active_employees:last-child td.practice').html("");
                             $('.tr_active_employees:last-child td.designation').html(data[obj]['designation__name']);
-                            $('.tr_active_employees:last-child td.manager').html(data[obj]['manager__user__first_name'] + " "+data[obj]['manager__user__last_name']);
+                            $('.tr_active_employees:last-child td.manager').html(data[obj]['manager__first_name'] + " "+data[obj]['manager__last_name']);
                             $('.tr_active_employees:last-child td.location').html(data[obj]['location__name']);
                             $('.tr_active_employees:last-child td.bu').html(data[obj]['business_unit__name']);
 
