@@ -9,7 +9,6 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from CompanyMaster.models import PnL, Practice, SubPractice, Department, Designation, Company, UpdateDate, UpdateBy
 import CompanyMaster
-from MyANSRSource.models import TimeStampAbstractModel
 fs = FileSystemStorage(location='employee/emp_photo')
 
 GENDER_CHOICES = (
@@ -82,6 +81,17 @@ NATURE_OF_EDUCATION = (
     ('FT', 'Full-time'),
     ('PT', 'Part-time'),
 )
+
+
+# used for employee without auto_now_add for date time field
+class TimeStampAbstractModel(models.Model):
+    created_on = models.DateTimeField(blank=True, null=True)
+    created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
+    updated_on = models.DateTimeField(blank=True, null=True)
+    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
+
+    class Meta:
+        abstract = True
 
 
 class Designation(models.Model):
@@ -325,16 +335,23 @@ class Employee(TimeStampAbstractModel):
 
 class EmployeeArchive(TimeStampAbstractModel):
     user = models.OneToOneField(User, verbose_name="User")
+    employee_assigned_id = models.CharField(
+        "Employee ID",
+        max_length=15,
+        primary_key=True,
+        blank=False)
+
     manager = models.ForeignKey('self', verbose_name="Manager",
                                 blank=True, null=True,
                                 related_name="Manager", default=None)
+    designation = models.ForeignKey(Designation)
     archive_date = models.DateField("Archive Date", auto_now_add=True)
     business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
     location = models.ForeignKey('CompanyMaster.OfficeLocation')
     practice = models.ForeignKey(Practice, default=None, verbose_name="Practice", blank=True, null=True)
 
     def __unicode__(self):
-        return self.user
+        return unicode(self.user)
 
 
 def DefaultPermission(sender, instance, **kwargs):

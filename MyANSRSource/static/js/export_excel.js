@@ -1,6 +1,5 @@
  $('#export').on('click', function(e){
-    var table_id = $('table').attr('id')
-        e.preventDefault();
+       e.preventDefault();
        if( $('table tr').length >2)
         ResultsToTable();
         else {
@@ -59,24 +58,10 @@
             };
 
             e.tableRows = [];
+//            console.log("search"+$('input[type=search]').val());
 
             // get contents of table except for exclude
-            if( $('input[type=search]').val() =="" ) {
-               $(dataTable.fnGetNodes()).each(function(i,o){
-                    var tempRows = "";
-                    if (i==0) {
-                        temp_td =""
-                         $( "table thead tr th" ).each(function( index ) {
-                           temp_td += "<td><b>"+ $( this ).text() +"</b></td>";
-                        });
-                        tempRows += "<tr>"+temp_td+"</tr>";
-                     }
-                    tempRows += $(o).html();
 
-                    e.tableRows.push(tempRows);
-               });
-           }
-           else{
            $(e.element).each(function(i,o){
                 var tempRows,temp_td  = "";
                 $(o).find("tr").not(e.settings.exclude).each(function (i,o) {
@@ -88,7 +73,8 @@
                         tempRows = "<tr>"+temp_td+"</tr>";
                     }
                     else {
-                        tempRows += "<tr>" + $(o).html() + "</tr>";
+                            if ($(o).html() !="")
+                                tempRows += "<tr>" + $(o).html() + "</tr>";
                     }
                 });
 
@@ -97,8 +83,8 @@
             });
 
 
-           }
-
+//           }
+//            console.log(e.tableRows)
             e.tableToExcel(e.tableRows, e.settings.name);
         },
 
