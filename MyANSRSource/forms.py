@@ -567,28 +567,14 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        # self.fields['practice'].queryset = \
-        #     Practice.objects.all()
-        # self.fields['practice'].widget.attrs['class'] = "form-control practice"
         self.fields['Sowdocument'].widget.attrs['class'] = "form-control Sowdocument"
-        # self.fields['customer'].queryset = \
-        #     Customer.objects.filter(active=True).order_by('name')
-        # self.fields['bu'].queryset = \
-        #     BusinessUnit.objects.all().order_by('name')
         self.fields['reason'].widget.attrs['class'] = "form-control reason"
-        # self.fields['bu'].widget.attrs['class'] = "form-control businessUnit"
-        # self.fields['projectFinType'].widget.attrs['class'] = "form-control fintype"
-        # self.fields['customer'].widget.attrs['class'] = "form-control customer"
         self.fields['remark'].widget.attrs['class'] = "form-control remark controls"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
         self.fields['revisedEffort'].widget.attrs['class'] = "form-control"
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control project_close"
         self.fields['signed'].widget.attrs['class'] = "form-control sowsigned"
-        # self.fields['salesForceNumber'].widget.attrs['class'] = "form-control"
-        # self.fields['salesForceNumber'].widget.attrs['min'] = "20100000"
-        # self.fields['salesForceNumber'].widget.attrs['max'] = "99999999"
-        # self.fields['po'].widget.attrs['class'] = "form-control"
 
 
 class ChangeProjectTeamMemberForm(forms.ModelForm):
