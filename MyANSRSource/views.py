@@ -3168,11 +3168,12 @@ def month_wise_active_employees(request):
                                                        'manager__user__first_name',
                                                        'manager__user__last_name', 'designation__name',
                                                        'location__name')
-
+            print result.query
+            print result
             result = json.dumps(list(result), cls=DjangoJSONEncoder)
 
         except Exception as e:
-            print str(e)
+            logger.error(str(e))
     # print  result
     else:
         raise PermissionDenied
