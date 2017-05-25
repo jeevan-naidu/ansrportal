@@ -1,6 +1,6 @@
 // $('#export').on('click', function(e){
 //       e.preventDefault();
-//       if( $('table tr').length >2)
+//       if( $('table tr').length <2)
 //        ResultsToTable();
 //        else {
 //             txt = $("table tbody tr td:nth-child(1)").text();

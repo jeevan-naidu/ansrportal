@@ -3132,7 +3132,11 @@ class ProjectChangeApproval(View):
 def project_change_detail(request):
     cr_id = request.GET.get('id')
     project_change_detail = ProjectChangeInfo.objects.get(crId=cr_id)
+
     return render(request,'project_change_detail.html', {'project_change_detail':project_change_detail})
+
+month = [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
+                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
 
 
 class ActiveEmployees(TemplateView):
@@ -3148,46 +3152,61 @@ class ActiveEmployees(TemplateView):
                                                        'manager__user__first_name',
                                                        'manager__user__last_name', 'designation__name',
                                                        'location__name')
-            context['month_list'] = \
-                [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
-                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
+            context['month_list'] = month
 
             return context
         else:
             raise PermissionDenied
 
     def post(self, request, *args, **kwargs):
-        workbook = xlsxwriter.Workbook('active_projects.xlsx')
+        now = datetime.now()
+        dict_month = dict(month)
+        if request.POST.get('month') != "":
+            file_name = str(dict_month[int(request.POST.get('month'))]) + '_active_employees.xlsx'
+        else:
+            file_name = now.strftime('%B') + '_active_employees.xlsx'
+
+        workbook = xlsxwriter.Workbook(file_name)
         worksheet = workbook.add_worksheet()
-        header = ['Employee Id', 'Name', 'Manager', 'Designation', 'Practice', 'Location']
+        header = ['Employee Id', 'Name', 'Manager', 'Designation', 'Practice', 'Business Unit',  'Location']
         header_length = len(header)
         header_column = list(string.ascii_uppercase)[:header_length]
         header_column = [s+"1" for s in header_column]
         header = zip(header_column, header)
-        date_format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
-        now = datetime.now()
-        result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=request.POST.get('month'),
-                                                archive_date__year=now.year).values_list(
-            'business_unit__name', 'employee_assigned_id',
-            'user__first_name', 'user__last_name', 'practice__name'
-            'manager__user__first_name',
-            'manager__user__last_name', 'designation__name',
-            'location__name')
+
+        if request.POST.get('month') != "":
+            result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=int(request.POST.get('month')),
+                                                    archive_date__year=now.year).values_list(
+                 'employee_assigned_id', 'user__first_name', 'user__last_name', 'manager__user__first_name',
+                 'manager__user__last_name',  'designation__name', 'practice__name', 'business_unit__name',
+                 'location__name')
+        else:
+            result = EmployeeArchive.objects.filter(user__is_active=True,
+                                                    archive_date__year=now.year).values_list(
+                'employee_assigned_id',
+                'user__first_name', 'user__last_name', 'manager__user__first_name',
+                'manager__user__last_name', 'designation__name', 'practice__name', 'business_unit__name',
+                'location__name')
+
         for k, v in header:
             worksheet.write(k, v)
         row = 1
         for s in result:
             worksheet.write(row, 0, s[0])
-            worksheet.write(row, 1, s[1]+"")
-            worksheet.write(row, 2, s[2])
-            worksheet.write(row, 3, s[3])
-            worksheet.write(row, 4, s[4])
-            worksheet.write(row, 5, s[5], date_format)
+            worksheet.write(row, 1, s[1]+" "+s[2])
+            worksheet.write(row, 2, s[3]+" "+s[4])
+            worksheet.write(row, 3, s[5])
+            worksheet.write(row, 4, s[6])
+            worksheet.write(row, 5, s[7])
+            worksheet.write(row, 6, s[8])
+
             row += 1
 
         workbook.close()
 
-        return generateDownload(self.request, 'active_projects.xlsx')
+        return generateDownload(self.request, file_name)
+
+
 @login_required()
 def month_wise_active_employees(request):
     if request.user.groups.filter(name='myansrsourcebuhead').exists():
