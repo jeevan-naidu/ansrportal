@@ -4,6 +4,7 @@ import json
 import CompanyMaster
 import employee
 import os
+import xlsxwriter
 from decimal import Decimal
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
@@ -29,7 +30,7 @@ from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
 from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
 from fb360.models import Respondent
-
+from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
@@ -3155,7 +3156,38 @@ class ActiveEmployees(TemplateView):
         else:
             raise PermissionDenied
 
+    def post(self, request, *args, **kwargs):
+        workbook = xlsxwriter.Workbook('active_projects.xlsx')
+        worksheet = workbook.add_worksheet()
+        header = ['Employee Id', 'Name', 'Manager', 'Designation', 'Practice', 'Location']
+        header_length = len(header)
+        header_column = list(string.ascii_uppercase)[:header_length]
+        header_column = [s+"1" for s in header_column]
+        header = zip(header_column, header)
+        date_format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
+        now = datetime.now()
+        result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=request.POST.get('month'),
+                                                archive_date__year=now.year).values_list(
+            'business_unit__name', 'employee_assigned_id',
+            'user__first_name', 'user__last_name', 'practice__name'
+            'manager__user__first_name',
+            'manager__user__last_name', 'designation__name',
+            'location__name')
+        for k, v in header:
+            worksheet.write(k, v)
+        row = 1
+        for s in result:
+            worksheet.write(row, 0, s[0])
+            worksheet.write(row, 1, s[1]+"")
+            worksheet.write(row, 2, s[2])
+            worksheet.write(row, 3, s[3])
+            worksheet.write(row, 4, s[4])
+            worksheet.write(row, 5, s[5], date_format)
+            row += 1
 
+        workbook.close()
+
+        return generateDownload(self.request, 'active_projects.xlsx')
 @login_required()
 def month_wise_active_employees(request):
     if request.user.groups.filter(name='myansrsourcebuhead').exists():
@@ -3168,8 +3200,7 @@ def month_wise_active_employees(request):
                                                        'manager__user__first_name',
                                                        'manager__user__last_name', 'designation__name',
                                                        'location__name')
-            print result.query
-            print result
+
             result = json.dumps(list(result), cls=DjangoJSONEncoder)
 
         except Exception as e:
@@ -3180,8 +3211,7 @@ def month_wise_active_employees(request):
 
     return HttpResponse(result, content_type="application/json")
 
-import xlsxwriter
-from reportviews import *
+
 class ActiveProjects(TemplateView):
     template_name = "MyANSRSource/active_projects.html"
 
@@ -3198,32 +3228,26 @@ class ActiveProjects(TemplateView):
     def post(self, request, *args, **kwargs):
         workbook = xlsxwriter.Workbook('active_projects.xlsx')
         worksheet = workbook.add_worksheet()
-        header = ['Project Id', 'Project', 'Practice' , 'Customer', 'Business Unit', 'End Date']
+        header = ['Project Id', 'Project', 'Practice', 'Customer', 'Business Unit', 'End Date']
         header_length = len(header)
         header_column = list(string.ascii_uppercase)[:header_length]
         header_column = [s+"1" for s in header_column]
         header = zip(header_column, header)
-        format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
-        print header
+        date_format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
         project_details = ProjectDetail.objects.filter(
-                project__closed=False).values_list ('project__projectId',  'project__name',  'PracticeName', 'project__customer__name',
-                                               'project__bu__name', 'project__endDate')
+                project__closed=False).values_list('project__projectId',  'project__name',  'PracticeName',
+                                                   'project__customer__name',
+                                                   'project__bu__name', 'project__endDate')
         for k, v in header:
             worksheet.write(k, v)
         row = 1
         for s in project_details:
-
             worksheet.write(row, 0, s[0])
-
             worksheet.write(row, 1, s[1])
-
             worksheet.write(row, 2, s[2])
-
             worksheet.write(row, 3, s[3])
-
             worksheet.write(row, 4, s[4])
-            worksheet.write(row, 5, s[5], format)
-
+            worksheet.write(row, 5, s[5], date_format)
             row += 1
 
         workbook.close()
