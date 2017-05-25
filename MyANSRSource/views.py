@@ -2912,17 +2912,17 @@ def ViewProject(request):
         allproj.append(val.project_id)
     project_status = request.GET.get('approve')
     if project_status == 'False':
-        data = Project.objects.filter(closed=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+        data = Project.objects.filter(closed=True,active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
                                       | Q(customer__Crelation=request.user.id)).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
     elif project_status == 'True':
-        data = Project.objects.filter(closed=False).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+        data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
                                                            | Q(customer__Crelation=request.user.id)).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
     else:
-        data = Project.objects.filter(closed=False).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+        data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
                                                           | Q(customer__Crelation=request.user.id)).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
