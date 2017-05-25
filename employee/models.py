@@ -334,16 +334,15 @@ class Employee(TimeStampAbstractModel):
 
 
 class EmployeeArchive(TimeStampAbstractModel):
-    user = models.OneToOneField(User, verbose_name="User")
+    user = models.ForeignKey(User, verbose_name="User")
     employee_assigned_id = models.CharField(
         "Employee ID",
         max_length=15,
-        primary_key=True,
-        blank=False)
+        blank=True)
 
-    manager = models.ForeignKey('self', verbose_name="Manager",
-                                blank=True, null=True,
-                                related_name="Manager", default=None)
+    manager = models.ForeignKey(Employee, verbose_name="Manager",
+                                blank=True, null=True, to_field="employee_assigned_id",
+                                related_name="archive_Manager", default=None)
     designation = models.ForeignKey(Designation)
     archive_date = models.DateField("Archive Date", auto_now_add=True)
     business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
@@ -522,6 +521,3 @@ class EmployeeCompanyInformation(UpdateDate, UpdateBy):
         verbose_name = 'Employee Company Information'
         verbose_name_plural = 'Employees Company Information'
 
-
-class EmployeeCompanyInformationArchive(EmployeeCompanyInformation):
-    archive_date = models.DateField(verbose_name="Date", blank=True, null=True,)

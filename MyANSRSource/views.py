@@ -964,8 +964,7 @@ class ChangeProjectWizard(SessionWizardView):
                 currentProject['projectFinType'] = fintype['projectFinType']
                 currentProject['practice'] = fintype['PracticeName']
                 currentProject['revisedTotal'] = currentProject['totalValue']
-                currentProject['revisedEffort'] = currentProject[
-                    'plannedEffort']
+                currentProject['revisedEffort'] = currentProject['plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -2843,6 +2842,16 @@ def project_summary(project_id, show_header=True):
         'name', 'book__name', 'signed', 'internal', 'currentProject',
         'projectId', 'customerContact'
     )[0]
+    projdetailobj = ProjectDetail.objects.filter(project_id=project_id)
+    if projdetailobj:
+        projdetailvalue = projdetailobj.values('projectFinType', 'deliveryManager__username', 'pmDelegate__username')[0]
+        basicInfo['projectFinType'] = projdetailvalue['projectFinType']
+        basicInfo['deliveryManager'] = projdetailvalue['deliveryManager__username']
+        basicInfo['pmDelegate'] = projdetailvalue['pmDelegate__username']
+    else:
+        basicInfo['projectFinType'] = None
+        basicInfo['deliveryManager'] = None
+        basicInfo['pmDelegate'] = None
     if basicInfo['customerContact']:
         customerObj = basicInfo['customerContact']
         basicInfo['customerContact__username'] = customerObj
@@ -2895,10 +2904,28 @@ def ViewProject(request):
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
 
     data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
-                                                                   | Q(pmDelegate=request.user))
-    data = Project.objects.filter(Q(projectManager=request.user) | Q(id__in=data2)).values(
-        'name', 'id', 'closed', 'projectId'
-    )
+                                                                   | Q(pmDelegate=request.user) |
+                                                                   Q(PracticeName__head=request.user.id))
+    allproj =[]
+    for val in data2:
+        allproj.append(val.project_id)
+    project_status = request.GET.get('approve')
+    if project_status == 'False':
+        data = Project.objects.filter(closed=True,active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+                                      | Q(customer__Crelation=request.user.id)).values(
+            'name', 'id', 'closed', 'projectId'
+        ).distinct()
+    elif project_status == 'True':
+        data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+                                                           | Q(customer__Crelation=request.user.id)).values(
+            'name', 'id', 'closed', 'projectId'
+        ).distinct()
+    else:
+        data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+                                                          | Q(customer__Crelation=request.user.id)).values(
+            'name', 'id', 'closed', 'projectId'
+        ).distinct()
+
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
 
@@ -3141,11 +3168,12 @@ def month_wise_active_employees(request):
                                                        'manager__user__first_name',
                                                        'manager__user__last_name', 'designation__name',
                                                        'location__name')
-
+            print result.query
+            print result
             result = json.dumps(list(result), cls=DjangoJSONEncoder)
 
         except Exception as e:
-            print str(e)
+            logger.error(str(e))
     # print  result
     else:
         raise PermissionDenied
