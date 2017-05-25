@@ -481,7 +481,6 @@
                                             <!--<input type="button" class="btn btn-info btn-sm pull-right" id="add_button"-->
                                                 <!--value="Add Item"  />-->
                                      {% endif %}
-
                                       {% if not reviewer_feedback_status and not author_feedback_status %}
                                  <input type="submit" id="form-submit" value="save"
                                         class="btn btn-info btn-sm pull-right"/>
@@ -507,8 +506,8 @@
                                                           <input type="submit" id="form-submit" value="save"
                                     class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
-                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
-                                        value="Add Item"  />
+                                    <!-- <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                        value="Add Item"  /> -->
                                 {% endif %}
 
                              {% endif %}
@@ -526,6 +525,11 @@
                                                           <input type="submit" id="form-submit" value="save"
                                     class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
+                                    <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
+                                        value="Add Item"  />
+                         <input type="button" class="btn btn-info btn-sm pull-right" id="add_buttons"
+                                        value="Add Items"  data-toggle="modal"
+                                           data-target="#add_rows" />
                                   {% endif %}
 
 
