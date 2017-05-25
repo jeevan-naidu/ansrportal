@@ -951,20 +951,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'endDate',
                     'plannedEffort',
                     'totalValue',
-                    'salesForceNumber',
-                    'po',
                     'startDate',
-                    'bu',
-                    'customerContact',
-                    'customer',
-                    'id',
                 )[0]
-                #Additional Project Detail initial value
-                fintype = ProjectDetail.objects.filter(project_id=currentProject['id']).values('projectFinType', 'PracticeName')[0]
-                currentProject['projectFinType'] = fintype['projectFinType']
-                currentProject['practice'] = fintype['PracticeName']
-                currentProject['revisedTotal'] = currentProject['totalValue']
-                currentProject['revisedEffort'] = currentProject['plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -2249,6 +2237,7 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
+        print pru.bu
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
@@ -2256,18 +2245,13 @@ def UpdateProjectInfo(request, newInfo):
         else:
             pci.reason = newInfo[1]['reason']
         pci.endDate = newInfo[1]['endDate']
-        pci.salesForceNumber = newInfo[1]['salesForceNumber']
         pci.revisedEffort = newInfo[1]['revisedEffort']
         pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
         pci.startDate = newInfo[1]['startDate']
-        pci.projectFinType = newInfo[1]['projectFinType']
-        pci.bu = newInfo[1]['bu']
-        pci.customer = newInfo[1]['customer']
-        pci.customerContact = newInfo[1]['customerContact']
-        pci.practice = newInfo[1]['practice']
         pci.estimationDocument = request.session['revisedestimation']
         pci.sowdocument = request.session['revisedsow']
+        pci.bu = pru.bu
         pci.approved = 0
         if pci.closed is True:
             pci.closedOn = datetime.now().replace(tzinfo=utc)
@@ -2874,7 +2858,7 @@ def project_summary(project_id, show_header=True):
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
         'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-        'closed', 'closedOn', 'signed', 'salesForceNumber',
+        'closed', 'closedOn', 'signed',
         'updatedOn'
     ).order_by('updatedOn')
     data = {
@@ -2907,22 +2891,26 @@ def ViewProject(request):
                                                                    | Q(pmDelegate=request.user) |
                                                                    Q(PracticeName__head=request.user.id))
     allproj =[]
+    bu_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
     for val in data2:
         allproj.append(val.project_id)
     project_status = request.GET.get('approve')
     if project_status == 'False':
         data = Project.objects.filter(closed=True,active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
-                                      | Q(customer__Crelation=request.user.id)).values(
+                                      | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                      | Q(bu__in=bu_list)).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
     elif project_status == 'True':
         data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
-                                                           | Q(customer__Crelation=request.user.id)).values(
+                                                           | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                        |Q(bu__in=bu_list)).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
     else:
         data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
-                                                          | Q(customer__Crelation=request.user.id)).values(
+                                                          | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                       |Q(bu__in=bu_list) ).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
 
@@ -3090,15 +3078,10 @@ class ProjectChangeApproval(View):
                 ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
                 update_project_table = []
                 for val in approve:
-                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('bu', 'startDate',
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('startDate',
                                                                                              'endDate',
-                                                                                             'practice', 'po',
                                                                                              'revisedEffort',
                                                                                              'revisedTotal',
-                                                                                             'salesForceNumber',
-                                                                                             'projectFinType',
-                                                                                             'customer',
-                                                                                             'customerContact',
                                                                                              'project', 'signed',
                                                                                              'closed',
                                                                                              )[0]
@@ -3107,16 +3090,9 @@ class ProjectChangeApproval(View):
                                                                                           totalValue=update_project_table['revisedTotal'],
                                                                                           closed=update_project_table['closed'],
                                                                                           signed=update_project_table['signed'],
-                                                                                          po=update_project_table['po'],
                                                                                           endDate=update_project_table['endDate'],
                                                                                           startDate=update_project_table['startDate'],
-                                                                                          bu=update_project_table['bu'],
-                                                                                          salesForceNumber=update_project_table['salesForceNumber'],
-                                                                                          customer=update_project_table['customer'],
-                                                                                          customerContact=update_project_table['customerContact'],
                                                                                           )
-                        ProjectDetail.objects.filter(project_id=update_project_table['project']).update(PracticeName=update_project_table['practice'],
-                                                                                                        projectFinType=update_project_table['projectFinType'])
 
                     except Exception as error:
                         return HttpResponse(error)
@@ -3130,7 +3106,7 @@ class ProjectChangeApproval(View):
 
 def project_change_detail(request):
     cr_id = request.GET.get('id')
-    project_change_detail = ProjectChangeInfo.objects.get(crId=cr_id)
+    project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
     return render(request,'project_change_detail.html', {'project_change_detail':project_change_detail})
 
 
