@@ -19,14 +19,17 @@ Active Projects
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
-
+  <form action="" method="post">
+    {% csrf_token %}
 <div class="panel pb-15">
 
     <div class="panel-body">
 
 
 <table class="table table-striped myansr-table" id="active_projects">
-    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right active_projects" style="margin-bottom:4px" value="Export">
+
+    <input type="submit" id="" class="btn btn-sm vd_bg-green vd_white pull-right active_projects" style="margin-bottom:4px" value="Export">
+
 
 
   <thead>
@@ -59,7 +62,7 @@ Active Projects
 </div>
 </div>
 
-
+  </form>
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="/static/js/export_excel.js"></script>

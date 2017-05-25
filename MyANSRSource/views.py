@@ -3180,7 +3180,8 @@ def month_wise_active_employees(request):
 
     return HttpResponse(result, content_type="application/json")
 
-
+import xlsxwriter
+from reportviews import *
 class ActiveProjects(TemplateView):
     template_name = "MyANSRSource/active_projects.html"
 
@@ -3189,10 +3190,45 @@ class ActiveProjects(TemplateView):
         if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
             context['projects_list'] = ProjectDetail.objects.filter(
                 project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
-                                              'project__customer__name',  'project__bu__name' ,'project__endDate')
+                                              'project__customer__name',  'project__bu__name','project__endDate')
             return context
         else:
             raise PermissionDenied
+
+    def post(self, request, *args, **kwargs):
+        workbook = xlsxwriter.Workbook('active_projects.xlsx')
+        worksheet = workbook.add_worksheet()
+        header = ['Project Id', 'Project', 'Practice' , 'Customer', 'Business Unit', 'End Date']
+        header_length = len(header)
+        header_column = list(string.ascii_uppercase)[:header_length]
+        header_column = [s+"1" for s in header_column]
+        header = zip(header_column, header)
+        format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
+        print header
+        project_details = ProjectDetail.objects.filter(
+                project__closed=False).values_list ('project__projectId',  'project__name',  'PracticeName', 'project__customer__name',
+                                               'project__bu__name', 'project__endDate')
+        for k, v in header:
+            worksheet.write(k, v)
+        row = 1
+        for s in project_details:
+
+            worksheet.write(row, 0, s[0])
+
+            worksheet.write(row, 1, s[1])
+
+            worksheet.write(row, 2, s[2])
+
+            worksheet.write(row, 3, s[3])
+
+            worksheet.write(row, 4, s[4])
+            worksheet.write(row, 5, s[5], format)
+
+            row += 1
+
+        workbook.close()
+
+        return generateDownload(self.request, 'active_projects.xlsx')
 
 
 @login_required()

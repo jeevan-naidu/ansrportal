@@ -1,15 +1,15 @@
- $('#export').on('click', function(e){
-       e.preventDefault();
-       if( $('table tr').length >2)
-        ResultsToTable();
-        else {
-             txt = $("table tbody tr td:nth-child(1)").text();
-             if( txt.includes("No matching records found") )
-                sweetAlert("Oops...", "There is no data to export!", "error");
-             else ResultsToTable();
-
-        }
-    });
+// $('#export').on('click', function(e){
+//       e.preventDefault();
+//       if( $('table tr').length >2)
+//        ResultsToTable();
+//        else {
+//             txt = $("table tbody tr td:nth-child(1)").text();
+//             if( txt.includes("No matching records found") )
+//                sweetAlert("Oops...", "There is no data to export!", "error");
+//             else ResultsToTable();
+//
+//        }
+//    });
     function ResultsToTable(){
          $('table').table2excel({
             exclude: ".noExl",
@@ -170,7 +170,7 @@
                             "July", "August", "September", "October", "November", "December"];
 
         if($('#export').hasClass('active_projects')) {
-            return "active_projects.xlsx"
+            return "active_projects.xls"
         }
         else{
             if ( $('#month').val()!="" ) {
@@ -181,7 +181,7 @@
                 filename=  monthNames[d.getMonth()];
             }
         }
-        return filename + "_active_employees.xlsx";
+        return filename + "_active_employees.xls";
     }
 
     $.fn[ pluginName ] = function ( options ) {
