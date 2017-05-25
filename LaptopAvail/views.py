@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse
-from models import Laptops, LaptopApply, Transaction
+from models import LaptopApply
 from django.views.generic import View
 # Create your views here.
 

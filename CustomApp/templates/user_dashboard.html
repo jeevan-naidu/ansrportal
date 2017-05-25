@@ -86,8 +86,10 @@
 {% endwith %}
                         {% endfor %}
                             <th>
-                             <a  onclick="delete_process({{ process| field_name:"id" }})" data-toggle="modal" title="Delete" class="reimburse-action-button pull-right btn btn-sm btn-success ansr_red the-right-button text-center"><i class="fa fa-times append-icon"></i></a>
+                             <a  onclick="delete_process({{ process| field_name:"id" }})" data-toggle="modal" title="Cancel" class="reimburse-action-button pull-right btn btn-sm btn-success ansr_red the-right-button text-center"><i class="fa fa-times append-icon"></i></a>
+                                {%if app_name != 'LaptopAvail'%}
                              <a id="{{ app_name }}-{{ process| field_name:"id" }}" href="#modal-container-process_update" data-toggle="modal" title="Update" class="reimburse-action-button pull-right btn btn-sm btn-primary text-center"><i class="fa fa-pencil-square-o"></i></a>
+                                {% endif %}
                             </th>
                         </tr>
 

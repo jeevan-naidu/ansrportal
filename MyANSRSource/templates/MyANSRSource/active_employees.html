@@ -19,16 +19,16 @@ Active Employees
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
-
+<form action="" method="post">{%csrf_token%}
 <div class="panel pb-15">
 
     <div class="panel-body">
 
 
 <table class="table table-striped myansr-table" id="active_employees">
-    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" style="margin-bottom:4px" value="Export">
+    <input type="submit" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" style="margin-bottom:4px" value="Export">
 
-<select id="month" style="float:right; width:120px;margin-right:30px;" >
+<select id="month" name="month" style="float:right; width:120px;margin-right:30px;" >
     <option value="">Select Month</option>
     {% for k,v in month_list %}
   <option value={{k}}>{{v}}</option>
@@ -71,7 +71,7 @@ Active Employees
 
 </div>
 </div>
-
+</form>
 
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
