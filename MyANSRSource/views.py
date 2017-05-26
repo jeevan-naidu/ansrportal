@@ -28,7 +28,7 @@ from employee.models import Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
-from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
+from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification, ProjectChangeRejection
 from fb360.models import Respondent
 from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -3078,6 +3078,15 @@ class ProjectChangeApproval(View):
                 ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=1)
                 ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
                 update_project_table = []
+                emailnotifier = []
+                for val in reject:
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('project')[0]
+                    emailvalues = ProjectDetail.objects.filter(project_id=update_project_table['project']).values('deliveryManager__email', 'pmDelegate__email', 'project__projectManager__email')[0]
+                    emailnotifier.append(emailvalues['project__projectManager__email'].encode("utf-8"))
+                    emailnotifier.append(emailvalues['deliveryManager__email'].encode("utf-8"))
+                    emailnotifier.append(emailvalues['pmDelegate__email'].encode("utf-8"))
+                    emailnotifier = list(set(emailnotifier))
+                    ProjectChangeRejection.delay(emailnotifier, val)
                 for val in approve:
                     update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('startDate',
                                                                                              'endDate',
