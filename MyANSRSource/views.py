@@ -2681,7 +2681,6 @@ def saveProject(request):
                 datetime.now().year,
                 str(pr.customer.seqNumber).zfill(3)
             )
-
             pr.projectId = projectIdPrefix
             pr.save()
             pr.customer.seqNumber = pr.customer.seqNumber + 1
@@ -2727,6 +2726,8 @@ def saveProject(request):
                 del_mgr = request.POST.get('DeliveryManager')
                 del_mgr_id = User.objects.get(username=del_mgr).id
                 pd.deliveryManager_id = del_mgr_id
+                pd.Sowdocument = request.session['sow']
+                pd.Estimationdocument = request.session['estimation']
                 sop = request.POST.get('sopname')
                 sop_id = qualitysop.objects.get(name=sop).id if sop != 'None' else None
                 pd.SOP_id = sop_id
@@ -2734,10 +2735,11 @@ def saveProject(request):
                 scope_id = ProjectScope.objects.get(scope=scope).id if scope != 'None' else None
                 pd.Scope_id = scope_id
                 asset = request.POST.get('projectasset')
-                pd.Sowdocument = request.session['sow']
-                pd.Estimationdocument = request.session['estimation']
                 asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
-                pd.Asset_id = asset_id
+                try:
+                    pd.Asset_id = asset_id
+                except Exception as e:
+                    print e
                 pd.save()
 
             except ValueError as e:
