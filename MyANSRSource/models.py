@@ -523,7 +523,8 @@ class ProjectMilestone(models.Model):
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
 
-    def save(self, request):
+    def save(self, request=None):
+        used_user = request.user if request else User.objects.get(id=35)
         if self.closed and self.financial:
             Invoice.models.Invoice.objects.get_or_create(
                 project=self.project,
@@ -532,7 +533,7 @@ class ProjectMilestone(models.Model):
                 description=self.description,
                 closed_on_date=date.today(),
                 amount=self.amount,
-                user=request.user
+                user=used_user
             )
         super(ProjectMilestone, self).save()
 
