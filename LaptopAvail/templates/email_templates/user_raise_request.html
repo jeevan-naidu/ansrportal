@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Page Title</title>
+</head>
+
+<body>
+
+<p>Hi,</p>
+
+<p>You have request for laptop approval on the ANSRSource portal.</p>
+<p>User Name: {{raised_by}} </p>
+<p>From Date : {{from_date}}</p>
+<p>To Date : {{to_date}}</p>
+<p>Laptop No. : {{laptop_no}}<p>
+{% if reason %} <p> Reason : {{reason}} </p> {% endif %}
+
+<p></p><p></p>
+<p>Regards,<br>
+ HR Support<br>
+</body>
+</html>
