@@ -421,14 +421,14 @@
                                                             <ul class="clearfix">
 
 
-                                                {% if user|create_project or user|manage_project %}
+                                                {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                 <li>
                                                     <a href="/myansrsource/project/add">
                                                         <span class="menu-text">Create Project</span>
                                                     </a>
                                                 </li>
                                                 {% endif %}
-                                               {% if user|create_project or user|manage_project %}
+                                               {% if request.user|has_group:'myansrsourcebuhead' %}
                                                 <li>
                                                     <a href="{% url 'new_created_project_approval' %}">
                                                         <span class="menu-text">Approve Project</span>
@@ -440,7 +440,7 @@
                                                     </a>
                                                 </li>
                                                 {% endif %}
-
+                                                {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                 <li>
                                                     <a href="/myansrsource/project/modify">
                                                         <span class="menu-text">Manage Project/Enter Change Request</span>
@@ -451,6 +451,7 @@
                                                         {% endif %}
                                                     </a>
                                                 </li>
+                                                 {% endif %}
                                                 <li>
                                                     <a href="/myansrsource/project/view-project">
                                                         <span class="menu-text">View Project</span>
@@ -461,6 +462,7 @@
                                                         {% endif %}
                                                     </a>
                                                 </li>
+                                                 {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                 <li>
                                                     <a href="/myansrsource/project/manage-projectleader">
                                                         <span class="menu-text">Manage Project Leader</span>
@@ -488,6 +490,7 @@
                                                         </a>
                                                     </li>
                                                 {% endif %}
+                                                                {% endif %}
                                                             </ul>
                                                         </div>
                                                     </li><!--  -->
