@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from models import LaptopApply, Transaction, Laptops
+from tasks import LaptopRaiseEmail
 
 
 class LaptopSerializer(serializers.ModelSerializer):
@@ -24,14 +25,15 @@ class LaptopSerializer(serializers.ModelSerializer):
         from_date = self.validated_data['from_date']
         to_date = self.validated_data['to_date']
         reason = self.validated_data['reason']
-        LaptopApply(laptop=laptop,
-                    from_date=from_date,
-                    to_date=to_date,
-                    reason=reason,
-                    user=request.user,
-                    return_status='initiated').save()
+        laptop_apply = LaptopApply.objects.create(laptop=laptop,
+                                                  from_date=from_date,
+                                                  to_date=to_date,
+                                                  reason=reason,
+                                                  user=request.user,
+                                                  return_status='initiated')
         laptop.avaliable = False
         laptop.save()
+        LaptopRaiseEmail.delay(laptop_apply, 'raise', laptop_apply.role, 'raise')
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -52,6 +54,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             laptop_id=pk,
             role=role
         ).save()
+        laptop_apply = LaptopApply.objects.get(id=pk)
+        LaptopRaiseEmail.delay(laptop_apply, "transect", role, self.validated_data['status'])
 
     @staticmethod
     def transactions(pk, role):
