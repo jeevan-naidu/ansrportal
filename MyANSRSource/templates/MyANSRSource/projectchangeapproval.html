@@ -21,8 +21,6 @@
                             <tr>
                                 <th><b>Project CRId</b></th>
                                 <th><b>Project Name</b></th>
-                                <th><b>Project FinType</b></th>
-                                <th><b>Customer</b></th>
                                 <th><b>Reason</b></th>
                                 <th><b>Revised Total</b></th>
                                 <th><b>Action</b></th>
@@ -38,8 +36,6 @@
                                                   </a></td>
                                 <!--<td class="ws-mw">{{process.projectId}}</td>-->
                                  <td class="ws-mw">{{process.project}}</td>
-                                 <td class="ws-mw">{{process.projectFinType}}</td>
-                                 <td class="ws-mw">{{process.customer}}</td>
                                  <td class="ws-mw">{{process.reason}}</td>
                                  <td class="ws-mw">{{process.revisedTotal}}</td>
                                  <td class="ws-mw">
@@ -57,7 +53,6 @@
                                 </label>
                             </div>
                                  </td>
-
                         </tr>
 
 
@@ -160,7 +155,10 @@ $(".submit").on("click", function(){
                              if(checkbox_detail[0] == "approve"){
                                 approve_list.push(checkbox_detail[1]);
                              }else{
+                             var remark = $('.'+checkedBoxId[i]).val()
                              reject_list.push(checkbox_detail[1])
+
+
                              }
                             }
                             swal({   title: "Are you sure?",

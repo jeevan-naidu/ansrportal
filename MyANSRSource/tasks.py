@@ -48,5 +48,27 @@ class TimeSheetRejectionNotification(Task):
                 u'Unable to send time sheet rejection reminder mail for   {0}{1}{2} and the error is {3}'
                 u' '.format(from_date, to_date, email_list, str(e)))
 
+
+class ProjectChangeRejection(Task):
+    def run(self, email_list, crid):
+        msg_html = render_to_string('email/project_rejection.html',
+                                    {
+                                     'crId': crid
+                                    })
+        mail_obj = EmailMessage(crid+' ID Request Rejection',
+                                msg_html, settings.EMAIL_HOST_USER, email_list,
+                                cc=[])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+            logger.error(
+                "Unable To send Mail To The Authorities For"
+                "The Following Exit Applicant : Date time : ")
+            return "failed"
+        else:
+            logger.debug('send successful')
+
 tasks.register(TimeSheetWeeklyReminder)
 tasks.register(TimeSheetRejectionNotification)
+tasks.register(ProjectChangeRejection)

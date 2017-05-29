@@ -579,9 +579,9 @@ class ProjectChangeInfo(models.Model):
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
-    po = models.CharField(max_length=60, null=False,
-                          blank=False, default=0,
-                          verbose_name="P.O.", validators=[alphanumeric])
+    # po = models.CharField(max_length=60, null=False,
+    #                       blank=False, default=0,
+    #                       verbose_name="P.O.", validators=[alphanumeric])
     revisedEffort = models.IntegerField(default=0,
                                         validators=[MinValueValidator(0)],
                                         verbose_name="Revised Effort")
@@ -590,10 +590,6 @@ class ProjectChangeInfo(models.Model):
                                        validators=[MinValueValidator(0)],
                                        decimal_places=2,
                                        verbose_name="Revised amount")
-    salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
-                                           verbose_name="Sales Force \
-                                           Opportunity Number",
-                                           validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
     closedOn = models.DateTimeField(default=None, blank=True, null=True)
@@ -601,13 +597,8 @@ class ProjectChangeInfo(models.Model):
                                  verbose_name="Contract Signed")
     # Record Entered / Updated Date
     #New Model Field As per New Project Creation Screen
-    projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
-                                      blank=True, null=True)
-    customer = models.ForeignKey(CompanyMaster.models.Customer, verbose_name="Customer", default=None, blank=True, null=True)
     startDate = models.DateField(verbose_name="Revised Project Start Date", blank=True, null=True)
     bu = models.ForeignKey(CompanyMaster.models.BusinessUnit, verbose_name="Business Unit", default=None,blank=True, null=True)
-    customerContact = models.CharField(verbose_name="Customer Contact", max_length=50, null=True,blank=True)
-    practice = models.ForeignKey(Practice, verbose_name="Practice Name", default=None, blank=True, null=True)
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     estimationDocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Estimation Document")
     createdOn = models.DateTimeField(verbose_name="created Date",

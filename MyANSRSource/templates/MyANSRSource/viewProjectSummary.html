@@ -203,7 +203,6 @@
 			<th>Project End Date</th>
 			<th>Signed</th>
 			<th>Closed</th>
-			<th>SalesForce Number</th>
 		</thead>
         {% if changes %}
 		{% for eachChange in changes %}
@@ -236,9 +235,6 @@
                 {% else %}
                        No
                 {% endif %}
-			</td>
-			<td>
-				{{ eachChange.salesForceNumber }}
 			</td>
 		</tr>
 		{% endfor %}

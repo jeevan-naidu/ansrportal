@@ -4,6 +4,7 @@ import json
 import CompanyMaster
 import employee
 import os
+import xlsxwriter
 from decimal import Decimal
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
@@ -27,9 +28,9 @@ from employee.models import Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
-from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
+from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification, ProjectChangeRejection
 from fb360.models import Respondent
-
+from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
@@ -951,20 +952,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'endDate',
                     'plannedEffort',
                     'totalValue',
-                    'salesForceNumber',
-                    'po',
                     'startDate',
-                    'bu',
-                    'customerContact',
-                    'customer',
-                    'id',
                 )[0]
-                #Additional Project Detail initial value
-                fintype = ProjectDetail.objects.filter(project_id=currentProject['id']).values('projectFinType', 'PracticeName')[0]
-                currentProject['projectFinType'] = fintype['projectFinType']
-                currentProject['practice'] = fintype['PracticeName']
-                currentProject['revisedTotal'] = currentProject['totalValue']
-                currentProject['revisedEffort'] = currentProject['plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -2249,6 +2238,7 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
+        print pru.bu
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
@@ -2256,18 +2246,13 @@ def UpdateProjectInfo(request, newInfo):
         else:
             pci.reason = newInfo[1]['reason']
         pci.endDate = newInfo[1]['endDate']
-        pci.salesForceNumber = newInfo[1]['salesForceNumber']
         pci.revisedEffort = newInfo[1]['revisedEffort']
         pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
         pci.startDate = newInfo[1]['startDate']
-        pci.projectFinType = newInfo[1]['projectFinType']
-        pci.bu = newInfo[1]['bu']
-        pci.customer = newInfo[1]['customer']
-        pci.customerContact = newInfo[1]['customerContact']
-        pci.practice = newInfo[1]['practice']
         pci.estimationDocument = request.session['revisedestimation']
         pci.sowdocument = request.session['revisedsow']
+        pci.bu = pru.bu
         pci.approved = 0
         if pci.closed is True:
             pci.closedOn = datetime.now().replace(tzinfo=utc)
@@ -2874,7 +2859,7 @@ def project_summary(project_id, show_header=True):
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
         'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-        'closed', 'closedOn', 'signed', 'salesForceNumber',
+        'closed', 'closedOn', 'signed',
         'updatedOn'
     ).order_by('updatedOn')
     data = {
@@ -2907,22 +2892,26 @@ def ViewProject(request):
                                                                    | Q(pmDelegate=request.user) |
                                                                    Q(PracticeName__head=request.user.id))
     allproj =[]
+    bu_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
     for val in data2:
         allproj.append(val.project_id)
     project_status = request.GET.get('approve')
     if project_status == 'False':
         data = Project.objects.filter(closed=True,active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
-                                      | Q(customer__Crelation=request.user.id)).values(
+                                      | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                      | Q(bu__in=bu_list)).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
     elif project_status == 'True':
         data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
-                                                           | Q(customer__Crelation=request.user.id)).values(
+                                                           | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                        |Q(bu__in=bu_list)).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
     else:
         data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
-                                                          | Q(customer__Crelation=request.user.id)).values(
+                                                          | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                       |Q(bu__in=bu_list) ).values(
             'name', 'id', 'closed', 'projectId'
         ).distinct()
 
@@ -3089,16 +3078,20 @@ class ProjectChangeApproval(View):
                 ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=1)
                 ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
                 update_project_table = []
+                emailnotifier = []
+                for val in reject:
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('project')[0]
+                    emailvalues = ProjectDetail.objects.filter(project_id=update_project_table['project']).values('deliveryManager__email', 'pmDelegate__email', 'project__projectManager__email')[0]
+                    emailnotifier.append(emailvalues['project__projectManager__email'].encode("utf-8"))
+                    emailnotifier.append(emailvalues['deliveryManager__email'].encode("utf-8"))
+                    emailnotifier.append(emailvalues['pmDelegate__email'].encode("utf-8"))
+                    emailnotifier = list(set(emailnotifier))
+                    ProjectChangeRejection.delay(emailnotifier, val)
                 for val in approve:
-                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('bu', 'startDate',
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('startDate',
                                                                                              'endDate',
-                                                                                             'practice', 'po',
                                                                                              'revisedEffort',
                                                                                              'revisedTotal',
-                                                                                             'salesForceNumber',
-                                                                                             'projectFinType',
-                                                                                             'customer',
-                                                                                             'customerContact',
                                                                                              'project', 'signed',
                                                                                              'closed',
                                                                                              )[0]
@@ -3107,16 +3100,9 @@ class ProjectChangeApproval(View):
                                                                                           totalValue=update_project_table['revisedTotal'],
                                                                                           closed=update_project_table['closed'],
                                                                                           signed=update_project_table['signed'],
-                                                                                          po=update_project_table['po'],
                                                                                           endDate=update_project_table['endDate'],
                                                                                           startDate=update_project_table['startDate'],
-                                                                                          bu=update_project_table['bu'],
-                                                                                          salesForceNumber=update_project_table['salesForceNumber'],
-                                                                                          customer=update_project_table['customer'],
-                                                                                          customerContact=update_project_table['customerContact'],
                                                                                           )
-                        ProjectDetail.objects.filter(project_id=update_project_table['project']).update(PracticeName=update_project_table['practice'],
-                                                                                                        projectFinType=update_project_table['projectFinType'])
 
                     except Exception as error:
                         return HttpResponse(error)
@@ -3130,8 +3116,12 @@ class ProjectChangeApproval(View):
 
 def project_change_detail(request):
     cr_id = request.GET.get('id')
+    project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
     project_change_detail = ProjectChangeInfo.objects.get(crId=cr_id)
-    return render(request,'project_change_detail.html', {'project_change_detail':project_change_detail})
+    return render(request,'project_change_detail.html', {'project_change_detail': project_change_detail})
+
+month = [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
+                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
 
 
 class ActiveEmployees(TemplateView):
@@ -3147,13 +3137,59 @@ class ActiveEmployees(TemplateView):
                                                        'manager__user__first_name',
                                                        'manager__user__last_name', 'designation__name',
                                                        'location__name')
-            context['month_list'] = \
-                [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
-                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
+            context['month_list'] = month
 
             return context
         else:
             raise PermissionDenied
+
+    def post(self, request, *args, **kwargs):
+        now = datetime.now()
+        dict_month = dict(month)
+        if request.POST.get('month') != "":
+            file_name = str(dict_month[int(request.POST.get('month'))]) + '_active_employees.xlsx'
+        else:
+            file_name = now.strftime('%B') + '_active_employees.xlsx'
+
+        workbook = xlsxwriter.Workbook(file_name)
+        worksheet = workbook.add_worksheet()
+        header = ['Employee Id', 'Name', 'Manager', 'Designation', 'Practice', 'Business Unit',  'Location']
+        header_length = len(header)
+        header_column = list(string.ascii_uppercase)[:header_length]
+        header_column = [s+"1" for s in header_column]
+        header = zip(header_column, header)
+
+        if request.POST.get('month') != "":
+            result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=int(request.POST.get('month')),
+                                                    archive_date__year=now.year).values_list(
+                 'employee_assigned_id', 'user__first_name', 'user__last_name', 'manager__user__first_name',
+                 'manager__user__last_name',  'designation__name', 'practice__name', 'business_unit__name',
+                 'location__name')
+        else:
+            result = EmployeeArchive.objects.filter(user__is_active=True,
+                                                    archive_date__year=now.year).values_list(
+                'employee_assigned_id',
+                'user__first_name', 'user__last_name', 'manager__user__first_name',
+                'manager__user__last_name', 'designation__name', 'practice__name', 'business_unit__name',
+                'location__name')
+
+        for k, v in header:
+            worksheet.write(k, v)
+        row = 1
+        for s in result:
+            worksheet.write(row, 0, s[0])
+            worksheet.write(row, 1, s[1]+" "+s[2])
+            worksheet.write(row, 2, s[3]+" "+s[4])
+            worksheet.write(row, 3, s[5])
+            worksheet.write(row, 4, s[6])
+            worksheet.write(row, 5, s[7])
+            worksheet.write(row, 6, s[8])
+
+            row += 1
+
+        workbook.close()
+
+        return generateDownload(self.request, file_name)
 
 
 @login_required()
@@ -3168,8 +3204,7 @@ def month_wise_active_employees(request):
                                                        'manager__user__first_name',
                                                        'manager__user__last_name', 'designation__name',
                                                        'location__name')
-            print result.query
-            print result
+
             result = json.dumps(list(result), cls=DjangoJSONEncoder)
 
         except Exception as e:
@@ -3189,10 +3224,39 @@ class ActiveProjects(TemplateView):
         if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
             context['projects_list'] = ProjectDetail.objects.filter(
                 project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
-                                              'project__customer__name',  'project__bu__name' ,'project__endDate')
+                                              'project__customer__name',  'project__bu__name','project__endDate')
             return context
         else:
             raise PermissionDenied
+
+    def post(self, request, *args, **kwargs):
+        workbook = xlsxwriter.Workbook('active_projects.xlsx')
+        worksheet = workbook.add_worksheet()
+        header = ['Project Id', 'Project', 'Practice', 'Customer', 'Business Unit', 'End Date']
+        header_length = len(header)
+        header_column = list(string.ascii_uppercase)[:header_length]
+        header_column = [s+"1" for s in header_column]
+        header = zip(header_column, header)
+        date_format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
+        project_details = ProjectDetail.objects.filter(
+                project__closed=False).values_list('project__projectId',  'project__name',  'PracticeName',
+                                                   'project__customer__name',
+                                                   'project__bu__name', 'project__endDate')
+        for k, v in header:
+            worksheet.write(k, v)
+        row = 1
+        for s in project_details:
+            worksheet.write(row, 0, s[0])
+            worksheet.write(row, 1, s[1])
+            worksheet.write(row, 2, s[2])
+            worksheet.write(row, 3, s[3])
+            worksheet.write(row, 4, s[4])
+            worksheet.write(row, 5, s[5], date_format)
+            row += 1
+
+        workbook.close()
+
+        return generateDownload(self.request, 'active_projects.xlsx')
 
 
 @login_required()

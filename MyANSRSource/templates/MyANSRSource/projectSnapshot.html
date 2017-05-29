@@ -138,10 +138,16 @@
         <span class="glyphicon glyphicon-remove"></span>
 	<b>Cancel Project</b>
 </a>
-<button type="submit" value="submit" class="btn btn-success pull-right">
+<button type="submit" value="submit" class="btn btn-success pull-right onetime">
         <i class="fa fa-upload"></i>
 	<b>Create Project</b>
 </button>
 </form>
 </div>
+<script type="text/javascript">
+	 $("form").submit(function(){
+	 $(".onetime").attr("disabled", true);
+
+	});
+</script>
 {% endblock %}
