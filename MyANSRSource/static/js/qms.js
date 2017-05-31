@@ -592,11 +592,17 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
             $('.qms-allocators .form-group:last-child').find('input.order-number').val('');
             $('#select-field').html('The end');
             globally_locked = true;
-//        console.log("im here");
+
+
             $('#qms-add-field').prop('disabled', true);
-//            $('#qms-submit').prop('disabled', false);
 
         }
+
+         $('.qms-allocators .form-group:last-child input.order-number').attr({name:"order_"+theID ,id:"order_"+theID});
+         $('#order_'+theID).removeClass().addClass("form-control input-sm order-number tab-order-"+theID);
+         $('.qms-allocators .form-group:last-child input.tab_complete').attr({name:"tab_complete_"+theID ,id:theID});
+
+        $('#'+theID).hide();
     })
 
 

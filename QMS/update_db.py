@@ -7,7 +7,12 @@ sys.setdefaultencoding('utf-8')
 # #
 database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
 cursor = database.cursor()
-s = [f for f in os.listdir("/home/rsb/Desktop/Templates")]
+s = [f for f in os.listdir("/home/rsb/qms_share_point/")]
+sheets = [u'For Consolidation', u'Summary', u'Legend', u'Editor Review 1', u'Editor Review 2',
+ u'Editor Review 3', u'EA', u'Copy Edit 1', u'Copy Edit 2', u'End User Testing',
+ u'QA Spot Check', u'Customer Feedback', u'Defect types & severity levels',
+ u'R1', u'R2']
+
 # ['ansrS_QA_Tmplt_F&A Supps QA sheet_1.2_Template.xlsx',
 #  'ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3_Template.xlsx',
 #  'ansrS_QA_Tmplt_Alt Text QA sheet_1.0_template_1.xlsx',
@@ -29,6 +34,7 @@ s = [f for f in os.listdir("/home/rsb/Desktop/Templates")]
 #  'ansrS_QA_Tmplt_Econ,Stats,SEM QA sheet_3.2_Template.xlsx',
 #  'ansrS_QA_Tmplt_Cognero QA sheet_2.1_Template.xlsx']
 # [30,31,35,26,20,21,38,28,25,27,34,32,36,22,33, 39 ,23,29
+
 error = []
 for t in s:
     book = xlrd.open_workbook("/home/rsb/Desktop/Templates/"+t)
