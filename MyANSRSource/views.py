@@ -954,6 +954,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'totalValue',
                     'startDate',
                 )[0]
+                currentProject['revisedTotal'] = currentProject['totalValue']
+                currentProject['revisedEffort'] = currentProject['plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -2238,7 +2240,6 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
-        print pru.bu
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
@@ -2633,136 +2634,137 @@ def saveProject(request):
     # Please go back and clean up error handling - for example a int() call
     # with throw ValueError.  You ahve to handle it.  Once you handle how do
     # you send them back to the summary page?
+    for i in range(0, 1):
+        if request.method == 'POST':
+            try:
+                #: code to check not more than 3 PM per project
+                pm = []
+                for eachId in eval(request.POST.get('pm')):
+                    pm.append(eachId)
+                pm_count = len(pm)
+                if pm_count > 3:
+                    messages.error(request, "OOPS can't select more than 3 ProjectManger")
+                    return render(
+                        request,
+                        'MyANSRSource/projectCreationFailure.html',
+                        {})
+                pr = Project()
+                pr.name = request.POST.get('name')
+                pType = projectType.objects.get(
+                    id=int(request.POST.get('projectType'))
+                )
+                pr.projectType = pType
+                startDate = request.session['PStartDate']
+                endDate = request.session['PEndDate']
+                pr.startDate = startDate
+                pr.endDate = endDate
+                pr.po = request.POST.get('po')
+                pr.totalValue = float(request.POST.get('totalValue'))
+                pr.plannedEffort = int(request.POST.get('plannedEffort'))
+                pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
+                pr.currentProject = request.POST.get('currentProject')
+                pr.signed = (request.POST.get('signed') == 'True')
+                pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
+                    pk=int(request.POST.get('bu'))
+                )
+                pr.customer = CompanyMaster.models.Customer.objects.get(
+                    pk=int(request.POST.get('customer'))
+                )
+                pr.internal = pr.customer.internal
+                pr.customerContact = request.POST.get('customerContact')
+                pr.book = Book.objects.get(
+                    pk=int(request.POST.get('book'))
+                )
+                try:
+                    projectIdPrefix = u"{0}-{1}-{2}".format(
+                        pr.customer.customerCode,
+                        datetime.now().year,
+                        str(pr.customer.seqNumber).zfill(3)
+                    )
+                    pr.projectId = projectIdPrefix
+                    pr.save()
+                except Exception as er:
+                    print er
+                pr.customer.seqNumber = pr.customer.seqNumber + 1
+                pr.customer.save()
 
-    if request.method == 'POST':
+                pci = ProjectChangeInfo()
+                pci.project = pr
+                pci.crId = u"BL-{0}".format(pr.id)
+                pci.reason = 'Base Line data'
+                pci.endDate = endDate
+                pci.revisedEffort = int(request.POST.get('plannedEffort'))
+                pci.revisedTotal = float(request.POST.get('totalValue'))
+                pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
+                pci.save()
 
-        try:
-            #: code to check not more than 3 PM per project
-            pm = []
-            for eachId in eval(request.POST.get('pm')):
-                pm.append(eachId)
-            pm_count = len(pm)
-            if pm_count > 3:
-                messages.error(request, "OOPS can't select more than 3 ProjectManger")
+                for eachId in eval(request.POST.get('pm')):
+                    pm = ProjectManager()
+                    pm.user = User.objects.get(pk=eachId)
+                    pm.project = pr
+                    pm.save()
+                if request.user.id not in eval(request.POST.get('pm')):
+                    pm = ProjectManager()
+                    pm.user = request.user
+                    pm.project = pr
+                    pm.save()
+                if pr.internal == False:
+                    context = {
+                        'projectId': pr.projectId,
+                        'projectName': pr.name,
+                    }
+                    senderEmail = settings.EXTERNAL_PROJECT_NOTIFIERS
+                    for eachRecp in senderEmail:
+                        SendMail(context, eachRecp, 'externalproject')
+
+                try:
+                    pd = ProjectDetail()
+                    pd.project_id = pr.id
+                    pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
+                    pd.projectFinType = request.POST.get('projectFinType')
+                    practice_name = request.POST.get('practicename')
+                    practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
+                    pd.PracticeName_id = practice_id
+                    del_mgr = request.POST.get('DeliveryManager')
+                    del_mgr_id = User.objects.get(username=del_mgr).id
+                    pd.deliveryManager_id = del_mgr_id
+                    pd.Sowdocument = request.session['sow']
+                    pd.Estimationdocument = request.session['estimation']
+                    sop = request.POST.get('sopname')
+                    sop_id = qualitysop.objects.get(name=sop).id if sop != 'None' else None
+                    pd.SOP_id = sop_id
+                    scope = request.POST.get('ProjectScope')
+                    scope_id = ProjectScope.objects.get(scope=scope).id if scope != 'None' else None
+                    pd.Scope_id = scope_id
+                    asset = request.POST.get('projectasset')
+                    asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
+                    try:
+                        pd.Asset_id = asset_id
+                    except Exception as e:
+                        print e
+                    pd.save()
+
+                except ValueError as e:
+                    pr.delete()
+                    pm.delete()
+                    pci.delete()
+                    pr.customer.delete()
+                    logger.exception(e)
+
+            except ValueError as e:
+                logger.exception(e)
                 return render(
                     request,
                     'MyANSRSource/projectCreationFailure.html',
                     {})
-            pr = Project()
-            pr.name = request.POST.get('name')
-            pType = projectType.objects.get(
-                id=int(request.POST.get('projectType'))
-            )
-            pr.projectType = pType
-            startDate = request.session['PStartDate']
-            endDate = request.session['PEndDate']
-            pr.startDate = startDate
-            pr.endDate = endDate
-            pr.po = request.POST.get('po')
-            pr.totalValue = float(request.POST.get('totalValue'))
-            pr.plannedEffort = int(request.POST.get('plannedEffort'))
-            pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
-            pr.currentProject = request.POST.get('currentProject')
-            pr.signed = (request.POST.get('signed') == 'True')
-            pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
-                pk=int(request.POST.get('bu'))
-            )
-            pr.customer = CompanyMaster.models.Customer.objects.get(
-                pk=int(request.POST.get('customer'))
-            )
-            pr.internal = pr.customer.internal
-            pr.customerContact = request.POST.get('customerContact')
-            pr.book = Book.objects.get(
-                pk=int(request.POST.get('book'))
-            )
 
-            projectIdPrefix = u"{0}-{1}-{2}".format(
-                pr.customer.customerCode,
-                datetime.now().year,
-                str(pr.customer.seqNumber).zfill(3)
-            )
-            pr.projectId = projectIdPrefix
-            pr.save()
-            pr.customer.seqNumber = pr.customer.seqNumber + 1
-            pr.customer.save()
-
-            pci = ProjectChangeInfo()
-            pci.project = pr
-            pci.crId = u"BL-{0}".format(pr.id)
-            pci.reason = 'Base Line data'
-            pci.endDate = endDate
-            pci.revisedEffort = int(request.POST.get('plannedEffort'))
-            pci.revisedTotal = float(request.POST.get('totalValue'))
-            pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
-            pci.save()
-
-            for eachId in eval(request.POST.get('pm')):
-                pm = ProjectManager()
-                pm.user = User.objects.get(pk=eachId)
-                pm.project = pr
-                pm.save()
-            if request.user.id not in eval(request.POST.get('pm')):
-                pm = ProjectManager()
-                pm.user = request.user
-                pm.project = pr
-                pm.save()
-            if pr.internal == False:
-                context = {
-                    'projectId': pr.projectId,
-                    'projectName': pr.name,
-                }
-                senderEmail = settings.EXTERNAL_PROJECT_NOTIFIERS
-                for eachRecp in senderEmail:
-                    SendMail(context, eachRecp, 'externalproject')
-
-            try:
-                pd = ProjectDetail()
-                pd.project_id = pr.id
-                pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
-                pd.projectFinType = request.POST.get('projectFinType')
-                practice_name = request.POST.get('practicename')
-                practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
-                pd.PracticeName_id = practice_id
-                del_mgr = request.POST.get('DeliveryManager')
-                del_mgr_id = User.objects.get(username=del_mgr).id
-                pd.deliveryManager_id = del_mgr_id
-                pd.Sowdocument = request.session['sow']
-                pd.Estimationdocument = request.session['estimation']
-                sop = request.POST.get('sopname')
-                sop_id = qualitysop.objects.get(name=sop).id if sop != 'None' else None
-                pd.SOP_id = sop_id
-                scope = request.POST.get('ProjectScope')
-                scope_id = ProjectScope.objects.get(scope=scope).id if scope != 'None' else None
-                pd.Scope_id = scope_id
-                asset = request.POST.get('projectasset')
-                asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
-                try:
-                    pd.Asset_id = asset_id
-                except Exception as e:
-                    print e
-                pd.save()
-
-            except ValueError as e:
-                pr.delete()
-                pm.delete()
-                pci.delete()
-                pr.customer.delete()
-                logger.exception(e)
-
-        except ValueError as e:
-            logger.exception(e)
-            return render(
-                request,
-                'MyANSRSource/projectCreationFailure.html',
-                {})
-
-        data = {'projectCode': projectIdPrefix, 'projectId': pr.id,
-                'projectName': pr.name, 'customerId': pr.customer.id}
-        return render(request, 'MyANSRSource/projectSuccess.html', data)
-    # This is not a post request.  This cannot be possible unless someone is
-    # trying to hack things.  Let us just send them back to dashboard.
-    else:
-        return HttpResponseRedirect(request, '/myansrsource/dashboard')
+            data = {'projectCode': projectIdPrefix, 'projectId': pr.id,
+                    'projectName': pr.name, 'customerId': pr.customer.id}
+            return render(request, 'MyANSRSource/projectSuccess.html', data)
+        # This is not a post request.  This cannot be possible unless someone is
+        # trying to hack things.  Let us just send them back to dashboard.
+        else:
+            return HttpResponseRedirect(request, '/myansrsource/dashboard')
 
 
 createProject = CreateProjectWizard.as_view(FORMS)
@@ -3050,8 +3052,11 @@ class NewCreatedProjectApproval(View):
 
 def project_detail(request):
     project_id = request.GET.get('id')
-    project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
-    return render(request, 'project_detail.html', {'project_detail': project_details})
+    try:
+        project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
+        return render(request, 'project_detail.html', {'project_detail': project_details})
+    except Exception as e:
+        return render(request, 'project_detail.html', {'project_detail': 'Nothing'})
 
 
 

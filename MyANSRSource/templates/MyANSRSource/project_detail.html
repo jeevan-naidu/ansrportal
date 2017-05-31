@@ -1,6 +1,9 @@
 {% load static from staticfiles %}
 
 <div class="LeaveDetails" >
+    {% if project_detail == 'Nothing' %}
+        <p>Sorry.. No Data Found</p>
+    {% else %}
 
 <table class=" table table-hover view_details" >
     </tr>
@@ -51,4 +54,5 @@
 
 
  </table>
+    {% endif %}
 </div>
