@@ -530,7 +530,7 @@
                                                                         <a href="/reports/milestones/">
                                                                             <span class="menu-text">Milestone Report</span>
                                                                         </a>
-                                                                    </li>
+                                                                    </li>{% endif %}
                                                                 {% if request.user|has_group:"myansrsourcebuhead" %}
                                                                 <li>
                                                                         <a href="{% url 'active_employees'%}">
@@ -545,8 +545,6 @@
 
                                                                 {%endif %}
 
-
-                                                                 {% endif %}
                                                             </ul>
                                                         </div>
                                                     </li>
