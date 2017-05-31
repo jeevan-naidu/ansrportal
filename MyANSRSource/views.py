@@ -954,6 +954,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'totalValue',
                     'startDate',
                 )[0]
+                currentProject['revisedTotal'] = currentProject['totalValue']
+                currentProject['revisedEffort'] = currentProject['plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -2238,7 +2240,6 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
-        print pru.bu
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
