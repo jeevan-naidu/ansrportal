@@ -33,7 +33,7 @@ class LaptopSerializer(serializers.ModelSerializer):
                                                   return_status='initiated')
         laptop.avaliable = False
         laptop.save()
-        #LaptopRaiseEmail.delay(laptop_apply, 'raise', laptop_apply.role, 'raise')
+        LaptopRaiseEmail.delay(laptop_apply, 'raise', laptop_apply.role, 'raise')
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -62,7 +62,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             role=role
         ).save()
 
-       # LaptopRaiseEmail.delay(laptop_apply, "transect", role, self.validated_data['status'])
+       LaptopRaiseEmail.delay(laptop_apply, "transect", role, self.validated_data['status'])
 
     @staticmethod
     def transactions(pk, role):
