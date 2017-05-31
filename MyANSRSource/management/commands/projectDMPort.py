@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import ProjectDetail, Project
 
 logger = logging.getLogger('MyANSRSource')
-FEED_DIR = "/home/vivekpradhan/Downloads/"
+FEED_DIR = "/www/MyANSRSource/ansr-timesheet/backup/"
 FEED_EXT = "csv"
 FEED_SUCCESS_DIR = os.path.join(FEED_DIR, "completed")
 FEED_ERROR_DIR = os.path.join(FEED_DIR, "error")
