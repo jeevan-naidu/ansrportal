@@ -33,7 +33,7 @@ class LaptopSerializer(serializers.ModelSerializer):
                                                   return_status='initiated')
         laptop.avaliable = False
         laptop.save()
-        LaptopRaiseEmail.delay(laptop_apply, 'raise', laptop_apply.role, 'raise')
+        #LaptopRaiseEmail.delay(laptop_apply, 'raise', laptop_apply.role, 'raise')
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -47,6 +47,13 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = ('status', 'reason')
 
     def save_as(self, role, request, pk):
+        laptop_apply = LaptopApply.objects.get(id=pk)
+        if self.validated_data['status'] == 'reject':
+            laptop_apply.laptop.avaliable = True
+            laptop_apply.is_active = False
+            laptop_apply.process_status = "Rolled Back"
+            laptop_apply.laptop.save()
+            laptop_apply.save()
         Transaction(
             status=self.validated_data['status'],
             reason=(lambda: self.validated_data['reason'] if 'reason' in self.validated_data else " ")(),
@@ -54,8 +61,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             laptop_id=pk,
             role=role
         ).save()
-        laptop_apply = LaptopApply.objects.get(id=pk)
-        LaptopRaiseEmail.delay(laptop_apply, "transect", role, self.validated_data['status'])
+
+       # LaptopRaiseEmail.delay(laptop_apply, "transect", role, self.validated_data['status'])
 
     @staticmethod
     def transactions(pk, role):
