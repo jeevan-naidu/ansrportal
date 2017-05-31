@@ -191,7 +191,7 @@ def get_review_group(project=None, chapter=None, is_author=False, component=Fals
                 values('review_group_id', 'review_group__name', 'review_group__alias').order_by('order_number')
 
             # for s in obj:
-                # print s.review_group_id,s.review_group__name,s.review_group__alias
+                #  print s.review_group_id,s.review_group__name,s.review_group__alias
     except Exception as e:
         print str(e)
         pass
@@ -283,10 +283,10 @@ def get_template_process_review(request):
         try:
             # qa_obj = qa_sheet_header_obj(project, chapter, author=author)
             qa_obj = QASheetHeader.objects.filter(project=project, chapter_component=cm_obj)
-            print "qa_obj" ,qa_obj
+            # print "qa_obj" ,qa_obj
             # qa_obj.filter(chapter_component=cm_obj)
         except Exception as e:
-            print "ryex",str(e)
+            print "exception", str(e)
             qa_obj_count = 0
         # print "qa_obj" ,qa_obj
         qa_obj_count = qa_obj.count()
@@ -388,85 +388,17 @@ def forbidden_access(self, form, project, message_code, chapter=None):
 
 
 def get_work_book(qms_form, reports, obj):
-    qms_data = {}
-    qms_data_list = []
-    severity_count = {}
-    # excluded_severity = DefectSeverityLevel.objects.get(name__icontains="S0")
-    if reports and len(reports) != 0:
-        # print"im in"
-        for eachData in reports:
-            # print "ed", eachData
-            # count = 0
-            for k, v in eachData.iteritems():
-                qms_data[k] = v
-                if k == 'id':
-                    r_obj = ReviewReport.objects.get(id=int(v))
-                    # print "idddd",v
-                    if r_obj.screen_shot:
-                        qms_data['screen_shot_url'] = r_obj.screen_shot.url
-                        # print "url",  r_obj.screen_shot.path
-                    else:
-                        qms_data['screen_shot_url'] = None
-                    qms_data['qms_id'] = v
-                if k == 'review_item':
-                    qms_data['review_item'] = v
-
-                if k == 'defect':
-                    qms_data['defect'] = v
-
-                if k == 'instruction':
-                    qms_data['instruction'] = v
-
-                if k == 'defect_severity_level__severity_type':
-                    qms_data['severity_type'] = v
-
-                if k == 'defect_severity_level__severity_level':
-                    qms_data['severity_level'] = v
-                    # if v.lower() != "s0":
-                    if v in severity_count:
-                        v = int(v)
-
-                        severity_count[v] += 1
-                    else:
-                        severity_count[v] = 1
-                            # print severity_count, v
-
-                if k == 'defect_severity_level__defect_classification':
-                    qms_data['defect_classification'] = v
-
-                if k == 'is_fixed':
-                    qms_data['is_fixed'] = v
-
-                if k == 'screen_shot':
-                    # url = ReviewReport.objects.get(id=obj.id)
-                    qms_data['screen_shot'] = v
-                    # if v:
-                    #     qms_data['screen_shot_url'] = v
-
-                if k == 'fixed_by__username':
-                    qms_data['fixed_by'] = v
-
-                if k == 'remarks':
-                    qms_data['remarks'] = v
-                    # qms_data['clear_screen_shot'] = False
-            # print "" qms_data
-            qms_data_list.append(qms_data.copy())
-
-        qms_data.clear()
-    # print "qms_data_list" , qms_data_list
+    qms_data_list, severity_count = initial_to_form(reports)
     qms_formset = formset_factory(
         qms_form, max_num=1, can_delete=True
     )
-    # print qms_data_list
     if len(qms_data_list):
         qms_formset = qms_formset(initial=qms_data_list)
     else:
         qms_formset = formset_factory(
             qms_form, extra=1, max_num=1, can_delete=True
         )
-    # qms_formset = formset_factory(
-    #     qms_form, max_num=1, can_delete=True
-    # )
+
     score = {}
     tmp_weight = {}
     defect_density = {}
@@ -499,13 +431,75 @@ def get_work_book(qms_form, reports, obj):
     else:
         total_score = 0
     total_defect_density = sum(defect_density.itervalues())
-    # severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id'). \
-    #     exclude(name__icontains='S0')
+
     # below to pack multiple variables in named tuple
     result = collections.namedtuple('result', ['a', 'b', 'c', 'd', 'e', 'f', 'g'])
     resultant_obj = result(severity_count, score, total_score, total_count, defect_density, total_defect_density,
                            qms_formset)
-    return resultant_obj
+    return resultant_obj  # resultant_obj
+
+
+def initial_to_form(reports):
+    qms_data = {}
+    qms_data_list = []
+    severity_count = {}
+    if reports and len(reports) != 0:
+        for eachData in reports:
+
+            for k, v in eachData.iteritems():
+                qms_data[k] = v
+                if k == 'id':
+                    r_obj = ReviewReport.objects.get(id=int(v))
+                    if r_obj.screen_shot:
+                        qms_data['screen_shot_url'] = r_obj.screen_shot.url
+                        # print "url",  r_obj.screen_shot.path
+                    else:
+                        qms_data['screen_shot_url'] = None
+                    qms_data['qms_id'] = v
+                if k == 'review_item':
+                    qms_data['review_item'] = v
+
+                if k == 'defect':
+                    qms_data['defect'] = v
+
+                if k == 'instruction':
+                    qms_data['instruction'] = v
+
+                if k == 'defect_severity_level__severity_type':
+                    qms_data['severity_type'] = v
+
+                if k == 'defect_severity_level__severity_level':
+                    qms_data['severity_level'] = v
+                    if v in severity_count:
+                        v = int(v)
+
+                        severity_count[v] += 1
+                    else:
+                        severity_count[v] = 1
+
+                if k == 'defect_severity_level__defect_classification':
+                    qms_data['defect_classification'] = v
+
+                if k == 'is_fixed':
+                    qms_data['is_fixed'] = v
+
+                if k == 'screen_shot':
+                    # url = ReviewReport.objects.get(id=obj.id)
+                    qms_data['screen_shot'] = v
+                    # if v:
+                    #     qms_data['screen_shot_url'] = v
+
+                if k == 'fixed_by__username':
+                    qms_data['fixed_by'] = v
+
+                if k == 'remarks':
+                    qms_data['remarks'] = v
+                    # qms_data['clear_screen_shot'] = False
+            # print "" qms_data
+            qms_data_list.append(qms_data.copy())
+
+        qms_data.clear()
+    return qms_data_list, severity_count
 
 
 class AssessmentView(TemplateView):
