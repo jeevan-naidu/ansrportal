@@ -3052,8 +3052,11 @@ class NewCreatedProjectApproval(View):
 
 def project_detail(request):
     project_id = request.GET.get('id')
-    project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
-    return render(request, 'project_detail.html', {'project_detail': project_details})
+    try:
+        project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
+        return render(request, 'project_detail.html', {'project_detail': project_details})
+    except Exception as e:
+        return render(request, 'project_detail.html', {'project_detail': 'Nothing'})
 
 
 
