@@ -193,7 +193,7 @@ def get_review_group(project=None, chapter=None, is_author=False, component=Fals
             # for s in obj:
                 #  print s.review_group_id,s.review_group__name,s.review_group__alias
     except Exception as e:
-        print str(e)
+        # print str(e)
         pass
         # print "get_review_group" , str(e)
     return obj
@@ -212,7 +212,7 @@ def mark_as_completed(request):
                 update(lead_review_status=True, lead_review_feedback=request.GET.get('feedback'))
             result = True
         except Exception as e:
-            print str(e)
+            # print str(e)
             logger.error(" {0} ".format(str(e)))
 
     else:# print request.session['c_project'], request.session['c_chapter'],request.session['c_component'],request.GET.get('tab_id')
@@ -234,7 +234,7 @@ def mark_as_completed(request):
                 if obj.lead_review_status is False:
                     can_show_button = True
         except Exception as e:
-            print str(e)
+            # print str(e)
             logger.error(" {0} ".format(str(e)))
     data = {"result": result, "can_show_button": can_show_button}
     return HttpResponse(
@@ -567,13 +567,13 @@ class AssessmentView(TemplateView):
                                                                 chapter_component=request.session['chapter_component'],
                                                                 order_number=order_number)[0]
                     if is_pm:
-                        print "first if is pm"
+                        # print "first if is pm"
                         # print prev_tab_obj.review_group_status , prev_tab_obj.author_feedback_status
                         if prev_tab_obj.review_group_status is True and \
                                         prev_tab_obj.author_feedback_status is True:
                             pass
                         else:
-                            print "is pm, else"
+                            # print "is pm, else"
                             return forbidden_access(self, form, project, "previous_tab_wait_pm", chapter)
                     if not is_pm:
                         if prev_tab_obj.review_group_status and prev_tab_obj.author_feedback_status:
@@ -627,7 +627,7 @@ class AssessmentView(TemplateView):
                               {'form': BaseAssessmentTemplateForm(request.POST), })
 
         else:
-            print form.errors()
+            # print form.errors()
             return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
                           {'form': BaseAssessmentTemplateForm(request.POST), })
 
@@ -935,7 +935,7 @@ def review_completed(request):
                                                                               review_group_feedback=review_feedback)
             messages.success(request, "Saved Successfully")
     except Exception as e:
-        print str(e)
+        # print str(e)
         messages.error(request, "Unable to save")
         logger.error("check permission for author failed {0} ".format(str(e)))
     obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'],
@@ -1073,7 +1073,7 @@ class ReviewRedirectView(View):
             id=self.kwargs['chapter_component_id'])
         form = BaseAssessmentTemplateForm(initial={'project': qa_obj.project, 'chapter': cc_obj.chapter,
                                                    'author': qa_obj.author, 'component': cc_obj.component})
-        print form
+        # print form
 
         self.request.session['active_tab'] = active_tab = self.kwargs['review_group_id']
 
@@ -1089,7 +1089,7 @@ class ReviewRedirectView(View):
             self.request.session['template_id'] = ptpm_obj.template_id
             obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
             is_pm = ProjectManager.objects.filter(project=project, user=self.request.user).exists()
-            print "is_pm" , is_pm
+            # print "is_pm" , is_pm
             self.request.session['is_pm'] = is_pm
             if obj.order_number != 1:
                 order_number = int(obj.order_number) - 1
@@ -1101,7 +1101,7 @@ class ReviewRedirectView(View):
                                     prev_tab_obj.author_feedback_status is True:
                         pass
                     else:
-                        print "if pm else"
+                        # print "if pm else"
                         return forbidden_access(self, form, project, "previous_tab_wait_pm", chapter)
                 if not is_pm:
                     if prev_tab_obj.review_group_status and prev_tab_obj.author_feedback_status:

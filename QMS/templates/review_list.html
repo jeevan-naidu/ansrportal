@@ -54,7 +54,7 @@
                              <td>{% get_chapter_component_name obj.chapter_component%}</td>
                             {% can_review  obj.project_id obj.order_number obj.chapter_component  as status %}
                             <td>
-                                {% if status %} <a class="btn vd_btn vd_bg-blue"  href="{% url 'review_redirect_view' obj.id  obj.chapter_component_id obj.review_group_id %} " >Review</a>
+                                {% if status.0 %} <a {% if status.1 == "green" %}title="review completed"    class="btn vd_btn vd_bg-green" {%else%} class="btn vd_btn vd_bg-blue" {%endif%} href="{% url 'review_redirect_view' obj.id  obj.chapter_component_id obj.review_group_id %} " >Review</a>
                                 {% else%} <a class="btn vd_btn vd_bg-red "   title="please wait till previous review is completed" >Review</a> {%endif%}
 
 

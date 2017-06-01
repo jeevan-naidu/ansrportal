@@ -174,13 +174,20 @@ def get_alias(obj):
 
 @register.simple_tag
 def can_review(project_id, order, chapter_component):
+    color = "blue"
+    cur_obj = QASheetHeader.objects.filter(project_id=project_id, chapter_component=chapter_component,
+                                           order_number=order)[0]
+    if cur_obj.review_group_status is True and cur_obj.author_feedback_status is True:
+        color = "green"
 
     if int(order) == 1:
-        return True
+        return True, color
     else:
         prev_order = int(order) - 1
         prev_tab_obj = QASheetHeader.objects.filter(project_id=project_id,
                                                     chapter_component=chapter_component,
                                                     order_number=prev_order)[0]
         if prev_tab_obj.review_group_status is not True and prev_tab_obj.author_feedback_status is not True:
-            return False
+            return False, color
+        else:
+            return True, color
