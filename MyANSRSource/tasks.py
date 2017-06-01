@@ -50,10 +50,13 @@ class TimeSheetRejectionNotification(Task):
 
 
 class ProjectChangeRejection(Task):
-    def run(self, email_list, crid):
+    def run(self, email_list, crid, reason, projectname, rejection_date):
         msg_html = render_to_string('email/project_rejection.html',
                                     {
-                                     'crId': crid
+                                     'crId': crid,
+                                     'reason': reason,
+                                     'projectname': projectname,
+                                      'rejectiondate' : rejection_date,
                                     })
         mail_obj = EmailMessage(crid+' ID Request Rejection',
                                 msg_html, settings.EMAIL_HOST_USER, email_list,
