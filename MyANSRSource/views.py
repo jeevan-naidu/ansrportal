@@ -3083,7 +3083,7 @@ class ProjectChangeApproval(View):
             reject = reject if reject else []
             try:
                 ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=1)
-                # ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
+                ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
                 update_project_table = []
                 emailnotifier = []
                 for val in reject:
