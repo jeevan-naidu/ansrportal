@@ -257,12 +257,12 @@
 
                                         </td>
                                         <td class="" id="is_fixed-{{forloop.counter}}-td">
-                                           {% if request.session.reviewer_logged_in %}{{form_obj.is_fixed.value|default_if_none:""}}{% else %}
+                                           {% if request.session.reviewer_logged_in %}{% get_fixed_status form_obj.is_fixed.value%}{% else %}
                                             {{form_obj.is_fixed}}{% endif %}
 
                                         </td>
                                         <td class="" id="fixed_by-{{forloop.counter}}-td" >
-                                            {% if form_obj.fixed_by.value %}{{form_obj.fixed_by.value|default_if_none:""}} {% endif %}
+                                            {% if form_obj.fixed_by.value %}{{ form_obj.fixed_by.value|default_if_none:""}} {% endif %}
                                         </td>
                                         <td id="remarks-{{forloop.counter}}-td">
                                            {% if request.session.reviewer_logged_in %} {{form_obj.remarks.value|default_if_none:""}}{% else %}{{form_obj.remarks}} {% endif %}
@@ -475,14 +475,14 @@
                               {% if result  and  need_button %}
 
                                      {% if not reviewer_feedback_status and  author_feedback_status %}
-                                 <input type="submit" id="form-submit" value="save"
+                                 <input type="submit" id="form-submit" value="Save"
                                         class="btn btn-info btn-sm pull-right"/>
                                       <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
                                             <!--<input type="button" class="btn btn-info btn-sm pull-right" id="add_button"-->
                                                 <!--value="Add Item"  />-->
                                      {% endif %}
                                       {% if not reviewer_feedback_status and not author_feedback_status %}
-                                 <input type="submit" id="form-submit" value="save"
+                                 <input type="submit" id="form-submit" value="Save"
                                         class="btn btn-info btn-sm pull-right"/>
                                         <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
                                         <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
@@ -493,7 +493,7 @@
                                       {% endif %}
 
                                      {% if reviewer_feedback_status and not author_feedback_status %}
-                                 <input type="submit" id="form-submit" value="save"
+                                 <input type="submit" id="form-submit" value="Save"
                                         class="btn btn-info btn-sm pull-right"/>
                                         <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
                                         <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
@@ -503,7 +503,7 @@
                              {% else %}
                               {% if request.session.author_logged_in %}
                                 {% if reviewer_feedback_status and not author_feedback_status %}
-                                                          <input type="submit" id="form-submit" value="save"
+                                                          <input type="submit" id="form-submit" value="Save"
                                     class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="author_modal" data-target="#reviewComplete">Author Feedback Completed</div>
                                     <!-- <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
@@ -515,14 +515,14 @@
                              {% if request.session.reviewer_logged_in %}
 
                                  {% if not reviewer_feedback_status and  author_feedback_status %}
-                               <input type="submit" id="form-submit" value="save"
+                               <input type="submit" id="form-submit" value="Save"
                                     class="btn btn-info btn-sm pull-right"/>
                                   <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Final Review Completed</div>
 
                                  {% endif %}
 
                                   {% if not reviewer_feedback_status and not author_feedback_status %}
-                                                          <input type="submit" id="form-submit" value="save"
+                                                          <input type="submit" id="form-submit" value="Save"
                                     class="btn btn-info btn-sm pull-right"/>
                                     <div class="btn btn-info btn-sm pull-right" data-toggle="modal" id="review_modal" data-target="#reviewComplete">Review Completed</div>
                                     <input type="button" class="btn btn-info btn-sm pull-right" id="add_button"
@@ -645,6 +645,11 @@
 <script type="text/javascript">
 
         $(function() {
+
+        $(".modal").on("hidden.bs.modal", function () {
+            var defect_id = $('#txt_copy_description').data('defect');
+            $('#'+defect_id).val($('#txt_copy_description').val())
+        });
         $(".modal").on('shown.bs.modal', function () {
     $(this).find("textarea:visible:first").focus();
 });

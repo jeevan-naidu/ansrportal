@@ -144,7 +144,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
 
         clear_screen_shot = forms.BooleanField(label='clear screen shot', required=False, initial=False)
 
-        severity_type = forms.ModelChoiceField(widget=forms.Select(), required=False,
+        severity_type = forms.ModelChoiceField(widget=forms.Select(), required=True,
                                                queryset=DefectTypeMaster.objects.all(), )
         # defect_severity_level = forms.CharField()
         # defect_classification = forms.CharField()
@@ -171,6 +171,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
         def __init__(self, *args, **kwargs):
             super(ReviewReportForm, self).__init__(*args, **kwargs)
             self.fields['severity_type'].widget.attrs['class'] = 'defect'
+            self.fields['severity_type'].widget.attrs['required'] = True
             self.fields['severity_level'].widget.attrs['class'] = 'severity_level'
             template_obj = ProjectTemplateProcessModel.objects.get(project=project_obj)
             # defect_type_master_obj = DefectSeverityLevel.objects.filter(template=template_obj.template)
@@ -196,7 +197,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                                                           review_group_id=tab)[0]
                     # print qa_obj.author_feedback_status,qa_obj.review_group_status
                     # condition to prevent reviewer from editing
-                    print "pm", request_obj.session['is_pm']
+                    # print "pm", request_obj.session['is_pm']
 
                     if qa_obj.reviewed_by == request_obj.user:
                         self.fields['remarks'].widget.attrs['readonly'] = True

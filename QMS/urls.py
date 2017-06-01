@@ -6,7 +6,9 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r'^$', login_required(AssessmentView.as_view()), name=u'qms'),
-    # url(r'^/edit(?P<pk>\d+)/$', login_required(AssessmentReviewEditView.as_view()), name=u'edit_review'),
+    url(r'^review/(?P<id>\d+)/(?P<chapter_component_id>\d+)/(?P<review_group_id>\d+)/$',
+        login_required(ReviewRedirectView.as_view()), name= u'review_redirect_view'),
+
     url(r'^edit/$', login_required(ReviewReportManipulationView.as_view()), name='edit_review'),
     url(r'^choose_tabs/$', login_required(ChooseTabs.as_view()), name='choose_tabs'),
     url(r'^fetch_severity/$', login_required(fetch_severity), name=u'fetch_severity'),
@@ -29,5 +31,5 @@ urlpatterns = [
     url(r'^AutoCompleteChapterSpecificComponent/$', login_required(AutoCompleteChapterSpecificComponent.as_view()),
         name='AutoCompleteChapterSpecificComponent', ),
     url(r'^dashboard/$', login_required(DashboardView.as_view()),  name='qms_dashboard'),# TemplateView.as_view(template_name='qms_dashboard.html')),
-
+    url(r'^review_list/$', login_required(ReviewListView.as_view()), name='review_list'),
                        ]

@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q, Sum
 from QMS.models import *
 from MyANSRSource.models import *
+
 import logging
 logger = logging.getLogger('MyANSRSource')
 register = template.Library()
@@ -148,3 +149,38 @@ def get_project_status(project):
         difference = 0
     return can_show_button, difference
 
+
+@register.simple_tag
+def get_chapter_component_name(obj):
+    cc_obj = ChapterComponent.objects.get(pk=obj)
+    return str(cc_obj.chapter.name + " : " + cc_obj.component.name)
+
+
+@register.simple_tag
+def get_fixed_status(obj):
+    status = (('', '------'), ('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
+    if obj == "":
+        return ""
+    else:
+        status = dict(status)
+        status[obj]
+        return status[obj]
+
+
+@register.simple_tag
+def get_alias(obj):
+    return ReviewGroup.objects.filter(id=obj).values_list('alias', flat=True).first()
+
+
+@register.simple_tag
+def can_review(project_id, order, chapter_component):
+
+    if int(order) == 1:
+        return True
+    else:
+        prev_order = int(order) - 1
+        prev_tab_obj = QASheetHeader.objects.filter(project_id=project_id,
+                                                    chapter_component=chapter_component,
+                                                    order_number=prev_order)[0]
+        if prev_tab_obj.review_group_status is not True and prev_tab_obj.author_feedback_status is not True:
+            return False

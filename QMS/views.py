@@ -380,7 +380,13 @@ def forbidden_access(self, form, project, message_code, chapter=None):
         result = True
 
     messages.error(self.request, msg_dict[message_code])
-    # print "forbidden_access", result
+    print "forbidden_access", result
+    try:
+        c = get_review_group(project, chapter,  component=self.request.session['component'])
+        print c
+    except Exception as e:
+        print str(e)
+
     return render(self.request, self.template_name, {'form': form,
                                                      'review_group': get_review_group(project, chapter,
                                                                                       component=self.request.session['component']),
@@ -515,7 +521,7 @@ class AssessmentView(TemplateView):
         return context
 
     def post(self, request):
-        # print "im in post"
+        print "im in post"
         form = BaseAssessmentTemplateForm(request.POST)
         # for sa in request.POST :
         # print request.POST
@@ -561,11 +567,13 @@ class AssessmentView(TemplateView):
                                                                 chapter_component=request.session['chapter_component'],
                                                                 order_number=order_number)[0]
                     if is_pm:
+                        print "first if is pm"
                         # print prev_tab_obj.review_group_status , prev_tab_obj.author_feedback_status
                         if prev_tab_obj.review_group_status is True and \
                                         prev_tab_obj.author_feedback_status is True:
                             pass
                         else:
+                            print "is pm, else"
                             return forbidden_access(self, form, project, "previous_tab_wait_pm", chapter)
                     if not is_pm:
                         if prev_tab_obj.review_group_status and prev_tab_obj.author_feedback_status:
@@ -619,6 +627,7 @@ class AssessmentView(TemplateView):
                               {'form': BaseAssessmentTemplateForm(request.POST), })
 
         else:
+            print form.errors()
             return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
                           {'form': BaseAssessmentTemplateForm(request.POST), })
 
@@ -634,7 +643,6 @@ class ReviewReportManipulationView(AssessmentView):
         qms_data_list = []
         request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
         # print request.POST.get('active_tab1')
-
 
         qms_form = review_report_base(request.session['template_id'], request.session['project'],
                                       request_obj=self.request, tab=active_tab)
@@ -664,7 +672,7 @@ class ReviewReportManipulationView(AssessmentView):
                     qms_data.clear()
                     # print qms_data_list
             for obj in qms_data_list:
-                if obj['severity_type'] == "" or obj['review_item'] == "":
+                if obj['severity_type'] == "":
                     continue
                 # print obj
                 if obj['qms_id'] > 0:
@@ -1032,4 +1040,111 @@ def chapter_summary(request):
         json.dumps(qms_data_list),
         content_type="application/json"
     )
+
+
+class ReviewListView(ListView):
+    model = QASheetHeader
+    template_name = 'review_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ReviewListView, self).get_context_data(**kwargs)
+        is_pm = False
+        # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
+        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+            is_pm = True
+            context['review_list'] = QASheetHeader.objects.filter\
+                (project__in=Project.objects.filter(closed=False, id__in=ProjectTeamMember.objects.filter(
+                    Q(member=self.request.user) | Q(project__projectManager=self.request.user)).values('project'),
+                                                    endDate__gte=datetime.date.today())).\
+                values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
+                        'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
+        else:
+            context['review_list'] = QASheetHeader.objects.filter(Q(author=self.request.user)|Q(reviewed_by=self.request.user))\
+                .values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
+                        'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
+        return context
+
+
+class ReviewRedirectView(View):
+    def get(self, request, *args, **kwargs):
+        qa_obj = QASheetHeader.objects.get(id=self.kwargs['id'])
+        request.session['QA_sheet_header_id'] = self.kwargs['id']
+        self.request.session['chapter_component'] = cc_obj = ChapterComponent.objects.get(
+            id=self.kwargs['chapter_component_id'])
+        form = BaseAssessmentTemplateForm(initial={'project': qa_obj.project, 'chapter': cc_obj.chapter,
+                                                   'author': qa_obj.author, 'component': cc_obj.component})
+        print form
+
+        self.request.session['active_tab'] = active_tab = self.kwargs['review_group_id']
+
+        self.request.session['project'] = project = qa_obj.project
+        self.request.session['chapter'] = chapter = cc_obj.chapter
+        self.request.session['author'] = author = qa_obj.author
+        self.request.session['component'] = component = cc_obj.component
+        if self.request.user is author:
+            # print"is author"
+            get_review_group(project, chapter, is_author=False, component=component)
+        try:
+            ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
+            self.request.session['template_id'] = ptpm_obj.template_id
+            obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
+            is_pm = ProjectManager.objects.filter(project=project, user=self.request.user).exists()
+            print "is_pm" , is_pm
+            self.request.session['is_pm'] = is_pm
+            if obj.order_number != 1:
+                order_number = int(obj.order_number) - 1
+                prev_tab_obj = QASheetHeader.objects.filter(project=project,
+                                                            chapter_component=self.request.session['chapter_component'],
+                                                            order_number=order_number)[0]
+                if is_pm:
+                    if prev_tab_obj.review_group_status is True and \
+                                    prev_tab_obj.author_feedback_status is True:
+                        pass
+                    else:
+                        print "if pm else"
+                        return forbidden_access(self, form, project, "previous_tab_wait_pm", chapter)
+                if not is_pm:
+                    if prev_tab_obj.review_group_status and prev_tab_obj.author_feedback_status:
+                        pass
+                    else:
+                        return forbidden_access(self, form, project, "previous_tab_wait", chapter)
+
+            if self.request.user == obj.reviewed_by:
+                self.request.session['reviewer_logged_in'] = True
+                if obj.review_group_status is True and obj.author_feedback_status is False:
+                    messages.info(self.request, " Please wait till author submit their feedback")
+            else:
+                self.request.session['reviewer_logged_in'] = False
+
+            if obj is None:
+                if is_pm:
+                    msg = "config_missing_manager"
+                else:
+                    msg = "config_missing"
+                return forbidden_access(self, form, project, msg, chapter)
+            else:
+                qms_team_members = [obj.reviewed_by, author]
+                if not is_pm:
+                    if self.request.user == author:
+                        self.request.session['author_logged_in'] = True
+                        if not obj.review_group_status and not obj.author_feedback_status:
+                            return forbidden_access(self, form, project, "wait", chapter)
+                    else:
+                        self.request.session['author_logged_in'] = False
+                else:
+                    self.request.session['author_logged_in'] = False
+                if not is_pm and request.user not in qms_team_members:
+                    return forbidden_access(self, form, project, "not_assigned", chapter)
+
+            project_template_process_model_obj = ProjectTemplateProcessModel.objects.get(project=project)
+            template_id = request.session['template_id'] = project_template_process_model_obj.template_id
+            qms_form = review_report_base(template_id, project, ChapterComponent.objects.get(chapter=chapter,
+                                                                                             component=component),
+                                          request_obj=self.request, tab=obj.review_group_id)
+
+            return render_common(obj, qms_form, request)
+
+        except:
+            return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
+                          {'form': BaseAssessmentTemplateForm(), })
 

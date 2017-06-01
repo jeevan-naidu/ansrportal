@@ -1,0 +1,341 @@
+{% extends 'master.html' %}
+{% load static from staticfiles %}
+{% load qms_tags %}
+
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script>
+
+
+
+
+
+            <div class="row">
+              <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-sm-12 qms-selectors">
+
+
+                        </div>
+
+                    </div><!-- ./qms-selectors row -->
+
+
+
+
+
+                <div class="panel widget">
+<!--                   <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-dot-circle-o"></i> </span> Data Tables Example </h3>
+                  </div> -->
+                  <div class="panel-body table-responsive">
+                    <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                             <th>Review Group</th>
+                            <th>Chapter Component</th>
+
+                            <th >Action</th>
+                        </tr>
+                      </thead>
+                      <tbody> <br/>
+                      {% for obj in review_list %}
+                        <tr class="odd gradeX">
+                          <td>{{obj.project__projectId}} </td>
+                            <td>{{obj.project__name}}</td>
+                            <td>{% get_alias obj.review_group_id %}</td>
+                             <td>{% get_chapter_component_name obj.chapter_component%}</td>
+                            {% can_review  obj.project_id obj.order_number obj.chapter_component  as status %}
+                            <td>
+                                {% if status %} <a class="btn vd_btn vd_bg-blue"  href="{% url 'review_redirect_view' obj.id  obj.chapter_component_id obj.review_group_id %} " >Review</a>
+                                {% else%} <a class="btn vd_btn vd_bg-red "   title="please wait till previous review is completed" >Review</a> {%endif%}
+
+
+
+                            </td>
+
+                            </td>
+
+                        </tr>
+                     {% endfor %}
+                   </tbody>
+			    </table>
+			   </div><!-- ./panel-body -->
+			  </div><!-- ./panel-widget -->
+			 </div><!-- ./col -->
+			</div><!-- ./row -->
+
+
+<!-- Modal Area -->
+
+
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/qms.js"></script>
+
+
+<script type="text/javascript">
+
+
+
+var qms_table_block = $('#qms_project_table tbody tr').html();
+
+function project_iterate(qms_obj){
+        <!--console.log(JSON.stringify(qms_obj));-->
+        <!--Object.keys(qms_obj).length === 0; jQuery.isEmptyObject({}); -->
+      qms_count = 1;
+$('#qms_project_table tbody').html('');
+  for (var qms_key in qms_obj){
+      if (qms_obj.hasOwnProperty(qms_key)){
+          var inner_obj = qms_obj[qms_key];
+          <!--console.log("inner_obj"+JSON.stringify(inner_obj));-->
+          for (var inner_key in inner_obj){
+              if (inner_obj.hasOwnProperty(inner_key)){
+                  for (var sub_inner_key in inner_obj[inner_key]){
+                      if (inner_key.hasOwnProperty(sub_inner_key)){
+                          $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
+                          $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
+                          $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key][sub_inner_key]['author']);
+                          $('#qms_project_table tbody tr:last-child .defect_density').html(inner_obj[inner_key][sub_inner_key]['defect_density']+"%");
+                          $('#qms_project_table tbody tr:last-child .chapter').html(inner_obj[inner_key][sub_inner_key]['chapter_name']);
+                          $('#qms_project_table tbody tr:last-child .component').html(inner_obj[inner_key][sub_inner_key]['component_name']);
+
+                          $('#qms_project_table tbody tr:last-child .questions').html(inner_obj[inner_key][sub_inner_key]['questions']);
+                          <!--inner_obj[inner_key]['severity_level']-->
+                          $('#qms_project_table tbody tr:last-child .s1').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S1']);
+                          $('#qms_project_table tbody tr:last-child .s2').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S2']);
+                          $('#qms_project_table tbody tr:last-child .s3').html(inner_obj[inner_key][sub_inner_key]['severity_level']['S3']);
+                          qms_count++;
+                      }
+                  }
+
+              }
+          }
+
+    }
+  }
+
+}
+
+$(document).ready(function() {
+    <!--$('#data-tables').dataTable();-->
+    $('#data-tables').dataTable( {
+    "order": [],
+    "columnDefs": [ {
+      "targets"  : 'no-sort',
+      "orderable": false,
+    }]
+});
+    $('.project').on('click', function()  {
+        $.ajax({
+            url: '/qms/chapter_summary',
+            type: 'GET',
+            dataType :'json',
+            data: {"project_id": this.getAttribute('data-value')},
+            success: function (data) {
+                project_iterate(data);
+            },
+        });
+    });
+});
+
+    jQuery(document).ready(function() {
+
+    $('#chapter_level').on('click', function(e){
+        e.preventDefault();
+        ResultsToTable();
+    });
+
+    function ResultsToTable(){
+        $("#qms_project_table").table2excel({
+            exclude: ".noExl",
+            name: "Results",
+            filename :"Chapter level"
+        });
+    }
+
+
+     $('#project_level').on('click', function(e){
+        e.preventDefault();
+        ResultsToTable2();
+    });
+
+    function ResultsToTable2(){
+        $(".qms-dashboard-table").table2excel({
+            exclude: ".noExl",
+            name: "Results",
+            filename: "Project Level"
+        });
+    }
+
+
+
+});
+
+//table2excel.js
+;(function ( $, window, document, undefined ) {
+    var pluginName = "table2excel",
+
+    defaults = {
+        exclude: ".noExl",
+                name: "Table2Excel"
+    };
+
+    // The actual plugin constructor
+    function Plugin ( element, options ) {
+            this.element = element;
+            // jQuery has an extend method which merges the contents of two or
+            // more objects, storing the result in the first object. The first object
+            // is generally empty as we don't want to alter the default options for
+            // future instances of the plugin
+            //
+            this.settings = $.extend( {}, defaults, options );
+            this._defaults = defaults;
+            this._name = pluginName;
+            this.init();
+    }
+
+    Plugin.prototype = {
+        init: function () {
+            var e = this;
+
+            e.template = {
+                head: "<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>",
+                sheet: {
+                    head: "<x:ExcelWorksheet><x:Name>",
+                    tail: "</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>"
+                },
+                mid: "</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>",
+                table: {
+                    head: "<table>",
+                    tail: "</table>"
+                },
+                foot: "</body></html>"
+            };
+
+            e.tableRows = [];
+
+            // get contents of table except for exclude
+            $(e.element).each( function(i,o) {
+                var tempRows = "";
+               $(o).find("tr").not(e.settings.exclude).each(function (i, o) {
+                var cloneRow = $(o).clone();
+                $(cloneRow).find(e.settings.exclude).remove();
+                 var html = $(cloneRow).html();
+                 tempRows += "<tr>" + html + "</tr>"; });
+                e.tableRows.push(tempRows);
+            });
+
+            e.tableToExcel(e.tableRows, e.settings.name);
+        },
+
+        tableToExcel: function (table, name) {
+            var e = this, fullTemplate="", i, link, a;
+
+            e.uri = "data:application/vnd.ms-excel;base64,";
+            e.base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)));
+            };
+            e.format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) {
+                    return c[p];
+                });
+            };
+            e.ctx = {
+                worksheet: name || "Worksheet",
+                table: table
+            };
+
+            fullTemplate= e.template.head;
+
+            if ( $.isArray(table) ) {
+                for (i in table) {
+                    //fullTemplate += e.template.sheet.head + "{worksheet" + i + "}" + e.template.sheet.tail;
+                    fullTemplate += e.template.sheet.head + "Table" + i + "" + e.template.sheet.tail;
+                }
+            }
+
+            fullTemplate += e.template.mid;
+
+            if ( $.isArray(table) ) {
+                for (i in table) {
+                    fullTemplate += e.template.table.head + "{table" + i + "}" + e.template.table.tail;
+                }
+            }
+
+            fullTemplate += e.template.foot;
+
+            for (i in table) {
+                e.ctx["table" + i] = table[i];
+            }
+            delete e.ctx.table;
+
+            if (typeof msie !== "undefined" && msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+            {
+                if (typeof Blob !== "undefined") {
+                    //use blobs if we can
+                    fullTemplate = [fullTemplate];
+                    //convert to array
+                    var blob1 = new Blob(fullTemplate, { type: "text/html" });
+                    window.navigator.msSaveBlob(blob1, getFileName(e.settings) );
+                } else {
+                    //otherwise use the iframe and save
+                    //requires a blank iframe on page called txtArea1
+                    txtArea1.document.open("text/html", "replace");
+                    txtArea1.document.write(fullTemplate);
+                    txtArea1.document.close();
+                    txtArea1.focus();
+                    sa = txtArea1.document.execCommand("SaveAs", true, getFileName(e.settings) );
+                }
+
+            } else {
+                link = e.uri + e.base64(e.format(fullTemplate, e.ctx));
+                a = document.createElement("a");
+                a.download = getFileName(e.settings);
+                a.href = link;
+
+                document.body.appendChild(a);
+
+                a.click();
+
+                document.body.removeChild(a);
+            }
+
+            return true;
+        }
+    };
+
+    function getFileName(settings) {
+        return ( settings.filename ? settings.filename : "table2excel") + ".xlsx";
+    }
+
+    $.fn[ pluginName ] = function ( options ) {
+        var e = this;
+            e.each(function() {
+                if ( !$.data( e, "plugin_" + pluginName ) ) {
+                    $.data( e, "plugin_" + pluginName, new Plugin( this, options ) );
+                }
+            });
+
+        // chain jQuery functions
+        return e;
+    };
+
+})( jQuery, window, document );
+</script>
+
+
+
+
+
+{% endblock %}
